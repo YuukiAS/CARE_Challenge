@@ -6,6 +6,7 @@
 - `results/20260801_care_target_domain_race_gap_closure/batch_manifest_fold2.jsonl`
 - `results/20260801_care_target_domain_race_gap_closure/batch_manifest_fold3.jsonl`
 - `results/20260801_care_target_domain_race_gap_closure/batch_manifest_receipt.json`
+- `results/20260801_care_target_domain_race_gap_closure/checkpoint_reload_audit.json`
 - `results/20260801_care_target_domain_race_gap_closure/completion_check.md`
 - `results/20260801_care_target_domain_race_gap_closure/controller_context.json`
 - `results/20260801_care_target_domain_race_gap_closure/controller_report.md`

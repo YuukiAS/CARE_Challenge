@@ -6,7 +6,7 @@ latest_scientific_status: `CONTROLLER_ACTIVE_CONTINUATION: previous interactive-
 latest_controller_task: `20260801_care_target_domain_race_gap_closure`
 route_status: `MAIN_ONLY_TARGET_DOMAIN_GAP_CLOSURE_ACTIVE_CONTINUATION`
 
-当前机器真值是 `prompts/routes/handoffs/CURRENT.md`。完整三模态四模型缺口闭合任务已完成 W0 启动审计；此前资源前提阻塞结论已被用户提供并经 controller 验证的 `61220581 / htzhulab / g1807htzh01` RUNNING GPU allocation 撤销。旧 M0 已重新审计为 `HIGH_LR_SHORT_FINETUNE_NEGATIVE`，不能作为忠实目标域微调负结果。当前 M3 fold2/fold3 已完成 4000-step interactive 训练；M0R fold2 job `61565286` 已完成；M0R fold3 从 pending job `61565287` 取消后接到 interactive allocation 并完成，launcher PID `4039804` 已退出；旧 M1 fold jobs `61565288`/`61565289` 因资源合同不符已取消，替换为 12 CPU/96G/12h 的 lane-level job `61576324`，该 job 已完成 fold2+fold3。takeover monitor PID `4185840` 的最终状态是 `M1_QUEUE_COMPLETED_NO_TAKEOVER_NEEDED`。M2 官方 source 已 pin，但 Google Drive ViT/model weights 未落地，因此保持 asset check，不做替代训练。剩余工作是 checkpoint reload/hash、inner selection、outer replay、aggregation、atlas、mapper、strict final validator、commit/push 和 notifier。
+当前机器真值是 `prompts/routes/handoffs/CURRENT.md`。完整三模态四模型缺口闭合任务已完成 W0 启动审计；此前资源前提阻塞结论已被用户提供并经 controller 验证的 `61220581 / htzhulab / g1807htzh01` RUNNING GPU allocation 撤销。旧 M0 已重新审计为 `HIGH_LR_SHORT_FINETUNE_NEGATIVE`，不能作为忠实目标域微调负结果。当前 M3 fold2/fold3 已完成 4000-step interactive 训练；M0R fold2 job `61565286` 已完成；M0R fold3 从 pending job `61565287` 取消后接到 interactive allocation 并完成，launcher PID `4039804` 已退出；旧 M1 fold jobs `61565288`/`61565289` 因资源合同不符已取消，替换为 12 CPU/96G/12h 的 lane-level job `61576324`，该 job 已完成 fold2+fold3。takeover monitor PID `4185840` 的最终状态是 `M1_QUEUE_COMPLETED_NO_TAKEOVER_NEEDED`。M2 官方 source 已 pin，但 Google Drive ViT/model weights 未落地，因此保持 asset check，不做替代训练。`checkpoint_reload_audit.json` 已写出快速资产表：M1/M3 的 500-step checkpoint grid 齐全；M0R 只有 best/final，缺 step00500..step04000；深度 torch reload/SHA256 因速度暂未完成。剩余工作是 bounded checkpoint reload/hash、inner selection、outer replay、aggregation、atlas、mapper、strict final validator、commit/push 和 notifier。
 
 ## 2026-08-01 目标域四模型缺口闭合继续执行证据
 
@@ -41,6 +41,12 @@ M0R: fold2 COMPLETED job 61565286; fold3 interactive takeover PID 4039804 comple
 M1: old fold jobs 61565288/61565289 cancelled; lane job 61576324 COMPLETED with 12 CPU/96G/12h
 takeover monitor: PID 4185840 exited as M1_QUEUE_COMPLETED_NO_TAKEOVER_NEEDED, state results/20260801_care_target_domain_race_gap_closure/interactive_takeover_monitor_state.json
 M2: source pinned, Google Drive assets required
+
+checkpoint asset manifest:
+results/20260801_care_target_domain_race_gap_closure/checkpoint_reload_audit.json
+status: PASS_WITH_CONTRACT_GAPS
+M1/M3: 500-step checkpoint grid complete
+M0R: missing step00500..step04000; only checkpoint_best.pth/checkpoint_final.pth present
 
 strict validator:
 results/20260801_care_target_domain_race_gap_closure/strict_validator_report.json

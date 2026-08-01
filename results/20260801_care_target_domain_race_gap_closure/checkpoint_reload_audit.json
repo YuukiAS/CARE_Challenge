@@ -1,0 +1,988 @@
+{
+  "audit_scope": "checkpoint sha256, size, bounded torch.load, top-level keys, and expected 500-step checkpoint presence",
+  "created_at": "2026-08-01T05:31:45.782366+00:00",
+  "hash_policy": "none",
+  "known_contract_gaps": [
+    "M0R nnU-Net runtime produced checkpoint_best.pth/checkpoint_final.pth but no step00500..step04000 files; inner selection over eight 500-step checkpoints is not satisfiable from current artifacts."
+  ],
+  "lanes": {
+    "M0R_FAITHFUL_CONTROL": {
+      "2": {
+        "all_discovered_checkpoints_torch_load": true,
+        "checkpoint_count": 2,
+        "contract_step_checkpoint_complete": false,
+        "expected_named_steps": [
+          500,
+          1000,
+          1500,
+          2000,
+          2500,
+          3000,
+          3500,
+          4000
+        ],
+        "loaded_named_steps": [],
+        "missing_expected_named_steps": [
+          500,
+          1000,
+          1500,
+          2000,
+          2500,
+          3000,
+          3500,
+          4000
+        ],
+        "records": [
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M0R_FAITHFUL_CONTROL",
+            "mtime": "2026-08-01T05:06:00.184586+00:00",
+            "name": "checkpoint_final.pth",
+            "parsed_step_from_name": null,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_2/checkpoint_final.pth",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 535639051,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M0R_FAITHFUL_CONTROL",
+            "mtime": "2026-08-01T05:05:58.358909+00:00",
+            "name": "checkpoint_best.pth",
+            "parsed_step_from_name": null,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_2/checkpoint_best.pth",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 535638539,
+            "torch_load_error": null,
+            "torch_load_success": null
+          }
+        ]
+      },
+      "3": {
+        "all_discovered_checkpoints_torch_load": true,
+        "checkpoint_count": 2,
+        "contract_step_checkpoint_complete": false,
+        "expected_named_steps": [
+          500,
+          1000,
+          1500,
+          2000,
+          2500,
+          3000,
+          3500,
+          4000
+        ],
+        "loaded_named_steps": [],
+        "missing_expected_named_steps": [
+          500,
+          1000,
+          1500,
+          2000,
+          2500,
+          3000,
+          3500,
+          4000
+        ],
+        "records": [
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 3,
+            "lane": "M0R_FAITHFUL_CONTROL",
+            "mtime": "2026-08-01T05:13:04.285159+00:00",
+            "name": "checkpoint_final.pth",
+            "parsed_step_from_name": null,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_3/checkpoint_final.pth",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 535639051,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 3,
+            "lane": "M0R_FAITHFUL_CONTROL",
+            "mtime": "2026-08-01T05:13:02.508878+00:00",
+            "name": "checkpoint_best.pth",
+            "parsed_step_from_name": null,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_3/checkpoint_best.pth",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 535638539,
+            "torch_load_error": null,
+            "torch_load_success": null
+          }
+        ]
+      }
+    },
+    "M1_MYOPSNET_L_CARE": {
+      "2": {
+        "all_discovered_checkpoints_torch_load": true,
+        "checkpoint_count": 13,
+        "contract_step_checkpoint_complete": true,
+        "expected_named_steps": [
+          500,
+          1000,
+          1500,
+          2000,
+          2500,
+          3000,
+          3500,
+          4000,
+          4500,
+          5000,
+          5500,
+          6000
+        ],
+        "loaded_named_steps": [
+          1,
+          500,
+          1000,
+          1500,
+          2000,
+          2500,
+          3000,
+          3500,
+          4000,
+          4500,
+          5000,
+          5500,
+          6000
+        ],
+        "missing_expected_named_steps": [],
+        "records": [
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M1_MYOPSNET_L_CARE",
+            "mtime": "2026-08-01T04:38:46.862841+00:00",
+            "name": "checkpoint_step00001.pt",
+            "parsed_step_from_name": 1,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold2/checkpoints/checkpoint_step00001.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 1431987085,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M1_MYOPSNET_L_CARE",
+            "mtime": "2026-08-01T05:06:48.658176+00:00",
+            "name": "checkpoint_step00500.pt",
+            "parsed_step_from_name": 500,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold2/checkpoints/checkpoint_step00500.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 1431987085,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M1_MYOPSNET_L_CARE",
+            "mtime": "2026-08-01T05:07:12.903681+00:00",
+            "name": "checkpoint_step01000.pt",
+            "parsed_step_from_name": 1000,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold2/checkpoints/checkpoint_step01000.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 1431987085,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M1_MYOPSNET_L_CARE",
+            "mtime": "2026-08-01T05:07:37.357817+00:00",
+            "name": "checkpoint_step01500.pt",
+            "parsed_step_from_name": 1500,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold2/checkpoints/checkpoint_step01500.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 1431987085,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M1_MYOPSNET_L_CARE",
+            "mtime": "2026-08-01T05:08:01.922749+00:00",
+            "name": "checkpoint_step02000.pt",
+            "parsed_step_from_name": 2000,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold2/checkpoints/checkpoint_step02000.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 1431987085,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M1_MYOPSNET_L_CARE",
+            "mtime": "2026-08-01T05:08:26.263317+00:00",
+            "name": "checkpoint_step02500.pt",
+            "parsed_step_from_name": 2500,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold2/checkpoints/checkpoint_step02500.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 1431987085,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M1_MYOPSNET_L_CARE",
+            "mtime": "2026-08-01T05:08:50.398789+00:00",
+            "name": "checkpoint_step03000.pt",
+            "parsed_step_from_name": 3000,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold2/checkpoints/checkpoint_step03000.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 1431987085,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M1_MYOPSNET_L_CARE",
+            "mtime": "2026-08-01T05:09:14.656244+00:00",
+            "name": "checkpoint_step03500.pt",
+            "parsed_step_from_name": 3500,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold2/checkpoints/checkpoint_step03500.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 1431987085,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M1_MYOPSNET_L_CARE",
+            "mtime": "2026-08-01T05:09:39.056535+00:00",
+            "name": "checkpoint_step04000.pt",
+            "parsed_step_from_name": 4000,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold2/checkpoints/checkpoint_step04000.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 1431987085,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M1_MYOPSNET_L_CARE",
+            "mtime": "2026-08-01T05:10:03.775259+00:00",
+            "name": "checkpoint_step04500.pt",
+            "parsed_step_from_name": 4500,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold2/checkpoints/checkpoint_step04500.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 1431987085,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M1_MYOPSNET_L_CARE",
+            "mtime": "2026-08-01T05:10:28.040889+00:00",
+            "name": "checkpoint_step05000.pt",
+            "parsed_step_from_name": 5000,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold2/checkpoints/checkpoint_step05000.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 1431987085,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M1_MYOPSNET_L_CARE",
+            "mtime": "2026-08-01T05:10:52.393069+00:00",
+            "name": "checkpoint_step05500.pt",
+            "parsed_step_from_name": 5500,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold2/checkpoints/checkpoint_step05500.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 1431987085,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M1_MYOPSNET_L_CARE",
+            "mtime": "2026-08-01T05:11:16.856264+00:00",
+            "name": "checkpoint_step06000.pt",
+            "parsed_step_from_name": 6000,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold2/checkpoints/checkpoint_step06000.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 1431987085,
+            "torch_load_error": null,
+            "torch_load_success": null
+          }
+        ]
+      },
+      "3": {
+        "all_discovered_checkpoints_torch_load": true,
+        "checkpoint_count": 12,
+        "contract_step_checkpoint_complete": true,
+        "expected_named_steps": [
+          500,
+          1000,
+          1500,
+          2000,
+          2500,
+          3000,
+          3500,
+          4000,
+          4500,
+          5000,
+          5500,
+          6000
+        ],
+        "loaded_named_steps": [
+          500,
+          1000,
+          1500,
+          2000,
+          2500,
+          3000,
+          3500,
+          4000,
+          4500,
+          5000,
+          5500,
+          6000
+        ],
+        "missing_expected_named_steps": [],
+        "records": [
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 3,
+            "lane": "M1_MYOPSNET_L_CARE",
+            "mtime": "2026-08-01T05:11:45.794338+00:00",
+            "name": "checkpoint_step00500.pt",
+            "parsed_step_from_name": 500,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold3/checkpoints/checkpoint_step00500.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 1431987085,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 3,
+            "lane": "M1_MYOPSNET_L_CARE",
+            "mtime": "2026-08-01T05:12:09.692286+00:00",
+            "name": "checkpoint_step01000.pt",
+            "parsed_step_from_name": 1000,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold3/checkpoints/checkpoint_step01000.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 1431987085,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 3,
+            "lane": "M1_MYOPSNET_L_CARE",
+            "mtime": "2026-08-01T05:12:33.718816+00:00",
+            "name": "checkpoint_step01500.pt",
+            "parsed_step_from_name": 1500,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold3/checkpoints/checkpoint_step01500.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 1431987085,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 3,
+            "lane": "M1_MYOPSNET_L_CARE",
+            "mtime": "2026-08-01T05:12:57.257535+00:00",
+            "name": "checkpoint_step02000.pt",
+            "parsed_step_from_name": 2000,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold3/checkpoints/checkpoint_step02000.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 1431987085,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 3,
+            "lane": "M1_MYOPSNET_L_CARE",
+            "mtime": "2026-08-01T05:13:21.135613+00:00",
+            "name": "checkpoint_step02500.pt",
+            "parsed_step_from_name": 2500,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold3/checkpoints/checkpoint_step02500.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 1431987085,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 3,
+            "lane": "M1_MYOPSNET_L_CARE",
+            "mtime": "2026-08-01T05:13:44.085840+00:00",
+            "name": "checkpoint_step03000.pt",
+            "parsed_step_from_name": 3000,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold3/checkpoints/checkpoint_step03000.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 1431987085,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 3,
+            "lane": "M1_MYOPSNET_L_CARE",
+            "mtime": "2026-08-01T05:14:06.750995+00:00",
+            "name": "checkpoint_step03500.pt",
+            "parsed_step_from_name": 3500,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold3/checkpoints/checkpoint_step03500.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 1431987085,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 3,
+            "lane": "M1_MYOPSNET_L_CARE",
+            "mtime": "2026-08-01T05:14:29.708967+00:00",
+            "name": "checkpoint_step04000.pt",
+            "parsed_step_from_name": 4000,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold3/checkpoints/checkpoint_step04000.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 1431987085,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 3,
+            "lane": "M1_MYOPSNET_L_CARE",
+            "mtime": "2026-08-01T05:14:52.850848+00:00",
+            "name": "checkpoint_step04500.pt",
+            "parsed_step_from_name": 4500,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold3/checkpoints/checkpoint_step04500.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 1431987085,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 3,
+            "lane": "M1_MYOPSNET_L_CARE",
+            "mtime": "2026-08-01T05:15:15.808907+00:00",
+            "name": "checkpoint_step05000.pt",
+            "parsed_step_from_name": 5000,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold3/checkpoints/checkpoint_step05000.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 1431987085,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 3,
+            "lane": "M1_MYOPSNET_L_CARE",
+            "mtime": "2026-08-01T05:15:38.904616+00:00",
+            "name": "checkpoint_step05500.pt",
+            "parsed_step_from_name": 5500,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold3/checkpoints/checkpoint_step05500.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 1431987085,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 3,
+            "lane": "M1_MYOPSNET_L_CARE",
+            "mtime": "2026-08-01T05:16:02.050562+00:00",
+            "name": "checkpoint_step06000.pt",
+            "parsed_step_from_name": 6000,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold3/checkpoints/checkpoint_step06000.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 1431987085,
+            "torch_load_error": null,
+            "torch_load_success": null
+          }
+        ]
+      }
+    },
+    "M3_CARE_TDS": {
+      "2": {
+        "all_discovered_checkpoints_torch_load": true,
+        "checkpoint_count": 9,
+        "contract_step_checkpoint_complete": true,
+        "expected_named_steps": [
+          500,
+          1000,
+          1500,
+          2000,
+          2500,
+          3000,
+          3500,
+          4000
+        ],
+        "loaded_named_steps": [
+          1,
+          500,
+          1000,
+          1500,
+          2000,
+          2500,
+          3000,
+          3500,
+          4000
+        ],
+        "missing_expected_named_steps": [],
+        "records": [
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M3_CARE_TDS",
+            "mtime": "2026-08-01T04:37:19.666269+00:00",
+            "name": "checkpoint_step00001.pt",
+            "parsed_step_from_name": 1,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m3_care_tds/fold2/checkpoints/checkpoint_step00001.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 180031661,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M3_CARE_TDS",
+            "mtime": "2026-08-01T04:41:17.975683+00:00",
+            "name": "checkpoint_step00500.pt",
+            "parsed_step_from_name": 500,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m3_care_tds/fold2/checkpoints/checkpoint_step00500.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 180031661,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M3_CARE_TDS",
+            "mtime": "2026-08-01T04:41:37.775661+00:00",
+            "name": "checkpoint_step01000.pt",
+            "parsed_step_from_name": 1000,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m3_care_tds/fold2/checkpoints/checkpoint_step01000.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 180031661,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M3_CARE_TDS",
+            "mtime": "2026-08-01T04:41:57.807907+00:00",
+            "name": "checkpoint_step01500.pt",
+            "parsed_step_from_name": 1500,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m3_care_tds/fold2/checkpoints/checkpoint_step01500.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 180031661,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M3_CARE_TDS",
+            "mtime": "2026-08-01T04:42:17.551537+00:00",
+            "name": "checkpoint_step02000.pt",
+            "parsed_step_from_name": 2000,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m3_care_tds/fold2/checkpoints/checkpoint_step02000.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 180031661,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M3_CARE_TDS",
+            "mtime": "2026-08-01T04:42:37.325985+00:00",
+            "name": "checkpoint_step02500.pt",
+            "parsed_step_from_name": 2500,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m3_care_tds/fold2/checkpoints/checkpoint_step02500.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 180031661,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M3_CARE_TDS",
+            "mtime": "2026-08-01T04:42:57.544893+00:00",
+            "name": "checkpoint_step03000.pt",
+            "parsed_step_from_name": 3000,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m3_care_tds/fold2/checkpoints/checkpoint_step03000.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 180031661,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M3_CARE_TDS",
+            "mtime": "2026-08-01T04:43:17.666933+00:00",
+            "name": "checkpoint_step03500.pt",
+            "parsed_step_from_name": 3500,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m3_care_tds/fold2/checkpoints/checkpoint_step03500.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 180031661,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M3_CARE_TDS",
+            "mtime": "2026-08-01T04:43:38.257080+00:00",
+            "name": "checkpoint_step04000.pt",
+            "parsed_step_from_name": 4000,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m3_care_tds/fold2/checkpoints/checkpoint_step04000.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 180031661,
+            "torch_load_error": null,
+            "torch_load_success": null
+          }
+        ]
+      },
+      "3": {
+        "all_discovered_checkpoints_torch_load": true,
+        "checkpoint_count": 8,
+        "contract_step_checkpoint_complete": true,
+        "expected_named_steps": [
+          500,
+          1000,
+          1500,
+          2000,
+          2500,
+          3000,
+          3500,
+          4000
+        ],
+        "loaded_named_steps": [
+          500,
+          1000,
+          1500,
+          2000,
+          2500,
+          3000,
+          3500,
+          4000
+        ],
+        "missing_expected_named_steps": [],
+        "records": [
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 3,
+            "lane": "M3_CARE_TDS",
+            "mtime": "2026-08-01T04:44:02.285303+00:00",
+            "name": "checkpoint_step00500.pt",
+            "parsed_step_from_name": 500,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m3_care_tds/fold3/checkpoints/checkpoint_step00500.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 180031661,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 3,
+            "lane": "M3_CARE_TDS",
+            "mtime": "2026-08-01T04:44:21.383235+00:00",
+            "name": "checkpoint_step01000.pt",
+            "parsed_step_from_name": 1000,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m3_care_tds/fold3/checkpoints/checkpoint_step01000.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 180031661,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 3,
+            "lane": "M3_CARE_TDS",
+            "mtime": "2026-08-01T04:44:40.547316+00:00",
+            "name": "checkpoint_step01500.pt",
+            "parsed_step_from_name": 1500,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m3_care_tds/fold3/checkpoints/checkpoint_step01500.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 180031661,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 3,
+            "lane": "M3_CARE_TDS",
+            "mtime": "2026-08-01T04:45:00.139472+00:00",
+            "name": "checkpoint_step02000.pt",
+            "parsed_step_from_name": 2000,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m3_care_tds/fold3/checkpoints/checkpoint_step02000.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 180031661,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 3,
+            "lane": "M3_CARE_TDS",
+            "mtime": "2026-08-01T04:45:18.938434+00:00",
+            "name": "checkpoint_step02500.pt",
+            "parsed_step_from_name": 2500,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m3_care_tds/fold3/checkpoints/checkpoint_step02500.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 180031661,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 3,
+            "lane": "M3_CARE_TDS",
+            "mtime": "2026-08-01T04:45:36.890201+00:00",
+            "name": "checkpoint_step03000.pt",
+            "parsed_step_from_name": 3000,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m3_care_tds/fold3/checkpoints/checkpoint_step03000.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 180031661,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 3,
+            "lane": "M3_CARE_TDS",
+            "mtime": "2026-08-01T04:45:54.850704+00:00",
+            "name": "checkpoint_step03500.pt",
+            "parsed_step_from_name": 3500,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m3_care_tds/fold3/checkpoints/checkpoint_step03500.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 180031661,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 3,
+            "lane": "M3_CARE_TDS",
+            "mtime": "2026-08-01T04:46:12.770844+00:00",
+            "name": "checkpoint_step04000.pt",
+            "parsed_step_from_name": 4000,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m3_care_tds/fold3/checkpoints/checkpoint_step04000.pt",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 180031661,
+            "torch_load_error": null,
+            "torch_load_success": null
+          }
+        ]
+      }
+    }
+  },
+  "load_errors": [],
+  "load_policy": "none",
+  "status": "PASS_WITH_CONTRACT_GAPS",
+  "task_key": "20260801_care_target_domain_race_gap_closure"
+}

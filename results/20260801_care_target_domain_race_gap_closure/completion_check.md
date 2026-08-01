@@ -22,5 +22,10 @@
 - interactive_takeover_monitor_pid: `4185840_exited_M1_QUEUE_RUNNING_NO_TAKEOVER`
 - interactive_takeover_monitor_state: `results/20260801_care_target_domain_race_gap_closure/interactive_takeover_monitor_state.json`
 - m2_status: `ASSET_CHECK_REQUIRED_NO_FAKE_JOB`
-- remaining_required_work: `checkpoint_reload_hash_audit,inner_full_volume_selection,outer_replay,aggregation,atlas,mapper,strict_final_validator,final_commit_push,notification`
+- checkpoint_asset_manifest: `results/20260801_care_target_domain_race_gap_closure/checkpoint_reload_audit.json`
+- checkpoint_asset_manifest_status: `PASS_WITH_CONTRACT_GAPS`
+- checkpoint_asset_manifest_scope: `exists_size_mtime_step_presence_only; torch_load_and_sha256_skipped_for_speed`
+- m1_m3_step_checkpoints: `COMPLETE_500_STEP_GRID`
+- m0r_step_checkpoints: `MISSING_STEP00500_TO_STEP04000_ONLY_BEST_AND_FINAL_PRESENT`
+- remaining_required_work: `bounded_checkpoint_sha_reload_if_required,M0R_step_checkpoint_repair_or_contract_exception,inner_full_volume_selection,outer_replay,aggregation,atlas,mapper,strict_final_validator,final_commit_push,notification`
 - validator_required_before_final_completion: `scripts/validation/validate_target_domain_race_gap_closure.py --phase final`

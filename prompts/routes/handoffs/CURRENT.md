@@ -8,7 +8,7 @@
 
 截至 2026-08-01 当前复查，M3 fold2/fold3 已在 `61220581` 中完成 4000-step 训练；M0R fold2 job `61565286` 已 `COMPLETED 0:0` 并写出 `fold2_training_receipt.json`；M0R fold3 原 pending job `61565287` 已按规则取消，并已由 interactive allocation 接力完成 4000 steps，launcher PID `4039804` 已退出。旧 M1 fold jobs `61565288`/`61565289` 因资源合同不符已取消；替换后的 12 CPU/96G/12h lane-level job `61576324` 已 `COMPLETED 0:0` 并完成 fold2+fold3。interactive takeover monitor PID `4185840` 的最终含义是 `M1_QUEUE_COMPLETED_NO_TAKEOVER_NEEDED`：它没有取消 M1，因为 M1 已经启动并随后正常完成。M2 source 已 pin 到 `third_party/I_MMSeg_PINNED`，但 Google Drive ViT/model weights 尚未落地，因此不得提交替代 job。
 
-现在剩余的不是“再把四个模型训练一遍”，而是目标合同后半段：checkpoint reload/hash 审计、inner full-volume selection、outer deterministic replay、统一 aggregation、失败/缺口 atlas、mapper 更新、strict final validator、最终轻量 commit/push 和 notifier。M2 的缺口是外部资产缺失；M0R/M1/M3 的缺口是合同级评价与若干实现 fidelity 差距尚未补齐。
+现在剩余的不是“再把四个模型训练一遍”，而是目标合同后半段：bounded checkpoint sha/reload、inner full-volume selection、outer deterministic replay、统一 aggregation、失败/缺口 atlas、mapper 更新、strict final validator、最终轻量 commit/push 和 notifier。M2 的缺口是外部资产缺失；M0R/M1/M3 的缺口是合同级评价与若干实现 fidelity 差距尚未补齐。最新 checkpoint asset manifest 已写入 `checkpoint_reload_audit.json`：M1/M3 的 500-step checkpoint grid 齐全；M0R 当前只有 `checkpoint_best.pth`/`checkpoint_final.pth`，缺 step00500..step04000，因此不能直接完成合同要求的八个 500-step checkpoint inner selection。
 
 ```text
 state_id: care_target_domain_gap_closure_active_after_interactive_recovery_20260801
@@ -37,6 +37,9 @@ M1_lane_job: 61576324 COMPLETED_0_0 12CPU_96G_12H
 interactive_takeover_monitor_pid: 4185840 EXITED_M1_QUEUE_COMPLETED_NO_TAKEOVER_NEEDED
 M2_status: SOURCE_PINNED_ASSET_CHECK_REQUIRED
 remaining_required_work: checkpoint_reload_hash_audit, inner_full_volume_selection, outer_replay, aggregation, atlas, mapper, strict_final_validator, final_commit_push, notification
+checkpoint_asset_manifest: results/20260801_care_target_domain_race_gap_closure/checkpoint_reload_audit.json
+M1_M3_step_checkpoint_grid: COMPLETE
+M0R_step_checkpoint_grid: MISSING_STEP00500_TO_STEP04000_ONLY_BEST_AND_FINAL_PRESENT
 scientific_decision: CONTROLLER_ACTIVE_CONTINUATION
 controller_verification_decision: ACTIVE_CONTINUATION
 validation_upload_authorized: false
