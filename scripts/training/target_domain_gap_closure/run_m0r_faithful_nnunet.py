@@ -30,12 +30,22 @@ def now_utc() -> str:
 
 def append_csv(path: Path, row: dict[str, object]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    exists = path.exists()
-    with path.open("a", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=list(row.keys()), lineterminator="\n")
-        if not exists:
-            writer.writeheader()
-        writer.writerow(row)
+    fieldnames = list(row.keys())
+    rows: list[dict[str, str]] = []
+    if path.exists():
+        with path.open(newline="", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            rows = list(reader)
+            for field in reader.fieldnames or []:
+                if field not in fieldnames:
+                    fieldnames.append(field)
+    normalized_row = {key: str(value) for key, value in row.items()}
+    rows.append(normalized_row)
+    with path.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames, lineterminator="\n")
+        writer.writeheader()
+        for existing in rows:
+            writer.writerow(existing)
 
 
 def write_json(path: Path, payload: dict[str, object]) -> None:
@@ -79,9 +89,11 @@ def main() -> int:
             "target_optimizer_steps": 4000,
             "num_epochs": 16,
             "num_iterations_per_epoch": 250,
-            "save_every": 2,
+            "checkpoint_every_optimizer_steps": 500,
             "optimizer": "AdamW",
-            "scheduler": "LambdaLR_constant",
+            "scheduler": "WarmupCosine_per_optimizer_step",
+            "warmup_optimizer_steps": 250,
+            "cosine_min_lr": 1.0e-6,
             "pretrained_checkpoint": str(pretrained),
             "device": str(device),
             "formal_credit": "pending",
@@ -99,12 +111,22 @@ def main() -> int:
         "optimizer_steps": 4000,
         "num_epochs": 16,
         "num_iterations_per_epoch": 250,
-        "save_every": 2,
+        "checkpoint_every_optimizer_steps": 500,
         "optimizer": "AdamW",
-        "scheduler": "LambdaLR_constant",
+        "scheduler": "WarmupCosine_per_optimizer_step",
+        "warmup_optimizer_steps": 250,
+        "cosine_min_lr": 1.0e-6,
         "output_folder": str(trainer.output_folder),
         "checkpoint_final": str(checkpoint_final),
         "checkpoint_final_exists": checkpoint_final.exists(),
+        "step_checkpoints": [
+            str(Path(trainer.output_folder) / f"checkpoint_step{step:05d}.pth")
+            for step in range(500, 4001, 500)
+        ],
+        "step_checkpoints_exist": {
+            f"checkpoint_step{step:05d}.pth": (Path(trainer.output_folder) / f"checkpoint_step{step:05d}.pth").exists()
+            for step in range(500, 4001, 500)
+        },
         "pretrained_checkpoint": str(pretrained),
     }
     write_json(RESULT_ROOT / f"fold{args.fold}_training_receipt.json", receipt)
@@ -117,9 +139,11 @@ def main() -> int:
             "target_optimizer_steps": 4000,
             "num_epochs": 16,
             "num_iterations_per_epoch": 250,
-            "save_every": 2,
+            "checkpoint_every_optimizer_steps": 500,
             "optimizer": "AdamW",
-            "scheduler": "LambdaLR_constant",
+            "scheduler": "WarmupCosine_per_optimizer_step",
+            "warmup_optimizer_steps": 250,
+            "cosine_min_lr": 1.0e-6,
             "pretrained_checkpoint": str(pretrained),
             "device": str(device),
             "formal_credit": "true",
