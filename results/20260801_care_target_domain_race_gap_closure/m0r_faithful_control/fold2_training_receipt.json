@@ -1,0 +1,39 @@
+{
+  "checkpoint_every_optimizer_steps": 500,
+  "checkpoint_final": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_2/checkpoint_final.pth",
+  "checkpoint_final_exists": true,
+  "cosine_min_lr": 1e-06,
+  "created_at": "2026-08-01T06:11:17.525690+00:00",
+  "fold": 2,
+  "formal_training_credit": true,
+  "lane_id": "M0R_FAITHFUL_CONTROL",
+  "num_epochs": 16,
+  "num_iterations_per_epoch": 250,
+  "optimizer": "AdamW",
+  "optimizer_steps": 4000,
+  "output_folder": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_2",
+  "pretrained_checkpoint": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_2/checkpoint_final.pth",
+  "scheduler": "WarmupCosine_per_optimizer_step",
+  "status": "TRAINING_COMPLETE",
+  "step_checkpoints": [
+    "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_2/checkpoint_step00500.pth",
+    "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_2/checkpoint_step01000.pth",
+    "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_2/checkpoint_step01500.pth",
+    "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_2/checkpoint_step02000.pth",
+    "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_2/checkpoint_step02500.pth",
+    "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_2/checkpoint_step03000.pth",
+    "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_2/checkpoint_step03500.pth",
+    "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_2/checkpoint_step04000.pth"
+  ],
+  "step_checkpoints_exist": {
+    "checkpoint_step00500.pth": true,
+    "checkpoint_step01000.pth": true,
+    "checkpoint_step01500.pth": true,
+    "checkpoint_step02000.pth": true,
+    "checkpoint_step02500.pth": true,
+    "checkpoint_step03000.pth": true,
+    "checkpoint_step03500.pth": true,
+    "checkpoint_step04000.pth": true
+  },
+  "warmup_optimizer_steps": 250
+}

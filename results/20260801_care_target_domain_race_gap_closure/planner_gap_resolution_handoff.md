@@ -1,22 +1,23 @@
 # Planner Gap Resolution Handoff
 
-当前不是“四个模型都不行”。训练层面已经跑完的是 M0R/M1/M3 的 fold2/fold3；没有跑的是 M2，因为官方 I-MMSeg 权重/ViT 资产没有落地，合同禁止用 rank-channel 或空模型替代。现在真正卡住的是合同后半段：checkpoint 深审计、M0R step checkpoint fidelity、full-volume inner/outer evaluation、统一 aggregation 和 final validator。
+当前不是“四个模型都不行”。训练层面已经跑完的是 M0R/M1/M3 的 fold2/fold3；没有跑的是 M2，因为官方 I-MMSeg 权重/ViT 资产没有落地，合同禁止用 rank-channel 或空模型替代。M0R 的关键实现缺口已经补过一轮：新的 interactive rerun 使用 AdamW、250 optimizer-step warmup、per-step cosine decay 到 `1e-6`，并写出 fold2/fold3 的 `checkpoint_step00500.pth` 到 `checkpoint_step04000.pth`。现在真正剩下的是合同后半段：checkpoint 深审计、full-volume inner/outer evaluation、统一 aggregation、atlas、mapper 和 final validator。
 
 ## Current Published State
 
 - repo: `YuukiAS/CARE_Challenge`
 - branch: `main`
-- latest pushed commit at this handoff: `f857c941fd748e7e008b739fc3c42f1ba8fe7fd8`
+- latest pushed commit at this handoff: `91f466d` for M0R warmup-cosine/checkpoint-cadence code repair; this packet update is pending commit/push
 - result root: `results/20260801_care_target_domain_race_gap_closure`
 - interactive allocation still verified through `htzhulab`: `61220581 / g1807htzh01 / NVIDIA H100 NVL`
-- latest training/accounting commit: `3c1c348`
-- latest checkpoint asset audit commit: `f857c94`
+- latest training/accounting commit before M0R rerun: `3c1c348`
+- latest checkpoint asset audit commit before M0R rerun: `f857c94`
+- latest M0R code repair commit: `91f466d`
 
 ## What Actually Ran
 
 | lane | fold2 | fold3 | current interpretation |
 | --- | --- | --- | --- |
-| M0R faithful nnU-Net control | Slurm job `61565286` completed `0:0` | pending job `61565287` cancelled, then interactive PID `4039804` completed | training complete, but step-checkpoint and LR/manifest fidelity gaps remain |
+| M0R faithful nnU-Net control | repaired interactive rerun in `61220581` completed 4000 steps | repaired interactive rerun in `61220581` completed 4000 steps | training complete with AdamW warmup-cosine and 500-step checkpoint grid; still needs reload/SHA, full-volume inner selection, and manifest-bound crop/augmentation fidelity decision |
 | M1 MyoPS-Net-L CARE | lane job `61576324` completed | lane job `61576324` completed | training complete, needs full-volume reconstruction/evaluation |
 | M2 I-MMSeg CARE | not run | not run | official source pinned, external weights missing |
 | M3 CARE-TDS | interactive `61220581` completed 4000 steps | interactive `61220581` completed 4000 steps | training complete, but model/loss fidelity and full-volume evaluation gaps remain |
@@ -65,19 +66,19 @@ BiomedCLIP note: upstream I-MMSeg calls `open_clip.create_model_from_pretrained(
 
 ## Remaining Gaps And Implementation Plan
 
-### Gap 1: M0R is trained but not contract-faithful enough
+### Gap 1: M0R training protocol repaired; evaluation and manifest fidelity still open
 
 Evidence:
-- `checkpoint_reload_audit.json` shows M0R fold2/fold3 each have only `checkpoint_best.pth` and `checkpoint_final.pth`.
-- Missing expected step checkpoints: `500,1000,1500,2000,2500,3000,3500,4000`.
-- `nnUNetTrainerGapClosureM0R4000` currently records `LambdaLR_constant`, not the requested 250-step warmup plus per-step cosine decay to `1e-6`.
+- `fold2_training_receipt.json` and `fold3_training_receipt.json` now record `scheduler: WarmupCosine_per_optimizer_step`, `warmup_optimizer_steps: 250`, `cosine_min_lr: 0.000001`, and `checkpoint_every_optimizer_steps: 500`.
+- `checkpoint_reload_audit.json` now reports `status: PASS` with no M0R missing expected step checkpoints.
+- Runtime log: `logs/M0RGapLane_61220581_20260801_014519.log`.
+- Runtime note: fold2 finalization emitted a nonfatal `/users/a/e/aereinh/.tmp/codex-care/pymp-*` cleanup `OSError: [Errno 16] Device or resource busy`; the fold2 receipt was written and fold3 completed.
 - The shared manifest currently records `step/case_id/input_order/shared_by_lanes`; it does not record crop coordinates, sampling stratum, augmentation values, and seed, and the nnU-Net dataloader does not consume it as a deterministic batch schedule.
 
-Repair plan:
-- Update `src/care_myocardium/nnunet/gap_closure_trainer.py` to use per-step AdamW schedule: 250-step warmup, then cosine decay to `1e-6`.
-- Add an nnU-Net checkpoint hook that emits explicit copied/aliased files named `checkpoint_step00500.pth` through `checkpoint_step04000.pth`.
-- Either implement manifest-bound batch sampling for M0R or record a planner-approved contract exception. If implementing, bind nnU-Net case order/crop RNG to the existing fold manifest and expand the manifest with crop coordinate, sampling stratum, augmentation parameters, and seed.
-- Rerun M0R fold2/fold3 after the scheduler/checkpoint/manifest repair, because current artifacts cannot satisfy all-checkpoint inner selection.
+Remaining implementation plan:
+- Run bounded torch reload/SHA256 audit over selected or all checkpoint-step files as final runtime permits.
+- Implement full-volume inference/evaluation over the eight 500-step M0R checkpoints for fold2/fold3 inner cases, then freeze checkpoint choice without using outer.
+- Either implement manifest-bound batch sampling for M0R/M3 or record a planner-approved contract exception. If implementing, bind nnU-Net case order/crop RNG to the existing fold manifest and expand the manifest with crop coordinate, sampling stratum, augmentation parameters, and seed.
 
 ### Gap 2: M1 has formal training but no full-volume evaluator
 

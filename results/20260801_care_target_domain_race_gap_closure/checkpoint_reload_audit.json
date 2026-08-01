@@ -1,16 +1,14 @@
 {
   "audit_scope": "checkpoint sha256, size, bounded torch.load, top-level keys, and expected 500-step checkpoint presence",
-  "created_at": "2026-08-01T05:31:45.782366+00:00",
+  "created_at": "2026-08-01T06:41:21.341289+00:00",
   "hash_policy": "none",
-  "known_contract_gaps": [
-    "M0R nnU-Net runtime produced checkpoint_best.pth/checkpoint_final.pth but no step00500..step04000 files; inner selection over eight 500-step checkpoints is not satisfiable from current artifacts."
-  ],
+  "known_contract_gaps": [],
   "lanes": {
     "M0R_FAITHFUL_CONTROL": {
       "2": {
         "all_discovered_checkpoints_torch_load": true,
-        "checkpoint_count": 2,
-        "contract_step_checkpoint_complete": false,
+        "checkpoint_count": 10,
+        "contract_step_checkpoint_complete": true,
         "expected_named_steps": [
           500,
           1000,
@@ -21,8 +19,7 @@
           3500,
           4000
         ],
-        "loaded_named_steps": [],
-        "missing_expected_named_steps": [
+        "loaded_named_steps": [
           500,
           1000,
           1500,
@@ -32,6 +29,7 @@
           3500,
           4000
         ],
+        "missing_expected_named_steps": [],
         "records": [
           {
             "checkpoint_summary": {
@@ -40,7 +38,7 @@
             "exists": true,
             "fold": 2,
             "lane": "M0R_FAITHFUL_CONTROL",
-            "mtime": "2026-08-01T05:06:00.184586+00:00",
+            "mtime": "2026-08-01T06:11:17.240645+00:00",
             "name": "checkpoint_final.pth",
             "parsed_step_from_name": null,
             "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_2/checkpoint_final.pth",
@@ -57,7 +55,7 @@
             "exists": true,
             "fold": 2,
             "lane": "M0R_FAITHFUL_CONTROL",
-            "mtime": "2026-08-01T05:05:58.358909+00:00",
+            "mtime": "2026-08-01T06:11:15.658752+00:00",
             "name": "checkpoint_best.pth",
             "parsed_step_from_name": null,
             "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_2/checkpoint_best.pth",
@@ -66,13 +64,149 @@
             "size_bytes": 535638539,
             "torch_load_error": null,
             "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M0R_FAITHFUL_CONTROL",
+            "mtime": "2026-08-01T05:48:38.040838+00:00",
+            "name": "checkpoint_step00500.pth",
+            "parsed_step_from_name": 500,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_2/checkpoint_step00500.pth",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 535631883,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M0R_FAITHFUL_CONTROL",
+            "mtime": "2026-08-01T05:51:51.392789+00:00",
+            "name": "checkpoint_step01000.pth",
+            "parsed_step_from_name": 1000,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_2/checkpoint_step01000.pth",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 535633099,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M0R_FAITHFUL_CONTROL",
+            "mtime": "2026-08-01T05:55:05.075608+00:00",
+            "name": "checkpoint_step01500.pth",
+            "parsed_step_from_name": 1500,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_2/checkpoint_step01500.pth",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 535634315,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M0R_FAITHFUL_CONTROL",
+            "mtime": "2026-08-01T05:58:18.805620+00:00",
+            "name": "checkpoint_step02000.pth",
+            "parsed_step_from_name": 2000,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_2/checkpoint_step02000.pth",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 535635595,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M0R_FAITHFUL_CONTROL",
+            "mtime": "2026-08-01T06:01:32.440419+00:00",
+            "name": "checkpoint_step02500.pth",
+            "parsed_step_from_name": 2500,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_2/checkpoint_step02500.pth",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 535636811,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M0R_FAITHFUL_CONTROL",
+            "mtime": "2026-08-01T06:04:46.023743+00:00",
+            "name": "checkpoint_step03000.pth",
+            "parsed_step_from_name": 3000,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_2/checkpoint_step03000.pth",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 535638027,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M0R_FAITHFUL_CONTROL",
+            "mtime": "2026-08-01T06:07:59.559833+00:00",
+            "name": "checkpoint_step03500.pth",
+            "parsed_step_from_name": 3500,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_2/checkpoint_step03500.pth",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 535639243,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 2,
+            "lane": "M0R_FAITHFUL_CONTROL",
+            "mtime": "2026-08-01T06:11:12.998236+00:00",
+            "name": "checkpoint_step04000.pth",
+            "parsed_step_from_name": 4000,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_2/checkpoint_step04000.pth",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 535640523,
+            "torch_load_error": null,
+            "torch_load_success": null
           }
         ]
       },
       "3": {
         "all_discovered_checkpoints_torch_load": true,
-        "checkpoint_count": 2,
-        "contract_step_checkpoint_complete": false,
+        "checkpoint_count": 10,
+        "contract_step_checkpoint_complete": true,
         "expected_named_steps": [
           500,
           1000,
@@ -83,8 +217,7 @@
           3500,
           4000
         ],
-        "loaded_named_steps": [],
-        "missing_expected_named_steps": [
+        "loaded_named_steps": [
           500,
           1000,
           1500,
@@ -94,6 +227,7 @@
           3500,
           4000
         ],
+        "missing_expected_named_steps": [],
         "records": [
           {
             "checkpoint_summary": {
@@ -102,7 +236,7 @@
             "exists": true,
             "fold": 3,
             "lane": "M0R_FAITHFUL_CONTROL",
-            "mtime": "2026-08-01T05:13:04.285159+00:00",
+            "mtime": "2026-08-01T06:37:14.782918+00:00",
             "name": "checkpoint_final.pth",
             "parsed_step_from_name": null,
             "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_3/checkpoint_final.pth",
@@ -119,13 +253,149 @@
             "exists": true,
             "fold": 3,
             "lane": "M0R_FAITHFUL_CONTROL",
-            "mtime": "2026-08-01T05:13:02.508878+00:00",
+            "mtime": "2026-08-01T06:37:13.203915+00:00",
             "name": "checkpoint_best.pth",
             "parsed_step_from_name": null,
             "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_3/checkpoint_best.pth",
             "sha256": null,
             "sha256_skipped": true,
             "size_bytes": 535638539,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 3,
+            "lane": "M0R_FAITHFUL_CONTROL",
+            "mtime": "2026-08-01T06:14:36.700127+00:00",
+            "name": "checkpoint_step00500.pth",
+            "parsed_step_from_name": 500,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_3/checkpoint_step00500.pth",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 535631883,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 3,
+            "lane": "M0R_FAITHFUL_CONTROL",
+            "mtime": "2026-08-01T06:17:49.936900+00:00",
+            "name": "checkpoint_step01000.pth",
+            "parsed_step_from_name": 1000,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_3/checkpoint_step01000.pth",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 535633099,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 3,
+            "lane": "M0R_FAITHFUL_CONTROL",
+            "mtime": "2026-08-01T06:21:03.402460+00:00",
+            "name": "checkpoint_step01500.pth",
+            "parsed_step_from_name": 1500,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_3/checkpoint_step01500.pth",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 535634315,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 3,
+            "lane": "M0R_FAITHFUL_CONTROL",
+            "mtime": "2026-08-01T06:24:16.805492+00:00",
+            "name": "checkpoint_step02000.pth",
+            "parsed_step_from_name": 2000,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_3/checkpoint_step02000.pth",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 535635531,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 3,
+            "lane": "M0R_FAITHFUL_CONTROL",
+            "mtime": "2026-08-01T06:27:30.181103+00:00",
+            "name": "checkpoint_step02500.pth",
+            "parsed_step_from_name": 2500,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_3/checkpoint_step02500.pth",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 535636811,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 3,
+            "lane": "M0R_FAITHFUL_CONTROL",
+            "mtime": "2026-08-01T06:30:43.760808+00:00",
+            "name": "checkpoint_step03000.pth",
+            "parsed_step_from_name": 3000,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_3/checkpoint_step03000.pth",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 535638027,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 3,
+            "lane": "M0R_FAITHFUL_CONTROL",
+            "mtime": "2026-08-01T06:33:57.194950+00:00",
+            "name": "checkpoint_step03500.pth",
+            "parsed_step_from_name": 3500,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_3/checkpoint_step03500.pth",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 535639243,
+            "torch_load_error": null,
+            "torch_load_success": null
+          },
+          {
+            "checkpoint_summary": {
+              "torch_load_skipped": "not selected by load_policy"
+            },
+            "exists": true,
+            "fold": 3,
+            "lane": "M0R_FAITHFUL_CONTROL",
+            "mtime": "2026-08-01T06:37:10.507037+00:00",
+            "name": "checkpoint_step04000.pth",
+            "parsed_step_from_name": 4000,
+            "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_3/checkpoint_step04000.pth",
+            "sha256": null,
+            "sha256_skipped": true,
+            "size_bytes": 535640523,
             "torch_load_error": null,
             "torch_load_success": null
           }
@@ -983,6 +1253,6 @@
   },
   "load_errors": [],
   "load_policy": "none",
-  "status": "PASS_WITH_CONTRACT_GAPS",
+  "status": "PASS",
   "task_key": "20260801_care_target_domain_race_gap_closure"
 }

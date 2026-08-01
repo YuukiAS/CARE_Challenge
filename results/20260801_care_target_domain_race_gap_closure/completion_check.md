@@ -1,6 +1,6 @@
 # Completion Check
 
-当前 goal 没有完成最终评价/aggregation/validator，但已经不是“训练没跑”或“四个模型都失败”。截至当前 live Slurm/accounting 复查：M3 fold2/fold3 已在 `61220581 / htzhulab / g1807htzh01` interactive allocation 完成；M0R fold2 job `61565286` 完成；M0R fold3 原 pending job `61565287` 被取消后已在 interactive allocation 完成；M1 替换后的 lane-level job `61576324` 已完成 fold2+fold3。M2 仍是外部 Google Drive 权重资产门，不能用假 job 代替。
+当前 goal 没有完成最终评价/aggregation/validator，但已经不是“训练没跑”或“四个模型都失败”。截至当前 live Slurm/accounting 复查：M3 fold2/fold3 已在 `61220581 / htzhulab / g1807htzh01` interactive allocation 完成；M0R 旧 fold2 job `61565286` 和 fold3 interactive takeover 已被新的 faithful rerun supersede，新的 M0R fold2+fold3 均在同一个 existing interactive allocation 内完成 4000 optimizer steps、AdamW、250-step warmup、per-step cosine to `1e-6`，并写出 `checkpoint_step00500.pth` 到 `checkpoint_step04000.pth`；M1 替换后的 lane-level job `61576324` 已完成 fold2+fold3。M2 仍是外部 Google Drive 权重资产门，不能用假 job 代替。
 
 - controller_verification_decision: `ACTIVE_CONTINUATION`
 - scientific_decision: `CONTROLLER_ACTIVE_CONTINUATION`
@@ -18,14 +18,18 @@
 - cancelled_for_replacement: `61565288,61565289`
 - active_m1_lane_job: `none_completed_61576324`
 - completed_training_jobs: `61565286,61576324`
-- completed_interactive_training_steps: `M3_fold2,M3_fold3,M0R_fold3`
+- completed_interactive_training_steps: `M3_fold2,M3_fold3,M0R_fold3_initial_takeover,M0R_fold2_fold3_faithful_rerun`
 - interactive_takeover_monitor_pid: `4185840_exited_M1_QUEUE_RUNNING_NO_TAKEOVER`
 - interactive_takeover_monitor_state: `results/20260801_care_target_domain_race_gap_closure/interactive_takeover_monitor_state.json`
 - m2_status: `ASSET_CHECK_REQUIRED_NO_FAKE_JOB`
 - checkpoint_asset_manifest: `results/20260801_care_target_domain_race_gap_closure/checkpoint_reload_audit.json`
-- checkpoint_asset_manifest_status: `PASS_WITH_CONTRACT_GAPS`
+- checkpoint_asset_manifest_status: `PASS`
 - checkpoint_asset_manifest_scope: `exists_size_mtime_step_presence_only; torch_load_and_sha256_skipped_for_speed`
 - m1_m3_step_checkpoints: `COMPLETE_500_STEP_GRID`
-- m0r_step_checkpoints: `MISSING_STEP00500_TO_STEP04000_ONLY_BEST_AND_FINAL_PRESENT`
-- remaining_required_work: `bounded_checkpoint_sha_reload_if_required,M0R_step_checkpoint_repair_or_contract_exception,inner_full_volume_selection,outer_replay,aggregation,atlas,mapper,strict_final_validator,final_commit_push,notification`
+- m0r_step_checkpoints: `COMPLETE_500_STEP_GRID_AFTER_INTERACTIVE_RERUN`
+- m0r_scheduler_optimizer_status: `AdamW_WarmupCosine_per_optimizer_step_250_warmup_min_lr_1e-6`
+- m0r_repaired_rerun_log: `logs/M0RGapLane_61220581_20260801_014519.log`
+- m0r_repaired_receipts: `results/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/fold2_training_receipt.json,results/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/fold3_training_receipt.json`
+- m0r_repaired_runtime_warning: `nonfatal pymp temp cleanup OSError Errno16 during fold2 finalization; receipt and fold3 completion succeeded`
+- remaining_required_work: `bounded_checkpoint_sha_reload_if_required,full_volume_inner_selection,outer_replay,aggregation,atlas,mapper,strict_final_validator,final_commit_push,notification`
 - validator_required_before_final_completion: `scripts/validation/validate_target_domain_race_gap_closure.py --phase final`

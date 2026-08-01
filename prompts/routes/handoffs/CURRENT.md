@@ -6,9 +6,9 @@
 
 此前 `OPERATIONALLY_BLOCKED_EXISTING_INTERACTIVE_LOST` packet 是过早的资源门误判，现已被用户提供并经 controller 验证的 `61220581 / htzhulab / g1807htzh01` RUNNING GPU allocation 撤销。`srun --jobid=61220581 --overlap` 的 CUDA probe 已确认该 allocation 暴露 `NVIDIA H100 NVL`。当前状态是非终局继续执行：M3 先用该 interactive GPU；M0R/M1/M2 在 preflight 后提交 `htzhulab` 队列作业；若 interactive 跑完而某个队列作业仍 pending，则取消一个 pending 作业并在 interactive allocation 中串行接力。不得把旧 blocked packet 解释为四模型全失败。
 
-截至 2026-08-01 当前复查，M3 fold2/fold3 已在 `61220581` 中完成 4000-step 训练；M0R fold2 job `61565286` 已 `COMPLETED 0:0` 并写出 `fold2_training_receipt.json`；M0R fold3 原 pending job `61565287` 已按规则取消，并已由 interactive allocation 接力完成 4000 steps，launcher PID `4039804` 已退出。旧 M1 fold jobs `61565288`/`61565289` 因资源合同不符已取消；替换后的 12 CPU/96G/12h lane-level job `61576324` 已 `COMPLETED 0:0` 并完成 fold2+fold3。interactive takeover monitor PID `4185840` 的最终含义是 `M1_QUEUE_COMPLETED_NO_TAKEOVER_NEEDED`：它没有取消 M1，因为 M1 已经启动并随后正常完成。M2 source 已 pin 到 `third_party/I_MMSeg_PINNED`，但 Google Drive ViT/model weights 尚未落地，因此不得提交替代 job。
+截至 2026-08-01 当前复查，M3 fold2/fold3 已在 `61220581` 中完成 4000-step 训练；M0R 旧 fold2 job `61565286` 与 fold3 takeover 训练已被新的 faithful rerun supersede，新的 M0R fold2+fold3 均在 `61220581 / htzhulab / g1807htzh01` interactive allocation 内完成 4000 optimizer steps，训练 receipt 记录 `AdamW`、`WarmupCosine_per_optimizer_step`、250-step warmup、cosine min lr `1e-6`，并写出每 500 step checkpoint grid。旧 M1 fold jobs `61565288`/`61565289` 因资源合同不符已取消；替换后的 12 CPU/96G/12h lane-level job `61576324` 已 `COMPLETED 0:0` 并完成 fold2+fold3。interactive takeover monitor PID `4185840` 的最终含义是 `M1_QUEUE_COMPLETED_NO_TAKEOVER_NEEDED`：它没有取消 M1，因为 M1 已经启动并随后正常完成。M2 source 已 pin 到 `third_party/I_MMSeg_PINNED`，但 Google Drive ViT/model weights 尚未落地，因此不得提交替代 job。
 
-现在剩余的不是“再把四个模型训练一遍”，而是目标合同后半段：bounded checkpoint sha/reload、inner full-volume selection、outer deterministic replay、统一 aggregation、失败/缺口 atlas、mapper 更新、strict final validator、最终轻量 commit/push 和 notifier。M2 的缺口是外部资产缺失；M0R/M1/M3 的缺口是合同级评价与若干实现 fidelity 差距尚未补齐。最新 checkpoint asset manifest 已写入 `checkpoint_reload_audit.json`：M1/M3 的 500-step checkpoint grid 齐全；M0R 当前只有 `checkpoint_best.pth`/`checkpoint_final.pth`，缺 step00500..step04000，因此不能直接完成合同要求的八个 500-step checkpoint inner selection。
+现在剩余的不是“再把四个模型训练一遍”，而是目标合同后半段：bounded checkpoint sha/reload、inner full-volume selection、outer deterministic replay、统一 aggregation、失败/缺口 atlas、mapper 更新、strict final validator、最终轻量 commit/push 和 notifier。M2 的缺口是外部资产缺失；M0R 的训练协议缺口已经修复，但仍缺 full-volume inner selection、selected checkpoint reload/SHA 和 manifest-bound crop/augmentation fidelity 闭环；M1/M3 也仍缺合同级评价与若干实现 fidelity 差距。最新 checkpoint asset manifest 已写入 `checkpoint_reload_audit.json`：M0R/M1/M3 的 500-step checkpoint grid 均齐全，快速存在性审计状态为 `PASS`；深度 torch reload/SHA256 仍需在 finalizer 阶段补齐或明确范围。
 
 ```text
 state_id: care_target_domain_gap_closure_active_after_interactive_recovery_20260801
@@ -29,9 +29,12 @@ formal_lane_training_started: true
 queue_jobs_submitted_by_this_goal: true
 interactive_steps_started_by_this_goal: true
 M3_fold2_fold3_training: complete_4000_steps_each
-M0R_fold2_job: 61565286 COMPLETED_0_0
-M0R_fold3_cancelled_job: 61565287 CANCELLED_FOR_INTERACTIVE_TAKEOVER
-M0R_fold3_interactive_pid: 4039804 EXITED_AFTER_COMPLETION
+M0R_initial_fold2_job: 61565286 COMPLETED_0_0 SUPERSEDED_BY_FAITHFUL_RERUN
+M0R_initial_fold3_cancelled_job: 61565287 CANCELLED_FOR_INTERACTIVE_TAKEOVER
+M0R_initial_fold3_interactive_pid: 4039804 EXITED_AFTER_COMPLETION SUPERSEDED_BY_FAITHFUL_RERUN
+M0R_faithful_rerun: 61220581 COMPLETED_FOLD2_FOLD3_4000_STEPS_EACH
+M0R_faithful_rerun_log: logs/M0RGapLane_61220581_20260801_014519.log
+M0R_scheduler_optimizer: AdamW_WarmupCosine_per_optimizer_step_250_warmup_min_lr_1e-6
 M1_old_fold_jobs: 61565288,61565289 CANCELLED_RESOURCE_CONTRACT_REPLACED
 M1_lane_job: 61576324 COMPLETED_0_0 12CPU_96G_12H
 interactive_takeover_monitor_pid: 4185840 EXITED_M1_QUEUE_COMPLETED_NO_TAKEOVER_NEEDED
@@ -39,8 +42,7 @@ M2_status: SOURCE_PINNED_ASSET_CHECK_REQUIRED
 remaining_required_work: checkpoint_reload_hash_audit, inner_full_volume_selection, outer_replay, aggregation, atlas, mapper, strict_final_validator, final_commit_push, notification
 checkpoint_asset_manifest: results/20260801_care_target_domain_race_gap_closure/checkpoint_reload_audit.json
 planner_gap_resolution_handoff: results/20260801_care_target_domain_race_gap_closure/planner_gap_resolution_handoff.md
-M1_M3_step_checkpoint_grid: COMPLETE
-M0R_step_checkpoint_grid: MISSING_STEP00500_TO_STEP04000_ONLY_BEST_AND_FINAL_PRESENT
+M0R_M1_M3_step_checkpoint_grid: COMPLETE
 scientific_decision: CONTROLLER_ACTIVE_CONTINUATION
 controller_verification_decision: ACTIVE_CONTINUATION
 validation_upload_authorized: false

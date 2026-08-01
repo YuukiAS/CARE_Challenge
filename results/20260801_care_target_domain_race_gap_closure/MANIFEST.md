@@ -21,6 +21,9 @@
 - `results/20260801_care_target_domain_race_gap_closure/known_bad_report.json`
 - `results/20260801_care_target_domain_race_gap_closure/lane_preflight_summary.json`
 - `results/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/lane_controller_packet.json`
+- `results/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/fold2_training_receipt.json`
+- `results/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/fold3_training_receipt.json`
+- `results/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/training_accounting.csv`
 - `results/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/lane_controller_packet.json`
 - `results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/lane_controller_packet.json`
 - `results/20260801_care_target_domain_race_gap_closure/m3_care_tds/lane_controller_packet.json`

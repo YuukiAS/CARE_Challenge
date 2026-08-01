@@ -145,6 +145,7 @@ def audit(load_policy: str, hash_policy: str) -> dict[str, Any]:
     }
     lane_reports: dict[str, Any] = {}
     all_errors: list[str] = []
+    contract_gaps: list[str] = []
     for lane_dir, lane_id in lanes.items():
         fold_reports: dict[str, Any] = {}
         for fold in (2, 3):
@@ -167,6 +168,11 @@ def audit(load_policy: str, hash_policy: str) -> dict[str, Any]:
                 }
             )
             missing_steps = [step for step in expected_steps(lane_dir) if step not in loaded_steps]
+            if missing_steps:
+                contract_gaps.append(
+                    f"{lane_id} fold{fold} missing expected 500-step checkpoints: "
+                    + ",".join(str(step) for step in missing_steps)
+                )
             load_failures = [record for record in records if record["torch_load_success"] is False]
             for record in load_failures:
                 all_errors.append(f"{lane_id} fold{fold} failed to torch.load {record['path']}: {record['torch_load_error']}")
@@ -180,6 +186,12 @@ def audit(load_policy: str, hash_policy: str) -> dict[str, Any]:
                 "contract_step_checkpoint_complete": not missing_steps,
             }
         lane_reports[lane_id] = fold_reports
+    if all_errors:
+        status = "LOAD_FAILURE"
+    elif contract_gaps:
+        status = "PASS_WITH_CONTRACT_GAPS"
+    else:
+        status = "PASS"
     return {
         "created_at": now_utc(),
         "task_key": TASK_KEY,
@@ -187,11 +199,9 @@ def audit(load_policy: str, hash_policy: str) -> dict[str, Any]:
         "load_policy": load_policy,
         "hash_policy": hash_policy,
         "lanes": lane_reports,
-        "status": "PASS_WITH_CONTRACT_GAPS" if not all_errors else "LOAD_FAILURE",
+        "status": status,
         "load_errors": all_errors,
-        "known_contract_gaps": [
-            "M0R nnU-Net runtime produced checkpoint_best.pth/checkpoint_final.pth but no step00500..step04000 files; inner selection over eight 500-step checkpoints is not satisfiable from current artifacts."
-        ],
+        "known_contract_gaps": contract_gaps,
     }
 
 

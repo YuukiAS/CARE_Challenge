@@ -5,12 +5,13 @@
     "job_id": "61220581",
     "launcher_log": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/logs/m0r_fold3_interactive_61220581_launcher.log",
     "launcher_pid": 4039804,
-    "last_completed_lane": "M0R_FAITHFUL_CONTROL",
+    "last_completed_lane": "M0R_FAITHFUL_CONTROL_FAITHFUL_RERUN",
     "last_verified_at": "2026-08-01T01:20:36-04:00",
     "node": "g1807htzh01",
     "partition": "htzhulab",
     "state": "RUNNING",
-    "state_meaning": "allocation still usable; M0R fold3 launcher process has exited after training completion"
+    "state_meaning": "allocation still usable; repaired M0R fold2+fold3 faithful rerun completed after the earlier fold3 takeover",
+    "latest_m0r_faithful_rerun_log": "logs/M0RGapLane_61220581_20260801_014519.log"
   },
   "interactive_completed_before_takeover": [
     {
@@ -50,7 +51,7 @@
       "partition": "htzhulab",
       "sacct_state": "COMPLETED",
       "sacct_exit_code": "0:0",
-      "state_at_receipt": "COMPLETED",
+      "state_at_receipt": "COMPLETED_SUPERSEDED_BY_FAITHFUL_INTERACTIVE_RERUN",
       "training_receipt": "results/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/fold2_training_receipt.json"
     },
     {
@@ -62,7 +63,7 @@
       "state_at_receipt": "CANCELLED_FOR_INTERACTIVE_TAKEOVER",
       "takeover_launcher_log": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/logs/m0r_fold3_interactive_61220581_launcher.log",
       "takeover_launcher_pid": 4039804,
-      "takeover_pid_state": "EXITED_AFTER_COMPLETION",
+      "takeover_pid_state": "EXITED_AFTER_COMPLETION_SUPERSEDED_BY_FAITHFUL_INTERACTIVE_RERUN",
       "takeover_training_receipt": "results/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/fold3_training_receipt.json"
     },
     {
@@ -104,6 +105,31 @@
       ]
     }
   ],
-  "scheduler_policy": "M3 completed first in existing interactive allocation 61220581. M0R fold2 completed as htzhulab job 61565286. M0R fold3 was still pending, so job 61565287 was cancelled, sacct confirmed CANCELLED, and fold3 completed serially inside allocation 61220581. Old M1 fold-specific pending jobs 61565288/61565289 used 8 CPU/64G/8h and were cancelled; replacement M1 lane-level job 61576324 requested 12 CPU/96G/12h, ran fold2+fold3, and completed 0:0. No takeover cancellation was needed because M1 had already started by the time the interactive monitor checked. M2 remains asset-gated; no fake substitute job was submitted.",
+  "faithful_interactive_reruns": [
+    {
+      "lane": "M0R_FAITHFUL_CONTROL",
+      "folds": [
+        2,
+        3
+      ],
+      "job_id": "61220581",
+      "partition": "htzhulab",
+      "node": "g1807htzh01",
+      "requested_interactive_resources": "8CPU_64G_gpu1_existing_allocation",
+      "contract_queue_lane_resources": "12CPU_96G_12H_for_new_queued_jobs",
+      "resource_note": "faithful repair reused the existing interactive allocation as authorized; it did not submit a new allocation",
+      "log": "logs/M0RGapLane_61220581_20260801_014519.log",
+      "status": "COMPLETED",
+      "fold2_receipt": "results/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/fold2_training_receipt.json",
+      "fold3_receipt": "results/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/fold3_training_receipt.json",
+      "scheduler": "WarmupCosine_per_optimizer_step",
+      "warmup_optimizer_steps": 250,
+      "cosine_min_lr": 0.000001,
+      "checkpoint_every_optimizer_steps": 500,
+      "step_checkpoint_grid": "COMPLETE_STEP00500_TO_STEP04000_FOLD2_FOLD3",
+      "runtime_warning": "nonfatal pymp temp cleanup OSError Errno16 during fold2 finalization; fold2 receipt was written and fold3 completed"
+    }
+  ],
+  "scheduler_policy": "M3 completed first in existing interactive allocation 61220581. M0R fold2 initially completed as htzhulab job 61565286, and M0R fold3 pending job 61565287 was cancelled and run inside allocation 61220581. That initial M0R training was then superseded by a faithful interactive rerun in the same existing allocation, completing fold2+fold3 with AdamW, 250-step warmup, per-step cosine decay to 1e-6, and checkpoint_step00500 through checkpoint_step04000. Old M1 fold-specific pending jobs 61565288/61565289 used 8 CPU/64G/8h and were cancelled; replacement M1 lane-level job 61576324 requested 12 CPU/96G/12h, ran fold2+fold3, and completed 0:0. No takeover cancellation was needed because M1 had already started by the time the interactive monitor checked. M2 remains asset-gated; no fake substitute job was submitted.",
   "task_key": "20260801_care_target_domain_race_gap_closure"
 }
