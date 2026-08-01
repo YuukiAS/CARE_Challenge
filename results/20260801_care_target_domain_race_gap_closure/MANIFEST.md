@@ -28,6 +28,11 @@
 - `results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/lane_controller_packet.json`
 - `results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/asset_download_receipt.json`
 - `results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/released_checkpoint_smoke_receipt.json`
+- `results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/preflight_report.json`
+- `results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/adapter_preflight_report.json`
+- `results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/fold2_training_receipt.json`
+- `results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/fold3_training_receipt.json`
+- `results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/training_accounting.csv`
 - `results/20260801_care_target_domain_race_gap_closure/m3_care_tds/lane_controller_packet.json`
 - `results/20260801_care_target_domain_race_gap_closure/m0_protocol_fidelity_audit.json`
 - `results/20260801_care_target_domain_race_gap_closure/mapper_report_final.md`

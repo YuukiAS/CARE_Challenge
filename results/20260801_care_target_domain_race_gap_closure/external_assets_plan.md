@@ -86,9 +86,10 @@ mkdir -p third_party/I_MMSeg_PINNED/weights/TU_Myops128/TU_pretrain_R50-ViT-B_16
 
 - BiomedCLIP 运行时资产：`train.py` 调用 `open_clip.create_model_from_pretrained('hf-hub:microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224')`，首次运行需要 HuggingFace 网络/缓存或预先下载缓存。
 - MyoPS380 边界：上游文档说 release agreement 需签名并从机构邮箱发送给 `donggenf@whu.edu.cn`，主题 `MyoPS380 Dataset Release Agreement`。CARE 本任务不应下载或混用 MyoPS380 作为训练数据；M2 只允许用官方 I-MMSeg 结构和公开/获批的模型资产适配 Dataset501。
-- 当前 preflight：pinned source 到位，CLIP/text prior code signal 到位，rank-channel substitute 未使用；Google Drive ViT/checkpoint 核心资产已放置。下一步仍需实现 Dataset501 CARE adapter、确认 BiomedCLIP HuggingFace cache/网络、跑真实 M2 preflight；MyoPS380 数据集仍不得混用。
+- 当前 preflight：pinned source 到位，CLIP/text prior code signal 到位，rank-channel substitute 未使用；Google Drive ViT/checkpoint 核心资产已放置。Dataset501 CARE adapter preflight 已通过，receipt 见 `results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/adapter_preflight_report.json`；MyoPS380 数据集仍不得混用。
 - 2026-08-01 GPU smoke：在 existing `61220581 / htzhulab / NVIDIA H100 NVL` 上，released `epoch_299.pth` 以 `strict=False` 后 missing/unexpected keys 均为 0，三路 1x128x128 forward 输出 `(1,4,128,128)` 且 finite，receipt 见 `results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/released_checkpoint_smoke_receipt.json`。
 - 上游 fidelity 风险：`VisionTransformer.load_from(R50-ViT-B_16.npz)` 当前 release 会失败，因为该 legacy 方法引用 `self.transformer`，而模型实际定义 `transformer1/transformer2/transformer3`。上游 `train.py/test.py` 也没有调用该方法；当前可用路径是加载 released `epoch_299.pth`。如果 planner 要求从 ViT npz 初始化再 CARE train，需要先修复三编码器 load_from 语义。
+- 2026-08-01 formal job：M2 fold2/fold3 lane job `61627615` 已在 `htzhulab / g1807htzh01` `COMPLETED 0:0`，elapsed `00:24:56`；log 为 `logs/M2IMM_61627615_20260801_031043.log`，training accounting 为 `results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/training_accounting.csv`，receipts 为 `fold2_training_receipt.json` 和 `fold3_training_receipt.json`。这只是 terminal training completion，不是 final evaluation completion。
 
 ## M3_CARE_TDS
 

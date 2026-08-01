@@ -1,0 +1,76 @@
+{
+  "case_id": "Case2002",
+  "created_at": "2026-08-01T07:40:56.747092+00:00",
+  "device": "NVIDIA H100 NVL",
+  "domain_evidence_label": "PREFLIGHT_SMOKE_ONLY",
+  "finite_loss": true,
+  "fold": 2,
+  "formal_training_credit": false,
+  "full_volume_one_case_inference": {
+    "case_id": "Case2002",
+    "center_crop_dim": 128,
+    "input_shape_zyx": [
+      12,
+      244,
+      255
+    ],
+    "prediction_shape_zyx": [
+      12,
+      244,
+      255
+    ],
+    "reconstruction_scope": "slice_wise_center_crop_pasted_to_original_grid_for_preflight_only",
+    "unique_pred_labels": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "unique_target_labels_compact4": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  "gradient_norm_sum": 7.530297245152904,
+  "gradient_tensors": 698,
+  "input_order_to_model": [
+    "C0/bSSFP",
+    "LGE",
+    "T2w"
+  ],
+  "label_mapping": {
+    "0": "background_or_blood",
+    "1": "myocardium",
+    "2": "scar_from_label5",
+    "3": "edema_from_label4"
+  },
+  "lane_id": "M2_I_MMSEG_CARE",
+  "loss_terms": {
+    "dec_ce": 0.5086219906806946,
+    "dec_dice": 2.258234977722168,
+    "out_ce": 0.1733171045780182,
+    "out_dice": 0.7525637745857239,
+    "total": 1.5908706188201904
+  },
+  "next_required_action": "submit/run M2 fold2+fold3 training, then checkpoint reload and canonical full-volume evaluation",
+  "one_batch_overfit": {
+    "final_loss": 1.5735352039337158,
+    "initial_loss": 1.5908706188201904,
+    "steps": 3
+  },
+  "rank_channel_substitute_used": false,
+  "released_checkpoint_path": "third_party/I_MMSeg_PINNED/weights/TU_Myops128/TU_pretrain_R50-ViT-B_16_skip3_epo300_bs24_lr0.001_128/epoch_299.pth",
+  "runtime_gpt_call_used": false,
+  "save_reload_max_abs_diff": 0.0,
+  "save_reload_pass": true,
+  "source_input_order": [
+    "LGE",
+    "T2",
+    "C0"
+  ],
+  "status": "PREFLIGHT_PASS_READY_FOR_HTZHULAB_TRAINING",
+  "vit_npz_path": "third_party/I_MMSeg_PINNED/model/vit_checkpoint/imagenet21k/R50-ViT-B_16.npz",
+  "z_index": 1
+}

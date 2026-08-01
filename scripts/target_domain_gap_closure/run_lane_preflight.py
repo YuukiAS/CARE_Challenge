@@ -246,7 +246,29 @@ def run_m2() -> dict[str, Any]:
     text = "\n".join(p.read_text(encoding="utf-8", errors="ignore")[:200000] for p in py_files[:80])
     has_clip_prior = "CLIP" in text or "clip" in text
     has_intensity_prior = "intensity" in text.lower() or "prior" in text.lower()
-    status = "PREFLIGHT_PASS_SOURCE_READY_ASSET_CHECK_REQUIRED" if source_ok and (has_clip_prior or has_intensity_prior) else "ASSET_APPROVAL_REQUIRED"
+    vit_npz = official / "model/vit_checkpoint/imagenet21k/R50-ViT-B_16.npz"
+    epoch_299 = official / "weights/TU_Myops128/TU_pretrain_R50-ViT-B_16_skip3_epo300_bs24_lr0.001_128/epoch_299.pth"
+    text_features = [
+        official / "text_features/embedding_class_information.pth",
+        official / "text_features/embedding_MRI_information.pth",
+    ]
+    asset_receipt = RESULT_ROOT / "m2_i_mmseg_care/asset_download_receipt.json"
+    smoke_receipt = RESULT_ROOT / "m2_i_mmseg_care/released_checkpoint_smoke_receipt.json"
+    adapter_preflight = RESULT_ROOT / "m2_i_mmseg_care/adapter_preflight_report.json"
+    core_assets_ready = vit_npz.exists() and epoch_299.exists() and all(path.exists() for path in text_features)
+    adapter_preflight_payload: dict[str, Any] | None = None
+    if adapter_preflight.exists():
+        adapter_preflight_payload = json.loads(adapter_preflight.read_text(encoding="utf-8"))
+    if source_ok and core_assets_ready and adapter_preflight_payload and adapter_preflight_payload.get("status") == "PREFLIGHT_PASS_READY_FOR_HTZHULAB_TRAINING":
+        status = "PREFLIGHT_PASS_READY_FOR_HTZHULAB_TRAINING"
+    elif source_ok and core_assets_ready and smoke_receipt.exists():
+        status = "RELEASED_CHECKPOINT_SMOKE_PASS_PENDING_CARE_ADAPTER_PREFLIGHT"
+    elif source_ok and core_assets_ready:
+        status = "SOURCE_AND_CORE_MODEL_ASSETS_READY_PENDING_GPU_SMOKE"
+    elif source_ok and (has_clip_prior or has_intensity_prior):
+        status = "PREFLIGHT_PASS_SOURCE_READY_ASSET_CHECK_REQUIRED"
+    else:
+        status = "ASSET_APPROVAL_REQUIRED"
     return {
         "lane_id": "M2_I_MMSEG_CARE",
         "formal_training_credit": False,
@@ -260,9 +282,20 @@ def run_m2() -> dict[str, Any]:
         "python_file_count": len(py_files),
         "clip_or_text_prior_signal_seen": has_clip_prior,
         "intensity_prior_signal_seen": has_intensity_prior,
+        "core_model_assets_ready": core_assets_ready,
+        "vit_npz_path": str(vit_npz.relative_to(REPO_ROOT)),
+        "epoch_299_path": str(epoch_299.relative_to(REPO_ROOT)),
+        "text_feature_paths": [str(path.relative_to(REPO_ROOT)) for path in text_features],
+        "asset_download_receipt": str(asset_receipt.relative_to(REPO_ROOT)) if asset_receipt.exists() else None,
+        "released_checkpoint_smoke_receipt": str(smoke_receipt.relative_to(REPO_ROOT)) if smoke_receipt.exists() else None,
+        "care_adapter_preflight_report": str(adapter_preflight.relative_to(REPO_ROOT)) if adapter_preflight.exists() else None,
+        "care_adapter_preflight_status": None if adapter_preflight_payload is None else adapter_preflight_payload.get("status"),
         "rank_channel_substitute_used": False,
-        "blocking_gap": None if source_ok else "pinned official source/assets are not present; Google Drive or other upstream asset approval may be required",
-        "next_required_action": "download/pin official source and upstream assets only; do not replace I-MMSeg with rank-channel lite features",
+        "runtime_gpt_call_used": False,
+        "myops380_dataset_used": False,
+        "direct_vit_npz_load_from_status": "FAIL_UPSTREAM_LEGACY_SINGLE_TRANSFORMER_PATH" if smoke_receipt.exists() else "NOT_TESTED",
+        "blocking_gap": None if source_ok and core_assets_ready else "pinned official source or public model assets are not present",
+        "next_required_action": "run CARE adapter preflight, then submit fold2/fold3 M2 training on htzhulab; do not replace I-MMSeg with rank-channel lite features",
     }
 
 

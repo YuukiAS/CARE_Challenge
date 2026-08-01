@@ -1,6 +1,6 @@
 # Completion Check
 
-当前 goal 没有完成最终评价/aggregation/validator，但已经不是“训练没跑”或“四个模型都失败”。截至当前 live Slurm/accounting 复查：M3 fold2/fold3 已在 `61220581 / htzhulab / g1807htzh01` interactive allocation 完成；M0R 旧 fold2 job `61565286` 和 fold3 interactive takeover 已被新的 faithful rerun supersede，新的 M0R fold2+fold3 均在同一个 existing interactive allocation 内完成 4000 optimizer steps、AdamW、250-step warmup、per-step cosine to `1e-6`，并写出 `checkpoint_step00500.pth` 到 `checkpoint_step04000.pth`；M1 替换后的 lane-level job `61576324` 已完成 fold2+fold3。M2 的 Google Drive 核心权重已下载并记录 SHA256，released `epoch_299.pth` GPU smoke 已通过；它仍未完成 CARE adapter、BiomedCLIP/cache 检查、preflight、训练和评价，不能用假 job 代替。
+当前 goal 没有完成最终评价/aggregation/validator，但已经不是“训练没跑”或“四个模型都失败”。截至当前 live Slurm/accounting 复查：M3 fold2/fold3 已在 `61220581 / htzhulab / g1807htzh01` interactive allocation 完成；M0R 旧 fold2 job `61565286` 和 fold3 interactive takeover 已被新的 faithful rerun supersede，新的 M0R fold2+fold3 均在同一个 existing interactive allocation 内完成 4000 optimizer steps、AdamW、250-step warmup、per-step cosine to `1e-6`，并写出 `checkpoint_step00500.pth` 到 `checkpoint_step04000.pth`；M1 替换后的 lane-level job `61576324` 已完成 fold2+fold3。M2 的 Google Drive 核心权重已下载并记录 SHA256，released `epoch_299.pth` GPU smoke 已通过，Dataset501 CARE adapter preflight 也已通过；正式 fold2/fold3 lane job `61627615` 已在 `htzhulab / g1807htzh01` `COMPLETED 0:0`，两折均完成 60 epoch / 6000 steps 并写出 step00500-step06000 checkpoint grid。
 
 - controller_verification_decision: `ACTIVE_CONTINUATION`
 - scientific_decision: `CONTROLLER_ACTIVE_CONTINUATION`
@@ -9,21 +9,27 @@
 - existing_interactive_job_id: `61220581`
 - old_M0_classification: `HIGH_LR_SHORT_FINETUNE_NEGATIVE`
 - formal_lane_training_started: `true`
-- formal_lane_training_status: `M0R_M1_M3_FOLD2_FOLD3_COMPLETE_M2_ASSET_GATED`
+- formal_lane_training_status: `M0R_M1_M2_M3_FOLD2_FOLD3_TRAINING_COMPLETE_PENDING_RELOAD_AND_EVALUATION`
 - queue_jobs_submitted_by_this_goal: `true`
 - interactive_steps_started_by_this_goal: `true`
 - active_interactive_lane: `none_currently_known`
 - active_interactive_launcher_pid: `none_currently_known`
-- submitted_queue_jobs: `61565286,61565287,61565288,61565289,61576324`
+- submitted_queue_jobs: `61565286,61565287,61565288,61565289,61576324,61627615`
 - cancelled_for_replacement: `61565288,61565289`
 - active_m1_lane_job: `none_completed_61576324`
-- completed_training_jobs: `61565286,61576324`
+- completed_training_jobs: `61565286,61576324,61627615`
 - completed_interactive_training_steps: `M3_fold2,M3_fold3,M0R_fold3_initial_takeover,M0R_fold2_fold3_faithful_rerun`
 - interactive_takeover_monitor_pid: `4185840_exited_M1_QUEUE_RUNNING_NO_TAKEOVER`
 - interactive_takeover_monitor_state: `results/20260801_care_target_domain_race_gap_closure/interactive_takeover_monitor_state.json`
-- m2_status: `RELEASED_CHECKPOINT_SMOKE_PASS_PENDING_CARE_ADAPTER_PREFLIGHT`
+- m2_status: `TRAINING_COMPLETE_FOLD2_FOLD3_PENDING_RELOAD_AND_EVALUATION`
 - m2_asset_download_receipt: `results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/asset_download_receipt.json`
 - m2_released_checkpoint_smoke_receipt: `results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/released_checkpoint_smoke_receipt.json`
+- m2_preflight_receipt: `results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/adapter_preflight_report.json`
+- m2_training_job: `61627615 / htzhulab / g1807htzh01 / COMPLETED 0:0 / elapsed 00:24:56`
+- m2_training_log: `logs/M2IMM_61627615_20260801_031043.log`
+- m2_training_accounting: `results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/training_accounting.csv`
+- m2_training_receipts: `results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/fold2_training_receipt.json,results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/fold3_training_receipt.json`
+- m2_step_checkpoints: `COMPLETE_STEP00500_TO_STEP06000_FOLD2_FOLD3`
 - checkpoint_asset_manifest: `results/20260801_care_target_domain_race_gap_closure/checkpoint_reload_audit.json`
 - checkpoint_asset_manifest_status: `PASS`
 - checkpoint_asset_manifest_scope: `exists_size_mtime_step_presence_only; torch_load_and_sha256_skipped_for_speed`

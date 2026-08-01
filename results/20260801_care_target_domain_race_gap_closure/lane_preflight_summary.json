@@ -51,6 +51,19 @@
       "asset_download_receipt": "results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/asset_download_receipt.json",
       "released_checkpoint_smoke_receipt": "results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/released_checkpoint_smoke_receipt.json",
       "released_checkpoint_smoke_status": "PASS",
+      "care_adapter_preflight_report": "results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/adapter_preflight_report.json",
+      "care_adapter_preflight_status": "PREFLIGHT_PASS_READY_FOR_HTZHULAB_TRAINING",
+      "formal_training_job_id": "61627615",
+      "formal_training_job_partition": "htzhulab",
+      "formal_training_job_node_at_last_check": "g1807htzh01",
+      "formal_training_job_log": "logs/M2IMM_61627615_20260801_031043.log",
+      "formal_training_accounting_csv": "results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/training_accounting.csv",
+      "formal_training_state_at_last_check": "COMPLETED",
+      "formal_training_sacct_exit_code": "0:0",
+      "formal_training_elapsed": "00:24:56",
+      "fold2_training_receipt": "results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/fold2_training_receipt.json",
+      "fold3_training_receipt": "results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/fold3_training_receipt.json",
+      "step_checkpoint_grid": "COMPLETE_STEP00500_TO_STEP06000_FOLD2_FOLD3",
       "released_checkpoint_forward_shape": [
         1,
         4,
@@ -67,7 +80,7 @@
       "rank_channel_substitute_used": false,
       "required_commit": "90f46c4eb72924509895fcda6bc6a3b8c3316e66",
       "required_source": "https://github.com/zzzzzzl24/I_MMSeg",
-      "status": "RELEASED_CHECKPOINT_SMOKE_PASS_PENDING_CARE_ADAPTER_PREFLIGHT"
+      "status": "TRAINING_COMPLETE_FOLD2_FOLD3_PENDING_RELOAD_AND_EVALUATION"
     },
     "M3_CARE_TDS": {
       "batch_manifest_fold2_sha256": "917a8312fd3bffdd45c1d6295ca16b04e02804639c4aec243804b799728d6d60",
@@ -82,7 +95,7 @@
       "stock_class4_5_logits_used_for_final_prediction": false
     }
   },
-  "next_scheduler_action": "no active lane training remains except asset-gated M2; proceed to checkpoint reload/hash audit, inner full-volume selection, outer replay, aggregation, atlas, mapper, strict validator, final packet, commit/push, and notifier",
+  "next_scheduler_action": "all four lane trainings have terminal fold2/fold3 evidence; proceed to checkpoint reload/hash audit, inner full-volume selection, outer replay, aggregation, atlas, mapper, strict validator, final packet, commit/push, and notifier",
   "task_key": "20260801_care_target_domain_race_gap_closure",
   "validation_upload_authorized": false
 }

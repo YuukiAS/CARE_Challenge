@@ -1,26 +1,40 @@
 {
+  "asset_download_receipt": "results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/asset_download_receipt.json",
   "blocking_gap": null,
+  "care_adapter_preflight_report": "results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/adapter_preflight_report.json",
+  "care_adapter_preflight_status": "PREFLIGHT_PASS_READY_FOR_HTZHULAB_TRAINING",
   "clip_or_text_prior_signal_seen": true,
-  "created_at": "2026-08-01T04:30:32.262237+00:00",
+  "core_model_assets_ready": true,
+  "created_at": "2026-08-01T07:41:20.353621+00:00",
+  "direct_vit_npz_load_from_status": "FAIL_UPSTREAM_LEGACY_SINGLE_TRANSFORMER_PATH",
+  "epoch_299_path": "third_party/I_MMSeg_PINNED/weights/TU_Myops128/TU_pretrain_R50-ViT-B_16_skip3_epo300_bs24_lr0.001_128/epoch_299.pth",
   "formal_training_credit": false,
-  "git_head": "2cbd2f9a3574f4bf285cffc0ff6be3d37e346063",
+  "git_head": "1fcd58de12c039e9cb91790a82d3b524e48c231a",
   "intensity_prior_signal_seen": false,
   "lane_id": "M2_I_MMSEG_CARE",
-  "next_required_action": "download/pin official source and upstream assets only; do not replace I-MMSeg with rank-channel lite features",
+  "myops380_dataset_used": false,
+  "next_required_action": "run CARE adapter preflight, then submit fold2/fold3 M2 training on htzhulab; do not replace I-MMSeg with rank-channel lite features",
   "official_source_at_required_commit": true,
   "official_source_exists": true,
   "official_source_head": "90f46c4eb72924509895fcda6bc6a3b8c3316e66",
   "official_source_path": "third_party/I_MMSeg_PINNED",
   "python_file_count": 9,
   "rank_channel_substitute_used": false,
+  "released_checkpoint_smoke_receipt": "results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/released_checkpoint_smoke_receipt.json",
   "required_commit": "90f46c4eb72924509895fcda6bc6a3b8c3316e66",
   "required_source": "https://github.com/zzzzzzl24/I_MMSeg",
-  "status": "PREFLIGHT_PASS_SOURCE_READY_ASSET_CHECK_REQUIRED",
+  "runtime_gpt_call_used": false,
+  "status": "PREFLIGHT_PASS_READY_FOR_HTZHULAB_TRAINING",
   "task_key": "20260801_care_target_domain_race_gap_closure",
+  "text_feature_paths": [
+    "third_party/I_MMSeg_PINNED/text_features/embedding_class_information.pth",
+    "third_party/I_MMSeg_PINNED/text_features/embedding_MRI_information.pth"
+  ],
   "torch_env": {
-    "cuda_available": false,
-    "cuda_device_count": 0,
-    "device_name": null,
+    "cuda_available": true,
+    "cuda_device_count": 1,
+    "device_name": "NVIDIA H100 NVL",
     "torch": "2.11.0+cu130"
-  }
+  },
+  "vit_npz_path": "third_party/I_MMSeg_PINNED/model/vit_checkpoint/imagenet21k/R50-ViT-B_16.npz"
 }

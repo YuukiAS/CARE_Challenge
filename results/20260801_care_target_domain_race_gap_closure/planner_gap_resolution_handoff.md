@@ -1,6 +1,6 @@
 # Planner Gap Resolution Handoff
 
-当前不是“四个模型都不行”。训练层面已经跑完的是 M0R/M1/M3 的 fold2/fold3。M2 之前没跑是因为官方 I-MMSeg 权重/ViT 资产没有落地，合同禁止用 rank-channel 或空模型替代；现在两个公开核心权重已经下载并记录 SHA256，M2 剩下的是 CARE Dataset501 adapter、BiomedCLIP/cache 检查、preflight、训练和评价。M0R 的关键实现缺口已经补过一轮：新的 interactive rerun 使用 AdamW、250 optimizer-step warmup、per-step cosine decay 到 `1e-6`，并写出 fold2/fold3 的 `checkpoint_step00500.pth` 到 `checkpoint_step04000.pth`。现在真正剩下的是合同后半段：checkpoint 深审计、full-volume inner/outer evaluation、统一 aggregation、atlas、mapper 和 final validator。
+当前不是“四个模型都不行”。训练层面 M0R/M1/M2/M3 的 fold2/fold3 都已经跑完；M2 之前没跑是因为官方 I-MMSeg 权重/ViT 资产没有落地，合同禁止用 rank-channel 或空模型替代。现在两个公开核心权重已经下载并记录 SHA256，Dataset501 CARE adapter preflight 已在 existing `61220581 / htzhulab` 上通过，正式 fold2/fold3 lane job `61627615` 已在 `htzhulab / g1807htzh01` `COMPLETED 0:0`。M0R 的关键实现缺口已经补过一轮：新的 interactive rerun 使用 AdamW、250 optimizer-step warmup、per-step cosine decay 到 `1e-6`，并写出 fold2/fold3 的 `checkpoint_step00500.pth` 到 `checkpoint_step04000.pth`。现在仍不能写 final complete，真正剩下的是合同后半段：checkpoint 深审计、full-volume inner/outer evaluation、统一 aggregation、atlas、mapper 和 final validator。
 
 ## Current Published State
 
@@ -19,7 +19,7 @@
 | --- | --- | --- | --- |
 | M0R faithful nnU-Net control | repaired interactive rerun in `61220581` completed 4000 steps | repaired interactive rerun in `61220581` completed 4000 steps | training complete with AdamW warmup-cosine and 500-step checkpoint grid; still needs reload/SHA, full-volume inner selection, and manifest-bound crop/augmentation fidelity decision |
 | M1 MyoPS-Net-L CARE | lane job `61576324` completed | lane job `61576324` completed | training complete, needs full-volume reconstruction/evaluation |
-| M2 I-MMSeg CARE | not run | not run | official source and two public core weights present; released checkpoint GPU smoke PASS; CARE adapter/preflight/training pending |
+| M2 I-MMSeg CARE | job `61627615` completed 6000 steps | job `61627615` completed 6000 steps | official source and two public core weights present; released checkpoint GPU smoke PASS; Dataset501 adapter preflight PASS; formal htzhulab lane job completed `0:0`, needs reload/full-volume evaluation |
 | M3 CARE-TDS | interactive `61220581` completed 4000 steps | interactive `61220581` completed 4000 steps | training complete, but model/loss fidelity and full-volume evaluation gaps remain |
 
 ## External Assets
@@ -87,6 +87,15 @@ Released-checkpoint smoke:
 - random three-modal 1x128x128 forward returned `(1,4,128,128)` and finite outputs;
 - direct `R50-ViT-B_16.npz` `load_from` failed because upstream `load_from` references legacy `self.transformer` while this release defines `transformer1/transformer2/transformer3`. Upstream `train.py/test.py` do not call this path. If the next plan requires ViT-npz initialization rather than released `epoch_299.pth`, the first implementation step is repairing three-encoder `load_from`.
 
+CARE adapter preflight and formal job:
+- preflight receipt: `results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/adapter_preflight_report.json`;
+- preflight covered real Dataset501 slice forward/loss/backward, direct gradients, 3-step one-batch overfit, save/reload parity `0.0`, and one-case slice-wise full-volume reconstruction;
+- formal training job: `61627615 / M2IMM / htzhulab / g1807htzh01 / COMPLETED 0:0 / elapsed 00:24:56`;
+- runtime log: `logs/M2IMM_61627615_20260801_031043.log`;
+- training accounting: `results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/training_accounting.csv`;
+- fold receipts: `results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/fold2_training_receipt.json` and `results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/fold3_training_receipt.json`;
+- current state: terminal training complete, not final goal complete; full-volume evaluation and final aggregation still required.
+
 ## Remaining Gaps And Implementation Plan
 
 ### Gap 1: M0R training protocol repaired; evaluation and manifest fidelity still open
@@ -115,20 +124,21 @@ Repair plan:
 - Add a deterministic M1 inference/evaluation script that loads each step checkpoint, slices Dataset501 inner cases, reconstructs full volumes, maps `seg_lge` scar and `seg_t2` pure-edema outputs back to label space, and writes per-checkpoint metrics.
 - Use inner cases only for checkpoint selection; do not touch fold outer until global source selection is frozen.
 
-### Gap 3: M2 assets are now present, but implementation/preflight is still pending
+### Gap 3: M2 assets, preflight, and fold2/fold3 training are present, but evaluation is still pending
 
 Evidence:
 - source is pinned at `third_party/I_MMSeg_PINNED`.
 - `R50-ViT-B_16.npz` and `epoch_299.pth` are present with SHA256 recorded in `m2_i_mmseg_care/asset_download_receipt.json`.
 - GPU smoke over released `epoch_299.pth` passed and is recorded in `m2_i_mmseg_care/released_checkpoint_smoke_receipt.json`.
+- Dataset501 CARE adapter preflight passed and is recorded in `m2_i_mmseg_care/adapter_preflight_report.json`.
+- Formal fold2/fold3 training job `61627615` completed on `htzhulab` with exit `0:0`; fold receipts and checkpoint grid are present.
 - Direct ViT npz `load_from` is a known upstream release bug in this checkout and must not be silently claimed as passing.
 - rank-channel substitute was explicitly not used.
 
 Repair plan:
 - Verify text feature files already present under `third_party/I_MMSeg_PINNED/text_features/`.
-- Add a CARE Dataset501 adapter that preserves I-MMSeg CLIP/text prior semantics without replacing them with handcrafted rank channels.
-- Confirm BiomedCLIP HuggingFace cache or network availability for `hf-hub:microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224`.
-- Run preflight, then formal fold2/fold3 training/evaluation only after assets are present.
+- Verify checkpoint reloadability and hashes.
+- Implement full-volume M2 inference/evaluation using inner cases only before global source selection.
 
 ### Gap 4: M3 training ran, but architecture/loss fidelity is partial
 
