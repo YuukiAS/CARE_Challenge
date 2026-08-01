@@ -1,0 +1,4 @@
+{
+  "status": "not_started",
+  "reason": "host sentinel baseline is not valid after nnU-Net provenance mismatch; no workstation bundle may be started."
+}

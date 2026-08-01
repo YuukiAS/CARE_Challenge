@@ -1,0 +1,16 @@
+{
+  "created_at_utc": "2026-08-01T15:02:41.446325+00:00",
+  "task_key": "20260801_care_test_docker_server_bundle",
+  "phase": "NNUNET_PROVENANCE_REPLAY_MISMATCH_STOP",
+  "git_head": "772a14213e866079cbc8a52a65eb24cf54e1250d",
+  "origin_main": "772a14213e866079cbc8a52a65eb24cf54e1250d",
+  "task_prompt_path": "prompts/tasks/20260801_care_test_docker_server_bundle_controller.md",
+  "task_prompt_sha256": "533fee7e5232558d5f83bb268b24ecae5de5952a6defa6c83fdd37e07462f38f",
+  "AGENTS_sha256": "6d1ed9fbd6726e2381c6969d6ea720ecd1f504b1f75d9d383e59ffa6f4517dde",
+  "slurm_job_used": "61220581",
+  "slurm_backend": "srun --overlap on existing htzhulab allocation",
+  "runtime_root": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine",
+  "fresh_nnunet_receipt": "results/20260801_care_test_docker_server_bundle/fresh_nnunet_provenance_receipt.json",
+  "downstream_bundle_ready_allowed": false,
+  "files_read_summary": "Required local policy/task/evidence files were read or re-read; SRR project-background visual files are not directly accessible in this local Codex environment."
+}

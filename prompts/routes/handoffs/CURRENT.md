@@ -1,5 +1,49 @@
 # CARE 当前开发状态
 
+## 2026-08-01 最新机器真值：服务器端跨机器 Docker bundle 因 nnU-Net fresh replay 不一致阻塞
+
+本次不再尝试安装或运行 Docker/rootless Docker，而是按跨机器方案在服务器端准备工位 WSL 可下载的构建资源。服务器已复用现有 `htzhulab` GPU allocation `61220581` 重新跑 frozen Dataset501 五折 nnU-Net `checkpoint_best.pth` 的 15 例公开 validation 推理；15 个 fresh 输出都生成，几何与历史 package A 全部一致，但数组只有 4/15 完全一致。因此历史 0.6691 edema 归属不能被当前 fresh replay 证明，MyoPS 可执行 bundle 和 `SERVER_BUNDLE_READY.json` 被合同硬门禁止。
+
+MoSAIC 诊断部分：MyoPS Docker-recipe fresh replay 已完成 15/15；CineMyoPS 诊断在上游 nnU-Net 硬门已失败后停止于 4/15，没有作为提交候选或 ready 条件使用。没有使用 sudo，没有修改 `/etc`，没有运行 Docker/Podman/Buildah/Apptainer，没有新训练，没有上传网盘、validation 或给组织方发邮件。
+
+```text
+state_id: care_test_docker_server_bundle_nnunet_mismatch_20260801
+active_development_branch: main
+active_worktree: /users/a/e/aereinh/CARE
+single_active_scientific_line: CARE_TEST_DOCKER_SERVER_BUNDLE_RETURN_TO_PLANNER
+result_root: results/20260801_care_test_docker_server_bundle
+runtime_root: /users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine
+terminal_state: SERVER_BUNDLE_BLOCKED
+blocking_token: NNUNET_PROVENANCE_REPLAY_MISMATCH
+nnunet_fresh_output_count: 15
+nnunet_geometry_equal_count: 15
+nnunet_array_equal_count: 4
+mosaic_myops_diagnostic_case_count: 15
+mosaic_cinemyops_diagnostic_case_count: 4
+server_bundle_ready: false
+workstation_should_start: false
+docker_or_rootless_attempted: false
+new_training_authorized: false
+validation_upload_authorized: false
+docker_upload_authorized: false
+organizer_email_send_authorized: false
+hosted_metric_claim_authorized: false
+```
+
+关键证据：
+
+```text
+results/20260801_care_test_docker_server_bundle/fresh_nnunet_provenance_receipt.json
+results/20260801_care_test_docker_server_bundle/fresh_nnunet_vs_historical_casewise.csv
+results/20260801_care_test_docker_server_bundle/fresh_mosaic_myops_manifest.json
+results/20260801_care_test_docker_server_bundle/fresh_mosaic_cine_manifest.json
+results/20260801_care_test_docker_server_bundle/fresh_mosaic_replay_receipt.json
+results/20260801_care_test_docker_server_bundle/controller_report.md
+/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/transfer/SERVER_BUNDLE_BLOCKED.json
+```
+
+下一步只允许 GPT Planner 决定是否追溯历史 package A 的原始生成命令/环境，或改写 bundle 合同。当前不得让工位执行 Docker 构建，也不得生成提交邮件或 Docker archive。
+
 ## 2026-08-01 最新机器真值：测试 Docker rootless unblock 在主机 subuid/subgid 前提处阻塞
 
 本次没有停在“没有 docker 命令”的旧判断上，而是按新合同完成了 rootless Docker 前置审计并下载校验了官方 rootless installer。服务器允许 `unshare -Ur true`，`newuidmap/newgidmap` 存在，本地 `/tmp` 是可用的 xfs Docker data root；真正阻塞点是 `/etc/subuid` 和 `/etc/subgid` 没有给当前用户 `aereinh` 分配至少 65536 的 subordinate uid/gid 范围。任务禁止 sudo 和系统级安装，因此不能修改这两个系统文件，也不能把 Apptainer/Singularity 替代成 Docker。

@@ -1,0 +1,20 @@
+{
+  "created_at_utc": "2026-08-01T14:54:17.770299+00:00",
+  "task_key": "20260801_care_test_docker_server_bundle",
+  "model_root": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres",
+  "folds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "checkpoint": "checkpoint_best.pth",
+  "case_count": 15,
+  "fresh_output_count": 15,
+  "historical_package": "results/submissions/care_myocardium_validation/upload_ready/20260519_084057__nnUNet_MyoPS+nnUNet_CineMyoPS_5fold_baseline_round8/CARE-Myocardium-OrganAgent.zip",
+  "comparison": "official-label array and SimpleITK geometry; gzip bytes ignored",
+  "token": "NNUNET_PROVENANCE_REPLAY_MISMATCH",
+  "all_array_geometry_equal": false,
+  "runtime_output_dir": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops"
+}

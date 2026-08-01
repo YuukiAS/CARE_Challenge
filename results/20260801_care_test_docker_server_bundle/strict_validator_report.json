@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "task_key": "20260801_care_test_docker_server_bundle",
+  "terminal_state": "SERVER_BUNDLE_BLOCKED",
+  "nnunet_token": "NNUNET_PROVENANCE_REPLAY_MISMATCH",
+  "errors": []
+}

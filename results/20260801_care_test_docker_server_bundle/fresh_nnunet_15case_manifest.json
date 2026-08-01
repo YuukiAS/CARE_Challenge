@@ -1,0 +1,635 @@
+{
+  "created_at_utc": "2026-08-01T14:54:17.770299+00:00",
+  "cases": [
+    {
+      "case_id": "Case1001",
+      "fresh_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1001.nii.gz",
+      "size_bytes": 2486,
+      "canonical_sha256": "60d3e610a5c3111ade837044aefa8843c036d5c9999c1cc3dd6f3b3c9d8576fb",
+      "geometry": {
+        "size": [
+          212,
+          251,
+          6
+        ],
+        "spacing": [
+          1.328125,
+          1.328125,
+          10.0
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          10.0
+        ],
+        "direction": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "labels": [
+          0,
+          200,
+          500,
+          600,
+          1220,
+          2221
+        ]
+      }
+    },
+    {
+      "case_id": "Case1002",
+      "fresh_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1002.nii.gz",
+      "size_bytes": 2301,
+      "canonical_sha256": "b450d59b8bc3767df65dd41e133dfb3f36f0bd131534da494c86dc757212aa00",
+      "geometry": {
+        "size": [
+          227,
+          257,
+          6
+        ],
+        "spacing": [
+          1.328125,
+          1.328125,
+          10.0
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          10.0
+        ],
+        "direction": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "labels": [
+          0,
+          200,
+          500,
+          600,
+          1220,
+          2221
+        ]
+      }
+    },
+    {
+      "case_id": "Case1003",
+      "fresh_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1003.nii.gz",
+      "size_bytes": 2289,
+      "canonical_sha256": "2c91ffafcff5a11514f534deb45ace3c9d8f5a591d71a856f18bf52073fcb12e",
+      "geometry": {
+        "size": [
+          235,
+          248,
+          6
+        ],
+        "spacing": [
+          1.328125,
+          1.328125,
+          10.0
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          10.0
+        ],
+        "direction": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "labels": [
+          0,
+          200,
+          500,
+          600,
+          1220,
+          2221
+        ]
+      }
+    },
+    {
+      "case_id": "Case1004",
+      "fresh_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1004.nii.gz",
+      "size_bytes": 2698,
+      "canonical_sha256": "d1f6ea9c534b6248a120b68622abca539a1ee8eaa42c39fd74ed3196efcc93b4",
+      "geometry": {
+        "size": [
+          220,
+          253,
+          7
+        ],
+        "spacing": [
+          1.7708333730697632,
+          1.7708333730697632,
+          10.0
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          10.0
+        ],
+        "direction": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "labels": [
+          0,
+          200,
+          500,
+          600,
+          1220,
+          2221
+        ]
+      }
+    },
+    {
+      "case_id": "Case1005",
+      "fresh_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1005.nii.gz",
+      "size_bytes": 1923,
+      "canonical_sha256": "e301c598bb95852a85decdfb756a1e86af903d070a8a82cbc122c1ae96ba209e",
+      "geometry": {
+        "size": [
+          258,
+          260,
+          5
+        ],
+        "spacing": [
+          1.7708333730697632,
+          1.7708333730697632,
+          10.0
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          10.0
+        ],
+        "direction": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "labels": [
+          0,
+          200,
+          500,
+          600,
+          1220,
+          2221
+        ]
+      }
+    },
+    {
+      "case_id": "Case1006",
+      "fresh_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1006.nii.gz",
+      "size_bytes": 1030,
+      "canonical_sha256": "192569567312ec311c41bd9d0aac00ccd6904ac3c43467266fdd13672a517a15",
+      "geometry": {
+        "size": [
+          252,
+          260,
+          3
+        ],
+        "spacing": [
+          1.6015625,
+          1.6015625,
+          10.0
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "direction": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "labels": [
+          0,
+          200,
+          500,
+          600,
+          1220,
+          2221
+        ]
+      }
+    },
+    {
+      "case_id": "Case1007",
+      "fresh_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1007.nii.gz",
+      "size_bytes": 2194,
+      "canonical_sha256": "1adceeda353bdba0ecad2d09f8361107c4b7758f39632273806c0740e9f206a6",
+      "geometry": {
+        "size": [
+          257,
+          255,
+          5
+        ],
+        "spacing": [
+          1.328125,
+          1.328125,
+          10.0
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          10.0
+        ],
+        "direction": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "labels": [
+          0,
+          200,
+          500,
+          600,
+          1220,
+          2221
+        ]
+      }
+    },
+    {
+      "case_id": "Case1008",
+      "fresh_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1008.nii.gz",
+      "size_bytes": 1229,
+      "canonical_sha256": "615cb234289625607b0588083bd464f4c31075d71bddb66152aa5faaf7717891",
+      "geometry": {
+        "size": [
+          240,
+          259,
+          3
+        ],
+        "spacing": [
+          1.328125,
+          1.328125,
+          10.0
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          10.0
+        ],
+        "direction": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "labels": [
+          0,
+          200,
+          500,
+          600,
+          1220,
+          2221
+        ]
+      }
+    },
+    {
+      "case_id": "Case1009",
+      "fresh_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1009.nii.gz",
+      "size_bytes": 1579,
+      "canonical_sha256": "db1cad7a64fa4cbddc559bfdba1e32d8ac03c206d8b52119fd0e7fe167cca9fa",
+      "geometry": {
+        "size": [
+          247,
+          256,
+          4
+        ],
+        "spacing": [
+          1.328125,
+          1.328125,
+          10.0
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          10.0
+        ],
+        "direction": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "labels": [
+          0,
+          200,
+          500,
+          600,
+          1220,
+          2221
+        ]
+      }
+    },
+    {
+      "case_id": "Case1010",
+      "fresh_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1010.nii.gz",
+      "size_bytes": 1685,
+      "canonical_sha256": "b23c76d4fc20e0f5b23cfc3d4d58905828c79790b593807a4f500d92dcdde940",
+      "geometry": {
+        "size": [
+          255,
+          244,
+          4
+        ],
+        "spacing": [
+          1.328125,
+          1.328125,
+          10.0
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          10.0
+        ],
+        "direction": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "labels": [
+          0,
+          200,
+          500,
+          600,
+          1220,
+          2221
+        ]
+      }
+    },
+    {
+      "case_id": "Case1011",
+      "fresh_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1011.nii.gz",
+      "size_bytes": 2803,
+      "canonical_sha256": "360e98a15b8b1243a2a075edb2d3ee308ecf5c4bb96163de350a2c2e4e2abe1d",
+      "geometry": {
+        "size": [
+          227,
+          264,
+          6
+        ],
+        "spacing": [
+          1.7708333730697632,
+          1.7708333730697632,
+          10.0
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          10.0
+        ],
+        "direction": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "labels": [
+          0,
+          200,
+          500,
+          600,
+          1220,
+          2221
+        ]
+      }
+    },
+    {
+      "case_id": "Case1012",
+      "fresh_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1012.nii.gz",
+      "size_bytes": 1073,
+      "canonical_sha256": "1934764b85e803c97bd39160aa7130b0620d8be2c5f6187f055e5635538fce7c",
+      "geometry": {
+        "size": [
+          160,
+          158,
+          4
+        ],
+        "spacing": [
+          1.7708333730697632,
+          1.7708333730697632,
+          10.0
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          10.0
+        ],
+        "direction": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "labels": [
+          0,
+          200,
+          500,
+          600,
+          1220,
+          2221
+        ]
+      }
+    },
+    {
+      "case_id": "Case1013",
+      "fresh_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1013.nii.gz",
+      "size_bytes": 1357,
+      "canonical_sha256": "939fb4308a2613b672a541d1c12218711a1886290250f46f776ba5175a65e34b",
+      "geometry": {
+        "size": [
+          169,
+          168,
+          6
+        ],
+        "spacing": [
+          1.8645833730697632,
+          1.8645833730697632,
+          10.0
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          10.0
+        ],
+        "direction": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "labels": [
+          0,
+          200,
+          500,
+          600,
+          1220,
+          2221
+        ]
+      }
+    },
+    {
+      "case_id": "Case1014",
+      "fresh_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1014.nii.gz",
+      "size_bytes": 1946,
+      "canonical_sha256": "c10e81416ef6d5f7ede2e81757f4e7a75138c60386fcf0d33bc3f7d8443e24e1",
+      "geometry": {
+        "size": [
+          232,
+          262,
+          6
+        ],
+        "spacing": [
+          1.48046875,
+          1.48046875,
+          10.0
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          10.0
+        ],
+        "direction": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "labels": [
+          0,
+          200,
+          500,
+          600,
+          1220,
+          2221
+        ]
+      }
+    },
+    {
+      "case_id": "Case1015",
+      "fresh_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1015.nii.gz",
+      "size_bytes": 1886,
+      "canonical_sha256": "f60860537fe0b7bf4c1e421b3db2f15d10b204983e22060c44a9661dc28b9851",
+      "geometry": {
+        "size": [
+          243,
+          260,
+          4
+        ],
+        "spacing": [
+          1.328125,
+          1.328125,
+          10.0
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          10.0
+        ],
+        "direction": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "labels": [
+          0,
+          200,
+          500,
+          600,
+          1220,
+          2221
+        ]
+      }
+    }
+  ]
+}

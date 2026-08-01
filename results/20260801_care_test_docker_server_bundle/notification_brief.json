@@ -1,0 +1,18 @@
+{
+  "task_name": "20260801_care_test_docker_server_bundle",
+  "final_status": "blocked",
+  "commit_status": "tracked server-bundle blocked packet committed on main before notification",
+  "push_status": "origin/main remote SHA verified before notification",
+  "key_conclusion": "Server-side bundle is not ready: fresh 5-fold nnU-Net replay produced 15 outputs with matching geometry but only 4 of 15 arrays matched historical package A; MoSAIC MyoPS diagnostic completed 15/15 and Cine diagnostic stopped at 4/15 after the upstream gate failed.",
+  "blocked_or_failure_reason": "NNUNET_PROVENANCE_REPLAY_MISMATCH blocks MyoPS executable bundle and SERVER_BUNDLE_READY.json.",
+  "slurm_terminal_status": "no new Slurm job submitted; existing allocation 61220581 used for frozen inference replay",
+  "evidence_paths": [
+    "results/20260801_care_test_docker_server_bundle/fresh_nnunet_provenance_receipt.json",
+    "results/20260801_care_test_docker_server_bundle/fresh_nnunet_vs_historical_casewise.csv",
+    "results/20260801_care_test_docker_server_bundle/controller_report.md",
+    "results/20260801_care_test_docker_server_bundle/fresh_mosaic_myops_manifest.json",
+    "results/20260801_care_test_docker_server_bundle/fresh_mosaic_cine_manifest.json",
+    "results/20260801_care_test_docker_server_bundle/fresh_mosaic_replay_receipt.json"
+  ],
+  "next_step": "Return to GPT Planner to decide whether to trace the historical package generation command or change the server-bundle contract."
+}

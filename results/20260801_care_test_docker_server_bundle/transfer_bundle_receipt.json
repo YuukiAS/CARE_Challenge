@@ -1,0 +1,4 @@
+{
+  "status": "not_started",
+  "reason": "transfer bundle intentionally not generated because SERVER_BUNDLE_READY conditions are false."
+}

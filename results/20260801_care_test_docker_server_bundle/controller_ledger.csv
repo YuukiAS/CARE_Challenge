@@ -1,0 +1,3 @@
+timestamp_utc,phase,git_head,decision,next_action,evidence
+2026-08-01T15:02:41.446325+00:00,bootstrap,772a14213e866079cbc8a52a65eb24cf54e1250d,MAIN_SYNCED_AND_TASK_SAVED,fresh_nnunet_replay,controller_context.json
+2026-08-01T15:02:41.446325+00:00,fresh_nnunet_replay,772a14213e866079cbc8a52a65eb24cf54e1250d,NNUNET_PROVENANCE_REPLAY_MISMATCH,block_server_bundle_ready,fresh_nnunet_provenance_receipt.json;fresh_nnunet_vs_historical_casewise.csv

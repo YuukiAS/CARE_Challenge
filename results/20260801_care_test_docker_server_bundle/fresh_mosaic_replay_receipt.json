@@ -1,0 +1,13 @@
+{
+  "created_at_utc": "2026-08-01T15:09:30.956829+00:00",
+  "task_key": "20260801_care_test_docker_server_bundle",
+  "mosaic_commit": "d334bd1fb2a99dbbc230510590cd8e3ee08cc377",
+  "runtime_output_dir": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_mosaic_outputs",
+  "myops_case_count": 15,
+  "myops_complete_15_of_15": true,
+  "cine_case_count": 4,
+  "cine_complete_15_of_15": false,
+  "cine_stop_reason": "controller stopped optional Cine diagnostic after nnU-Net provenance hard gate blocked bundle readiness",
+  "new_training_used": false,
+  "threshold_search_used": false
+}

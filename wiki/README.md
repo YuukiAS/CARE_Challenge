@@ -1,5 +1,46 @@
 # CARE 架构 Wiki
 
+architecture_version: `care-test-docker-server-bundle-nnunet-mismatch-20260801`
+latest_verified_runtime: `server-side fresh nnU-Net 5-fold replay completed 15 outputs; geometry matched package A 15/15, array matched 4/15; MoSAIC MyoPS diagnostic replay completed 15/15; Cine diagnostic stopped at 4/15 after upstream gate failure`
+latest_scientific_status: `SERVER_BUNDLE_BLOCKED: workstation Docker bundle must not start because nnU-Net edema provenance was not reproduced`
+latest_controller_task: `20260801_care_test_docker_server_bundle`
+route_status: `MAIN_ONLY_TEST_DOCKER_SERVER_BUNDLE_RETURN_TO_PLANNER`
+
+当前机器真值是 `prompts/routes/handoffs/CURRENT.md`。服务器端跨机器 Docker bundle 任务已经绕开本机 Docker/rootless 限制，直接复用现有 GPU allocation 做 fresh inference 证据；但关键 nnU-Net hosted provenance gate 未通过：15 例 fresh 输出全部存在，几何全一致，数组只有 4/15 与历史 package A 一致。因此不能生成 `SERVER_BUNDLE_READY.json`，不能让工位开始构建/验证 Docker，也不能把历史 hosted edema 分数绑定到当前冻结权重。
+
+关键证据：
+
+```text
+results/20260801_care_test_docker_server_bundle/fresh_nnunet_provenance_receipt.json
+results/20260801_care_test_docker_server_bundle/fresh_nnunet_vs_historical_casewise.csv
+results/20260801_care_test_docker_server_bundle/fresh_mosaic_replay_receipt.json
+results/20260801_care_test_docker_server_bundle/controller_report.md
+```
+
+## 2026-08-01 服务器端跨机器 bundle 阻塞
+
+```text
+result_root:
+results/20260801_care_test_docker_server_bundle
+
+terminal_state:
+SERVER_BUNDLE_BLOCKED
+
+blocking_token:
+NNUNET_PROVENANCE_REPLAY_MISMATCH
+
+nnU-Net fresh replay:
+15 outputs generated
+15/15 geometry equality vs historical package A
+4/15 array equality vs historical package A
+
+MoSAIC diagnostic:
+MyoPS 15/15 complete
+CineMyoPS 4/15 partial, stopped after upstream nnU-Net hard gate failure
+```
+
+不得把该状态解释成 Docker submission readiness。不得生成或上传 Docker archive，不得给组织方发邮件；后续需要 GPT Planner 决定是否追溯历史 package A 生成环境或修订合同。
+
 architecture_version: `care-test-docker-rootless-prerequisite-blocked-20260801`
 latest_verified_runtime: `rootless Docker prerequisite audit completed; official rootless installer downloaded but not executed because /etc/subuid and /etc/subgid have no current-user range for aereinh`
 latest_scientific_status: `ROOTLESS_DOCKER_PREREQUISITE_BLOCKED: Docker packaging did not reach inference, image build, export, upload, or hosted metric stages`
