@@ -55,16 +55,31 @@
       "job_id": "61565288",
       "lane": "M1_MYOPSNET_L_CARE",
       "partition": "htzhulab",
-      "state_at_receipt": "PENDING"
+      "sacct_state_after_cancel": "CANCELLED by 397557",
+      "state_at_receipt": "CANCELLED_RESOURCE_CONTRACT_REPLACED"
     },
     {
       "fold": 3,
       "job_id": "61565289",
       "lane": "M1_MYOPSNET_L_CARE",
       "partition": "htzhulab",
-      "state_at_receipt": "PENDING"
+      "sacct_state_after_cancel": "CANCELLED by 397557",
+      "state_at_receipt": "CANCELLED_RESOURCE_CONTRACT_REPLACED"
+    },
+    {
+      "folds": [
+        2,
+        3
+      ],
+      "job_id": "61576324",
+      "lane": "M1_MYOPSNET_L_CARE",
+      "partition": "htzhulab",
+      "requested_cpus": 12,
+      "requested_memory": "96G",
+      "state_at_receipt": "PENDING",
+      "time_limit": "12:00:00"
     }
   ],
-  "scheduler_policy": "M3 completed in existing interactive allocation. M0R fold3 was still pending, so job 61565287 was cancelled, sacct confirmed CANCELLED, and M0R fold3 is now running serially in allocation 61220581. Keep M0R fold2 running as job 61565286 and M1 fold2/fold3 queued. When interactive work finishes again, cancel one still-pending M1 job and run it serially in the interactive allocation.",
+  "scheduler_policy": "M3 completed in existing interactive allocation. M0R fold3 was still pending, so job 61565287 was cancelled, sacct confirmed CANCELLED, and M0R fold3 is now running serially in allocation 61220581. Old M1 fold-specific pending jobs 61565288/61565289 used 8 CPU/64G/8h and were cancelled; replacement M1 lane-level job 61576324 requests 12 CPU/96G/12h and runs fold2+fold3. When interactive work finishes again, if 61576324 is still pending, cancel it, wait for CANCELLED accounting, and run M1 fold2+fold3 serially in the interactive allocation.",
   "task_key": "20260801_care_target_domain_race_gap_closure"
 }

@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=8
+#SBATCH --cpus-per-task=12
 #SBATCH --job-name=M3TDS
 #SBATCH --output=/dev/null
 #SBATCH --error=/dev/null
-#SBATCH --mem=64G
-#SBATCH --time=08:00:00
+#SBATCH --mem=96G
+#SBATCH --time=12:00:00
 #SBATCH --gres=gpu:1
 #SBATCH --partition=htzhulab
 #SBATCH --qos=gpu_access

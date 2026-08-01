@@ -20,6 +20,12 @@
     },
     "M1_MYOPSNET_L_CARE": {
       "local_c0_lge_t2_forward": "PASS",
+      "cancelled_old_fold_jobs": [
+        "61565288",
+        "61565289"
+      ],
+      "lane_level_queue_job_id": "61576324",
+      "lane_level_queue_resources": "htzhulab gpu=1 cpus=12 mem=96G time=12:00:00",
       "uses_t1_or_t2star_placeholders": false,
       "pinned_source_at_required_commit": true,
       "required_commit": "479f07028c5bdb12b405dc92212aa48ae6ba947a",
@@ -47,7 +53,7 @@
       "stock_class4_5_logits_used_for_final_prediction": false
     }
   },
-  "next_scheduler_action": "submit M0R/M1/M2 htzhulab queue jobs after command files are written; run M3 first on existing interactive allocation 61220581; when an interactive lane finishes, cancel one still-pending queued lane and run it serially in the interactive allocation",
+  "next_scheduler_action": "keep M0R fold2 job 61565286 running and M0R fold3 interactive PID 4039804 running; if interactive frees while M1 lane job 61576324 is still pending, cancel 61576324, wait for CANCELLED accounting, and run M1 fold2+fold3 serially in allocation 61220581",
   "task_key": "20260801_care_target_domain_race_gap_closure",
   "validation_upload_authorized": false
 }

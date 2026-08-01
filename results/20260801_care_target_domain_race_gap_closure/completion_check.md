@@ -13,6 +13,8 @@
 - interactive_steps_started_by_this_goal: `true`
 - active_interactive_lane: `M3_CARE_TDS`
 - active_interactive_launcher_pid: `4032144`
-- submitted_queue_jobs: `61565286,61565287,61565288,61565289`
+- submitted_queue_jobs: `61565286,61565287,61565288,61565289,61576324`
+- cancelled_for_replacement: `61565288,61565289`
+- active_m1_lane_job: `61576324`
 - m2_status: `ASSET_CHECK_REQUIRED_NO_FAKE_JOB`
 - validator_required_before_final_completion: `scripts/validation/validate_target_domain_race_gap_closure.py --phase final`
