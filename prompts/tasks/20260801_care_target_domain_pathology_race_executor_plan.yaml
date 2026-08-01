@@ -1,0 +1,313 @@
+task_key: 20260801_care_target_domain_pathology_specialist_race
+plan_version: 1
+repository: /users/a/e/aereinh/CARE
+remote: YuukiAS/CARE_Challenge
+base_branch: main
+execution_mode: controller_supervised
+controller_is_coordinator: true
+executor_slots: 4
+executor_count: 4
+parallel_execution_allowed: true
+mapper_slots: 1
+mapper_required: true
+architecture_impact: system
+wiki_update_required: true
+diagram_update_required: false
+slurm_runtime_continuity_required: true
+continuity_backend: tmux_watcher
+planning_review_required: false
+review_required: false
+allow_git_commit: true
+auto_git_commit: true
+allow_git_push: true
+auto_git_push: true
+allow_diagnostic_push: true
+new_slurm_job_authorized: false
+existing_interactive_allocation_only: true
+required_existing_gpu_count: 4
+required_remaining_walltime_hours: 10
+formal_folds: [2, 3]
+formal_population: complete_tri_modal_only
+case_source: data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/splits_final.json
+seed: 20260801
+
+shared_read_only_inputs:
+  - AGENTS.md
+  - START_HERE_FOR_GPT.md
+  - GPT_PLANNER_CARE_PROTOCOL.md
+  - prompts/FINAL_OUTPUT_READABILITY_POLICY.md
+  - prompts/AGENT_FLOW_V2_PROTOCOL.md
+  - prompts/HANDOFF_GATE_POLICY.md
+  - prompts/GPT_HARD_GATE_PROMPT.md
+  - prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md
+  - prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md
+  - prompts/routes/handoffs/CURRENT.md
+  - routes/README.md
+  - wiki/README.md
+  - prompts/blueprints/CARE_target_domain_pathology_specialist_race_20260801.md
+  - results/20260801_mosaic_leaderboard_live_snapshot/leaderboard_snapshot.md
+  - results/20260731_care_qif_v2_signal_audit/**
+  - results/20260731_care_myopath_a0_a3_full_volume_closure/**
+  - results/20260731_care_myowall_geometry_diagnostic_closure/**
+  - results/20260730_care_failure_forensics_deep_research_packet/**
+  - results/experiments/MyoPS-Net_iteration_log.md
+  - data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/**
+  - data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/**
+
+forbidden_global_actions:
+  - write_/overflow/htzhu/CARE
+  - create_new_slurm_job_or_allocation
+  - push_task_branch
+  - force_push
+  - access_official_validation
+  - upload_validation
+  - upload_docker
+  - per_case_model_selection
+  - outer_driven_checkpoint_threshold_or_source_selection
+  - commit_checkpoints_nifti_feature_tensors_or_large_logs
+
+worktrees:
+  m0:
+    branch: task/20260801-td-nnunet
+    path: /users/a/e/aereinh/CARE_worktrees/task_20260801_td_nnunet
+    remote_publication: forbidden
+  m1:
+    branch: task/20260801-myopsnet-l-care
+    path: /users/a/e/aereinh/CARE_worktrees/task_20260801_myopsnet_l_care
+    remote_publication: forbidden
+  m2:
+    branch: task/20260801-i-mmseg-care
+    path: /users/a/e/aereinh/CARE_worktrees/task_20260801_i_mmseg_care
+    remote_publication: forbidden
+  m3:
+    branch: task/20260801-care-tds
+    path: /users/a/e/aereinh/CARE_worktrees/task_20260801_care_tds
+    remote_publication: forbidden
+
+runtime_root: /users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_pathology_specialist_race
+result_root: results/20260801_care_target_domain_pathology_specialist_race
+shared_lock_root: /users/a/e/aereinh/.locks/care_target_domain_race_20260801
+main_push_lock: /users/a/e/aereinh/.care-main-push.lock
+
+waves:
+  - wave_id: W0_BOOTSTRAP_AND_FREEZE
+    mode: controller_only
+    dependencies: []
+    actions:
+      - sync_origin_main_fast_forward_only
+      - read_required_protocols_and_visual_SRR_v2_v2_5_v3
+      - verify_leaderboard_snapshot
+      - verify_metric_truth_PASS
+      - freeze_fold2_fold3_complete_case_manifests
+      - freeze_inner_actual_train_splits
+      - verify_fold_checkpoint_hashes_and_plans
+      - inspect_existing_interactive_allocation
+      - require_four_free_gpus_and_ten_hours_remaining
+      - create_four_local_worktrees_from_same_origin_main_sha
+      - validate_executor_plan
+    required_outputs:
+      - results/20260801_care_target_domain_pathology_specialist_race/controller_context.json
+      - results/20260801_care_target_domain_pathology_specialist_race/frozen_data_contract.json
+      - results/20260801_care_target_domain_pathology_specialist_race/fold2_case_manifest.csv
+      - results/20260801_care_target_domain_pathology_specialist_race/fold3_case_manifest.csv
+      - results/20260801_care_target_domain_pathology_specialist_race/split_receipt.json
+      - results/20260801_care_target_domain_pathology_specialist_race/existing_allocation_receipt.json
+    completion_condition: all_required_outputs_exist_and_allocation_has_4_free_gpus
+    failure_branch: OPERATIONALLY_BLOCKED_EXISTING_ALLOCATION_INSUFFICIENT
+
+  - wave_id: W1_PARALLEL_IMPLEMENTATION_PREFLIGHT
+    mode: parallel
+    dependencies: [W0_BOOTSTRAP_AND_FREEZE]
+    max_concurrency: 4
+    executors:
+      - executor_id: M0_TD_NNUNET
+        worktree: m0
+        gpu_slot: 0
+        read_scope:
+          - shared_read_only_inputs
+        write_scope:
+          - src/care_myocardium/experiments/target_domain_race/td_nnunet/**
+          - scripts/training/target_domain_race/td_nnunet/**
+          - scripts/evaluation/target_domain_race/td_nnunet/**
+          - configs/target_domain_race/td_nnunet/**
+          - jobs/target_domain_race/td_nnunet/**
+          - tests/target_domain_race/td_nnunet/**
+          - results/20260801_care_target_domain_pathology_specialist_race/m0_td_nnunet/**
+        required_preflight:
+          - exact_plainconvunet_restore
+          - parameter_byte_coverage_ge_0_99
+          - fp32_stock_logit_parity_le_1e_6
+          - one_batch_overfit
+          - checkpoint_save_reload
+          - full_volume_single_case_inference
+      - executor_id: M1_MYOPSNET_L_CARE
+        worktree: m1
+        gpu_slot: 1
+        read_scope:
+          - shared_read_only_inputs
+          - code/MyoPS-Net/**
+          - third_party/MyoPS-Net/**
+        write_scope:
+          - src/care_myocardium/experiments/target_domain_race/myopsnet_l_care/**
+          - scripts/training/target_domain_race/myopsnet_l_care/**
+          - scripts/evaluation/target_domain_race/myopsnet_l_care/**
+          - configs/target_domain_race/myopsnet_l_care/**
+          - jobs/target_domain_race/myopsnet_l_care/**
+          - tests/target_domain_race/myopsnet_l_care/**
+          - results/20260801_care_target_domain_pathology_specialist_race/m1_myopsnet_l_care/**
+        required_preflight:
+          - c0_lge_t2_only_no_mapping_placeholders
+          - cmff_mpc_pathology_specific_heads_active
+          - strict_label4_label5_contract
+          - one_batch_overfit
+          - checkpoint_save_reload
+          - slice_to_full_volume_reconstruction
+      - executor_id: M2_I_MMSEG_CARE
+        worktree: m2
+        gpu_slot: 2
+        read_scope:
+          - shared_read_only_inputs
+        write_scope:
+          - third_party/I_MMSeg_PINNED/**
+          - src/care_myocardium/experiments/target_domain_race/i_mmseg_care/**
+          - scripts/training/target_domain_race/i_mmseg_care/**
+          - scripts/evaluation/target_domain_race/i_mmseg_care/**
+          - configs/target_domain_race/i_mmseg_care/**
+          - jobs/target_domain_race/i_mmseg_care/**
+          - tests/target_domain_race/i_mmseg_care/**
+          - results/20260801_care_target_domain_pathology_specialist_race/m2_i_mmseg_care/**
+        required_preflight:
+          - official_source_commit_license_and_asset_receipt
+          - intensity_prior_feature_enhancement_active
+          - class_feature_modulation_active
+          - no_runtime_gpt_call
+          - strict_label4_label5_contract
+          - one_batch_overfit
+          - checkpoint_save_reload
+        allowed_lane_block: LANE_BLOCKED_EXTERNAL_ASSET
+      - executor_id: M3_CARE_TDS
+        worktree: m3
+        gpu_slot: 3
+        read_scope:
+          - shared_read_only_inputs
+        write_scope:
+          - src/care_myocardium/experiments/target_domain_race/care_tds/**
+          - scripts/training/target_domain_race/care_tds/**
+          - scripts/evaluation/target_domain_race/care_tds/**
+          - configs/target_domain_race/care_tds/**
+          - jobs/target_domain_race/care_tds/**
+          - tests/target_domain_race/care_tds/**
+          - results/20260801_care_target_domain_pathology_specialist_race/m3_care_tds/**
+        required_preflight:
+          - exact_plainconvunet_restore
+          - full_encoder_decoder_preserved
+          - independent_scar_pure_edema_injury_boundary_heads
+          - stock_pathology_logits_absent_from_final_output
+          - component_tversky_mil_remote_fp_losses_have_direct_gradients
+          - matched_batch_manifest_with_m0
+          - one_batch_overfit
+          - checkpoint_save_reload
+    required_outputs_per_executor:
+      - implementation_snapshot.md
+      - preflight_report.json
+      - known_bad_preflight.json
+      - local_implementation_commit.txt
+    completion_condition: m0_m1_m3_preflight_pass_and_m2_pass_or_allowed_lane_block
+    failure_branch: OPERATIONALLY_BLOCKED_ASSET_OR_IMPLEMENTATION
+
+  - wave_id: W2_PARALLEL_FORMAL_TRAINING
+    mode: parallel
+    dependencies: [W1_PARALLEL_IMPLEMENTATION_PREFLIGHT]
+    max_concurrency: 4
+    scheduling:
+      allocation: existing_interactive_only
+      srun_mode: overlap_exclusive_one_gpu_per_executor
+      no_sbatch: true
+      no_salloc: true
+    lane_order_within_each_executor: [fold2, fold3]
+    formal_minimums:
+      m0_optimizer_steps_per_fold: 4000
+      m3_optimizer_steps_per_fold: 4000
+      m1_epochs_per_fold: 60
+      m2_epochs_per_fold: 60
+      checkpoint_reload_required: true
+      outer_once_after_freeze: true
+    required_outputs_per_lane:
+      - training_accounting.csv
+      - checkpoint_selection.csv
+      - slurm_step_accounting.csv
+      - fold2_casewise_metrics.csv
+      - fold3_casewise_metrics.csv
+      - lane_summary.csv
+      - lane_controller_packet.json
+    completion_condition: all_started_lane_steps_terminal_and_results_aggregated
+    failure_branch: OPERATIONALLY_BLOCKED_ASSET_OR_IMPLEMENTATION
+
+  - wave_id: W3_CONTROLLER_MERGE_AND_COMPOSITION
+    mode: controller_only
+    dependencies: [W2_PARALLEL_FORMAL_TRAINING]
+    merge_order:
+      - M0_TD_NNUNET
+      - M1_MYOPSNET_L_CARE
+      - M2_I_MMSEG_CARE
+      - M3_CARE_TDS
+    actions:
+      - fetch_origin_main
+      - rebase_each_local_branch_on_current_main_if_conflict_free
+      - merge_local_commits_in_fixed_order
+      - run_all_lane_tests
+      - verify_m0_m3_batch_manifest_identity
+      - aggregate_inner_metrics_without_outer
+      - freeze_global_scar_source
+      - freeze_global_edema_source
+      - compose_fixed_scar_priority_candidate
+      - evaluate_fold2_fold3_outer_once
+      - generate_case_atlas
+      - run_mapper_final
+      - update_wiki_as_unreviewed_terminal_evidence
+    required_outputs:
+      - results/20260801_care_target_domain_pathology_specialist_race/global_source_selection_receipt.json
+      - results/20260801_care_target_domain_pathology_specialist_race/composed_casewise_metrics.csv
+      - results/20260801_care_target_domain_pathology_specialist_race/composed_summary.csv
+      - results/20260801_care_target_domain_pathology_specialist_race/case_atlas.pdf
+      - results/20260801_care_target_domain_pathology_specialist_race/case_atlas_contact_sheet.png
+      - results/20260801_care_target_domain_pathology_specialist_race/visual_findings.md
+      - results/20260801_care_target_domain_pathology_specialist_race/mapper_report_final.md
+    completion_condition: fixed_global_sources_frozen_before_outer_and_atlas_visually_checked
+    failure_branch: OPERATIONALLY_BLOCKED_ASSET_OR_IMPLEMENTATION
+
+  - wave_id: W4_FINALIZER_VALIDATOR_PUSH_NOTIFY
+    mode: controller_only
+    dependencies: [W3_CONTROLLER_MERGE_AND_COMPOSITION]
+    actions:
+      - terminal_accounting_for_all_srun_steps
+      - write_scientific_decision
+      - run_strict_validator
+      - run_known_bad_20_of_20_or_more
+      - git_diff_check
+      - commit_lightweight_outputs
+      - acquire_main_push_lock
+      - fetch_rebase_origin_main
+      - rerun_validator_after_rebase
+      - push_HEAD_to_main_only
+      - verify_local_sha_equals_remote_main_sha
+      - write_notification_brief
+      - run_existing_notifier_once
+      - commit_and_push_notification_receipt_if_created
+    required_outputs:
+      - results/20260801_care_target_domain_pathology_specialist_race/controller_report.md
+      - results/20260801_care_target_domain_pathology_specialist_race/scientific_decision.json
+      - results/20260801_care_target_domain_pathology_specialist_race/strict_validator_report.json
+      - results/20260801_care_target_domain_pathology_specialist_race/known_bad_report.json
+      - results/20260801_care_target_domain_pathology_specialist_race/finalizer_state.json
+      - results/20260801_care_target_domain_pathology_specialist_race/completion_check.md
+      - results/20260801_care_target_domain_pathology_specialist_race/MANIFEST.md
+      - results/20260801_care_target_domain_pathology_specialist_race/notification_brief.json
+    completion_tokens:
+      - TARGET_DOMAIN_CANDIDATE_READY
+      - SCAR_ONLY_CANDIDATE_READY
+      - EDEMA_ONLY_CANDIDATE_READY
+      - NO_GO_TARGET_DOMAIN_RACE
+      - OPERATIONALLY_BLOCKED_EXISTING_ALLOCATION_INSUFFICIENT
+      - OPERATIONALLY_BLOCKED_ASSET_OR_IMPLEMENTATION
+    completion_condition: pushed_main_verified_and_notifier_event_recorded
