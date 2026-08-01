@@ -11,6 +11,7 @@
 - `results/20260801_care_target_domain_race_gap_closure/controller_report.md`
 - `results/20260801_care_target_domain_race_gap_closure/existing_interactive_receipt.json`
 - `results/20260801_care_target_domain_race_gap_closure/external_assets_plan.md`
+- `results/20260801_care_target_domain_race_gap_closure/interactive_takeover_monitor_state.json`
 - `results/20260801_care_target_domain_race_gap_closure/finalizer_state.json`
 - `results/20260801_care_target_domain_race_gap_closure/fold2_case_manifest.csv`
 - `results/20260801_care_target_domain_race_gap_closure/fold2_fold3_case_manifest.csv`

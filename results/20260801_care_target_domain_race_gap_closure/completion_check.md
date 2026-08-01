@@ -16,5 +16,7 @@
 - submitted_queue_jobs: `61565286,61565287,61565288,61565289,61576324`
 - cancelled_for_replacement: `61565288,61565289`
 - active_m1_lane_job: `61576324`
+- interactive_takeover_monitor_pid: `4185840`
+- interactive_takeover_monitor_state: `results/20260801_care_target_domain_race_gap_closure/interactive_takeover_monitor_state.json`
 - m2_status: `ASSET_CHECK_REQUIRED_NO_FAKE_JOB`
 - validator_required_before_final_completion: `scripts/validation/validate_target_domain_race_gap_closure.py --phase final`

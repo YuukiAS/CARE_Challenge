@@ -6,7 +6,7 @@
 
 此前 `OPERATIONALLY_BLOCKED_EXISTING_INTERACTIVE_LOST` packet 是过早的资源门误判，现已被用户提供并经 controller 验证的 `61220581 / htzhulab / g1807htzh01` RUNNING GPU allocation 撤销。`srun --jobid=61220581 --overlap` 的 CUDA probe 已确认该 allocation 暴露 `NVIDIA H100 NVL`。当前状态是非终局继续执行：M3 先用该 interactive GPU；M0R/M1/M2 在 preflight 后提交 `htzhulab` 队列作业；若 interactive 跑完而某个队列作业仍 pending，则取消一个 pending 作业并在 interactive allocation 中串行接力。不得把旧 blocked packet 解释为四模型全失败。
 
-截至 2026-08-01 00:56 EDT，M3 fold2/fold3 已在 `61220581` 中完成 4000-step 训练；M0R fold2 job `61565286` 正在 `htzhulab` 跑；M0R fold3 原 pending job `61565287` 已按规则取消并由 interactive allocation 接力运行，launcher PID `4039804`。旧 M1 fold jobs `61565288`/`61565289` 因资源合同不符已取消，替换为 12 CPU/96G/12h 的 lane-level job `61576324`，该 job 负责 fold2+fold3。M2 source 已 pin 到 `third_party/I_MMSeg_PINNED`，但 Google Drive ViT/model weights 尚未落地，因此不得提交替代 job。
+截至 2026-08-01 01:04 EDT，M3 fold2/fold3 已在 `61220581` 中完成 4000-step 训练；M0R fold2 job `61565286` 正在 `htzhulab` 跑；M0R fold3 原 pending job `61565287` 已按规则取消并由 interactive allocation 接力运行，launcher PID `4039804`。旧 M1 fold jobs `61565288`/`61565289` 因资源合同不符已取消，替换为 12 CPU/96G/12h 的 lane-level job `61576324`，该 job 负责 fold2+fold3。interactive takeover monitor PID `4185840` 正在运行：若 M0R interactive 结束且 `61576324` 仍 PENDING，它会取消 `61576324`、等待 sacct CANCELLED、再用 `61220581` 跑 M1 lane。M2 source 已 pin 到 `third_party/I_MMSeg_PINNED`，但 Google Drive ViT/model weights 尚未落地，因此不得提交替代 job。
 
 ```text
 state_id: care_target_domain_gap_closure_active_after_interactive_recovery_20260801
@@ -32,6 +32,7 @@ M0R_fold3_cancelled_job: 61565287 CANCELLED_FOR_INTERACTIVE_TAKEOVER
 M0R_fold3_interactive_pid: 4039804 RUNNING
 M1_old_fold_jobs: 61565288,61565289 CANCELLED_RESOURCE_CONTRACT_REPLACED
 M1_lane_job: 61576324 PENDING 12CPU_96G_12H
+interactive_takeover_monitor_pid: 4185840 MONITORING
 M2_status: SOURCE_PINNED_ASSET_CHECK_REQUIRED
 scientific_decision: CONTROLLER_ACTIVE_CONTINUATION
 controller_verification_decision: ACTIVE_CONTINUATION
@@ -51,6 +52,7 @@ results/20260801_care_target_domain_race_gap_closure/scientific_decision.json
 results/20260801_care_target_domain_race_gap_closure/blocker_superseded_by_user_override.md
 results/20260801_care_target_domain_race_gap_closure/lane_preflight_summary.json
 results/20260801_care_target_domain_race_gap_closure/scheduler_receipt.json
+results/20260801_care_target_domain_race_gap_closure/interactive_takeover_monitor_state.json
 results/20260801_care_target_domain_race_gap_closure/external_assets_plan.md
 results/20260801_care_target_domain_race_gap_closure/strict_validator_report.json
 results/20260801_care_target_domain_race_gap_closure/known_bad_report.json

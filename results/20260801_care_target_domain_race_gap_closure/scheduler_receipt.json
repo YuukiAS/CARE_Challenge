@@ -31,6 +31,14 @@
     "reason": "Pinned I-MMSeg source is present, but upstream Google Drive ViT/model weights are not placed. Contract forbids rank-channel or empty substitute jobs.",
     "status": "ASSET_CHECK_REQUIRED"
   },
+  "interactive_takeover_monitor": {
+    "launcher_log": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/logs/interactive_takeover_monitor_launcher.log",
+    "log": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/logs/interactive_takeover_monitor.log",
+    "pid": 4185840,
+    "state_path": "results/20260801_care_target_domain_race_gap_closure/interactive_takeover_monitor_state.json",
+    "status": "MONITORING",
+    "scope": "cancel M1 lane job 61576324 only if it is still PENDING after M0R interactive PID 4039804 exits, then launch M1 lane inside allocation 61220581"
+  },
   "queue_jobs": [
     {
       "fold": 2,
