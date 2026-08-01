@@ -1,0 +1,323 @@
+task_key: 20260801_care_target_domain_race_gap_closure
+plan_version: 1
+repository: /users/a/e/aereinh/CARE
+remote: YuukiAS/CARE_Challenge
+base_branch: main
+execution_mode: controller_supervised
+controller_is_coordinator: true
+executor_slots: 4
+executor_count: 4
+parallel_execution_allowed: true
+mapper_slots: 1
+mapper_required: true
+architecture_impact: system
+wiki_update_required: true
+diagram_update_required: false
+slurm_runtime_continuity_required: true
+continuity_backend: tmux_watcher
+planning_review_required: false
+review_required: false
+allow_git_commit: true
+auto_git_commit: true
+allow_git_push: true
+auto_git_push: true
+allow_diagnostic_push: true
+existing_interactive_required: true
+new_interactive_allocation_authorized: false
+htzhulab_queue_jobs_authorized: true
+a100_gpu_authorized: false
+volta_gpu_authorized: false
+formal_outer_folds: [2, 3]
+formal_population: complete_tri_modal_only
+seed: 20260801
+
+blueprint: prompts/blueprints/CARE_target_domain_race_gap_closure_20260801.md
+result_root: results/20260801_care_target_domain_race_gap_closure
+runtime_root: /users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure
+lock_root: /users/a/e/aereinh/.locks/care_td_gap_closure_20260801
+main_push_lock: /users/a/e/aereinh/.care-main-push.lock
+
+local_worktrees:
+  m0r:
+    branch: task/20260801-m0r-faithful
+    path: /users/a/e/aereinh/CARE_worktrees/task_20260801_m0r_faithful
+    remote_push: forbidden
+  m1:
+    branch: task/20260801-m1-myopsnet-faithful
+    path: /users/a/e/aereinh/CARE_worktrees/task_20260801_m1_myopsnet_faithful
+    remote_push: forbidden
+  m2:
+    branch: task/20260801-m2-immseg-faithful
+    path: /users/a/e/aereinh/CARE_worktrees/task_20260801_m2_immseg_faithful
+    remote_push: forbidden
+  m3:
+    branch: task/20260801-m3-care-tds-faithful
+    path: /users/a/e/aereinh/CARE_worktrees/task_20260801_m3_care_tds_faithful
+    remote_push: forbidden
+
+shared_read_only_inputs:
+  - AGENTS.md
+  - START_HERE_FOR_GPT.md
+  - GPT_PLANNER_CARE_PROTOCOL.md
+  - prompts/FINAL_OUTPUT_READABILITY_POLICY.md
+  - prompts/AGENT_FLOW_V2_PROTOCOL.md
+  - prompts/HANDOFF_GATE_POLICY.md
+  - prompts/GPT_HARD_GATE_PROMPT.md
+  - prompts/routes/README.md
+  - prompts/routes/route_portfolio_planner_prompt.md
+  - prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md
+  - prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md
+  - prompts/routes/handoffs/CURRENT.md
+  - routes/README.md
+  - wiki/README.md
+  - .agents/skills/slurm-routing-partition/SKILL.md
+  - .agents/skills/care-mapper/SKILL.md
+  - prompts/blueprints/CARE_target_domain_race_gap_closure_20260801.md
+  - results/20260801_care_target_domain_pathology_specialist_race/**
+  - results/20260731_care_qif_v2_signal_audit/**
+  - results/20260731_care_myopath_a0_a3_full_volume_closure/**
+  - results/20260731_care_myowall_geometry_diagnostic_closure/**
+  - results/20260730_care_failure_forensics_deep_research_packet/**
+  - results/experiments/MyoPS-Net_iteration_log.md
+  - data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/**
+  - data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/**
+
+forbidden_actions:
+  - write_/overflow/htzhu/CARE
+  - create_new_salloc
+  - submit_a100_gpu_or_volta_gpu
+  - push_task_or_codex_branch
+  - force_push
+  - access_official_validation
+  - upload_validation_or_docker
+  - hosted_metric_claim
+  - per_case_or_per_fold_model_selection
+  - outer_driven_selection
+  - commit_checkpoints_nifti_feature_tensors_or_large_logs
+
+waves:
+  - wave_id: W0_BOOTSTRAP_AUDIT_FREEZE
+    mode: controller_only
+    dependencies: []
+    actions:
+      - sync_origin_main_fast_forward_only
+      - read_all_required_protocols
+      - visually_read_SRR_v2_v2_5_v3
+      - freeze_existing_split_receipt_and_hashes
+      - audit_old_M0_against_blueprint
+      - write_old_M0_as_HIGH_LR_SHORT_FINETUNE_NEGATIVE
+      - discover_existing_RUNNING_interactive_allocation
+      - validate_executor_plan
+      - create_local_only_worktrees_from_same_main_sha
+    required_outputs:
+      - results/20260801_care_target_domain_race_gap_closure/controller_context.json
+      - results/20260801_care_target_domain_race_gap_closure/m0_protocol_fidelity_audit.json
+      - results/20260801_care_target_domain_race_gap_closure/frozen_data_contract.json
+      - results/20260801_care_target_domain_race_gap_closure/split_receipt_copy.json
+      - results/20260801_care_target_domain_race_gap_closure/existing_interactive_receipt.json
+    completion_condition: old_M0_invalid_negative_bound_and_existing_interactive_RUNNING
+    failure_token: OPERATIONALLY_BLOCKED_EXISTING_INTERACTIVE_LOST
+
+  - wave_id: W1_PARALLEL_IMPLEMENTATION
+    mode: parallel
+    dependencies: [W0_BOOTSTRAP_AUDIT_FREEZE]
+    max_concurrency: 4
+    executors:
+      - executor_id: M0R_FAITHFUL_CONTROL
+        worktree: m0r
+        write_scope:
+          - src/care_myocardium/experiments/td_gap_closure/m0r/**
+          - scripts/training/td_gap_closure/m0r/**
+          - scripts/evaluation/td_gap_closure/m0r/**
+          - configs/td_gap_closure/m0r/**
+          - jobs/td_gap_closure/m0r/**
+          - tests/td_gap_closure/m0r/**
+          - results/20260801_care_target_domain_race_gap_closure/m0r/**
+        implementation_gate:
+          - full_stock_PlainConvUNet_parity
+          - AdamW_parameter_groups_exact
+          - per_step_warmup_cosine_exact
+          - deterministic_common_batch_manifest_writer
+          - all_500_step_checkpoint_reload_and_inner_full_volume_eval
+          - no_default_SGD_or_PolyLR
+      - executor_id: M1_MYOPSNET_L_CARE
+        worktree: m1
+        write_scope:
+          - third_party/MyoPS-Net_PINNED/**
+          - src/care_myocardium/experiments/td_gap_closure/m1/**
+          - scripts/training/td_gap_closure/m1/**
+          - scripts/evaluation/td_gap_closure/m1/**
+          - configs/td_gap_closure/m1/**
+          - jobs/td_gap_closure/m1/**
+          - tests/td_gap_closure/m1/**
+          - results/20260801_care_target_domain_race_gap_closure/m1/**
+        implementation_gate:
+          - official_commit_and_license_receipt
+          - source_diff_audit
+          - C0_LGE_T2_only_forward
+          - no_T1_T2star_placeholder_consumption
+          - CMFF_MPC_and_pathology_specific_branches_active
+          - scar_and_injury_targets_correct
+          - slice_to_full_volume_reconstruction_roundtrip
+          - canonical_evaluator_invocation
+      - executor_id: M2_I_MMSEG_CARE
+        worktree: m2
+        write_scope:
+          - third_party/I_MMSeg_PINNED/**
+          - src/care_myocardium/experiments/td_gap_closure/m2/**
+          - scripts/training/td_gap_closure/m2/**
+          - scripts/evaluation/td_gap_closure/m2/**
+          - configs/td_gap_closure/m2/**
+          - jobs/td_gap_closure/m2/**
+          - tests/td_gap_closure/m2/**
+          - results/20260801_care_target_domain_race_gap_closure/m2/**
+        implementation_gate:
+          - official_commit_source_receipt
+          - asset_hash_and_public_provenance
+          - isolated_environment_receipt
+          - CLIP_prior_encoder_active
+          - intensity_prior_cross_modal_module_active
+          - class_feature_modulation_active
+          - no_runtime_GPT_call
+          - no_rank_channel_substitute
+          - CARE_full_volume_reconstruction
+        allowed_lane_block: ASSET_APPROVAL_REQUIRED
+      - executor_id: M3_CARE_TDS
+        worktree: m3
+        write_scope:
+          - src/care_myocardium/experiments/td_gap_closure/m3/**
+          - scripts/training/td_gap_closure/m3/**
+          - scripts/evaluation/td_gap_closure/m3/**
+          - configs/td_gap_closure/m3/**
+          - jobs/td_gap_closure/m3/**
+          - tests/td_gap_closure/m3/**
+          - results/20260801_care_target_domain_race_gap_closure/m3/**
+        implementation_gate:
+          - full_stock_PlainConvUNet_parity
+          - independent_scar_pure_edema_injury_boundary_heads
+          - stock_class4_class5_logits_absent_from_final_output
+          - exact_loss_formula_and_direct_gradient_receipt
+          - actual_train_only_hard_negative_masks
+          - common_batch_manifest_reader_matches_M0R
+          - final_label_on_off_interventions
+    required_outputs_per_executor:
+      - implementation_snapshot.md
+      - preflight_report.json
+      - gradient_receipt.json
+      - save_reload_receipt.json
+      - one_case_full_volume_receipt.json
+      - known_bad_preflight.json
+      - local_implementation_commit.txt
+    completion_condition: M0R_M1_M3_PASS_and_M2_PASS_or_ASSET_APPROVAL_REQUIRED
+    failure_token: OPERATIONALLY_BLOCKED_IMPLEMENTATION
+
+  - wave_id: W2_FORMAL_SCHEDULING_AND_EXECUTION
+    mode: controller_scheduled_parallel_queue_plus_interactive
+    dependencies: [W1_PARALLEL_IMPLEMENTATION]
+    interactive_priority: [M3_CARE_TDS, M0R_FAITHFUL_CONTROL, M1_MYOPSNET_L_CARE, M2_I_MMSEG_CARE]
+    queue_submit_order: [M0R_FAITHFUL_CONTROL, M1_MYOPSNET_L_CARE, M2_I_MMSEG_CARE]
+    queue_partition: htzhulab
+    queue_resources:
+      gpu: 1
+      cpu: 12
+      memory_gb: 96
+      walltime_hours: 12
+    claim_protocol:
+      atomic_claim_root: /users/a/e/aereinh/.locks/care_td_gap_closure_20260801
+      queue_and_interactive_same_lane_duplicate_forbidden: true
+      race_loser_token: RACE_LOST_ZERO_CREDIT
+    interactive_takeover_loop:
+      - after_current_interactive_lane_terminal_check_queue_in_order_M0R_M1_M2
+      - if_job_PENDING_scancel_and_wait_for_sacct_CANCELLED
+      - run_cancelled_lane_with_srun_on_existing_interactive
+      - if_job_RUNNING_and_claimed_skip_to_next_pending
+      - if_job_COMPLETED_skip_to_next
+      - if_startup_failed_repair_same_scope_and_prefer_interactive_exact_resume
+      - never_leave_interactive_idle_while_eligible_PENDING_lane_exists
+    lane_sequence_inside_job: [fold2, fold3]
+    formal_minimums:
+      M0R_optimizer_steps_per_fold: 4000
+      M3_optimizer_steps_per_fold: 4000
+      M1_min_epochs_per_fold: 60
+      M2_min_epochs_per_fold: 60
+      all_selected_checkpoints_reloaded: true
+      all_inner_full_volume_evaluations_complete: true
+      outer_replay_only_after_freeze: true
+    required_outputs_per_lane:
+      - training_accounting.csv
+      - queue_and_interactive_attempts.csv
+      - claim_receipt.json
+      - checkpoint_selection_scar.csv
+      - checkpoint_selection_edema.csv
+      - fold2_inner_summary.csv
+      - fold3_inner_summary.csv
+      - fold2_outer_casewise.csv
+      - fold3_outer_casewise.csv
+      - lane_summary.csv
+      - lane_terminal_packet.json
+    completion_condition: all_eligible_lane_jobs_and_interactive_steps_terminal_and_aggregated
+    failure_token: OPERATIONALLY_BLOCKED_IMPLEMENTATION
+
+  - wave_id: W3_INTEGRATION_SELECTION_ATLAS
+    mode: controller_only
+    dependencies: [W2_FORMAL_SCHEDULING_AND_EXECUTION]
+    merge_order: [M0R_FAITHFUL_CONTROL, M1_MYOPSNET_L_CARE, M2_I_MMSEG_CARE, M3_CARE_TDS]
+    actions:
+      - merge_local_commits_in_fixed_order
+      - rerun_all_tests
+      - validate_M0R_M3_batch_manifest_hash_identity
+      - freeze_global_scar_source_from_inner_only
+      - freeze_global_edema_source_from_inner_only
+      - compose_with_fold_specific_stock_anatomy_and_scar_priority
+      - deterministic_outer_replay_without_retuning
+      - generate_and_visually_review_sentinel_atlas
+      - mapper_final
+      - update_CURRENT_and_wiki_with_honest_terminal_status
+    required_outputs:
+      - results/20260801_care_target_domain_race_gap_closure/global_source_selection_receipt.json
+      - results/20260801_care_target_domain_race_gap_closure/composed_casewise_metrics.csv
+      - results/20260801_care_target_domain_race_gap_closure/composed_summary.csv
+      - results/20260801_care_target_domain_race_gap_closure/case_atlas.pdf
+      - results/20260801_care_target_domain_race_gap_closure/case_atlas_contact_sheet.png
+      - results/20260801_care_target_domain_race_gap_closure/visual_findings.md
+      - results/20260801_care_target_domain_race_gap_closure/mapper_report_final.md
+    completion_condition: source_selection_frozen_before_outer_and_atlas_checked
+    failure_token: OPERATIONALLY_BLOCKED_IMPLEMENTATION
+
+  - wave_id: W4_FINALIZE_PUSH_NOTIFY
+    mode: controller_only
+    dependencies: [W3_INTEGRATION_SELECTION_ATLAS]
+    actions:
+      - terminal_accounting_all_queue_jobs_and_srun_steps
+      - write_scientific_decision
+      - run_strict_validator
+      - run_known_bad_at_least_21_cases
+      - git_diff_check
+      - commit_lightweight_outputs
+      - acquire_main_push_lock
+      - fetch_rebase_origin_main
+      - rerun_validator_after_rebase
+      - push_HEAD_to_main_only
+      - verify_local_sha_equals_remote_main_sha
+      - write_notification_brief
+      - run_existing_notifier_once
+      - commit_and_push_notification_receipt_if_created
+    completion_tokens:
+      - TARGET_DOMAIN_CANDIDATE_READY
+      - SCAR_ONLY_CANDIDATE_READY
+      - EDEMA_ONLY_CANDIDATE_READY
+      - NO_GO_AFTER_FAITHFUL_FOUR_LANE_EVALUATION
+      - M2_ASSET_APPROVAL_REQUIRED_OTHER_LANES_COMPLETE
+      - OPERATIONALLY_BLOCKED_EXISTING_INTERACTIVE_LOST
+      - OPERATIONALLY_BLOCKED_IMPLEMENTATION
+    required_outputs:
+      - results/20260801_care_target_domain_race_gap_closure/controller_report.md
+      - results/20260801_care_target_domain_race_gap_closure/scientific_decision.json
+      - results/20260801_care_target_domain_race_gap_closure/strict_validator_report.json
+      - results/20260801_care_target_domain_race_gap_closure/known_bad_report.json
+      - results/20260801_care_target_domain_race_gap_closure/slurm_and_interactive_accounting.csv
+      - results/20260801_care_target_domain_race_gap_closure/finalizer_state.json
+      - results/20260801_care_target_domain_race_gap_closure/completion_check.md
+      - results/20260801_care_target_domain_race_gap_closure/MANIFEST.md
+      - results/20260801_care_target_domain_race_gap_closure/notification_brief.json
+    completion_condition: main_push_verified_and_notifier_event_recorded
