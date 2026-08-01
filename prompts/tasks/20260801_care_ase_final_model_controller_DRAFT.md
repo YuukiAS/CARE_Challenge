@@ -39,109 +39,60 @@ docker_upload_authorized: false
 hosted_metric_claim_authorized: false
 blueprint_path: prompts/blueprints/CARE_ASE_final_model_blueprint_v2_20260801.md
 implementation_contract_path: prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_20260801.yaml
+implementation_contract_amendment_path: prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_amendment01_20260801.yaml
 ---
 
 # CARE-ASE Final Model Controller — REVISED DRAFT
 
-> 当前仍是待再次审查的执行草案，不授权实现、训练、Slurm、CURRENT/wiki 前移或 runtime push。后续用户一次性授权正式执行时，必须先把授权字段、reviewed commit/hash、commit/push/notify 边界冻结在 frontmatter；运行中不得再次停下来等待人工继续。
+当前文件仍不授权实现、训练、Slurm、CURRENT/wiki 前移或 runtime push。后续正式授权时，必须一次性冻结 reviewed commit、执行权限和 commit/push/notify 权限；运行中不得再设置第二个人工继续门。
 
-## 1. 唯一科学任务
+## 1. 冻结设计真值
 
-严格实现并验证：
+执行时必须同时读取，冲突时 amendment 优先：
 
 ```text
 prompts/blueprints/CARE_ASE_final_model_blueprint_v2_20260801.md
 prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_20260801.yaml
+prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_amendment01_20260801.yaml
 ```
 
-v2 的关键不可替代内容：
+不可降级的核心是：
 
-1. stock encoder、bottleneck、低中分辨率 decoder 完整继承；scar/edema 最高两级 decoder 必须复制完整 stock stage 权重，不得随机重建或缩成固定 `64/32` 小头。
-2. 正常 forward 不读取、叠加或回退到 stock class4/class5 logits；step0 parity 仅作为初始化能力审计。
-3. no-T2 最终损失使用排除 class4 的五类竞争，edema-exclusive 参数梯度精确为0。
-4. Stage C 只能读取每个 fold 的 `actual-train complete` 病例，不能读取 inner、outer 或全部80例。
-5. 每 fold 只能选择一个完整 checkpoint，禁止 scar/edema/anatomy 从不同 step 拼接共享参数。
-6. W2 implementation PASS 后自动启动 W3；早期低分不能跳过 Stage A/B/C。
+- 保留完整 stock encoder、bottleneck、低中分辨率 decoder；anatomy 保留原 stock 最高两级成熟路径；scar/edema 各复制最高两级 stock decoder stage，而不是随机重建小头。
+- 新 modality/proposal/soft-wall/extent/context 信息只能通过零初始化残差投影进入，step0 anatomy/scar/edema logit parity 均 `<=1e-6`。
+- 正常 final 不读取、相加或回退到 stock class4/class5 logits。
+- no-T2 使用排除 class4 的五类最终竞争，edema-exclusive 参数梯度精确为0。
+- Stage C 只读每 fold `actual-train complete`；禁止 inner/outer/全部80例泄漏。
+- 每 fold 只选择一个完整 checkpoint；禁止病种或 anatomy 跨 step 拼接共享参数。
+- early metric 不能阻止 W3 或跳过 Stage A/B/C。
 
-## 2. 角色图
+## 2. 单 Executor 与 Controller 权限
 
-本草案改为一个 Executor。原因是模型、loss、sampler、trainer 和 conditional final competition 高度耦合；三分支并行开发会增加接口遗漏、合并删模块和 no-T2 梯度泄漏风险。
+模型、loss、sampler、conditional competition 和 trainer 高度耦合，本草案只允许一个 Executor，避免并行 worktree 合并时删模块或产生接口漂移。fold2/fold3 只在 Slurm runtime 并行。
+
+Executor 执行代码和命令，但不能宣布任务完成。Controller 必须检查真实 diff、runtime tensor authority、训练预算、Slurm accounting、aggregation、validator 和 reviewer；同范围缺陷必须退回同一 Executor 修复。
+
+## 3. 不可中断任务图
 
 ```text
-Planner/User-authorized frozen contract
-  -> Controller/Coordinator
-       -> Executor: implementation + tests + Slurm commands + aggregation
-       -> Mapper: draft/final architecture and wiki fingerprint
-       -> deterministic dependency finalizer + strict validators
-       -> independent read-only Reviewer
-       -> Controller same-scope repair loop
-       -> terminal commit/push/notify only if start-time permission allows
+W0 evidence/split/asset freeze
+ -> W1 full implementation
+ -> W2 real-case preflight + same-goal repair loop
+ -> W3 fold2/fold3 formal 14000-step training
+ -> W4 single-checkpoint reload + inner freeze
+ -> W5 one-time outer + interventions + atlas
+ -> W6 terminal aggregation + mapper + validator
+ -> local candidate commit
+ -> independent reviewer at fixed candidate SHA
+ -> repair/rerun if revise
+ -> exact reviewed SHA push + notify only if start-time authorized
 ```
 
-Executor 不能宣布任务完成。Controller 必须逐 wave 检查真实 diff、命令、代码路径、tensor authority、训练预算、Slurm accounting、aggregation 和 required outputs。
+`W1/W2` 不能以 `NO_RUN`、`NEEDS_IMPLEMENTATION`、`PREFLIGHT_NEEDS_IMPLEMENTATION` 结束。`W3` 只依赖 implementation PASS，不依赖早期科学分数。submitted、pending、running、preempted、startup-failed、partial checkpoint、awaiting sacct 均不是完成。
 
-## 3. 强制任务图
+## 4. W0 必须读取与输出
 
-```text
-W0 远端同步、协议/图/证据读取、资产与 split 冻结
- ↓
-W1 单 Executor 完成全部实现与 deterministic tests
- ↓
-W2 真实病例 preflight + mandatory same-goal repair loop
- ↓ IMPLEMENTATION_PASS only
-W3 fold2/fold3 七个 2000-step chunk/fold，累计 14000 steps/fold
- ↓
-W4 单一完整 checkpoint reload + inner freeze
- ↓
-W5 outer 一次性评价 + module interventions + atlas
- ↓
-W6 mapper final + strict validator + independent reviewer + terminal accounting
- ↓
-若启动合同已授权：local commit -> main push -> notification_brief -> existing notifier
-否则：terminal local packet -> return to user
-```
-
-不允许出现独立 W7 人工继续门。正式用户授权必须在 W0 前一次性编码，避免完成训练后因等待第二次 prompt 形成流程性 no-run。
-
-## 4. W0：必须读取与冻结
-
-读取最新 `origin/main`，并完整阅读：
-
-```text
-AGENTS.md
-START_HERE_FOR_GPT.md
-GPT_PLANNER_CARE_PROTOCOL.md
-prompts/FINAL_OUTPUT_READABILITY_POLICY.md
-prompts/AGENT_FLOW_V2_PROTOCOL.md
-prompts/HANDOFF_GATE_POLICY.md
-prompts/GPT_HARD_GATE_PROMPT.md
-prompts/routes/README.md
-prompts/routes/route_portfolio_planner_prompt.md
-prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md
-prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md
-prompts/routes/handoffs/CURRENT.md
-routes/README.md
-wiki/README.md
-.agents/skills/slurm-routing-partition/SKILL.md
-.agents/skills/care-mapper/SKILL.md
-
-CARE-ASE v2 blueprint and exact contract
-results/20260801_care_nnunet_mosaic_complementarity_closure/**
-results/20260801_care_four_lane_evidence_reconciliation/**
-results/20260730_care_failure_forensics_deep_research_packet/**
-results/20260731_care_myopath_a0_a3_full_volume_closure/**
-results/20260731_care_myowall_geometry_diagnostic_closure/**
-results/20260731_care_qif_v2_signal_audit/**
-docs/presentation/20260801/presentation-final.pdf
-```
-
-视觉读取并在 receipt 中记录：
-
-```text
-SRR-v2, SRR-v2.5, SRR-v3
-CARE-MMRD, CARE-SRR-Cascade, CARE-DG, CARE-ARC
-CARE-PRISM, CARE-MyoWall-IF, MoSAIC, V4 hard-case atlas
-```
+必须 fetch 最新 `origin/main`，读取项目协议、当前机器真值、Slurm/mapper skill、v2 设计文件、指定结果目录与 `docs/presentation/20260801/presentation-final.pdf`。必须视觉读取：SRR-v2/v2.5/v3、MMRD、Cascade、DG、ARC、PRISM、MyoWall、MoSAIC 与 V4 atlas。
 
 W0 exact outputs：
 
@@ -157,75 +108,58 @@ results/20260801_care_ase_final_model/split_case_lists.json
 results/20260801_care_ase_final_model/sentinel_case_contract.json
 ```
 
-任一 stock checkpoint/plans/split 不可读，或 train/inner/outer 有交集，才允许 `OPERATIONALLY_BLOCKED_ASSET_OR_RUNTIME`。不得用旧 receipt 或相似路径代替。
+stock checkpoint/plans/split 不可读，或 train/inner/outer 交集非空，才允许 operational block。不得用旧 receipt、相似文件或自然语言代替。
 
-## 5. W1：完整实现，不接受 future work
+## 5. W1 全实现门
 
-Executor 必须实现 exact contract 的全部 required files/classes。Controller 用 AST、runtime 和 diff 联合拒绝：
-
-- `pass`、`NotImplementedError`、随机输出、固定零占位；
-- module 声明但 forward 未调用；
-- loss 声明但未进入总损失；
-- encoder-only、decoder reset、随机浅 pathology head；
-- scar/edema top stages 未完整复制 stock stage；
-- stock pathology logits进入正常 final；
-- no-T2 class4 仍进入最终 loss graph；
-- Stage C 数据集指向全部80例或含 inner/outer；
-- hard-negative manifest未被 sampler真实消费；
-- scar/edema/anatomy允许跨 checkpoint拼接；
-- hard ROI、hard wall、fixed scar-priority、dictionary/prototype/query 被恢复。
-
-W1 outputs：
+Exact contract 的 required files/classes 必须全部为真实实现。AST/runtime/diff 必须拒绝：
 
 ```text
-implementation_snapshot.md
-source_diff_summary.md
-contract_coverage.json
-stock_clone_and_parity_receipt.json
-remaining_gap_count: 0
+pass / NotImplementedError / random output / fixed-zero placeholder
+module declared but not called
+loss declared but absent from total loss
+encoder-only inheritance / decoder reset / shallow D0 pathology heads
+random anatomy decoder or missing stock top-stage clones
+stock class4/5 logits entering normal final
+no-T2 class4 gradient through final competition
+Stage C dataset containing inner/outer/all-80
+hard-negative manifest not consumed by sampler
+per-pathology checkpoint splicing
+hard ROI / hard wall / scar priority / dictionary / prototype / query
 ```
 
-`remaining_gap_count > 0` 必须继续同一 Executor 实现；不是终态，也不能返回 Planner。
+W1必须写 `implementation_snapshot.md`、`source_diff_summary.md`、`contract_coverage.json`、`stock_clone_and_parity_receipt.json`，且 `remaining_gap_count: 0`。任何 gap 都在本 Goal 继续实现。
 
-## 6. W2：真实病例 preflight 与 repair loop
+## 6. W2 真实 preflight
 
 固定病例：
 
 ```text
-complete CenterB: Case2019
-complete CenterC: Case3008
-LGE-only: Case1045
-LGE+C0: Case7009
+Case2019 complete CenterB
+Case3008 complete CenterC
+Case1045 LGE-only
+Case7009 LGE+C0
 ```
 
-必须完成：
+必须证明：
 
-1. stock compatibility 每尺度 FP32 parity；
-2. cloned scar/edema step0 class4/class5 parity；
-3. CARE-ASE normal forward 输出全部合同 key，且正常 final 不读取 stock pathology logits；
-4. 每项 loss finite、有效 denominator 正确、直接梯度到目标模块；
-5. no-T2 conditional five-class final loss，edema-exclusive 梯度 max abs `0.0`；
-6. one-batch overfit：scar、edema、final competition 均下降；
-7. save/reload 包含 model/optimizer/scheduler/RNG/sampler cursor，输出一致；
-8. full-volume one-case sliding-window inference；
-9. 每个辅助模块 on/off 对对应中间量及 final labels 有可测影响；
-10. all known-bad fixtures fail closed；
-11. Stage C loader 证明只读取 actual-train complete；
-12. checkpoint loader拒绝跨 step 参数拼接。
+1. stock compatibility 与 anatomy/scar/edema step0 parity；
+2. normal forward 不读取 stock pathology logits；
+3. 所有合同输出、loss denominator、finite value和直接梯度；
+4. no-T2 five-class final competition与 edema-exclusive gradient max abs `0.0`；
+5. one-batch overfit 中 scar、edema、final competition 均下降；
+6. save/reload 包含 model/optimizer/scheduler/RNG/sampler/batch cursor并保持输出一致；
+7. full-volume sliding-window inference；
+8. module on/off改变对应中间量和 final labels；
+9. Stage C loader只读 actual-train complete；
+10. loader拒绝跨 step参数拼接；
+11. known-bad 全部 fail closed。
 
-每个 failure class 最多3次同合同 repair。repair 不能改 blueprint、split、budget、loss权重、metric或科学语义。三次后仍失败时，只有附带完整 attempt diff、错误、最小复现和“为何继续同范围修复不可能”的证据，才能 operational block；不得写 `NO_RUN`、`NEEDS_IMPLEMENTATION` 或 `PREFLIGHT_NEEDS_IMPLEMENTATION` 作为终态。
+每类失败最多3次同合同 repair；不得改变 blueprint、split、budget、loss权重、metric或科学语义。三次仍失败时，只有完整 attempt/diff/reproducer 与不可修复证据才可 operational block。
 
-## 7. W3：不可跳过的正式训练
+## 7. W3 Slurm 与 exact resume
 
-每 fold 七个 2000-step chunk：
-
-```text
-chunk 1: Stage A, step 0-2000
-chunk 2-5: Stage B, step 2000-10000
-chunk 6-7: Stage C, step 10000-14000
-```
-
-每个 chunk 单 job `<=8h`。训练 chunk 依赖使用 `afterok`；所有 attempt 的 accounting/finalizer 使用 `afterany`。正式 wrapper 固定：
+每 fold 七个 `2000-step` chunk：Stage A 1个、Stage B 4个、Stage C 2个，总计14000步。每 job walltime `<=8h`。训练依赖 `afterok`，所有 attempt 的 finalizer/accounting 用 `afterany`。正式 Python 固定：
 
 ```text
 /users/a/e/aereinh/CARE/envs/env_CARE/bin/python
@@ -233,64 +167,58 @@ chunk 6-7: Stage C, step 10000-14000
 
 禁止裸 `python`。
 
-### 固定路由
+路由：先 `htzhulab`；2小时仍 pending，提交同 fold/chunk 隔离的 `a100-gpu` mirror；atomic winner lock决定唯一正式 attempt，启动后取消 pending mirror；V100不进入本合同。所有兼容分区连续12次、每2小时均未启动，才可24小时 scheduler block。
 
-- 先提交 `htzhulab`。
-- 2小时首次检查仍 pending，则提交同 fold/chunk 的 `a100-gpu` 隔离 mirror。
-- per-fold/per-chunk atomic winner lock；一个启动后立即取消仍 pending mirror。
-- V100 不进入本合同。
-- 两个兼容分区连续12次、每2小时均未启动，才允许24小时 scheduler block。
+startup/preemption同语义重试各2次，unknown 0次，失败 credit 为0。checkpoint必须保存 model、optimizer、scheduler、precision state、global/stage step、Python/NumPy/Torch/CUDA RNG、sampler cursor、batch descriptor cursor、code/config/split hashes。resume必须证明无step reset、overlap、gap或duplicate。
 
-startup/preemption 同语义重试各最多2次，unknown 0次。每次重试必须保持 code/config/split hash，旧 attempt 永久留 ledger，训练 credit 为0。
+Controller必须持续到全部 chunk terminal、sacct闭合、runtime aggregation完成。
 
-Controller必须持续到全部 chunk terminal。submitted、pending、running、preempted、startup_failed、partial checkpoint、awaiting sacct 都不是完成，也不能结束 Goal。
+## 8. W4 单一 checkpoint
 
-## 8. W4：单一 checkpoint 选择与 reload
-
-候选 step：`4000,6000,8000,10000,12000,14000`。每 fold 使用 v2 contract 的 joint score 选择一个完整 checkpoint；禁止 scar、edema、anatomy分别选择或拼接共享参数。
-
-选中后必须重新加载整个 checkpoint并写：
+候选 step固定：`4000,6000,8000,10000,12000,14000`。每 fold 用 contract 的 joint score 选择一个完整 checkpoint；同分选更晚 step。选择后重新加载整个 state dict，并写：
 
 ```text
 checkpoint_selection_casewise.csv
 checkpoint_selection_summary.csv
 checkpoint_freeze_receipt.json
-selected_state_dict_sha256
 full_reload_parity_receipt.json
 outer_access_count_before_freeze: 0
 ```
 
-## 9. W5：outer一次性评价、干预与atlas
+## 9. W5 outer 与机制证据
 
-checkpoint freeze 后，每 fold outer 只能读取一次。decode、extent系数、threshold、checkpoint、source均不可变化。必须使用 canonical physical-space evaluator，并报告 exact contract 全部指标。
+freeze 后每 fold outer只读一次。不得调整 threshold、extent系数、checkpoint、source或decode。必须报告 Dice、HD95/exact HD mm、precision、sensitivity、lesion/small-lesion recall、component、remote/blood-pool FP、volume ratio、help/harm、CenterB/CenterC。
 
-atlas至少包含：
+atlas固定包含：
 
 ```text
 Case3008 Case3009 Case3027 Case3012 Case2034 Case2025
 Case2019 Case2012 Case2009 Case1045 Case1029 Case8021
 ```
 
-每例显示 LGE/T2/C0、GT、stock、CARE-ASE、scar proposal/center/context、edema injury/extent/boundary、soft-wall、FP/FN和预先声明的module-off版本。Controller必须视觉核对病例ID、slice、orientation、label和prediction provenance。
+每例显示原始模态、GT、stock、CARE-ASE、scar proposal/center/context、edema injury/extent/boundary、soft-wall、FP/FN和预声明module-off。Controller视觉核对病例ID、slice、orientation、label和prediction provenance。
 
-干预必须在同一 selected checkpoint、同一case、同一decode下执行，记录 changed voxels、final-label delta、Dice、HD95、remote FP、component和volume ratio。module presence或nonzero gradient不能替代final-output effect。
+干预必须同 checkpoint/case/decode，报告 changed voxels、final-label delta、Dice、HD95、remote FP、component和volume ratio。module存在或梯度非零不是机制成功。
 
-## 10. W6：终态闭合
+## 10. 终态、Reviewer、push/notify顺序
 
-Mapper final 在 reviewer 前运行，更新 root wiki/fingerprint时只能写真实 terminal 状态；未通过 reviewer 的模型不得写 candidate-ready。
+固定顺序：
 
-Independent Reviewer 必须固定 terminal commit 的只读 checkout，检查：
+```text
+terminal runtime aggregation
+ -> mapper final
+ -> strict validator PASS
+ -> create local candidate commit
+ -> independent reviewer read-only checkout at that exact candidate SHA
+ -> if revise: repair and rerun from earliest affected wave, create new candidate SHA
+ -> reviewer PASS on current candidate SHA
+ -> if start-time authorized, fast-forward push that exact reviewed SHA to main
+ -> verify remote SHA equality
+ -> write notification_brief.json
+ -> invoke existing notifier once
+```
 
-- 完整 decoder clone 与正常 final 无 stock pathology shortcut；
-- no-T2 class4 loss/gradient完全隔离；
-- Stage C 无 inner/outer/全80例泄漏；
-- 每fold足额14000步且Stage A/B/C全部完成；
-- exact resume无step reset/overlap/gap/duplicate；
-- 单一 checkpoint reload；
-- outer access count与机器指标；
-- proposal/extent/context/soft-wall真实影响final；
-- promotion token与机器gate一致；
-- negative是否为faithful negative。
+Reviewer必须检查成熟 decoder clone、no-T2零梯度、Stage C无泄漏、14000步、resume连续性、单checkpoint reload、outer access count、final-output interventions与promotion token。
 
 Reviewer tokens：
 
@@ -300,35 +228,17 @@ CARE_ASE_REVIEW_REVISE_IMPLEMENTATION
 CARE_ASE_REVIEW_REVISE_EVIDENCE
 ```
 
-REVISE 必须进入同一 Controller 的授权范围 repair loop；不得以 review revise 结束并把实现问题留给未来。
+implementation revise 使受影响 runtime 失效，必须从最早受影响 wave 重跑；evidence revise 至少重新 aggregation、validator 与 review。Reviewer未PASS禁止push；reviewed SHA与pushed SHA必须完全相同。
 
-Controller terminal report 必须包含：
-
-```text
-controller_verification_decision: VERIFIED_COMPLETE | NEEDS_REPAIR | OPERATIONALLY_BLOCKED
-operational_completion_status
-experiment_adequacy_decision
-contract_compliance_status
-required_outputs_complete
-validators_passed
-all_jobs_terminal
-aggregation_complete
-review_token
-scientific_token
-git_commit_decision
-git_push_decision
-next_required_action
-```
-
-若正式启动时已授权 commit/push：review PASS 和 strict validator PASS 后完成 lightweight local commit、push main、确认 remote SHA，随后写 `notification_brief.json` 并调用：
+未来正式启动若已授权，push后调用：
 
 ```text
 ./envs/env_CARE/bin/python controller_notifications/notify_goal_watcher.py --once
 ```
 
-禁止自建 SMTP，禁止 terminal push 前通知，禁止上传 validation/Docker或声称 hosted metric。
+禁止自建SMTP、提前通知、validation/Docker上传或hosted claim。
 
-## 11. 当前边界
+## 11. 当前草案边界
 
 ```text
 allow_execution: false
@@ -338,4 +248,4 @@ allow_current_or_wiki_update: false
 allow_runtime_commit_push_notify: false
 ```
 
-本轮只完成设计修订并推送规划文件。需要下一次独立审查通过后，用户才决定是否将本草案转成正式、一次性授权的 Controller 合同。
+本轮仅落库设计修订。下一次独立复审通过后，用户才决定是否把本草案转换为正式的一次性授权合同。
