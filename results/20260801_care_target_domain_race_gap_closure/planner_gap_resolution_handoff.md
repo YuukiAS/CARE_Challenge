@@ -19,7 +19,7 @@
 | --- | --- | --- | --- |
 | M0R faithful nnU-Net control | repaired interactive rerun in `61220581` completed 4000 steps | repaired interactive rerun in `61220581` completed 4000 steps | training complete with AdamW warmup-cosine and 500-step checkpoint grid; still needs reload/SHA, full-volume inner selection, and manifest-bound crop/augmentation fidelity decision |
 | M1 MyoPS-Net-L CARE | lane job `61576324` completed | lane job `61576324` completed | training complete, needs full-volume reconstruction/evaluation |
-| M2 I-MMSeg CARE | not run | not run | official source and two public core weights present; CARE adapter/preflight/training pending |
+| M2 I-MMSeg CARE | not run | not run | official source and two public core weights present; released checkpoint GPU smoke PASS; CARE adapter/preflight/training pending |
 | M3 CARE-TDS | interactive `61220581` completed 4000 steps | interactive `61220581` completed 4000 steps | training complete, but model/loss fidelity and full-volume evaluation gaps remain |
 
 ## External Assets
@@ -59,6 +59,7 @@ No extra M1 pretrained weights were used in the current CARE adapter. The curren
     - size: `340373498`
     - sha256: `56a274d79638ba3dc5a44b5243e3e339702e3ec46ce0714fc2acfb1ab0835da6`
   - receipt: `results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/asset_download_receipt.json`
+  - smoke receipt: `results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/released_checkpoint_smoke_receipt.json`
 
 Reproducible download command:
 
@@ -79,6 +80,12 @@ mkdir -p third_party/I_MMSeg_PINNED/weights/TU_Myops128/TU_pretrain_R50-ViT-B_16
 Do not use MyoPS380 as CARE training data unless the planner explicitly authorizes a data-compliance path. This run did not download `MyoPS380_dataset/` or `I_MMSeg_env.tar.gz`.
 
 BiomedCLIP note: upstream I-MMSeg calls `open_clip.create_model_from_pretrained('hf-hub:microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224')`; first run needs HuggingFace access/cache unless the model is already cached.
+
+Released-checkpoint smoke:
+- ran inside existing `61220581 / htzhulab / NVIDIA H100 NVL`;
+- `epoch_299.pth` loaded into `VisionTransformer` with 0 missing and 0 unexpected keys;
+- random three-modal 1x128x128 forward returned `(1,4,128,128)` and finite outputs;
+- direct `R50-ViT-B_16.npz` `load_from` failed because upstream `load_from` references legacy `self.transformer` while this release defines `transformer1/transformer2/transformer3`. Upstream `train.py/test.py` do not call this path. If the next plan requires ViT-npz initialization rather than released `epoch_299.pth`, the first implementation step is repairing three-encoder `load_from`.
 
 ## Remaining Gaps And Implementation Plan
 
@@ -113,6 +120,8 @@ Repair plan:
 Evidence:
 - source is pinned at `third_party/I_MMSeg_PINNED`.
 - `R50-ViT-B_16.npz` and `epoch_299.pth` are present with SHA256 recorded in `m2_i_mmseg_care/asset_download_receipt.json`.
+- GPU smoke over released `epoch_299.pth` passed and is recorded in `m2_i_mmseg_care/released_checkpoint_smoke_receipt.json`.
+- Direct ViT npz `load_from` is a known upstream release bug in this checkout and must not be silently claimed as passing.
 - rank-channel substitute was explicitly not used.
 
 Repair plan:

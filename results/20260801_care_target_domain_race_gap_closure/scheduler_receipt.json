@@ -31,9 +31,10 @@
   ],
   "m2_asset_gate": {
     "job_submitted": false,
-    "reason": "Pinned I-MMSeg source and public core model assets are present. M2 still needs Dataset501 CARE adapter, BiomedCLIP cache/network check, preflight, and formal training. Contract forbids rank-channel or empty substitute jobs.",
+    "reason": "Pinned I-MMSeg source and public core model assets are present. Released epoch_299 checkpoint GPU smoke passed. M2 still needs Dataset501 CARE adapter, BiomedCLIP cache/network check, preflight, and formal training. Contract forbids rank-channel or empty substitute jobs.",
     "receipt": "results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/asset_download_receipt.json",
-    "status": "SOURCE_AND_CORE_MODEL_ASSETS_READY_PENDING_CARE_ADAPTER_PREFLIGHT"
+    "smoke_receipt": "results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/released_checkpoint_smoke_receipt.json",
+    "status": "RELEASED_CHECKPOINT_SMOKE_PASS_PENDING_CARE_ADAPTER_PREFLIGHT"
   },
   "interactive_takeover_monitor": {
     "launcher_log": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/logs/interactive_takeover_monitor_launcher.log",
@@ -131,6 +132,6 @@
       "runtime_warning": "nonfatal pymp temp cleanup OSError Errno16 during fold2 finalization; fold2 receipt was written and fold3 completed"
     }
   ],
-  "scheduler_policy": "M3 completed first in existing interactive allocation 61220581. M0R fold2 initially completed as htzhulab job 61565286, and M0R fold3 pending job 61565287 was cancelled and run inside allocation 61220581. That initial M0R training was then superseded by a faithful interactive rerun in the same existing allocation, completing fold2+fold3 with AdamW, 250-step warmup, per-step cosine decay to 1e-6, and checkpoint_step00500 through checkpoint_step04000. Old M1 fold-specific pending jobs 61565288/61565289 used 8 CPU/64G/8h and were cancelled; replacement M1 lane-level job 61576324 requested 12 CPU/96G/12h, ran fold2+fold3, and completed 0:0. No takeover cancellation was needed because M1 had already started by the time the interactive monitor checked. M2 source and two public core model assets are now present, but CARE adapter/preflight/training remain pending; no fake substitute job was submitted.",
+  "scheduler_policy": "M3 completed first in existing interactive allocation 61220581. M0R fold2 initially completed as htzhulab job 61565286, and M0R fold3 pending job 61565287 was cancelled and run inside allocation 61220581. That initial M0R training was then superseded by a faithful interactive rerun in the same existing allocation, completing fold2+fold3 with AdamW, 250-step warmup, per-step cosine decay to 1e-6, and checkpoint_step00500 through checkpoint_step04000. Old M1 fold-specific pending jobs 61565288/61565289 used 8 CPU/64G/8h and were cancelled; replacement M1 lane-level job 61576324 requested 12 CPU/96G/12h, ran fold2+fold3, and completed 0:0. No takeover cancellation was needed because M1 had already started by the time the interactive monitor checked. M2 source and two public core model assets are now present, and released checkpoint GPU smoke passed, but CARE adapter/preflight/training remain pending; no fake substitute job was submitted.",
   "task_key": "20260801_care_target_domain_race_gap_closure"
 }

@@ -49,6 +49,15 @@
       "google_drive_assets_required": false,
       "core_model_assets_downloaded": true,
       "asset_download_receipt": "results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/asset_download_receipt.json",
+      "released_checkpoint_smoke_receipt": "results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/released_checkpoint_smoke_receipt.json",
+      "released_checkpoint_smoke_status": "PASS",
+      "released_checkpoint_forward_shape": [
+        1,
+        4,
+        128,
+        128
+      ],
+      "direct_vit_npz_load_from_status": "FAIL_UPSTREAM_LEGACY_SINGLE_TRANSFORMER_PATH",
       "vit_checkpoint_path": "third_party/I_MMSeg_PINNED/model/vit_checkpoint/imagenet21k/R50-ViT-B_16.npz",
       "vit_checkpoint_sha256": "ff009bf39bb4f9198b834cfe46aba2bfdaf730e933ab3e3c4b1edf4226eaafbe",
       "epoch_299_path": "third_party/I_MMSeg_PINNED/weights/TU_Myops128/TU_pretrain_R50-ViT-B_16_skip3_epo300_bs24_lr0.001_128/epoch_299.pth",
@@ -58,7 +67,7 @@
       "rank_channel_substitute_used": false,
       "required_commit": "90f46c4eb72924509895fcda6bc6a3b8c3316e66",
       "required_source": "https://github.com/zzzzzzl24/I_MMSeg",
-      "status": "SOURCE_AND_CORE_ASSETS_READY_PENDING_CARE_ADAPTER_PREFLIGHT"
+      "status": "RELEASED_CHECKPOINT_SMOKE_PASS_PENDING_CARE_ADAPTER_PREFLIGHT"
     },
     "M3_CARE_TDS": {
       "batch_manifest_fold2_sha256": "917a8312fd3bffdd45c1d6295ca16b04e02804639c4aec243804b799728d6d60",

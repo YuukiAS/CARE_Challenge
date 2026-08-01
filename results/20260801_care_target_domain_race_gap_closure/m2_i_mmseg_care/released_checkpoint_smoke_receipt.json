@@ -1,0 +1,44 @@
+{
+  "created_at": "2026-08-01T10:35:00+00:00",
+  "cuda_device": "NVIDIA H100 NVL",
+  "direct_vit_npz_load_from_status": "FAIL_UPSTREAM_LEGACY_SINGLE_TRANSFORMER_PATH",
+  "direct_vit_npz_load_from_error": "VisionTransformer.load_from references self.transformer, but the released I-MMSeg model defines transformer1, transformer2, and transformer3.",
+  "epoch_299_checkpoint_keys": 934,
+  "epoch_299_load_missing_keys": 0,
+  "epoch_299_load_unexpected_keys": 0,
+  "epoch_299_path": "third_party/I_MMSeg_PINNED/weights/TU_Myops128/TU_pretrain_R50-ViT-B_16_skip3_epo300_bs24_lr0.001_128/epoch_299.pth",
+  "forward_finite": true,
+  "forward_output_shape": [
+    1,
+    4,
+    128,
+    128
+  ],
+  "input_shapes": {
+    "bssfp_c0_proxy": [
+      1,
+      1,
+      128,
+      128
+    ],
+    "lge": [
+      1,
+      1,
+      128,
+      128
+    ],
+    "t2w": [
+      1,
+      1,
+      128,
+      128
+    ]
+  },
+  "lane_id": "M2_I_MMSEG_CARE",
+  "released_checkpoint_smoke_status": "PASS",
+  "slurm_job_id": "61220581",
+  "slurm_partition": "htzhulab",
+  "source_commit_required": "90f46c4eb72924509895fcda6bc6a3b8c3316e66",
+  "text_feature_load_status": "PASS_ON_GPU",
+  "vit_npz_path": "third_party/I_MMSeg_PINNED/model/vit_checkpoint/imagenet21k/R50-ViT-B_16.npz"
+}
