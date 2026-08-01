@@ -1,0 +1,17 @@
+{
+  "blocking_gap": "Pinned official I_MMSeg source/assets are not present in the repository. The contract forbids replacing this lane with hand-crafted rank channels.",
+  "created_at": "2026-08-01T02:17:04.694466+00:00",
+  "formal_training_credit": false,
+  "git_head": "87a24c9754232325905fe4abf45666d97b0b6213",
+  "lane_id": "M2_I_MMSEG_CARE",
+  "next_required_action": "download/pin official source, license, commit and public assets before faithful forward/training",
+  "official_source_exists": false,
+  "official_source_path": "third_party/I_MMSeg_PINNED",
+  "status": "LANE_BLOCKED_EXTERNAL_ASSET",
+  "torch_env": {
+    "cuda_available": true,
+    "cuda_device_count": 1,
+    "device_name": "Tesla V100-SXM2-16GB",
+    "torch": "2.11.0+cu130"
+  }
+}

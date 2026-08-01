@@ -1,0 +1,6 @@
+PARTITION|AVAIL|TIMELIMIT|NODES|STATE|GRES
+volta-gpu|up|11-00:00:00|12|mix-|gpu:tesla_v100-sxm2-16gb:4(S:0),myJob:1
+volta-gpu|up|11-00:00:00|4|mix|gpu:tesla_v100-sxm2-16gb:4(S:0),myJob:1
+a100-gpu|up|6-00:00:00|8|mix-|gpu:nvidia_a100-pcie-40gb:3
+htzhulab|up|11-00:00:00|1|mix|gpu:nvidia_h100_nvl:2(S:1)
+htzhulab|up|11-00:00:00|1|mix|gpu:nvidia_a100-sxm4-80gb:8

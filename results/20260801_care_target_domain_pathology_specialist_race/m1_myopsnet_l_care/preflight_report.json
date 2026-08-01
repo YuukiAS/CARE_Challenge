@@ -1,0 +1,20 @@
+{
+  "blocking_gap": "CARE-specific complete-trimodal MyoPS-Net-L full-volume training entrypoint is not yet implemented; old third_party code exists but cannot be used as formal race lane without wrapper repair.",
+  "cmff_or_cross_modal_signal_seen": true,
+  "code_root_exists": true,
+  "created_at": "2026-08-01T02:16:49.325745+00:00",
+  "formal_training_credit": false,
+  "git_head": "87a24c9754232325905fe4abf45666d97b0b6213",
+  "lane_id": "M1_MYOPSNET_L_CARE",
+  "mpc_or_consistency_signal_seen": false,
+  "next_required_action": "implement C0/LGE/T2-only full-volume reconstruction and strict label4/label5 training wrapper before formal epochs",
+  "python_file_count": 16,
+  "status": "PREFLIGHT_NEEDS_IMPLEMENTATION",
+  "t1_t2star_mentions_need_forward_audit": true,
+  "torch_env": {
+    "cuda_available": true,
+    "cuda_device_count": 1,
+    "device_name": "Tesla V100-SXM2-16GB",
+    "torch": "2.11.0+cu130"
+  }
+}

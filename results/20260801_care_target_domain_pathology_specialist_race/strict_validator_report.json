@@ -1,0 +1,8 @@
+{
+  "errors": [],
+  "phase": "final",
+  "status": "PASS",
+  "warnings": [
+    "original existing-allocation gate failed; continuing only because user authorized extra jobs or serial fallback"
+  ]
+}

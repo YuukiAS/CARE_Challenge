@@ -1,0 +1,5 @@
+lane_id,job_id,partition_request,submitted_at,intent
+M1_MYOPSNET_L_CARE,61517360,volta-gpu:gpu:tesla_v100-sxm2-16gb:1,2026-07-31T22:13:33-04:00,queued_parallel_v100
+M2_I_MMSEG_CARE,61517361,volta-gpu:gpu:tesla_v100-sxm2-16gb:1,2026-07-31T22:13:33-04:00,queued_parallel_v100_asset_probe
+M3_CARE_TDS,61517362,a100-gpu:gpu:nvidia_a100-pcie-40gb:1,2026-07-31T22:13:33-04:00,queued_backup_a100
+M0_TD_NNUNET,61517363,htzhulab:gpu:1,2026-07-31T22:13:33-04:00,queued_backup_htzhulab

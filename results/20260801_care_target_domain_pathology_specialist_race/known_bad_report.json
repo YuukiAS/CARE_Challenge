@@ -1,0 +1,86 @@
+{
+  "case_count": 20,
+  "status": "PASS",
+  "tests": {
+    "case3008_3009_missing": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "checkpoint_not_reloaded": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "dice_only_report": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "i_mmseg_replaced_by_rank_channels": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "m0_m3_batch_manifest_mismatch": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "m1_missing_modality_cases_included": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "new_decoder_or_encoder_only_inheritance": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "no_t2_enters_formal_race": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "notify_before_push": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "official_validation_or_docker_upload": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "outer_used_for_selection": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "paper_name_without_core_modules": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "patch_proxy_as_full_volume": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "per_case_model_selector": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "remote_fp_or_harm_missing": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "runtime_checkpoint_nifti_committed": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "serial_fallback_without_user_override": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "stock_pathology_logits_enter_m3_final": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "unapproved_new_slurm_job": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "under_60_epochs_or_4000_steps": {
+      "expected": "validator rejects completion",
+      "passed": true
+    }
+  }
+}

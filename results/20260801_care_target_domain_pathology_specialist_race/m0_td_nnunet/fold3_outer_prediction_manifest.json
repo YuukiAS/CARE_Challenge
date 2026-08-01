@@ -1,0 +1,28 @@
+{
+  "case_count": 16,
+  "cases": [
+    "Case2004",
+    "Case2005",
+    "Case2012",
+    "Case2018",
+    "Case2021",
+    "Case2029",
+    "Case2032",
+    "Case3003",
+    "Case3009",
+    "Case3010",
+    "Case3019",
+    "Case3020",
+    "Case3021",
+    "Case3029",
+    "Case3032",
+    "Case3045"
+  ],
+  "checkpoint_name": "checkpoint_best.pth",
+  "checkpoint_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_pathology_specialist_race/m0_td_nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerTargetDomainRace4000__nnUNetPlans__3d_fullres/fold_3/checkpoint_best.pth",
+  "created_at": "2026-08-01T03:16:38.086220+00:00",
+  "fold": 3,
+  "lane_id": "M0_TD_NNUNET",
+  "prediction_dir": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_pathology_specialist_race/m0_td_nnunet/outer_predictions/fold_3/checkpoint_best",
+  "prediction_files_present": 16
+}

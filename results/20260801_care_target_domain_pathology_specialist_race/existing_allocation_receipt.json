@@ -1,0 +1,25 @@
+{
+  "observed_existing_allocation": {
+    "alloc_tres": "cpu=8,mem=64G,node=1,billing=8,gres/gpu=1,gres/gpu:nvidia_h100_nvl=1",
+    "contract_original_required_gpu_count": 4,
+    "contract_original_required_walltime_hours": 10,
+    "gpu_count": 1,
+    "job_id": "61220581",
+    "original_resource_gate_status": "FAIL_GPU_COUNT",
+    "partition": "htzhulab",
+    "post_override_resource_strategy": "submit_lane_level_extra_gpu_jobs_and_keep_existing_h100_available",
+    "state": "RUNNING",
+    "time_left_at_probe": "2-02:20:27"
+  },
+  "policy_override": {
+    "created_at": "2026-08-01T02:10:06.384885+00:00",
+    "new_slurm_job_authorized": true,
+    "serial_fallback_authorized": true,
+    "source": "user_message_after_initial_insufficient_allocation_findings",
+    "summary": "User authorized controller to decide between submitting extra Slurm jobs or using the existing one-GPU allocation serially, and requested not to stop at the original resource block."
+  },
+  "queue_snapshot_paths": {
+    "htzhulab": "results/20260801_care_target_domain_pathology_specialist_race/queue_htzhulab.txt",
+    "school_gpu": "results/20260801_care_target_domain_pathology_specialist_race/queue_school_gpu.txt"
+  }
+}

@@ -1,0 +1,7 @@
+fold,event,timestamp,target_optimizer_steps,num_epochs,num_iterations_per_epoch,pretrained_checkpoint,device,formal_credit
+2,start,2026-08-01T02:21:36.680405+00:00,4000,16,250,/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_2/checkpoint_final.pth,cuda,pending
+2,startup_cancelled,2026-08-01T02:35:42.331697+00:00,4000,16,250,data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_2/checkpoint_final.pth,cuda,false_compile_startup_zero_credit
+2,start,2026-08-01T02:35:49.278579+00:00,4000,16,250,/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_2/checkpoint_final.pth,cuda,pending
+3,start,2026-08-01T02:42:42.717909+00:00,4000,16,250,/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_3/checkpoint_final.pth,cuda,pending
+3,complete,2026-08-01T03:08:18.061496+00:00,4000,16,250,/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_3/checkpoint_final.pth,cuda,true
+2,complete,2026-08-01T03:14:51.807612+00:00,4000,16,250,/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_2/checkpoint_final.pth,cuda,true

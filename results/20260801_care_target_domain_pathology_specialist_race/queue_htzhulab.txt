@@ -1,0 +1,11 @@
+JOBID|USER|NAME|PARTITION|STATE|TIME|TIME_LEFT|NODES|NODELIST(REASON)|TRES_PER_NODE
+61505986|jiangyk|ehr-found|htzhulab|PENDING|0:00|9-00:00:00|1|(Resources)|gres/gpu:2
+61479594|zzhaoy|Downstream|htzhulab|PENDING|0:00|9-00:00:00|1|(ReqNodeNotAvail, May be reserved for other job)|gres/gpu:1
+61193367|shangao|drksqc3|htzhulab|PENDING|0:00|3:00:00|1|(QOSMinGRES)|N/A
+61248344_[17-23%1]|shangao|condfull_infer|htzhulab|PENDING|0:00|12:00:00|1|(JobArrayTaskLimit)|gres/gpu:nvidia_a100-sxm4-80gb:1
+61457635|shangao|chictr_txt_audit|htzhulab|PENDING|0:00|1:00:00|1|(QOSMinGRES)|N/A
+61479937|xiaoyuqi|interact|htzhulab|RUNNING|3:54:07|8-20:05:53|1|g180702|gres/gpu:2
+61432410|jiangyk|Downstream|htzhulab|RUNNING|21:23:51|8-02:36:09|1|g180702|gres/gpu:2
+61479593|zzhaoy|Downstream|htzhulab|RUNNING|7:57:59|8-16:02:01|1|g180702|gres/gpu:1
+61220581|aereinh|CareDPR5d|htzhulab|RUNNING|2-21:44:07|2-02:15:53|1|g1807htzh01|gres/gpu:1
+61248344_16|shangao|condfull_infer|htzhulab|RUNNING|55:41|11:04:19|1|g180702|gres/gpu:nvidia_a100-sxm4-80gb:1

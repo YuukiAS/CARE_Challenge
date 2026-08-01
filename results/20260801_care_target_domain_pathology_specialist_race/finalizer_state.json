@@ -1,0 +1,26 @@
+{
+  "created_at": "2026-08-01T03:19:28.238350+00:00",
+  "known_nonfatal_repairs": [
+    "61517363 failed because the first worker script had an sbatch header placement bug; M0 preflight/training was rerun successfully on the existing interactive allocation.",
+    "61546557 failed because nnU-Net predictor could not discover the repo-local trainer; the eval script now patches trainer discovery and fold2/fold3 outer eval completed on the interactive allocation."
+  ],
+  "lane_status": {
+    "M0_TD_NNUNET": "FORMAL_TRAINED_AND_EVALUATED_NO_GO_VS_STOCK",
+    "M1_MYOPSNET_L_CARE": "PREFLIGHT_NEEDS_IMPLEMENTATION",
+    "M2_I_MMSEG_CARE": "LANE_BLOCKED_EXTERNAL_ASSET",
+    "M3_CARE_TDS": "PREFLIGHT_NEEDS_IMPLEMENTATION"
+  },
+  "m0_outer_eval": [
+    "/users/a/e/aereinh/CARE/results/20260801_care_target_domain_pathology_specialist_race/m0_td_nnunet/fold2_outer_eval_checkpoint_best/evaluation_summary.json",
+    "/users/a/e/aereinh/CARE/results/20260801_care_target_domain_pathology_specialist_race/m0_td_nnunet/fold3_outer_eval_checkpoint_best/evaluation_summary.json",
+    "/users/a/e/aereinh/CARE/results/20260801_care_target_domain_pathology_specialist_race/m0_td_nnunet/m0_vs_stock_outer_summary.json"
+  ],
+  "m0_training_receipts": [
+    "/users/a/e/aereinh/CARE/results/20260801_care_target_domain_pathology_specialist_race/m0_td_nnunet/fold2_training_receipt.json",
+    "/users/a/e/aereinh/CARE/results/20260801_care_target_domain_pathology_specialist_race/m0_td_nnunet/fold3_training_receipt.json"
+  ],
+  "slurm_accounting_path": "/users/a/e/aereinh/CARE/results/20260801_care_target_domain_pathology_specialist_race/slurm_accounting.csv",
+  "slurm_jobs_terminal": true,
+  "status": "COMPLETE",
+  "task_key": "20260801_care_target_domain_pathology_specialist_race"
+}

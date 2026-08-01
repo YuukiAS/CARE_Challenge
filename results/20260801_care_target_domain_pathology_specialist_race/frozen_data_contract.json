@@ -1,0 +1,35 @@
+{
+  "center_counts": {
+    "CenterB": 35,
+    "CenterC": 45
+  },
+  "complete_triomodal_cases": 80,
+  "created_at": "2026-08-01T02:10:06.379268+00:00",
+  "data_contract_status": "PASS",
+  "dataset": "Dataset501_CAREMyoPS",
+  "errors": [],
+  "formal_folds": [
+    2,
+    3
+  ],
+  "input_order": [
+    "LGE",
+    "T2",
+    "C0"
+  ],
+  "label_semantics": {
+    "injury": [
+      4,
+      5
+    ],
+    "myocardium_union": [
+      1,
+      4,
+      5
+    ],
+    "pure_edema": 4,
+    "scar": 5
+  },
+  "plans_sha256": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
+  "splits_final_sha256": "9c3e9f3b7e4565a5c3c2589ddbb913c78c0ad423f4265370585841c93c6f880a"
+}

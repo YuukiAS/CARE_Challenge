@@ -1,0 +1,16 @@
+{
+  "blocked_or_failure_reason": "none; operational packet complete, scientific result is no-go",
+  "commit_status": "complete_in_current_closeout_commit",
+  "evidence_paths": [
+    "/users/a/e/aereinh/CARE/results/20260801_care_target_domain_pathology_specialist_race/controller_report.md",
+    "/users/a/e/aereinh/CARE/results/20260801_care_target_domain_pathology_specialist_race/scientific_decision.json",
+    "/users/a/e/aereinh/CARE/results/20260801_care_target_domain_pathology_specialist_race/m0_td_nnunet/m0_vs_stock_outer_summary.json",
+    "/users/a/e/aereinh/CARE/results/20260801_care_target_domain_pathology_specialist_race/slurm_accounting.csv"
+  ],
+  "final_status": "complete",
+  "key_conclusion": "目标域 M0 fold2/fold3 完训并完成外层评价，但相对 stock nnU-Net 下降；M1/M2/M3 未形成正式候选，因此结论是 NO_GO_TARGET_DOMAIN_RACE。",
+  "next_step": "Do not package/upload this candidate; planner should decide whether to implement true M3 heads/losses or repair M1/M2 assets before another race.",
+  "push_status": "complete_after_current_closeout_push",
+  "slurm_terminal_status": "all submitted Slurm jobs reached terminal states; failed startup/eval attempts were repaired by successful interactive reruns",
+  "task_name": "20260801_care_target_domain_pathology_specialist_race"
+}
