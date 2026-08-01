@@ -13,6 +13,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 RESULT_ROOT = REPO_ROOT / "results/20260801_care_target_domain_race_gap_closure"
 
 ALLOWED_DECISIONS = {
+    "CONTROLLER_ACTIVE_CONTINUATION",
     "TARGET_DOMAIN_CANDIDATE_READY",
     "SCAR_ONLY_CANDIDATE_READY",
     "EDEMA_ONLY_CANDIDATE_READY",
@@ -91,6 +92,8 @@ def validate(phase: str) -> dict[str, Any]:
         decision = read_json(RESULT_ROOT / "scientific_decision.json")
         decision_token = decision.get("scientific_decision")
         add(errors, decision_token in ALLOWED_DECISIONS, "invalid scientific_decision token")
+        if phase == "final":
+            add(errors, decision_token != "CONTROLLER_ACTIVE_CONTINUATION", "final packet cannot use nonterminal active-continuation decision")
         add(errors, decision.get("validation_upload_authorized") is False, "validation upload must be unauthorized")
         add(errors, decision.get("docker_upload_authorized") is False, "Docker upload must be unauthorized")
         add(errors, decision.get("hosted_metric_claim_authorized") is False, "hosted metric claim must be unauthorized")
@@ -123,6 +126,12 @@ def validate(phase: str) -> dict[str, Any]:
         add(errors, isinstance(running, list), "running_interactive_allocations must be a list")
         if decision_token == "OPERATIONALLY_BLOCKED_EXISTING_INTERACTIVE_LOST":
             add(errors, len(running) == 0, "interactive-lost block requires zero usable running interactive allocations")
+            add(errors, receipt.get("new_interactive_allocation_created") is False, "must not create a new interactive allocation")
+            add(errors, receipt.get("a100_or_volta_submitted") is False, "must not submit a100/volta")
+        elif decision_token == "CONTROLLER_ACTIVE_CONTINUATION":
+            add(errors, receipt.get("usable_existing_interactive_allocation") is True, "active continuation requires usable existing interactive allocation")
+            usable = [r for r in running if r.get("partition") == "htzhulab" and r.get("state") == "RUNNING" and r.get("usable_for_contract") is True]
+            add(errors, bool(usable), "active continuation requires a RUNNING usable htzhulab allocation")
             add(errors, receipt.get("new_interactive_allocation_created") is False, "must not create a new interactive allocation")
             add(errors, receipt.get("a100_or_volta_submitted") is False, "must not submit a100/volta")
         elif phase == "final":

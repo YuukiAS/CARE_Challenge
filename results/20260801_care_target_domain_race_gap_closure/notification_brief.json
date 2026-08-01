@@ -1,17 +1,15 @@
 {
-  "blocked_or_failure_reason": "合同要求复用既有交互式GPU allocation且禁止新建interactive allocation；当前Slurm快照没有可用的htzhulab交互式GPU allocation，因此M0R/M1/M2/M3不能合法启动。",
-  "commit_status": "committed: 4b930c7a8c7bb685e9756e26b8906965957ac7b5",
+  "blocked_or_failure_reason": "SUPERSEDED: 之前的blocked邮件依据错误的interactive查询；用户提供并controller验证了61220581 / htzhulab / g1807htzh01可用。",
+  "commit_status": "superseded_by_followup_commit_pending",
   "evidence_paths": [
-    "results/20260801_care_target_domain_race_gap_closure/controller_report.md",
-    "results/20260801_care_target_domain_race_gap_closure/scientific_decision.json",
+    "results/20260801_care_target_domain_race_gap_closure/blocker_superseded_by_user_override.md",
     "results/20260801_care_target_domain_race_gap_closure/existing_interactive_receipt.json",
-    "results/20260801_care_target_domain_race_gap_closure/m0_protocol_fidelity_audit.json",
-    "results/20260801_care_target_domain_race_gap_closure/strict_validator_report.json"
+    "results/20260801_care_target_domain_race_gap_closure/scientific_decision.json"
   ],
-  "final_status": "blocked",
-  "key_conclusion": "四模型缺口闭合任务已完成W0审计并停止在资源前提丢失：当前没有可复用的htzhulab交互式GPU allocation；旧M0已降级为HIGH_LR_SHORT_FINETUNE_NEGATIVE，不是四模型科学失败。",
-  "next_step": "返回GPT planner：若要继续，需重新提供与合同一致的interactive allocation策略或明确修改资源合同；不得把该阻塞解释为四模型失败。",
-  "push_status": "pushed: origin/main 4b930c7a8c7bb685e9756e26b8906965957ac7b5",
-  "slurm_terminal_status": "no eligible training job submitted by this goal; observed jobs were unrelated general tunnel jobs; no lane training attempt is awaiting accounting",
+  "final_status": "superseded_nonterminal",
+  "key_conclusion": "旧W0 blocked通知已撤销为历史错误包；当前controller继续执行四模型缺口闭合，不能再把该任务解释成全模型失败或资源终局阻塞。",
+  "next_step": "继续M0R/M1/M2/M3实现、preflight和htzhulab调度；终局complete或真实blocked后再按既有notifier写合法notification_brief.json。",
+  "push_status": "superseded_by_followup_commit_pending",
+  "slurm_terminal_status": "usable existing interactive allocation verified: job 61220581, htzhulab, g1807htzh01, NVIDIA H100 NVL",
   "task_name": "20260801_care_target_domain_race_gap_closure"
 }

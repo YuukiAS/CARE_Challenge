@@ -170,6 +170,20 @@ Third-party papers for consultation live under **`literature/`** (PDFs, etc.). U
 
 The usual working environment is a compute node. The user also has access to the **`htzhulab`** partition; when CPU-only execution would be slow, use temporary GPU jobs there via `sbatch`, `srun`, or similar Slurm commands instead of letting long CPU runs crawl.
 
+### Existing interactive allocation checks
+
+When a CARE controller contract requires reusing an existing interactive allocation, the controller must check the lab partition directly before declaring the allocation missing. Do not rely only on a generic or truncated `squeue -u "$USER"` view.
+
+Minimum required checks:
+
+```bash
+squeue -u "$USER" -p htzhulab -o '%i|%j|%P|%T|%M|%L|%R|%b|%D'
+squeue -j <candidate_job_id> -o '%i|%j|%P|%T|%M|%L|%R|%b|%D'
+scontrol show job <candidate_job_id>
+```
+
+If the user provides an interactive job id, treat that id as authoritative enough to verify directly before making any resource conclusion. A controller must not write an `OPERATIONALLY_BLOCKED_EXISTING_INTERACTIVE_LOST` packet until the `htzhulab` partition-specific query and the specific job-id query both fail to show a usable RUNNING allocation, or `scontrol show job` proves it is no longer usable.
+
 For CARE model work, default to the lab partition first. If queue inspection suggests a materially long wait on `htzhulab`, school GPU partitions may be used as fallbacks. The priority order is:
 
 1. `htzhulab` — preferred/default for CARE jobs.

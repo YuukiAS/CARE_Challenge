@@ -1,14 +1,14 @@
 # CARE 架构 Wiki
 
-architecture_version: `care-target-domain-gap-closure-w0-blocked-20260801`
-latest_verified_runtime: `faithful target-domain four-lane gap closure stopped at W0 because no usable existing htzhulab interactive GPU allocation was running`
-latest_scientific_status: `OPERATIONALLY_BLOCKED_EXISTING_INTERACTIVE_LOST: no M0R/M1/M2/M3 formal training started`
+architecture_version: `care-target-domain-gap-closure-active-after-interactive-recovery-20260801`
+latest_verified_runtime: `faithful target-domain four-lane gap closure continues with verified existing htzhulab interactive allocation 61220581 on g1807htzh01`
+latest_scientific_status: `CONTROLLER_ACTIVE_CONTINUATION: previous interactive-lost blocked packet is superseded, no M0R/M1/M2/M3 formal training result yet`
 latest_controller_task: `20260801_care_target_domain_race_gap_closure`
-route_status: `MAIN_ONLY_TARGET_DOMAIN_GAP_CLOSURE_W0_BLOCKED_RETURN_TO_PLANNER`
+route_status: `MAIN_ONLY_TARGET_DOMAIN_GAP_CLOSURE_ACTIVE_CONTINUATION`
 
-当前机器真值是 `prompts/routes/handoffs/CURRENT.md`。完整三模态四模型缺口闭合任务已完成 W0 启动审计，但在进入 M0R/M1/M2/M3 实现和训练前被资源前提阻塞：当前 Slurm 没有可复用的 RUNNING `htzhulab` interactive GPU allocation，而任务合同禁止新建 interactive allocation。旧 M0 已重新审计为 `HIGH_LR_SHORT_FINETUNE_NEGATIVE`，不能作为忠实目标域微调负结果；M0R/M1/M2/M3 均未开始正式训练，validation/Docker upload 未启动。
+当前机器真值是 `prompts/routes/handoffs/CURRENT.md`。完整三模态四模型缺口闭合任务已完成 W0 启动审计；此前资源前提阻塞结论已被用户提供并经 controller 验证的 `61220581 / htzhulab / g1807htzh01` RUNNING GPU allocation 撤销。旧 M0 已重新审计为 `HIGH_LR_SHORT_FINETUNE_NEGATIVE`，不能作为忠实目标域微调负结果；M0R/M1/M2/M3 还没有正式训练结果，当前 controller 应继续实现、preflight 和调度，validation/Docker upload 未启动。
 
-## 2026-08-01 目标域四模型缺口闭合 W0 阻塞证据
+## 2026-08-01 目标域四模型缺口闭合继续执行证据
 
 ```text
 result_root:
@@ -23,18 +23,23 @@ old_m0_classification: HIGH_LR_SHORT_FINETUNE_NEGATIVE
 
 interactive allocation receipt:
 results/20260801_care_target_domain_race_gap_closure/existing_interactive_receipt.json
-usable_existing_interactive_allocation: false
+usable_existing_interactive_allocation: true
+job_id: 61220581
+partition: htzhulab
+node: g1807htzh01
+gpu: NVIDIA H100 NVL
 
 scientific decision:
 results/20260801_care_target_domain_race_gap_closure/scientific_decision.json
-scientific_decision: OPERATIONALLY_BLOCKED_EXISTING_INTERACTIVE_LOST
+scientific_decision: CONTROLLER_ACTIVE_CONTINUATION
+previous_decision_superseded: OPERATIONALLY_BLOCKED_EXISTING_INTERACTIVE_LOST
 
 strict validator:
 results/20260801_care_target_domain_race_gap_closure/strict_validator_report.json
-status: PASS
+bootstrap status: PASS after active-continuation update
 ```
 
-不得把这个 W0 阻塞解释为四模型科学失败。继续该目标需要 Planner/用户重新提供与合同一致的 interactive allocation 策略或授权修改资源合同；在此之前不得私自 `salloc`、提交 a100/volta、访问 official validation、上传 validation/Docker 或作 hosted metric claim。
+不得把旧 W0 阻塞解释为四模型科学失败。继续该目标时必须复用 `61220581`，M3 先跑 interactive，M0R/M1/M2 在 preflight 后提交 `htzhulab` 队列；若 interactive 跑完而某条 lane 仍 pending，则取消一个 pending 作业并在 interactive 中串行接力。禁止私自 `salloc`、提交 a100/volta、访问 official validation、上传 validation/Docker 或作 hosted metric claim。
 
 ## 2026-07-31 MyoWall-IF 终态证据
 

@@ -2,6 +2,7 @@
 
 - `results/20260801_care_target_domain_race_gap_closure/MANIFEST.md`
 - `results/20260801_care_target_domain_race_gap_closure/architecture_delta_final.md`
+- `results/20260801_care_target_domain_race_gap_closure/blocker_superseded_by_user_override.md`
 - `results/20260801_care_target_domain_race_gap_closure/completion_check.md`
 - `results/20260801_care_target_domain_race_gap_closure/controller_context.json`
 - `results/20260801_care_target_domain_race_gap_closure/controller_report.md`

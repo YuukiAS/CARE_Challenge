@@ -67,7 +67,7 @@
   ],
   "old_m0_audit": "HIGH_LR_SHORT_FINETUNE_NEGATIVE",
   "origin_main": "16f6e9700ab61f44f821048e7cab8eb5099de567",
-  "phase": "W0_BOOTSTRAP_AUDIT_FREEZE",
+  "phase": "W0_BOOTSTRAP_AUDIT_FREEZE_SUPERSEDED_BY_ACTIVE_CONTINUATION",
   "recovered_route_objective": "modality-specific evidence; pathology-specific authority; soft anatomy context; negative-space accounting; full-volume help/harm",
   "required_runtime_paths": [
     "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure"
@@ -76,5 +76,10 @@
   "task_key": "20260801_care_target_domain_race_gap_closure",
   "visual_read_entrypoint_note": "goal attachment contained only goal-objective.md; repo images were visually opened for SRR-v2/v2.5/v3 while recording that Project-background access is not available from this Codex context",
   "visual_read_status": "PASS_REPO_IMAGES_READ_PROJECT_BACKGROUND_UNAVAILABLE_IN_CODEX_ATTACHMENT",
-  "w0_decision": "OPERATIONALLY_BLOCKED_EXISTING_INTERACTIVE_LOST"
+  "usable_existing_interactive_allocation": true,
+  "verified_interactive_job_id": "61220581",
+  "verified_interactive_node": "g1807htzh01",
+  "verified_interactive_partition": "htzhulab",
+  "w0_decision": "CONTROLLER_ACTIVE_CONTINUATION",
+  "w0_previous_decision_superseded": "OPERATIONALLY_BLOCKED_EXISTING_INTERACTIVE_LOST"
 }

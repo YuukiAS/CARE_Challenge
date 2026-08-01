@@ -1,25 +1,31 @@
 # CARE 当前开发状态
 
-## 2026-08-01 最新机器真值：四模型缺口闭合在 W0 被既有 interactive allocation 丢失阻塞
+## 2026-08-01 最新机器真值：四模型缺口闭合继续执行，旧 W0 interactive-lost 阻塞已撤销
 
 完整三模态四模型缺口闭合任务已经同步到 `main` 最新合同，并完成 W0 启动审计、协议读取、SRR-v2/v2.5/v3 视觉读取、旧 M0 fidelity 审计、split 复用 hash、executor plan validator 修复和目标 validator。旧 M0 不能再解释为忠实目标域微调负结果；它实际使用 nnU-Net 默认 `SGD`、初始学习率 `1e-2`、`PolyLRScheduler` 和 16 epoch 训练，没有 500-step checkpoint 的全体积 inner selection，因此只能标记为 `HIGH_LR_SHORT_FINETUNE_NEGATIVE`。
 
-本任务没有进入 M0R/M1/M2/M3 preflight 或正式训练，因为当前 Slurm 只看到 general 分区 tunnel jobs，没有任何可复用的 RUNNING `htzhulab` interactive GPU allocation。新合同明确禁止新建 interactive allocation，且要求 M3 首先使用现有 interactive GPU；因此终态为资源前提丢失的操作阻塞，不是模型失败，也不是四条 lane 的科学负结果。
+此前 `OPERATIONALLY_BLOCKED_EXISTING_INTERACTIVE_LOST` packet 是过早的资源门误判，现已被用户提供并经 controller 验证的 `61220581 / htzhulab / g1807htzh01` RUNNING GPU allocation 撤销。`srun --jobid=61220581 --overlap` 的 CUDA probe 已确认该 allocation 暴露 `NVIDIA H100 NVL`。当前状态是非终局继续执行：M3 先用该 interactive GPU；M0R/M1/M2 在 preflight 后提交 `htzhulab` 队列作业；若 interactive 跑完而某个队列作业仍 pending，则取消一个 pending 作业并在 interactive allocation 中串行接力。不得把旧 blocked packet 解释为四模型全失败。
 
 ```text
-state_id: care_target_domain_gap_closure_w0_interactive_lost_20260801
+state_id: care_target_domain_gap_closure_active_after_interactive_recovery_20260801
 active_development_branch: main
 active_worktree: /users/a/e/aereinh/CARE
-single_active_scientific_line: CARE_TARGET_DOMAIN_GAP_CLOSURE_W0_BLOCKED_RETURN_TO_PLANNER
+single_active_scientific_line: CARE_TARGET_DOMAIN_GAP_CLOSURE_ACTIVE_CONTINUATION
 method_name: faithful target-domain four-lane gap closure
 controller_is_coordinator: true
 result_root: results/20260801_care_target_domain_race_gap_closure
 old_m0_classification: HIGH_LR_SHORT_FINETUNE_NEGATIVE
+previous_decision_superseded: OPERATIONALLY_BLOCKED_EXISTING_INTERACTIVE_LOST
+usable_existing_interactive_allocation: true
+existing_interactive_job_id: 61220581
+existing_interactive_partition: htzhulab
+existing_interactive_node: g1807htzh01
+existing_interactive_gpu: NVIDIA H100 NVL
 formal_lane_training_started: false
 queue_jobs_submitted_by_this_goal: false
 interactive_steps_started_by_this_goal: false
-scientific_decision: OPERATIONALLY_BLOCKED_EXISTING_INTERACTIVE_LOST
-controller_verification_decision: OPERATIONALLY_BLOCKED
+scientific_decision: CONTROLLER_ACTIVE_CONTINUATION
+controller_verification_decision: ACTIVE_CONTINUATION
 validation_upload_authorized: false
 docker_upload_authorized: false
 hosted_metric_claim_authorized: false
@@ -33,11 +39,12 @@ results/20260801_care_target_domain_race_gap_closure/m0_protocol_fidelity_audit.
 results/20260801_care_target_domain_race_gap_closure/frozen_data_contract.json
 results/20260801_care_target_domain_race_gap_closure/existing_interactive_receipt.json
 results/20260801_care_target_domain_race_gap_closure/scientific_decision.json
+results/20260801_care_target_domain_race_gap_closure/blocker_superseded_by_user_override.md
 results/20260801_care_target_domain_race_gap_closure/strict_validator_report.json
 results/20260801_care_target_domain_race_gap_closure/known_bad_report.json
 ```
 
-除非 Planner/用户重新提供或授权可用的 interactive allocation 策略，否则不得把本 blocked packet 改写成 M0R/M1/M2/M3 失败；也不得私自 `salloc`、提交 a100/volta、访问 official validation、上传 validation/Docker 或作 hosted metric claim。
+继续执行时必须按 `htzhulab` 分区和具体 job id 查询 interactive allocation；不能只看默认 `squeue -u` 后写 resource-lost。禁止新建 interactive allocation、提交 a100/volta、访问 official validation、上传 validation/Docker 或作 hosted metric claim。
 
 ## 2026-07-31 最新机器真值：CARE-MyoWall-IF frozen-stock geometry gate 失败，禁止进入四臂正式训练
 
