@@ -1,0 +1,17 @@
+{
+  "task_name": "20260801_mosaic_leaderboard_live_snapshot",
+  "final_status": "complete",
+  "commit_status": "complete_task_files_committed_to_main",
+  "push_status": "complete_origin_main_verified_after_push",
+  "key_conclusion": "已重新抓取 CARE2026 myocardium leaderboard，并按用户修正排除 2026-07-28 本地 edema 行；7-28 前 MoSAIC 归属的 OrganAgent edema 最好为 0.6255，literal all-OrganAgent 7-28 前最好为 0.6691 但不作为 MoSAIC 结论。",
+  "blocked_or_failure_reason": "none",
+  "slurm_terminal_status": "not_applicable_no_slurm_jobs",
+  "evidence_paths": [
+    "results/20260801_mosaic_leaderboard_live_snapshot/leaderboard_snapshot.md",
+    "results/leaderboard/care2026_myocardium_latest.json",
+    "results/leaderboard/care2026_myocardium_myops_scar_latest.csv",
+    "results/leaderboard/care2026_myocardium_myops_edema_latest.csv",
+    "results/leaderboard/care2026_myocardium_myocardium_cinemyops_latest.csv"
+  ],
+  "next_step": "后续引用 MoSAIC leaderboard edema 时使用 0.6255，除非用户另行确认 May 2026 OrganAgent 行也可归入 MoSAIC。"
+}
