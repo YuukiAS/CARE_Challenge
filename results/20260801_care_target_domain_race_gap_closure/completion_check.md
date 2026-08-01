@@ -32,12 +32,14 @@
 - m2_step_checkpoints: `COMPLETE_STEP00500_TO_STEP06000_FOLD2_FOLD3`
 - checkpoint_asset_manifest: `results/20260801_care_target_domain_race_gap_closure/checkpoint_reload_audit.json`
 - checkpoint_asset_manifest_status: `PASS`
-- checkpoint_asset_manifest_scope: `exists_size_mtime_step_presence_only; torch_load_and_sha256_skipped_for_speed`
+- checkpoint_asset_manifest_scope: `all_four_lanes_step_grid_complete; final_policy_torch_load_and_sha256_completed`
+- checkpoint_asset_manifest_load_policy: `final`
+- checkpoint_asset_manifest_hash_policy: `final`
 - m1_m3_step_checkpoints: `COMPLETE_500_STEP_GRID`
 - m0r_step_checkpoints: `COMPLETE_500_STEP_GRID_AFTER_INTERACTIVE_RERUN`
 - m0r_scheduler_optimizer_status: `AdamW_WarmupCosine_per_optimizer_step_250_warmup_min_lr_1e-6`
 - m0r_repaired_rerun_log: `logs/M0RGapLane_61220581_20260801_014519.log`
 - m0r_repaired_receipts: `results/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/fold2_training_receipt.json,results/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/fold3_training_receipt.json`
 - m0r_repaired_runtime_warning: `nonfatal pymp temp cleanup OSError Errno16 during fold2 finalization; receipt and fold3 completion succeeded`
-- remaining_required_work: `bounded_checkpoint_sha_reload_if_required,full_volume_inner_selection,outer_replay,aggregation,atlas,mapper,strict_final_validator,final_commit_push,notification`
+- remaining_required_work: `full_volume_inner_selection,outer_replay,aggregation,atlas,mapper,strict_final_validator,final_commit_push,notification`
 - validator_required_before_final_completion: `scripts/validation/validate_target_domain_race_gap_closure.py --phase final`

@@ -1,12 +1,12 @@
 # Planner Gap Resolution Handoff
 
-当前不是“四个模型都不行”。训练层面 M0R/M1/M2/M3 的 fold2/fold3 都已经跑完；M2 之前没跑是因为官方 I-MMSeg 权重/ViT 资产没有落地，合同禁止用 rank-channel 或空模型替代。现在两个公开核心权重已经下载并记录 SHA256，Dataset501 CARE adapter preflight 已在 existing `61220581 / htzhulab` 上通过，正式 fold2/fold3 lane job `61627615` 已在 `htzhulab / g1807htzh01` `COMPLETED 0:0`。M0R 的关键实现缺口已经补过一轮：新的 interactive rerun 使用 AdamW、250 optimizer-step warmup、per-step cosine decay 到 `1e-6`，并写出 fold2/fold3 的 `checkpoint_step00500.pth` 到 `checkpoint_step04000.pth`。现在仍不能写 final complete，真正剩下的是合同后半段：checkpoint 深审计、full-volume inner/outer evaluation、统一 aggregation、atlas、mapper 和 final validator。
+当前不是“四个模型都不行”。训练层面 M0R/M1/M2/M3 的 fold2/fold3 都已经跑完；M2 之前没跑是因为官方 I-MMSeg 权重/ViT 资产没有落地，合同禁止用 rank-channel 或空模型替代。现在两个公开核心权重已经下载并记录 SHA256，Dataset501 CARE adapter preflight 已在 existing `61220581 / htzhulab` 上通过，正式 fold2/fold3 lane job `61627615` 已在 `htzhulab / g1807htzh01` `COMPLETED 0:0`。M0R 的关键实现缺口已经补过一轮：新的 interactive rerun 使用 AdamW、250 optimizer-step warmup、per-step cosine decay 到 `1e-6`，并写出 fold2/fold3 的 `checkpoint_step00500.pth` 到 `checkpoint_step04000.pth`。四 lane checkpoint grid 已完整，final-only torch.load/SHA256 审计已 PASS。现在仍不能写 final complete，真正剩下的是合同后半段：full-volume inner/outer evaluation、统一 aggregation、atlas、mapper 和 final validator。
 
 ## Current Published State
 
 - repo: `YuukiAS/CARE_Challenge`
 - branch: `main`
-- latest pushed commit at this handoff: `91f466d` for M0R warmup-cosine/checkpoint-cadence code repair; this packet update is pending commit/push
+- latest pushed commit at this handoff: `75fa8f1` for M2 I-MMSeg CARE adapter/training evidence; checkpoint audit update is pending commit/push
 - result root: `results/20260801_care_target_domain_race_gap_closure`
 - interactive allocation still verified through `htzhulab`: `61220581 / g1807htzh01 / NVIDIA H100 NVL`
 - latest training/accounting commit before M0R rerun: `3c1c348`
@@ -102,13 +102,12 @@ CARE adapter preflight and formal job:
 
 Evidence:
 - `fold2_training_receipt.json` and `fold3_training_receipt.json` now record `scheduler: WarmupCosine_per_optimizer_step`, `warmup_optimizer_steps: 250`, `cosine_min_lr: 0.000001`, and `checkpoint_every_optimizer_steps: 500`.
-- `checkpoint_reload_audit.json` now reports `status: PASS` with no M0R missing expected step checkpoints.
+- `checkpoint_reload_audit.json` now reports `status: PASS`, `load_policy: final`, and `hash_policy: final`; M0R/M1/M2/M3 expected 500-step checkpoint grids are complete, and final/max-step checkpoints were torch-loaded and hashed.
 - Runtime log: `logs/M0RGapLane_61220581_20260801_014519.log`.
 - Runtime note: fold2 finalization emitted a nonfatal `/users/a/e/aereinh/.tmp/codex-care/pymp-*` cleanup `OSError: [Errno 16] Device or resource busy`; the fold2 receipt was written and fold3 completed.
 - The shared manifest currently records `step/case_id/input_order/shared_by_lanes`; it does not record crop coordinates, sampling stratum, augmentation values, and seed, and the nnU-Net dataloader does not consume it as a deterministic batch schedule.
 
 Remaining implementation plan:
-- Run bounded torch reload/SHA256 audit over selected or all checkpoint-step files as final runtime permits.
 - Implement full-volume inference/evaluation over the eight 500-step M0R checkpoints for fold2/fold3 inner cases, then freeze checkpoint choice without using outer.
 - Either implement manifest-bound batch sampling for M0R/M3 or record a planner-approved contract exception. If implementing, bind nnU-Net case order/crop RNG to the existing fold manifest and expand the manifest with crop coordinate, sampling stratum, augmentation parameters, and seed.
 
@@ -137,7 +136,6 @@ Evidence:
 
 Repair plan:
 - Verify text feature files already present under `third_party/I_MMSeg_PINNED/text_features/`.
-- Verify checkpoint reloadability and hashes.
 - Implement full-volume M2 inference/evaluation using inner cases only before global source selection.
 
 ### Gap 4: M3 training ran, but architecture/loss fidelity is partial

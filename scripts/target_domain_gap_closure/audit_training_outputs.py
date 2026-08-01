@@ -106,7 +106,7 @@ def discover_lane_checkpoints(lane: str, fold: int) -> list[Path]:
 
 
 def expected_steps(lane: str) -> list[int]:
-    if lane == "m1_myopsnet_l_care":
+    if lane in {"m1_myopsnet_l_care", "m2_i_mmseg_care"}:
         return list(range(500, 6001, 500))
     if lane in {"m0r_faithful_control", "m3_care_tds"}:
         return list(range(500, 4001, 500))
@@ -141,6 +141,7 @@ def audit(load_policy: str, hash_policy: str) -> dict[str, Any]:
     lanes = {
         "m0r_faithful_control": "M0R_FAITHFUL_CONTROL",
         "m1_myopsnet_l_care": "M1_MYOPSNET_L_CARE",
+        "m2_i_mmseg_care": "M2_I_MMSEG_CARE",
         "m3_care_tds": "M3_CARE_TDS",
     }
     lane_reports: dict[str, Any] = {}

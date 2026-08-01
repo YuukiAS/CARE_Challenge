@@ -8,7 +8,7 @@
 
 截至 2026-08-01 当前复查，M3 fold2/fold3 已在 `61220581` 中完成 4000-step 训练；M0R 旧 fold2 job `61565286` 与 fold3 takeover 训练已被新的 faithful rerun supersede，新的 M0R fold2+fold3 均在 `61220581 / htzhulab / g1807htzh01` interactive allocation 内完成 4000 optimizer steps，训练 receipt 记录 `AdamW`、`WarmupCosine_per_optimizer_step`、250-step warmup、cosine min lr `1e-6`，并写出每 500 step checkpoint grid。旧 M1 fold jobs `61565288`/`61565289` 因资源合同不符已取消；替换后的 12 CPU/96G/12h lane-level job `61576324` 已 `COMPLETED 0:0` 并完成 fold2+fold3。interactive takeover monitor PID `4185840` 的最终含义是 `M1_QUEUE_COMPLETED_NO_TAKEOVER_NEEDED`：它没有取消 M1，因为 M1 已经启动并随后正常完成。M2 source 已 pin 到 `third_party/I_MMSeg_PINNED`，Google Drive 的两个核心公开权重 `R50-ViT-B_16.npz` 和 `epoch_299.pth` 已下载并记录 SHA256；released `epoch_299.pth` GPU smoke PASS；MyoPS380 dataset 没有下载也不得混入 CARE 训练。
 
-现在剩余的不是“再把四个模型训练一遍”，而是目标合同后半段：bounded checkpoint sha/reload、inner full-volume selection、outer deterministic replay、统一 aggregation、失败/缺口 atlas、mapper 更新、strict final validator、最终轻量 commit/push 和 notifier。M2 的外部核心权重缺口已经补齐，Dataset501 CARE adapter preflight 已在 existing `61220581 / htzhulab` 上通过；formal fold2/fold3 lane job `61627615` 已在 `htzhulab / g1807htzh01` `COMPLETED 0:0`，log 为 `logs/M2IMM_61627615_20260801_031043.log`。M0R 的训练协议缺口已经修复，但仍缺 full-volume inner selection、selected checkpoint reload/SHA 和 manifest-bound crop/augmentation fidelity 闭环；M1/M2/M3 也仍缺合同级评价与若干实现 fidelity 差距。最新 checkpoint asset manifest 已写入 `checkpoint_reload_audit.json`：M0R/M1/M3 的 500-step checkpoint grid 均齐全，快速存在性审计状态为 `PASS`；M2 step00500-step06000 checkpoint grid 也已完整，深度 torch reload/SHA256 仍需在 finalizer 阶段补齐或明确范围。
+现在剩余的不是“再把四个模型训练一遍”，而是目标合同后半段：inner full-volume selection、outer deterministic replay、统一 aggregation、失败/缺口 atlas、mapper 更新、strict final validator、最终轻量 commit/push 和 notifier。M2 的外部核心权重缺口已经补齐，Dataset501 CARE adapter preflight 已在 existing `61220581 / htzhulab` 上通过；formal fold2/fold3 lane job `61627615` 已在 `htzhulab / g1807htzh01` `COMPLETED 0:0`，log 为 `logs/M2IMM_61627615_20260801_031043.log`。M0R 的训练协议缺口已经修复，但仍缺 full-volume inner selection 和 manifest-bound crop/augmentation fidelity 闭环；M1/M2/M3 也仍缺合同级评价与若干实现 fidelity 差距。最新 checkpoint asset manifest 已写入 `checkpoint_reload_audit.json`：M0R/M1/M2/M3 的 500-step checkpoint grid 均齐全，`load_policy: final` 与 `hash_policy: final` 审计状态为 `PASS`，最终/最大 step checkpoint 已完成 torch.load 与 SHA256 记录。
 
 ```text
 state_id: care_target_domain_gap_closure_active_after_interactive_recovery_20260801
@@ -46,7 +46,7 @@ M2_formal_job: 61627615 htzhulab g1807htzh01 COMPLETED_0_0
 M2_formal_log: logs/M2IMM_61627615_20260801_031043.log
 M2_training_accounting: results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/training_accounting.csv
 M2_training_receipts: results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/fold2_training_receipt.json, results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/fold3_training_receipt.json
-remaining_required_work: checkpoint_reload_hash_audit, inner_full_volume_selection, outer_replay, aggregation, atlas, mapper, strict_final_validator, final_commit_push, notification
+remaining_required_work: inner_full_volume_selection, outer_replay, aggregation, atlas, mapper, strict_final_validator, final_commit_push, notification
 checkpoint_asset_manifest: results/20260801_care_target_domain_race_gap_closure/checkpoint_reload_audit.json
 planner_gap_resolution_handoff: results/20260801_care_target_domain_race_gap_closure/planner_gap_resolution_handoff.md
 M0R_M1_M3_step_checkpoint_grid: COMPLETE
