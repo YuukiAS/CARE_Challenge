@@ -1,0 +1,27 @@
+{
+  "created_at_utc": "2026-08-01T13:33:16.646115+00:00",
+  "task_key": "20260801_care_test_docker_rootless_unblock",
+  "state": "blocked",
+  "terminal_state": "ROOTLESS_DOCKER_PREREQUISITE_BLOCKED",
+  "controller_verification_decision": "OPERATIONALLY_BLOCKED",
+  "rootless_prerequisite_decision": "FAIL",
+  "failed_hard_requirements": [
+    "subuid_at_least_65536",
+    "subgid_at_least_65536"
+  ],
+  "docker_install_executed": false,
+  "docker_build_complete": false,
+  "docker_run_complete": false,
+  "docker_export_complete": false,
+  "fresh_nnunet_replay_complete": false,
+  "fresh_mosaic_replay_complete": false,
+  "host_docker_equivalence_complete": false,
+  "new_training_authorized": false,
+  "docker_upload_authorized": false,
+  "organizer_email_send_authorized": false,
+  "hosted_metric_claim_authorized": false,
+  "slurm_jobs": [],
+  "slurm_terminal_status": "not used; blocked before inference or Slurm submission",
+  "aggregation_complete": true,
+  "validator_phase_final": "ready_to_validate_blocked_packet"
+}

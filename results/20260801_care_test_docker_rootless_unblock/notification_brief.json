@@ -1,0 +1,18 @@
+{
+  "task_name": "20260801_care_test_docker_rootless_unblock",
+  "final_status": "blocked",
+  "commit_status": "tracked blocked packet committed on main before notification",
+  "push_status": "origin/main remote SHA verified before notification",
+  "key_conclusion": "rootless Docker cannot be installed on this host until /etc/subuid and /etc/subgid assign at least 65536 subordinate IDs to aereinh; Docker images and exports were not produced.",
+  "blocked_or_failure_reason": "Missing current-user subordinate uid/gid ranges: subuid_total=0 and subgid_total=0.",
+  "slurm_terminal_status": "not used; stopped before inference execution",
+  "evidence_paths": [
+    "results/20260801_care_test_docker_rootless_unblock/rootless_prerequisite_audit.json",
+    "results/20260801_care_test_docker_rootless_unblock/rootless_storage_receipt.json",
+    "results/20260801_care_test_docker_rootless_unblock/rootless_install_receipt.json",
+    "results/20260801_care_test_docker_rootless_unblock/rootless_admin_fix_required.md",
+    "results/20260801_care_test_docker_rootless_unblock/controller_report.md",
+    "results/20260801_care_test_docker_rootless_unblock/strict_validator_report.json"
+  ],
+  "next_step": "Ask the system administrator to add valid /etc/subuid and /etc/subgid ranges for aereinh, then rerun this controller from W1."
+}

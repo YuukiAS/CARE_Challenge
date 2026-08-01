@@ -1,0 +1,3 @@
+timestamp_utc,phase,git_head,decision,next_action,evidence
+2026-08-01T13:33:16.646115+00:00,W0_BOOTSTRAP,7603b111df77b07a3e2aabc5455995b37b7e5407,BOOTSTRAP_COMPLETE,RUN_ROOTLESS_PREREQUISITES,controller_context.json
+2026-08-01T13:33:16.646115+00:00,W1_ROOTLESS_PREREQUISITE_AUDIT,7603b111df77b07a3e2aabc5455995b37b7e5407,ROOTLESS_DOCKER_PREREQUISITE_BLOCKED,COMMIT_PUSH_NOTIFY_BLOCKED_PACKET,rootless_prerequisite_audit.json;rootless_storage_receipt.json;rootless_install_receipt.json

@@ -1,0 +1,38 @@
+{
+  "created_at_utc": "2026-08-01T13:28:00.564277+00:00",
+  "task_key": "20260801_care_test_docker_rootless_unblock",
+  "storage_candidates": [
+    {
+      "path": "/tmp/aereinh/care-rootless-docker-data",
+      "writable": true,
+      "findmnt_returncode": 0,
+      "findmnt_stdout": "{\n   \"filesystems\": [\n      {\n         \"target\": \"/tmp\",\n         \"source\": \"/dev/mapper/vg01-tmp\",\n         \"fstype\": \"xfs\",\n         \"options\": \"rw,relatime,attr2,inode64,logbufs=8,logbsize=32k,noquota\"\n      }\n   ]\n}",
+      "findmnt_stderr": "",
+      "fstype": "xfs",
+      "source": "/dev/mapper/vg01-tmp",
+      "target": "/tmp",
+      "local_layer_ok": true
+    },
+    {
+      "path": "/scratch/aereinh/care-rootless-docker-data",
+      "writable": false,
+      "error": "PermissionError(13, 'Permission denied')",
+      "findmnt_returncode": 1,
+      "findmnt_stdout": "",
+      "findmnt_stderr": ""
+    },
+    {
+      "path": "/users/a/e/aereinh/.tmp/docker-data",
+      "writable": true,
+      "findmnt_returncode": 0,
+      "findmnt_stdout": "{\n   \"filesystems\": [\n      {\n         \"target\": \"/users\",\n         \"source\": \"rc-isilon2-ll.its.unc.edu:/ifs/rcisilon/users\",\n         \"fstype\": \"nfs\",\n         \"options\": \"rw,relatime,vers=3,rsize=131072,wsize=524288,namlen=255,hard,proto=tcp,timeo=600,retrans=2,sec=sys,mountaddr=172.26.112.207,mountvers=3,mountport=300,mountproto=tcp,local_lock=none,addr=172.26.112.207\"\n      }\n   ]\n}",
+      "findmnt_stderr": "",
+      "fstype": "nfs",
+      "source": "rc-isilon2-ll.its.unc.edu:/ifs/rcisilon/users",
+      "target": "/users",
+      "local_layer_ok": false
+    }
+  ],
+  "selected_docker_data_root": "/tmp/aereinh/care-rootless-docker-data",
+  "decision": "PASS"
+}

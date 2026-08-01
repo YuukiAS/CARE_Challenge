@@ -1,0 +1,6 @@
+{
+  "status": "PASS",
+  "task_key": "20260801_care_test_docker_rootless_unblock",
+  "terminal_state": "ROOTLESS_DOCKER_PREREQUISITE_BLOCKED",
+  "errors": []
+}

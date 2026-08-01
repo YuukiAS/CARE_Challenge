@@ -1,0 +1,226 @@
+{
+  "created_at_utc": "2026-08-01T13:28:00.564277+00:00",
+  "task_key": "20260801_care_test_docker_rootless_unblock",
+  "user": "aereinh",
+  "paths": {
+    "TASK_RUNTIME": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_rootless_unblock",
+    "DOCKER_LOCAL": "/users/a/e/aereinh/.local/docker-rootless",
+    "DOCKER_DIST": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_rootless_unblock/dist",
+    "ROOTLESS_RUN": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_rootless_unblock/rootless-run"
+  },
+  "commands": {
+    "uname_a": {
+      "cmd": [
+        "uname",
+        "-a"
+      ],
+      "returncode": 0,
+      "stdout": "Linux c151407.ll.unc.edu 5.14.0-611.16.1.el9_7.x86_64 #1 SMP PREEMPT_DYNAMIC Sun Dec 7 05:52:24 EST 2025 x86_64 x86_64 x86_64 GNU/Linux",
+      "stderr": ""
+    },
+    "uname_m": {
+      "cmd": [
+        "uname",
+        "-m"
+      ],
+      "returncode": 0,
+      "stdout": "x86_64",
+      "stderr": ""
+    },
+    "os_release": {
+      "cmd": [
+        "bash",
+        "-lc",
+        "cat /etc/os-release"
+      ],
+      "returncode": 0,
+      "stdout": "NAME=\"Red Hat Enterprise Linux\"\nVERSION=\"9.7 (Plow)\"\nID=\"rhel\"\nID_LIKE=\"fedora\"\nVERSION_ID=\"9.7\"\nPLATFORM_ID=\"platform:el9\"\nPRETTY_NAME=\"Red Hat Enterprise Linux 9.7 (Plow)\"\nANSI_COLOR=\"0;31\"\nLOGO=\"fedora-logo-icon\"\nCPE_NAME=\"cpe:/o:redhat:enterprise_linux:9::baseos\"\nHOME_URL=\"https://www.redhat.com/\"\nDOCUMENTATION_URL=\"https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9\"\nBUG_REPORT_URL=\"https://issues.redhat.com/\"\n\nREDHAT_BUGZILLA_PRODUCT=\"Red Hat Enterprise Linux 9\"\nREDHAT_BUGZILLA_PRODUCT_VERSION=9.7\nREDHAT_SUPPORT_PRODUCT=\"Red Hat Enterprise Linux\"\nREDHAT_SUPPORT_PRODUCT_VERSION=\"9.7\"",
+      "stderr": ""
+    },
+    "id": {
+      "cmd": [
+        "id"
+      ],
+      "returncode": 0,
+      "stdout": "uid=397557(aereinh) gid=100(users) groups=100(users),3419(rc_htzhu_psx),3514(rc_tengfei_psx),3756(rc_gaussian_psx),6000(rc_dom_longleafusers),6159(rc_htzhu_pi),10060(bios_groups_everyone_psx),10072(bios_groups_students_psx),10213(bios_logon_local_psx),10214(bios_logon_xen_psx)",
+      "stderr": ""
+    },
+    "command_docker": {
+      "cmd": [
+        "bash",
+        "-lc",
+        "command -v docker"
+      ],
+      "returncode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    "command_dockerd_rootless": {
+      "cmd": [
+        "bash",
+        "-lc",
+        "command -v dockerd-rootless.sh"
+      ],
+      "returncode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    "command_rootlesskit": {
+      "cmd": [
+        "bash",
+        "-lc",
+        "command -v rootlesskit"
+      ],
+      "returncode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    "command_slirp4netns": {
+      "cmd": [
+        "bash",
+        "-lc",
+        "command -v slirp4netns"
+      ],
+      "returncode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    "command_fuse_overlayfs": {
+      "cmd": [
+        "bash",
+        "-lc",
+        "command -v fuse-overlayfs"
+      ],
+      "returncode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    "command_newuidmap": {
+      "cmd": [
+        "bash",
+        "-lc",
+        "command -v newuidmap"
+      ],
+      "returncode": 0,
+      "stdout": "/usr/bin/newuidmap",
+      "stderr": ""
+    },
+    "command_newgidmap": {
+      "cmd": [
+        "bash",
+        "-lc",
+        "command -v newgidmap"
+      ],
+      "returncode": 0,
+      "stdout": "/usr/bin/newgidmap",
+      "stderr": ""
+    },
+    "subuid": {
+      "cmd": [
+        "bash",
+        "-lc",
+        "grep -E \"^(aereinh|[0-9]+):\" /etc/subuid || true"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "subgid": {
+      "cmd": [
+        "bash",
+        "-lc",
+        "grep -E \"^(aereinh|[0-9]+):\" /etc/subgid || true"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "unshare_userns": {
+      "cmd": [
+        "unshare",
+        "-Ur",
+        "true"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "findmnt_users": {
+      "cmd": [
+        "findmnt",
+        "-T",
+        "/users/a/e/aereinh"
+      ],
+      "returncode": 0,
+      "stdout": "TARGET SOURCE                                        FSTYPE OPTIONS\n/users rc-isilon2-ll.its.unc.edu:/ifs/rcisilon/users nfs    rw,relatime,vers=3,rsize=131072,wsize=524288,namlen=255,hard,proto=tcp,timeo=600,retrans=2,sec=sys,mountaddr=172.26.112.207,mountvers=3,mountport=300,mountproto=tcp,local_lock=none,addr=172.26.112.207",
+      "stderr": ""
+    },
+    "findmnt_tmp": {
+      "cmd": [
+        "findmnt",
+        "-T",
+        "/tmp"
+      ],
+      "returncode": 0,
+      "stdout": "TARGET SOURCE               FSTYPE OPTIONS\n/tmp   /dev/mapper/vg01-tmp xfs    rw,relatime,attr2,inode64,logbufs=8,logbsize=32k,noquota",
+      "stderr": ""
+    },
+    "cgroup": {
+      "cmd": [
+        "bash",
+        "-lc",
+        "cat /proc/self/cgroup"
+      ],
+      "returncode": 0,
+      "stdout": "0::/system.slice/slurmstepd.scope/job_61350432/step_extern/user/task_0",
+      "stderr": ""
+    }
+  },
+  "hard_requirements": {
+    "arch_x86_64_or_amd64": true,
+    "unprivileged_user_namespace_works": true,
+    "newuidmap_exists": true,
+    "newgidmap_exists": true,
+    "subuid_at_least_65536": false,
+    "subgid_at_least_65536": false,
+    "writable_local_docker_data_root": true
+  },
+  "subuid_total": 0,
+  "subuid_rows": [],
+  "subgid_total": 0,
+  "subgid_rows": [],
+  "storage_candidates": [
+    {
+      "path": "/tmp/aereinh/care-rootless-docker-data",
+      "writable": true,
+      "findmnt_returncode": 0,
+      "findmnt_stdout": "{\n   \"filesystems\": [\n      {\n         \"target\": \"/tmp\",\n         \"source\": \"/dev/mapper/vg01-tmp\",\n         \"fstype\": \"xfs\",\n         \"options\": \"rw,relatime,attr2,inode64,logbufs=8,logbsize=32k,noquota\"\n      }\n   ]\n}",
+      "findmnt_stderr": "",
+      "fstype": "xfs",
+      "source": "/dev/mapper/vg01-tmp",
+      "target": "/tmp",
+      "local_layer_ok": true
+    },
+    {
+      "path": "/scratch/aereinh/care-rootless-docker-data",
+      "writable": false,
+      "error": "PermissionError(13, 'Permission denied')",
+      "findmnt_returncode": 1,
+      "findmnt_stdout": "",
+      "findmnt_stderr": ""
+    },
+    {
+      "path": "/users/a/e/aereinh/.tmp/docker-data",
+      "writable": true,
+      "findmnt_returncode": 0,
+      "findmnt_stdout": "{\n   \"filesystems\": [\n      {\n         \"target\": \"/users\",\n         \"source\": \"rc-isilon2-ll.its.unc.edu:/ifs/rcisilon/users\",\n         \"fstype\": \"nfs\",\n         \"options\": \"rw,relatime,vers=3,rsize=131072,wsize=524288,namlen=255,hard,proto=tcp,timeo=600,retrans=2,sec=sys,mountaddr=172.26.112.207,mountvers=3,mountport=300,mountproto=tcp,local_lock=none,addr=172.26.112.207\"\n      }\n   ]\n}",
+      "findmnt_stderr": "",
+      "fstype": "nfs",
+      "source": "rc-isilon2-ll.its.unc.edu:/ifs/rcisilon/users",
+      "target": "/users",
+      "local_layer_ok": false
+    }
+  ],
+  "selected_docker_data_root": "/tmp/aereinh/care-rootless-docker-data",
+  "rootless_prerequisite_decision": "FAIL"
+}

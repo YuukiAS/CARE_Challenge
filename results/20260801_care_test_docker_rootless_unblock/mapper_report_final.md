@@ -1,0 +1,11 @@
+当前阻塞发生在 Docker runtime 前置条件层，尚未进入模型图、推理图、镜像入口或输出格式变更。wiki 只需要记录本任务的运行时阻塞状态；没有新的模型组件被验证或前移为候选。
+
+# Mapper Report Final
+
+mapper_status: COMPLETE_BLOCKED_RUNTIME_PREREQUISITE
+architecture_change_detected: false
+model_source_changed: false
+docker_source_changed: false
+verified_runtime_path: none
+evidence_status: blocked_before_docker_runtime
+final_output_effect_evidence: not_started_due_to_rootless_prerequisite_failure

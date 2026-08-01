@@ -1,5 +1,49 @@
 # CARE 架构 Wiki
 
+architecture_version: `care-test-docker-rootless-prerequisite-blocked-20260801`
+latest_verified_runtime: `rootless Docker prerequisite audit completed; official rootless installer downloaded but not executed because /etc/subuid and /etc/subgid have no current-user range for aereinh`
+latest_scientific_status: `ROOTLESS_DOCKER_PREREQUISITE_BLOCKED: Docker packaging did not reach inference, image build, export, upload, or hosted metric stages`
+latest_controller_task: `20260801_care_test_docker_rootless_unblock`
+route_status: `MAIN_ONLY_TEST_DOCKER_RUNTIME_BLOCKED_RETURN_TO_PLANNER`
+
+当前机器真值是 `prompts/routes/handoffs/CURRENT.md`。这次测试 Docker unblock 已经把旧的“docker command not found”粗粒度阻塞细化为 rootless Docker 主机前提阻塞：user namespace、uidmap 二进制和本地 `/tmp` data root 可用，但 `/etc/subuid` 与 `/etc/subgid` 没有给 `aereinh` 配置至少 65536 的 subordinate ID 范围。由于任务禁止 sudo 和系统级安装，Docker build/load/run/save、CPU smoke、host/Docker 等价验证、tar.gz 导出和邮件草稿都没有启动。
+
+关键证据：
+
+```text
+results/20260801_care_test_docker_rootless_unblock/rootless_prerequisite_audit.json
+results/20260801_care_test_docker_rootless_unblock/rootless_storage_receipt.json
+results/20260801_care_test_docker_rootless_unblock/rootless_install_receipt.json
+results/20260801_care_test_docker_rootless_unblock/controller_report.md
+results/20260801_care_test_docker_rootless_unblock/strict_validator_report.json
+```
+
+## 2026-08-01 测试 Docker rootless 前提阻塞
+
+```text
+result_root:
+results/20260801_care_test_docker_rootless_unblock
+
+terminal_state:
+ROOTLESS_DOCKER_PREREQUISITE_BLOCKED
+
+hard requirement failure:
+subuid_total 0
+subgid_total 0
+
+passed host checks:
+unshare -Ur true passed
+newuidmap exists
+newgidmap exists
+/tmp/aereinh/care-rootless-docker-data selected on xfs
+
+official installer:
+downloaded and SHA256 recorded
+not executed after hard prerequisite failure
+```
+
+不得把该状态解释成 Docker submission readiness，也不得上传 Docker、给组织方发邮件或作 hosted metric claim。管理员补齐 `/etc/subuid` 和 `/etc/subgid` 后，才能从该 controller 合同 W1 重新跑。
+
 architecture_version: `care-four-lane-evidence-reconciled-no-candidate-20260801`
 latest_verified_runtime: `M0R/M1/M2/M3 frozen fold2+fold3 evidence reconciled; same-case stock comparison complete; M2 outer replay complete; physical-space metric correction complete`
 latest_scientific_status: `FOUR_LANE_EVIDENCE_CORRECTED_NO_CANDIDATE: M0R did not beat same-case stock on outer scar or edema, and M2 did not pass scar/edema packaging gates`

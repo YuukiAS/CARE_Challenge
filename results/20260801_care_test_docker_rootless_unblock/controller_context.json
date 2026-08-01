@@ -1,0 +1,48 @@
+{
+  "created_at_utc": "2026-08-01T13:33:16.646115+00:00",
+  "task_key": "20260801_care_test_docker_rootless_unblock",
+  "phase": "W1_ROOTLESS_PREREQUISITE_AUDIT_TERMINAL",
+  "git_head": "7603b111df77b07a3e2aabc5455995b37b7e5407",
+  "origin_main": "7603b111df77b07a3e2aabc5455995b37b7e5407",
+  "task_prompt_path": "prompts/tasks/20260801_care_test_docker_rootless_unblock_controller.md",
+  "task_prompt_sha256": "8e5727bc0b761f1de7bd176abcf9a00107aa8654cbe4b273ba172ccbfdc1b704",
+  "AGENTS_sha256": "6d1ed9fbd6726e2381c6969d6ea720ecd1f504b1f75d9d383e59ffa6f4517dde",
+  "slurm_skill_sha256": "2b7e87f58b275b50dc9d4a9377f4e2518c3a390c806e400cb32e07ebac3f83a6",
+  "files_read": [
+    "START_HERE_FOR_GPT.md",
+    "GPT_PLANNER_CARE_PROTOCOL.md",
+    "AGENTS.md",
+    "prompts/FINAL_OUTPUT_READABILITY_POLICY.md",
+    "prompts/AGENT_FLOW_V2_PROTOCOL.md",
+    "prompts/HANDOFF_GATE_POLICY.md",
+    "prompts/GPT_HARD_GATE_PROMPT.md",
+    "prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md",
+    "prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md",
+    "prompts/routes/handoffs/CURRENT.md",
+    "wiki/README.md",
+    ".agents/skills/care-mapper/SKILL.md",
+    "prompts/tasks/20260801_care_test_docker_packaging_controller.md",
+    "results/20260801_care_test_docker_packaging/nnunet_edema_hosted_truth_audit.json",
+    "results/20260801_care_test_docker_packaging/production_asset_manifest.json"
+  ],
+  "visual_srr_gate": {
+    "project_background_visual_access": "unavailable_in_local_codex_environment",
+    "local_image_paths_are_canonical_names_not_visual_entrypoint": true,
+    "claim": "not_used_for_scientific_route_planning"
+  },
+  "rootless_decision": "FAIL",
+  "hard_requirements": {
+    "arch_x86_64_or_amd64": true,
+    "unprivileged_user_namespace_works": true,
+    "newuidmap_exists": true,
+    "newgidmap_exists": true,
+    "subuid_at_least_65536": false,
+    "subgid_at_least_65536": false,
+    "writable_local_docker_data_root": true
+  },
+  "selected_docker_data_root": "/tmp/aereinh/care-rootless-docker-data",
+  "installer_downloaded": true,
+  "installer_sha256": "f019d4d3ef4efe3c8545f177e134d88beec0fae46e9ea27374ddd5e98d616df7",
+  "downstream_waves_started": false,
+  "downstream_stop_reason": "Rootless Docker hard prerequisite failed before image build/replay waves: no current-user /etc/subuid or /etc/subgid range >=65536."
+}

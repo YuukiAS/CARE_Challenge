@@ -1,5 +1,47 @@
 # CARE 当前开发状态
 
+## 2026-08-01 最新机器真值：测试 Docker rootless unblock 在主机 subuid/subgid 前提处阻塞
+
+本次没有停在“没有 docker 命令”的旧判断上，而是按新合同完成了 rootless Docker 前置审计并下载校验了官方 rootless installer。服务器允许 `unshare -Ur true`，`newuidmap/newgidmap` 存在，本地 `/tmp` 是可用的 xfs Docker data root；真正阻塞点是 `/etc/subuid` 和 `/etc/subgid` 没有给当前用户 `aereinh` 分配至少 65536 的 subordinate uid/gid 范围。任务禁止 sudo 和系统级安装，因此不能修改这两个系统文件，也不能把 Apptainer/Singularity 替代成 Docker。
+
+```text
+state_id: care_test_docker_rootless_prerequisite_blocked_20260801
+active_development_branch: main
+active_worktree: /users/a/e/aereinh/CARE
+single_active_scientific_line: CARE_TEST_DOCKER_ROOTLESS_UNBLOCK_RETURN_TO_PLANNER
+result_root: results/20260801_care_test_docker_rootless_unblock
+terminal_state: ROOTLESS_DOCKER_PREREQUISITE_BLOCKED
+controller_verification_decision: OPERATIONALLY_BLOCKED
+unprivileged_user_namespace_works: true
+newuidmap_exists: true
+newgidmap_exists: true
+subuid_total: 0
+subgid_total: 0
+selected_docker_data_root: /tmp/aereinh/care-rootless-docker-data
+official_rootless_installer_downloaded: true
+official_rootless_installer_executed: false
+docker_images_built: false
+docker_tarballs_exported: false
+new_training_authorized: false
+validation_upload_authorized: false
+docker_upload_authorized: false
+organizer_email_send_authorized: false
+hosted_metric_claim_authorized: false
+```
+
+关键证据：
+
+```text
+results/20260801_care_test_docker_rootless_unblock/rootless_prerequisite_audit.json
+results/20260801_care_test_docker_rootless_unblock/rootless_storage_receipt.json
+results/20260801_care_test_docker_rootless_unblock/rootless_install_receipt.json
+results/20260801_care_test_docker_rootless_unblock/rootless_admin_fix_required.md
+results/20260801_care_test_docker_rootless_unblock/controller_report.md
+results/20260801_care_test_docker_rootless_unblock/strict_validator_report.json
+```
+
+下一步只允许在管理员为 `aereinh` 配置有效 `/etc/subuid` 和 `/etc/subgid` 后，从该合同 W1 重新执行。当前不得上传 Docker、不得给组织方发邮件、不得声称测试 Docker 已可提交。
+
 ## 2026-08-01 最新机器真值：四模型证据纠偏后无本地候选
 
 本次重新评价把旧结论中最关键的漏洞补上了：M0R 必须和同病例 stock nnU-Net 比较，M2 不能因为 inner selection 失败就省略 outer 评价，距离和小病灶指标也不能再用体素单位冒充物理单位。纠偏后，M0R 在真正未见的 fold2+fold3 outer 病例上没有超过同病例 stock；M2 的 scar 明显低于 stock，edema 虽略高但没有达到候选门槛且损害比例过高。因此旧的 scar-only 候选说法已撤销，当前应回到 Planner 决定下一步，不得上传 validation、Docker 或声称 hosted 指标。

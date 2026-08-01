@@ -1,0 +1,64 @@
+{
+  "created_at_utc": "2026-08-01T13:29:16.487014+00:00",
+  "task_key": "20260801_care_test_docker_rootless_unblock",
+  "url": "https://get.docker.com/rootless",
+  "download_command": [
+    "curl",
+    "-fL",
+    "--retry",
+    "3",
+    "--retry-delay",
+    "3",
+    "https://get.docker.com/rootless",
+    "-o",
+    "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_rootless_unblock/docker-rootless-install.sh"
+  ],
+  "download_returncode": 0,
+  "download_stdout": "",
+  "download_stderr_tail": "  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\n  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\n100  8645  100  8645    0     0  24215      0 --:--:-- --:--:-- --:--:-- 24215",
+  "script_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_rootless_unblock/docker-rootless-install.sh",
+  "script_exists": true,
+  "install_executed": false,
+  "script_sha256": "f019d4d3ef4efe3c8545f177e134d88beec0fae46e9ea27374ddd5e98d616df7",
+  "script_head_40": "#!/bin/sh\nset -e\n# Docker CE for Linux installation script (Rootless mode)\n#\n# See https://docs.docker.com/go/rootless/ for the\n# installation steps.\n#\n# This script is meant for quick & easy install via:\n#   $ curl -fsSL https://get.docker.com/rootless -o get-docker.sh\n#   $ sh get-docker.sh\n#\n# NOTE: Make sure to verify the contents of the script\n#       you downloaded matches the contents of rootless-install.sh\n#       located at https://github.com/docker/docker-install\n#       before executing.\n#\n# Git commit from https://github.com/docker/docker-install when\n# the script was uploaded (Should only be modified by upload job):\nSCRIPT_COMMIT_SHA=\"5ce20f2eef3615d08fea941eda5a109e949e8ebf\"\n\n# This script should be run with an unprivileged user and install/setup Docker under $HOME/bin/.\n\n# latest version available in the stable channel.\nSTABLE_LATEST=\"29.7.1\"\n\n# latest version available in the test channel.\nTEST_LATEST=\"29.7.1\"\n\n# The channel to install from:\n#   * test\n#   * stable\nDEFAULT_CHANNEL_VALUE=\"stable\"\nif [ -z \"$CHANNEL\" ]; then\n\tCHANNEL=$DEFAULT_CHANNEL_VALUE\nfi\n\nSTATIC_RELEASE_URL=\nSTATIC_RELEASE_ROOTLESS_URL=\n\n# static_release_url returns the download URL for a given package and version.",
+  "grep_markers": {
+    "dockerd-rootless-setuptool.sh": [
+      "\t\tPATH=\"$BIN:$PATH\" \"$BIN/dockerd-rootless-setuptool.sh\" install \"$@\""
+    ],
+    "rootlesskit": [],
+    "newuidmap": [
+      "\tif ! command -v newuidmap >/dev/null 2>&1; then",
+      "\t\t\techo \"newuidmap binary not found. Please install with a package manager.\""
+    ],
+    "subuid": [
+      "\t# validate subuid/subgid files for current user",
+      "\tif ! grep \"^$(id -un):\\|^$(id -u):\" /etc/subuid >/dev/null 2>&1; then",
+      "\t\t>&2 echo \"Could not find records for the current user $(id -un) from /etc/subuid . Please make sure valid subuid range is set there.",
+      "echo \\\"$(id -un):100000:65536\\\" >> /etc/subuid\"",
+      "\t\t>&2 echo \"Could not find records for the current user $(id -un) from /etc/subgid . Please make sure valid subuid range is set there."
+    ],
+    "subgid": [
+      "\t# validate subuid/subgid files for current user",
+      "\tif ! grep \"^$(id -un):\\|^$(id -u):\" /etc/subgid >/dev/null 2>&1; then",
+      "\t\t>&2 echo \"Could not find records for the current user $(id -un) from /etc/subgid . Please make sure valid subuid range is set there.",
+      "echo \\\"$(id -un):100000:65536\\\" >> /etc/subgid\""
+    ],
+    "curl": [
+      "#   $ curl -fsSL https://get.docker.com/rootless -o get-docker.sh",
+      "\t\t\tINSTRUCTIONS=\"curl -o /etc/yum.repos.d/vbatts-shadow-utils-newxidmap-epel-7.repo https://copr.fedorainfracloud.org/coprs/vbatts/shadow-utils-newxidmap/repo/epel-7/vbatts-shadow-utils-newxidmap-epel-7.repo",
+      "\t\tcurl -L -o docker.tgz \"$STATIC_RELEASE_URL\"",
+      "\t\tcurl -L -o rootless.tgz \"$STATIC_RELEASE_ROOTLESS_URL\""
+    ]
+  },
+  "prerequisite_decision": "FAIL",
+  "hard_requirements": {
+    "arch_x86_64_or_amd64": true,
+    "unprivileged_user_namespace_works": true,
+    "newuidmap_exists": true,
+    "newgidmap_exists": true,
+    "subuid_at_least_65536": false,
+    "subgid_at_least_65536": false,
+    "writable_local_docker_data_root": true
+  },
+  "install_skip_reason": "Official rootless Docker setup requires subordinate uid/gid ranges; /etc/subuid and /etc/subgid have no current-user range >=65536. Contract says stop with ROOTLESS_DOCKER_PREREQUISITE_BLOCKED rather than perform a misleading partial install."
+}
