@@ -1,0 +1,42 @@
+{
+  "a100_or_volta_submitted": false,
+  "blocker": "no RUNNING htzhulab interactive allocation found; only general tunnel jobs are running",
+  "created_at": "2026-08-01T04:05:54.690894+00:00",
+  "htzhulab_queue_jobs_submitted": false,
+  "new_interactive_allocation_authorized": false,
+  "new_interactive_allocation_created": false,
+  "running_interactive_allocations": [],
+  "sinfo_htzhulab_command": [
+    "sinfo",
+    "-p",
+    "htzhulab",
+    "-o",
+    "%P|%a|%l|%D|%t|%G"
+  ],
+  "sinfo_htzhulab_returncode": 0,
+  "sinfo_htzhulab_stdout": [
+    "PARTITION|AVAIL|TIMELIMIT|NODES|STATE|GRES",
+    "htzhulab|up|11-00:00:00|1|mix|gpu:nvidia_h100_nvl:2(S:1)",
+    "htzhulab|up|11-00:00:00|1|mix|gpu:nvidia_a100-sxm4-80gb:8"
+  ],
+  "squeue_command": [
+    "squeue",
+    "-u",
+    "aereinh",
+    "-o",
+    "%i|%j|%P|%T|%M|%L|%R|%b"
+  ],
+  "squeue_returncode": 0,
+  "squeue_stderr": "",
+  "squeue_stdout": [
+    "JOBID|NAME|PARTITION|STATE|TIME|TIME_LEFT|NODELIST(REASON)|TRES_PER_NODE",
+    "61392148|create-tunnel_tailscale|general|RUNNING|1-09:40:37|8-14:19:23|c0810|N/A",
+    "61350432|create-tunnel_cloudflared_backup|general|RUNNING|1-23:36:32|8-00:23:28|c151407|N/A",
+    "61144610|create-tunnel_tailscale|general|RUNNING|3-09:39:49|6-14:20:11|c151408|N/A",
+    "60585184|create-tunnel_cursor|general|RUNNING|6-15:39:32|3-08:20:28|c0307|N/A",
+    "60397663|create-tunnel_cloudflared|general|RUNNING|7-13:41:07|2-10:18:53|c0412|N/A",
+    "60166590|create-tunnel_vscode|general|RUNNING|8-15:04:35|1-08:55:25|c151410|N/A"
+  ],
+  "task_key": "20260801_care_target_domain_race_gap_closure",
+  "usable_existing_interactive_allocation": false
+}

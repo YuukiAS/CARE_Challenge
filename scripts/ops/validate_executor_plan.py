@@ -324,6 +324,8 @@ def validate_plan(data: dict[str, Any]) -> list[str]:
     if not isinstance(executors, list) or not executors:
         waves = data.get("waves")
         if isinstance(waves, list) and waves:
+            if int(data.get("executor_count", 1)) > 1 or int(data.get("executor_slots", 1)) > 1 or bool(data.get("parallel_execution_allowed", False)):
+                return validate_controller_supervised_wave_plan(data, waves)
             return validate_single_executor_wave_plan(data, waves)
         return ["executor plan must define non-empty executors list"]
     max_parallel = int(data.get("max_parallel", 1))
@@ -410,6 +412,128 @@ def validate_plan(data: dict[str, Any]) -> list[str]:
             writes = set(as_list(entry.get("write_scope")))
             if any(path_overlap(forbid, write) for forbid in forbidden for write in writes):
                 errors.append(f"{entry.get('id')}: write_scope includes forbidden shared files")
+    return errors
+
+
+def validate_controller_supervised_wave_plan(data: dict[str, Any], waves: list[Any]) -> list[str]:
+    """Validate controller-supervised wave plans with nested lane executors.
+
+    This plan shape is used when a controller owns the lifecycle while multiple
+    lane executors work in isolated local worktrees. It is distinct from the
+    older top-level `executors:` schema and from the single-executor `waves:`
+    schema below.
+    """
+
+    errors: list[str] = []
+    if int(data.get("executor_count", 0)) < 2:
+        errors.append("parallel waves plan requires executor_count >= 2")
+    if int(data.get("executor_slots", 0)) < 2:
+        errors.append("parallel waves plan requires executor_slots >= 2")
+    if data.get("parallel_execution_allowed") is not True:
+        errors.append("parallel waves plan requires parallel_execution_allowed=true")
+    for field in ("task_key", "result_root", "runtime_root"):
+        if not str(data.get(field, "")).strip():
+            errors.append(f"parallel waves plan missing {field}")
+    if not str(data.get("lock_root") or data.get("shared_lock_root") or "").strip():
+        errors.append("parallel waves plan missing lock_root/shared_lock_root")
+
+    worktrees = as_mapping(data.get("local_worktrees") or data.get("worktrees"))
+    if not worktrees:
+        errors.append("parallel waves plan missing local_worktrees/worktrees")
+    seen_worktree_paths: dict[str, str] = {}
+    for name, item in worktrees.items():
+        tree = as_mapping(item)
+        branch = str(tree.get("branch", "")).strip()
+        path = normalized_path(tree.get("path"))
+        if not branch:
+            errors.append(f"worktree {name}: missing branch")
+        if not path:
+            errors.append(f"worktree {name}: missing path")
+        if str(tree.get("remote_push", tree.get("remote_publication", "forbidden"))) != "forbidden":
+            errors.append(f"worktree {name}: remote publication must be forbidden")
+        for other_name, other_path in seen_worktree_paths.items():
+            if path_overlap(path, other_path):
+                errors.append(f"worktree {name}: path conflicts with {other_name}")
+        seen_worktree_paths[str(name)] = path
+
+    seen_waves: set[str] = set()
+    nested_executors: list[dict[str, Any]] = []
+    for idx, wave in enumerate(waves):
+        if not isinstance(wave, dict):
+            errors.append(f"wave[{idx}] must be a mapping")
+            continue
+        wave_id = str(wave.get("wave_id", "")).strip()
+        if not wave_id:
+            errors.append(f"wave[{idx}] missing wave_id")
+            continue
+        if wave_id in seen_waves:
+            errors.append(f"duplicate wave_id: {wave_id}")
+        for dep in as_list(wave.get("dependencies")):
+            if dep and dep not in seen_waves:
+                errors.append(f"{wave_id}: dependency {dep} is not an earlier wave")
+        seen_waves.add(wave_id)
+        if wave.get("mode") in (None, ""):
+            errors.append(f"{wave_id}: missing mode")
+        if wave.get("completion_condition") in (None, ""):
+            errors.append(f"{wave_id}: missing completion_condition")
+        if "failure_token" in wave and not str(wave.get("failure_token", "")).strip():
+            errors.append(f"{wave_id}: empty failure_token")
+
+        executors_in_wave = wave.get("executors")
+        if executors_in_wave is not None:
+            if not isinstance(executors_in_wave, list) or not executors_in_wave:
+                errors.append(f"{wave_id}: executors must be a non-empty list")
+            else:
+                for executor in executors_in_wave:
+                    if not isinstance(executor, dict):
+                        errors.append(f"{wave_id}: executor entry must be a mapping")
+                        continue
+                    nested = dict(executor)
+                    nested["_wave_id"] = wave_id
+                    nested_executors.append(nested)
+
+        if "claim_protocol" in wave or "interactive_takeover_loop" in wave:
+            claim = as_mapping(wave.get("claim_protocol"))
+            if not str(claim.get("atomic_claim_root", "")).strip():
+                errors.append(f"{wave_id}: claim_protocol missing atomic_claim_root")
+            if claim.get("queue_and_interactive_same_lane_duplicate_forbidden") is not True:
+                errors.append(f"{wave_id}: duplicate queue/interactive lane must be forbidden")
+            if str(wave.get("queue_partition", "")).strip() and str(wave.get("queue_partition")).strip() != "htzhulab":
+                errors.append(f"{wave_id}: queue_partition must be htzhulab")
+            resources = as_mapping(wave.get("queue_resources"))
+            for field in ("gpu", "cpu", "memory_gb", "walltime_hours"):
+                if field not in resources:
+                    errors.append(f"{wave_id}: queue_resources missing {field}")
+            if not as_list(wave.get("interactive_takeover_loop")):
+                errors.append(f"{wave_id}: missing interactive_takeover_loop")
+
+    if not nested_executors:
+        errors.append("parallel waves plan must define nested executors in at least one wave")
+
+    seen_executor_ids: set[str] = set()
+    seen_scopes: dict[str, list[str]] = {}
+    for executor in nested_executors:
+        wave_id = str(executor.get("_wave_id", "wave"))
+        eid = str(executor.get("executor_id", "")).strip()
+        if not eid:
+            errors.append(f"{wave_id}: nested executor missing executor_id")
+            continue
+        if eid in seen_executor_ids:
+            errors.append(f"duplicate executor_id: {eid}")
+        seen_executor_ids.add(eid)
+        worktree_name = str(executor.get("worktree", "")).strip()
+        if worktree_name not in worktrees:
+            errors.append(f"{eid}: unknown worktree {worktree_name}")
+        write_scope = as_list(executor.get("write_scope"))
+        if not write_scope:
+            errors.append(f"{eid}: missing write_scope")
+        for other_id, other_scope in seen_scopes.items():
+            if scopes_overlap(write_scope, other_scope):
+                errors.append(f"{eid}: write_scope overlaps with {other_id}")
+        seen_scopes[eid] = write_scope
+        if not as_list(executor.get("implementation_gate") or executor.get("required_preflight")):
+            errors.append(f"{eid}: missing implementation_gate/required_preflight")
+
     return errors
 
 

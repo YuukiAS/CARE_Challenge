@@ -1,0 +1,20 @@
+# MANIFEST
+
+- `results/20260801_care_target_domain_race_gap_closure/MANIFEST.md`
+- `results/20260801_care_target_domain_race_gap_closure/architecture_delta_final.md`
+- `results/20260801_care_target_domain_race_gap_closure/completion_check.md`
+- `results/20260801_care_target_domain_race_gap_closure/controller_context.json`
+- `results/20260801_care_target_domain_race_gap_closure/controller_report.md`
+- `results/20260801_care_target_domain_race_gap_closure/existing_interactive_receipt.json`
+- `results/20260801_care_target_domain_race_gap_closure/finalizer_state.json`
+- `results/20260801_care_target_domain_race_gap_closure/fold2_case_manifest.csv`
+- `results/20260801_care_target_domain_race_gap_closure/fold2_fold3_case_manifest.csv`
+- `results/20260801_care_target_domain_race_gap_closure/fold3_case_manifest.csv`
+- `results/20260801_care_target_domain_race_gap_closure/frozen_data_contract.json`
+- `results/20260801_care_target_domain_race_gap_closure/known_bad_report.json`
+- `results/20260801_care_target_domain_race_gap_closure/m0_protocol_fidelity_audit.json`
+- `results/20260801_care_target_domain_race_gap_closure/mapper_report_final.md`
+- `results/20260801_care_target_domain_race_gap_closure/scientific_decision.json`
+- `results/20260801_care_target_domain_race_gap_closure/slurm_and_interactive_accounting.csv`
+- `results/20260801_care_target_domain_race_gap_closure/split_receipt_copy.json`
+- `results/20260801_care_target_domain_race_gap_closure/strict_validator_report.json`

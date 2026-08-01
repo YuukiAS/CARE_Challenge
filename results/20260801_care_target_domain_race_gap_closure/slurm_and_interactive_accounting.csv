@@ -1,0 +1,8 @@
+timestamp,record_type,job_id,name,partition,observed_state,terminal_required,terminal_state,submitted_by_this_goal,notes
+2026-08-01T04:05:54.808325+00:00,observed_existing_job,61392148,create-tunnel_tailscale,general,RUNNING,false,NONE,false,not a usable htzhulab interactive allocation for this goal
+2026-08-01T04:05:54.808346+00:00,observed_existing_job,61350432,create-tunnel_cloudflared_backup,general,RUNNING,false,NONE,false,not a usable htzhulab interactive allocation for this goal
+2026-08-01T04:05:54.808354+00:00,observed_existing_job,61144610,create-tunnel_tailscale,general,RUNNING,false,NONE,false,not a usable htzhulab interactive allocation for this goal
+2026-08-01T04:05:54.808360+00:00,observed_existing_job,60585184,create-tunnel_cursor,general,RUNNING,false,NONE,false,not a usable htzhulab interactive allocation for this goal
+2026-08-01T04:05:54.808365+00:00,observed_existing_job,60397663,create-tunnel_cloudflared,general,RUNNING,false,NONE,false,not a usable htzhulab interactive allocation for this goal
+2026-08-01T04:05:54.808370+00:00,observed_existing_job,60166590,create-tunnel_vscode,general,RUNNING,false,NONE,false,not a usable htzhulab interactive allocation for this goal
+2026-08-01T04:05:54.808375+00:00,goal_training_submission,,,htzhulab,NOT_SUBMITTED,true,NONE,false,blocked before M3/M0R/M1/M2 scheduling because existing interactive allocation was lost

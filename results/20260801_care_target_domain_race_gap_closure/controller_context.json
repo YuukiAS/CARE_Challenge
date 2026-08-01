@@ -1,0 +1,80 @@
+{
+  "authority_sha256": {
+    ".agents/skills/care-mapper/SKILL.md": "2c41516189001ec7be94d9981a69fcd5544ad5ebd244c93cdc58488f4b535d0e",
+    ".agents/skills/slurm-routing-partition/SKILL.md": "2b7e87f58b275b50dc9d4a9377f4e2518c3a390c806e400cb32e07ebac3f83a6",
+    "AGENTS.md": "726abb7a526758079ef6b3aa24bb05ebcbb30828b1e967a235c1ecce11e4e4da",
+    "GPT_PLANNER_CARE_PROTOCOL.md": "6e9f234de0be18674dc195fe1de830982ddbc5d3201e068eb6a2ed6ac9f9c195",
+    "START_HERE_FOR_GPT.md": "83a11ac74d130cfd1df2064fdd52b642e06d1b13eb3af677b02819dcad4274fe",
+    "prompts/AGENT_FLOW_V2_PROTOCOL.md": "29b417ef95e5b54d046e9fafb6cede016d74e74c88426756546b507fb09a22a1",
+    "prompts/FINAL_OUTPUT_READABILITY_POLICY.md": "1d1dd49a03f2bb9c22b20e17168125abd5c5a78d6c68d675f3052c03526e069b",
+    "prompts/GPT_HARD_GATE_PROMPT.md": "afb068852d40a04500e818b2d53acabb811a090920042b711b34dcc55416de9b",
+    "prompts/HANDOFF_GATE_POLICY.md": "668765a296b5789d1560cdbd710316fcd7b93544f9195f7eaf3ebcbe263ccb1a",
+    "prompts/blueprints/CARE_target_domain_race_gap_closure_20260801.md": "5403cb3af2b2d566e4fd9906df504d187f5a81b27ac58152f9ed057a62f6ff18",
+    "prompts/routes/README.md": "8fc6811cf6d397bee1610d2570efff8c84fb77e3ff539ca632f32d9ba703c9f7",
+    "prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md": "a0dce70c97ef9711dbdc76a213d26419513fa5c28478accbec0dd8288a91674a",
+    "prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md": "a225f46868eda817a0d2b2f3e33d444ffc88b683664dfc3a0dd6eb25881475d9",
+    "prompts/routes/handoffs/CURRENT.md": "44ad1f08d3d9d0822b94d053647d39d6c24cc1732e050e42c99bb0f10fae4db4",
+    "prompts/routes/route_portfolio_planner_prompt.md": "8fb21c31a60c9a688989f0e0e2520d18061107948907c946f6b76b4ea1ee83e3",
+    "prompts/tasks/20260801_care_target_domain_race_gap_closure_controller.md": "f478521dbf2411f19d9f48a81539b28f9f3cff1f70e9fed0a01744734abadb2d",
+    "prompts/tasks/20260801_care_target_domain_race_gap_closure_executor_plan.yaml": "6a083808bf6cbc869ce89f3dfc8808d7fcc8dff1ed0d440329d38db33f7e4de9",
+    "routes/README.md": "46cf19fabc1a6d8806643a9f5d0e4f61bd6816820c5eefe5d2e108d625db9771",
+    "scripts/evaluation/target_domain_race/evaluate_m0_td_nnunet_outer.py": "d73055d954620915836357b539b2b8fb674798c21cfd98ea06f27fbc83351352",
+    "scripts/training/target_domain_race/run_m0_td_nnunet.py": "56a6d95163640e82b10ed2cbcbebb2798c608935d13d2ed0ef93a74bbfc62da8",
+    "src/care_myocardium/nnunet/target_domain_race_trainer.py": "dba42c748027df1ba9240b2bc61f8a64943c2daba7b7d4bc7bf1c747affd7b6f",
+    "wiki/README.md": "15fd142db669357a6f303b81e2f94ea9194970a356d3bdb47335335f96d81081"
+  },
+  "created_at": "2026-08-01T04:05:54.693274+00:00",
+  "diagram_versions_read": [
+    "SRR-v2",
+    "SRR-v2.5",
+    "SRR-v3"
+  ],
+  "executor_plan_validation": {
+    "command": "./envs/env_CARE/bin/python scripts/ops/validate_executor_plan.py prompts/tasks/20260801_care_target_domain_race_gap_closure_executor_plan.yaml",
+    "status": "PASS"
+  },
+  "files_read": [
+    "AGENTS.md",
+    "START_HERE_FOR_GPT.md",
+    "GPT_PLANNER_CARE_PROTOCOL.md",
+    "prompts/FINAL_OUTPUT_READABILITY_POLICY.md",
+    "prompts/AGENT_FLOW_V2_PROTOCOL.md",
+    "prompts/HANDOFF_GATE_POLICY.md",
+    "prompts/GPT_HARD_GATE_PROMPT.md",
+    "prompts/routes/README.md",
+    "prompts/routes/route_portfolio_planner_prompt.md",
+    "prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md",
+    "prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md",
+    "prompts/routes/handoffs/CURRENT.md",
+    "routes/README.md",
+    "wiki/README.md",
+    ".agents/skills/slurm-routing-partition/SKILL.md",
+    ".agents/skills/care-mapper/SKILL.md",
+    "prompts/blueprints/CARE_target_domain_race_gap_closure_20260801.md",
+    "prompts/tasks/20260801_care_target_domain_race_gap_closure_executor_plan.yaml",
+    "prompts/tasks/20260801_care_target_domain_race_gap_closure_controller.md",
+    "scripts/training/target_domain_race/run_m0_td_nnunet.py",
+    "src/care_myocardium/nnunet/target_domain_race_trainer.py",
+    "scripts/evaluation/target_domain_race/evaluate_m0_td_nnunet_outer.py"
+  ],
+  "git_head": "16f6e9700ab61f44f821048e7cab8eb5099de567",
+  "git_status_short_branch": [
+    "## main...origin/main",
+    " M scripts/ops/validate_executor_plan.py",
+    "?? \"CARE Myocardium \\344\\270\\213\\344\\270\\200\\344\\273\\243\\346\\250\\241\\345\\236\\213\\346\\267\\261\\345\\272\\246\\347\\240\\224\\347\\251\\266\\344\\270\\216\\350\\256\\276\\350\\256\\241\\350\\243\\201\\345\\206\\263.md\"",
+    "?? docs/notes/deep_research/CARE_FRONTIER_RESET_HIGH_GAIN_DESIGN_20260731.pdf",
+    "?? scripts/validation/validate_target_domain_race_gap_closure.py"
+  ],
+  "old_m0_audit": "HIGH_LR_SHORT_FINETUNE_NEGATIVE",
+  "origin_main": "16f6e9700ab61f44f821048e7cab8eb5099de567",
+  "phase": "W0_BOOTSTRAP_AUDIT_FREEZE",
+  "recovered_route_objective": "modality-specific evidence; pathology-specific authority; soft anatomy context; negative-space accounting; full-volume help/harm",
+  "required_runtime_paths": [
+    "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure"
+  ],
+  "result_root": "results/20260801_care_target_domain_race_gap_closure",
+  "task_key": "20260801_care_target_domain_race_gap_closure",
+  "visual_read_entrypoint_note": "goal attachment contained only goal-objective.md; repo images were visually opened for SRR-v2/v2.5/v3 while recording that Project-background access is not available from this Codex context",
+  "visual_read_status": "PASS_REPO_IMAGES_READ_PROJECT_BACKGROUND_UNAVAILABLE_IN_CODEX_ATTACHMENT",
+  "w0_decision": "OPERATIONALLY_BLOCKED_EXISTING_INTERACTIVE_LOST"
+}

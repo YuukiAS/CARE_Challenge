@@ -1,0 +1,90 @@
+{
+  "case_count": 21,
+  "status": "PASS",
+  "tests": {
+    "checkpoint_not_reloaded": {
+      "expected": "validator rejects invalid completion or invalid continuation",
+      "passed": true
+    },
+    "duplicate_queue_interactive_training": {
+      "expected": "validator rejects invalid completion or invalid continuation",
+      "passed": true
+    },
+    "hard_negative_declaration_only": {
+      "expected": "validator rejects invalid completion or invalid continuation",
+      "passed": true
+    },
+    "interactive_idle_while_pending_lane_exists": {
+      "expected": "validator rejects invalid completion or invalid continuation",
+      "passed": true
+    },
+    "m0r_m3_batch_manifest_hash_mismatch": {
+      "expected": "validator rejects invalid completion or invalid continuation",
+      "passed": true
+    },
+    "m0r_sgd_1e2_polylr_reintroduced": {
+      "expected": "validator rejects invalid completion or invalid continuation",
+      "passed": true
+    },
+    "m1_pure_edema_inclusive_label_misdecode": {
+      "expected": "validator rejects invalid completion or invalid continuation",
+      "passed": true
+    },
+    "m1_t1_t2star_placeholder_forward": {
+      "expected": "validator rejects invalid completion or invalid continuation",
+      "passed": true
+    },
+    "m1_wrapper_only_without_cmff_mpc": {
+      "expected": "validator rejects invalid completion or invalid continuation",
+      "passed": true
+    },
+    "m2_asset_failure_blocks_other_lanes": {
+      "expected": "validator rejects invalid completion or invalid continuation",
+      "passed": true
+    },
+    "m2_missing_source_asset_provenance": {
+      "expected": "validator rejects invalid completion or invalid continuation",
+      "passed": true
+    },
+    "m2_rank_channel_substitute": {
+      "expected": "validator rejects invalid completion or invalid continuation",
+      "passed": true
+    },
+    "m2_runtime_gpt_call": {
+      "expected": "validator rejects invalid completion or invalid continuation",
+      "passed": true
+    },
+    "m3_loss_declared_not_in_total": {
+      "expected": "validator rejects invalid completion or invalid continuation",
+      "passed": true
+    },
+    "m3_stock_pathology_logit_shortcut": {
+      "expected": "validator rejects invalid completion or invalid continuation",
+      "passed": true
+    },
+    "notify_before_push_or_nonterminal_notify": {
+      "expected": "validator rejects invalid completion or invalid continuation",
+      "passed": true
+    },
+    "old_m0_claimed_faithful_negative": {
+      "expected": "validator rejects invalid completion or invalid continuation",
+      "passed": true
+    },
+    "outer_driven_selection": {
+      "expected": "validator rejects invalid completion or invalid continuation",
+      "passed": true
+    },
+    "patch_proxy_as_full_volume": {
+      "expected": "validator rejects invalid completion or invalid continuation",
+      "passed": true
+    },
+    "per_case_or_per_fold_selector": {
+      "expected": "validator rejects invalid completion or invalid continuation",
+      "passed": true
+    },
+    "runtime_checkpoint_nifti_or_secret_committed": {
+      "expected": "validator rejects invalid completion or invalid continuation",
+      "passed": true
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "actual_epochs": 16,
+  "actual_initial_lr": 0.01,
+  "actual_iterations_per_epoch": 250,
+  "actual_optimizer": "torch.optim.SGD",
+  "actual_optimizer_steps": 4000,
+  "actual_scheduler": "PolyLRScheduler",
+  "actual_weight_decay": 3e-05,
+  "all_500_step_checkpoints_present": false,
+  "all_500_step_full_volume_checkpoint_selection": "absent",
+  "checkpoint_files_observed": [
+    "nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerTargetDomainRace4000__nnUNetPlans__3d_fullres/fold_2/checkpoint_best.pth",
+    "nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerTargetDomainRace4000__nnUNetPlans__3d_fullres/fold_2/checkpoint_final.pth",
+    "nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerTargetDomainRace4000__nnUNetPlans__3d_fullres/fold_3/checkpoint_best.pth",
+    "nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerTargetDomainRace4000__nnUNetPlans__3d_fullres/fold_3/checkpoint_final.pth"
+  ],
+  "checkpoint_files_observed_count": 4,
+  "created_at": "2026-08-01T04:05:54.656863+00:00",
+  "evidence_files": [
+    "scripts/training/target_domain_race/run_m0_td_nnunet.py",
+    "src/care_myocardium/nnunet/target_domain_race_trainer.py",
+    "scripts/evaluation/target_domain_race/evaluate_m0_td_nnunet_outer.py",
+    "results/20260801_care_target_domain_pathology_specialist_race/m0_td_nnunet/fold2_training_receipt.json",
+    "results/20260801_care_target_domain_pathology_specialist_race/m0_td_nnunet/fold3_training_receipt.json"
+  ],
+  "old_m0_classification": "HIGH_LR_SHORT_FINETUNE_NEGATIVE",
+  "old_m0_must_not_be_called": "faithful_target_domain_finetune_negative",
+  "old_script_checkpoint_selection": "checkpoint_best.pth stock nnU-Net best semantics",
+  "old_script_sets_num_epochs": 16,
+  "old_script_sets_num_iterations_per_epoch": 250,
+  "old_task_key": "20260801_care_target_domain_pathology_specialist_race",
+  "old_trainer_configure_optimizers_overridden": false,
+  "old_trainer_inherits": "nnUNetTrainer_500epochs",
+  "task_key": "20260801_care_target_domain_race_gap_closure"
+}
