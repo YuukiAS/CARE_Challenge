@@ -1,0 +1,10 @@
+{
+  "case_count": 57,
+  "created_at_utc": "2026-08-01T13:57:58.918882+00:00",
+  "new_model_predictions_created": false,
+  "row_count": 60,
+  "runtime_png_policy": "existing V4 atlas references only",
+  "status": "HARD_CASE_INDEX_BOUND_TO_EXISTING_V4_WHEN_AVAILABLE",
+  "v4_atlas_manifest": "results/20260730_care_failure_forensics_deep_research_packet/v4_atlas_manifest.csv",
+  "v4_atlas_manifest_sha256": "d9b6e6a07d77a16b53c299714f20733218571e614908bc16f57b2caee3bebb78"
+}

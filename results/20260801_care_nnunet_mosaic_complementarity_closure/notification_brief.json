@@ -1,0 +1,19 @@
+{
+  "blocked_or_failure_reason": "none",
+  "commit_status": "complete",
+  "evidence_paths": [
+    "results/20260801_care_nnunet_mosaic_complementarity_closure/oof_complementarity_casewise.csv",
+    "results/20260801_care_nnunet_mosaic_complementarity_closure/oof_case_oracle_bounds.csv",
+    "results/20260801_care_nnunet_mosaic_complementarity_closure/m10_diagnostic_casewise.csv",
+    "results/20260801_care_nnunet_mosaic_complementarity_closure/validation_disagreement_casewise.csv",
+    "results/20260801_care_nnunet_mosaic_complementarity_closure/strict_validator_report.json",
+    "results/20260801_care_nnunet_mosaic_complementarity_closure/controller_report.md"
+  ],
+  "final_status": "complete",
+  "key_conclusion": "nnU-Net remains the stable baseline; MoSAIC clean OOF shows limited scar-only complementarity and no useful pure-edema complementarity. M10 is diagnostic only; validation 15-case evidence is no-GT disagreement only.",
+  "next_step": "Planner/user may review the committed evidence packet; no selector, threshold tuning, validation upload, Docker upload, or hosted metric claim is authorized by this closure.",
+  "push_status": "complete",
+  "slurm_terminal_status": "not_used_no_new_training_no_new_gpu_job",
+  "task_name": "20260801_care_nnunet_mosaic_complementarity_closure",
+  "updated_at_utc": "2026-08-01T13:59:30.912318+00:00"
+}

@@ -335,3 +335,33 @@ results/20260729_care_prism_fold0_fold1_v2
 ## 资源与权限
 
 只允许复用既有 allocation `61220581 / htzhulab / g1807htzh01`；若仍运行，GPU命令必须串行。禁止新Slurm job、写`/overflow/htzhu/CARE`、runtime push、validation/Docker upload、fold1 outer调参或二次评价。
+
+## 2026-08-01 nnU-Net / MoSAIC complementarity closure
+
+这次补上的不是新模型，而是一套冻结证据表：把 220 例 fair OOF、80 例 M10 机制诊断和 15 例 fresh validation no-GT disagreement 放在同一个可审计结果包里。可读结论是：nnU-Net 仍是更稳的底线；MoSAIC clean OOF 只在 scar 少数病例上显示有限互补，pure edema 没有显示可用互补；M10 只能解释机制，不能证明泛化。
+
+```text
+result_root:
+results/20260801_care_nnunet_mosaic_complementarity_closure
+
+strict_validator:
+results/20260801_care_nnunet_mosaic_complementarity_closure/strict_validator_report.json
+
+controller_report:
+results/20260801_care_nnunet_mosaic_complementarity_closure/controller_report.md
+```
+
+Evidence files:
+
+- `oof_complementarity_casewise.csv`: 220-case scar and 80-case pure-edema fair OOF comparison, with buckets and component fields.
+- `oof_case_oracle_bounds.csv`: case-oracle upper bound only; not a selector.
+- `m10_diagnostic_casewise.csv`: 80-case full-data M10 diagnostic, marked as not valid for generalization claims.
+- `validation_disagreement_casewise.csv`: 15-case fresh validation pairwise disagreement only; no GT and no performance claim.
+- `hard_case_bucket_index.csv`: hard-case index grouped by frozen OOF buckets.
+
+Key numbers:
+
+- scar all-case: nnU-Net mean Dice `0.561047`, MoSAIC clean OOF mean Dice `0.378168`, case-oracle gain `0.021954`, MoSAIC rescue fraction `18/220 = 0.081818`.
+- pure edema T2-present 80-case: nnU-Net mean Dice `0.430812`, MoSAIC clean OOF mean Dice `0.052756`, case-oracle gain `0.002293`, MoSAIC rescue fraction `0/80`.
+
+This closure does not authorize training, threshold tuning, case-level selector construction, validation upload, Docker upload, or hosted metric claims.

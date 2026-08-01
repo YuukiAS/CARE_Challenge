@@ -1,0 +1,27 @@
+{
+  "case_counts": {
+    "m10_cases": 80,
+    "oof_pure_edema": 80,
+    "oof_scar": 220,
+    "validation_cases": 15
+  },
+  "created_at_utc": "2026-08-01T13:57:58.938696+00:00",
+  "forbidden_actions_executed": [],
+  "source_hashes": {
+    "results/20260730_care_failure_forensics_deep_research_packet/case_oracle_summary.csv": "ac34240854f64f6925f4d6e1c64a76bbac71c80ca6a2b96c3bf9e702b637a487",
+    "results/20260730_care_failure_forensics_deep_research_packet/mosaic_recipe_decomposition_receipt.json": "b1a1e1e7b96b5bf72e191303ee5ab1b2ce1a95b9c5bc3aedc457def5f30634b7",
+    "results/20260730_care_failure_forensics_deep_research_packet/standardized_casewise_metrics.csv": "7a9f320e6cf20bc01bb7c86d24e522193f0ab0e2b788b20487dbf6f8a6a18ac1",
+    "results/20260730_care_failure_forensics_deep_research_packet/standardized_model_summary.csv": "ca51896dc99cdefcf389620f149951024a4d23d2eb7297f069ca8d2fe7266672",
+    "results/20260730_care_failure_forensics_deep_research_packet/v4_mosaic_m0_m10_casewise.csv": "8f62b57c1ebb0a39cdec212c5c193cd2a514b6ceaed8d9adcb2de9d3ae44bd80",
+    "results/20260730_care_failure_forensics_deep_research_packet/v4_mosaic_recipe_population_audit.json": "6c1de1d1e33de86d12f9b66b167180215d380f4d141addc75f2bf6711a34cbeb",
+    "results/20260731_care_metric_truth_reconciliation/metric_semantics_contract.json": "467b686538ecfb6e93fca1e9d7f5e963aa153a4426f9388c1d59d82d6a23b715",
+    "results/20260731_care_metric_truth_reconciliation/metric_truth_receipt.json": "aec3bf2b9a0725db32c8b03deb62cc6b3684a0c93fc097e15d72d29919f0792b",
+    "results/20260801_care_four_lane_evidence_reconciliation/all_outer_casewise.csv": "3fd9b107803b34c1be3bf9daf0b19e5844af8a0dfc446e713cb09b2fac36726e",
+    "results/20260801_care_four_lane_evidence_reconciliation/metric_contract.json": "8e6ea1c8b0006acf2be99826a500bcf13fbe544de7f1fc784f6c74e9dae958a2"
+  },
+  "status": "STRICT_VALIDATOR_PASS_READY_FOR_PUBLICATION",
+  "strict_validator": "PASS",
+  "task_key": "20260801_care_nnunet_mosaic_complementarity_closure",
+  "terminal_decision": "LIMITED_COMPLEMENTARITY_FOR_DIAGNOSTIC_REVIEW_ONLY",
+  "updated_at_utc": "2026-08-01T13:59:30.912318+00:00"
+}

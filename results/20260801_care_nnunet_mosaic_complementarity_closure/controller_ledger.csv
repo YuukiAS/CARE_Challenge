@@ -1,0 +1,8 @@
+phase,status,evidence
+bootstrap,PASS,controller_context.json
+oof_matrix,PASS,oof_complementarity_casewise.csv
+m10_diagnostic,PASS,m10_diagnostic_casewise.csv
+validation_disagreement,PASS,validation_disagreement_casewise.csv
+hard_case_index,PASS,hard_case_bucket_index.csv
+strict_validator,PASS,strict_validator_report.json
+commit_push_notifier,READY_FOR_TERMINAL_ACTION,post-run terminal actions

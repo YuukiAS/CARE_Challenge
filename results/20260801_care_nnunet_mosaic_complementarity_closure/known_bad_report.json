@@ -1,0 +1,117 @@
+{
+  "checks": [
+    {
+      "check": "required_files",
+      "detail": "PASS",
+      "status": "PASS"
+    },
+    {
+      "check": "pathologies",
+      "detail": "PASS",
+      "status": "PASS"
+    },
+    {
+      "check": "no_lesion_union",
+      "detail": "PASS",
+      "status": "PASS"
+    },
+    {
+      "check": "population_counts",
+      "detail": "scar=220 pure_edema=80",
+      "status": "PASS"
+    },
+    {
+      "check": "unique_case_pathology",
+      "detail": "PASS",
+      "status": "PASS"
+    },
+    {
+      "check": "pure_edema_t2_denominator",
+      "detail": "PASS",
+      "status": "PASS"
+    },
+    {
+      "check": "oof_model_ids",
+      "detail": "PASS",
+      "status": "PASS"
+    },
+    {
+      "check": "oof_bucket_names",
+      "detail": "PASS",
+      "status": "PASS"
+    },
+    {
+      "check": "bucket_sum_scar",
+      "detail": "PASS",
+      "status": "PASS"
+    },
+    {
+      "check": "bucket_sum_pure_edema",
+      "detail": "PASS",
+      "status": "PASS"
+    },
+    {
+      "check": "oracle_not_selector",
+      "detail": "PASS",
+      "status": "PASS"
+    },
+    {
+      "check": "m10_case_count",
+      "detail": "PASS",
+      "status": "PASS"
+    },
+    {
+      "check": "m10_trained_flag",
+      "detail": "PASS",
+      "status": "PASS"
+    },
+    {
+      "check": "m10_generalization_boundary",
+      "detail": "PASS",
+      "status": "PASS"
+    },
+    {
+      "check": "m10_evidence_tier",
+      "detail": "PASS",
+      "status": "PASS"
+    },
+    {
+      "check": "validation_case_set",
+      "detail": "PASS",
+      "status": "PASS"
+    },
+    {
+      "check": "validation_geometry",
+      "detail": "PASS",
+      "status": "PASS"
+    },
+    {
+      "check": "validation_no_gt_words",
+      "detail": "PASS",
+      "status": "PASS"
+    },
+    {
+      "check": "validation_reuse_receipt",
+      "detail": "PASS",
+      "status": "PASS"
+    },
+    {
+      "check": "frozen_boundaries",
+      "detail": "PASS",
+      "status": "PASS"
+    },
+    {
+      "check": "source_hashes",
+      "detail": "PASS",
+      "status": "PASS"
+    },
+    {
+      "check": "hard_case_index",
+      "detail": "rows=60",
+      "status": "PASS"
+    }
+  ],
+  "known_bad_fixture_policy": "embedded hard checks",
+  "status": "PASS",
+  "task_key": "20260801_care_nnunet_mosaic_complementarity_closure"
+}

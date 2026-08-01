@@ -475,3 +475,44 @@ srun --jobid=61220581 --overlap --ntasks=1 bash -lc '<command>'
 只有 `controller_verification_decision: VERIFIED_COMPLETE`，且所有进程终态、aggregation、strict validator、Mapper、CURRENT/wiki、轻量 commit 全部确认后，才允许自动推送轻量代码与结果到 `origin/main`。不得推送 checkpoint、NIfTI、raw data、大日志、cache、secret或上传包。Push 后必须核对远端 SHA，再发送中文完成邮件。
 
 若出现真实终态阻塞或忠实机制失败，同范围修复已穷尽并写好稳定阻塞 packet 后，发送一次中文阻塞邮件；修复中、submitted、pending、running、monitor或中间 PASS 不得通知。
+
+## 2026-08-01 nnU-Net / MoSAIC 互补证据闭合
+
+本轮只做冻结证据闭合，不训练、不调阈值、不构造病例级 selector、不上传 validation 或 Docker。结论是：nnU-Net 仍是当前可靠底线；MoSAIC clean OOF 在 scar 少数病例上有有限互补信号，但 pure edema 没有形成可用互补。M10 只保留为 full-data 机制诊断，不能作为泛化证据。
+
+```text
+result_root:
+results/20260801_care_nnunet_mosaic_complementarity_closure
+
+controller_verification_decision: VERIFIED_COMPLETE
+strict_validator_status: PASS
+terminal_decision: LIMITED_COMPLEMENTARITY_FOR_DIAGNOSTIC_REVIEW_ONLY
+```
+
+核心证据：
+
+```text
+220-case fair OOF matrix:
+results/20260801_care_nnunet_mosaic_complementarity_closure/oof_complementarity_casewise.csv
+
+80-case M10 diagnostic:
+results/20260801_care_nnunet_mosaic_complementarity_closure/m10_diagnostic_casewise.csv
+
+15-case fresh validation no-GT disagreement:
+results/20260801_care_nnunet_mosaic_complementarity_closure/validation_disagreement_casewise.csv
+
+strict validator:
+results/20260801_care_nnunet_mosaic_complementarity_closure/strict_validator_report.json
+```
+
+主要数字：
+
+- scar all-case：nnU-Net mean Dice `0.561047`，MoSAIC clean OOF mean Dice `0.378168`，case-oracle gain `0.021954`，MoSAIC rescue fraction `18/220 = 0.081818`。
+- pure edema T2-present 80-case：nnU-Net mean Dice `0.430812`，MoSAIC clean OOF mean Dice `0.052756`，case-oracle gain `0.002293`，MoSAIC rescue fraction `0/80`。
+- validation 15-case：复用 2026-07-28 frozen fresh no-GT disagreement 输出；没有提交新训练或新 GPU 推理 job，没有 GT 性能结论。
+
+边界：
+
+- `oof_case_oracle_bounds.csv` 是上界，不是可部署 selector。
+- `m10_diagnostic_casewise.csv` 中 M10 行标记 `trained_on_case_possible=true` 与 `not_valid_for_generalization_claim=true`。
+- validation disagreement 只能说明两个预测的差异，不能写成谁更好。
