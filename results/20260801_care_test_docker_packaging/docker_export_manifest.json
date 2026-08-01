@@ -1,0 +1,10 @@
+{
+  "status": "blocked",
+  "dist_dir": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_packaging/dist",
+  "expected_tarballs": [
+    "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_packaging/dist/MyoPS-OrganAgent-v1.tar.gz",
+    "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_packaging/dist/CineMyoPS-OrganAgent-v1.tar.gz"
+  ],
+  "existing_tarballs": [],
+  "reason": "No Docker image was built, so no `docker save | gzip` export was possible."
+}

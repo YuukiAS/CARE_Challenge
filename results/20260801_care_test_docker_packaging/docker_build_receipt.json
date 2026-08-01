@@ -1,0 +1,16 @@
+{
+  "status": "blocked",
+  "decision": "DOCKER_PACKAGING_BLOCKED_PROVENANCE",
+  "reason": "Docker CLI is unavailable in this host environment; task requires Docker build/load/run/save, not apptainer substitution.",
+  "docker_status": {
+    "docker_path": null,
+    "docker_version_exit_code": 127,
+    "docker_version_output": "docker command not found",
+    "podman_path": null,
+    "apptainer_path": "/usr/bin/apptainer",
+    "singularity_path": "/usr/bin/singularity",
+    "docker_available": false
+  },
+  "images_built": [],
+  "tarballs_exported": []
+}

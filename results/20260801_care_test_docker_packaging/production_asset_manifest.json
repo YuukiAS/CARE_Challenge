@@ -1,0 +1,164 @@
+{
+  "created_at_utc": "2026-08-01T12:15:42.268888+00:00",
+  "nnunet_myops": {
+    "model_root": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres",
+    "trainer": "nnUNetTrainer_500epochs",
+    "configuration": "3d_fullres",
+    "folds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "checkpoint_for_hosted_lineage": "checkpoint_best.pth",
+    "assets": [
+      {
+        "asset": "nnunet_fold0_checkpoint_best.pth",
+        "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_best.pth",
+        "exists": true,
+        "sha256": "f139ca5525322d340a0284c6562a9bcb9cb9cae0a512e14ef40ce85a66f53278",
+        "size_bytes": 357374639
+      },
+      {
+        "asset": "nnunet_fold0_checkpoint_final.pth",
+        "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_final.pth",
+        "exists": true,
+        "sha256": "8bceb20cae8920e87d43b14665a0db9dfd4f1204533d25a3cd6e40ad9de74111",
+        "size_bytes": 357381749
+      },
+      {
+        "asset": "nnunet_fold1_checkpoint_best.pth",
+        "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/checkpoint_best.pth",
+        "exists": true,
+        "sha256": "b92d56b1e24ce826081671acc4e048e5d48b191f6dcb9836747ae82d93acd1e2",
+        "size_bytes": 357341103
+      },
+      {
+        "asset": "nnunet_fold1_checkpoint_final.pth",
+        "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/checkpoint_final.pth",
+        "exists": true,
+        "sha256": "5310569ff62f2f9a6ff2bc7dd3754404140071427a2025caf5e25d2916cfe400",
+        "size_bytes": 357381813
+      },
+      {
+        "asset": "nnunet_fold2_checkpoint_best.pth",
+        "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_2/checkpoint_best.pth",
+        "exists": true,
+        "sha256": "9e328bf4bd6ed9eeadac6f41c5de303c69dfc078dfeac3e64b26e18d3e09d38d",
+        "size_bytes": 357327215
+      },
+      {
+        "asset": "nnunet_fold2_checkpoint_final.pth",
+        "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_2/checkpoint_final.pth",
+        "exists": true,
+        "sha256": "31470ab242055b0af5c783f0f522bc8e490199cb2b4d42f5d0cefffb41de019b",
+        "size_bytes": 357381493
+      },
+      {
+        "asset": "nnunet_fold3_checkpoint_best.pth",
+        "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_3/checkpoint_best.pth",
+        "exists": true,
+        "sha256": "9c2c2cf0dea4eb8a691c6680fabc66f6456233ba83867466a06ffd5abda3462b",
+        "size_bytes": 357354799
+      },
+      {
+        "asset": "nnunet_fold3_checkpoint_final.pth",
+        "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_3/checkpoint_final.pth",
+        "exists": true,
+        "sha256": "0c27009930261c93a4890c66aa7f88f226a5f8b32a3358e43dd10d357b6fdeb8",
+        "size_bytes": 357381813
+      },
+      {
+        "asset": "nnunet_fold4_checkpoint_best.pth",
+        "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_4/checkpoint_best.pth",
+        "exists": true,
+        "sha256": "11c6ccfec5dc51be7c08f1713058412694e1b7def1c5d8cd5520f7f7568aeff2",
+        "size_bytes": 357367855
+      },
+      {
+        "asset": "nnunet_fold4_checkpoint_final.pth",
+        "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_4/checkpoint_final.pth",
+        "exists": true,
+        "sha256": "9971020827eb50fabe53ef339f5ea2ac8c5a7929584c5c9c0541e83119df0847",
+        "size_bytes": 357381813
+      },
+      {
+        "asset": "plans.json",
+        "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/plans.json",
+        "exists": true,
+        "sha256": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
+        "size_bytes": 11947
+      },
+      {
+        "asset": "dataset.json",
+        "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/dataset.json",
+        "exists": true,
+        "sha256": "8437262d92fb898c8d16a89150efd4629602dd71e0fa5bbcf1c6c80cc3b535ae",
+        "size_bytes": 675
+      }
+    ]
+  },
+  "mosaic": {
+    "repo_commit": "d334bd1fb2a99dbbc230510590cd8e3ee08cc377",
+    "weights": [
+      {
+        "path": "/users/a/e/aereinh/MoSAIC/code/weights/myops/coarse.pt",
+        "exists": true,
+        "expected_sha256": "aae815c3dd50d6776e2af769551e8d6918a5dee4f83f29309a254051e067080c",
+        "actual_sha256": "aae815c3dd50d6776e2af769551e8d6918a5dee4f83f29309a254051e067080c",
+        "sha256_match": true,
+        "size_bytes": 4343733
+      },
+      {
+        "path": "/users/a/e/aereinh/MoSAIC/code/weights/myops/coarse_edema.pt",
+        "exists": true,
+        "expected_sha256": "b9b596f1f5475ac852bf2c0be38a72c59e538dd3199f1f4989983433506ed9d4",
+        "actual_sha256": "b9b596f1f5475ac852bf2c0be38a72c59e538dd3199f1f4989983433506ed9d4",
+        "sha256_match": true,
+        "size_bytes": 4345269
+      },
+      {
+        "path": "/users/a/e/aereinh/MoSAIC/code/weights/myops/edema.pt",
+        "exists": true,
+        "expected_sha256": "14a6a53f643bdbbac4c8234af2aa86e8a43423b761013f7b7f580965e1ed503c",
+        "actual_sha256": "14a6a53f643bdbbac4c8234af2aa86e8a43423b761013f7b7f580965e1ed503c",
+        "sha256_match": true,
+        "size_bytes": 320526339
+      },
+      {
+        "path": "/users/a/e/aereinh/MoSAIC/code/weights/myops/fine_scar.pt",
+        "exists": true,
+        "expected_sha256": "94c54de3321000eabbc3c3a42a5d838410fb859a1c5b2460e6c2f6d773622ded",
+        "actual_sha256": "94c54de3321000eabbc3c3a42a5d838410fb859a1c5b2460e6c2f6d773622ded",
+        "sha256_match": true,
+        "size_bytes": 29381835
+      },
+      {
+        "path": "/users/a/e/aereinh/MoSAIC/code/weights/cinemyops/coarse.pt",
+        "exists": true,
+        "expected_sha256": "225dedc45271216f5718391af9e0131e996c432df89b61240bef5e52ee451f4c",
+        "actual_sha256": "225dedc45271216f5718391af9e0131e996c432df89b61240bef5e52ee451f4c",
+        "sha256_match": true,
+        "size_bytes": 4339573
+      },
+      {
+        "path": "/users/a/e/aereinh/MoSAIC/code/weights/cinemyops/fine_v1.pt",
+        "exists": true,
+        "expected_sha256": "05b31f649befeef8dd2003a0816310d03ee0385626c5c536db80faac9edacdab",
+        "actual_sha256": "05b31f649befeef8dd2003a0816310d03ee0385626c5c536db80faac9edacdab",
+        "sha256_match": true,
+        "size_bytes": 6594857
+      },
+      {
+        "path": "/users/a/e/aereinh/MoSAIC/code/weights/cinemyops/fine_v2.pt",
+        "exists": true,
+        "expected_sha256": "0f102c08c6d3374bd12e9d4d45585aa2017ffbf96192a0cdda1fb8653cc714fa",
+        "actual_sha256": "0f102c08c6d3374bd12e9d4d45585aa2017ffbf96192a0cdda1fb8653cc714fa",
+        "sha256_match": true,
+        "size_bytes": 6594857
+      }
+    ],
+    "myops_production_intended_usage": "fine_scar/coarse scar source only; MoSAIC edema weights are explicitly not authorized for MyoPS production graph in this task."
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "created_at_utc": "2026-08-01T12:15:42.271521+00:00",
+  "task_key": "20260801_care_test_docker_packaging",
+  "historical_organagent_nnunet_candidate": {
+    "leaderboard_time": "2026-05-21 00:23:31",
+    "Dice": 0.6691,
+    "HD": 21.0898,
+    "PRE": 0.6698,
+    "SEN": 0.7351
+  },
+  "mosaic_attributed_edema_candidate": {
+    "leaderboard_time": "2026-06-10 04:46:23",
+    "Dice": 0.6255,
+    "HD": 30.2965,
+    "PRE": 0.7557,
+    "SEN": 0.576,
+    "attribution_boundary": "MoSAIC-attributed by date/user rule only; exact hosted zip remains unresolved in local lineage evidence."
+  },
+  "package_summary": {
+    "package_a": "results/submissions/care_myocardium_validation/upload_ready/20260519_084057__nnUNet_MyoPS+nnUNet_CineMyoPS_5fold_baseline_round8/CARE-Myocardium-OrganAgent.zip",
+    "package_b": "results/submissions/care_myocardium_validation/upload_ready/20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED/CARE-Myocardium-OrganAgent.zip",
+    "package_a_exists": true,
+    "package_b_exists": true,
+    "package_a_sha256": "d594a763577d235bdc1ccbb41479de22c647bcbecc1ef6e9a3125fc66d543e24",
+    "package_b_sha256": "5b0d4143e451bba9177f937f02102f14676cfe699a1f1e027636ecf78b73abb3",
+    "myops_case_count_a": 15,
+    "myops_case_count_b": 15,
+    "package_all_myops_bytes_equal": true,
+    "package_all_myops_voxel_equal": true,
+    "package_all_myops_geometry_equal": true,
+    "cached_all_equal_package_a": true,
+    "fresh_all_equal_package_a": false,
+    "fresh_rerun_output_dir": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_packaging/nnunet_regen_myops",
+    "fresh_rerun_case_count": 0
+  },
+  "direct_upload_receipt_found": false,
+  "provenance_status": "NNUNET_EDEMA_PROVENANCE_UNRESOLVED",
+  "provenance_reason": "The package and cached historical predictions match, but a fresh current rerun has not produced 15/15 matching files.",
+  "docker_status": {
+    "docker_path": null,
+    "docker_version_exit_code": 127,
+    "docker_version_output": "docker command not found",
+    "podman_path": null,
+    "apptainer_path": "/usr/bin/apptainer",
+    "singularity_path": "/usr/bin/singularity",
+    "docker_available": false
+  },
+  "final_decision": "DOCKER_PACKAGING_BLOCKED_PROVENANCE"
+}

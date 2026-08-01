@@ -1,0 +1,16 @@
+{
+  "status": "PASS_FOR_BLOCKED_PACKET",
+  "cases": {
+    "assume_0_6691_without_package_replay": "PASS: package replay/equality audit is recorded",
+    "use_mosaic_edema_in_myops_production": "PASS_FOR_BLOCKED: no production Docker source was created",
+    "wrong_output_directory_name": "BLOCKED_NOT_RUN: Docker output tests did not run",
+    "container_downloads_weights_at_runtime": "BLOCKED_NOT_RUN: no container was built",
+    "absolute_users_or_overflow_dependency": "BLOCKED_NOT_RUN: no container was built",
+    "interactive_prompt_required": "BLOCKED_NOT_RUN: no container was built",
+    "docker_and_host_outputs_differ": "BLOCKED_NOT_RUN: no Docker output exists",
+    "cpu_path_untested": "BLOCKING_REASON: CPU Docker path untested because Docker CLI is unavailable",
+    "tar_gz_committed_to_git": "PASS: no tar.gz generated or staged",
+    "organizer_email_sent_automatically": "PASS: no organizer email sent",
+    "notify_before_push_terminal_completion": "PASS_PENDING_FINAL_FLOW: notifier is intended only after commit/push/remote SHA verification"
+  }
+}

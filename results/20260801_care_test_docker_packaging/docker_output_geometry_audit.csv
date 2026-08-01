@@ -1,0 +1,2 @@
+task,case_id,status,shape_equal,spacing_equal,origin_equal,direction_equal,label_set_valid,note
+blocked,,DOCKER_PACKAGING_BLOCKED_PROVENANCE,,,,Docker runtime unavailable before source intervention or equivalence testing.

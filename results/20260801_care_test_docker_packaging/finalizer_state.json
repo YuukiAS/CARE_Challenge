@@ -1,0 +1,9 @@
+{
+  "state": "blocked",
+  "controller_decision": "DOCKER_PACKAGING_BLOCKED_PROVENANCE",
+  "provenance_status": "NNUNET_EDEMA_PROVENANCE_UNRESOLVED",
+  "docker_build_complete": false,
+  "docker_run_complete": false,
+  "docker_export_complete": false,
+  "validator_phase_final": "ready_to_validate_blocked_packet"
+}
