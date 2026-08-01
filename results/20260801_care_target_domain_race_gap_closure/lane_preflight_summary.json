@@ -1,0 +1,53 @@
+{
+  "created_at": "2026-08-01T04:31:30+00:00",
+  "existing_interactive_job_id": "61220581",
+  "existing_interactive_partition": "htzhulab",
+  "existing_interactive_node": "g1807htzh01",
+  "formal_training_credit": false,
+  "lane_status": {
+    "M0R_FAITHFUL_CONTROL": {
+      "batch_manifest_fold2_sha256": "917a8312fd3bffdd45c1d6295ca16b04e02804639c4aec243804b799728d6d60",
+      "batch_manifest_fold3_sha256": "2a5599328357ca35978a6577b11f38fb97df8039da94067cfd5f7cf3ffce955c",
+      "optimizer": "AdamW",
+      "fold2_queue_job_id": "61565286",
+      "fold2_queue_state_at_last_check": "RUNNING",
+      "fold3_cancelled_queue_job_id": "61565287",
+      "fold3_interactive_takeover_pid": 4039804,
+      "scheduler": "LambdaLR_constant",
+      "status": "PREFLIGHT_PASS_READY_FOR_HTZHULAB_TRAINING",
+      "stock_parity_fold2": "PASS",
+      "stock_parity_fold3": "PASS"
+    },
+    "M1_MYOPSNET_L_CARE": {
+      "local_c0_lge_t2_forward": "PASS",
+      "uses_t1_or_t2star_placeholders": false,
+      "pinned_source_at_required_commit": true,
+      "required_commit": "479f07028c5bdb12b405dc92212aa48ae6ba947a",
+      "required_source": "https://github.com/QJYBall/MyoPS-Net",
+      "status": "PREFLIGHT_PASS_SOURCE_PINNED_READY_FOR_WRAPPER_TRAINING"
+    },
+    "M2_I_MMSEG_CARE": {
+      "google_drive_assets_required": true,
+      "pinned_source_at_required_commit": true,
+      "rank_channel_substitute_used": false,
+      "required_commit": "90f46c4eb72924509895fcda6bc6a3b8c3316e66",
+      "required_source": "https://github.com/zzzzzzl24/I_MMSeg",
+      "status": "PREFLIGHT_PASS_SOURCE_READY_ASSET_CHECK_REQUIRED"
+    },
+    "M3_CARE_TDS": {
+      "batch_manifest_fold2_sha256": "917a8312fd3bffdd45c1d6295ca16b04e02804639c4aec243804b799728d6d60",
+      "batch_manifest_fold3_sha256": "2a5599328357ca35978a6577b11f38fb97df8039da94067cfd5f7cf3ffce955c",
+      "device_used": "cuda",
+      "fold2_gradient_smoke": "PASS",
+      "fold2_formal_training_launched_on_interactive": true,
+      "fold2_formal_training_steps_complete": 4000,
+      "fold3_gradient_smoke": "PASS",
+      "fold3_formal_training_steps_complete": 4000,
+      "status": "PREFLIGHT_PASS_READY_FOR_INTERACTIVE_TRAINING",
+      "stock_class4_5_logits_used_for_final_prediction": false
+    }
+  },
+  "next_scheduler_action": "submit M0R/M1/M2 htzhulab queue jobs after command files are written; run M3 first on existing interactive allocation 61220581; when an interactive lane finishes, cancel one still-pending queued lane and run it serially in the interactive allocation",
+  "task_key": "20260801_care_target_domain_race_gap_closure",
+  "validation_upload_authorized": false
+}

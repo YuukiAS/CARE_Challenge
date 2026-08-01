@@ -1,0 +1,4 @@
+fold,event,timestamp,epochs,steps_per_epoch,device
+2,start,2026-08-01T04:38:44.435304+00:00,1,1,cuda
+2,epoch,2026-08-01T04:38:44.978628+00:00,1,1,2.762484073638916,cuda
+2,complete,2026-08-01T04:38:47.198830+00:00,1,1,2.762484073638916,cuda

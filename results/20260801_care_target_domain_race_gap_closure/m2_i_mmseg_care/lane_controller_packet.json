@@ -1,0 +1,26 @@
+{
+  "blocking_gap": null,
+  "clip_or_text_prior_signal_seen": true,
+  "created_at": "2026-08-01T04:30:32.262237+00:00",
+  "formal_training_credit": false,
+  "git_head": "2cbd2f9a3574f4bf285cffc0ff6be3d37e346063",
+  "intensity_prior_signal_seen": false,
+  "lane_id": "M2_I_MMSEG_CARE",
+  "next_required_action": "download/pin official source and upstream assets only; do not replace I-MMSeg with rank-channel lite features",
+  "official_source_at_required_commit": true,
+  "official_source_exists": true,
+  "official_source_head": "90f46c4eb72924509895fcda6bc6a3b8c3316e66",
+  "official_source_path": "third_party/I_MMSeg_PINNED",
+  "python_file_count": 9,
+  "rank_channel_substitute_used": false,
+  "required_commit": "90f46c4eb72924509895fcda6bc6a3b8c3316e66",
+  "required_source": "https://github.com/zzzzzzl24/I_MMSeg",
+  "status": "PREFLIGHT_PASS_SOURCE_READY_ASSET_CHECK_REQUIRED",
+  "task_key": "20260801_care_target_domain_race_gap_closure",
+  "torch_env": {
+    "cuda_available": false,
+    "cuda_device_count": 0,
+    "device_name": null,
+    "torch": "2.11.0+cu130"
+  }
+}

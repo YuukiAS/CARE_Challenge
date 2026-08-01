@@ -1,0 +1,142 @@
+{
+  "batch_manifest": {
+    "folds": {
+      "fold2": {
+        "actual_train_case_count": 51,
+        "first_case": "Case2002",
+        "last_case": "Case3045",
+        "path": "results/20260801_care_target_domain_race_gap_closure/batch_manifest_fold2.jsonl",
+        "sha256": "917a8312fd3bffdd45c1d6295ca16b04e02804639c4aec243804b799728d6d60",
+        "steps": 4000
+      },
+      "fold3": {
+        "actual_train_case_count": 51,
+        "first_case": "Case2001",
+        "last_case": "Case3044",
+        "path": "results/20260801_care_target_domain_race_gap_closure/batch_manifest_fold3.jsonl",
+        "sha256": "2a5599328357ca35978a6577b11f38fb97df8039da94067cfd5f7cf3ffce955c",
+        "steps": 4000
+      }
+    },
+    "status": "PASS"
+  },
+  "contract_checks": {
+    "detached_soft_wall_lv_context": true,
+    "independent_heads": [
+      "scar",
+      "pure_edema",
+      "injury",
+      "boundary"
+    ],
+    "loss_terms_enter_total": [
+      "scar_bce",
+      "pure_edema_bce",
+      "injury_bce",
+      "boundary_bce",
+      "scar_injury_containment",
+      "pure_edema_injury_containment"
+    ],
+    "stock_class4_5_logits_used_for_final_prediction": false,
+    "uses_f0": true
+  },
+  "created_at": "2026-08-01T04:28:48.213762+00:00",
+  "device_used": "cuda",
+  "formal_training_credit": false,
+  "git_head": "2cbd2f9a3574f4bf285cffc0ff6be3d37e346063",
+  "lane_id": "M3_CARE_TDS",
+  "next_required_action": "run M3 first in interactive allocation 61220581, then perform all-checkpoint inner full-volume selection",
+  "smoke_reports": {
+    "fold2": {
+      "f0_shape": [
+        1,
+        32,
+        16,
+        64,
+        64
+      ],
+      "final_logits_shape": [
+        1,
+        5,
+        16,
+        64,
+        64
+      ],
+      "fold": 2,
+      "head_grad_checks": {
+        "boundary_head.net.3.weight": true,
+        "injury_head.net.3.weight": true,
+        "pure_edema_head.net.3.weight": true,
+        "scar_head.net.3.weight": true
+      },
+      "input_shape": [
+        1,
+        3,
+        16,
+        64,
+        64
+      ],
+      "loss_terms": [
+        "boundary_bce",
+        "injury_bce",
+        "pure_edema_bce",
+        "pure_edema_injury_containment",
+        "scar_bce",
+        "scar_injury_containment",
+        "total"
+      ],
+      "status": "PASS",
+      "total_loss": 3.007190704345703,
+      "uses_stock_pathology_logits_for_final": false
+    },
+    "fold3": {
+      "f0_shape": [
+        1,
+        32,
+        16,
+        64,
+        64
+      ],
+      "final_logits_shape": [
+        1,
+        5,
+        16,
+        64,
+        64
+      ],
+      "fold": 3,
+      "head_grad_checks": {
+        "boundary_head.net.3.weight": true,
+        "injury_head.net.3.weight": true,
+        "pure_edema_head.net.3.weight": true,
+        "scar_head.net.3.weight": true
+      },
+      "input_shape": [
+        1,
+        3,
+        16,
+        64,
+        64
+      ],
+      "loss_terms": [
+        "boundary_bce",
+        "injury_bce",
+        "pure_edema_bce",
+        "pure_edema_injury_containment",
+        "scar_bce",
+        "scar_injury_containment",
+        "total"
+      ],
+      "status": "PASS",
+      "total_loss": 2.8584964275360107,
+      "uses_stock_pathology_logits_for_final": false
+    }
+  },
+  "status": "PREFLIGHT_PASS_READY_FOR_INTERACTIVE_TRAINING",
+  "task_key": "20260801_care_target_domain_race_gap_closure",
+  "torch_env": {
+    "cuda_available": true,
+    "cuda_device_count": 1,
+    "device_name": "NVIDIA H100 NVL",
+    "torch": "2.11.0+cu130"
+  }
+}

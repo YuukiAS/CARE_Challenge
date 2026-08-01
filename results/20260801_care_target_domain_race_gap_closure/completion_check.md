@@ -9,6 +9,10 @@
 - existing_interactive_job_id: `61220581`
 - old_M0_classification: `HIGH_LR_SHORT_FINETUNE_NEGATIVE`
 - formal_lane_training_started: `false`
-- queue_jobs_submitted_by_this_goal: `false`
-- interactive_steps_started_by_this_goal: `false`
+- queue_jobs_submitted_by_this_goal: `true`
+- interactive_steps_started_by_this_goal: `true`
+- active_interactive_lane: `M3_CARE_TDS`
+- active_interactive_launcher_pid: `4032144`
+- submitted_queue_jobs: `61565286,61565287,61565288,61565289`
+- m2_status: `ASSET_CHECK_REQUIRED_NO_FAKE_JOB`
 - validator_required_before_final_completion: `scripts/validation/validate_target_domain_race_gap_closure.py --phase final`

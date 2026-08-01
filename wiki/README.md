@@ -1,12 +1,12 @@
 # CARE 架构 Wiki
 
 architecture_version: `care-target-domain-gap-closure-active-after-interactive-recovery-20260801`
-latest_verified_runtime: `faithful target-domain four-lane gap closure continues with verified existing htzhulab interactive allocation 61220581 on g1807htzh01`
-latest_scientific_status: `CONTROLLER_ACTIVE_CONTINUATION: previous interactive-lost blocked packet is superseded, no M0R/M1/M2/M3 formal training result yet`
+latest_verified_runtime: `M3 fold2/fold3 complete in interactive allocation 61220581; M0R fold2 running in job 61565286; M0R fold3 running by interactive takeover PID 4039804`
+latest_scientific_status: `CONTROLLER_ACTIVE_CONTINUATION: previous interactive-lost blocked packet is superseded; training is active, M2 remains source-pinned asset-check-required`
 latest_controller_task: `20260801_care_target_domain_race_gap_closure`
 route_status: `MAIN_ONLY_TARGET_DOMAIN_GAP_CLOSURE_ACTIVE_CONTINUATION`
 
-当前机器真值是 `prompts/routes/handoffs/CURRENT.md`。完整三模态四模型缺口闭合任务已完成 W0 启动审计；此前资源前提阻塞结论已被用户提供并经 controller 验证的 `61220581 / htzhulab / g1807htzh01` RUNNING GPU allocation 撤销。旧 M0 已重新审计为 `HIGH_LR_SHORT_FINETUNE_NEGATIVE`，不能作为忠实目标域微调负结果；M0R/M1/M2/M3 还没有正式训练结果，当前 controller 应继续实现、preflight 和调度，validation/Docker upload 未启动。
+当前机器真值是 `prompts/routes/handoffs/CURRENT.md`。完整三模态四模型缺口闭合任务已完成 W0 启动审计；此前资源前提阻塞结论已被用户提供并经 controller 验证的 `61220581 / htzhulab / g1807htzh01` RUNNING GPU allocation 撤销。旧 M0 已重新审计为 `HIGH_LR_SHORT_FINETUNE_NEGATIVE`，不能作为忠实目标域微调负结果。当前 M3 fold2/fold3 已完成 4000-step interactive 训练；M0R fold2 job `61565286` 正在跑；M0R fold3 从 pending job `61565287` 取消后接到 interactive allocation，launcher PID `4039804`；M1 fold2/fold3 jobs `61565288`/`61565289` 仍 pending。M2 官方 source 已 pin，但 Google Drive ViT/model weights 未落地，因此保持 asset check，不做替代训练。
 
 ## 2026-08-01 目标域四模型缺口闭合继续执行证据
 
@@ -33,6 +33,13 @@ scientific decision:
 results/20260801_care_target_domain_race_gap_closure/scientific_decision.json
 scientific_decision: CONTROLLER_ACTIVE_CONTINUATION
 previous_decision_superseded: OPERATIONALLY_BLOCKED_EXISTING_INTERACTIVE_LOST
+
+scheduler receipt:
+results/20260801_care_target_domain_race_gap_closure/scheduler_receipt.json
+M3: fold2/fold3 complete 4000 steps
+M0R: fold2 RUNNING job 61565286; fold3 interactive takeover PID 4039804
+M1: fold2/fold3 PENDING jobs 61565288/61565289
+M2: source pinned, Google Drive assets required
 
 strict validator:
 results/20260801_care_target_domain_race_gap_closure/strict_validator_report.json

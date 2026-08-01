@@ -1,0 +1,3 @@
+fold,event,timestamp,target_optimizer_steps,num_epochs,num_iterations_per_epoch,save_every,optimizer,scheduler,pretrained_checkpoint,device,formal_credit
+2,start,2026-08-01T04:40:12.103316+00:00,4000,16,250,2,AdamW,LambdaLR_constant,/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_2/checkpoint_final.pth,cuda,pending
+3,start,2026-08-01T04:47:20.031586+00:00,4000,16,250,2,AdamW,LambdaLR_constant,/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_3/checkpoint_final.pth,cuda,pending

@@ -1,8 +1,9 @@
 timestamp,record_type,job_id,name,partition,observed_state,terminal_required,terminal_state,submitted_by_this_goal,notes
-2026-08-01T04:05:54.808325+00:00,observed_existing_job,61392148,create-tunnel_tailscale,general,RUNNING,false,NONE,false,not a usable htzhulab interactive allocation for this goal
-2026-08-01T04:05:54.808346+00:00,observed_existing_job,61350432,create-tunnel_cloudflared_backup,general,RUNNING,false,NONE,false,not a usable htzhulab interactive allocation for this goal
-2026-08-01T04:05:54.808354+00:00,observed_existing_job,61144610,create-tunnel_tailscale,general,RUNNING,false,NONE,false,not a usable htzhulab interactive allocation for this goal
-2026-08-01T04:05:54.808360+00:00,observed_existing_job,60585184,create-tunnel_cursor,general,RUNNING,false,NONE,false,not a usable htzhulab interactive allocation for this goal
-2026-08-01T04:05:54.808365+00:00,observed_existing_job,60397663,create-tunnel_cloudflared,general,RUNNING,false,NONE,false,not a usable htzhulab interactive allocation for this goal
-2026-08-01T04:05:54.808370+00:00,observed_existing_job,60166590,create-tunnel_vscode,general,RUNNING,false,NONE,false,not a usable htzhulab interactive allocation for this goal
-2026-08-01T04:05:54.808375+00:00,goal_training_submission,,,htzhulab,NOT_SUBMITTED,true,NONE,false,blocked before M3/M0R/M1/M2 scheduling because existing interactive allocation was lost
+2026-08-01T04:40:58-04:00,existing_interactive_allocation,61220581,CareDPR5d,htzhulab,RUNNING,false,NONE,false,verified usable H100 interactive allocation on g1807htzh01; M3 launcher PID 4032144 is running inside this allocation
+2026-08-01T04:40:58-04:00,interactive_training_step,61220581,M3_CARE_TDS,htzhulab,COMPLETED,true,COMPLETED,true,M3 fold2/fold3 serial training completed 4000 steps each; log /users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/logs/m3_interactive_61220581_launcher_v2.log
+2026-08-01T04:40:58-04:00,queued_training_job,61565286,M0RGap,htzhulab,RUNNING,true,RUNNING,true,M0R fold2 formal job running; log logs/M0RGap_fold2_61565286_20260801_004005.log
+2026-08-01T04:40:58-04:00,queued_training_job,61565287,M0RGap,htzhulab,CANCELLED,true,CANCELLED,true,M0R fold3 queue job cancelled after M3 freed interactive allocation; sacct state CANCELLED by 397557
+2026-08-01T04:47:13-04:00,interactive_training_step,61220581,M0RGap,htzhulab,RUNNING,true,RUNNING,true,M0R fold3 takeover running in existing interactive allocation; launcher PID 4039804; log /users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/logs/m0r_fold3_interactive_61220581_launcher.log
+2026-08-01T04:40:58-04:00,queued_training_job,61565288,M1MyoPS,htzhulab,PENDING,true,PENDING,true,M1 fold2 queued; cancel and run interactively if M3/M0R frees before this starts
+2026-08-01T04:40:58-04:00,queued_training_job,61565289,M1MyoPS,htzhulab,PENDING,true,PENDING,true,M1 fold3 queued; cancel and run interactively if M3/M0R frees before this starts
+2026-08-01T04:40:58-04:00,asset_gated_lane,,M2_I_MMSEG_CARE,htzhulab,ASSET_CHECK_REQUIRED,false,NONE,false,pinned source present but Google Drive ViT/model assets not downloaded; no rank-channel or empty substitute job submitted
