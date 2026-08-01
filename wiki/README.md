@@ -1,10 +1,48 @@
 # CARE 架构 Wiki
 
-architecture_version: `care-test-docker-provenance-reconcile-deployable-nondeterministic-20260801`
-latest_verified_runtime: `package A labelwise audit completed; used nnU-Net channels 1/2/3/4 matched 4/15; three frozen replay variants did not exact reproduce package A; second checkpoint_best default-TTA deployment replay matched geometry 15/15 but array only 7/15`
-latest_scientific_status: `SERVER_BUNDLE_BLOCKED: current nnU-Net deployment source is not two-run voxel deterministic, so workstation Docker bundle must not start`
-latest_controller_task: `20260801_care_test_docker_provenance_reconcile_and_bundle`
-route_status: `MAIN_ONLY_TEST_DOCKER_RECONCILE_BLOCKED_RETURN_TO_PLANNER`
+architecture_version: `care-test-docker-final-model-freeze-bundle-ready-20260801`
+latest_verified_runtime: `Planner-frozen final model bundled; MyoPS production graph uses MoSAIC scar plus Dataset501 5-fold nnU-Net anatomy/pure-edema; MoSAIC Cine replay completed 15/15; source intervention and strict validator passed`
+latest_scientific_status: `SERVER_BUNDLE_READY: server-side transfer bundle is ready for workstation CPU Docker determinism/equivalence gates; no hosted metric claim is made`
+latest_controller_task: `20260801_care_test_docker_final_model_freeze_and_bundle`
+route_status: `MAIN_ONLY_TEST_DOCKER_FINAL_BUNDLE_READY_RETURN_TO_PLANNER`
+
+当前机器真值是 `prompts/routes/handoffs/CURRENT.md`。本次按 Planner 冻结的最终模型完成服务器端 bundle：MyoPS 不再使用 MoSAIC edema 分支，而是用 MoSAIC repo-final scar 与 Dataset501 五折 nnU-Net 的 anatomy/pure-edema 组合；CineMyoPS 继续使用 MoSAIC repo-final Cine，并已从 4/15 补齐到 15/15。旧的 `0.6691` 归属仍保持 `UNRESOLVED_NOT_CLAIMED`，13 个 GPU replay 变化体素只记录为浮点/并行差异，不作为打包阻塞。
+
+关键证据：
+
+```text
+results/20260801_care_test_docker_final_model_freeze_and_bundle/final_submission_model_contract.json
+results/20260801_care_test_docker_final_model_freeze_and_bundle/production_asset_manifest.json
+results/20260801_care_test_docker_final_model_freeze_and_bundle/fresh_mosaic_cine_15case_manifest.json
+results/20260801_care_test_docker_final_model_freeze_and_bundle/source_intervention_receipt.json
+results/20260801_care_test_docker_final_model_freeze_and_bundle/transfer_bundle_receipt.json
+results/20260801_care_test_docker_final_model_freeze_and_bundle/strict_validator_report.json
+```
+
+## 2026-08-01 最终冻结模型服务器端 bundle ready
+
+```text
+result_root:
+results/20260801_care_test_docker_final_model_freeze_and_bundle
+
+terminal_state:
+SERVER_BUNDLE_READY
+
+transfer_bundle:
+/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/transfer/transfer_bundle
+
+archive:
+/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/transfer/care2026_myocardium_final_model_freeze_transfer_bundle.tar.gz
+
+archive_sha256:
+46beb1a1e3af291cba55a05d382a5e3ffe4adf759f72349610421597bda734ea
+
+source intervention:
+PASS
+
+strict validator:
+PASS
+```
 
 当前机器真值是 `prompts/routes/handoffs/CURRENT.md`。这次已经按新合同纠正了上一轮过窄的阻塞口径：没有直接把完整六类数组 mismatch 当成终点，而是先按语义标签审计 production 会使用的 nnU-Net anatomy `1/2/3` 和 pure-edema `4`。审计结果是 package A 与上一轮 fresh replay 几何 15/15 一致，但 full array 4/15、一致的 used channels 也只有 4/15；11 个不一致病例合计 120 个体素差异，横跨 anatomy、pure edema、scar 和背景。三个冻结 variant 均没有 exact 复现 package A，因此历史 `0.6691` lineage 保持 `UNRESOLVED`，不得作 hosted claim。
 

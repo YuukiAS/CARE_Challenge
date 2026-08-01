@@ -1,0 +1,91 @@
+{
+  "asset_manifest_sha256": "e1c634830aed0ca55edb08643168ba76504a54b7f94433987d90319dea434314",
+  "cinemyops": {
+    "final_decode": "frozen MoSAIC threshold/postprocess/decode",
+    "official_labels": {
+      "0": "background",
+      "200": "myocardium",
+      "2221": "scar",
+      "500": "LV"
+    },
+    "source": "MoSAIC repo-final Cine",
+    "tta": {
+      "enabled": true,
+      "flips": [
+        "horizontal",
+        "vertical"
+      ]
+    },
+    "weights": [
+      "cinemyops/coarse.pt",
+      "cinemyops/fine_v1.pt",
+      "cinemyops/fine_v2.pt"
+    ],
+    "z_spacings_mm": [
+      4,
+      8,
+      16
+    ]
+  },
+  "created_at_utc": "2026-08-01T16:46:17+00:00",
+  "frozen_by_planner": true,
+  "historical_0_6691_lineage_status": "UNRESOLVED_NOT_CLAIMED",
+  "hosted_metric_claim_authorized": false,
+  "known_gpu_float_parallel_delta": {
+    "blocking": false,
+    "changed_voxels": 13,
+    "interpretation": "Recorded as GPU floating/parallel inference variance only."
+  },
+  "model_selection_closed": true,
+  "myops": {
+    "anatomy": {
+      "raw_classes": {
+        "1": "myocardium",
+        "2": "LV blood",
+        "3": "RV blood"
+      },
+      "source": "Same Dataset501 5-fold nnU-Net"
+    },
+    "official_labels": {
+      "0": "background",
+      "1220": "edema",
+      "200": "myocardium",
+      "2221": "scar",
+      "500": "LV",
+      "600": "RV"
+    },
+    "priority": [
+      "scar",
+      "pure_edema",
+      "anatomy",
+      "background"
+    ],
+    "pure_edema": {
+      "configuration": "3d_fullres",
+      "folds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "raw_class": 4,
+      "source": "Dataset501 5-fold nnU-Net checkpoint_best.pth",
+      "trainer": "nnUNetTrainer_500epochs",
+      "tta": "default"
+    },
+    "scar": {
+      "forbidden_weights": [
+        "myops/coarse_edema.pt",
+        "myops/edema.pt"
+      ],
+      "source": "MoSAIC repo-final scar",
+      "weights": [
+        "myops/coarse.pt",
+        "myops/fine_scar.pt"
+      ]
+    }
+  },
+  "server_gpu_bitwise_repeat_required": false,
+  "task_key": "20260801_care_test_docker_final_model_freeze_and_bundle"
+}

@@ -1,0 +1,147 @@
+{
+  "cinemyops_cases": [
+    "Case1001",
+    "Case1008",
+    "Case1015"
+  ],
+  "created_at_utc": "2026-08-01T16:46:25+00:00",
+  "host_smoke_status": "PASS",
+  "myops_cases": [
+    "Case1001",
+    "Case1008",
+    "Case1015"
+  ],
+  "records": [
+    {
+      "case_id": "Case1001",
+      "label_schema_ok": true,
+      "labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "output": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/host_sentinel_outputs/myops/Case1001_pred.nii.gz",
+      "sha256": "62e1bd1b54df765526f9aa85fac056a440697044b9bfcfbddfc051e30cc2771d",
+      "shape_zyx": [
+        6,
+        251,
+        212
+      ],
+      "track": "myops"
+    },
+    {
+      "case_id": "Case1008",
+      "label_schema_ok": true,
+      "labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "output": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/host_sentinel_outputs/myops/Case1008_pred.nii.gz",
+      "sha256": "c709245ac121cc729383c38303f517fca242b1b4c4c29e00b317229449063e19",
+      "shape_zyx": [
+        3,
+        259,
+        240
+      ],
+      "track": "myops"
+    },
+    {
+      "case_id": "Case1015",
+      "label_schema_ok": true,
+      "labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "output": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/host_sentinel_outputs/myops/Case1015_pred.nii.gz",
+      "sha256": "80848add11052926e268e30bf25c53339d69ef731f654906516d07d60e8f8004",
+      "shape_zyx": [
+        4,
+        260,
+        243
+      ],
+      "track": "myops"
+    },
+    {
+      "case_id": "Case1001",
+      "label_schema_ok": true,
+      "labels": [
+        0,
+        200,
+        500,
+        2221
+      ],
+      "output": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_mosaic_outputs/cinemyops/Case1001_pred.nii.gz",
+      "sha256": "6b2a731c560306503f12636e7652e22a2287d3bbcc2e110f2b2c4068555fe80a",
+      "shape_zyx": [
+        8,
+        256,
+        256
+      ],
+      "spacing_xyz": [
+        1.3280999660491943,
+        1.3280999660491943,
+        5.0
+      ],
+      "track": "cinemyops"
+    },
+    {
+      "case_id": "Case1008",
+      "label_schema_ok": true,
+      "labels": [
+        0,
+        200,
+        500,
+        2221
+      ],
+      "output": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_mosaic_outputs/cinemyops/Case1008_pred.nii.gz",
+      "sha256": "014dd9b1ac397036e38ba2de054bf5a309b5e2b5e2496a960ea0fabb65a1a862",
+      "shape_zyx": [
+        20,
+        256,
+        256
+      ],
+      "spacing_xyz": [
+        1.3672000169754028,
+        1.3672000169754028,
+        4.0
+      ],
+      "track": "cinemyops"
+    },
+    {
+      "case_id": "Case1015",
+      "label_schema_ok": true,
+      "labels": [
+        0,
+        200,
+        500,
+        2221
+      ],
+      "output": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_mosaic_outputs/cinemyops/Case1015_pred.nii.gz",
+      "sha256": "5b2357cc35c8edc9438a97933941538b53b6e6a18125843bc76f51e42e1d5bc6",
+      "shape_zyx": [
+        5,
+        268,
+        269
+      ],
+      "spacing_xyz": [
+        1.25,
+        1.25,
+        14.000000953674316
+      ],
+      "track": "cinemyops"
+    }
+  ],
+  "sentinel_case_policy": "3 fixed validation cases per track, no model selection",
+  "task_key": "20260801_care_test_docker_final_model_freeze_and_bundle"
+}

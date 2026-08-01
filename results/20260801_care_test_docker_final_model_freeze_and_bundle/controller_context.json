@@ -1,0 +1,21 @@
+{
+  "allowed_blockers": [
+    "fixed weight or source asset missing",
+    "SHA256 mismatch",
+    "fixed production graph cannot run",
+    "MoSAIC Cine asset cannot load",
+    "source intervention failure",
+    "bundle validator failure"
+  ],
+  "explicit_nonblockers": [
+    "NNUNET_PROVENANCE_REPLAY_MISMATCH",
+    "NNUNET_DEPLOYABLE_SOURCE_NONDETERMINISTIC",
+    "package A non-15/15 exact",
+    "13 GPU changed voxels",
+    "historical 0.6691 unresolved"
+  ],
+  "runtime": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine",
+  "task_key": "20260801_care_test_docker_final_model_freeze_and_bundle",
+  "task_prompt": "prompts/tasks/20260801_care_test_docker_final_model_freeze_and_bundle_controller.md",
+  "transfer_bundle": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/transfer/transfer_bundle"
+}

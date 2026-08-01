@@ -1,16 +1,15 @@
-current_milestone_id: care_arc_clean_fold1_w3_stop
-current_task_key: 20260729_care_arc_clean_fold1
-method_name: CARE-ARC single-encoder anchor-relaxed reconstruction
-short_method_name: CARE_ARC_W3_STOP
-execution_label: CARE-ARC W0-W3 controller execution; clean fold blocked by mechanism
-  gate
-execution_code: CARE-ARC-W3-CONTOUR-LIMITED
-updated_at: '2026-07-29'
-current_result_root: results/20260729_care_arc_clean_fold1
-current_review_path: results/20260729_care_arc_clean_fold1/controller_report.md
-current_review_token: OPERATIONALLY_BLOCKED_BY_W3_MECHANISM_GATE
-wiki_fingerprint_status: CARE_ARC_W3_CONTOUR_LIMITED_MAPPER_UPDATED
-entrypoints_authority_status: FOLD1_CLEAN_FORBIDDEN_UNTIL_PLANNER_REPAIR
+current_milestone_id: care_test_docker_final_model_freeze_bundle
+current_task_key: 20260801_care_test_docker_final_model_freeze_and_bundle
+method_name: CARE2026 myocardium frozen final model Docker bundle
+short_method_name: CARE_TEST_DOCKER_FINAL_FREEZE
+execution_label: Planner-frozen MyoPS and CineMyoPS final submission model bundle
+execution_code: SERVER-BUNDLE-READY
+updated_at: '2026-08-01'
+current_result_root: results/20260801_care_test_docker_final_model_freeze_and_bundle
+current_review_path: results/20260801_care_test_docker_final_model_freeze_and_bundle/controller_report.md
+current_review_token: VERIFIED_COMPLETE
+wiki_fingerprint_status: FINAL_MODEL_FREEZE_BUNDLE_READY_MAPPER_UPDATED
+entrypoints_authority_status: WORKSTATION_CPU_DOCKER_DETERMINISM_GATE_NEXT
 main_only:
   branch: main
   worktree: /users/a/e/aereinh/CARE

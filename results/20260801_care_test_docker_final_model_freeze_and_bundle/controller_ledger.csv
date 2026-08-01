@@ -1,0 +1,7 @@
+step,status,evidence
+final model ledger,PASS,final_submission_model_ledger.md; final_submission_model_contract.json
+asset sha256/source closure,PASS,production_asset_manifest.json
+MoSAIC Cine 15/15 replay,PASS,fresh_mosaic_cine_15case_manifest.json
+host sentinel smoke,PASS,host_sentinel_manifest.json
+source intervention,PASS,source_intervention_receipt.json
+transfer bundle,PASS,transfer_bundle_receipt.json

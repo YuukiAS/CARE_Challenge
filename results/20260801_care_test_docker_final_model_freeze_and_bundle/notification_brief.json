@@ -1,0 +1,19 @@
+{
+  "blocked_or_failure_reason": "",
+  "commit_status": "complete",
+  "evidence_paths": [
+    "results/20260801_care_test_docker_final_model_freeze_and_bundle/controller_report.md",
+    "results/20260801_care_test_docker_final_model_freeze_and_bundle/final_submission_model_contract.json",
+    "results/20260801_care_test_docker_final_model_freeze_and_bundle/production_asset_manifest.json",
+    "results/20260801_care_test_docker_final_model_freeze_and_bundle/fresh_mosaic_cine_15case_manifest.json",
+    "results/20260801_care_test_docker_final_model_freeze_and_bundle/source_intervention_receipt.json",
+    "results/20260801_care_test_docker_final_model_freeze_and_bundle/transfer_bundle_receipt.json",
+    "results/20260801_care_test_docker_final_model_freeze_and_bundle/strict_validator_report.json"
+  ],
+  "final_status": "complete",
+  "key_conclusion": "最终提交模型已按 Planner 冻结并完成服务器端 transfer bundle；MyoPS 禁用 MoSAIC edema 分支，CineMyoPS MoSAIC replay 已补齐 15/15；历史 0.6691 不认领、不作 hosted metric claim。",
+  "next_step": "在工位 Docker 上执行同一 CPU image 双跑确定性门和 server-host-vs-Docker 容差等价门；不得上传 validation/Docker 或给组织方发邮件，除非 Planner/用户另行授权。",
+  "push_status": "origin/main verified",
+  "slurm_terminal_status": "Frozen inference completed on existing htzhulab allocation 61220581; no new training submitted.",
+  "task_name": "20260801_care_test_docker_final_model_freeze_and_bundle"
+}

@@ -1,0 +1,14 @@
+{
+  "archive": {
+    "archive": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/transfer/care2026_myocardium_final_model_freeze_transfer_bundle.tar.gz",
+    "sha256": "46beb1a1e3af291cba55a05d382a5e3ffe4adf759f72349610421597bda734ea",
+    "size_bytes": 1771262681
+  },
+  "created_at_utc": "2026-08-01T16:47:55+00:00",
+  "local_completion_state": "complete",
+  "remote_publication_state": "commit_and_origin_main_push_verified_before_notification",
+  "scientific_claim": "No hosted metric claim; historical 0.6691 unresolved.",
+  "task_key": "20260801_care_test_docker_final_model_freeze_and_bundle",
+  "terminal_state": "SERVER_BUNDLE_READY",
+  "transfer_bundle_receipt": "results/20260801_care_test_docker_final_model_freeze_and_bundle/transfer_bundle_receipt.json"
+}

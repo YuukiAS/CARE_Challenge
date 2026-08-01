@@ -1,0 +1,17 @@
+{
+  "archive": {
+    "archive": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/transfer/care2026_myocardium_final_model_freeze_transfer_bundle.tar.gz",
+    "sha256": "46beb1a1e3af291cba55a05d382a5e3ffe4adf759f72349610421597bda734ea",
+    "size_bytes": 1771262681
+  },
+  "bundle_dir": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/transfer/transfer_bundle",
+  "bundle_ready": true,
+  "created_at_utc": "2026-08-01T16:46:31+00:00",
+  "file_count": 111,
+  "myops_forbidden_mosaic_edema_present": false,
+  "sentinel_host_smoke_pass": true,
+  "sentinel_manifest": "results/20260801_care_test_docker_final_model_freeze_and_bundle/host_sentinel_manifest.json",
+  "source_intervention_pass": true,
+  "source_intervention_receipt": "results/20260801_care_test_docker_final_model_freeze_and_bundle/source_intervention_receipt.json",
+  "task_key": "20260801_care_test_docker_final_model_freeze_and_bundle"
+}
