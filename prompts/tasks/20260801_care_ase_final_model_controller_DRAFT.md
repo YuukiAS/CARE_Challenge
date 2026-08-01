@@ -2,7 +2,7 @@
 task_key: 20260801_care_ase_final_model
 task_kind: scientific_milestone
 task_type: final_asymmetric_pathology_model
-status: DRAFT_REVIEW_PENDING_NOT_AUTHORIZED
+status: DRAFT_FINAL_AUDITED_NOT_AUTHORIZED
 risk_level: critical
 route_change: false
 scientific_decision_scope: promotion_candidate
@@ -42,77 +42,88 @@ implementation_contract_path: prompts/blueprints/CARE_ASE_exact_implementation_c
 implementation_contract_amendment_paths:
   - prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_amendment01_20260801.yaml
   - prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_amendment02_controller_only_interactive_20260801.yaml
+  - prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_amendment03_final_audit_20260801.yaml
 ---
 
-# CARE-ASE Final Model Controller — CONTROLLER-ONLY INTERACTIVE DRAFT
+# CARE-ASE Final Model Controller — FINAL-AUDITED CONTROLLER-ONLY INTERACTIVE DRAFT
 
-当前文件只供下一轮 GPT 设计审核，不授权实现、训练、Slurm、CURRENT/wiki 前移或 runtime push。未来正式授权时必须一次性打开执行、训练、main commit、`origin/main` push 和 terminal notifier 权限；运行中不再启用 planning critic、独立 reviewer 或第二个人工继续门。
+当前文件仍然不授权实现、训练、GPU 作业、validation、Docker、hosted claim、CURRENT/wiki 前移或 runtime push。正式执行时，用户必须一次性把 frontmatter 中 execution/training/commit/push 权限改为授权状态，并保留 validation、Docker 与 hosted claim 为 false；运行过程中不再设置 planning critic、independent reviewer 或第二个人工继续门。
 
-## 1. 冻结设计真值
+## 1. 唯一设计真值与优先级
 
-执行时按以下优先级读取，后者覆盖冲突字段：
+正式 Controller 必须按以下顺序读取，后者覆盖冲突字段：
 
 ```text
 prompts/blueprints/CARE_ASE_final_model_blueprint_v2_20260801.md
 prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_20260801.yaml
 prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_amendment01_20260801.yaml
 prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_amendment02_controller_only_interactive_20260801.yaml
+prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_amendment03_final_audit_20260801.yaml
 ```
 
-不可降级的核心：
+`prompts/tasks/20260801_care_ase_final_model_planning_review.md` 是历史审查记录，不是 runtime 权限或科学字段来源。当前 `planning_review_required: false`、`review_required: false`，不得恢复其中已经被 Amendment02/03 取代的 reviewer、a100 mirror 或候选提交顺序。
 
-- 保留完整 stock encoder、bottleneck、低中分辨率 decoder；anatomy 保留原 stock 最高两级路径；scar/edema 各复制最高两级 stock decoder stage，不得随机重建小头。
-- modality、proposal、soft-wall、extent、context 只通过零初始化残差投影或 Amendment02 冻结的确定性 ramp 进入；compatibility/step0 anatomy、scar、edema final logit parity 均 `<=1e-6`。
-- 正常 final 不读取、相加、蒸馏或回退到 stock class4/class5 logits。
-- no-T2 使用排除 class4 的五类最终竞争，edema-exclusive 参数梯度精确为0。
-- Stage C 只读每 fold `actual-train complete`；禁止 inner、outer 或全部80例泄漏。
-- 每 fold 只选择一个完整 checkpoint；禁止病种或 anatomy 跨 step 参数拼接。
-- sentinel case 必须标记 train/inner/outer；只有 patient-held-out outer sentinel 可进入 promotion gate。
-- early metric、视觉差或某个 hard case 暂未改善，均不能阻止 W3 或跳过 Stage A/B/C。
+不可降级的模型边界：
 
-## 2. Agent Flow：Controller 盯住单 Executor
+- 完整继承 stock encoder、bottleneck、低中分辨率 decoder；anatomy 保留 stock 最高两级路径。
+- scar 和 pure-edema 各复制 stock 最高两级完整 decoder stage，包括 transition、skip fusion、卷积块和 deep supervision classifier。
+- 所有新证据只能通过零初始化残差投影或 Amendment03 冻结的 extent/wall ramp 进入；step-0 anatomy、scar、edema final logits 与 stock 对应行最大绝对误差均不超过 `1e-6`。
+- 正常推理不得读取、叠加、蒸馏或 fallback 到 stock class4/class5 logits。
+- no-T2 使用排除 class4 的五类竞争；edema-exclusive loss 精确为零，edema-exclusive 参数梯度最大绝对值精确为 `0.0`。
+- Stage C 只使用每 fold `actual-train complete`；inner、outer 与全部80例均禁止进入。
+- 每 fold 固定使用完整 `step14000` checkpoint。inner 每2000步只做描述性监控，不得选择 checkpoint 或改变训练。
+- early Dice、视觉差、loss 波动或 named hard case 暂未改善，均不能阻止 W3，也不能跳过 Stage A/B/C。
 
-本任务只允许：
+## 2. Agent Flow
 
 ```text
 GPT Planner / user
 -> one Controller goal
    -> one Executor
-   -> optional Mapper final
+   -> Mapper final
    -> strict Validators
    -> Controller verification and same-goal repair loop
-   -> main commit + origin/main push + notifier
+   -> main lightweight commit
+   -> push origin/main
+   -> verify SHA equality
+   -> notification
 ```
 
-不启用 planning critic，不启用 independent reviewer。Executor 负责代码和命令，但不能宣布任务完成。Controller 是唯一协调者和验收者，必须逐 wave 检查真实 diff、tensor authority、数据划分、训练预算、interactive/Slurm accounting、aggregation、known-bad、wiki/fingerprint 和 terminal push；仍有授权范围内修复时，`NEEDS_REPAIR` 是内部继续状态，不是终态。
+`parallel_execution_allowed: false` 约束的是 Agent/Executor，不禁止 Amendment02/03 明确授权的 fold3 Slurm batch 与 fold2 interactive 运行并行。Executor 不能宣布 Goal 完成。Controller 是唯一协调者和验收者；仍有授权范围内修复时，`NEEDS_REPAIR` 只是内部继续状态。
 
 ## 3. 不可中断任务图
 
 ```text
 W0 evidence/split/asset/resource freeze
  -> W1 full implementation
- -> W2 real-case preflight + same-goal mandatory repair loop
- -> W3 fold2/fold3 formal 14000-step training
- -> W4 single-checkpoint reload + inner freeze
- -> W5 one-time outer + interventions + hard-case atlas
- -> W6 terminal aggregation + mapper + validator + Controller verification
- -> commit main + push origin/main + verify SHA + email
+ -> W2 real-case preflight and mandatory same-goal repair
+ -> W3 fold2/fold3 exact 14000-step training
+ -> W4 step14000 full-state reload and freeze
+ -> W5 one-time outer evaluation, interventions and hard-case atlas
+ -> W6 aggregation, mapper, validators and Controller verification
+ -> commit main, push origin/main, verify SHA and notify
 ```
 
-`W1/W2` 不能以 `NO_RUN`、`NEEDS_IMPLEMENTATION`、`PREFLIGHT_NEEDS_IMPLEMENTATION` 结束。W3只依赖 implementation PASS，不依赖早期科学分数。submitted、pending、running、preempted、startup-failed、partial checkpoint、awaiting sacct 均不是完成。
+`NO_RUN`、`NEEDS_IMPLEMENTATION`、`PREFLIGHT_NEEDS_IMPLEMENTATION`、submitted、pending、running、preempted、startup-failed、partial checkpoint 与 awaiting sacct 都不是终态。W3 只依赖 W2 implementation PASS，不依赖早期科学分数。
 
-## 4. W0 强制同步、读取和冻结
+## 4. W0：同步、资产、split、资源与存储冻结
 
-必须 fetch 最新 `origin/main`，确认本地 `main` 与远端关系，读取项目协议、CURRENT、wiki、Slurm/mapper skill、全部 v2 设计文件、指定结果目录和 `docs/presentation/20260801/presentation-final.pdf`。必须视觉读取 SRR-v2/v2.5/v3、MMRD、Cascade、DG、ARC、PRISM、MyoWall、MoSAIC 和 V4 atlas。
+必须执行并记录：
 
-必须实时核验 interactive allocation：
+```bash
+git fetch origin main --prune
+git status --short --branch
+git rev-parse HEAD
+git rev-parse origin/main
+git log --oneline -12 origin/main
+```
+
+必须读取项目协议、CURRENT、wiki、Slurm/mapper skill、五份设计真值、指定 evidence 目录和 presentation PDF，并视觉读取 SRR-v2/v2.5/v3、MMRD、Cascade、DG、ARC、PRISM、MyoWall、MoSAIC 与 V4 atlas。若 CURRENT/wiki 与更新后的 main 不一致，必须把旧状态标为 stale，不得用旧状态覆盖当前源码和最新提交。
+
+必须实时核验既有 allocation：
 
 ```text
-job id: 61220581
-partition: htzhulab
-job name: CareDPR5d
-user: aereinh
-node: g1807htzh01
+61220581 | CareDPR5d | htzhulab | aereinh | g1807htzh01
 ```
 
 最低检查：
@@ -124,7 +135,16 @@ scontrol show job 61220581
 srun --jobid=61220581 --overlap /users/a/e/aereinh/CARE/envs/env_CARE/bin/python -c 'import torch; print(torch.cuda.is_available(), torch.cuda.get_device_name(0))'
 ```
 
-W0 exact outputs：
+W0 还必须：
+
+- 生成 train/inner/outer case list、hash 与全零交集证明；
+- 冻结 fold2/fold3 stock checkpoint、plans、preprocess 与 canonical patient-held-out OOF prediction manifest；
+- 从 `actual-train` 计算 scar/edema area reference，不得读取 inner/outer；
+- 用真实 checkpoint 序列化测量存储需求，检查 bytes、inode、quota、fsync 与 atomic rename；
+- 用至少20个真实 optimizer steps、checkpoint 与一次 full-volume eval 估计剩余时长；
+- 在任何正式 W3 命令前写 replacement allocation、fold3 takeover 和 watcher 状态机。
+
+W0 exact outputs 至少包括：
 
 ```text
 results/20260801_care_ase_final_model/controller_context.json
@@ -135,37 +155,54 @@ results/20260801_care_ase_final_model/stock_fold2_fold3_checkpoint_manifest.json
 results/20260801_care_ase_final_model/plans_and_architecture_receipt.json
 results/20260801_care_ase_final_model/split_receipt.json
 results/20260801_care_ase_final_model/split_case_lists.json
+results/20260801_care_ase_final_model/split_hash_manifest.json
 results/20260801_care_ase_final_model/sentinel_case_contract.json
 results/20260801_care_ase_final_model/sentinel_split_authority.csv
+results/20260801_care_ase_final_model/extent_area_reference_receipt.json
 results/20260801_care_ase_final_model/interactive_allocation_receipt.json
 results/20260801_care_ase_final_model/runtime_estimate_and_takeover_plan.json
+results/20260801_care_ase_final_model/storage_quota_receipt.json
 ```
 
-stock checkpoint/plans/split真正不可读，或train/inner/outer交集非空，才可能进入阻塞判定。interactive身份或剩余时长不符时应先走资源修复/替换，不得把它当科学终态。
+实现缺口、allocation identity mismatch 或剩余时长不足都先进入同 Goal 修复，不是科学阻塞。
 
-## 5. W1 全实现门
+## 5. W1：完整实现门
 
-Exact contract及两份amendment的required files/classes必须全部为真实实现。AST/runtime/diff必须拒绝：
+Exact contract 与三份 amendment 声明的 source/classes/runtime helper 必须全部真实实现。AST/runtime/diff 必须拒绝：
 
 ```text
 pass / NotImplementedError / random output / fixed-zero placeholder
 module declared but not called
 loss declared but absent from total loss
-encoder-only inheritance / decoder reset / shallow D0 pathology heads
-random anatomy decoder or missing stock top-stage clones
-stock class4/5 logits entering normal final
-extent/wall direct bias破坏step0 parity
+encoder-only inheritance / decoder reset / shallow D0 pathology head
+random anatomy decoder or incomplete stock top-stage clone
+stock class4/class5 logits entering normal final
+scar proposal, center, context, edema injury, boundary, context, extent or wall without declared final-logit entry
+separate duplicate scar slice-presence heads
 no-T2 class4 gradient through final competition
-Stage C dataset containing inner/outer/all-80
+Stage C containing inner/outer/all-80
 hard-negative manifest not consumed by sampler
-per-pathology checkpoint splicing
+inner-selected checkpoint or per-pathology checkpoint splicing
 hard ROI / hard wall / scar priority / dictionary / prototype / query
-nonouter sentinel case controlling promotion
+nonouter sentinel controlling promotion
+missing runtime allocation/lock/watcher helper
 ```
 
-W1必须写 `implementation_snapshot.md`、`source_diff_summary.md`、`contract_coverage.json`、`stock_clone_and_parity_receipt.json`，且 `remaining_gap_count: 0`。任何gap都在本Goal继续实现；缺module/head/loss/sampler/evaluator不是block理由。
+W1 必须写：
 
-## 6. W2 真实 preflight 与强制 repair
+```text
+implementation_snapshot.md
+source_diff_summary.md
+contract_coverage.json
+stock_clone_and_parity_receipt.json
+parameter_group_coverage_receipt.json
+component_final_logit_wiring_receipt.json
+runtime_helper_contract_receipt.json
+```
+
+`remaining_gap_count` 必须为0。缺 module/head/loss/sampler/evaluator/runtime helper 是 W1 repair，不是 block。
+
+## 6. W2：真实病例 preflight 与强制 repair
 
 固定病例：
 
@@ -176,114 +213,120 @@ Case1045 LGE-only
 Case7009 LGE+C0
 ```
 
-必须在 interactive allocation 中证明：
+必须在 live htzhulab allocation 中证明：
 
-1. stock compatibility与anatomy/scar/edema step0 final parity；
-2. normal forward不读取stock pathology logits；
-3. 所有合同输出、loss denominator、finite value和直接梯度；
-4. no-T2 five-class competition与edema-exclusive gradient max abs `0.0`；
-5. one-batch overfit中scar、edema和final competition均明显下降；
-6. save/reload包含model/optimizer/scheduler/RNG/sampler/batch cursor及extent ramp state；
-7. full-volume one-case sliding-window inference；
-8. module on/off改变对应中间量和final labels；
-9. Stage C loader只读actual-train complete；
-10. sentinel authority不允许train/inner病例进入promotion；
-11. known-bad全部fail closed。
+1. stock compatibility 与 anatomy/scar/edema final-logit step0 parity；
+2. normal forward 不读取 stock pathology logits；
+3. 每个声明组件按 Amendment03 真正进入 final logits；
+4. 所有 loss denominator、finite value 和直接梯度有效；
+5. no-T2 five-class competition与 edema-exclusive gradient max abs `0.0`；
+6. one-batch overfit 中 scar、edema、final competition 均下降；
+7. exact scheduler、named optimizer groups、bf16/fp32 reduction 与 gradient accumulation 符合合同；
+8. save/reload 覆盖完整 state、ramp、next-batch hash，并在 optimizer-step 边界精确续跑；
+9. full-volume one-case sliding-window inference；
+10. 每个预声明 module-off 干预产生并记录 final-logit/label delta；
+11. Stage C loader 只读 actual-train complete；
+12. sentinel authority、fixed-step14000 checkpoint 与 known-bad 全部 fail closed；
+13. allocation replacement、fold3 atomic lock、watcher restart、secondary accounting 和 push retry 状态机通过无训练副作用的 dry-run。
 
-每类失败最多3次同合同repair；不得改变blueprint、split、budget、loss权重、metric或科学语义。三次仍失败时，必须有完整attempt/diff/reproducer，并由Controller确认无同范围修复后才可block。
+每一失败类最多三次同合同 repair。不得更改 blueprint、split、14000步、loss权重、metric、decode、promotion 或外部资源权限。三次仍无法完成真实 forward/backward 时，Controller 才能按 Amendment02 阻塞边界判断。
 
-## 7. W3：interactive优先、可并行但绝不等待到No-Run
+## 7. W3：interactive-first 且不得 No-Run
 
-所有主要模型工作优先在现有 interactive job `61220581` 上通过以下形式运行：
+所有主要训练优先使用：
 
 ```bash
 srun --jobid=61220581 --overlap <exact command>
 ```
 
-每 fold 保持七个连续 `2000-step` exact-resume chunk：Stage A 1个、Stage B 4个、Stage C 2个，总计14000步；checkpoint每1000步。chunk只是恢复边界，不能重置stage、scheduler、sampler或batch cursor。
+每 fold 固定七个连续 `2000-step` chunk：Stage A 1个、Stage B 4个、Stage C 2个，总计 `14000` optimizer steps；checkpoint 每1000步。chunk 只是恢复边界，不得重置 global/stage step、scheduler、optimizer moments、RNG、sampler、batch descriptor、ramp 或 next-batch hash。
 
 固定调度：
 
-1. fold2先在`61220581`运行。
-2. 需要并行时，可同时把fold3提交到`htzhulab`，必须与interactive运行使用相同code/config/split/budget，并隔离runtime/log/lock。
-3. 若fold3 batch已经启动，让其完成，不得再在interactive重复。
-4. 若fold2完成时fold3仍pending，立即取消pending fold3 job，并在`61220581`中串行继续fold3。
-5. 禁止自动转向a100、volta或其他partition。
-6. W3前根据真实preflight吞吐量与`scontrol`剩余时长评估；若现有allocation无法覆盖剩余工作，必须在其过期前申请/提交新的`htzhulab` interactive allocation，并保持exact resume，不得返回Planner或写No-Run。
+1. fold2 先在既有 allocation 运行。
+2. fold3 可作为唯一并行训练 job 提交到 `htzhulab`，使用同 code/config/split/budget 与独立 runtime/log。
+3. batch 与 interactive 在每个 fold3 chunk 前竞争 shared atomic mkdir lock；loser 必须在读取训练 batch 前退出并记 zero credit。
+4. fold3 batch 已启动并持锁时，让其完成，interactive 不重复。
+5. fold2 完成而 fold3 batch 仍 pending 时，执行 `scancel` 并按 Amendment03 轮询；若取消期间转为 running，由 atomic lock 决定唯一 winner。
+6. 禁止自动转到 a100、volta 或其他 partition。
+7. 既有 allocation 无法覆盖剩余工作时，在其过期前按 Amendment03 exact template 提交 `CareASE5d` htzhulab allocation holder；只在当前 chunk terminal、checkpoint reload PASS 后把新 chunk 接到 replacement allocation。
+8. startup/preemption 失败为 zero credit，按合同重试；pending parallel job 不得阻止 interactive 串行进度。
+9. `care_ase_final_model` tmux watcher 必须持续记录 heartbeat、hash、job/chunk owner 与下一非终态 wave；Controller 进程中断后从状态文件恢复。
+10. sacct 延迟先自动轮询，再按 Amendment03 双重 secondary accounting；sacct latency 本身不得成为 block。
 
-startup/preemption同语义重试各2次，unknown 0次，失败credit为0。Controller必须持续到全部step terminal、sacct/interactive accounting、runtime aggregation闭合。
+Stage A/B/C 无论早期指标如何都必须完成。低分只能影响最终科学 token，不能改变执行预算。
 
-## 8. W4 单一 checkpoint
+## 8. W4：固定终点 checkpoint
 
-候选step固定：`4000,6000,8000,10000,12000,14000`。每fold用冻结joint score选择一个完整checkpoint；同分选更晚step。选择后重新加载整个state dict，并写：
+每 fold 唯一正式 checkpoint：
 
 ```text
-checkpoint_selection_casewise.csv
-checkpoint_selection_summary.csv
-checkpoint_freeze_receipt.json
-full_reload_parity_receipt.json
-outer_access_count_before_freeze: 0
+checkpoint_step14000.pt
 ```
 
-## 9. W5 outer、hard cases与机制证据
+inner full-volume 结果只用于显示训练轨迹、数值异常与机制健康，不得选择 checkpoint。W4 必须完整 reload step14000 state dict，并证明：
 
-freeze后每fold outer只读一次。不得调整threshold、extent系数、checkpoint、source或decode。必须报告Dice、HD95/exact HD mm、precision、sensitivity、lesion/small-lesion recall、component、remote/blood-pool FP、volume ratio、help/harm、CenterB/CenterC。
+```text
+checkpoint_step: 14000
+outer_access_count_before_freeze: 0
+model_optimizer_scheduler_ramp_sampler_hash_reload: PASS
+```
 
-atlas固定包含：
+必须写：
+
+```text
+inner_monitor_casewise.csv
+inner_monitor_summary.csv
+checkpoint_freeze_receipt.json
+full_reload_parity_receipt.json
+```
+
+禁止自动挑选最佳 checkpoint、同折不同病种 checkpoint、权重平均、参数拼接、inner/outer 调参和 posthoc threshold。
+
+## 9. W5：一次 outer、hard cases 与可证伪机制
+
+step14000 freeze 后，每 fold outer 只读一次。报告 Dice、HD95/exact HD mm、precision、sensitivity、lesion/small-lesion recall、component、remote/blood-pool FP、volume ratio、help/harm、CenterB/CenterC。
+
+atlas 固定包含：
 
 ```text
 Case3008 Case3009 Case3027 Case3012 Case2034 Case2025
 Case2019 Case2012 Case2009 Case1045 Case1029 Case8021
 ```
 
-每例必须标明`actual_train/inner/outer`。只有outer病例可进入promotion；其余只能解释机制，不得选择checkpoint或改变模型。若Case3008/3009不是outer，使用Amendment02冻结的CenterC severe-underactivation outer subgroup gate。
+每例必须标记 `actual_train/inner/outer`。只有 outer 病例可进入 promotion；train/inner 只能解释机制。Case3008/3009 非 outer 时，使用冻结的 CenterC severe-underactivation subgroup；若不足两例，按 Amendment03 取 stock sensitivity 最低两例；outer CenterC T2-present 总数不足两例时，edema promotion 失败但 Goal 继续聚合，不得 block。Case2009 非 outer 时只作描述性诊断。
 
-每例显示原始模态、GT、stock、CARE-ASE、scar proposal/center/context、edema injury/extent/boundary、soft-wall、FP/FN和预声明module-off。Controller视觉核对病例ID、slice、orientation、label和prediction provenance。
+每例显示原始模态、GT、stock、CARE-ASE、scar occupancy/center/context、edema injury/extent/boundary/context、soft-wall、FP/FN 和所有预声明 module-off。干预必须同 checkpoint/case/input/sliding-window/decode，报告 Amendment03 的 final-logit、final-label 与病例级指标。模块存在、梯度非零或中间图好看不构成机制成功。
 
-干预必须同checkpoint/case/decode，报告changed voxels、final-label delta、Dice、HD95、remote FP、component和volume ratio。module存在或梯度非零不是机制成功。
+最终 promotion 使用 fold2+fold3 pooled outer casewise 行和同病例 patient-held-out stock baseline。不得用 MoSAIC selector、validation disagreement 或 named sentinel 改模型。
 
-## 10. 允许阻塞的严格边界
+## 10. 严格阻塞边界
 
-Controller必须先耗尽同范围修复与资源接管。以下不是block理由：实现缺口、preflight bug、低Dice、视觉不佳、某个stage早期失败、单个startup failure、短期pending、parallel job未启动、旧interactive剩余时长不足。
+以下不是 block 理由：实现缺口、preflight bug、低Dice、视觉不佳、loss波动、某个stage或hard case暂未改善、单次startup failure、短期pending、parallel job未启动、既有allocation剩余时间不足、sacct延迟或push单次失败。
 
-只有Amendment02列明的不可修复数据/checkpoint/仓库/文件系统问题、24小时无任何可用htzhulab资源、或同一失败类3次真实修复仍无法forward/backward，才允许`OPERATIONALLY_BLOCKED`。blocked packet必须包含attempt lineage、reproducer、已尝试修复、证据路径与下一动作。
+只有 Amendment02 明确列出的不可修复数据/checkpoint/仓库/文件系统问题、24小时没有可用 htzhulab 资源，或同一合同失败类三次真实修复仍无法 forward/backward，才允许 `OPERATIONALLY_BLOCKED`。blocked packet 必须包含 attempt lineage、minimal reproducer、diff、hash、已尝试修复和下一动作。
 
-## 11. W6 Controller终态、push与邮件
+## 11. W6：Controller 终态、push 与邮件
 
-不启用independent reviewer。固定顺序：
-
-```text
-terminal runtime或blocked证据aggregation
- -> mapper final（如架构/wiki变化）
- -> strict validator PASS（含achieved/blocked packet语义）
- -> Controller逐项核对diff、合同、训练、评价与证据
- -> 在main创建轻量commit
- -> push origin/main
- -> 验证local main == origin/main SHA
- -> 写notification_brief.json
- -> 调用既有notifier一次
-```
-
-未来正式启动合同必须在W0前一次性设定：
+不启用 critic/reviewer。固定顺序：
 
 ```text
-allow_git_commit: true
-auto_git_commit: true
-allow_git_push: true
-auto_git_push: true
+terminal achieved 或 blocked evidence aggregation
+-> mapper final
+-> strict validators
+-> Controller 核对真实 diff、合同、训练、评价、runtime、accounting 与 evidence
+-> create main lightweight commit
+-> push origin/main with Amendment03 retry policy
+-> verify local main == origin/main SHA
+-> write notification_brief.json
+-> ./envs/env_CARE/bin/python controller_notifications/notify_goal_watcher.py --once
 ```
 
-无论goal achieved还是blocked，都必须完成main push与邮件通知，不得停在pending、monitor、未聚合、未commit、未push状态。push失败属于同Goal operational retry，不得立即退出。
+无论 achieved 还是 blocked，都必须 push 和通知；不得停在 pending、monitor、未聚合、未commit、未push或SHA不一致状态。禁止 force push、自建 SMTP、提前通知、validation/Docker 上传或 hosted claim。
 
-通知只允许：
+## 12. 当前边界与未来激活
 
-```bash
-./envs/env_CARE/bin/python controller_notifications/notify_goal_watcher.py --once
-```
-
-禁止自建SMTP、提前通知、validation/Docker上传或hosted claim。
-
-## 12. 当前草案边界
+当前仍是设计草案：
 
 ```text
 allow_execution: false
@@ -293,4 +336,18 @@ allow_current_or_wiki_update: false
 allow_runtime_commit_push_notify: false
 ```
 
-本轮只供新的GPT继续审核与必要设计修订。审核通过后，用户再决定是否把本草案转换为正式的一次性授权Controller合同。
+未来正式授权必须在启动前一次性设置：
+
+```text
+status: AUTHORIZED_BY_USER
+allow_git_commit: true
+auto_git_commit: true
+allow_git_push: true
+auto_git_push: true
+new_training_authorized: true
+validation_upload_authorized: false
+docker_upload_authorized: false
+hosted_metric_claim_authorized: false
+```
+
+缺失或错误字段是 W0 fail-closed repair，不得被转成 No-Run 或第二个人工继续门。
