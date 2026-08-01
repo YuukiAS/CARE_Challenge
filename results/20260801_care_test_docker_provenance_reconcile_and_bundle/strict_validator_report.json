@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "task_key": "20260801_care_test_docker_provenance_reconcile_and_bundle",
+  "terminal_state": "SERVER_BUNDLE_BLOCKED",
+  "blocking_token": "NNUNET_DEPLOYABLE_SOURCE_NONDETERMINISTIC",
+  "errors": []
+}

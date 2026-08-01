@@ -1,0 +1,27 @@
+{
+  "created_at_utc": "2026-08-01T15:45:00Z",
+  "dataset_json_sha256": "8437262d92fb898c8d16a89150efd4629602dd71e0fa5bbcf1c6c80cc3b535ae",
+  "env_vars": {
+    "CUDA_VISIBLE_DEVICES": null,
+    "nnUNet_preprocessed": null,
+    "nnUNet_raw": null,
+    "nnUNet_results": null
+  },
+  "executable": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python3.12",
+  "nnunet_predict": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/nnUNetv2_predict",
+  "origin_main": "82a780369d20ce2daf13f6f4d668355992423dc7",
+  "packages": {
+    "SimpleITK": "2.5.0",
+    "batchgenerators": "0.25.1",
+    "nibabel": "5.3.2",
+    "nnunetv2": "2.7.0",
+    "numpy": "1.26.4",
+    "scipy": "1.15.2",
+    "torch": "2.11.0"
+  },
+  "plans_json_sha256": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
+  "python": "3.12.13",
+  "repo_head": "82a780369d20ce2daf13f6f4d668355992423dc7",
+  "trainer_source": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/nnUNetTrainer.py",
+  "trainer_source_sha256": "f9cad95db820fbb7e02b9ba33e1ca5b951e402026eee39b710886c05f7ef5e97"
+}

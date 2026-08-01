@@ -1,0 +1,31 @@
+{
+  "array_equal_count": 7,
+  "case_count": 15,
+  "casewise_csv": "/users/a/e/aereinh/CARE/results/20260801_care_test_docker_provenance_reconcile_and_bundle/nnunet_deployable_repeat_casewise.csv",
+  "changed_voxels_total": 13,
+  "checkpoint": "checkpoint_best.pth",
+  "created_at_utc": "2026-08-01T15:40:00Z",
+  "first_output_dir": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops",
+  "folds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "geometry_equal_count": 15,
+  "nnunet_deployment_source_hashes": {
+    "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/dataset.json": "8437262d92fb898c8d16a89150efd4629602dd71e0fa5bbcf1c6c80cc3b535ae",
+    "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_best.pth": "f139ca5525322d340a0284c6562a9bcb9cb9cae0a512e14ef40ce85a66f53278",
+    "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/checkpoint_best.pth": "b92d56b1e24ce826081671acc4e048e5d48b191f6dcb9836747ae82d93acd1e2",
+    "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_2/checkpoint_best.pth": "9e328bf4bd6ed9eeadac6f41c5de303c69dfc078dfeac3e64b26e18d3e09d38d",
+    "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_3/checkpoint_best.pth": "9c2c2cf0dea4eb8a691c6680fabc66f6456233ba83867466a06ffd5abda3462b",
+    "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_4/checkpoint_best.pth": "11c6ccfec5dc51be7c08f1713058412694e1b7def1c5d8cd5520f7f7568aeff2",
+    "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/plans.json": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f"
+  },
+  "production_nnunet_source_variant": "best_default_tta",
+  "second_output_dir": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops_repeat_best_default",
+  "task_key": "20260801_care_test_docker_provenance_reconcile_and_bundle",
+  "token": "NNUNET_DEPLOYABLE_SOURCE_NONDETERMINISTIC",
+  "tta": "default"
+}

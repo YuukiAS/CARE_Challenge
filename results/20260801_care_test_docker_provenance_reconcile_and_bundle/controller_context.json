@@ -1,0 +1,22 @@
+{
+  "agents_sha256": "6d1ed9fbd6726e2381c6969d6ea720ecd1f504b1f75d9d383e59ffa6f4517dde",
+  "created_at_utc": "2026-08-01T15:45:00Z",
+  "decision": "OPERATIONALLY_BLOCKED at W4",
+  "files_read": [
+    "AGENTS.md",
+    "task prompt",
+    "previous server bundle receipts",
+    "submission manifests",
+    "submission helper",
+    "wiki/README.md",
+    "prompts/routes/handoffs/CURRENT.md"
+  ],
+  "git_head": "82a780369d20ce2daf13f6f4d668355992423dc7",
+  "origin_main": "82a780369d20ce2daf13f6f4d668355992423dc7",
+  "result_root": "/users/a/e/aereinh/CARE/results/20260801_care_test_docker_provenance_reconcile_and_bundle",
+  "runtime_root": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine",
+  "slurm_allocation": "61220581 htzhulab g1807htzh01 NVIDIA H100 NVL (verified earlier this turn by squeue)",
+  "task_key": "20260801_care_test_docker_provenance_reconcile_and_bundle",
+  "task_prompt": "prompts/tasks/20260801_care_test_docker_provenance_reconcile_and_bundle_controller.md",
+  "task_prompt_sha256": "1e62e6ff09f7451266919e505ecf41262bac31a6e00bfa86b2ffe1f3e3460e1b"
+}

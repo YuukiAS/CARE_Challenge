@@ -1,0 +1,129 @@
+{
+  "assets": [
+    {
+      "asset_id": "package_a",
+      "cine_members": 15,
+      "evidence_class": "DIRECT_EVIDENCE",
+      "evidence_note": "Local upload-ready ZIP and manifest exist in repository result tree.",
+      "exists": true,
+      "mtime_epoch": 1779194472.334497,
+      "myops_members": 15,
+      "path": "/users/a/e/aereinh/CARE/results/submissions/care_myocardium_validation/upload_ready/20260519_084057__nnUNet_MyoPS+nnUNet_CineMyoPS_5fold_baseline_round8/CARE-Myocardium-OrganAgent.zip",
+      "sha256": "d594a763577d235bdc1ccbb41479de22c647bcbecc1ef6e9a3125fc66d543e24",
+      "size_bytes": 88289,
+      "zip_member_count": 30
+    },
+    {
+      "asset_id": "package_b",
+      "cine_members": 15,
+      "evidence_class": "DIRECT_EVIDENCE",
+      "evidence_note": "Local upload-ready ZIP and manifest exist in repository result tree.",
+      "exists": true,
+      "mtime_epoch": 1779291271.113663,
+      "myops_members": 15,
+      "path": "/users/a/e/aereinh/CARE/results/submissions/care_myocardium_validation/upload_ready/20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED/CARE-Myocardium-OrganAgent.zip",
+      "sha256": "5b0d4143e451bba9177f937f02102f14676cfe699a1f1e027636ecf78b73abb3",
+      "size_bytes": 115913,
+      "zip_member_count": 64
+    },
+    {
+      "asset_id": "package_a_manifest",
+      "evidence_class": "DIRECT_EVIDENCE",
+      "exists": true,
+      "path": "/users/a/e/aereinh/CARE/results/submissions/care_myocardium_validation/upload_ready/20260519_084057__nnUNet_MyoPS+nnUNet_CineMyoPS_5fold_baseline_round8/manifest.json",
+      "sha256": "4472929c36c4bf7de9849845949a9448f63c4993043ebe15f35764e68e5ff6d3"
+    },
+    {
+      "asset_id": "package_b_manifest",
+      "evidence_class": "DIRECT_EVIDENCE",
+      "exists": true,
+      "path": "/users/a/e/aereinh/CARE/results/submissions/care_myocardium_validation/upload_ready/20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED/manifest.json",
+      "sha256": "8054252c65458cb4eedf1840beb12564929559553fa4d11be546cc80d416d892"
+    },
+    {
+      "asset_id": "cached_manifest",
+      "evidence_class": "DIRECT_EVIDENCE",
+      "exists": true,
+      "path": "/users/a/e/aereinh/CARE/results/submissions/care_myocardium_validation/nnunet_5fold_best/manifest.json",
+      "sha256": "f61f7cd9b2e94d4740fd27c9803fcac4c8f941bed6aa9932f11a3887aebf3640"
+    },
+    {
+      "asset_id": "cached_myops_args",
+      "evidence_class": "DIRECT_EVIDENCE",
+      "exists": true,
+      "path": "/users/a/e/aereinh/CARE/results/submissions/care_myocardium_validation/nnunet_5fold_best/nnunet_predictions/Dataset501_CAREMyoPS/predict_from_raw_data_args.json",
+      "sha256": "5b6e3a4b9573f9610f664f0885080d50dc6c2d3e3bff265ed3237a44ac5851dc"
+    },
+    {
+      "asset_id": "fold_0_checkpoint_best.pth",
+      "evidence_class": "DIRECT_EVIDENCE",
+      "exists": true,
+      "path": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_best.pth",
+      "sha256": "f139ca5525322d340a0284c6562a9bcb9cb9cae0a512e14ef40ce85a66f53278"
+    },
+    {
+      "asset_id": "fold_0_checkpoint_final.pth",
+      "evidence_class": "DIRECT_EVIDENCE",
+      "exists": true,
+      "path": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_final.pth",
+      "sha256": "8bceb20cae8920e87d43b14665a0db9dfd4f1204533d25a3cd6e40ad9de74111"
+    },
+    {
+      "asset_id": "fold_1_checkpoint_best.pth",
+      "evidence_class": "DIRECT_EVIDENCE",
+      "exists": true,
+      "path": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/checkpoint_best.pth",
+      "sha256": "b92d56b1e24ce826081671acc4e048e5d48b191f6dcb9836747ae82d93acd1e2"
+    },
+    {
+      "asset_id": "fold_1_checkpoint_final.pth",
+      "evidence_class": "DIRECT_EVIDENCE",
+      "exists": true,
+      "path": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/checkpoint_final.pth",
+      "sha256": "5310569ff62f2f9a6ff2bc7dd3754404140071427a2025caf5e25d2916cfe400"
+    },
+    {
+      "asset_id": "fold_2_checkpoint_best.pth",
+      "evidence_class": "DIRECT_EVIDENCE",
+      "exists": true,
+      "path": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_2/checkpoint_best.pth",
+      "sha256": "9e328bf4bd6ed9eeadac6f41c5de303c69dfc078dfeac3e64b26e18d3e09d38d"
+    },
+    {
+      "asset_id": "fold_2_checkpoint_final.pth",
+      "evidence_class": "DIRECT_EVIDENCE",
+      "exists": true,
+      "path": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_2/checkpoint_final.pth",
+      "sha256": "31470ab242055b0af5c783f0f522bc8e490199cb2b4d42f5d0cefffb41de019b"
+    },
+    {
+      "asset_id": "fold_3_checkpoint_best.pth",
+      "evidence_class": "DIRECT_EVIDENCE",
+      "exists": true,
+      "path": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_3/checkpoint_best.pth",
+      "sha256": "9c2c2cf0dea4eb8a691c6680fabc66f6456233ba83867466a06ffd5abda3462b"
+    },
+    {
+      "asset_id": "fold_3_checkpoint_final.pth",
+      "evidence_class": "DIRECT_EVIDENCE",
+      "exists": true,
+      "path": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_3/checkpoint_final.pth",
+      "sha256": "0c27009930261c93a4890c66aa7f88f226a5f8b32a3358e43dd10d357b6fdeb8"
+    },
+    {
+      "asset_id": "fold_4_checkpoint_best.pth",
+      "evidence_class": "DIRECT_EVIDENCE",
+      "exists": true,
+      "path": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_4/checkpoint_best.pth",
+      "sha256": "11c6ccfec5dc51be7c08f1713058412694e1b7def1c5d8cd5520f7f7568aeff2"
+    },
+    {
+      "asset_id": "fold_4_checkpoint_final.pth",
+      "evidence_class": "DIRECT_EVIDENCE",
+      "exists": true,
+      "path": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_4/checkpoint_final.pth",
+      "sha256": "9971020827eb50fabe53ef339f5ea2ac8c5a7929584c5c9c0541e83119df0847"
+    }
+  ],
+  "created_at_utc": "2026-08-01T15:45:00Z"
+}

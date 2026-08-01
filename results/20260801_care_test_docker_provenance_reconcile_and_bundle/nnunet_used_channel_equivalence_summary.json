@@ -1,0 +1,196 @@
+{
+  "anatomy_123_multiclass_equal_count": 5,
+  "anatomy_union_equal_count": 5,
+  "background_mask_equal_count": 6,
+  "case_count": 15,
+  "casewise_csv": "/users/a/e/aereinh/CARE/results/20260801_care_test_docker_provenance_reconcile_and_bundle/nnunet_labelwise_equivalence_casewise.csv",
+  "changed_voxels_by_fresh_label": {
+    "0": 25,
+    "1": 25,
+    "2": 8,
+    "3": 17,
+    "4": 30,
+    "5": 15
+  },
+  "changed_voxels_by_historical_semantic_label": {
+    "0": 17,
+    "1": 35,
+    "2": 10,
+    "3": 15,
+    "4": 32,
+    "5": 11
+  },
+  "changed_voxels_total": 120,
+  "classes": {
+    "background": 0,
+    "lv_class2": 2,
+    "myocardium_class1": 1,
+    "pure_edema_class4": 4,
+    "rv_class3": 3,
+    "scar_class5": 5
+  },
+  "created_at_utc": "2026-08-01T15:28:00Z",
+  "first_layer_pass": false,
+  "generated_from": "prior fresh nnU-Net outputs and package A extraction; no new inference",
+  "geometry_equal_count": 15,
+  "lv_class2_equal_count": 9,
+  "myocardium_class1_equal_count": 6,
+  "package_a_full_array_equal_count": 4,
+  "package_a_used_channel_equal_count": 4,
+  "pure_edema_class4_equal_count": 5,
+  "raw_to_official": {
+    "0": 0,
+    "1": 200,
+    "2": 500,
+    "3": 600,
+    "4": 1220,
+    "5": 2221
+  },
+  "rv_class3_equal_count": 6,
+  "scar_class5_equal_count": 8,
+  "semantic_label_mapping": "fresh raw 1/2/3/4/5 compared against package A official 200/500/600/1220/2221 after remapping historical to raw ids",
+  "token": "NNUNET_USED_CHANNELS_PROVENANCE_NOT_REPRODUCED",
+  "top_changed_label_transitions": [
+    {
+      "fresh_label": 4,
+      "fresh_official_label": 1220,
+      "historical_official_label": 200,
+      "historical_semantic_label": 1,
+      "voxel_count": 17
+    },
+    {
+      "fresh_label": 0,
+      "fresh_official_label": 0,
+      "historical_official_label": 600,
+      "historical_semantic_label": 3,
+      "voxel_count": 12
+    },
+    {
+      "fresh_label": 1,
+      "fresh_official_label": 200,
+      "historical_official_label": 1220,
+      "historical_semantic_label": 4,
+      "voxel_count": 11
+    },
+    {
+      "fresh_label": 3,
+      "fresh_official_label": 600,
+      "historical_official_label": 0,
+      "historical_semantic_label": 0,
+      "voxel_count": 10
+    },
+    {
+      "fresh_label": 5,
+      "fresh_official_label": 2221,
+      "historical_official_label": 1220,
+      "historical_semantic_label": 4,
+      "voxel_count": 10
+    },
+    {
+      "fresh_label": 0,
+      "fresh_official_label": 0,
+      "historical_official_label": 200,
+      "historical_semantic_label": 1,
+      "voxel_count": 9
+    },
+    {
+      "fresh_label": 4,
+      "fresh_official_label": 1220,
+      "historical_official_label": 2221,
+      "historical_semantic_label": 5,
+      "voxel_count": 6
+    },
+    {
+      "fresh_label": 1,
+      "fresh_official_label": 200,
+      "historical_official_label": 0,
+      "historical_semantic_label": 0,
+      "voxel_count": 4
+    },
+    {
+      "fresh_label": 1,
+      "fresh_official_label": 200,
+      "historical_official_label": 500,
+      "historical_semantic_label": 2,
+      "voxel_count": 4
+    },
+    {
+      "fresh_label": 0,
+      "fresh_official_label": 0,
+      "historical_official_label": 1220,
+      "historical_semantic_label": 4,
+      "voxel_count": 4
+    },
+    {
+      "fresh_label": 3,
+      "fresh_official_label": 600,
+      "historical_official_label": 1220,
+      "historical_semantic_label": 4,
+      "voxel_count": 4
+    },
+    {
+      "fresh_label": 4,
+      "fresh_official_label": 1220,
+      "historical_official_label": 500,
+      "historical_semantic_label": 2,
+      "voxel_count": 4
+    },
+    {
+      "fresh_label": 2,
+      "fresh_official_label": 500,
+      "historical_official_label": 200,
+      "historical_semantic_label": 1,
+      "voxel_count": 3
+    },
+    {
+      "fresh_label": 3,
+      "fresh_official_label": 600,
+      "historical_official_label": 200,
+      "historical_semantic_label": 1,
+      "voxel_count": 3
+    },
+    {
+      "fresh_label": 1,
+      "fresh_official_label": 200,
+      "historical_official_label": 600,
+      "historical_semantic_label": 3,
+      "voxel_count": 3
+    },
+    {
+      "fresh_label": 4,
+      "fresh_official_label": 1220,
+      "historical_official_label": 0,
+      "historical_semantic_label": 0,
+      "voxel_count": 3
+    },
+    {
+      "fresh_label": 5,
+      "fresh_official_label": 2221,
+      "historical_official_label": 200,
+      "historical_semantic_label": 1,
+      "voxel_count": 3
+    },
+    {
+      "fresh_label": 1,
+      "fresh_official_label": 200,
+      "historical_official_label": 2221,
+      "historical_semantic_label": 5,
+      "voxel_count": 3
+    },
+    {
+      "fresh_label": 2,
+      "fresh_official_label": 500,
+      "historical_official_label": 1220,
+      "historical_semantic_label": 4,
+      "voxel_count": 3
+    },
+    {
+      "fresh_label": 5,
+      "fresh_official_label": 2221,
+      "historical_official_label": 500,
+      "historical_semantic_label": 2,
+      "voxel_count": 2
+    }
+  ],
+  "transition_csv": "/users/a/e/aereinh/CARE/results/20260801_care_test_docker_provenance_reconcile_and_bundle/nnunet_label_transition_counts.csv"
+}

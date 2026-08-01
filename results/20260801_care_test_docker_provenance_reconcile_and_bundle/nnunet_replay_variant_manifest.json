@@ -1,0 +1,263 @@
+[
+  {
+    "anatomy_123_multiclass_equal_count": 0,
+    "case_count": 15,
+    "changed_voxels_total": 2226,
+    "checkpoint": "checkpoint_final.pth",
+    "decision": "NOT_EXACT",
+    "fresh_output_count": 15,
+    "full_array_equal_count": 0,
+    "geometry_equal_count": 15,
+    "output_dir": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/nnunet_replay_variants/v1_final_default_tta",
+    "pure_edema_class4_equal_count": 0,
+    "top_changed_transitions": [
+      {
+        "fresh_label": 1,
+        "fresh_official_label": 200,
+        "historical_official_label": 1220,
+        "historical_semantic_label": 4,
+        "voxel_count": 301
+      },
+      {
+        "fresh_label": 3,
+        "fresh_official_label": 600,
+        "historical_official_label": 0,
+        "historical_semantic_label": 0,
+        "voxel_count": 298
+      },
+      {
+        "fresh_label": 5,
+        "fresh_official_label": 2221,
+        "historical_official_label": 1220,
+        "historical_semantic_label": 4,
+        "voxel_count": 284
+      },
+      {
+        "fresh_label": 4,
+        "fresh_official_label": 1220,
+        "historical_official_label": 200,
+        "historical_semantic_label": 1,
+        "voxel_count": 258
+      },
+      {
+        "fresh_label": 2,
+        "fresh_official_label": 500,
+        "historical_official_label": 200,
+        "historical_semantic_label": 1,
+        "voxel_count": 164
+      },
+      {
+        "fresh_label": 0,
+        "fresh_official_label": 0,
+        "historical_official_label": 200,
+        "historical_semantic_label": 1,
+        "voxel_count": 158
+      },
+      {
+        "fresh_label": 0,
+        "fresh_official_label": 0,
+        "historical_official_label": 600,
+        "historical_semantic_label": 3,
+        "voxel_count": 120
+      },
+      {
+        "fresh_label": 1,
+        "fresh_official_label": 200,
+        "historical_official_label": 0,
+        "historical_semantic_label": 0,
+        "voxel_count": 111
+      },
+      {
+        "fresh_label": 2,
+        "fresh_official_label": 500,
+        "historical_official_label": 1220,
+        "historical_semantic_label": 4,
+        "voxel_count": 75
+      },
+      {
+        "fresh_label": 1,
+        "fresh_official_label": 200,
+        "historical_official_label": 600,
+        "historical_semantic_label": 3,
+        "voxel_count": 73
+      }
+    ],
+    "tta": "default",
+    "used_channels_1234_equal_count": 0,
+    "variant": "v1_final_default_tta"
+  },
+  {
+    "anatomy_123_multiclass_equal_count": 0,
+    "case_count": 15,
+    "changed_voxels_total": 6230,
+    "checkpoint": "checkpoint_best.pth",
+    "decision": "NOT_EXACT",
+    "fresh_output_count": 15,
+    "full_array_equal_count": 0,
+    "geometry_equal_count": 15,
+    "output_dir": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/nnunet_replay_variants/v2_best_no_tta",
+    "pure_edema_class4_equal_count": 0,
+    "top_changed_transitions": [
+      {
+        "fresh_label": 4,
+        "fresh_official_label": 1220,
+        "historical_official_label": 200,
+        "historical_semantic_label": 1,
+        "voxel_count": 1016
+      },
+      {
+        "fresh_label": 1,
+        "fresh_official_label": 200,
+        "historical_official_label": 1220,
+        "historical_semantic_label": 4,
+        "voxel_count": 614
+      },
+      {
+        "fresh_label": 3,
+        "fresh_official_label": 600,
+        "historical_official_label": 0,
+        "historical_semantic_label": 0,
+        "voxel_count": 556
+      },
+      {
+        "fresh_label": 0,
+        "fresh_official_label": 0,
+        "historical_official_label": 600,
+        "historical_semantic_label": 3,
+        "voxel_count": 554
+      },
+      {
+        "fresh_label": 1,
+        "fresh_official_label": 200,
+        "historical_official_label": 0,
+        "historical_semantic_label": 0,
+        "voxel_count": 450
+      },
+      {
+        "fresh_label": 0,
+        "fresh_official_label": 0,
+        "historical_official_label": 200,
+        "historical_semantic_label": 1,
+        "voxel_count": 439
+      },
+      {
+        "fresh_label": 5,
+        "fresh_official_label": 2221,
+        "historical_official_label": 1220,
+        "historical_semantic_label": 4,
+        "voxel_count": 420
+      },
+      {
+        "fresh_label": 4,
+        "fresh_official_label": 1220,
+        "historical_official_label": 2221,
+        "historical_semantic_label": 5,
+        "voxel_count": 366
+      },
+      {
+        "fresh_label": 2,
+        "fresh_official_label": 500,
+        "historical_official_label": 200,
+        "historical_semantic_label": 1,
+        "voxel_count": 328
+      },
+      {
+        "fresh_label": 1,
+        "fresh_official_label": 200,
+        "historical_official_label": 500,
+        "historical_semantic_label": 2,
+        "voxel_count": 246
+      }
+    ],
+    "tta": "disabled",
+    "used_channels_1234_equal_count": 0,
+    "variant": "v2_best_no_tta"
+  },
+  {
+    "anatomy_123_multiclass_equal_count": 0,
+    "case_count": 15,
+    "changed_voxels_total": 6440,
+    "checkpoint": "checkpoint_final.pth",
+    "decision": "NOT_EXACT",
+    "fresh_output_count": 15,
+    "full_array_equal_count": 0,
+    "geometry_equal_count": 15,
+    "output_dir": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/nnunet_replay_variants/v3_final_no_tta",
+    "pure_edema_class4_equal_count": 0,
+    "top_changed_transitions": [
+      {
+        "fresh_label": 4,
+        "fresh_official_label": 1220,
+        "historical_official_label": 200,
+        "historical_semantic_label": 1,
+        "voxel_count": 1041
+      },
+      {
+        "fresh_label": 1,
+        "fresh_official_label": 200,
+        "historical_official_label": 1220,
+        "historical_semantic_label": 4,
+        "voxel_count": 706
+      },
+      {
+        "fresh_label": 3,
+        "fresh_official_label": 600,
+        "historical_official_label": 0,
+        "historical_semantic_label": 0,
+        "voxel_count": 598
+      },
+      {
+        "fresh_label": 5,
+        "fresh_official_label": 2221,
+        "historical_official_label": 1220,
+        "historical_semantic_label": 4,
+        "voxel_count": 552
+      },
+      {
+        "fresh_label": 0,
+        "fresh_official_label": 0,
+        "historical_official_label": 600,
+        "historical_semantic_label": 3,
+        "voxel_count": 499
+      },
+      {
+        "fresh_label": 0,
+        "fresh_official_label": 0,
+        "historical_official_label": 200,
+        "historical_semantic_label": 1,
+        "voxel_count": 467
+      },
+      {
+        "fresh_label": 1,
+        "fresh_official_label": 200,
+        "historical_official_label": 0,
+        "historical_semantic_label": 0,
+        "voxel_count": 429
+      },
+      {
+        "fresh_label": 2,
+        "fresh_official_label": 500,
+        "historical_official_label": 200,
+        "historical_semantic_label": 1,
+        "voxel_count": 375
+      },
+      {
+        "fresh_label": 4,
+        "fresh_official_label": 1220,
+        "historical_official_label": 2221,
+        "historical_semantic_label": 5,
+        "voxel_count": 274
+      },
+      {
+        "fresh_label": 1,
+        "fresh_official_label": 200,
+        "historical_official_label": 500,
+        "historical_semantic_label": 2,
+        "voxel_count": 216
+      }
+    ],
+    "tta": "disabled",
+    "used_channels_1234_equal_count": 0,
+    "variant": "v3_final_no_tta"
+  }
+]

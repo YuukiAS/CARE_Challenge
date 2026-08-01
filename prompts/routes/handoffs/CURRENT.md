@@ -1,6 +1,59 @@
 # CARE 当前开发状态
 
-## 2026-08-01 最新机器真值：服务器端跨机器 Docker bundle 因 nnU-Net fresh replay 不一致阻塞
+## 2026-08-01 最新机器真值：Docker provenance 纠偏后因当前部署源非确定性阻塞
+
+本次已经执行新的 provenance reconcile 合同，没有直接沿用上一轮 `NNUNET_PROVENANCE_REPLAY_MISMATCH` 当阻塞理由。先按语义标签统一 package A 的官方标签 `200/500/600/1220/2221` 和 fresh nnU-Net 的 raw 类别 `1/2/3/4/5`，逐病例审计 anatomy `1/2/3`、pure edema `4`、scar `5`、used channels `1/2/3/4` 和 label transitions。结果是：几何 15/15 一致，完整数组 4/15 一致，生产会使用的 used channels 也只有 4/15 一致；11 个不一致病例合计 120 个语义体素变化，差异不是只落在将被 MoSAIC 替换的 scar 通道。
+
+历史追溯没有找到能 exact 复现 package A 的 replay。按合同最多三个 frozen variants 已全部跑完：`checkpoint_final + default TTA`、`checkpoint_best + no TTA`、`checkpoint_final + no TTA` 均没有达到 full-array 或 used-channel 15/15 exact。因此历史 `0.6691` lineage 保持 `UNRESOLVED`，不得作 hosted claim。
+
+随后按合同验证当前部署源自身：`checkpoint_best.pth + folds 0-4 + default TTA` 第二次 fresh replay 与上一轮 fresh replay 对比，geometry 15/15 一致，但 array 只有 7/15 完全一致，合计 13 个体素变化。这触发本任务明确允许的硬阻塞 `NNUNET_DEPLOYABLE_SOURCE_NONDETERMINISTIC`。因此没有生成 `SERVER_BUNDLE_READY.json`、没有生成工位 Docker transfer tar、没有让工位开始构建、没有上传网盘/validation/Docker、没有给组织方发邮件。
+
+```text
+state_id: care_test_docker_provenance_reconcile_deployable_nondeterministic_20260801
+active_development_branch: main
+active_worktree: /users/a/e/aereinh/CARE
+single_active_scientific_line: CARE_TEST_DOCKER_RECONCILE_BLOCKED_RETURN_TO_PLANNER
+result_root: results/20260801_care_test_docker_provenance_reconcile_and_bundle
+runtime_root: /users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine
+terminal_state: SERVER_BUNDLE_BLOCKED
+blocking_token: NNUNET_DEPLOYABLE_SOURCE_NONDETERMINISTIC
+historical_hosted_lineage_status: UNRESOLVED
+historical_0_6691_claim_authorized: false
+package_a_geometry_equal_count: 15
+package_a_full_array_equal_count: 4
+package_a_used_channel_equal_count: 4
+package_a_changed_semantic_voxels_total: 120
+variant_replay_count: 3
+variant_exact_reproduction_count: 0
+deployable_repeat_geometry_equal_count: 15
+deployable_repeat_array_equal_count: 7
+deployable_repeat_changed_voxels_total: 13
+server_bundle_ready: false
+workstation_should_start: false
+docker_or_rootless_attempted: false
+new_training_authorized: false
+validation_upload_authorized: false
+docker_upload_authorized: false
+organizer_email_send_authorized: false
+hosted_metric_claim_authorized: false
+```
+
+关键证据：
+
+```text
+results/20260801_care_test_docker_provenance_reconcile_and_bundle/nnunet_labelwise_equivalence_casewise.csv
+results/20260801_care_test_docker_provenance_reconcile_and_bundle/nnunet_label_transition_counts.csv
+results/20260801_care_test_docker_provenance_reconcile_and_bundle/nnunet_used_channel_equivalence_summary.json
+results/20260801_care_test_docker_provenance_reconcile_and_bundle/historical_package_generation_trace.md
+results/20260801_care_test_docker_provenance_reconcile_and_bundle/nnunet_replay_variant_decision.json
+results/20260801_care_test_docker_provenance_reconcile_and_bundle/nnunet_deployable_source_receipt.json
+results/20260801_care_test_docker_provenance_reconcile_and_bundle/controller_report.md
+/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/transfer/SERVER_BUNDLE_BLOCKED.json
+```
+
+下一步只允许 GPT Planner 决定是否授权确定性 nnU-Net 部署模式、CPU/禁 TTA 等新 source contract，或停止 Docker bundle 线。不得把当前 `NNUNET_DEPLOYABLE_SOURCE_NONDETERMINISTIC` 表述为历史 `0.6691` 已复现。
+
+## 2026-08-01 历史机器真值：服务器端跨机器 Docker bundle 因 nnU-Net fresh replay 不一致阻塞
 
 本次不再尝试安装或运行 Docker/rootless Docker，而是按跨机器方案在服务器端准备工位 WSL 可下载的构建资源。服务器已复用现有 `htzhulab` GPU allocation `61220581` 重新跑 frozen Dataset501 五折 nnU-Net `checkpoint_best.pth` 的 15 例公开 validation 推理；15 个 fresh 输出都生成，几何与历史 package A 全部一致，但数组只有 4/15 完全一致。因此历史 0.6691 edema 归属不能被当前 fresh replay 证明，MyoPS 可执行 bundle 和 `SERVER_BUNDLE_READY.json` 被合同硬门禁止。
 

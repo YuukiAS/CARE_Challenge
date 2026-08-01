@@ -1,0 +1,16 @@
+{
+  "blocked_or_failure_reason": "NNUNET_DEPLOYABLE_SOURCE_NONDETERMINISTIC: checkpoint_best folds0-4 default TTA replay geometry 15/15 equal, array only 7/15 equal, 13 changed voxels total. Historical 0.6691 lineage remains UNRESOLVED and is not claimed.",
+  "commit_status": "terminal packet committed on main before notifier invocation",
+  "evidence_paths": [
+    "results/20260801_care_test_docker_provenance_reconcile_and_bundle/nnunet_used_channel_equivalence_summary.json",
+    "results/20260801_care_test_docker_provenance_reconcile_and_bundle/nnunet_replay_variant_decision.json",
+    "results/20260801_care_test_docker_provenance_reconcile_and_bundle/nnunet_deployable_source_receipt.json",
+    "results/20260801_care_test_docker_provenance_reconcile_and_bundle/controller_report.md"
+  ],
+  "final_status": "blocked",
+  "key_conclusion": "当前冻结 nnU-Net 部署源两次 15 例 fresh replay 未达到逐体素可复现；因此不能生成 SERVER_BUNDLE_READY 或工位 Docker bundle。",
+  "next_step": "GPT Planner must decide whether to authorize a deterministic nnU-Net deployment mode or revise the bundle source contract; no upload or hosted claim was made.",
+  "push_status": "terminal commit pushed to origin/main and remote SHA verified before notifier invocation",
+  "slurm_terminal_status": "existing allocation 61220581 used for completed frozen replay commands; no submitted monitor state remains for this packet",
+  "task_name": "20260801_care_test_docker_provenance_reconcile_and_bundle"
+}

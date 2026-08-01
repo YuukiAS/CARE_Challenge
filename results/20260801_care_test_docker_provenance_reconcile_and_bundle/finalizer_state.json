@@ -1,0 +1,15 @@
+{
+  "blocking_token": "NNUNET_DEPLOYABLE_SOURCE_NONDETERMINISTIC",
+  "commit_required": true,
+  "controller_verification_decision": "OPERATIONALLY_BLOCKED",
+  "created_at_utc": "2026-08-01T15:45:00Z",
+  "historical_0_6691_claim_authorized": false,
+  "historical_hosted_lineage_status": "UNRESOLVED",
+  "nnunet_deployment_source_status": "NONDETERMINISTIC",
+  "notifier_required": true,
+  "push_required": true,
+  "server_bundle_ready": false,
+  "task_key": "20260801_care_test_docker_provenance_reconcile_and_bundle",
+  "terminal_state": "SERVER_BUNDLE_BLOCKED",
+  "workstation_build_authorized": false
+}

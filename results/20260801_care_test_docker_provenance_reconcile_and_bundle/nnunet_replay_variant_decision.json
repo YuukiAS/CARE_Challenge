@@ -1,0 +1,20 @@
+{
+  "historical_0_6691_claim_authorized": false,
+  "historical_hosted_lineage_status": "UNRESOLVED",
+  "max_variant_count_allowed": 3,
+  "production_nnunet_source": {
+    "checkpoint": "checkpoint_best.pth",
+    "output_dir": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops",
+    "tta": "default",
+    "variant": "best_default_tta"
+  },
+  "selected_decision": "NONE_EXACT",
+  "selected_variant": null,
+  "token": "NNUNET_USED_CHANNELS_VARIANTS_NOT_REPRODUCED",
+  "variant_count": 3,
+  "variants_run": [
+    "v1_final_default_tta",
+    "v2_best_no_tta",
+    "v3_final_no_tta"
+  ]
+}

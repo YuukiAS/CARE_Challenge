@@ -1,5 +1,57 @@
 # CARE 架构 Wiki
 
+architecture_version: `care-test-docker-provenance-reconcile-deployable-nondeterministic-20260801`
+latest_verified_runtime: `package A labelwise audit completed; used nnU-Net channels 1/2/3/4 matched 4/15; three frozen replay variants did not exact reproduce package A; second checkpoint_best default-TTA deployment replay matched geometry 15/15 but array only 7/15`
+latest_scientific_status: `SERVER_BUNDLE_BLOCKED: current nnU-Net deployment source is not two-run voxel deterministic, so workstation Docker bundle must not start`
+latest_controller_task: `20260801_care_test_docker_provenance_reconcile_and_bundle`
+route_status: `MAIN_ONLY_TEST_DOCKER_RECONCILE_BLOCKED_RETURN_TO_PLANNER`
+
+当前机器真值是 `prompts/routes/handoffs/CURRENT.md`。这次已经按新合同纠正了上一轮过窄的阻塞口径：没有直接把完整六类数组 mismatch 当成终点，而是先按语义标签审计 production 会使用的 nnU-Net anatomy `1/2/3` 和 pure-edema `4`。审计结果是 package A 与上一轮 fresh replay 几何 15/15 一致，但 full array 4/15、一致的 used channels 也只有 4/15；11 个不一致病例合计 120 个体素差异，横跨 anatomy、pure edema、scar 和背景。三个冻结 variant 均没有 exact 复现 package A，因此历史 `0.6691` lineage 保持 `UNRESOLVED`，不得作 hosted claim。
+
+随后本任务按合同把历史 lineage 和当前部署源分开：对 `checkpoint_best.pth + folds 0-4 + default TTA` 做第二次独立 15/15 fresh replay。两次当前部署源 replay 的 geometry 是 15/15，但 array 只有 7/15 一致，合计 13 个体素变化。这个状态触发合同允许的硬阻塞 `NNUNET_DEPLOYABLE_SOURCE_NONDETERMINISTIC`；因此没有生成 `SERVER_BUNDLE_READY.json`，没有让工位开始 Docker 构建，也没有上传网盘、validation、Docker 或给组织方发邮件。
+
+关键证据：
+
+```text
+results/20260801_care_test_docker_provenance_reconcile_and_bundle/nnunet_used_channel_equivalence_summary.json
+results/20260801_care_test_docker_provenance_reconcile_and_bundle/nnunet_replay_variant_decision.json
+results/20260801_care_test_docker_provenance_reconcile_and_bundle/nnunet_deployable_source_receipt.json
+results/20260801_care_test_docker_provenance_reconcile_and_bundle/nnunet_lineage_vs_deployment_decision.json
+results/20260801_care_test_docker_provenance_reconcile_and_bundle/controller_report.md
+```
+
+## 2026-08-01 Docker provenance 纠偏后阻塞
+
+```text
+result_root:
+results/20260801_care_test_docker_provenance_reconcile_and_bundle
+
+terminal_state:
+SERVER_BUNDLE_BLOCKED
+
+blocking_token:
+NNUNET_DEPLOYABLE_SOURCE_NONDETERMINISTIC
+
+package A audit:
+geometry equality 15/15
+full array equality 4/15
+used channels 1/2/3/4 equality 4/15
+changed semantic voxels vs package A 120
+
+variant replay:
+v1 checkpoint_final default TTA NOT_EXACT
+v2 checkpoint_best no TTA NOT_EXACT
+v3 checkpoint_final no TTA NOT_EXACT
+
+deployable repeat:
+checkpoint_best folds0-4 default TTA
+geometry equality 15/15
+array equality 7/15
+changed voxels 13
+```
+
+不得把 `NNUNET_DEPLOYABLE_SOURCE_NONDETERMINISTIC` 解释成历史 `0.6691` 已复现。下一步需要 GPT Planner 决定是否授权一个确定性部署模式或修订 bundle source 合同。
+
 architecture_version: `care-test-docker-server-bundle-nnunet-mismatch-20260801`
 latest_verified_runtime: `server-side fresh nnU-Net 5-fold replay completed 15 outputs; geometry matched package A 15/15, array matched 4/15; MoSAIC MyoPS diagnostic replay completed 15/15; Cine diagnostic stopped at 4/15 after upstream gate failure`
 latest_scientific_status: `SERVER_BUNDLE_BLOCKED: workstation Docker bundle must not start because nnU-Net edema provenance was not reproduced`

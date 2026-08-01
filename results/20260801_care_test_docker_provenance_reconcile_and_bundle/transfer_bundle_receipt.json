@@ -1,0 +1,6 @@
+{
+  "created_at_utc": "2026-08-01T15:45:00Z",
+  "reason": "SERVER_BUNDLE_READY forbidden because nnU-Net deployment source is non-deterministic",
+  "status": "NOT_READY",
+  "task_key": "20260801_care_test_docker_provenance_reconcile_and_bundle"
+}
