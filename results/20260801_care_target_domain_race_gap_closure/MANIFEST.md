@@ -27,6 +27,7 @@
 - `results/20260801_care_target_domain_race_gap_closure/m0_protocol_fidelity_audit.json`
 - `results/20260801_care_target_domain_race_gap_closure/mapper_report_final.md`
 - `results/20260801_care_target_domain_race_gap_closure/notification_brief.json`
+- `results/20260801_care_target_domain_race_gap_closure/planner_gap_resolution_handoff.md`
 - `results/20260801_care_target_domain_race_gap_closure/scientific_decision.json`
 - `results/20260801_care_target_domain_race_gap_closure/scheduler_receipt.json`
 - `results/20260801_care_target_domain_race_gap_closure/slurm_and_interactive_accounting.csv`

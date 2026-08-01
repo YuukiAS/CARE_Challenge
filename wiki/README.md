@@ -48,6 +48,10 @@ status: PASS_WITH_CONTRACT_GAPS
 M1/M3: 500-step checkpoint grid complete
 M0R: missing step00500..step04000; only checkpoint_best.pth/checkpoint_final.pth present
 
+planner handoff:
+results/20260801_care_target_domain_race_gap_closure/planner_gap_resolution_handoff.md
+records remaining gaps, implementation plan, external asset locations, download commands, and hard boundaries
+
 strict validator:
 results/20260801_care_target_domain_race_gap_closure/strict_validator_report.json
 bootstrap status: PASS after active-continuation update
