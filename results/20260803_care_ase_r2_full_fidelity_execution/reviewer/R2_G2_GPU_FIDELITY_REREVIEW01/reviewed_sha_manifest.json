@@ -1,0 +1,54 @@
+{
+  "round_id": "R2_G2_GPU_FIDELITY_REREVIEW01",
+  "candidate_commit_sha": "c9d815b01580062b658fd23fb4c0cde6669a3433",
+  "detached_checkout": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R2_G2_GPU_FIDELITY_REREVIEW01/c9d815b01580062b658fd23fb4c0cde6669a3433",
+  "effective_contract_sha256": "b3ea5986b7a2458f758f7353ab023cea85a9cb67a6fb7c7bf12e5bc10e61d09c",
+  "actual_imported_source_paths": {
+    "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh": "ebef044dcf0a020d1818a0a48907ce0701640b966089c96aaf2a9e8a677a5cd9",
+    "scripts/training/care_ase/run_care_ase_r2_chunk.py": "af6ac65dd93f1e194950d21fa9aac594fbac901d0b85631357febe01276e1097",
+    "src/care_myocardium/models/care_ase.py": "62eea3d23392b95a604343b175e643bde02c62242add4fbb357dbae6a6bccd87",
+    "src/care_myocardium/training/care_ase_trainer.py": "4bf5e6f62ca4315fa6a1aba2a0686ad8b88664f67230ecb66a8415fe1cf61e4c",
+    "src/care_myocardium/training/care_ase_sampler.py": "c04af32585b45268640dc15845741b3888e4ecbcd947bd253597ec52d1320a2d",
+    "src/care_myocardium/inference/care_ase_r2_decode.py": "7fea71edba56d259dbbb31c3832b74709bd83d5af1f8b680a85c2e0a41acb05b",
+    "scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py": "10e3a275914f76f47ba709d5b28e765a72e2981043f0ea9f88c49d4c631f43e7",
+    "scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py": "c8692a48a5dbf95bf40dbe40a90eae31490e6d65f229b3bbaf24d55052a01861",
+    "scripts/validation/validate_care_ase_r2_g1.py": "a68088920deac2c4cc6b2d791a88d3fcd47dd9ca0735f0631fbd643aa356716d",
+    "scripts/validation/run_care_ase_r2_g2_gpu_fidelity.py": "47e68c10f4f115a93185bb333ebb4e9794128d48f45054a05204527a35abd87b"
+  },
+  "reviewed_evidence_paths": {
+    "results/20260803_care_ase_r2_full_fidelity_execution/g2_real_gpu_fidelity_receipt.json": "5f1f5487f008b016647b1db6f2249c3fdd57bf64589e814e8268c5d031842cfb",
+    "results/20260803_care_ase_r2_full_fidelity_execution/hard_negative_manifest_generation_receipt.json": "2ef2465127e7209416734581225b15a5c2d0e55a17dea2eb821c4a4ba099a665",
+    "results/20260803_care_ase_r2_full_fidelity_execution/formal_call_chain.json": "37201267c0d73d4345f274d35fbb7fb4dbabc4262ad70944ff5701dfc330483b",
+    "results/20260803_care_ase_r2_full_fidelity_execution/contract_to_code_coverage.json": "b8d99bda9125b5014dd2ac2d8163cdde07ae310e1f94370cd952085dc3086b67",
+    "results/20260803_care_ase_r2_full_fidelity_execution/semantic_loss_coverage.json": "84a8bb9ed77e6c311000d3fa246821f931d155e8a0a88314221a38bdee29d6fc",
+    "results/20260803_care_ase_r2_full_fidelity_execution/sampler_static_contract.json": "ee859c7186e3dd7f36f29b2dbcd5f3114acdc9dd03fd1bb5806fa31a861432a6",
+    "results/20260803_care_ase_r2_full_fidelity_execution/scheduler_static_contract.json": "d26b7cfda4155cdd874fdd45ff51e2f5dbd191bb588a8925efdd82488dc0d520",
+    "results/20260803_care_ase_r2_full_fidelity_execution/checkpoint_schema_contract.json": "1681a349d71e06820a51171f8621bf27da76c09b56bde0cc445b7eb9f8ad4507",
+    "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_full_fidelity_execution/reviewer/R2_G2_GPU_FIDELITY_REREVIEW01/gpu_rerun/g2_real_gpu_fidelity_receipt.json": "844d80d9dc78f286b1bb67028d6fa6ede32ad1caff7cc3915d297cf040578dbc"
+  },
+  "gpu_rerun": {
+    "job_id": "61794608",
+    "cuda_device": "NVIDIA H100 NVL",
+    "command": "srun --jobid=61794608 --overlap /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/run_care_ase_r2_g2_gpu_fidelity.py --fold 1 --output-dir /users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_full_fidelity_execution/reviewer/R2_G2_GPU_FIDELITY_REREVIEW01/gpu_rerun --patch-size 8,64,64 --sliding-window-patch-size 8,128,128",
+    "exit_code": 0,
+    "decision": "PASS",
+    "pass_condition_count": 16,
+    "required_pass_condition_count": 16,
+    "receipt_sha256": "844d80d9dc78f286b1bb67028d6fa6ede32ad1caff7cc3915d297cf040578dbc",
+    "module_off_final_logit_final_label_evidence": {
+      "status": "PASS",
+      "toggles": [
+        "disable_all_evidence",
+        "disable_edema_boundary",
+        "disable_edema_context",
+        "disable_edema_injury",
+        "disable_extent_wall",
+        "disable_scar_center",
+        "disable_scar_context",
+        "disable_scar_proposal"
+      ],
+      "all_toggles_pass_logit_or_label_effect": true
+    }
+  },
+  "detached_checkout_status_note": "git status --short reports ?? data, the user-prepared non-versioned data symlink."
+}

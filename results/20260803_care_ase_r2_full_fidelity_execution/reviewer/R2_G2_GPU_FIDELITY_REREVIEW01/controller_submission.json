@@ -1,0 +1,28 @@
+{
+  "candidate_commit_sha": "c9d815b01580062b658fd23fb4c0cde6669a3433",
+  "created_at_utc": "2026-08-02T19:34:28.565155+00:00",
+  "decision_requested": [
+    "PASS_CONTINUE",
+    "REVISE_CONTINUE_CURRENT_GOAL"
+  ],
+  "detached_checkout_root": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R2_G2_GPU_FIDELITY_REREVIEW01/c9d815b01580062b658fd23fb4c0cde6669a3433",
+  "effective_contract_sha256": "b3ea5986b7a2458f758f7353ab023cea85a9cb67a6fb7c7bf12e5bc10e61d09c",
+  "evidence_sha256_manifest": {
+    "results/20260803_care_ase_r2_full_fidelity_execution/controller_ledger.csv": "21c058b9ec15537ed0ac1a08fcb8b7ed5c507ee81a38ecc4b23a3c23f32dcbc7",
+    "results/20260803_care_ase_r2_full_fidelity_execution/effective_contract.json": "b3ea5986b7a2458f758f7353ab023cea85a9cb67a6fb7c7bf12e5bc10e61d09c",
+    "results/20260803_care_ase_r2_full_fidelity_execution/g2_real_gpu_fidelity_receipt.json": "5f1f5487f008b016647b1db6f2249c3fdd57bf64589e814e8268c5d031842cfb",
+    "results/20260803_care_ase_r2_full_fidelity_execution/hard_negative_manifest_fold1.json": "83499357657390bcc851758e5eecb8803d4787b7e1470898ae24daa1fdf582a9",
+    "results/20260803_care_ase_r2_full_fidelity_execution/hard_negative_manifest_fold4.json": "2ba11f9b1cd655e66f9feb17acff00928239bc3df768c04dd7edb034ddbae85c",
+    "results/20260803_care_ase_r2_full_fidelity_execution/hard_negative_manifest_generation_receipt.json": "2ef2465127e7209416734581225b15a5c2d0e55a17dea2eb821c4a4ba099a665",
+    "scripts/validation/run_care_ase_r2_g2_gpu_fidelity.py": "47e68c10f4f115a93185bb333ebb4e9794128d48f45054a05204527a35abd87b"
+  },
+  "fixed_evidence_directory": "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R2_G2_GPU_FIDELITY_REREVIEW01",
+  "g2_rerun_command": "srun --jobid=61794608 --overlap ./envs/env_CARE/bin/python scripts/validation/run_care_ase_r2_g2_gpu_fidelity.py --fold 1 --output-dir results/20260803_care_ase_r2_full_fidelity_execution --patch-size 8,64,64 --sliding-window-patch-size 8,128,128",
+  "outer_access_before_freeze": 0,
+  "r2_recommended_command": "srun --jobid=61794608 --overlap /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/run_care_ase_r2_g2_gpu_fidelity.py --fold 1 --output-dir /users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_full_fidelity_execution/reviewer/R2_G2_GPU_FIDELITY_REREVIEW01/gpu_rerun --patch-size 8,64,64 --sliding-window-patch-size 8,128,128",
+  "repair_addressed": "R2-G2-F001 module-off/final-logit/final-label evidence",
+  "reviewer_session_id": "019fc386-dba4-7b72-a29f-06a657b4fc5f",
+  "round_id": "R2_G2_GPU_FIDELITY_REREVIEW01",
+  "supersedes_round_id": "R2_G2_GPU_FIDELITY",
+  "temporary_reviewer_output_root": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_full_fidelity_execution/reviewer/R2_G2_GPU_FIDELITY_REREVIEW01"
+}

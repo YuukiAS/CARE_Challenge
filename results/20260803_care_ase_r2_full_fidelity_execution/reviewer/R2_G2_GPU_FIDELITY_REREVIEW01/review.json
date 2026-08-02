@@ -1,0 +1,18 @@
+{
+  "round_id": "R2_G2_GPU_FIDELITY_REREVIEW01",
+  "reviewer_session_id": "019fc386-dba4-7b72-a29f-06a657b4fc5f",
+  "candidate_commit_sha": "c9d815b01580062b658fd23fb4c0cde6669a3433",
+  "effective_contract_sha256": "b3ea5986b7a2458f758f7353ab023cea85a9cb67a6fb7c7bf12e5bc10e61d09c",
+  "decision": "PASS_CONTINUE",
+  "findings": [],
+  "critical_finding_count": 0,
+  "invalidated_wave_or_none": "none",
+  "required_repair_scope": "none",
+  "next_review_trigger": "next contracted CARE-ASE R2 continuous-review milestone",
+  "review_notes": {
+    "r2_g2_f001_repair": "PASS: committed and independently rerun G2 receipts include module_off_final_logit_final_label_evidence for all eight disable_* toggles, with final_logit_max_abs_delta, scar/edema logit deltas, final_label_changed_voxels, and per-toggle passes_logit_or_label_effect.",
+    "gpu_rerun": "PASS: recommended srun on job 61794608 from detached checkout completed with decision PASS and 16/16 pass conditions.",
+    "regression_check": "PASS: descriptors, step0 parity, gradients, no-T2 edema gradient zero, sampler_400, scheduler, actual-train area references, atomic save/reload, resume fields, sliding-window inference, fixed decode, and outer_access_count_before_freeze remained passing.",
+    "checkout_status": "git status --short reported only ?? data, the user-prepared non-versioned symlink."
+  }
+}

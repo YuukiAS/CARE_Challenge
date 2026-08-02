@@ -1,0 +1,95 @@
+{
+  "round_id": "R2_G2_GPU_FIDELITY_REREVIEW01",
+  "commands": [
+    {
+      "command": "sed -n '1,220p' .agents/skills/codex-workflow-protocol/SKILL.md",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R2_G2_GPU_FIDELITY_REREVIEW01/c9d815b01580062b658fd23fb4c0cde6669a3433",
+      "exit_code": 0,
+      "purpose": "Read applicable workflow skill from detached checkout."
+    },
+    {
+      "command": "git rev-parse HEAD",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R2_G2_GPU_FIDELITY_REREVIEW01/c9d815b01580062b658fd23fb4c0cde6669a3433",
+      "exit_code": 0,
+      "purpose": "Verify immutable candidate commit."
+    },
+    {
+      "command": "sed -n '1,320p' /users/a/e/aereinh/CARE/results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R2_G2_GPU_FIDELITY_REREVIEW01/controller_submission.json",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R2_G2_GPU_FIDELITY_REREVIEW01/c9d815b01580062b658fd23fb4c0cde6669a3433",
+      "exit_code": 0,
+      "purpose": "Read specified controller submission."
+    },
+    {
+      "command": "nl -ba scripts/validation/run_care_ase_r2_g2_gpu_fidelity.py | sed -n '1,760p'",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R2_G2_GPU_FIDELITY_REREVIEW01/c9d815b01580062b658fd23fb4c0cde6669a3433",
+      "exit_code": 0,
+      "purpose": "Inspect repaired G2 validator implementation."
+    },
+    {
+      "command": "python - <<'PY'\nimport json\np='results/20260803_care_ase_r2_full_fidelity_execution/g2_real_gpu_fidelity_receipt.json'\nd=json.load(open(p))\nmod=d.get('module_off_final_logit_final_label_evidence', {})\nprint(json.dumps({'decision': d.get('decision'), 'pass_condition_count': d.get('pass_condition_count'), 'required_pass_condition_count': d.get('required_pass_condition_count'), 'outer_access_count_before_freeze': d.get('outer_access_count_before_freeze'), 'module_off_status': mod.get('status'), 'module_off_toggles': sorted(mod.get('toggles', {}).keys()), 'module_off_all_pass': all(v.get('passes_logit_or_label_effect') for v in mod.get('toggles', {}).values()), 'keys': sorted(d.keys())}, indent=2, sort_keys=True))\nPY",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R2_G2_GPU_FIDELITY_REREVIEW01/c9d815b01580062b658fd23fb4c0cde6669a3433",
+      "exit_code": 0,
+      "purpose": "Inspect committed G2 receipt and module-off summary."
+    },
+    {
+      "command": "python - <<'PY'\nimport json\np='results/20260803_care_ase_r2_full_fidelity_execution/g2_real_gpu_fidelity_receipt.json'\nd=json.load(open(p))\nprint(json.dumps(d.get('module_off_final_logit_final_label_evidence', {}), indent=2, sort_keys=True)[:20000])\nPY",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R2_G2_GPU_FIDELITY_REREVIEW01/c9d815b01580062b658fd23fb4c0cde6669a3433",
+      "exit_code": 0,
+      "purpose": "Inspect committed per-toggle final-logit/final-label ablation evidence."
+    },
+    {
+      "command": "squeue -j 61794608 -o '%i|%j|%P|%T|%M|%L|%R|%b|%D'",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R2_G2_GPU_FIDELITY_REREVIEW01/c9d815b01580062b658fd23fb4c0cde6669a3433",
+      "exit_code": 0,
+      "purpose": "Verify requested Slurm job is running."
+    },
+    {
+      "command": "scontrol show job 61794608",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R2_G2_GPU_FIDELITY_REREVIEW01/c9d815b01580062b658fd23fb4c0cde6669a3433",
+      "exit_code": 0,
+      "purpose": "Inspect requested Slurm allocation."
+    },
+    {
+      "command": "mkdir -p /users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_full_fidelity_execution/reviewer/R2_G2_GPU_FIDELITY_REREVIEW01/gpu_rerun && srun --jobid=61794608 --overlap /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/run_care_ase_r2_g2_gpu_fidelity.py --fold 1 --output-dir /users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_full_fidelity_execution/reviewer/R2_G2_GPU_FIDELITY_REREVIEW01/gpu_rerun --patch-size 8,64,64 --sliding-window-patch-size 8,128,128",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R2_G2_GPU_FIDELITY_REREVIEW01/c9d815b01580062b658fd23fb4c0cde6669a3433",
+      "exit_code": 0,
+      "purpose": "Run recommended independent G2 GPU rerun into reviewer temp output."
+    },
+    {
+      "command": "python - <<'PY'\nimport json\np='/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_full_fidelity_execution/reviewer/R2_G2_GPU_FIDELITY_REREVIEW01/gpu_rerun/g2_real_gpu_fidelity_receipt.json'\nd=json.load(open(p))\nmod=d.get('module_off_final_logit_final_label_evidence', {})\nprint(json.dumps({'decision': d.get('decision'), 'pass_condition_count': d.get('pass_condition_count'), 'required_pass_condition_count': d.get('required_pass_condition_count'), 'cuda_device': d.get('cuda_device'), 'slurm_job_id': d.get('slurm_job_id'), 'outer_access_count_before_freeze': d.get('outer_access_count_before_freeze'), 'descriptor_keys': sorted(d.get('required_case_descriptors', {})), 'step0_status': d.get('step0_parity', {}).get('status'), 'no_t2_edema_exclusive_gradient_zero': d.get('gradient', {}).get('no_t2_edema_exclusive_gradient_zero'), 'sampler_400_status': d.get('sampler_400', {}).get('status'), 'scheduler_status': d.get('scheduler', {}).get('status'), 'area_reference_source': d.get('area_reference', {}).get('source'), 'area_inner_outer': d.get('area_reference', {}).get('inner_or_outer_access'), 'checkpoint_required_fields_present': d.get('checkpoint', {}).get('required_fields_present'), 'checkpoint_reload_logits_max_abs_error': d.get('checkpoint', {}).get('reload_logits_max_abs_error'), 'decode_no_t2_excludes_class4': d.get('decode', {}).get('no_t2_excludes_class4'), 'sliding_window_finite_logits': d.get('sliding_window', {}).get('finite_logits'), 'module_off_status': mod.get('status'), 'module_off_toggles': sorted(mod.get('toggles', {})), 'module_off_all_pass': all(v.get('passes_logit_or_label_effect') for v in mod.get('toggles', {}).values())}, indent=2, sort_keys=True))\nPY",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R2_G2_GPU_FIDELITY_REREVIEW01/c9d815b01580062b658fd23fb4c0cde6669a3433",
+      "exit_code": 0,
+      "purpose": "Summarize independent GPU rerun receipt."
+    },
+    {
+      "command": "python - <<'PY'\nimport json\np='/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_full_fidelity_execution/reviewer/R2_G2_GPU_FIDELITY_REREVIEW01/gpu_rerun/g2_real_gpu_fidelity_receipt.json'\nd=json.load(open(p))\nprint(json.dumps(d.get('module_off_final_logit_final_label_evidence', {}), indent=2, sort_keys=True)[:24000])\nPY",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R2_G2_GPU_FIDELITY_REREVIEW01/c9d815b01580062b658fd23fb4c0cde6669a3433",
+      "exit_code": 0,
+      "purpose": "Inspect rerun per-toggle final-logit/final-label ablation evidence."
+    },
+    {
+      "command": "sha256sum /users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_full_fidelity_execution/reviewer/R2_G2_GPU_FIDELITY_REREVIEW01/gpu_rerun/g2_real_gpu_fidelity_receipt.json && find /users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_full_fidelity_execution/reviewer/R2_G2_GPU_FIDELITY_REREVIEW01/gpu_rerun -maxdepth 1 -type f -printf '%f\\n' | sort",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R2_G2_GPU_FIDELITY_REREVIEW01/c9d815b01580062b658fd23fb4c0cde6669a3433",
+      "exit_code": 0,
+      "purpose": "Hash and list rerun artifacts."
+    },
+    {
+      "command": "python - <<'PY'\nimport json\nfor p in ['results/20260803_care_ase_r2_full_fidelity_execution/semantic_loss_coverage.json','results/20260803_care_ase_r2_full_fidelity_execution/sampler_static_contract.json','results/20260803_care_ase_r2_full_fidelity_execution/scheduler_static_contract.json','results/20260803_care_ase_r2_full_fidelity_execution/checkpoint_schema_contract.json']:\n    d=json.load(open(p)); print(p, d.get('status'))\nrows=json.load(open('results/20260803_care_ase_r2_full_fidelity_execution/contract_to_code_coverage.json'))\nprint('coverage_fail_rows', [r for r in rows if r.get('status')!='PASS'])\nPY",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R2_G2_GPU_FIDELITY_REREVIEW01/c9d815b01580062b658fd23fb4c0cde6669a3433",
+      "exit_code": 0,
+      "purpose": "Check static receipt regressions."
+    },
+    {
+      "command": "sha256sum jobs/care_ase_r2/run_fold_chunk_htzhulab.sh scripts/training/care_ase/run_care_ase_r2_chunk.py src/care_myocardium/models/care_ase.py src/care_myocardium/training/care_ase_trainer.py src/care_myocardium/training/care_ase_sampler.py src/care_myocardium/inference/care_ase_r2_decode.py scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py scripts/validation/validate_care_ase_r2_g1.py scripts/validation/run_care_ase_r2_g2_gpu_fidelity.py results/20260803_care_ase_r2_full_fidelity_execution/g2_real_gpu_fidelity_receipt.json results/20260803_care_ase_r2_full_fidelity_execution/hard_negative_manifest_generation_receipt.json results/20260803_care_ase_r2_full_fidelity_execution/formal_call_chain.json results/20260803_care_ase_r2_full_fidelity_execution/contract_to_code_coverage.json results/20260803_care_ase_r2_full_fidelity_execution/semantic_loss_coverage.json results/20260803_care_ase_r2_full_fidelity_execution/sampler_static_contract.json results/20260803_care_ase_r2_full_fidelity_execution/scheduler_static_contract.json results/20260803_care_ase_r2_full_fidelity_execution/checkpoint_schema_contract.json /users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_full_fidelity_execution/reviewer/R2_G2_GPU_FIDELITY_REREVIEW01/gpu_rerun/g2_real_gpu_fidelity_receipt.json",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R2_G2_GPU_FIDELITY_REREVIEW01/c9d815b01580062b658fd23fb4c0cde6669a3433",
+      "exit_code": 0,
+      "purpose": "Compute source and evidence SHA256 manifest."
+    },
+    {
+      "command": "git status --short",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R2_G2_GPU_FIDELITY_REREVIEW01/c9d815b01580062b658fd23fb4c0cde6669a3433",
+      "exit_code": 0,
+      "purpose": "Check detached checkout status after review; only prepared data symlink appears."
+    }
+  ]
+}
