@@ -134,6 +134,43 @@ def sampler_400_checks(repo_root: Path, fold: int) -> dict[str, Any]:
     }
 
 
+def module_off_checks(model: torch.nn.Module, batch: dict[str, torch.Tensor], *, global_step: int) -> dict[str, Any]:
+    model.eval()
+    toggles: dict[str, dict[str, bool]] = {
+        "disable_scar_proposal": {"disable_scar_proposal": True},
+        "disable_scar_center": {"disable_scar_center": True},
+        "disable_scar_context": {"disable_scar_context": True},
+        "disable_edema_injury": {"disable_edema_injury": True},
+        "disable_edema_boundary": {"disable_edema_boundary": True},
+        "disable_edema_context": {"disable_edema_context": True},
+        "disable_extent_wall": {"disable_extent_wall": True},
+        "disable_all_evidence": {"disable_all_evidence": True},
+    }
+    with torch.no_grad():
+        base = model(batch["image"], batch["availability"], global_step=global_step)
+        base_logits = base["final_logits"]
+        base_labels = decode_care_ase_r2_logits(base_logits, batch["availability"])
+        rows = {}
+        for name, kwargs in toggles.items():
+            off = model(batch["image"], batch["availability"], global_step=global_step, **kwargs)
+            off_logits = off["final_logits"]
+            off_labels = decode_care_ase_r2_logits(off_logits, batch["availability"])
+            diff = (base_logits - off_logits).abs()
+            rows[name] = {
+                "final_logit_max_abs_delta": float(diff.max().detach().cpu()),
+                "scar_logit_max_abs_delta": float(diff[:, 5:6].max().detach().cpu()),
+                "edema_logit_max_abs_delta": float(diff[:, 4:5].max().detach().cpu()),
+                "final_label_changed_voxels": int((base_labels != off_labels).sum().detach().cpu()),
+                "passes_logit_or_label_effect": float(diff.max().detach().cpu()) > 1.0e-8 or int((base_labels != off_labels).sum().detach().cpu()) > 0,
+            }
+    return {
+        "status": "PASS" if all(row["passes_logit_or_label_effect"] for row in rows.values()) else "FAIL",
+        "global_step": int(global_step),
+        "probe_case_shape": list(batch["image"].shape),
+        "toggles": rows,
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--fold", type=int, default=1, choices=(1, 4))
@@ -204,6 +241,7 @@ def main() -> int:
     overfit_optimizer = build_optimizer(overfit_model)
     overfit_scheduler = CAREASEStageScheduler(overfit_optimizer)
     overfit_history = [one_train_step(overfit_model, overfit_optimizer, overfit_scheduler, complete_batch, 2000 + idx) for idx in range(4)]
+    module_off = module_off_checks(overfit_model, complete_batch, global_step=2004)
 
     decode_input = torch.zeros(2, 6, 2, 4, 4, device=device)
     decode_input[0, 4] = 10.0
@@ -277,6 +315,7 @@ def main() -> int:
             "final_loss": overfit_history[-1]["loss"],
             "loss_decreased": overfit_history[-1]["loss"] < overfit_history[0]["loss"],
         },
+        "module_off_final_logit_final_label_evidence": module_off,
         "sampler_400": sampler_400_checks(REPO_ROOT, fold),
         "scheduler": scheduler_checks(),
         "checkpoint": {
@@ -314,6 +353,7 @@ def main() -> int:
         complete_grad["component_heads"] > 0.0,
         checks["gradient"]["no_t2_edema_exclusive_gradient_zero"],
         checks["overfit_direction"]["loss_decreased"],
+        checks["module_off_final_logit_final_label_evidence"]["status"] == "PASS",
         checks["sampler_400"]["status"] == "PASS",
         checks["scheduler"]["status"] == "PASS",
         checks["checkpoint"]["required_fields_present"],
