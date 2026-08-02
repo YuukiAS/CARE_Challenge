@@ -1,0 +1,12 @@
+{
+  "candidate_commit_sha": "76916d6ab12876dfa42ee6634f4cd236bd0f7010",
+  "critical_finding_count": 0,
+  "decision": "PASS_CONTINUE",
+  "effective_contract_sha256": "b3ea5986b7a2458f758f7353ab023cea85a9cb67a6fb7c7bf12e5bc10e61d09c",
+  "findings": [],
+  "invalidated_wave_or_none": null,
+  "next_review_trigger": "R1_G1_STATIC_FIDELITY",
+  "required_repair_scope": "none",
+  "reviewer_session_id": "019fc386-dba4-7b72-a29f-06a657b4fc5f",
+  "round_id": "R0_W1_EARLY_DIFF_REREVIEW_03"
+}

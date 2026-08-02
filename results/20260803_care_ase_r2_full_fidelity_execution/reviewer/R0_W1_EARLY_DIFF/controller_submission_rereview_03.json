@@ -1,0 +1,33 @@
+{
+  "candidate_commit_sha": "76916d6ab12876dfa42ee6634f4cd236bd0f7010",
+  "created_at_utc": "2026-08-02T18:14:31.528595+00:00",
+  "decision_requested": [
+    "PASS_CONTINUE",
+    "REVISE_CONTINUE_CURRENT_GOAL"
+  ],
+  "detached_checkout_root": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R0_W1_EARLY_DIFF/76916d6ab12876dfa42ee6634f4cd236bd0f7010",
+  "effective_contract_sha256": "b3ea5986b7a2458f758f7353ab023cea85a9cb67a6fb7c7bf12e5bc10e61d09c",
+  "evidence_sha256_manifest": {
+    "results/20260803_care_ase_r2_full_fidelity_execution/checkpoint_schema_contract.json": "1681a349d71e06820a51171f8621bf27da76c09b56bde0cc445b7eb9f8ad4507",
+    "results/20260803_care_ase_r2_full_fidelity_execution/contract_to_code_coverage.json": "b8d99bda9125b5014dd2ac2d8163cdde07ae310e1f94370cd952085dc3086b67",
+    "results/20260803_care_ase_r2_full_fidelity_execution/effective_contract.json": "b3ea5986b7a2458f758f7353ab023cea85a9cb67a6fb7c7bf12e5bc10e61d09c",
+    "results/20260803_care_ase_r2_full_fidelity_execution/formal_call_chain.json": "37201267c0d73d4345f274d35fbb7fb4dbabc4262ad70944ff5701dfc330483b",
+    "results/20260803_care_ase_r2_full_fidelity_execution/g1_static_implementation_gate_receipt.json": "37640f5f08f47f74ef28d70628338fc5fedc6632e24a6b9dc41415ddc8e52162",
+    "results/20260803_care_ase_r2_full_fidelity_execution/known_bad_validator_report.json": "164da5c2f91c0fb48533d1e40a638a8e50fd1ac6d78a912592ae2ae6fa4db125",
+    "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R0_W1_EARLY_DIFF/review_rereview_02.json": "c762ed6fab7e993dd5b02c5e29f8c4cf1e47d7dff049b5c1f7e0eb0a254d7aa1",
+    "results/20260803_care_ase_r2_full_fidelity_execution/sampler_static_contract.json": "ee859c7186e3dd7f36f29b2dbcd5f3114acdc9dd03fd1bb5806fa31a861432a6",
+    "results/20260803_care_ase_r2_full_fidelity_execution/scheduler_static_contract.json": "d26b7cfda4155cdd874fdd45ff51e2f5dbd191bb588a8925efdd82488dc0d520",
+    "results/20260803_care_ase_r2_full_fidelity_execution/semantic_loss_coverage.json": "84a8bb9ed77e6c311000d3fa246821f931d155e8a0a88314221a38bdee29d6fc",
+    "results/20260803_care_ase_r2_full_fidelity_execution/w1_behavior_implementation_source_manifest.json": "64ee841b9fbbde1faa759cf28763d592bfc2e28369a9bd7e1fd2aa774215f4ed"
+  },
+  "fixed_evidence_directory": "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R0_W1_EARLY_DIFF",
+  "formal_entrypoint": "scripts/training/care_ase/run_care_ase_r2_chunk.py",
+  "formal_wrapper": "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh",
+  "outer_access_before_freeze": 0,
+  "repaired_findings": [
+    "R0-F003-REREVIEW02"
+  ],
+  "reviewer_session_id": "019fc386-dba4-7b72-a29f-06a657b4fc5f",
+  "round_id": "R0_W1_EARLY_DIFF_REREVIEW_03",
+  "supersedes_candidate_commit_sha": "d471494ba8e80941bef277951fca5ef3673af809"
+}
