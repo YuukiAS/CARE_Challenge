@@ -1,0 +1,12 @@
+{
+  "round_id": "R1_G1_STATIC_FIDELITY_REREVIEW01",
+  "reviewer_session_id": "019fc386-dba4-7b72-a29f-06a657b4fc5f",
+  "candidate_commit_sha": "7ab4a2511b9e319363e2bb59d41f34518aebe8e2",
+  "effective_contract_sha256": "b3ea5986b7a2458f758f7353ab023cea85a9cb67a6fb7c7bf12e5bc10e61d09c",
+  "decision": "PASS_CONTINUE",
+  "findings": [],
+  "critical_finding_count": 0,
+  "invalidated_wave_or_none": "none",
+  "required_repair_scope": "none",
+  "next_review_trigger": "next contracted CARE-ASE R2 continuous-review milestone"
+}

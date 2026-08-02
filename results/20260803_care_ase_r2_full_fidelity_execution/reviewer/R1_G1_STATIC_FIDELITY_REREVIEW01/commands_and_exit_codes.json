@@ -1,0 +1,77 @@
+{
+  "round_id": "R1_G1_STATIC_FIDELITY_REREVIEW01",
+  "commands": [
+    {
+      "command": "git rev-parse HEAD",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R1_G1_STATIC_FIDELITY_REREVIEW01/7ab4a2511b9e319363e2bb59d41f34518aebe8e2",
+      "exit_code": 0,
+      "purpose": "Verify immutable candidate commit."
+    },
+    {
+      "command": "sed -n '1,260p' /users/a/e/aereinh/CARE/results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R1_G1_STATIC_FIDELITY_REREVIEW01/controller_submission.json",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R1_G1_STATIC_FIDELITY_REREVIEW01/7ab4a2511b9e319363e2bb59d41f34518aebe8e2",
+      "exit_code": 0,
+      "purpose": "Read specified controller submission."
+    },
+    {
+      "command": "find results/20260803_care_ase_r2_full_fidelity_execution -maxdepth 2 -type f | sort",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R1_G1_STATIC_FIDELITY_REREVIEW01/7ab4a2511b9e319363e2bb59d41f34518aebe8e2",
+      "exit_code": 0,
+      "purpose": "List candidate evidence files."
+    },
+    {
+      "command": "nl -ba scripts/validation/validate_care_ase_r2_g1.py | sed -n '1,520p'",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R1_G1_STATIC_FIDELITY_REREVIEW01/7ab4a2511b9e319363e2bb59d41f34518aebe8e2",
+      "exit_code": 0,
+      "purpose": "Inspect repaired validator, known-bad fixture runner, and subprocess evidence fields."
+    },
+    {
+      "command": "sed -n '1,260p' results/20260803_care_ase_r2_full_fidelity_execution/known_bad_validator_report.json",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R1_G1_STATIC_FIDELITY_REREVIEW01/7ab4a2511b9e319363e2bb59d41f34518aebe8e2",
+      "exit_code": 0,
+      "purpose": "Inspect committed known-bad report fields."
+    },
+    {
+      "command": "sed -n '1,220p' results/20260803_care_ase_r2_full_fidelity_execution/g1_static_implementation_gate_receipt.json && sed -n '1,220p' results/20260803_care_ase_r2_full_fidelity_execution/g1_source_sha_manifest.json",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R1_G1_STATIC_FIDELITY_REREVIEW01/7ab4a2511b9e319363e2bb59d41f34518aebe8e2",
+      "exit_code": 0,
+      "purpose": "Inspect G1 PASS receipt and source manifest."
+    },
+    {
+      "command": "sed -n '1,240p' results/20260803_care_ase_r2_full_fidelity_execution/formal_call_chain.json && sed -n '1,260p' results/20260803_care_ase_r2_full_fidelity_execution/contract_to_code_coverage.json",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R1_G1_STATIC_FIDELITY_REREVIEW01/7ab4a2511b9e319363e2bb59d41f34518aebe8e2",
+      "exit_code": 0,
+      "purpose": "Re-check formal call chain and contract-to-code coverage."
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/validate_care_ase_r2_g1.py --output-dir /tmp/care_ase_r2_r1_g1_rereview01_validator_probe",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R1_G1_STATIC_FIDELITY_REREVIEW01/7ab4a2511b9e319363e2bb59d41f34518aebe8e2",
+      "exit_code": 0,
+      "purpose": "Independently rerun repaired validator from detached checkout into /tmp."
+    },
+    {
+      "command": "python - <<'PY'\nimport json\np='/tmp/care_ase_r2_r1_g1_rereview01_validator_probe/known_bad_validator_report.json'\ndata=json.load(open(p))\nprint(json.dumps({'status': data.get('status'), 'required_known_bad_count': data.get('required_known_bad_count'), 'known_bad_count_passed': data.get('known_bad_count_passed'), 'nonzero_exit_count': sum(1 for r in data.get('known_bad', []) if r.get('validator_exit_if_mutated', 0) != 0), 'rejected_as_expected_count': sum(1 for r in data.get('known_bad', []) if r.get('observed_decision') == 'REJECTED_AS_EXPECTED'), 'fail_rows': [r.get('known_bad') for r in data.get('known_bad', []) if r.get('status') != 'PASS']}, indent=2))\nPY",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R1_G1_STATIC_FIDELITY_REREVIEW01/7ab4a2511b9e319363e2bb59d41f34518aebe8e2",
+      "exit_code": 0,
+      "purpose": "Summarize independent known-bad fixture rerun."
+    },
+    {
+      "command": "sha256sum jobs/care_ase_r2/run_fold_chunk_htzhulab.sh scripts/training/care_ase/run_care_ase_r2_chunk.py src/care_myocardium/models/care_ase.py src/care_myocardium/training/care_ase_trainer.py src/care_myocardium/training/care_ase_sampler.py src/care_myocardium/inference/care_ase_r2_decode.py scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py scripts/validation/validate_care_ase_r2_g1.py results/20260803_care_ase_r2_full_fidelity_execution/g1_static_implementation_gate_receipt.json results/20260803_care_ase_r2_full_fidelity_execution/known_bad_validator_report.json results/20260803_care_ase_r2_full_fidelity_execution/contract_to_code_coverage.json results/20260803_care_ase_r2_full_fidelity_execution/formal_call_chain.json results/20260803_care_ase_r2_full_fidelity_execution/semantic_loss_coverage.json results/20260803_care_ase_r2_full_fidelity_execution/sampler_static_contract.json results/20260803_care_ase_r2_full_fidelity_execution/scheduler_static_contract.json results/20260803_care_ase_r2_full_fidelity_execution/checkpoint_schema_contract.json",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R1_G1_STATIC_FIDELITY_REREVIEW01/7ab4a2511b9e319363e2bb59d41f34518aebe8e2",
+      "exit_code": 0,
+      "purpose": "Compute independent SHA256 manifest."
+    },
+    {
+      "command": "python - <<'PY'\nimport json\nfor p in ['results/20260803_care_ase_r2_full_fidelity_execution/semantic_loss_coverage.json','results/20260803_care_ase_r2_full_fidelity_execution/sampler_static_contract.json','results/20260803_care_ase_r2_full_fidelity_execution/scheduler_static_contract.json','results/20260803_care_ase_r2_full_fidelity_execution/checkpoint_schema_contract.json']:\n    d=json.load(open(p))\n    print(p, d.get('status'))\nPY",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R1_G1_STATIC_FIDELITY_REREVIEW01/7ab4a2511b9e319363e2bb59d41f34518aebe8e2",
+      "exit_code": 0,
+      "purpose": "Check static contract receipt statuses for regressions."
+    },
+    {
+      "command": "python - <<'PY'\nimport json\np='results/20260803_care_ase_r2_full_fidelity_execution/contract_to_code_coverage.json'\nrows=json.load(open(p))\nprint(json.dumps({'row_count': len(rows), 'fail_rows': [r for r in rows if r.get('status')!='PASS']}, indent=2))\nPY",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R1_G1_STATIC_FIDELITY_REREVIEW01/7ab4a2511b9e319363e2bb59d41f34518aebe8e2",
+      "exit_code": 0,
+      "purpose": "Check coverage row failures."
+    }
+  ]
+}

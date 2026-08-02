@@ -1,0 +1,46 @@
+{
+  "round_id": "R1_G1_STATIC_FIDELITY_REREVIEW01",
+  "candidate_commit_sha": "7ab4a2511b9e319363e2bb59d41f34518aebe8e2",
+  "detached_checkout": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R1_G1_STATIC_FIDELITY_REREVIEW01/7ab4a2511b9e319363e2bb59d41f34518aebe8e2",
+  "effective_contract_sha256": "b3ea5986b7a2458f758f7353ab023cea85a9cb67a6fb7c7bf12e5bc10e61d09c",
+  "actual_imported_source_paths": {
+    "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh": "ebef044dcf0a020d1818a0a48907ce0701640b966089c96aaf2a9e8a677a5cd9",
+    "scripts/training/care_ase/run_care_ase_r2_chunk.py": "af6ac65dd93f1e194950d21fa9aac594fbac901d0b85631357febe01276e1097",
+    "src/care_myocardium/models/care_ase.py": "62eea3d23392b95a604343b175e643bde02c62242add4fbb357dbae6a6bccd87",
+    "src/care_myocardium/training/care_ase_trainer.py": "4bf5e6f62ca4315fa6a1aba2a0686ad8b88664f67230ecb66a8415fe1cf61e4c",
+    "src/care_myocardium/training/care_ase_sampler.py": "31c74681bc823a50c80fad006849d58701c1a44e595c5197eeaf5edd8734d2f4",
+    "src/care_myocardium/inference/care_ase_r2_decode.py": "7fea71edba56d259dbbb31c3832b74709bd83d5af1f8b680a85c2e0a41acb05b",
+    "scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py": "637cfc9d76f6f78c8d99212cc58e8fa877b2ecd5dcf2a359a358b59d098beb80",
+    "scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py": "c8692a48a5dbf95bf40dbe40a90eae31490e6d65f229b3bbaf24d55052a01861",
+    "scripts/validation/validate_care_ase_r2_g1.py": "a68088920deac2c4cc6b2d791a88d3fcd47dd9ca0735f0631fbd643aa356716d"
+  },
+  "reviewed_evidence_paths": {
+    "results/20260803_care_ase_r2_full_fidelity_execution/g1_static_implementation_gate_receipt.json": "ad2347afd836f027d4f4710db80fc19e1fae5519d744c354404675e41d9f2d4c",
+    "results/20260803_care_ase_r2_full_fidelity_execution/known_bad_validator_report.json": "57d9f8e24356622d77e045d8a32c4316f04561a701eeea4faa0f735393f25e82",
+    "results/20260803_care_ase_r2_full_fidelity_execution/contract_to_code_coverage.json": "b8d99bda9125b5014dd2ac2d8163cdde07ae310e1f94370cd952085dc3086b67",
+    "results/20260803_care_ase_r2_full_fidelity_execution/formal_call_chain.json": "37201267c0d73d4345f274d35fbb7fb4dbabc4262ad70944ff5701dfc330483b",
+    "results/20260803_care_ase_r2_full_fidelity_execution/semantic_loss_coverage.json": "84a8bb9ed77e6c311000d3fa246821f931d155e8a0a88314221a38bdee29d6fc",
+    "results/20260803_care_ase_r2_full_fidelity_execution/sampler_static_contract.json": "ee859c7186e3dd7f36f29b2dbcd5f3114acdc9dd03fd1bb5806fa31a861432a6",
+    "results/20260803_care_ase_r2_full_fidelity_execution/scheduler_static_contract.json": "d26b7cfda4155cdd874fdd45ff51e2f5dbd191bb588a8925efdd82488dc0d520",
+    "results/20260803_care_ase_r2_full_fidelity_execution/checkpoint_schema_contract.json": "1681a349d71e06820a51171f8621bf27da76c09b56bde0cc445b7eb9f8ad4507"
+  },
+  "independent_validator_probe": {
+    "command": [
+      "PYTHONDONTWRITEBYTECODE=1",
+      "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+      "scripts/validation/validate_care_ase_r2_g1.py",
+      "--output-dir",
+      "/tmp/care_ase_r2_r1_g1_rereview01_validator_probe"
+    ],
+    "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R1_G1_STATIC_FIDELITY_REREVIEW01/7ab4a2511b9e319363e2bb59d41f34518aebe8e2",
+    "exit_code": 0,
+    "known_bad_summary": {
+      "status": "PASS",
+      "required_known_bad_count": 31,
+      "known_bad_count_passed": 31,
+      "nonzero_exit_count": 31,
+      "rejected_as_expected_count": 31,
+      "fail_rows": []
+    }
+  }
+}
