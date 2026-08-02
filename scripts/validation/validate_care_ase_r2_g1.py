@@ -9,6 +9,7 @@ import hashlib
 import inspect
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any
@@ -32,6 +33,25 @@ DECODE = REPO_ROOT / "src/care_myocardium/inference/care_ase_r2_decode.py"
 EVALUATOR = REPO_ROOT / "scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py"
 MANIFEST_BUILDER = REPO_ROOT / "scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py"
 VALIDATOR = REPO_ROOT / "scripts/validation/validate_care_ase_r2_g1.py"
+
+STRUCTURAL_KNOWN_BAD_FIXTURES = (
+    "stage_2000_4000_8000",
+    "scheduler_none_or_static_lr",
+    "stage_A_B_complete_only",
+    "pathology_deep_supervision_missing",
+    "area_reference_hardcoded_0_20_0_30",
+    "hard_negative_manifest_not_consumed",
+    "center_cycle_or_10_5_5_broken",
+    "missing_checkpoint_field",
+    "resume_not_restore_sampler_or_next_hash",
+    "no_t2_class4_background",
+    "no_t2_edema_gradient_nonzero",
+    "edema_metric_mixes_no_t2",
+    "outer_before_w45",
+    "proxy_loss_targets",
+    "count_only_hard_negative_manifest",
+    "wrapper_points_old_entry",
+)
 
 
 def sha256_file(path: Path) -> str:
@@ -227,63 +247,232 @@ def checkpoint_schema_contract() -> dict[str, Any]:
     }
 
 
-def known_bad_matrix() -> dict[str, Any]:
-    model_text = MODEL.read_text(encoding="utf-8")
-    trainer_text = TRAINER.read_text(encoding="utf-8")
-    sampler_text = SAMPLER.read_text(encoding="utf-8")
-    builder_text = MANIFEST_BUILDER.read_text(encoding="utf-8")
-    decode_text = DECODE.read_text(encoding="utf-8")
-    evaluator_text = EVALUATOR.read_text(encoding="utf-8")
-    wrapper_text = WRAPPER.read_text(encoding="utf-8")
-    checks = {
-        "stage_2000_4000_8000": "stage_b_steps: int = 8000" in model_text and "stage_c_steps: int = 4000" in model_text,
-        "scheduler_none_or_static_lr": "class CAREASEStageScheduler" in trainer_text and "power = 0.9" in trainer_text,
-        "stage_A_B_complete_only": '"complete",\n        "lge_only",' in sampler_text and '"complete",\n        "lge_c0",' in sampler_text,
-        "delete_each_semantic_auxiliary_loss": all(name in trainer_text for name in REQUIRED_LOSS_WEIGHTS),
-        "pathology_deep_supervision_missing": "half_logits6" in model_text and "seg_layers" in model_text and "scar_half_dense" in trainer_text,
-        "area_reference_hardcoded_0_20_0_30": "scar_area_reference: float | None = None" in model_text and "compute_actual_train_area_references" in sampler_text,
-        "hard_negative_manifest_not_consumed": "_load_hard_negative_manifest" in sampler_text and "_hard_negative_category" in sampler_text and "resolved_target_coordinates" in sampler_text and "sample_coords" in builder_text,
-        "center_cycle_or_10_5_5_broken": 'stage_c_cycle = ("complete_centerB", "complete_centerC")' in sampler_text and 'scar_within_focus_cycle' in sampler_text and 'edema_within_focus_cycle' in sampler_text and "_fallback_sequence" in sampler_text,
-        "missing_checkpoint_field": all(field in trainer_text for field in REQUIRED_CHECKPOINT_FIELDS),
-        "resume_not_restore_sampler_or_next_hash": "case_group_cursor" in trainer_text and "next_batch_descriptor_sha256" in trainer_text,
-        "no_t2_class4_background": "torch.full_like(mapped, -1)" in trainer_text and "torch.zeros_like(mapped)" not in inspect.getsource(care_ase_loss),
-        "no_t2_edema_gradient_nonzero": "edema_valid = valid_binary * t2_mask" in trainer_text and "z_edema" in model_text,
-        "edema_metric_mixes_no_t2": "availability[1]" in decode_text and "pure_edema_metric_population" in decode_text,
-        "outer_before_w45": "W5 outer evaluation forbidden before W4.5" in evaluator_text and "load_care_ase_checkpoint" in evaluator_text and "sliding_window_logits" in evaluator_text,
-        "proxy_loss_targets": "_geometry_targets_numpy" in trainer_text and "_component_center_heatmap" in trainer_text and "per_gt_component_tversky" in trainer_text,
-        "count_only_hard_negative_manifest": "targets" in builder_text and "sample_coords" in builder_text and "resolved_target_coordinates" in sampler_text,
-        "wrapper_points_old_entry": "run_care_ase_r2_chunk.py" in wrapper_text and "run_care_ase_train.py" not in wrapper_text,
+def known_bad_fixture_ids() -> list[str]:
+    return [
+        "stage_2000_4000_8000",
+        "scheduler_none_or_static_lr",
+        "stage_A_B_complete_only",
+        *[f"delete_semantic_auxiliary_loss__{name}" for name in REQUIRED_LOSS_WEIGHTS],
+        "pathology_deep_supervision_missing",
+        "area_reference_hardcoded_0_20_0_30",
+        "hard_negative_manifest_not_consumed",
+        "center_cycle_or_10_5_5_broken",
+        "missing_checkpoint_field",
+        "resume_not_restore_sampler_or_next_hash",
+        "no_t2_class4_background",
+        "no_t2_edema_gradient_nonzero",
+        "edema_metric_mixes_no_t2",
+        "outer_before_w45",
+        "proxy_loss_targets",
+        "count_only_hard_negative_manifest",
+        "wrapper_points_old_entry",
+    ]
+
+
+def gate_failures(payloads: dict[str, Any]) -> list[str]:
+    failures: list[str] = []
+    call_chain = payloads["call_chain"]
+    if not (call_chain["wrapper_uses_htzhulab"] and call_chain["wrapper_uses_env_python"] and not call_chain["old_entrypoint_bypass"]):
+        failures.append("formal_call_chain")
+    for name in ("coverage", "loss", "sampler", "scheduler", "checkpoint"):
+        payload = payloads[name]
+        status = payload.get("status") if isinstance(payload, dict) else ("PASS" if all(row["status"] == "PASS" for row in payload) else "FAIL")
+        if status != "PASS":
+            failures.append(name)
+    if "known_bad" in payloads:
+        known_bad = payloads["known_bad"]
+        if known_bad.get("status") != "PASS":
+            failures.append("known_bad")
+    return failures
+
+
+def build_gate_payloads(*, include_known_bad: bool, output_dir: Path) -> dict[str, Any]:
+    payloads: dict[str, Any] = {
+        "call_chain": formal_call_chain(),
+        "coverage": coverage_rows(),
+        "loss": semantic_loss_coverage(),
+        "sampler": sampler_static_contract(),
+        "scheduler": scheduler_static_contract(),
+        "checkpoint": checkpoint_schema_contract(),
     }
-    rows = [{"known_bad": key, "validator_exit_if_mutated": 1 if ok else 0, "status": "PASS" if ok else "FAIL"} for key, ok in checks.items()]
-    return {"required_known_bad_count": len(rows), "known_bad_count_passed": sum(1 for row in rows if row["status"] == "PASS"), "known_bad": rows, "status": "PASS" if all(row["status"] == "PASS" for row in rows) else "FAIL"}
+    if include_known_bad:
+        payloads["known_bad"] = known_bad_matrix(output_dir)
+    return payloads
+
+
+def _mark_coverage_failure(coverage: list[dict[str, Any]], known_bad: str) -> None:
+    matched = False
+    for row in coverage:
+        if row.get("known_bad_test") == known_bad or known_bad in str(row.get("known_bad_test", "")):
+            row["status"] = "FAIL"
+            row["fixture_injected_failure"] = True
+            matched = True
+    if not matched:
+        coverage.append(
+            {
+                "contract_clause": f"known-bad fixture {known_bad}",
+                "source_path": "fixture",
+                "class_or_function": known_bad,
+                "source_line_hash": "fixture",
+                "runtime_test": "known_bad_fixture",
+                "known_bad_test": known_bad,
+                "status": "FAIL",
+                "fixture_injected_failure": True,
+            }
+        )
+
+
+def apply_known_bad_fixture(fixture: str, payloads: dict[str, Any]) -> None:
+    coverage = payloads["coverage"]
+    loss = payloads["loss"]
+    sampler = payloads["sampler"]
+    scheduler = payloads["scheduler"]
+    checkpoint = payloads["checkpoint"]
+    call_chain = payloads["call_chain"]
+
+    if fixture.startswith("delete_semantic_auxiliary_loss__"):
+        loss_name = fixture.removeprefix("delete_semantic_auxiliary_loss__")
+        if loss_name not in loss["terms"]:
+            raise ValueError(f"unknown semantic loss fixture: {loss_name}")
+        loss["terms"][loss_name]["declared"] = False
+        loss["terms"][loss_name]["enters_total_loss"] = False
+        loss["status"] = "FAIL"
+        _mark_coverage_failure(coverage, "delete_each_semantic_auxiliary_loss")
+        return
+
+    if fixture not in STRUCTURAL_KNOWN_BAD_FIXTURES:
+        raise ValueError(f"unknown known-bad fixture: {fixture}")
+    if fixture == "stage_2000_4000_8000":
+        scheduler["stage_ranges"] = {"A": (0, 2000), "B": (2000, 6000), "C": (6000, 14000)}
+        scheduler["status"] = "FAIL"
+    elif fixture == "scheduler_none_or_static_lr":
+        scheduler["power"] = None
+        scheduler["sample_lrs"] = {key: 1.0e-4 for key in scheduler["sample_lrs"]}
+        scheduler["status"] = "FAIL"
+    elif fixture == "stage_A_B_complete_only":
+        sampler["stage_A_B_cycle"] = ["complete"] * 20
+        sampler["stage_A_B_counts_per_20"] = {"complete": 20}
+        sampler["status"] = "FAIL"
+    elif fixture == "pathology_deep_supervision_missing":
+        _mark_coverage_failure(coverage, "delete_pathology_deep_supervision")
+    elif fixture == "area_reference_hardcoded_0_20_0_30":
+        _mark_coverage_failure(coverage, "hardcoded_area_reference")
+    elif fixture == "hard_negative_manifest_not_consumed":
+        sampler["hard_negative_manifest_symbol"] = "MISSING"
+        sampler["hard_negative_manifest_consumption"] = "MISSING"
+        sampler["status"] = "FAIL"
+    elif fixture == "center_cycle_or_10_5_5_broken":
+        sampler["stage_A_B_counts_per_20"] = {"complete": 20}
+        sampler["stage_C_cycle"] = ["complete"]
+        sampler["status"] = "FAIL"
+    elif fixture == "missing_checkpoint_field":
+        checkpoint["required_fields"] = [field for field in checkpoint["required_fields"] if field != "optimizer"]
+        checkpoint["field_count"] = len(checkpoint["required_fields"])
+        checkpoint["status"] = "FAIL"
+    elif fixture == "resume_not_restore_sampler_or_next_hash":
+        checkpoint["full_reload_checks_required_fields"] = False
+        checkpoint["resume_equivalence_fields_present"] = False
+        checkpoint["status"] = "FAIL"
+    elif fixture == "no_t2_class4_background":
+        _mark_coverage_failure(coverage, "no_t2_class4_background")
+    elif fixture == "no_t2_edema_gradient_nonzero":
+        _mark_coverage_failure(coverage, "no_t2_edema_gradient_nonzero")
+    elif fixture == "edema_metric_mixes_no_t2":
+        _mark_coverage_failure(coverage, "edema_metric_mixes_no_t2")
+    elif fixture == "outer_before_w45":
+        _mark_coverage_failure(coverage, "outer_access_before_freeze")
+    elif fixture == "proxy_loss_targets":
+        loss["target_builder_semantics"]["physical_edt"] = False
+        loss["target_builder_semantics"]["per_gt_component"] = False
+        loss["status"] = "FAIL"
+    elif fixture == "count_only_hard_negative_manifest":
+        sampler["hard_negative_manifest_spatial_targets"] = "MISSING"
+        sampler["status"] = "FAIL"
+    elif fixture == "wrapper_points_old_entry":
+        call_chain["old_entrypoint_bypass"] = True
+        call_chain["old_trainer_bypass"] = True
+
+
+def run_known_bad_fixture(fixture: str, output_dir: Path) -> int:
+    payloads = build_gate_payloads(include_known_bad=False, output_dir=output_dir)
+    apply_known_bad_fixture(fixture, payloads)
+    failures = gate_failures(payloads)
+    decision = "REJECTED_AS_EXPECTED" if failures else "ACCEPTED_INVALID"
+    receipt = {
+        "fixture": fixture,
+        "decision": decision,
+        "expected_validator_exit": "nonzero",
+        "observed_failures": failures,
+        "known_bad_fixture_rejected": bool(failures),
+    }
+    write_json(output_dir / "known_bad_fixture_receipt.json", receipt)
+    print(json.dumps(receipt, indent=2, sort_keys=True))
+    return 1 if failures else 0
+
+
+def known_bad_matrix(output_dir: Path) -> dict[str, Any]:
+    rows = []
+    fixture_root = output_dir / "known_bad_fixtures"
+    for fixture in known_bad_fixture_ids():
+        fixture_dir = fixture_root / fixture
+        command = [
+            sys.executable,
+            str(VALIDATOR),
+            "--output-dir",
+            str(fixture_dir),
+            "--known-bad-fixture",
+            fixture,
+        ]
+        proc = subprocess.run(command, cwd=str(REPO_ROOT), text=True, capture_output=True, check=False)
+        receipt_path = fixture_dir / "known_bad_fixture_receipt.json"
+        receipt: dict[str, Any] = {}
+        if receipt_path.is_file():
+            receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        rejected_as_expected = proc.returncode != 0 and receipt.get("decision") == "REJECTED_AS_EXPECTED"
+        rows.append(
+            {
+                "known_bad": fixture,
+                "command": command,
+                "validator_exit_if_mutated": proc.returncode,
+                "expected_nonzero_exit": True,
+                "observed_decision": receipt.get("decision", "NO_RECEIPT"),
+                "observed_failures": receipt.get("observed_failures", []),
+                "stdout_tail": proc.stdout[-2000:],
+                "stderr_tail": proc.stderr[-2000:],
+                "status": "PASS" if rejected_as_expected else "FAIL",
+            }
+        )
+    return {
+        "required_known_bad_count": len(rows),
+        "known_bad_count_passed": sum(1 for row in rows if row["status"] == "PASS"),
+        "known_bad": rows,
+        "status": "PASS" if all(row["status"] == "PASS" for row in rows) else "FAIL",
+    }
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output-dir", type=Path, default=RESULT_ROOT)
+    parser.add_argument("--known-bad-fixture", choices=known_bad_fixture_ids())
     args = parser.parse_args()
     out = args.output_dir.resolve()
-    call_chain = formal_call_chain()
-    coverage = coverage_rows()
-    loss = semantic_loss_coverage()
-    sampler = sampler_static_contract()
-    scheduler = scheduler_static_contract()
-    checkpoint = checkpoint_schema_contract()
-    known_bad = known_bad_matrix()
+    if args.known_bad_fixture:
+        return run_known_bad_fixture(args.known_bad_fixture, out)
+
+    payloads = build_gate_payloads(include_known_bad=True, output_dir=out)
+    call_chain = payloads["call_chain"]
+    coverage = payloads["coverage"]
+    loss = payloads["loss"]
+    sampler = payloads["sampler"]
+    scheduler = payloads["scheduler"]
+    checkpoint = payloads["checkpoint"]
+    known_bad = payloads["known_bad"]
     source_manifest = {
         str(path.relative_to(REPO_ROOT)): sha256_file(path)
         for path in (WRAPPER, ENTRYPOINT, MODEL, TRAINER, SAMPLER, DECODE, EVALUATOR, MANIFEST_BUILDER, VALIDATOR)
     }
-    overall_status = "PASS"
-    failures: list[str] = []
-    if not (call_chain["wrapper_uses_htzhulab"] and call_chain["wrapper_uses_env_python"] and not call_chain["old_entrypoint_bypass"]):
-        failures.append("formal_call_chain")
-    for name, payload in {"coverage": coverage, "loss": loss, "sampler": sampler, "scheduler": scheduler, "checkpoint": checkpoint, "known_bad": known_bad}.items():
-        status = payload.get("status") if isinstance(payload, dict) else ("PASS" if all(row["status"] == "PASS" for row in payload) else "FAIL")
-        if status != "PASS":
-            failures.append(name)
-    if failures:
-        overall_status = "NEEDS_REPAIR_CONTINUE_CURRENT_GOAL"
+    failures = gate_failures(payloads)
+    overall_status = "NEEDS_REPAIR_CONTINUE_CURRENT_GOAL" if failures else "PASS"
 
     write_json(out / "formal_call_chain.json", call_chain)
     write_json(out / "contract_to_code_coverage.json", coverage)

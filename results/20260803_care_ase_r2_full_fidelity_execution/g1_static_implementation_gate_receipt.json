@@ -7,7 +7,7 @@
     "scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py": "637cfc9d76f6f78c8d99212cc58e8fa877b2ecd5dcf2a359a358b59d098beb80",
     "scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py": "c8692a48a5dbf95bf40dbe40a90eae31490e6d65f229b3bbaf24d55052a01861",
     "scripts/training/care_ase/run_care_ase_r2_chunk.py": "af6ac65dd93f1e194950d21fa9aac594fbac901d0b85631357febe01276e1097",
-    "scripts/validation/validate_care_ase_r2_g1.py": "a6a0f9f594db2f397dc953af0321227fc73530ac6c58c224ff101c4015daa873",
+    "scripts/validation/validate_care_ase_r2_g1.py": "a68088920deac2c4cc6b2d791a88d3fcd47dd9ca0735f0631fbd643aa356716d",
     "src/care_myocardium/inference/care_ase_r2_decode.py": "7fea71edba56d259dbbb31c3832b74709bd83d5af1f8b680a85c2e0a41acb05b",
     "src/care_myocardium/models/care_ase.py": "62eea3d23392b95a604343b175e643bde02c62242add4fbb357dbae6a6bccd87",
     "src/care_myocardium/training/care_ase_sampler.py": "31c74681bc823a50c80fad006849d58701c1a44e595c5197eeaf5edd8734d2f4",
