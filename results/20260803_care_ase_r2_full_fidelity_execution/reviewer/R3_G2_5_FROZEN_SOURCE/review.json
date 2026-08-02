@@ -1,0 +1,55 @@
+{
+  "round_id": "R3_G2_5_FROZEN_SOURCE",
+  "reviewer_session_id": "019fc386-dba4-7b72-a29f-06a657b4fc5f",
+  "candidate_commit_sha": "207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+  "effective_contract_sha256": "b3ea5986b7a2458f758f7353ab023cea85a9cb67a6fb7c7bf12e5bc10e61d09c",
+  "decision": "PASS_CONTINUE",
+  "findings": [],
+  "critical_finding_count": 0,
+  "invalidated_wave_or_none": "none",
+  "required_repair_scope": "none",
+  "next_review_trigger": "next contracted CARE-ASE R2 continuous-review milestone",
+  "review_scope_observations": {
+    "detached_checkout": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R3_G2_5_FROZEN_SOURCE/207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+    "main_evidence_dir": "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_full_fidelity_execution",
+    "candidate_head_sha": "207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+    "origin_main_sha": "207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+    "candidate_equals_origin_main": true,
+    "formal_training_binding": {
+      "wrapper": "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh",
+      "observed": "Wrapper requires EXPECTED_TRAINING_SOURCE_SHA unless ALLOW_UNREVIEWED_LOCAL_SMOKE=1 and exits nonzero if git rev-parse HEAD differs from the expected SHA.",
+      "entrypoint": "scripts/training/care_ase/run_care_ase_r2_chunk.py"
+    },
+    "g1_static_gate": {
+      "receipt": "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_full_fidelity_execution/g1_static_implementation_gate_receipt.json",
+      "decision": "PASS",
+      "known_bad_count_passed": 31,
+      "required_known_bad_count": 31,
+      "all_known_bad_nonzero_and_rejected_as_expected": true
+    },
+    "g2_gpu_gate": {
+      "receipt": "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_full_fidelity_execution/g2_real_gpu_fidelity_receipt.json",
+      "decision": "PASS",
+      "pass_condition_count": 16,
+      "required_pass_condition_count": 16,
+      "module_off_final_logit_final_label_evidence_status": "PASS"
+    },
+    "continuous_reviewer_prior": {
+      "r1_latest_decision": "PASS_CONTINUE",
+      "r1_latest_review": "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R1_G1_STATIC_FIDELITY_REREVIEW03/review.json",
+      "r2_latest_decision": "PASS_CONTINUE",
+      "r2_latest_review": "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R2_G2_GPU_FIDELITY_REREVIEW01/review.json"
+    },
+    "outer_access_count_before_freeze": 0,
+    "training_source_commit_receipt": {
+      "path": "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_full_fidelity_execution/training_source_commit_receipt.json",
+      "local_head_sha": "207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+      "origin_main_sha": "207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+      "post_verification_evidence_not_frozen_source": true
+    },
+    "large_artifact_requirement": {
+      "checkpoint_nifti_raw_data_large_logs_required_for_r3_pass": false,
+      "note": "R3 PASS is supported by source hashes and lightweight JSON/Markdown/SHA receipts. A large G2 probe checkpoint exists in evidence but was not required or read for this R3 decision."
+    }
+  }
+}

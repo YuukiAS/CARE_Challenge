@@ -1,0 +1,29 @@
+{
+  "area_reference": {
+    "edema_positive_t2_present_count": 51,
+    "edema_reference": 0.363873662229183,
+    "fold": 4,
+    "inner_or_outer_access": "forbidden_not_used",
+    "payload_sha256": "70fa1e5804a0c51c1c46b804d0b8af0eb5dc639eb98d668aaa3d6fedd5226939",
+    "scar_positive_count": 114,
+    "scar_reference": 0.31927310682312793,
+    "source": "actual_train_only"
+  },
+  "device": "cuda",
+  "end_step": 2000,
+  "fixed_decode_function": "decode_care_ase_r2_logits",
+  "fold": 4,
+  "formal_training_entrypoint": "scripts/training/care_ase/run_care_ase_r2_chunk.py",
+  "gradient_accumulation": 4,
+  "outer_access_before_freeze": 0,
+  "patch_size": [
+    20,
+    256,
+    256
+  ],
+  "plans_hash": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
+  "source_hash": "df920d76579e9c983620a382717f269da662239ab34956ade4901ec4d6b04402",
+  "split_hash": "9c3e9f3b7e4565a5c3c2589ddbb913c78c0ad423f4265370585841c93c6f880a",
+  "start_step": 0,
+  "status": "STARTED"
+}

@@ -1,0 +1,85 @@
+{
+  "round_id": "R3_G2_5_FROZEN_SOURCE",
+  "candidate_commit_sha": "207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+  "origin_main_sha": "207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+  "effective_contract_sha256": "b3ea5986b7a2458f758f7353ab023cea85a9cb67a6fb7c7bf12e5bc10e61d09c",
+  "detached_checkout": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R3_G2_5_FROZEN_SOURCE/207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+  "source_files": {
+    "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh": "ebef044dcf0a020d1818a0a48907ce0701640b966089c96aaf2a9e8a677a5cd9",
+    "scripts/training/care_ase/run_care_ase_r2_chunk.py": "af6ac65dd93f1e194950d21fa9aac594fbac901d0b85631357febe01276e1097",
+    "src/care_myocardium/models/care_ase.py": "62eea3d23392b95a604343b175e643bde02c62242add4fbb357dbae6a6bccd87",
+    "src/care_myocardium/training/care_ase_trainer.py": "4bf5e6f62ca4315fa6a1aba2a0686ad8b88664f67230ecb66a8415fe1cf61e4c",
+    "src/care_myocardium/training/care_ase_sampler.py": "c04af32585b45268640dc15845741b3888e4ecbcd947bd253597ec52d1320a2d",
+    "src/care_myocardium/inference/care_ase_r2_decode.py": "7fea71edba56d259dbbb31c3832b74709bd83d5af1f8b680a85c2e0a41acb05b",
+    "scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py": "c8692a48a5dbf95bf40dbe40a90eae31490e6d65f229b3bbaf24d55052a01861",
+    "scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py": "10e3a275914f76f47ba709d5b28e765a72e2981043f0ea9f88c49d4c631f43e7",
+    "scripts/validation/validate_care_ase_r2_g1.py": "a68088920deac2c4cc6b2d791a88d3fcd47dd9ca0735f0631fbd643aa356716d",
+    "scripts/validation/run_care_ase_r2_g2_gpu_fidelity.py": "47e68c10f4f115a93185bb333ebb4e9794128d48f45054a05204527a35abd87b",
+    "src/care_myocardium/data/care_ase_splits.py": "81303a9db1fa3171b907bd2a0e42185b86345c27871029457dccd6e2a2e9dbf5"
+  },
+  "contract_and_task_files": {
+    "prompts/blueprints/CARE_ASE_R2_full_fidelity_execution_contract_20260803.yaml": "57d569562a87fde838365b26e8cd101c260f19b9f1667f5a0c5109d1bb065650",
+    "prompts/blueprints/CARE_ASE_R2_continuous_independent_reviewer_amendment_20260803.yaml": "d51167acd31c46bb93944b2ec8ecb9e89c8acea52abc356adbef483f44be9f8d",
+    "prompts/tasks/20260803_care_ase_r2_full_fidelity_controller.md": "0fade205d0c51ff15d6b00d9654fd4e607b45a0571e4b90bfba7fa07707115ee",
+    "prompts/tasks/20260803_care_ase_r2_continuous_reviewer_addendum.md": "211d8d3d60da7bbb54b45fd8180480efd631edf9494c6f76be72da703835695e"
+  },
+  "evidence_files": {
+    "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_full_fidelity_execution/training_source_commit_receipt.json": {
+      "sha256": "computed_in_source_evidence_not_rehashed_in_manifest",
+      "decision": "PASS",
+      "local_head_sha": "207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+      "origin_main_sha": "207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+      "post_verification_evidence_not_frozen_source": true
+    },
+    "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_full_fidelity_execution/g1_static_implementation_gate_receipt.json": {
+      "decision": "PASS",
+      "source_manifest_matches_detached_checkout": true
+    },
+    "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_full_fidelity_execution/known_bad_validator_report.json": {
+      "status": "PASS",
+      "known_bad_count": 31,
+      "known_bad_count_passed": 31,
+      "required_known_bad_count": 31,
+      "all_nonzero_exit_and_rejected_as_expected": true
+    },
+    "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_full_fidelity_execution/g2_real_gpu_fidelity_receipt.json": {
+      "decision": "PASS",
+      "pass_condition_count": 16,
+      "required_pass_condition_count": 16,
+      "outer_access_count_before_freeze": 0,
+      "module_off_final_logit_final_label_evidence_status": "PASS"
+    },
+    "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_full_fidelity_execution/split_and_outer_access_receipt.json": {
+      "status": "PASS",
+      "outer_access_count_before_g4_5": 0
+    },
+    "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_full_fidelity_execution/source_hash_manifest.json": {
+      "plans_sha256": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
+      "splits_final_sha256": "9c3e9f3b7e4565a5c3c2589ddbb913c78c0ad423f4265370585841c93c6f880a",
+      "stock_fold1_checkpoint_sha256": "5310569ff62f2f9a6ff2bc7dd3754404140071427a2025caf5e25d2916cfe400",
+      "stock_fold4_checkpoint_sha256": "9971020827eb50fabe53ef339f5ea2ac8c5a7929584c5c9c0541e83119df0847"
+    },
+    "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_full_fidelity_execution/hard_negative_manifest_generation_receipt.json": {
+      "status": "PASS",
+      "outer_access_count_before_freeze": 0,
+      "fold1_manifest_sha256": "83499357657390bcc851758e5eecb8803d4787b7e1470898ae24daa1fdf582a9",
+      "fold4_manifest_sha256": "2ba11f9b1cd655e66f9feb17acff00928239bc3df768c04dd7edb034ddbae85c",
+      "fold_manifest_payloads_not_opened": true
+    },
+    "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R1_G1_STATIC_FIDELITY_REREVIEW03/review.json": {
+      "decision": "PASS_CONTINUE",
+      "critical_finding_count": 0
+    },
+    "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R2_G2_GPU_FIDELITY_REREVIEW01/review.json": {
+      "decision": "PASS_CONTINUE",
+      "critical_finding_count": 0
+    }
+  },
+  "large_artifact_policy": {
+    "checkpoint_nifti_raw_data_or_large_logs_required_for_r3_pass": false,
+    "large_files_detected_in_evidence_over_50MiB": [
+      "g2_atomic_checkpoint_probe.pt"
+    ],
+    "large_files_read_for_review": []
+  }
+}

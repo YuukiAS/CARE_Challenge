@@ -1,0 +1,267 @@
+{
+  "contains_checkpoints_nifti_raw_or_large_logs": false,
+  "created_utc": "2026-08-02T23:36:51.530318+00:00",
+  "files": [
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/effective_contract.json",
+      "sha256": "b3ea5986b7a2458f758f7353ab023cea85a9cb67a6fb7c7bf12e5bc10e61d09c",
+      "size_bytes": 4332
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/formal_call_chain.json",
+      "sha256": "37201267c0d73d4345f274d35fbb7fb4dbabc4262ad70944ff5701dfc330483b",
+      "size_bytes": 758
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/contract_to_code_coverage.json",
+      "sha256": "b8d99bda9125b5014dd2ac2d8163cdde07ae310e1f94370cd952085dc3086b67",
+      "size_bytes": 9324
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/semantic_loss_coverage.json",
+      "sha256": "84a8bb9ed77e6c311000d3fa246821f931d155e8a0a88314221a38bdee29d6fc",
+      "size_bytes": 2261
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/sampler_static_contract.json",
+      "sha256": "ee859c7186e3dd7f36f29b2dbcd5f3114acdc9dd03fd1bb5806fa31a861432a6",
+      "size_bytes": 1531
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/scheduler_static_contract.json",
+      "sha256": "d26b7cfda4155cdd874fdd45ff51e2f5dbd191bb588a8925efdd82488dc0d520",
+      "size_bytes": 1281
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/checkpoint_schema_contract.json",
+      "sha256": "1681a349d71e06820a51171f8621bf27da76c09b56bde0cc445b7eb9f8ad4507",
+      "size_bytes": 833
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/source_hash_manifest.json",
+      "sha256": "f63512e1e8230bc95554f211db5e8cbdd7c5ca4583d827c97b1e2b20a17636ae",
+      "size_bytes": 4624
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/g1_source_sha_manifest.json",
+      "sha256": "ae2be69ac6e7e23eff3ceb7f285bec30159ea65873f366665f6ae411329ebf86",
+      "size_bytes": 1120
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/g1_static_implementation_gate_receipt.json",
+      "sha256": "1ac090373ec752c707d79f9675802d2a70f6c89380ec0d97761d9d00ee8d18b0",
+      "size_bytes": 1237
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/known_bad_validator_report.json",
+      "sha256": "57d9f8e24356622d77e045d8a32c4316f04561a701eeea4faa0f735393f25e82",
+      "size_bytes": 31002
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/g2_real_gpu_fidelity_receipt.json",
+      "sha256": "5f1f5487f008b016647b1db6f2249c3fdd57bf64589e814e8268c5d031842cfb",
+      "size_bytes": 16302
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/split_and_outer_access_receipt.json",
+      "sha256": "458a1ea16701a6597d0375d5c8864248f022805ef5bc66b29763f81bff56a0cc",
+      "size_bytes": 1928
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/training_source_commit_receipt.json",
+      "sha256": "a16a49c0d4a117dcc35f8efcdaecbcd161134f1254f10cd7f1779cc824cc1776",
+      "size_bytes": 4197
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/running_training_user_override_receipt.json",
+      "sha256": "d6fb3a9dda6b56681dac44aa31b6feb78a64608c28d3c388627217e717d134d2",
+      "size_bytes": 1373
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/controller_ledger.csv",
+      "sha256": "2c5bcae3fac7df915c8ec9d1a6bccf3539bbee1622eeacbe2a5ee6e91af1a06f",
+      "size_bytes": 8859
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/runtime/fold_1/chunk_start_00000_02000.json",
+      "sha256": "405be62ec1489dd8fcb861be108f47e9e99da2625a25c90dcaada1164a876447",
+      "size_bytes": 984
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/runtime/fold_4/chunk_start_00000_02000.json",
+      "sha256": "914c7e61fe0ffd927547a9e81ef1bd4f911be75f1374510920321f17488e5989",
+      "size_bytes": 983
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/runtime/fold_1/checkpoint_step01000_receipt.json",
+      "sha256": "0b56bdbf30fbf54eca1c8b6e40edf4c19b628f4a79952359aa924d7b005536c6",
+      "size_bytes": 653
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/runtime/fold_4/checkpoint_step01000_receipt.json",
+      "sha256": "9b92f4f8447dcd10df3b61be93e6c046958832448e184840cf64da3047f0a679",
+      "size_bytes": 653
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R0_W1_EARLY_DIFF/commands_and_exit_codes.json",
+      "sha256": "76d269f79a271143eb27626295b82e676559fce56b63e462ede0d1c615f619ff",
+      "size_bytes": 654
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R0_W1_EARLY_DIFF/commands_and_exit_codes_rereview_03.json",
+      "sha256": "af4780b9af3c1120896c35625be1cbd3dd6f601ef58a4bb4c1761217b23f5eb7",
+      "size_bytes": 74
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R0_W1_EARLY_DIFF/controller_submission.json",
+      "sha256": "71b1a8060a319510dc328ef83bfb08f062d6a5b18ffdedb1803fc388f325cfdc",
+      "size_bytes": 2501
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R0_W1_EARLY_DIFF/controller_submission_rereview_01.json",
+      "sha256": "c71067223c894ba9a4b6b420554cc655e1de60b9b719295aa518190f41fceb99",
+      "size_bytes": 2879
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R0_W1_EARLY_DIFF/controller_submission_rereview_02.json",
+      "sha256": "4c80b821a125580eb9fb673d08dc7911304f32ad1a6484ed3654d830d8f06cc0",
+      "size_bytes": 2879
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R0_W1_EARLY_DIFF/controller_submission_rereview_03.json",
+      "sha256": "ffd22617ef53db3b52839aed22aa0304258ca94b3c21ed55220408505e3160a6",
+      "size_bytes": 2827
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R0_W1_EARLY_DIFF/review.json",
+      "sha256": "c3929adaa80ed9cb40e2676bf4eb56fa3821dbb0fbd38bbc7f762f954fbc9ef1",
+      "size_bytes": 4897
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R0_W1_EARLY_DIFF/review.md",
+      "sha256": "7db18ff86f3e33eae60dff5cd7f070c26fa688a313f4ffd7ddbb157f2cb4e1d2",
+      "size_bytes": 213
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R0_W1_EARLY_DIFF/review_rereview_01.json",
+      "sha256": "df48a0b0d5d6edacb76f6ecffd3af65afd17011bfe927527ccf3fc354ee5df6b",
+      "size_bytes": 3332
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R0_W1_EARLY_DIFF/review_rereview_01.md",
+      "sha256": "722174d7ded6d4243585cbf9e348dffb23b06489e5f1b9779b3493fee2a9413e",
+      "size_bytes": 221
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R0_W1_EARLY_DIFF/review_rereview_02.json",
+      "sha256": "c762ed6fab7e993dd5b02c5e29f8c4cf1e47d7dff049b5c1f7e0eb0a254d7aa1",
+      "size_bytes": 1634
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R0_W1_EARLY_DIFF/review_rereview_02.md",
+      "sha256": "c2291a346cdefd56641cb4f887004f5cf451cb29340c3518dc9badca558223b4",
+      "size_bytes": 183
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R0_W1_EARLY_DIFF/review_rereview_03.json",
+      "sha256": "3113ab3822c01d5cbb235f9a5693b80f85278417947f3f01aae8e3729efd7f05",
+      "size_bytes": 484
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R0_W1_EARLY_DIFF/review_rereview_03.md",
+      "sha256": "12094d50d58a36897500c2ee2568924ea3f83167770406ebfa55a3ae5e84f99a",
+      "size_bytes": 159
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R0_W1_EARLY_DIFF/reviewed_sha_manifest.json",
+      "sha256": "009c835647404e35fe71ab5b96c6d86ac299f470fd9fdeabf5bbb0915423534d",
+      "size_bytes": 115
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R0_W1_EARLY_DIFF/reviewed_sha_manifest_rereview_03.json",
+      "sha256": "667249d866a899b607fa8a19bbd0124eb9f3fd622d71a57f1569aebf4ecbd709",
+      "size_bytes": 245
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R0_W1_EARLY_DIFF/reviewer_initialization_receipt.json",
+      "sha256": "c35dbc0c62ca3bbc075548bb66916175bec47ed986bbf9986239d0553ab6bc84",
+      "size_bytes": 417
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R1_G1_STATIC_FIDELITY_REREVIEW03/commands_and_exit_codes.json",
+      "sha256": "fc6da64d16dd59601d827edaea1f048b2d237c8f3b5213cf5df6fd3ca0f54dad",
+      "size_bytes": 8156
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R1_G1_STATIC_FIDELITY_REREVIEW03/controller_submission.json",
+      "sha256": "18c3bcdd4bd07dd165a189767ed84f7dfe0d51eed25cdbfa00f732132d40ab5b",
+      "size_bytes": 3367
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R1_G1_STATIC_FIDELITY_REREVIEW03/review.json",
+      "sha256": "868941153b1dd267722c08729ade241a5c015685529dc2e1e1005404a6baa0e5",
+      "size_bytes": 1339
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R1_G1_STATIC_FIDELITY_REREVIEW03/review.md",
+      "sha256": "cfdb901ab5ab735d08b24390474d47b2bff754d3673d84fadb43db5d6286e629",
+      "size_bytes": 2312
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R1_G1_STATIC_FIDELITY_REREVIEW03/reviewed_sha_manifest.json",
+      "sha256": "d3d79005e6253daf652972b7dec5265e7fb1eb45d8752fc5fe68f3c98620fb7d",
+      "size_bytes": 4106
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R2_G2_GPU_FIDELITY_REREVIEW01/commands_and_exit_codes.json",
+      "sha256": "2bb0a989b52c552815d4c6fc665dce7b2ed2a43fb00cf076036efb7e57485ab0",
+      "size_bytes": 10187
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R2_G2_GPU_FIDELITY_REREVIEW01/controller_submission.json",
+      "sha256": "02d54a36fadd692d7ac40622689280d7da956f5d32fe762e30b1c2d3e14002b1",
+      "size_bytes": 2820
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R2_G2_GPU_FIDELITY_REREVIEW01/review.json",
+      "sha256": "8b5d11e165648bea32bbd456247e3be9fb433694c9866eca8e60b7aa2fa73ecd",
+      "size_bytes": 1369
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R2_G2_GPU_FIDELITY_REREVIEW01/review.md",
+      "sha256": "29db844a6accef7cf94456cac35d4f76c18d5e7f21c45522a39a21278491013f",
+      "size_bytes": 2996
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R2_G2_GPU_FIDELITY_REREVIEW01/reviewed_sha_manifest.json",
+      "sha256": "bfdd7c295fb6455540c1eaf58f89fac953fbc7b7ac684b8b9aa97dfc68487b75",
+      "size_bytes": 4415
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R3_G2_5_FROZEN_SOURCE/commands_and_exit_codes.json",
+      "sha256": "733d13dcf1a779a2356b456ae4ab05ab43304fcb1d9fb348c6cc4f70b65b2dca",
+      "size_bytes": 6638
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R3_G2_5_FROZEN_SOURCE/review.json",
+      "sha256": "bb72d0ef2cd3290067dd00c9721422b399e49c6c2aea76915936b2471c0589fd",
+      "size_bytes": 3162
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R3_G2_5_FROZEN_SOURCE/review.md",
+      "sha256": "8136b068bf49e74d58f4e2a7fe020be744c0fb8aab0862436812c7db06fd92c0",
+      "size_bytes": 1984
+    },
+    {
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R3_G2_5_FROZEN_SOURCE/reviewed_sha_manifest.json",
+      "sha256": "0807c392121ada84cd65fc694e4b4ba1d466458409168c01b9a3c590034f2b75",
+      "size_bytes": 5608
+    }
+  ],
+  "origin_main_sha_before_package_commit": "207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+  "package_purpose": "lightweight pretraining external review evidence package plus running-training override receipt",
+  "pretraining_external_review_request_json_policy": "written after package push to avoid commit-SHA self-reference",
+  "running_training_not_canceled_by_user_override": true,
+  "source_candidate_commit_sha_before_package_commit": "207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+  "training_credit_status": "PENDING_EXTERNAL_PRETRAINING_REVIEW"
+}

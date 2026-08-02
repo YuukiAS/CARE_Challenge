@@ -1,0 +1,93 @@
+{
+  "receipt_type": "CARE_ASE_R2_G2_5_IMMUTABLE_TRAINING_SOURCE",
+  "created_utc": "2026-08-02T19:49:10Z",
+  "decision": "PASS",
+  "training_source_commit_sha": "207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+  "local_head_sha": "207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+  "origin_main_sha": "207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+  "local_head_equals_origin_main": true,
+  "remote": "origin",
+  "branch": "main",
+  "pushed_to_origin_main": true,
+  "formal_training_allowed_after_r3_pass": true,
+  "manual_continue_gate": false,
+  "outer_access_count_before_freeze": 0,
+  "effective_contract_sha256": "b3ea5986b7a2458f758f7353ab023cea85a9cb67a6fb7c7bf12e5bc10e61d09c",
+  "g1_static_implementation_gate": {
+    "decision": "PASS",
+    "receipt": "results/20260803_care_ase_r2_full_fidelity_execution/g1_static_implementation_gate_receipt.json",
+    "known_bad_validator_report": "results/20260803_care_ase_r2_full_fidelity_execution/known_bad_validator_report.json",
+    "known_bad_count_passed": 31,
+    "required_known_bad_count": 31
+  },
+  "g2_real_gpu_fidelity_gate": {
+    "decision": "PASS",
+    "receipt": "results/20260803_care_ase_r2_full_fidelity_execution/g2_real_gpu_fidelity_receipt.json",
+    "slurm_job_id": "61794608",
+    "pass_condition_count": 16,
+    "required_pass_condition_count": 16
+  },
+  "continuous_reviewer": {
+    "review_required": true,
+    "review_mode": "independent_thread",
+    "reviewer": "separate_readonly",
+    "r1_latest_decision": "PASS_CONTINUE",
+    "r1_latest_receipt": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R1_G1_STATIC_FIDELITY_REREVIEW03/review.json",
+    "r2_latest_decision": "PASS_CONTINUE",
+    "r2_latest_receipt": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R2_G2_GPU_FIDELITY_REREVIEW01/review.json",
+    "next_required_round": "R3_G2_5_FROZEN_SOURCE"
+  },
+  "manifest_sha256": {
+    "hard_negative_manifest_fold1": "83499357657390bcc851758e5eecb8803d4787b7e1470898ae24daa1fdf582a9",
+    "hard_negative_manifest_fold4": "2ba11f9b1cd655e66f9feb17acff00928239bc3df768c04dd7edb034ddbae85c"
+  },
+  "commands_and_results": [
+    {
+      "command": "git fetch origin main --prune",
+      "exit_code": 0
+    },
+    {
+      "command": "git rev-list --left-right --count origin/main...HEAD",
+      "exit_code": 0,
+      "stdout": "0 14 before push"
+    },
+    {
+      "command": "git diff --check origin/main..HEAD",
+      "exit_code": 0
+    },
+    {
+      "command": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "exit_code": 0,
+      "stdout": "4 passed in 17.40s"
+    },
+    {
+      "command": "./envs/env_CARE/bin/python scripts/validation/validate_care_ase_r2_g1.py --output-dir results/20260803_care_ase_r2_full_fidelity_execution",
+      "exit_code": 0,
+      "stdout": "{\"decision\":\"PASS\",\"failures\":[]}"
+    },
+    {
+      "command": "git push origin main",
+      "exit_code": 0,
+      "stdout": "6be72cc..207f360 main -> main"
+    },
+    {
+      "command": "git fetch origin main --prune && git rev-parse HEAD && git rev-parse origin/main",
+      "exit_code": 0,
+      "stdout": "207f360f22dd4e28fcecd4a22b67ed1af074ab42 == 207f360f22dd4e28fcecd4a22b67ed1af074ab42"
+    }
+  ],
+  "working_tree_non_goal_changes_not_part_of_training_source": [
+    "results/leaderboard/care2026_myocardium_latest.json",
+    "results/leaderboard/care2026_myocardium_myocardium_cinemyops_latest.csv",
+    "results/leaderboard/care2026_myocardium_myops_edema_latest.csv",
+    "results/leaderboard/care2026_myocardium_myops_scar_latest.csv",
+    "docs/presentation/2026_08_01_care_group_meeting/",
+    "scripts/visualization/",
+    "third_party/I_MMSeg_PINNED/",
+    "third_party/MyoPS-Net_PINNED/"
+  ],
+  "notes": [
+    "The immutable training source is the pushed commit above. This receipt is written after remote SHA verification and is not part of the frozen training source commit.",
+    "A raw working-tree git diff --check is intentionally not used as the training-source gate because unrelated pre-existing leaderboard CSV modifications contain whitespace issues outside this Goal scope. The committed training-source range origin/main..HEAD passed git diff --check before push."
+  ]
+}

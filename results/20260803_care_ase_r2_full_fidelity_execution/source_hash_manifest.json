@@ -1,0 +1,92 @@
+{
+  "AGENTS.md": {
+    "path": "AGENTS.md",
+    "sha256": "6d1ed9fbd6726e2381c6969d6ea720ecd1f504b1f75d9d383e59ffa6f4517dde",
+    "size_bytes": 51129
+  },
+  "care_mapper_skill": {
+    "path": ".agents/skills/care-mapper/SKILL.md",
+    "sha256": "2c41516189001ec7be94d9981a69fcd5544ad5ebd244c93cdc58488f4b535d0e",
+    "size_bytes": 6832
+  },
+  "contract_precedence::prompts/blueprints/CARE_ASE_R2_full_fidelity_execution_contract_20260803.yaml": {
+    "path": "prompts/blueprints/CARE_ASE_R2_full_fidelity_execution_contract_20260803.yaml",
+    "sha256": "57d569562a87fde838365b26e8cd101c260f19b9f1667f5a0c5109d1bb065650",
+    "size_bytes": 26862
+  },
+  "contract_precedence::prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_20260801.yaml": {
+    "path": "prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_20260801.yaml",
+    "sha256": "c67c0594e2e70140d8f645562ba4f7eb559b1b01eef621c16e6c11b1c881f513",
+    "size_bytes": 15077
+  },
+  "contract_precedence::prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_amendment01_20260801.yaml": {
+    "path": "prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_amendment01_20260801.yaml",
+    "sha256": "e8c9dc7589026fc87d2917753422d51133c8a372a2e7a6a20d6da0cec7d36a96",
+    "size_bytes": 2262
+  },
+  "contract_precedence::prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_amendment02_controller_only_interactive_20260801.yaml": {
+    "path": "prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_amendment02_controller_only_interactive_20260801.yaml",
+    "sha256": "aa2650b6c3b1ddfd9604faeeac02c9d52fbd925da77d2b66d10e85c04d36d5e1",
+    "size_bytes": 7171
+  },
+  "contract_precedence::prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_amendment03_final_audit_20260801.yaml": {
+    "path": "prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_amendment03_final_audit_20260801.yaml",
+    "sha256": "8b7c7c04a191d938df52f70a8ef0ed6cea2ad32c893fe42fbb867e77b92fd62e",
+    "size_bytes": 17519
+  },
+  "contract_precedence::prompts/blueprints/CARE_ASE_final_model_blueprint_v2_20260801.md": {
+    "path": "prompts/blueprints/CARE_ASE_final_model_blueprint_v2_20260801.md",
+    "sha256": "f6886e5ae5f59f763a460a9b1ac5dbfbf43e470e2d07c8ca0db605f41a1ccddb",
+    "size_bytes": 14413
+  },
+  "metric_semantics_contract": {
+    "path": "results/20260731_care_metric_truth_reconciliation/metric_semantics_contract.json",
+    "sha256": "467b686538ecfb6e93fca1e9d7f5e963aa153a4426f9388c1d59d82d6a23b715",
+    "size_bytes": 2722
+  },
+  "nnunet_mosaic_oof_casewise": {
+    "path": "results/20260801_care_nnunet_mosaic_complementarity_closure/oof_complementarity_casewise.csv",
+    "sha256": "a4e71b119deb59da3a792fd08d098ad6621b449616877cd4f3f501f5b2100251",
+    "size_bytes": 185858
+  },
+  "plans": {
+    "path": "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans.json",
+    "sha256": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
+    "size_bytes": 11947
+  },
+  "r1_supersession": {
+    "path": "prompts/tasks/20260803_care_ase_r1_plan_audit_and_supersession.md",
+    "sha256": "0b7105337efeba521600089cbe88dd2c8b13bd27dc01875f43e6a862507308c0",
+    "size_bytes": 3983
+  },
+  "r2_contract": {
+    "path": "prompts/blueprints/CARE_ASE_R2_full_fidelity_execution_contract_20260803.yaml",
+    "sha256": "57d569562a87fde838365b26e8cd101c260f19b9f1667f5a0c5109d1bb065650",
+    "size_bytes": 26862
+  },
+  "r2_task": {
+    "path": "prompts/tasks/20260803_care_ase_r2_full_fidelity_controller.md",
+    "sha256": "0fade205d0c51ff15d6b00d9654fd4e607b45a0571e4b90bfba7fa07707115ee",
+    "size_bytes": 18309
+  },
+  "slurm_skill": {
+    "path": ".agents/skills/slurm-routing-partition/SKILL.md",
+    "sha256": "2b7e87f58b275b50dc9d4a9377f4e2518c3a390c806e400cb32e07ebac3f83a6",
+    "size_bytes": 8113
+  },
+  "splits_final": {
+    "path": "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/splits_final.json",
+    "sha256": "9c3e9f3b7e4565a5c3c2589ddbb913c78c0ad423f4265370585841c93c6f880a",
+    "size_bytes": 20042
+  },
+  "stock_fold1_checkpoint": {
+    "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/checkpoint_final.pth",
+    "sha256": "5310569ff62f2f9a6ff2bc7dd3754404140071427a2025caf5e25d2916cfe400",
+    "size_bytes": 357381813
+  },
+  "stock_fold4_checkpoint": {
+    "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_4/checkpoint_final.pth",
+    "sha256": "9971020827eb50fabe53ef339f5ea2ac8c5a7929584c5c9c0541e83119df0847",
+    "size_bytes": 357381813
+  }
+}

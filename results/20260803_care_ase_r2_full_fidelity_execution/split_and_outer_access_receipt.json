@@ -1,0 +1,53 @@
+{
+  "fold1_fold4_outer_intersection": [],
+  "fold1_fold4_outer_zero_intersection": true,
+  "folds": [
+    1,
+    4
+  ],
+  "outer_access_count_before_g4_5": 0,
+  "outer_access_policy": "forbidden before W4.5 snapshot push",
+  "outer_accessed_by_w0_generator": false,
+  "outer_labels_or_images_read_by_w0_generator": false,
+  "split_summary": {
+    "1": {
+      "actual_train_case_ids_sha256": "3d5d01fdd499e4fac0d5e16da7bb6837a34d52be969012a82374970dc9861ef1",
+      "actual_train_complete_count": 51,
+      "actual_train_count": 141,
+      "actual_train_lge_c0_count": 15,
+      "actual_train_lge_only_count": 75,
+      "development_count": 176,
+      "inner_case_ids_sha256": "971da5e329b6872ed70aa540f9bd1190bbfbe808f0e9048ed3851a0e93f3e89e",
+      "inner_count": 35,
+      "intersections": {
+        "actual_train__inner": [],
+        "actual_train__outer": [],
+        "inner__outer": []
+      },
+      "outer_case_ids_sha256": "8315492d941804738ea9710d612051c9e7ffeb43b09d98f7cdebc9c078c26a84",
+      "outer_count": 44,
+      "outer_label_or_image_read_by_w0_generator": false,
+      "zero_intersections": true
+    },
+    "4": {
+      "actual_train_case_ids_sha256": "ee988c9e26d31e7abe718ab0347e318b8284476822331137dce2f82bfa26a246",
+      "actual_train_complete_count": 51,
+      "actual_train_count": 141,
+      "actual_train_lge_c0_count": 16,
+      "actual_train_lge_only_count": 74,
+      "development_count": 176,
+      "inner_case_ids_sha256": "e582aaefcb14307fc0f98536c89a12e18495d21f66e88b8aad9a0a82b4cdce61",
+      "inner_count": 35,
+      "intersections": {
+        "actual_train__inner": [],
+        "actual_train__outer": [],
+        "inner__outer": []
+      },
+      "outer_case_ids_sha256": "757a63db266dc87997b86ef87d220e497b20ad98d36f8dba5bb7fa75fcb4094f",
+      "outer_count": 44,
+      "outer_label_or_image_read_by_w0_generator": false,
+      "zero_intersections": true
+    }
+  },
+  "status": "PASS"
+}

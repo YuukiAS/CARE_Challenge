@@ -1,0 +1,38 @@
+{
+  "created_utc": "2026-08-02T23:36:51.522818+00:00",
+  "fold_runtime_state": {
+    "fold1": {
+      "checkpoint_step01000_receipt_exists": true,
+      "checkpoint_step02000_exists": false,
+      "chunk_terminal_exists": false,
+      "current_optimizer_step_observed": 1616,
+      "last_case_id_observed": "Case7002",
+      "line_count": 1616,
+      "stage_observed": "A"
+    },
+    "fold4": {
+      "checkpoint_step01000_receipt_exists": true,
+      "checkpoint_step02000_exists": false,
+      "chunk_terminal_exists": false,
+      "current_optimizer_step_observed": 1573,
+      "last_case_id_observed": "Case3029",
+      "line_count": 1573,
+      "stage_observed": "A"
+    }
+  },
+  "formal_training_credit_status": "PENDING_EXTERNAL_PRETRAINING_REVIEW",
+  "large_artifacts_excluded_from_git": [
+    "runtime/fold_*/checkpoint_step*.pt",
+    "g2_atomic_checkpoint_probe.pt",
+    "NIfTI",
+    "raw data",
+    "large logs"
+  ],
+  "latest_user_instruction": "do not cancel already running training; package evidence and push immediately",
+  "origin_main_sha_at_receipt_creation": "207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+  "outer_access_count_fold1": 0,
+  "outer_access_count_fold4": 0,
+  "outer_access_remains_forbidden": true,
+  "source_candidate_sha_at_training_start": "207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+  "status": "RUNNING_NOT_CANCELED_BY_USER_OVERRIDE"
+}

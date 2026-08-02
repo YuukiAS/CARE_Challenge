@@ -1,0 +1,16 @@
+{
+  "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_full_fidelity_execution/runtime/fold_4/checkpoint_step01000.pt",
+  "checkpoint_sha256": "4311c8e7c7abe8106a0242e5d33a0a297aae9d287b13832c1e874221c33578b0",
+  "extent_wall_ramp_value": 0.3333333333333333,
+  "fixed_terminal_step14000": false,
+  "global_optimizer_step": 1000,
+  "has_optimizer_state": true,
+  "has_rng_state": true,
+  "has_scheduler_state": true,
+  "microbatch_cursor": 0,
+  "next_batch_hash": "9a8e0fdb6c11020173465240088e07308a43b0957d1b704600f161605380c290",
+  "required_fields_present": true,
+  "schema_version": 1,
+  "stage_id": "A",
+  "stage_step": 1000
+}

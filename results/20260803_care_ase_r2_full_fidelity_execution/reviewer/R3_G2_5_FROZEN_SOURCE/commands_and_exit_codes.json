@@ -1,0 +1,86 @@
+{
+  "round_id": "R3_G2_5_FROZEN_SOURCE",
+  "commands": [
+    {
+      "command": "sed -n '1,240p' .agents/skills/codex-workflow-protocol/SKILL.md",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R3_G2_5_FROZEN_SOURCE/207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+      "exit_code": 0,
+      "purpose": "Load required workflow skill instructions."
+    },
+    {
+      "command": "pwd; git rev-parse HEAD; git status --short; git remote -v",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R3_G2_5_FROZEN_SOURCE/207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+      "exit_code": 0,
+      "purpose": "Verify detached checkout path, HEAD, and remote identity."
+    },
+    {
+      "command": "git ls-remote --heads origin main",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R3_G2_5_FROZEN_SOURCE/207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+      "exit_code": 0,
+      "stdout_summary": "207f360f22dd4e28fcecd4a22b67ed1af074ab42 refs/heads/main",
+      "purpose": "Verify candidate SHA equals pushed origin/main SHA."
+    },
+    {
+      "command": "find /users/a/e/aereinh/CARE/results/20260803_care_ase_r2_full_fidelity_execution -maxdepth 4 -type f | sort | rg 'controller_submission|review\\\\.json|review\\\\.md|receipt|g1|g2|training_source_commit|known|manifest|contract|coverage|sha|pass|submission'",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R3_G2_5_FROZEN_SOURCE/207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+      "exit_code": 0,
+      "purpose": "Enumerate allowed lightweight evidence paths without opening fold-specific manifest payloads."
+    },
+    {
+      "command": "find . -maxdepth 4 -type f (...) | rg 'care_ase|CARE_ASE|r2|R2|fold|split|contract|validator|decode|inference|sampler|trainer|model|loss|checkpoint|scheduler|wrapper'",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R3_G2_5_FROZEN_SOURCE/207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+      "exit_code": 0,
+      "purpose": "Discover relevant frozen source files in the detached checkout."
+    },
+    {
+      "command": "python - <<'PY' ... summarize training_source, G1, known-bad, G2, split, source, and reviewer receipts ... PY",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R3_G2_5_FROZEN_SOURCE/207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+      "exit_code": 0,
+      "purpose": "Read allowed JSON evidence and extract pass/freeze fields."
+    },
+    {
+      "command": "sed -n '1,220p' jobs/care_ase_r2/run_fold_chunk_htzhulab.sh; sed -n '1,260p' scripts/training/care_ase/run_care_ase_r2_chunk.py",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R3_G2_5_FROZEN_SOURCE/207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+      "exit_code": 0,
+      "purpose": "Inspect wrapper-to-entrypoint binding."
+    },
+    {
+      "command": "rg -n 'run_care_ase_r2_chunk|EXPECTED_TRAINING_SOURCE_SHA|CURRENT_SOURCE_SHA|evaluate_care_ase_r2_outer|sliding_window_logits|decode_care_ase_r2_logits|load_care_ase_checkpoint|CAREASEDeterministicSampler|CAREASEStageScheduler|care_ase_loss|save_care_ase_checkpoint|build_care_ase_for_fold_with_area_references|compute_actual_train_area_references' jobs/care_ase_r2/run_fold_chunk_htzhulab.sh scripts/training/care_ase/run_care_ase_r2_chunk.py scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py scripts/validation/validate_care_ase_r2_g1.py scripts/validation/run_care_ase_r2_g2_gpu_fidelity.py",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R3_G2_5_FROZEN_SOURCE/207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+      "exit_code": 0,
+      "purpose": "Verify call-chain symbols and evaluator/decode binding."
+    },
+    {
+      "command": "sha256sum jobs/care_ase_r2/run_fold_chunk_htzhulab.sh scripts/training/care_ase/run_care_ase_r2_chunk.py src/care_myocardium/models/care_ase.py src/care_myocardium/training/care_ase_trainer.py src/care_myocardium/training/care_ase_sampler.py src/care_myocardium/inference/care_ase_r2_decode.py scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py scripts/validation/validate_care_ase_r2_g1.py scripts/validation/run_care_ase_r2_g2_gpu_fidelity.py prompts/blueprints/CARE_ASE_R2_full_fidelity_execution_contract_20260803.yaml prompts/blueprints/CARE_ASE_R2_continuous_independent_reviewer_amendment_20260803.yaml prompts/tasks/20260803_care_ase_r2_full_fidelity_controller.md prompts/tasks/20260803_care_ase_r2_continuous_reviewer_addendum.md src/care_myocardium/data/care_ase_splits.py",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R3_G2_5_FROZEN_SOURCE/207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+      "exit_code": 0,
+      "purpose": "Record key source, validator, split/config/contract/task SHA256 values."
+    },
+    {
+      "command": "python - <<'PY' ... check known-bad count/nonzero/rejected and G2 module-off toggles ... PY",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R3_G2_5_FROZEN_SOURCE/207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+      "exit_code": 0,
+      "stdout_summary": "known_bad_count=31, all_nonzero=True, all_rejected=True, all_status_pass=True, all eight module-off toggles pass.",
+      "purpose": "Verify G1 known-bad and G2 module-off evidence."
+    },
+    {
+      "command": "sed -n '1,180p' scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py; sed -n '240,360p' scripts/training/care_ase/run_care_ase_r2_chunk.py; sed -n '430,710p' src/care_myocardium/training/care_ase_trainer.py",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R3_G2_5_FROZEN_SOURCE/207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+      "exit_code": 0,
+      "purpose": "Inspect evaluator fail-closed logic, chunk loop, scheduler, checkpoint save/resume implementation."
+    },
+    {
+      "command": "python - <<'PY' ... summarize coverage, semantic loss, sampler, scheduler, and checkpoint contract receipts ... PY",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R3_G2_5_FROZEN_SOURCE/207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+      "exit_code": 0,
+      "purpose": "Confirm contract-to-code coverage and static contract receipts are PASS."
+    },
+    {
+      "command": "python - <<'PY' ... list evidence files over 50MiB and extension counts by stat only ... PY",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R3_G2_5_FROZEN_SOURCE/207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+      "exit_code": 0,
+      "stdout_summary": "Only large file over 50MiB is g2_atomic_checkpoint_probe.pt; no large file content was read for R3 PASS.",
+      "purpose": "Verify no checkpoint/NIfTI/raw data/large log payload is required for R3 PASS."
+    }
+  ]
+}
