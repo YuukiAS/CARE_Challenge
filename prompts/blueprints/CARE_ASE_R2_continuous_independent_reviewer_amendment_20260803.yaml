@@ -1,0 +1,219 @@
+contract_id: CARE_ASE_R2_CONTINUOUS_INDEPENDENT_REVIEWER_AMENDMENT_20260803
+status: AUTHORIZED_BY_USER
+base_contract: prompts/blueprints/CARE_ASE_R2_full_fidelity_execution_contract_20260803.yaml
+base_controller: prompts/tasks/20260803_care_ase_r2_full_fidelity_controller.md
+precedence: this_amendment_overrides_all_conflicting_reviewer_and_repair_loop_fields
+branch_policy: main_only
+
+purpose:
+  primary: prevent_silent_behavioral_reduction_by_continuous_independent_readonly_review
+  secondary: convert_every_review_failure_into_same_goal_executor_repair_and_re_review_instead_of_terminal_block
+
+role_override:
+  review_required: true
+  review_mode: independent_thread
+  reviewer: separate_readonly
+  reviewer_lifetime: first_W1_candidate_through_W6_terminal_packet
+  reviewer_is_final_only: false
+  reviewer_participates_in_implementation: false
+  reviewer_writes_source_or_runtime: false
+  reviewer_may_run_readonly_tests_and_predeclared_gpu_checks: true
+  manual_continue_gate: false
+  user_confirmation_between_rounds: false
+  reviewer_can_declare_goal_blocked: false
+  reviewer_decisions:
+    - PASS_CONTINUE
+    - REVISE_CONTINUE_CURRENT_GOAL
+
+core_semantics:
+  review_failure_is_terminal_block: forbidden
+  review_failure_action: controller_assigns_exact_findings_to_same_executor_then_re_reviews_new_fixed_candidate
+  low_metric_or_visual_quality_as_review_failure: forbidden
+  reviewer_must_not_change_model_split_budget_checkpoint_decode_or_metric_population: true
+  reviewer_must_not_select_checkpoint_or_tune_threshold: true
+  reviewer_must_not_read_fold1_or_fold4_outer_before_W4_5: true
+  controller_must_continue_until_pass_or_true_irrecoverable_operational_block: true
+
+reviewer_isolation:
+  candidate_source: immutable_local_candidate_commit_or_pushed_training_source_commit
+  mutable_worktree_review: forbidden
+  checkout_mode: detached_readonly
+  suggested_checkout_root: /users/a/e/aereinh/CARE_reviewers/care_ase_r2
+  reviewer_output_root: /users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_full_fidelity_execution/reviewer
+  reviewer_must_not_commit_or_push: true
+  reviewer_must_not_edit_main_worktree: true
+  each_round_binds:
+    - candidate_commit_sha
+    - effective_contract_sha256
+    - formal_entrypoint_sha256
+    - reviewed_file_sha256_manifest
+    - evidence_sha256_manifest
+
+review_rounds:
+  - id: R0_W1_EARLY_DIFF
+    trigger: first_behaviorally_complete_W1_candidate_exists
+    execution: asynchronous_with_executor_work_on_unrelated_files
+    required_scope:
+      - formal_wrapper_to_entrypoint_call_graph
+      - model_branch_topology
+      - target_builder_and_loss_wiring
+      - sampler_source_and_manifest_consumption
+      - optimizer_scheduler_and_checkpoint_implementation
+    progression_rule: findings_must_be_repaired_before_G1_PASS
+  - id: R1_G1_STATIC_FIDELITY
+    trigger: controller_claims_G1_candidate_ready
+    execution: synchronous_repair_loop
+    required_scope:
+      - contract_to_code_coverage
+      - known_bad_mutation_tests
+      - old_wrapper_and_old_trainer_bypass_checks
+      - every_declared_loss_reaches_total_loss
+      - stage_sampler_scheduler_checkpoint_semantics
+    progression_rule: PASS_CONTINUE_required_before_G2
+  - id: R2_G2_REAL_GPU_FIDELITY
+    trigger: G2_executor_receipts_complete
+    execution: synchronous_repair_loop
+    required_scope:
+      - independent_rerun_of_critical_preflight_on_job_61794608_or_verified_htzhulab_replacement
+      - no_t2_zero_gradient
+      - real_case_mode_coverage
+      - sampler_composition
+      - scheduler_numeric_values
+      - exact_resume_equivalence
+      - module_off_output_effect
+    progression_rule: PASS_CONTINUE_required_before_G2_5
+  - id: R3_G2_5_FROZEN_SOURCE
+    trigger: immutable_training_source_candidate_commit_created
+    execution: synchronous_repair_loop
+    required_scope:
+      - pushed_sha_equals_reviewed_sha
+      - formal_command_and_python_binding
+      - source_config_split_plans_stock_hash_binding
+      - zero_fresh_outer_access
+    progression_rule: PASS_CONTINUE_required_before_any_formal_training
+  - id: R4_W3_FIRST_CHUNK
+    trigger: first_2000_step_chunk_of_each_fold_terminal
+    execution: asynchronous_with_at_most_one_chunk_lookahead
+    required_scope:
+      - source_and_contract_hash_continuity
+      - exact_step_and_stage
+      - scheduler_and_sampler_cursor
+      - checkpoint_schema_and_reload
+      - no_overlap_gap_duplicate
+    progression_rule: critical_behavioral_finding_pauses_future_chunks_and_enters_same_goal_repair
+  - id: R5_W3_STAGE_C_TRANSITION
+    trigger: each_fold_reaches_step10000
+    execution: asynchronous_with_at_most_one_chunk_lookahead
+    required_scope:
+      - stage_B_to_C_trainability
+      - Stage_C_complete_only_population
+      - optimizer_moment_continuity
+      - scheduler_transition
+      - next_batch_hash
+    progression_rule: critical_behavioral_finding_pauses_future_chunks_and_enters_same_goal_repair
+  - id: R6_W4_W4_5_FREEZE
+    trigger: both_folds_step14000_and_pre_outer_snapshot_ready
+    execution: synchronous_repair_loop
+    required_scope:
+      - two_fold_full_state_reload
+      - immutable_training_source_binding
+      - outer_access_zero_before_freeze
+      - checkpoint_and_snapshot_hashes
+    progression_rule: PASS_CONTINUE_required_before_W5
+  - id: R7_W5_METRIC_TRUTH
+    trigger: outer_once_and_three_way_join_complete
+    execution: synchronous_repair_loop
+    required_scope:
+      - exact_case_set_equality
+      - no_t2_edema_exclusion
+      - duplicate_and_missing_case_checks
+      - help_harm_and_empty_prediction_semantics
+      - physical_metric_binding_or_explicit_NOT_BOUND
+      - no_posthoc_tuning
+    progression_rule: PASS_CONTINUE_required_before_terminal_scientific_token
+  - id: R8_W6_TERMINAL
+    trigger: terminal_packet_candidate_commit_ready
+    execution: synchronous_repair_loop
+    required_scope:
+      - real_diff_and_runtime_lineage
+      - all_required_outputs_and_job_accounting
+      - mapper_and_wiki_truth
+      - commit_push_sha_notification_order
+      - scientific_claim_matches_metrics
+    progression_rule: PASS_CONTINUE_required_before_VERIFIED_COMPLETE
+
+review_output_contract:
+  tracked_summary_root: results/20260803_care_ase_r2_full_fidelity_execution/reviewer
+  per_round_required_files:
+    - review.json
+    - review.md
+    - reviewed_sha_manifest.json
+    - commands_and_exit_codes.json
+  review_json_required_fields:
+    - round_id
+    - reviewer_session_id
+    - candidate_commit_sha
+    - effective_contract_sha256
+    - decision
+    - findings
+    - critical_finding_count
+    - invalidated_wave_or_none
+    - required_repair_scope
+    - next_review_trigger
+  finding_required_fields:
+    - finding_id
+    - severity
+    - contract_clause
+    - source_path_or_evidence_path
+    - function_or_field
+    - expected
+    - observed
+    - reproducer_command
+    - repair_scope
+    - affected_training_credit
+
+controller_repair_loop:
+  on_PASS_CONTINUE:
+    action: record_round_pass_and_continue_declared_wave
+  on_REVISE_CONTINUE_CURRENT_GOAL:
+    actions:
+      - record_finding_in_controller_ledger
+      - send_exact_findings_to_same_executor
+      - repair_only_within_current_scientific_contract
+      - rerun_all_affected_first_party_gates
+      - create_new_immutable_candidate_commit
+      - invalidate_all_prior_reviewer_tokens_for_changed_files
+      - submit_new_candidate_to_same_independent_reviewer
+      - repeat_until_PASS_CONTINUE
+  return_to_planner_on_review_failure: forbidden
+  wait_for_user_on_review_failure: forbidden
+  lower_contract_to_obtain_pass: forbidden
+  cap_on_repair_rounds: none
+
+training_credit_rules:
+  evidence_only_or_report_only_repair:
+    training_credit: preserved_if_source_runtime_and_metric_semantics_unchanged
+  operational_wrapper_repair:
+    training_credit: preserved_only_if_formal_source_config_split_and_batch_sequence_hashes_unchanged
+  behavioral_model_loss_sampler_scheduler_checkpoint_decode_repair:
+    action: invalidate_affected_training_credit_and_return_to_G1_G2_G2_5
+    restart_rule: restart_affected_fold_from_step0_unless_reviewer_and_controller_prove_bitwise_behavioral_equivalence
+  current_running_chunk_when_async_reviewer_finds_issue:
+    nonbehavioral_finding: allow_finish_then_repair_evidence
+    behavioral_finding: cancel_or_stop_at_safe_boundary_mark_affected_credit_invalid_and_repair
+
+non_blocking_definition:
+  meaning: reviewer_failure_never_terminates_the_goal_and_never_returns_to_user
+  does_not_mean: allow_known_bad_code_to_progress_into_formal_training_or_outer
+  progression_pause_for_repair: allowed_and_required
+  goal_terminal_block_from_reviewer_decision_alone: forbidden
+
+terminal_requirements:
+  reviewer_rounds_completed: [R1_G1_STATIC_FIDELITY, R2_G2_REAL_GPU_FIDELITY, R3_G2_5_FROZEN_SOURCE, R6_W4_W4_5_FREEZE, R7_W5_METRIC_TRUTH, R8_W6_TERMINAL]
+  all_mandatory_round_decisions: PASS_CONTINUE
+  unresolved_critical_findings: 0
+  reviewer_final_commit_sha_must_equal_terminal_candidate_sha: true
+  validation_upload_authorized: false
+  docker_upload_authorized: false
+  challenge_upload_authorized: false
+  hosted_metric_claim_authorized: false
