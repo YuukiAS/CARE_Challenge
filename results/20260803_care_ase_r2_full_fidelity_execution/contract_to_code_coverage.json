@@ -49,7 +49,7 @@
     "contract_clause": "Stage A/B 10/5/5 alternating cycle",
     "known_bad_test": "stage_A_B_complete_only",
     "runtime_test": "sampler_400_step_receipt",
-    "source_line_hash": "151:1b8dd514025efa908044b599fce27166613b4fc0af87b135e90983e5a4245c2f",
+    "source_line_hash": "161:1b8dd514025efa908044b599fce27166613b4fc0af87b135e90983e5a4245c2f",
     "source_path": "src/care_myocardium/training/care_ase_sampler.py",
     "status": "PASS"
   },
@@ -58,7 +58,7 @@
     "contract_clause": "Stage C complete-only CenterB/CenterC",
     "known_bad_test": "stage_C_not_complete_only",
     "runtime_test": "sampler_static_contract",
-    "source_line_hash": "171:9d33b367f86962a4a0a739261863cc90d1a3522728e62c14f05b742b46853fea",
+    "source_line_hash": "181:9d33b367f86962a4a0a739261863cc90d1a3522728e62c14f05b742b46853fea",
     "source_path": "src/care_myocardium/training/care_ase_sampler.py",
     "status": "PASS"
   },
@@ -67,7 +67,7 @@
     "contract_clause": "CenterB/CenterC pathology and hard-negative cycles",
     "known_bad_test": "break_center_or_focus_cycle",
     "runtime_test": "sampler_static_contract",
-    "source_line_hash": "22:c41d8962e1221a5bda947bcb11ccc052ee4759b8a04226f343feeb7d678e5eb7",
+    "source_line_hash": "22:0c310f321b53ea6c5eae0bb53e8bf08f5dbe678e27d978b9f19a4a2778068c12",
     "source_path": "src/care_myocardium/training/care_ase_sampler.py",
     "status": "PASS"
   },
@@ -76,8 +76,17 @@
     "contract_clause": "hard-negative manifest consumed by formal sampler",
     "known_bad_test": "hard_negative_manifest_not_read",
     "runtime_test": "sampler_static_contract",
-    "source_line_hash": "22:c41d8962e1221a5bda947bcb11ccc052ee4759b8a04226f343feeb7d678e5eb7",
+    "source_line_hash": "22:0c310f321b53ea6c5eae0bb53e8bf08f5dbe678e27d978b9f19a4a2778068c12",
     "source_path": "src/care_myocardium/training/care_ase_sampler.py",
+    "status": "PASS"
+  },
+  {
+    "class_or_function": "build_case",
+    "contract_clause": "hard-negative manifest provides spatial OOF coordinates",
+    "known_bad_test": "count_only_hard_negative_manifest",
+    "runtime_test": "sampler_static_contract",
+    "source_line_hash": "66:257f33d59f08266fb46ec3dfb634e2e2734a4ed5e7ccd4a063473470f49a815e",
+    "source_path": "scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py",
     "status": "PASS"
   },
   {
@@ -85,7 +94,7 @@
     "contract_clause": "actual-train-only scar/edema area reference",
     "known_bad_test": "hardcoded_area_reference",
     "runtime_test": "area_reference_receipt",
-    "source_line_hash": "224:c9fb88b4bb78f32be78b4bcdea74d503e372e24e374652e69004ac817655df8e",
+    "source_line_hash": "234:c9fb88b4bb78f32be78b4bcdea74d503e372e24e374652e69004ac817655df8e",
     "source_path": "src/care_myocardium/training/care_ase_sampler.py",
     "status": "PASS"
   },
@@ -148,7 +157,7 @@
     "contract_clause": "fixed step14000 argmax and outer zero-access",
     "known_bad_test": "outer_access_before_freeze",
     "runtime_test": "outer_access_audit_receipt",
-    "source_line_hash": "199:d430c116baef458a8bfc1a944cbb30cb227cde2688f173ed40400a35c6bc829c",
+    "source_line_hash": "205:d430c116baef458a8bfc1a944cbb30cb227cde2688f173ed40400a35c6bc829c",
     "source_path": "scripts/training/care_ase/run_care_ase_r2_chunk.py",
     "status": "PASS"
   },

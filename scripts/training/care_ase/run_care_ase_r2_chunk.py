@@ -46,6 +46,7 @@ CRITICAL_SOURCE_PATHS = (
     "src/care_myocardium/training/care_ase_sampler.py",
     "src/care_myocardium/inference/care_ase_r2_decode.py",
     "scripts/training/care_ase/run_care_ase_r2_chunk.py",
+    "scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py",
     "scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py",
     "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh",
 )
@@ -100,10 +101,14 @@ def deterministic_center(
     pathology_focus: str,
     within_focus: str,
     hard_negative_category: str,
+    resolved_target_coordinates: tuple[tuple[int, int, int], ...],
     fallback_sequence: tuple[str, ...],
     micro: int,
     patch_size: tuple[int, int, int],
 ) -> tuple[int, int, int]:
+    if resolved_target_coordinates:
+        idx = int(hashlib.sha256(f"{descriptor_sha}|coords|micro={micro}".encode("utf-8")).hexdigest()[:16], 16) % len(resolved_target_coordinates)
+        return tuple(int(v) for v in resolved_target_coordinates[idx])
     wall = (seg == 1) | (seg == 4) | (seg == 5)
     blood = (seg == 2) | (seg == 3)
     background = seg == 0
@@ -158,6 +163,7 @@ def make_batch(descriptor: Any, *, descriptor_sha: str, micro: int, patch_size: 
         pathology_focus=descriptor.pathology_focus,
         within_focus=descriptor.within_focus,
         hard_negative_category=descriptor.hard_negative_category,
+        resolved_target_coordinates=descriptor.resolved_target_coordinates,
         fallback_sequence=descriptor.fallback_sequence,
         micro=micro,
         patch_size=patch_size,
@@ -304,6 +310,7 @@ def main() -> int:
             "within_focus": descriptor.within_focus,
             "hard_negative_category": descriptor.hard_negative_category,
             "hard_negative_counts": json.dumps(descriptor.hard_negative_counts, sort_keys=True),
+            "resolved_target_coordinate_count": len(descriptor.resolved_target_coordinates),
             "fallback_sequence": "|".join(descriptor.fallback_sequence),
             "descriptor_sha256": desc_sha,
             "loss": loss_total / 4.0,

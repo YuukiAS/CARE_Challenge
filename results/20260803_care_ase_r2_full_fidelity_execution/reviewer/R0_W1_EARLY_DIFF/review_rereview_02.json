@@ -1,0 +1,25 @@
+{
+  "candidate_commit_sha": "d471494ba8e80941bef277951fca5ef3673af809",
+  "critical_finding_count": 1,
+  "decision": "REVISE_CONTINUE_CURRENT_GOAL",
+  "effective_contract_sha256": "b3ea5986b7a2458f758f7353ab023cea85a9cb67a6fb7c7bf12e5bc10e61d09c",
+  "findings": [
+    {
+      "affected_training_credit": "none_yet_pretraining_not_started",
+      "contract_clause": "sampler_contract.oof_definitions; deterministic_fallbacks; hard_negative_manifest_consumption",
+      "expected": "OOF focus resolves to spatial target masks/coordinates from held-out stock predictions or usable manifest; patch selection samples those targets before fallback",
+      "finding_id": "R0-F003-REREVIEW02",
+      "function_or_field": "_hard_negative_category; deterministic_center",
+      "observed": "count-only manifest and generic lesion/background fallback",
+      "repair_scope": "add spatial hard-negative manifest builder and resolved_target_coordinates consumed by deterministic_center",
+      "reproducer_command": "nl -ba src/care_myocardium/training/care_ase_sampler.py | sed -n '68,138p' && nl -ba scripts/training/care_ase/run_care_ase_r2_chunk.py | sed -n '96,149p'",
+      "severity": "critical",
+      "source_path_or_evidence_path": "src/care_myocardium/training/care_ase_sampler.py; scripts/training/care_ase/run_care_ase_r2_chunk.py"
+    }
+  ],
+  "invalidated_wave_or_none": null,
+  "next_review_trigger": "R0_REVIEW_FIXED_CANDIDATE_03",
+  "required_repair_scope": "W1_R0_sampler_spatial_target_repair_no_training_started",
+  "reviewer_session_id": "019fc386-dba4-7b72-a29f-06a657b4fc5f",
+  "round_id": "R0_W1_EARLY_DIFF_REREVIEW_02"
+}

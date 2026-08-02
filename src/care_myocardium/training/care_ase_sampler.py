@@ -19,7 +19,7 @@ from src.care_myocardium.data.care_ase_splits import PREPROCESSED_REL, build_car
 from src.care_myocardium.data.case_metadata import load_myops_case_metadata
 
 
-HARD_NEGATIVE_MANIFEST_TEMPLATE = "results/20260803_care_ase_r2_full_fidelity_execution/hard_negative_manifest_fold{fold}.csv"
+HARD_NEGATIVE_MANIFEST_TEMPLATE = "results/20260803_care_ase_r2_full_fidelity_execution/hard_negative_manifest_fold{fold}.json"
 LEGACY_HARD_NEGATIVE_MANIFEST_TEMPLATE = "results/20260801_care_ase_final_model/hard_negative_manifest_fold{fold}.csv"
 
 
@@ -36,6 +36,7 @@ class CAREASEBatchDescriptor:
     availability: tuple[float, float, float]
     hard_negative_category: str
     hard_negative_counts: dict[str, int]
+    resolved_target_coordinates: tuple[tuple[int, int, int], ...]
     fallback_sequence: tuple[str, ...]
 
     def sha256(self) -> str:
@@ -93,7 +94,16 @@ def _load_hard_negative_manifest(repo_root: Path, fold: int) -> dict[str, Any]:
     return data
 
 
-def _hard_negative_category(manifest: dict[str, Any], case_id: str, pathology_focus: str, within_focus: str) -> tuple[str, dict[str, int]]:
+def _coords(value: dict[str, Any], key: str) -> tuple[tuple[int, int, int], ...]:
+    raw = value.get("targets", {}).get(key, []) if isinstance(value.get("targets", {}), dict) else []
+    out = []
+    for item in raw:
+        if isinstance(item, (list, tuple)) and len(item) == 3:
+            out.append((int(item[0]), int(item[1]), int(item[2])))
+    return tuple(out)
+
+
+def _hard_negative_category(manifest: dict[str, Any], case_id: str, pathology_focus: str, within_focus: str) -> tuple[str, dict[str, int], tuple[tuple[int, int, int], ...]]:
     cases = manifest.get("cases", {})
     value = cases.get(case_id, {}) if isinstance(cases, dict) else {}
     if isinstance(value, dict):
@@ -104,15 +114,15 @@ def _hard_negative_category(manifest: dict[str, Any], case_id: str, pathology_fo
             "edema_fn_voxels": int(value.get("edema_fn_voxels", 0) or 0),
         }
         if pathology_focus == "scar" and within_focus == "oof_fn" and counts["scar_fn_voxels"] > 0:
-            return "scar_oof_fn", counts
+            return "scar_oof_fn", counts, _coords(value, "scar_oof_fn")
         if pathology_focus == "scar" and within_focus == "oof_fp" and counts["scar_fp_voxels"] > 0:
-            return "scar_oof_fp", counts
+            return "scar_oof_fp", counts, _coords(value, "scar_oof_fp")
         if pathology_focus == "edema" and within_focus == "oof_fn_or_low_volume" and counts["edema_fn_voxels"] > 0:
-            return "edema_oof_fn_or_low_volume", counts
+            return "edema_oof_fn_or_low_volume", counts, _coords(value, "edema_oof_fn_or_low_volume")
         if pathology_focus == "edema" and within_focus == "safe_fp" and counts["edema_fp_voxels"] > 0:
-            return "edema_safe_fp", counts
-        return "manifest_consumed_no_matching_oof", counts
-    return "manifest_missing_case", {"scar_fp_voxels": 0, "scar_fn_voxels": 0, "edema_fp_voxels": 0, "edema_fn_voxels": 0}
+            return "edema_safe_fp", counts, _coords(value, "edema_safe_fp")
+        return "manifest_consumed_no_matching_oof", counts, ()
+    return "manifest_missing_case", {"scar_fp_voxels": 0, "scar_fn_voxels": 0, "edema_fp_voxels": 0, "edema_fn_voxels": 0}, ()
 
 
 def _fallback_sequence(pathology_focus: str, within_focus: str, hard_category: str) -> tuple[str, ...]:
@@ -275,7 +285,7 @@ class CAREASEDeterministicSampler:
             self.edema_focus_cursor += 1
         self.batch_descriptor_cursor += 1
         center, availability = self.case_meta[case_id]
-        hard_category, hard_counts = _hard_negative_category(self.hard_negative_manifest, case_id, pathology, within_focus)
+        hard_category, hard_counts, hard_coords = _hard_negative_category(self.hard_negative_manifest, case_id, pathology, within_focus)
         return CAREASEBatchDescriptor(
             fold=self.fold,
             global_step=int(global_step),
@@ -288,6 +298,7 @@ class CAREASEDeterministicSampler:
             availability=availability,
             hard_negative_category=hard_category,
             hard_negative_counts=hard_counts,
+            resolved_target_coordinates=hard_coords,
             fallback_sequence=_fallback_sequence(pathology, within_focus, hard_category),
         )
 

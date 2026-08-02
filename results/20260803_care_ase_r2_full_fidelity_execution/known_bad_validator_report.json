@@ -76,12 +76,17 @@
       "validator_exit_if_mutated": 1
     },
     {
+      "known_bad": "count_only_hard_negative_manifest",
+      "status": "PASS",
+      "validator_exit_if_mutated": 1
+    },
+    {
       "known_bad": "wrapper_points_old_entry",
       "status": "PASS",
       "validator_exit_if_mutated": 1
     }
   ],
-  "known_bad_count_passed": 16,
-  "required_known_bad_count": 16,
+  "known_bad_count_passed": 17,
+  "required_known_bad_count": 17,
   "status": "PASS"
 }
