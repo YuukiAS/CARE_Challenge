@@ -1,0 +1,16 @@
+{
+  "blocked_or_failure_reason": "",
+  "commit_status": "complete",
+  "evidence_paths": [
+    "/users/a/e/aereinh/CARE/results/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/revised_final_submission_model_contract.json",
+    "/users/a/e/aereinh/CARE/results/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/strict_validator_report.json",
+    "/users/a/e/aereinh/CARE/results/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/transfer_bundle_receipt.json",
+    "/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/transfer/SERVER_BUNDLE_READY.json"
+  ],
+  "final_status": "complete",
+  "key_conclusion": "MyoPS \u5df2\u4fee\u8ba2\u4e3a\u7eaf Dataset501 \u4e94\u6298 nnU-Net\uff1bCineMyoPS \u4f7f\u7528\u5408\u4f5c\u8005\u539f\u59cb Docker archive\uff1b\u670d\u52a1\u5668\u4ec5\u5b8c\u6210\u9759\u6001\u5ba1\u8ba1\u548c transfer \u51c6\u5907\u3002",
+  "next_step": "\u5728\u5de5\u4f4d WSL \u5bf9 MyoPS build/run/save\uff0c\u5e76 load/run CineMyoPS archive\u3002",
+  "push_status": "complete",
+  "slurm_terminal_status": "No Slurm jobs were needed for this server-side rebundle.",
+  "task_name": "20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle"
+}

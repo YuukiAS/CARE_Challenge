@@ -1,0 +1,18 @@
+{
+  "cinemyops_archive": {
+    "path": "CineMyoPS-OrganAgent.tar.gz",
+    "sha256": "c02db56bd52d14d3b5bbda9d204a20b7e4c061fd5e6012ffa1cebc67fb92c136",
+    "size_bytes": 672040570
+  },
+  "cinemyops_archive_byte_preserved": true,
+  "created_at_utc": "2026-08-02T14:28:30.288944Z",
+  "myops_workstation_bundle": {
+    "path": "MyoPS-nnUNet-workstation-bundle.tar.gz",
+    "sha256": "996d802080fa0d529822e1ba35c1884f1cf2effd50644e5faac9b24ec3cc75c2",
+    "size_bytes": 1660699273
+  },
+  "server_bundle_ready": "/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/transfer/SERVER_BUNDLE_READY.json",
+  "status": "PASS",
+  "task": "20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle",
+  "transfer": "/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/transfer"
+}

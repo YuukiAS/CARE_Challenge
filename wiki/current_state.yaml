@@ -1,15 +1,23 @@
-current_milestone_id: care_test_docker_final_model_freeze_bundle
-current_task_key: 20260801_care_test_docker_final_model_freeze_and_bundle
-method_name: CARE2026 myocardium frozen final model Docker bundle
-short_method_name: CARE_TEST_DOCKER_FINAL_FREEZE
-execution_label: Planner-frozen MyoPS and CineMyoPS final submission model bundle
+current_milestone_id: care_test_docker_nnunet_myops_collaborator_cine_rebundle
+current_task_key: 20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle
+method_name: CARE2026 myocardium pure nnU-Net MyoPS and collaborator Cine Docker rebundle
+short_method_name: CARE_TEST_DOCKER_NNUNET_MYOPS_COLLAB_CINE
+execution_label: Pure Dataset501 nnU-Net MyoPS plus collaborator prebuilt CineMyoPS archive
 execution_code: SERVER-BUNDLE-READY
-updated_at: '2026-08-01'
-current_result_root: results/20260801_care_test_docker_final_model_freeze_and_bundle
-current_review_path: results/20260801_care_test_docker_final_model_freeze_and_bundle/controller_report.md
+updated_at: '2026-08-02'
+current_result_root: results/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle
+current_review_path: results/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/controller_report.md
 current_review_token: VERIFIED_COMPLETE
-wiki_fingerprint_status: FINAL_MODEL_FREEZE_BUNDLE_READY_MAPPER_UPDATED
+wiki_fingerprint_status: NNUNET_MYOPS_COLLABORATOR_CINE_REBUNDLE_READY
 entrypoints_authority_status: WORKSTATION_CPU_DOCKER_DETERMINISM_GATE_NEXT
+current_transfer_root: /users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/transfer
+supersedes_commit: c2f946b9376f4b39700f04b39c6d7a16e7154e67
+selected_myops: dataset501_nnunet_v2_5fold_best_default_tta_all_six_classes
+selected_cinemyops: collaborator_provided_prebuilt_mosaic_docker
+server_docker_run_performed: false
+challenge_upload_authorized: false
+validation_upload_authorized: false
+organizer_email_send_authorized: false
 main_only:
   branch: main
   worktree: /users/a/e/aereinh/CARE

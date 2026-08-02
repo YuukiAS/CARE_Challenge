@@ -1,22 +1,54 @@
 # CARE 架构 Wiki
 
-architecture_version: `care-test-docker-final-model-freeze-bundle-ready-20260801`
-latest_verified_runtime: `Planner-frozen final model bundled; MyoPS production graph uses MoSAIC scar plus Dataset501 5-fold nnU-Net anatomy/pure-edema; MoSAIC Cine replay completed 15/15; source intervention and strict validator passed`
-latest_scientific_status: `SERVER_BUNDLE_READY: server-side transfer bundle is ready for workstation CPU Docker determinism/equivalence gates; no hosted metric claim is made`
-latest_controller_task: `20260801_care_test_docker_final_model_freeze_and_bundle`
-route_status: `MAIN_ONLY_TEST_DOCKER_FINAL_BUNDLE_READY_RETURN_TO_PLANNER`
+architecture_version: `care-test-docker-nnunet-myops-collaborator-cine-rebundle-20260802`
+latest_verified_runtime: `old c2f mixed MyoPS bundle superseded; MyoPS production graph is Dataset501 five-fold nnU-Net all six classes; CineMyoPS is collaborator prebuilt Docker archive; server performed static archive audit and host smoke only`
+latest_scientific_status: `SERVER_BUNDLE_READY: server transfer authorizes workstation WSL Docker build/load/run/save; no server Docker run or hosted metric claim is made`
+latest_controller_task: `20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle`
+route_status: `MAIN_ONLY_TEST_DOCKER_NNUNET_MYOPS_COLLABORATOR_CINE_READY_FOR_WORKSTATION`
 
-当前机器真值是 `prompts/routes/handoffs/CURRENT.md`。本次按 Planner 冻结的最终模型完成服务器端 bundle：MyoPS 不再使用 MoSAIC edema 分支，而是用 MoSAIC repo-final scar 与 Dataset501 五折 nnU-Net 的 anatomy/pure-edema 组合；CineMyoPS 继续使用 MoSAIC repo-final Cine，并已从 4/15 补齐到 15/15。旧的 `0.6691` 归属仍保持 `UNRESOLVED_NOT_CLAIMED`，13 个 GPU replay 变化体素只记录为浮点/并行差异，不作为打包阻塞。
+当前机器真值是 `prompts/routes/handoffs/CURRENT.md`。旧 `c2f946b9376f4b39700f04b39c6d7a16e7154e67` 的 mixed MyoPS bundle 已被本任务修订取代：新 MyoPS 全部使用 Dataset501 五折 nnU-Net 六类 raw argmax 并直接映射 official label；新 CineMyoPS 使用合作者预构建 Docker archive，服务器只做下载 SHA 和 Docker-save 静态审计。服务器 bundle 只授权 WSL build/load/run/save，未运行服务器 Docker，未上传 challenge/validation/网盘，未给组织方发送邮件。
 
 关键证据：
 
 ```text
-results/20260801_care_test_docker_final_model_freeze_and_bundle/final_submission_model_contract.json
-results/20260801_care_test_docker_final_model_freeze_and_bundle/production_asset_manifest.json
-results/20260801_care_test_docker_final_model_freeze_and_bundle/fresh_mosaic_cine_15case_manifest.json
-results/20260801_care_test_docker_final_model_freeze_and_bundle/source_intervention_receipt.json
-results/20260801_care_test_docker_final_model_freeze_and_bundle/transfer_bundle_receipt.json
-results/20260801_care_test_docker_final_model_freeze_and_bundle/strict_validator_report.json
+results/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/revised_final_submission_model_contract.json
+results/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/nnunet_environment_fingerprint.json
+results/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/collaborator_archive_manifest.json
+results/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/pure_nnunet_myops_host_smoke_receipt.json
+results/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/transfer_bundle_receipt.json
+results/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/strict_validator_report.json
+/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/transfer/SERVER_BUNDLE_READY.json
+```
+
+## 2026-08-02 纯 nnU-Net MyoPS + 合作者 Cine bundle ready
+
+```text
+result_root:
+results/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle
+
+terminal_state:
+SERVER_BUNDLE_READY
+
+transfer:
+/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/transfer
+
+MyoPS:
+Dataset501_CAREMyoPS, nnUNetTrainer_500epochs, 3d_fullres, folds 0-4, checkpoint_best.pth, default TTA
+raw label map 0->0, 1->200, 2->500, 3->600, 4->1220, 5->2221
+
+CineMyoPS:
+collaborator archive CineMyoPS-OrganAgent.tar.gz
+sha256 c02db56bd52d14d3b5bbda9d204a20b7e4c061fd5e6012ffa1cebc67fb92c136
+
+collaborator MyoPS:
+reference-only, not final
+sha256 81d19bbefd8f7cca46aee32b31a774f16222b6146b9eab6bc7265a6c214de2ff
+
+server_docker_run_performed:
+false
+
+strict validator:
+PASS
 ```
 
 ## 2026-08-01 最终冻结模型服务器端 bundle ready

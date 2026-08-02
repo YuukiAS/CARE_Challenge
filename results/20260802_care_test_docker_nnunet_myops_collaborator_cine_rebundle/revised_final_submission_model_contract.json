@@ -1,0 +1,130 @@
+{
+  "challenge_upload_performed": false,
+  "cinemyops": {
+    "archive": "CineMyoPS-OrganAgent.tar.gz",
+    "byte_preserved": true,
+    "image_tag": "care-myocardium-cinemyops:organagent",
+    "server_static_audit_only": true,
+    "sha256": "c02db56bd52d14d3b5bbda9d204a20b7e4c061fd5e6012ffa1cebc67fb92c136"
+  },
+  "collaborator_myops_reference": {
+    "archive": "MyoPS-OrganAgent-collaborator-reference.tar.gz",
+    "reference_only": true,
+    "selected_as_final": false,
+    "sha256": "81d19bbefd8f7cca46aee32b31a774f16222b6146b9eab6bc7265a6c214de2ff"
+  },
+  "created_at_utc": "2026-08-02T14:27:00.211059Z",
+  "myops": {
+    "asset_manifest": [
+      {
+        "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_best.pth",
+        "role": "fold_0_checkpoint_best",
+        "sha256": "f139ca5525322d340a0284c6562a9bcb9cb9cae0a512e14ef40ce85a66f53278",
+        "size_bytes": 357374639
+      },
+      {
+        "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/checkpoint_best.pth",
+        "role": "fold_1_checkpoint_best",
+        "sha256": "b92d56b1e24ce826081671acc4e048e5d48b191f6dcb9836747ae82d93acd1e2",
+        "size_bytes": 357341103
+      },
+      {
+        "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_2/checkpoint_best.pth",
+        "role": "fold_2_checkpoint_best",
+        "sha256": "9e328bf4bd6ed9eeadac6f41c5de303c69dfc078dfeac3e64b26e18d3e09d38d",
+        "size_bytes": 357327215
+      },
+      {
+        "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_3/checkpoint_best.pth",
+        "role": "fold_3_checkpoint_best",
+        "sha256": "9c2c2cf0dea4eb8a691c6680fabc66f6456233ba83867466a06ffd5abda3462b",
+        "size_bytes": 357354799
+      },
+      {
+        "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_4/checkpoint_best.pth",
+        "role": "fold_4_checkpoint_best",
+        "sha256": "11c6ccfec5dc51be7c08f1713058412694e1b7def1c5d8cd5520f7f7568aeff2",
+        "size_bytes": 357367855
+      },
+      {
+        "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/plans.json",
+        "role": "plans.json",
+        "sha256": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
+        "size_bytes": 11947
+      },
+      {
+        "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/dataset.json",
+        "role": "dataset.json",
+        "sha256": "8437262d92fb898c8d16a89150efd4629602dd71e0fa5bbcf1c6c80cc3b535ae",
+        "size_bytes": 675
+      }
+    ],
+    "checkpoint": "checkpoint_best.pth",
+    "configuration": "3d_fullres",
+    "dataset": "Dataset501_CAREMyoPS",
+    "folds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "forbidden_components": [
+      "MoSAIC scar overlay",
+      "MoSAIC edema",
+      "CARE-DG",
+      "SCR",
+      "CARE-ASE",
+      "ARC",
+      "PRISM",
+      "MyoWall",
+      "case selector",
+      "historical package A prediction source",
+      "validation-driven threshold/postprocess"
+    ],
+    "official_label_map": {
+      "0": 0,
+      "1": 200,
+      "2": 500,
+      "3": 600,
+      "4": 1220,
+      "5": 2221
+    },
+    "production_context": {
+      "contains_myops_configs": false,
+      "contains_vendor_myops": false,
+      "context_path": "/users/a/e/aereinh/CARE/docker/CARE2026_Myocardium/MyoPS",
+      "file_count": 6,
+      "forbidden_weight_files": [],
+      "mentions_mosaic_in_predict": false,
+      "mentions_overlay_or_priority_in_predict": false,
+      "official_label_map": {
+        "0": 0,
+        "1": 200,
+        "2": 500,
+        "3": 600,
+        "4": 1220,
+        "5": 2221
+      },
+      "uses_disable_tta": false,
+      "uses_nnunet_cli": true
+    },
+    "raw_label_semantics": {
+      "0": "background",
+      "1": "myocardium",
+      "2": "LV",
+      "3": "RV",
+      "4": "pure edema",
+      "5": "scar"
+    },
+    "trainer": "nnUNetTrainer_500epochs",
+    "tta": "default"
+  },
+  "organizer_email_sent": false,
+  "selected_cinemyops": "collaborator_provided_prebuilt_mosaic_docker",
+  "selected_myops": "dataset501_nnunet_v2_5fold_best_default_tta_all_six_classes",
+  "server_docker_run_performed": false,
+  "supersedes_commit": "c2f946b9376f4b39700f04b39c6d7a16e7154e67",
+  "task": "20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle",
+  "validation_upload_performed": false
+}

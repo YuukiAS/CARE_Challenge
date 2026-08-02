@@ -1,0 +1,165 @@
+{
+  "created_at_utc": "2026-08-02T14:27:00.207743Z",
+  "expected_output_root": "/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/pure_nnunet_myops_official_15case",
+  "records": [
+    {
+      "case_id": "Case1001",
+      "direction": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "official_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "official_output_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/pure_nnunet_myops_official_15case/Case1001_pred.nii.gz",
+      "official_sha256": "436c0000eebf649f6b75065d1c76b922fe92086ffe5ba919570ff1c50cab2223",
+      "origin_xyz": [
+        0.0,
+        0.0,
+        10.0
+      ],
+      "raw_labels": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "raw_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1001.nii.gz",
+      "raw_sha256": "477e392431fbb12a109e54e8a77717dbf1547350a87d6a11a1d453a3fa76dcc9",
+      "shape_zyx": [
+        6,
+        251,
+        212
+      ],
+      "spacing_xyz": [
+        1.328125,
+        1.328125,
+        10.0
+      ],
+      "voxel_count": 319272
+    },
+    {
+      "case_id": "Case1004",
+      "direction": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "official_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "official_output_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/pure_nnunet_myops_official_15case/Case1004_pred.nii.gz",
+      "official_sha256": "7cf7b1a41aac87b4f11c73e6ecdb4ecf0138c6b035351f89a7566093dc3b7f30",
+      "origin_xyz": [
+        0.0,
+        0.0,
+        10.0
+      ],
+      "raw_labels": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "raw_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1004.nii.gz",
+      "raw_sha256": "7e56caca3ab1d086001e60438b55ef0fb16feebef631977cc626e802e28f48ec",
+      "shape_zyx": [
+        7,
+        253,
+        220
+      ],
+      "spacing_xyz": [
+        1.7708333730697632,
+        1.7708333730697632,
+        10.0
+      ],
+      "voxel_count": 389620
+    },
+    {
+      "case_id": "Case1012",
+      "direction": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "official_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "official_output_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/pure_nnunet_myops_official_15case/Case1012_pred.nii.gz",
+      "official_sha256": "1a9a95ace46d46072ada5a92ac12cf07e00c8754e2132bc783473cda1c269f57",
+      "origin_xyz": [
+        0.0,
+        0.0,
+        10.0
+      ],
+      "raw_labels": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "raw_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1012.nii.gz",
+      "raw_sha256": "dedd153bc40b9fe35df20564aa164e1b136888641d67eedd32c31e9dd14f37fe",
+      "shape_zyx": [
+        4,
+        158,
+        160
+      ],
+      "spacing_xyz": [
+        1.7708333730697632,
+        1.7708333730697632,
+        10.0
+      ],
+      "voxel_count": 101120
+    }
+  ],
+  "selection_rule": "minimum, median, and maximum voxel count among 15 fresh nnU-Net outputs",
+  "sentinel_case_ids": [
+    "Case1012",
+    "Case1001",
+    "Case1004"
+  ],
+  "sentinel_input_root": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_val/AnonymousCenter",
+  "status": "PASS",
+  "task": "20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle"
+}

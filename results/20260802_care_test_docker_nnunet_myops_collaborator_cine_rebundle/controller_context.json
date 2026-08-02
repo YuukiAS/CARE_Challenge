@@ -1,0 +1,18 @@
+{
+  "branch_policy": "main-only",
+  "created_at_utc": "2026-08-02T14:27:00.212919Z",
+  "forbidden_actions_respected": {
+    "large_git_artifacts": true,
+    "new_training": true,
+    "organizer_email": true,
+    "overflow_write": true,
+    "sudo": true,
+    "system_docker_install_or_run": true,
+    "uploads": true
+  },
+  "remote": "YuukiAS/CARE_Challenge",
+  "repo": "/users/a/e/aereinh/CARE",
+  "runtime": "/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle",
+  "task": "20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle",
+  "transfer": "/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/transfer"
+}

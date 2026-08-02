@@ -1,0 +1,13 @@
+{
+  "checks": [
+    "required files",
+    "pure nnU-Net MyoPS context",
+    "model contract and nnU-Net provenance",
+    "collaborator archive static audits",
+    "transfer completeness",
+    "Git staged heavy artifact guard"
+  ],
+  "failures": [],
+  "status": "PASS",
+  "task": "20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle"
+}

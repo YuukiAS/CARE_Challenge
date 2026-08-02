@@ -1,0 +1,65 @@
+{
+  "cases": [
+    {
+      "actual_replay_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/fresh_replay_myops_official_3case/myops/Case1001_pred.nii.gz",
+      "case_id": "Case1001",
+      "changed_fraction": 3.1321255857074847e-06,
+      "changed_voxels": 1,
+      "expected_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/pure_nnunet_myops_official_15case/Case1001_pred.nii.gz",
+      "mode": "fresh_replay_compare",
+      "per_label_dice": {
+        "0": 0.9999983382880046,
+        "1220": 1.0,
+        "200": 1.0,
+        "2221": 1.0,
+        "500": 1.0,
+        "600": 0.9999011564693091
+      },
+      "reason_no_fresh_server_replay": ""
+    },
+    {
+      "actual_replay_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/fresh_replay_myops_official_3case/myops/Case1004_pred.nii.gz",
+      "case_id": "Case1004",
+      "changed_fraction": 0.0,
+      "changed_voxels": 0,
+      "expected_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/pure_nnunet_myops_official_15case/Case1004_pred.nii.gz",
+      "mode": "fresh_replay_compare",
+      "per_label_dice": {
+        "0": 1.0,
+        "1220": 1.0,
+        "200": 1.0,
+        "2221": 1.0,
+        "500": 1.0,
+        "600": 1.0
+      },
+      "reason_no_fresh_server_replay": ""
+    },
+    {
+      "actual_replay_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/fresh_replay_myops_official_3case/myops/Case1012_pred.nii.gz",
+      "case_id": "Case1012",
+      "changed_fraction": 0.0,
+      "changed_voxels": 0,
+      "expected_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/pure_nnunet_myops_official_15case/Case1012_pred.nii.gz",
+      "mode": "fresh_replay_compare",
+      "per_label_dice": {
+        "0": 1.0,
+        "1220": 1.0,
+        "200": 1.0,
+        "2221": 1.0,
+        "500": 1.0,
+        "600": 1.0
+      },
+      "reason_no_fresh_server_replay": ""
+    }
+  ],
+  "created_at_utc": "2026-08-02T14:27:00.205599Z",
+  "fresh_3case_replay_performed": true,
+  "reused_existing_fresh_outputs": true,
+  "server_docker_run_performed": false,
+  "status": "PASS",
+  "task": "20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle",
+  "thresholds": {
+    "max_changed_fraction": 1e-05,
+    "min_per_label_dice": 0.9999
+  }
+}

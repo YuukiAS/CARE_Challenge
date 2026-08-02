@@ -1,12 +1,34 @@
-# CARE2026 MyoPS Frozen Production Source
+# CARE2026 MyoPS Pure nnU-Net Production Source
 
-This source context implements the frozen final MyoPS graph for the workstation
-Docker build. It combines MoSAIC repo-final scar with Dataset501 5-fold nnU-Net
-anatomy and pure edema:
+This source context implements the revised final MyoPS workstation Docker build.
+The production graph is Dataset501 CAREMyoPS nnU-Net v2 only:
 
-- MoSAIC scar: `models/mosaic/myops/coarse.pt` and `models/mosaic/myops/fine_scar.pt`.
-- nnU-Net: `models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/.../fold_0..fold_4/checkpoint_best.pth`.
-- Output priority: scar > pure edema > anatomy > background.
+- dataset: `Dataset501_CAREMyoPS`
+- trainer: `nnUNetTrainer_500epochs`
+- configuration: `3d_fullres`
+- folds: `0 1 2 3 4`
+- checkpoint: `checkpoint_best.pth`
+- TTA: nnU-Net default TTA
 
-The MyoPS context intentionally excludes and refuses MoSAIC `coarse_edema.pt`
-and `edema.pt`.
+Inputs are discovered under `/input` in sorted case order. Each case must provide
+all three modalities in the same directory:
+
+- `<CaseID>_LGE.nii.gz` -> channel `0000`
+- `<CaseID>_T2.nii.gz` -> channel `0001`
+- `<CaseID>_C0.nii.gz` -> channel `0002`
+
+Missing modalities are a hard failure. No zero-fill, case selector, thresholding,
+postprocessing, scar overlay, or priority overwrite is performed.
+
+Raw nnU-Net labels are mapped directly to the official labels:
+
+| Raw | Official |
+| --- | --- |
+| 0 | 0 |
+| 1 | 200 |
+| 2 | 500 |
+| 3 | 600 |
+| 4 | 1220 |
+| 5 | 2221 |
+
+Outputs are written atomically to `/output/myops/<CaseID>_pred.nii.gz`.

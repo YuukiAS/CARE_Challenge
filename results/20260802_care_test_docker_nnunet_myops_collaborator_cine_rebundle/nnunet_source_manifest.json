@@ -1,0 +1,1188 @@
+{
+  "cli_script": {
+    "path": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/nnUNetv2_predict",
+    "sha256": "c4f4990cebe3f2259d48d1ce08bbcf4f7f1463e0709d35944948452fb65025d8",
+    "shebang": "#!/users/a/e/aereinh/CARE/envs/env_CARE/bin/python3.12",
+    "size_bytes": 253
+  },
+  "dataset501_assets": [
+    {
+      "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_best.pth",
+      "role": "fold_0_checkpoint_best",
+      "sha256": "f139ca5525322d340a0284c6562a9bcb9cb9cae0a512e14ef40ce85a66f53278",
+      "size_bytes": 357374639
+    },
+    {
+      "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/checkpoint_best.pth",
+      "role": "fold_1_checkpoint_best",
+      "sha256": "b92d56b1e24ce826081671acc4e048e5d48b191f6dcb9836747ae82d93acd1e2",
+      "size_bytes": 357341103
+    },
+    {
+      "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_2/checkpoint_best.pth",
+      "role": "fold_2_checkpoint_best",
+      "sha256": "9e328bf4bd6ed9eeadac6f41c5de303c69dfc078dfeac3e64b26e18d3e09d38d",
+      "size_bytes": 357327215
+    },
+    {
+      "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_3/checkpoint_best.pth",
+      "role": "fold_3_checkpoint_best",
+      "sha256": "9c2c2cf0dea4eb8a691c6680fabc66f6456233ba83867466a06ffd5abda3462b",
+      "size_bytes": 357354799
+    },
+    {
+      "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_4/checkpoint_best.pth",
+      "role": "fold_4_checkpoint_best",
+      "sha256": "11c6ccfec5dc51be7c08f1713058412694e1b7def1c5d8cd5520f7f7568aeff2",
+      "size_bytes": 357367855
+    },
+    {
+      "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/plans.json",
+      "role": "plans.json",
+      "sha256": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
+      "size_bytes": 11947
+    },
+    {
+      "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/dataset.json",
+      "role": "dataset.json",
+      "sha256": "8437262d92fb898c8d16a89150efd4629602dd71e0fa5bbcf1c6c80cc3b535ae",
+      "size_bytes": 675
+    }
+  ],
+  "direct_url": null,
+  "dist_info": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2-2.7.0.dist-info",
+  "docker_binding_decision": "standard site-packages release; requirements.lock pins exact current versions and no nnU-Net upgrade/downgrade is authorized",
+  "editable_install": false,
+  "git_info": {
+    "git_root": null,
+    "is_git_repo": false
+  },
+  "installer": "pip",
+  "nnunetv2_source_root": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2",
+  "python_file_count": 186,
+  "python_files": [
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/__init__.py",
+      "relative_path": "__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/batch_running/__init__.py",
+      "relative_path": "batch_running/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/batch_running/benchmarking/__init__.py",
+      "relative_path": "batch_running/benchmarking/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/batch_running/benchmarking/generate_benchmarking_commands.py",
+      "relative_path": "batch_running/benchmarking/generate_benchmarking_commands.py",
+      "sha256": "14abb1eb4e966e9ac9789003ad6b70548978061d10017e609f91a0cf0eb88974",
+      "size_bytes": 2041
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/batch_running/benchmarking/summarize_benchmark_results.py",
+      "relative_path": "batch_running/benchmarking/summarize_benchmark_results.py",
+      "sha256": "241809f5cc0ef6d16c3c6cc16ce2b69a51c969551cb4b8a89d5b4445589ebb05",
+      "size_bytes": 3272
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/batch_running/collect_results_custom_Decathlon.py",
+      "relative_path": "batch_running/collect_results_custom_Decathlon.py",
+      "sha256": "e107dea2b811a9732a490b2151cb97f0af6e9506dc190e7a7d8e3e21a1ee7c37",
+      "size_bytes": 6018
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/batch_running/collect_results_custom_Decathlon_2d.py",
+      "relative_path": "batch_running/collect_results_custom_Decathlon_2d.py",
+      "sha256": "d4bf22f3ffec8578bd0051c04b5b04d2e35997c041d601a1e8ce4936a3060f85",
+      "size_bytes": 708
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/batch_running/generate_lsf_runs_customDecathlon.py",
+      "relative_path": "batch_running/generate_lsf_runs_customDecathlon.py",
+      "sha256": "8c7d707dbae32b1e413c06c5e85078502484604b2d628715bde64f6154da353e",
+      "size_bytes": 5126
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/batch_running/release_trainings/__init__.py",
+      "relative_path": "batch_running/release_trainings/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/batch_running/release_trainings/nnunetv2_v1/__init__.py",
+      "relative_path": "batch_running/release_trainings/nnunetv2_v1/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/batch_running/release_trainings/nnunetv2_v1/collect_results.py",
+      "relative_path": "batch_running/release_trainings/nnunetv2_v1/collect_results.py",
+      "sha256": "0b04206863b2e762e80011c6b1d8557cfc0e4cfd5de7c63c309b602ca49edbb0",
+      "size_bytes": 5662
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/batch_running/release_trainings/nnunetv2_v1/generate_lsf_commands.py",
+      "relative_path": "batch_running/release_trainings/nnunetv2_v1/generate_lsf_commands.py",
+      "sha256": "02e2c82613e4aa810295e8b0940605231b7ff6c7b8e34fb2bf1245882f6225eb",
+      "size_bytes": 3833
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/configuration.py",
+      "relative_path": "configuration.py",
+      "sha256": "c62f73b1bc1111b0bc9c3dfe5c8d1a481047bbb2c128b6017ede97da2af17beb",
+      "size_bytes": 416
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/dataset_conversion/Dataset015_018_RibFrac_RibSeg.py",
+      "relative_path": "dataset_conversion/Dataset015_018_RibFrac_RibSeg.py",
+      "sha256": "0ca0a97ddbdef37d4d7217c25c45530383864472eed5e4a0870c06b281bd6024",
+      "size_bytes": 5526
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/dataset_conversion/Dataset021_CTAAorta.py",
+      "relative_path": "dataset_conversion/Dataset021_CTAAorta.py",
+      "sha256": "37b8b5d3fe8ebea5b743302e9202b8b00104bd0d8b2661b0b1ae5bc79c1bdc77",
+      "size_bytes": 2367
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/dataset_conversion/Dataset023_AbdomenAtlas1_1Mini.py",
+      "relative_path": "dataset_conversion/Dataset023_AbdomenAtlas1_1Mini.py",
+      "sha256": "9c56a62d9c8481de015787ce457fc2fdaddcdd9ccb7bf1c0c8d7e380a86707d8",
+      "size_bytes": 2410
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/dataset_conversion/Dataset027_ACDC.py",
+      "relative_path": "dataset_conversion/Dataset027_ACDC.py",
+      "sha256": "833c9bbbb0fe3355e550368a8af1d0340058852e91de44f13d9e72b5886436b0",
+      "size_bytes": 4545
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/dataset_conversion/Dataset042_BraTS18.py",
+      "relative_path": "dataset_conversion/Dataset042_BraTS18.py",
+      "sha256": "a69dd8c0a5737ca3f6127f5c608373d9855e86cb18606af8d7e4822f8ee4dc59",
+      "size_bytes": 4820
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/dataset_conversion/Dataset043_BraTS19.py",
+      "relative_path": "dataset_conversion/Dataset043_BraTS19.py",
+      "sha256": "adb330e9aaa079cf0ff23e398f4b59b712b158b9725acfa4f2f2f2751f6a5587",
+      "size_bytes": 4820
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/dataset_conversion/Dataset073_Fluo_C3DH_A549_SIM.py",
+      "relative_path": "dataset_conversion/Dataset073_Fluo_C3DH_A549_SIM.py",
+      "sha256": "83417929feb87ef483488a4023bac343f097f60bf76b3a625eae7402cac39c91",
+      "size_bytes": 4162
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/dataset_conversion/Dataset114_MNMs.py",
+      "relative_path": "dataset_conversion/Dataset114_MNMs.py",
+      "sha256": "d1ac40e1583274cadf1b88d6899c402f01b08c61fec214d508347cb2bd2807a5",
+      "size_bytes": 9018
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/dataset_conversion/Dataset115_EMIDEC.py",
+      "relative_path": "dataset_conversion/Dataset115_EMIDEC.py",
+      "sha256": "41209b45ce2ec0576e172029c5a43287af31475d40efe4b8cb149e0cb77b0089",
+      "size_bytes": 2406
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/dataset_conversion/Dataset119_ToothFairy2_All.py",
+      "relative_path": "dataset_conversion/Dataset119_ToothFairy2_All.py",
+      "sha256": "0c35ff5a280d3356b93e19aa41e439f21d961073feedf9d7fa87c25ead7426e6",
+      "size_bytes": 6742
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/dataset_conversion/Dataset120_RoadSegmentation.py",
+      "relative_path": "dataset_conversion/Dataset120_RoadSegmentation.py",
+      "sha256": "7df77db5f7b31b1aeffd4ca39c09c6fb54efd0b8ce5df3129617bf5ac7317778",
+      "size_bytes": 3430
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/dataset_conversion/Dataset137_BraTS21.py",
+      "relative_path": "dataset_conversion/Dataset137_BraTS21.py",
+      "sha256": "bf26185c147961eeca20f03f7c4a358cf5eb44b678c19bb8bf7cc17164b08085",
+      "size_bytes": 3961
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/dataset_conversion/Dataset218_Amos2022_task1.py",
+      "relative_path": "dataset_conversion/Dataset218_Amos2022_task1.py",
+      "sha256": "105f57f47808a67c577d03a3d2a1be5a0fd85f36d6765ed9673568bc49769dcf",
+      "size_bytes": 3742
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/dataset_conversion/Dataset219_Amos2022_task2.py",
+      "relative_path": "dataset_conversion/Dataset219_Amos2022_task2.py",
+      "sha256": "1074b6242df81dd63ca207f088e0a3752e22eeb25a52abf6ae09f808b67e8e5a",
+      "size_bytes": 3555
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/dataset_conversion/Dataset220_KiTS2023.py",
+      "relative_path": "dataset_conversion/Dataset220_KiTS2023.py",
+      "sha256": "9eb2d979548987343da75f46ff60d4150be83875142db24d88dd64086ecce06c",
+      "size_bytes": 2080
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/dataset_conversion/Dataset221_AutoPETII_2023.py",
+      "relative_path": "dataset_conversion/Dataset221_AutoPETII_2023.py",
+      "sha256": "adb24656233a4ac01c0a7398076c2c8df43082b69e1facb1c1cce923476affe5",
+      "size_bytes": 3167
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/dataset_conversion/Dataset223_AMOS2022postChallenge.py",
+      "relative_path": "dataset_conversion/Dataset223_AMOS2022postChallenge.py",
+      "sha256": "6c1b541a62b5be4b948e0f4874245610e6a5b76659df60558890efb339c10d1c",
+      "size_bytes": 2653
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/dataset_conversion/Dataset224_AbdomenAtlas1.0.py",
+      "relative_path": "dataset_conversion/Dataset224_AbdomenAtlas1.0.py",
+      "sha256": "a37dc1aab36fd6ff1c929ca955e0ae8adaced3119121d6b927dc73fa33be6b83",
+      "size_bytes": 2382
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/dataset_conversion/Dataset226_BraTS2024-BraTS-GLI.py",
+      "relative_path": "dataset_conversion/Dataset226_BraTS2024-BraTS-GLI.py",
+      "sha256": "fbf7e3bcff0f9d7df084f5920a3e91d9199eb7d078b295b700b6b07eafbf307d",
+      "size_bytes": 2179
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/dataset_conversion/Dataset227_TotalSegmentatorMRI.py",
+      "relative_path": "dataset_conversion/Dataset227_TotalSegmentatorMRI.py",
+      "sha256": "28da78b68b305873a8c051f11f16e6e7382efdc5383349d90e0d245341b5e807",
+      "size_bytes": 2215
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/dataset_conversion/Dataset987_dummyDataset4.py",
+      "relative_path": "dataset_conversion/Dataset987_dummyDataset4.py",
+      "sha256": "b6a2fbe51d9007d0917cac4ce6da87dd0850798052a94798d8c82335c8befe11",
+      "size_bytes": 1369
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/dataset_conversion/Dataset989_dummyDataset4_2.py",
+      "relative_path": "dataset_conversion/Dataset989_dummyDataset4_2.py",
+      "sha256": "3eec6f0bc34a6bb7e83d6ba96ffe4cdd06410d0bf9a8facbcf282a5303203711",
+      "size_bytes": 1398
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/dataset_conversion/__init__.py",
+      "relative_path": "dataset_conversion/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/dataset_conversion/convert_MSD_dataset.py",
+      "relative_path": "dataset_conversion/convert_MSD_dataset.py",
+      "sha256": "b78eba6801dfe0230602247c0f116d9fa2dbd85b287defc7cad4e4e4efa76017",
+      "size_bytes": 6041
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/dataset_conversion/convert_raw_dataset_from_old_nnunet_format.py",
+      "relative_path": "dataset_conversion/convert_raw_dataset_from_old_nnunet_format.py",
+      "sha256": "a007dc0cf6d3e383e9fbc0ad300e7a0b45ce95711ac969ec06f847699bb1cda6",
+      "size_bytes": 2930
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/dataset_conversion/datasets_for_integration_tests/Dataset996_IntegrationTest_Hippocampus_regions_ignore.py",
+      "relative_path": "dataset_conversion/datasets_for_integration_tests/Dataset996_IntegrationTest_Hippocampus_regions_ignore.py",
+      "sha256": "bbd4605b24d97ba49afeac37647178330bbed52450bcc502fa269326b8c9e7ea",
+      "size_bytes": 3250
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/dataset_conversion/datasets_for_integration_tests/Dataset997_IntegrationTest_Hippocampus_regions.py",
+      "relative_path": "dataset_conversion/datasets_for_integration_tests/Dataset997_IntegrationTest_Hippocampus_regions.py",
+      "sha256": "0fdc2e99d835b33d8db1f8992a13d60619a587cd2f1b3230f1fea2d0e478f0da",
+      "size_bytes": 1468
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/dataset_conversion/datasets_for_integration_tests/Dataset998_IntegrationTest_Hippocampus_ignore.py",
+      "relative_path": "dataset_conversion/datasets_for_integration_tests/Dataset998_IntegrationTest_Hippocampus_ignore.py",
+      "sha256": "af8f7a0189ae069a11b0a93fdc8e06cff70911cc47896818c043d63c3b948449",
+      "size_bytes": 1364
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/dataset_conversion/datasets_for_integration_tests/Dataset999_IntegrationTest_Hippocampus.py",
+      "relative_path": "dataset_conversion/datasets_for_integration_tests/Dataset999_IntegrationTest_Hippocampus.py",
+      "sha256": "425ad3577d58a659260c9bbef555a8ae19a638b5905dedb1d6f8632a2ae654e5",
+      "size_bytes": 1085
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/dataset_conversion/datasets_for_integration_tests/__init__.py",
+      "relative_path": "dataset_conversion/datasets_for_integration_tests/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/dataset_conversion/generate_dataset_json.py",
+      "relative_path": "dataset_conversion/generate_dataset_json.py",
+      "sha256": "56c822b45cd7e3d0819c1ad8e406a9c203324369c0b4bbc25303d5dab198d450",
+      "size_bytes": 4502
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/ensembling/__init__.py",
+      "relative_path": "ensembling/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/ensembling/ensemble.py",
+      "relative_path": "ensembling/ensemble.py",
+      "sha256": "998d4ebbf4556323f73e573b1462f81e14208bbaa26047ddaab7f9140ab717f9",
+      "size_bytes": 10001
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/evaluation/__init__.py",
+      "relative_path": "evaluation/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/evaluation/accumulate_cv_results.py",
+      "relative_path": "evaluation/accumulate_cv_results.py",
+      "sha256": "bafa26af2935673e1742aa50acf8371fd9e08240fc7ff6b366fcb57f160e5e78",
+      "size_bytes": 3273
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/evaluation/evaluate_predictions.py",
+      "relative_path": "evaluation/evaluate_predictions.py",
+      "sha256": "bdce137cc297e33e126d648c625dd905a6c41d6aa80a521f4a629bbeca3df294",
+      "size_bytes": 12473
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/evaluation/find_best_configuration.py",
+      "relative_path": "evaluation/find_best_configuration.py",
+      "sha256": "4b6f5e664313bc00b10ed0f6e3195d9a003218f7792febb0abe4e37289edb916",
+      "size_bytes": 18962
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/experiment_planning/__init__.py",
+      "relative_path": "experiment_planning/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/experiment_planning/dataset_fingerprint/__init__.py",
+      "relative_path": "experiment_planning/dataset_fingerprint/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/experiment_planning/dataset_fingerprint/fingerprint_extractor.py",
+      "relative_path": "experiment_planning/dataset_fingerprint/fingerprint_extractor.py",
+      "sha256": "3c02d290f45c06b3d517f866ae4b9fc4e7fe39155ce8efc6ed1eafa8525e5900",
+      "size_bytes": 12058
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/experiment_planning/experiment_planners/__init__.py",
+      "relative_path": "experiment_planning/experiment_planners/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/experiment_planning/experiment_planners/default_experiment_planner.py",
+      "relative_path": "experiment_planning/experiment_planners/default_experiment_planner.py",
+      "sha256": "07c3d9441b69a4c0a5800c137453871e241bfe23f267f58e7a68eb88cb18de83",
+      "size_bytes": 33570
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/experiment_planning/experiment_planners/network_topology.py",
+      "relative_path": "experiment_planning/experiment_planners/network_topology.py",
+      "sha256": "2140c9c6b20273bbf3052a72459954543d93790cc5269e0d8fbaddcfbd30aa8f",
+      "size_bytes": 3928
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/experiment_planning/experiment_planners/resampling/__init__.py",
+      "relative_path": "experiment_planning/experiment_planners/resampling/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/experiment_planning/experiment_planners/resampling/planners_no_resampling.py",
+      "relative_path": "experiment_planning/experiment_planners/resampling/planners_no_resampling.py",
+      "sha256": "f14c3cf05a40363acd8db6ff9c94cdfad22d78a94dc2bfd82a5ec2bfddcf3ae4",
+      "size_bytes": 2759
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/experiment_planning/experiment_planners/resampling/resample_with_torch.py",
+      "relative_path": "experiment_planning/experiment_planners/resampling/resample_with_torch.py",
+      "sha256": "25d360daf2da56c79d535a9ac7eba5f0e8fd514dd8480e00fadf902846f814f3",
+      "size_bytes": 8747
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/experiment_planning/experiment_planners/resencUNet_planner.py",
+      "relative_path": "experiment_planning/experiment_planners/resencUNet_planner.py",
+      "sha256": "4937ef22d6286d99d1190515387d0ba695c945467d0ae2b4d2f2bb8d79ac4c38",
+      "size_bytes": 14292
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/experiment_planning/experiment_planners/residual_unets/__init__.py",
+      "relative_path": "experiment_planning/experiment_planners/residual_unets/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/experiment_planning/experiment_planners/residual_unets/residual_encoder_unet_planners.py",
+      "relative_path": "experiment_planning/experiment_planners/residual_unets/residual_encoder_unet_planners.py",
+      "sha256": "c6137c9f609c3ef898252c2272f8837759a196bdc9b65050fe283faa696823ff",
+      "size_bytes": 18395
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/experiment_planning/plan_and_preprocess_api.py",
+      "relative_path": "experiment_planning/plan_and_preprocess_api.py",
+      "sha256": "1e5bc618f04e7e6fe63bc06dd668c230cfc4367d3444dd21483c8e67fa7897be",
+      "size_bytes": 9074
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/experiment_planning/plan_and_preprocess_entrypoints.py",
+      "relative_path": "experiment_planning/plan_and_preprocess_entrypoints.py",
+      "sha256": "a0a0c5d15fa759108444038d23de592053ac47369a666d464721d4c89c9a2f76",
+      "size_bytes": 16510
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/experiment_planning/plans_for_pretraining/__init__.py",
+      "relative_path": "experiment_planning/plans_for_pretraining/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/experiment_planning/plans_for_pretraining/move_plans_between_datasets.py",
+      "relative_path": "experiment_planning/plans_for_pretraining/move_plans_between_datasets.py",
+      "sha256": "68e661248ccfa37d1c9d8c37ff40b770c4c78967e798aabd5c5659fbd703c182",
+      "size_bytes": 4386
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/experiment_planning/verify_dataset_integrity.py",
+      "relative_path": "experiment_planning/verify_dataset_integrity.py",
+      "sha256": "5b5b07d70f539c4bba5c077a7280c6fe1e21e06b1214bad8fb998a8214932f21",
+      "size_bytes": 12625
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/imageio/__init__.py",
+      "relative_path": "imageio/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/imageio/base_reader_writer.py",
+      "relative_path": "imageio/base_reader_writer.py",
+      "sha256": "a780da36e9160245d72397e1ce91f98dbc9df33beec45dc7a3ef4941a49f18cb",
+      "size_bytes": 5646
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/imageio/natural_image_reader_writer.py",
+      "relative_path": "imageio/natural_image_reader_writer.py",
+      "sha256": "e1cfcf5a4298e2e57daf57496f27445e7bf009d2b7da836d89fb2c61a06e1dce",
+      "size_bytes": 3409
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/imageio/nibabel_reader_writer.py",
+      "relative_path": "imageio/nibabel_reader_writer.py",
+      "sha256": "88d15db3c7fed1349e0e26b2604708df6d726415164dc37ed0674beb3201b015",
+      "size_bytes": 9783
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/imageio/reader_writer_registry.py",
+      "relative_path": "imageio/reader_writer_registry.py",
+      "sha256": "3b21e1aa5d20d73a92691f4ef111fca3dc5b0d95bc8f651ee91d6254ffdeb682",
+      "size_bytes": 3865
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/imageio/simpleitk_reader_writer.py",
+      "relative_path": "imageio/simpleitk_reader_writer.py",
+      "sha256": "ef5afaf725119faa01256f385724c51d0b2ab2fd68551d669f49533229c1fab8",
+      "size_bytes": 10739
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/imageio/tif_reader_writer.py",
+      "relative_path": "imageio/tif_reader_writer.py",
+      "sha256": "89023950722846e6c0e3c6011148f13d99c890a4d08bf6baf9d6df2458d36986",
+      "size_bytes": 4809
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/inference/JHU_inference.py",
+      "relative_path": "inference/JHU_inference.py",
+      "sha256": "42ed5eeb1794459c1b0fd88393277b7820babab8ae48d09aff619079aca88f7b",
+      "size_bytes": 8609
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/inference/__init__.py",
+      "relative_path": "inference/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/inference/data_iterators.py",
+      "relative_path": "inference/data_iterators.py",
+      "sha256": "8437bd32ea1f055457d5e5d0b1e5b4fcbc51eeeb619586401bc9204e64cc501b",
+      "size_bytes": 16267
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/inference/examples.py",
+      "relative_path": "inference/examples.py",
+      "sha256": "8c2fb58fcb0b5a3f322e2056a298baf080714fc6082f748b58fbdd8c70971434",
+      "size_bytes": 6491
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/inference/export_prediction.py",
+      "relative_path": "inference/export_prediction.py",
+      "sha256": "23e948530d232d9f50c921564ad2f866c430edc1eed1acc847009a09656b57e4",
+      "size_bytes": 8908
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/inference/predict_from_raw_data.py",
+      "relative_path": "inference/predict_from_raw_data.py",
+      "sha256": "1c4de7def902d082b94a0e722e1f1cf871e6afa329121dcd522bd40052600c03",
+      "size_bytes": 63895
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/inference/sliding_window_prediction.py",
+      "relative_path": "inference/sliding_window_prediction.py",
+      "sha256": "c36fa09cc4b8f21d337edd934b5e1931072ed81ec07766af79cfd2d7db343eb3",
+      "size_bytes": 2895
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/model_sharing/__init__.py",
+      "relative_path": "model_sharing/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/model_sharing/entry_points.py",
+      "relative_path": "model_sharing/entry_points.py",
+      "sha256": "f208bc7ed47b6a3dae45788a8153c8a08d1507977d7dcfed15200142c931aee0",
+      "size_bytes": 3528
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/model_sharing/model_download.py",
+      "relative_path": "model_sharing/model_download.py",
+      "sha256": "13cab02343cc3c7a1cdac547b70fe7d9d12416c891f6d9e22a7d6c7a37a78c9a",
+      "size_bytes": 1856
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/model_sharing/model_export.py",
+      "relative_path": "model_sharing/model_export.py",
+      "sha256": "9fbb7550a44f409bf97ab8375b0ef9268852e9cbcf4e8d1ae7d19ead4ee59a42",
+      "size_bytes": 6830
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/model_sharing/model_import.py",
+      "relative_path": "model_sharing/model_import.py",
+      "sha256": "47856f523e0acdcc7935142d94d22ce4bcc8463d6c61f0299f588b1132f2d1fa",
+      "size_bytes": 202
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/paths.py",
+      "relative_path": "paths.py",
+      "sha256": "145b7e3637bb7493c40ae1524e0375252f662b7832c7d29797b3e904a31f27a1",
+      "size_bytes": 1890
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/postprocessing/__init__.py",
+      "relative_path": "postprocessing/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/postprocessing/remove_connected_components.py",
+      "relative_path": "postprocessing/remove_connected_components.py",
+      "sha256": "0a2b303024fd92490c185e1f27570f6d78c3d1771d536044ecbdf9f664c01510",
+      "size_bytes": 20629
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/preprocessing/__init__.py",
+      "relative_path": "preprocessing/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/preprocessing/cropping/__init__.py",
+      "relative_path": "preprocessing/cropping/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/preprocessing/cropping/cropping.py",
+      "relative_path": "preprocessing/cropping/cropping.py",
+      "sha256": "6905c1f88f187f30ee335f17ee18afc2a6aaad738aa44054b86f5fef6f8091f4",
+      "size_bytes": 1180
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/preprocessing/normalization/__init__.py",
+      "relative_path": "preprocessing/normalization/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/preprocessing/normalization/default_normalization_schemes.py",
+      "relative_path": "preprocessing/normalization/default_normalization_schemes.py",
+      "sha256": "037dc6a6ca0e30ce3f7a742d5fa9b435bd81f387dc9d0d6bad7b0ed4d27b7c5d",
+      "size_bytes": 4690
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/preprocessing/normalization/map_channel_name_to_normalization.py",
+      "relative_path": "preprocessing/normalization/map_channel_name_to_normalization.py",
+      "sha256": "e195bc1f5cdfcf723b1a11c15e2539f15d11018bfcf20a758e18badca4b723fb",
+      "size_bytes": 976
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/preprocessing/preprocessors/__init__.py",
+      "relative_path": "preprocessing/preprocessors/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/preprocessing/preprocessors/default_preprocessor.py",
+      "relative_path": "preprocessing/preprocessors/default_preprocessor.py",
+      "sha256": "97aa05bdd2e1d8932660be54787a4e6954be6f947d3baa2bd84123b7ff4280d8",
+      "size_bytes": 23765
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/preprocessing/resampling/__init__.py",
+      "relative_path": "preprocessing/resampling/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/preprocessing/resampling/default_resampling.py",
+      "relative_path": "preprocessing/resampling/default_resampling.py",
+      "sha256": "2612ee202253ec1d43ae61fcf80ca1aff431b3d1cfbf6b3dd37086968cf7964d",
+      "size_bytes": 9027
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/preprocessing/resampling/no_resampling.py",
+      "relative_path": "preprocessing/resampling/no_resampling.py",
+      "sha256": "1a41bdfa6b1d44ae99cdc7314dff57c571661c366760c3e6c5bea90f1526eadc",
+      "size_bytes": 375
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/preprocessing/resampling/resample_torch.py",
+      "relative_path": "preprocessing/resampling/resample_torch.py",
+      "sha256": "5f7f0f1e8ace6a2716d64694be5be073c7266db364de7cfe242e3d3bf6e782b7",
+      "size_bytes": 7693
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/preprocessing/resampling/utils.py",
+      "relative_path": "preprocessing/resampling/utils.py",
+      "sha256": "7f5cceddb94a028944f64074af41dc202d3ecba56e5c08dc7e2022e16ee1d141",
+      "size_bytes": 713
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/run/__init__.py",
+      "relative_path": "run/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/run/load_pretrained_weights.py",
+      "relative_path": "run/load_pretrained_weights.py",
+      "sha256": "02df8f93be911ac2a948a7890e026af8089801f63f153a93f125b4554a2d5a8c",
+      "size_bytes": 3385
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/run/run_training.py",
+      "relative_path": "run/run_training.py",
+      "sha256": "8095178a4e3fd18c6d5e901649cbedbf3207bb15fe52a4a5979913f1a662e631",
+      "size_bytes": 14160
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/tests/__init__.py",
+      "relative_path": "tests/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/tests/integration_tests/__init__.py",
+      "relative_path": "tests/integration_tests/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/tests/integration_tests/add_lowres_and_cascade.py",
+      "relative_path": "tests/integration_tests/add_lowres_and_cascade.py",
+      "sha256": "cef51d5cbd1b8ae664dc358188a912142c05a24f2bf7ad68d4eb8183b5d42e94",
+      "size_bytes": 2113
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/tests/integration_tests/cleanup_integration_test.py",
+      "relative_path": "tests/integration_tests/cleanup_integration_test.py",
+      "sha256": "5e0dbbdb89a7a61883dcf1f0147c52e11aabb9b79e552567170ce6a3ff1e9a68",
+      "size_bytes": 659
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/tests/integration_tests/run_integration_test_bestconfig_inference.py",
+      "relative_path": "tests/integration_tests/run_integration_test_bestconfig_inference.py",
+      "sha256": "acfbfba79a943003d1d40b0c140f2790b17948dcac2f4cb322a43f253d93609e",
+      "size_bytes": 4244
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/tests/integration_tests/run_nnunet_inference.py",
+      "relative_path": "tests/integration_tests/run_nnunet_inference.py",
+      "sha256": "764016bb68eb85b856397238291bbe131fd3a560852f90b65f56c75a9eebc4a4",
+      "size_bytes": 1763
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/__init__.py",
+      "relative_path": "training/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/data_augmentation/__init__.py",
+      "relative_path": "training/data_augmentation/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/data_augmentation/compute_initial_patch_size.py",
+      "relative_path": "training/data_augmentation/compute_initial_patch_size.py",
+      "sha256": "4da8a4fbb4db5bd5a428a596793c0bd685d360ec8b24bd4be7495fda59352e9f",
+      "size_bytes": 1157
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/data_augmentation/custom_transforms/__init__.py",
+      "relative_path": "training/data_augmentation/custom_transforms/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/data_augmentation/custom_transforms/cascade_transforms.py",
+      "relative_path": "training/data_augmentation/custom_transforms/cascade_transforms.py",
+      "sha256": "246f051c507492f6861ae505535b13fa1e2172f13e4407364212df2c8d8ae2e7",
+      "size_bytes": 7310
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/data_augmentation/custom_transforms/deep_supervision_donwsampling.py",
+      "relative_path": "training/data_augmentation/custom_transforms/deep_supervision_donwsampling.py",
+      "sha256": "f2f85b8a092e4fee07b1c6763dd44566592a1a780a74cec20f7e877fb1d4ba9b",
+      "size_bytes": 2601
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/data_augmentation/custom_transforms/masking.py",
+      "relative_path": "training/data_augmentation/custom_transforms/masking.py",
+      "sha256": "e0a648d7875ae44c17ffb9af200ab0e1dab263c4f29678075db7a6819a243031",
+      "size_bytes": 893
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/data_augmentation/custom_transforms/region_based_training.py",
+      "relative_path": "training/data_augmentation/custom_transforms/region_based_training.py",
+      "sha256": "d225089dbdb00005c58fd2a3edb8a1269bf79aa679e40b0cb57f77417ccdd89a",
+      "size_bytes": 1329
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/data_augmentation/custom_transforms/transforms_for_dummy_2d.py",
+      "relative_path": "training/data_augmentation/custom_transforms/transforms_for_dummy_2d.py",
+      "sha256": "63443f7e76981ee4eed59649ab8b6cef09bddd63da8d9ccace5d836afb82532f",
+      "size_bytes": 2455
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/dataloading/__init__.py",
+      "relative_path": "training/dataloading/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/dataloading/data_loader.py",
+      "relative_path": "training/dataloading/data_loader.py",
+      "sha256": "03e07ba75daa520f14943364a04e6e359f60dc317310f64a9904010f499f6445",
+      "size_bytes": 11964
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/dataloading/nnunet_dataset.py",
+      "relative_path": "training/dataloading/nnunet_dataset.py",
+      "sha256": "e2563c1fabcd99b082adf98d0b0c905330b5efdf1142959fdc98a8679e22cce3",
+      "size_bytes": 13650
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/dataloading/utils.py",
+      "relative_path": "training/dataloading/utils.py",
+      "sha256": "e8424956e4d15ceb6e938b927589a6f04500d5c6a725d9d3bbfdeb43ce801626",
+      "size_bytes": 3072
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/logging/__init__.py",
+      "relative_path": "training/logging/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/logging/nnunet_logger.py",
+      "relative_path": "training/logging/nnunet_logger.py",
+      "sha256": "c34fb156ea5a5a628305db0558d9e0d294f726c822badd29b6882666adff2702",
+      "size_bytes": 11520
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/loss/__init__.py",
+      "relative_path": "training/loss/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/loss/compound_losses.py",
+      "relative_path": "training/loss/compound_losses.py",
+      "sha256": "f7d4516748b62c29bbf281c19ae1ba1f109219820c00ee4fc88ceee651ccb092",
+      "size_bytes": 6201
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/loss/deep_supervision.py",
+      "relative_path": "training/loss/deep_supervision.py",
+      "sha256": "41fd5993faaf3e482ed370bd2af97b6cb943bb59a92cc48f7712802283325a9d",
+      "size_bytes": 1385
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/loss/dice.py",
+      "relative_path": "training/loss/dice.py",
+      "sha256": "30d4cde284b2ba65990b785af7dc11642ecb5a8c7add735f3d3a1c11d6953b80",
+      "size_bytes": 7145
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/loss/robust_ce_loss.py",
+      "relative_path": "training/loss/robust_ce_loss.py",
+      "sha256": "d0f74c94846f03d19658c01c429260ca18c0d7bd2fcc59dab61c82d8d588acaa",
+      "size_bytes": 1153
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/lr_scheduler/__init__.py",
+      "relative_path": "training/lr_scheduler/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/lr_scheduler/polylr.py",
+      "relative_path": "training/lr_scheduler/polylr.py",
+      "sha256": "8d53863bdf191d9c2cb59bb0352bbda188265103a323598596bcc03e3097fc9e",
+      "size_bytes": 949
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/lr_scheduler/warmup.py",
+      "relative_path": "training/lr_scheduler/warmup.py",
+      "sha256": "73eb177e66ea6fa555fc8395b0e81c07937ed1bdcb57900e9e6bae44f3a8e1ba",
+      "size_bytes": 5461
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/__init__.py",
+      "relative_path": "training/nnUNetTrainer/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/nnUNetTrainer.py",
+      "relative_path": "training/nnUNetTrainer/nnUNetTrainer.py",
+      "sha256": "f9cad95db820fbb7e02b9ba33e1ca5b951e402026eee39b710886c05f7ef5e97",
+      "size_bytes": 74956
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/primus/__init__.py",
+      "relative_path": "training/nnUNetTrainer/primus/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/primus/primus_trainers.py",
+      "relative_path": "training/nnUNetTrainer/primus/primus_trainers.py",
+      "sha256": "7cac5c275d3f37a39f391fe0032eb81cf6dc887e4cdd53726ce13b4759570115",
+      "size_bytes": 11378
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/variants/__init__.py",
+      "relative_path": "training/nnUNetTrainer/variants/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/variants/benchmarking/__init__.py",
+      "relative_path": "training/nnUNetTrainer/variants/benchmarking/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/variants/benchmarking/nnUNetTrainerBenchmark_5epochs.py",
+      "relative_path": "training/nnUNetTrainer/variants/benchmarking/nnUNetTrainerBenchmark_5epochs.py",
+      "sha256": "c70498bb705ee22c5380ac18f02c10d6db8268f590a22f5103ddd19e403c0b46",
+      "size_bytes": 2974
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/variants/benchmarking/nnUNetTrainerBenchmark_5epochs_noDataLoading.py",
+      "relative_path": "training/nnUNetTrainer/variants/benchmarking/nnUNetTrainerBenchmark_5epochs_noDataLoading.py",
+      "sha256": "ec5564b1e3209f66889b83aeec45c7a0a79c0c973b79cd39b68adec78299a13a",
+      "size_bytes": 2513
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/variants/competitions/__init__.py",
+      "relative_path": "training/nnUNetTrainer/variants/competitions/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/variants/competitions/aortaseg24.py",
+      "relative_path": "training/nnUNetTrainer/variants/competitions/aortaseg24.py",
+      "sha256": "8f5cbb5d73b1a4c0e1975f29518f205e4850a95639fd295a0ada5d04428a88e1",
+      "size_bytes": 322
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/variants/data_augmentation/__init__.py",
+      "relative_path": "training/nnUNetTrainer/variants/data_augmentation/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/variants/data_augmentation/nnUNetTrainerDA5.py",
+      "relative_path": "training/nnUNetTrainer/variants/data_augmentation/nnUNetTrainerDA5.py",
+      "sha256": "5b5317aad1ab09e9d669fc695212e35ff79c93dbe32d0514f2ba97a492543835",
+      "size_bytes": 20124
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/variants/data_augmentation/nnUNetTrainerDAOrd0.py",
+      "relative_path": "training/nnUNetTrainer/variants/data_augmentation/nnUNetTrainerDAOrd0.py",
+      "sha256": "b5e5ed1aaefbedcef107adb9a01366d07ecfbe5345bdd1a368febd39b90bdd89",
+      "size_bytes": 8617
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/variants/data_augmentation/nnUNetTrainerNoDA.py",
+      "relative_path": "training/nnUNetTrainer/variants/data_augmentation/nnUNetTrainerNoDA.py",
+      "sha256": "f5dc6bf0ebda564707341de1bc816e3b7924bd9bbba9867675dd2e674aebd42e",
+      "size_bytes": 1637
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/variants/data_augmentation/nnUNetTrainerNoMirroring.py",
+      "relative_path": "training/nnUNetTrainer/variants/data_augmentation/nnUNetTrainerNoMirroring.py",
+      "sha256": "da1b3da72695cc0984f1899ef450656d60af13b48624e7a5466475e0b8db0817",
+      "size_bytes": 9332
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/variants/data_augmentation/nnUNetTrainer_noDummy2DDA.py",
+      "relative_path": "training/nnUNetTrainer/variants/data_augmentation/nnUNetTrainer_noDummy2DDA.py",
+      "sha256": "8ed0fc60893d29443b2d9e12641f791d3f8c9f8d218464012f213a96c9b211c2",
+      "size_bytes": 1599
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/variants/loss/__init__.py",
+      "relative_path": "training/nnUNetTrainer/variants/loss/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/variants/loss/nnUNetTrainerCELoss.py",
+      "relative_path": "training/nnUNetTrainer/variants/loss/nnUNetTrainerCELoss.py",
+      "sha256": "fa655414f0dd1717e8f34aa4cad186c1a0448e7e706e94cc7a2eb60c3af07ee1",
+      "size_bytes": 1637
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/variants/loss/nnUNetTrainerDiceLoss.py",
+      "relative_path": "training/nnUNetTrainer/variants/loss/nnUNetTrainerDiceLoss.py",
+      "sha256": "1d4b045166e8c1bc7a3718b9d92294f93b554a2a94e23da4eb474d8d8a05cda2",
+      "size_bytes": 3051
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/variants/loss/nnUNetTrainerTopkLoss.py",
+      "relative_path": "training/nnUNetTrainer/variants/loss/nnUNetTrainerTopkLoss.py",
+      "sha256": "80f3b9684439165f4e5b3356ce554dedcfb2a3c2ccccd1e201f6460f3029cd78",
+      "size_bytes": 3473
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/variants/lr_schedule/__init__.py",
+      "relative_path": "training/nnUNetTrainer/variants/lr_schedule/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/variants/lr_schedule/nnUNetTrainerCosAnneal.py",
+      "relative_path": "training/nnUNetTrainer/variants/lr_schedule/nnUNetTrainerCosAnneal.py",
+      "sha256": "a60db3062260a0bdfaab36e2f66eded0daab0766b4a384c0a97d9830fe007c52",
+      "size_bytes": 517
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/variants/lr_schedule/nnUNetTrainer_warmup.py",
+      "relative_path": "training/nnUNetTrainer/variants/lr_schedule/nnUNetTrainer_warmup.py",
+      "sha256": "1560310b88c12a55f25014b84d4b7b5353f3f9d332f2e64bd32d9ce605af0ef8",
+      "size_bytes": 5718
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/variants/network_architecture/__init__.py",
+      "relative_path": "training/nnUNetTrainer/variants/network_architecture/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/variants/network_architecture/nnUNetTrainerBN.py",
+      "relative_path": "training/nnUNetTrainer/variants/network_architecture/nnUNetTrainerBN.py",
+      "sha256": "bc127f45bb85ff004a5b875e7a170601e7c0a6ba6fdfa382da91e56beb43b53b",
+      "size_bytes": 1616
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/variants/network_architecture/nnUNetTrainerNoDeepSupervision.py",
+      "relative_path": "training/nnUNetTrainer/variants/network_architecture/nnUNetTrainerNoDeepSupervision.py",
+      "sha256": "d89f051248ff58f3af7e5e9a4456751949d89d08c710f9e4722e0bead890d564",
+      "size_bytes": 448
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/variants/optimizer/__init__.py",
+      "relative_path": "training/nnUNetTrainer/variants/optimizer/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/variants/optimizer/nnUNetTrainerAdam.py",
+      "relative_path": "training/nnUNetTrainer/variants/optimizer/nnUNetTrainerAdam.py",
+      "sha256": "49bb9d187be938d949d7cae3d51a95f4df22ab0c730156c98a3bb283bab42069",
+      "size_bytes": 2702
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/variants/optimizer/nnUNetTrainerAdan.py",
+      "relative_path": "training/nnUNetTrainer/variants/optimizer/nnUNetTrainerAdan.py",
+      "sha256": "2f76061e27f63b483902f314f1def99186f4251a8eae4eef465c10e1557de1c0",
+      "size_bytes": 3079
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/variants/sampling/__init__.py",
+      "relative_path": "training/nnUNetTrainer/variants/sampling/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/variants/sampling/nnUNetTrainer_probabilisticOversampling.py",
+      "relative_path": "training/nnUNetTrainer/variants/sampling/nnUNetTrainer_probabilisticOversampling.py",
+      "sha256": "6322745bc100c60c0cb8e9b8a2c096027d7fe5a6a1a0ed7105a07c211d4481a9",
+      "size_bytes": 3391
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/variants/training_length/__init__.py",
+      "relative_path": "training/nnUNetTrainer/variants/training_length/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/variants/training_length/nnUNetTrainer_Xepochs.py",
+      "relative_path": "training/nnUNetTrainer/variants/training_length/nnUNetTrainer_Xepochs.py",
+      "sha256": "d66be30e831248c94d289317998c4223a840fe68281071fc03e76d6d5f669cfd",
+      "size_bytes": 3846
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/variants/training_length/nnUNetTrainer_Xepochs_NoMirroring.py",
+      "relative_path": "training/nnUNetTrainer/variants/training_length/nnUNetTrainer_Xepochs_NoMirroring.py",
+      "sha256": "c2bc1a97f0ffd3f9e171a862695d041b0db5a902bdedd3ff903f20af0064ffdc",
+      "size_bytes": 2981
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/utilities/__init__.py",
+      "relative_path": "utilities/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/utilities/collate_outputs.py",
+      "relative_path": "utilities/collate_outputs.py",
+      "sha256": "f7363bce1b01e4be63b5b5ac215509ee67d5df9863ae0ac433bf2d4573228da0",
+      "size_bytes": 906
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/utilities/crossval_split.py",
+      "relative_path": "utilities/crossval_split.py",
+      "sha256": "2fcd9e124407c9782d155fe7254fa2c1eaadf6204db92d3461ed193f0def5728",
+      "size_bytes": 619
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/utilities/dataset_name_id_conversion.py",
+      "relative_path": "utilities/dataset_name_id_conversion.py",
+      "sha256": "2ef62f02c3027e95370f81dd1c0a0b0b4515b51efb05f0d1a68b6eeb367e91ff",
+      "size_bytes": 3925
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/utilities/ddp_allgather.py",
+      "relative_path": "utilities/ddp_allgather.py",
+      "sha256": "b23c0b7cac223da285de80461873196e2e60c0e0ddce776f858cc4b0777059af",
+      "size_bytes": 1748
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/utilities/default_n_proc_DA.py",
+      "relative_path": "utilities/default_n_proc_DA.py",
+      "sha256": "24eab4780983dc83280391bb6e47ecf08a3a7dde7aa47ec697e1b845b5ae469f",
+      "size_bytes": 2087
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/utilities/file_path_utilities.py",
+      "relative_path": "utilities/file_path_utilities.py",
+      "sha256": "c1d3501ea6a05b17cfde1666e714cd0dbbcec7710ceac43430474cc666170f42",
+      "size_bytes": 5545
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/utilities/find_class_by_name.py",
+      "relative_path": "utilities/find_class_by_name.py",
+      "sha256": "0775eef7dfd37441237e0d93e3c6b45185f1e6303f0c237364792a5f88a92df2",
+      "size_bytes": 869
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/utilities/get_network_from_plans.py",
+      "relative_path": "utilities/get_network_from_plans.py",
+      "sha256": "837e4123fc3c94cde28d1622a45410bb73da36605b9b03ef77def0de838769f0",
+      "size_bytes": 3188
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/utilities/helpers.py",
+      "relative_path": "utilities/helpers.py",
+      "sha256": "b59a9b71a328b9ab09fcfd2db4903b6145130be6d2d8ded5cefa3c2fbc05e83b",
+      "size_bytes": 543
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/utilities/json_export.py",
+      "relative_path": "utilities/json_export.py",
+      "sha256": "886b79058e166e7f49903f19deee0ff8f7eaacbbbf354ce12ed8ef10399f6639",
+      "size_bytes": 2420
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/utilities/label_handling/__init__.py",
+      "relative_path": "utilities/label_handling/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/utilities/label_handling/label_handling.py",
+      "relative_path": "utilities/label_handling/label_handling.py",
+      "sha256": "28e7defb67ee37ccf4a7acf888510f0c6be46144851f0a5c76f13666c0e1bc21",
+      "size_bytes": 15584
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/utilities/network_initialization.py",
+      "relative_path": "utilities/network_initialization.py",
+      "sha256": "32a938610ffe927e6ec9434fa876042b15587c6ca4d849ba097e3d11b32e68c1",
+      "size_bytes": 509
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/utilities/overlay_plots.py",
+      "relative_path": "utilities/overlay_plots.py",
+      "sha256": "596129fffff03aa9b15415cdc7bc9b1e425a8e165bcf51188a21d1021fb5e0ae",
+      "size_bytes": 12080
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/utilities/plans_handling/__init__.py",
+      "relative_path": "utilities/plans_handling/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/utilities/plans_handling/plans_handler.py",
+      "relative_path": "utilities/plans_handling/plans_handler.py",
+      "sha256": "7b03dc455cf24566688752f7e5a4661643e6ec8c5f93fa61fcba3a9d1d7a89be",
+      "size_bytes": 15166
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/utilities/utils.py",
+      "relative_path": "utilities/utils.py",
+      "sha256": "9f5a0a6eecbc36a0ea5a9710b565356bb0b529a5b850e42f96db829f379130b0",
+      "size_bytes": 3546
+    }
+  ],
+  "source_kind": "site-packages-release",
+  "task_key": "20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle",
+  "trainer_source": {
+    "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/nnUNetTrainer.py",
+    "sha256": "f9cad95db820fbb7e02b9ba33e1ca5b951e402026eee39b710886c05f7ef5e97",
+    "size_bytes": 74956
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "cmd": null,
+  "config_architecture": "amd64",
+  "config_json_present": true,
+  "config_os": "linux",
+  "docker_run_performed": false,
+  "entrypoint": [
+    "python",
+    "/app/predict.py"
+  ],
+  "env": [
+    "PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+    "LANG=C.UTF-8",
+    "PYTHON_VERSION=3.10.20",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "PYTHONUNBUFFERED=1",
+    "PIP_DISABLE_PIP_VERSION_CHECK=1",
+    "PIP_NO_CACHE_DIR=1"
+  ],
+  "errors": [],
+  "expected_repo_tag": "care-myocardium-cinemyops:organagent",
+  "expected_sha256": "c02db56bd52d14d3b5bbda9d204a20b7e4c061fd5e6012ffa1cebc67fb92c136",
+  "file_count": 7,
+  "final_role": "final_cinemyops_archive",
+  "gzip_readable": true,
+  "labels": {
+    "org.opencontainers.image.description": "CPU-only CineMyoPS inference for the CARE 2026 Myocardium track",
+    "org.opencontainers.image.title": "OrganAgent CARE 2026 CineMyoPS",
+    "org.opencontainers.image.vendor": "OrganAgent"
+  },
+  "layer_count": 1,
+  "manifest_json": [
+    {
+      "Config": "a007363b67dee3b681441afd5c389c4932bf9b5b91f083619be4b5a702130255.json",
+      "Layers": [
+        "6b7593ce363882473052c4bb4f6a667ad5af9bd90ace3214cb915b8d73a8f538/layer.tar"
+      ],
+      "RepoTags": [
+        "care-myocardium-cinemyops:organagent"
+      ]
+    }
+  ],
+  "manifest_present": true,
+  "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/downloads/CineMyoPS-OrganAgent.tar.gz",
+  "path_traversal_ok": true,
+  "repo_tag_match": true,
+  "repo_tags": [
+    "care-myocardium-cinemyops:organagent"
+  ],
+  "rootfs_layer_count": 1,
+  "rootfs_layers": [
+    "sha256:6b7593ce363882473052c4bb4f6a667ad5af9bd90ace3214cb915b8d73a8f538"
+  ],
+  "server_static_audit_only": true,
+  "sha256": "c02db56bd52d14d3b5bbda9d204a20b7e4c061fd5e6012ffa1cebc67fb92c136",
+  "sha256_match": true,
+  "size_bytes": 672040570,
+  "status": "PASS",
+  "tar_readable": true,
+  "task_key": "20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle",
+  "top_level_sample": [
+    "a007363b67dee3b681441afd5c389c4932bf9b5b91f083619be4b5a702130255.json",
+    "6b7593ce363882473052c4bb4f6a667ad5af9bd90ace3214cb915b8d73a8f538",
+    "6b7593ce363882473052c4bb4f6a667ad5af9bd90ace3214cb915b8d73a8f538/VERSION",
+    "6b7593ce363882473052c4bb4f6a667ad5af9bd90ace3214cb915b8d73a8f538/json",
+    "6b7593ce363882473052c4bb4f6a667ad5af9bd90ace3214cb915b8d73a8f538/layer.tar",
+    "manifest.json",
+    "repositories"
+  ],
+  "working_dir": "/app"
+}

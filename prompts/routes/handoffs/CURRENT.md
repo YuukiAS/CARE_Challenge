@@ -1,5 +1,61 @@
 # CARE 当前开发状态
 
+## 2026-08-02 最新机器真值：MyoPS 已修订为纯五折 nnU-Net，CineMyoPS 固定为合作者 Docker archive
+
+旧 `c2f946b9376f4b39700f04b39c6d7a16e7154e67` 的 mixed MyoPS bundle 已被用户修订取代。本次服务器端没有运行 Docker，也没有安装 Docker/Podman/Buildah/Apptainer；服务器只完成版本冻结、合作者 archive 下载与静态审计、纯 nnU-Net MyoPS context、3-case host smoke、transfer bundle 和轻量 Git 证据。
+
+新的最终 MyoPS 不再使用 MoSAIC scar overlay 或任何 MoSAIC edema/source/weight，而是直接使用 Dataset501_CAREMyoPS 五折 nnU-Net 六类 argmax：raw `0/1/2/3/4/5` 映射为 official `0/200/500/600/1220/2221`。CineMyoPS 使用合作者提供的预构建 Docker archive，服务器只验证 archive SHA 和 Docker-save 静态结构，后续 build/load/run/save 确定性门只授权在工位 WSL 执行。未上传 challenge/validation/网盘，未给组织方发送邮件。
+
+```text
+state_id: care_test_docker_nnunet_myops_collaborator_cine_rebundle_20260802
+active_development_branch: main
+active_worktree: /users/a/e/aereinh/CARE
+single_active_scientific_line: CARE_TEST_DOCKER_NNUNET_MYOPS_COLLABORATOR_CINE_READY_FOR_WORKSTATION
+supersedes_commit: c2f946b9376f4b39700f04b39c6d7a16e7154e67
+result_root: results/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle
+runtime_root: /users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle
+transfer_root: /users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/transfer
+terminal_state: SERVER_BUNDLE_READY
+controller_verification_decision: VERIFIED_COMPLETE
+selected_myops: dataset501_nnunet_v2_5fold_best_default_tta_all_six_classes
+selected_myops_scar: nnunet_raw_class5
+selected_myops_pure_edema: nnunet_raw_class4
+selected_myops_anatomy: nnunet_raw_classes123
+selected_cinemyops: collaborator_provided_prebuilt_mosaic_docker
+myops_context_contains_mosaic: false
+collaborator_myops_reference_only: true
+collaborator_myops_reference_sha256: 81d19bbefd8f7cca46aee32b31a774f16222b6146b9eab6bc7265a6c214de2ff
+cinemyops_archive_sha256: c02db56bd52d14d3b5bbda9d204a20b7e4c061fd5e6012ffa1cebc67fb92c136
+nnunet_version: 2.7.0
+python_version: 3.12.13
+torch_version: 2.11.0
+pure_nnunet_fresh_output_count: 15
+host_smoke_sentinel_cases: Case1012,Case1001,Case1004
+server_docker_run_performed: false
+workstation_build_authorized: true
+validation_upload_authorized: false
+challenge_upload_authorized: false
+netdisk_upload_authorized: false
+organizer_email_send_authorized: false
+hosted_metric_claim_authorized: false
+```
+
+关键证据：
+
+```text
+results/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/revised_final_submission_model_contract.json
+results/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/nnunet_environment_fingerprint.json
+results/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/nnunet_source_manifest.json
+results/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/collaborator_archive_manifest.json
+results/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/pure_nnunet_myops_15case_manifest.json
+results/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/pure_nnunet_myops_host_smoke_receipt.json
+results/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/transfer_bundle_receipt.json
+results/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/strict_validator_report.json
+/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/transfer/SERVER_BUNDLE_READY.json
+```
+
+下一步只允许工位 WSL 使用 transfer 中的 MyoPS nnU-Net bundle 和原字节 Cine archive 做 Docker build/load/run/save 与 CPU 确定性验证。不得把合作者 MyoPS reference 当作最终 MyoPS；若在 WSL 加载它，只能立即 retag 为 `care-myocardium-myops:collaborator-reference` 后做黑盒接口参考。
+
 ## 2026-08-01 最新机器真值：Docker provenance 纠偏后因当前部署源非确定性阻塞
 
 本次已经执行新的 provenance reconcile 合同，没有直接沿用上一轮 `NNUNET_PROVENANCE_REPLAY_MISMATCH` 当阻塞理由。先按语义标签统一 package A 的官方标签 `200/500/600/1220/2221` 和 fresh nnU-Net 的 raw 类别 `1/2/3/4/5`，逐病例审计 anatomy `1/2/3`、pure edema `4`、scar `5`、used channels `1/2/3/4` 和 label transitions。结果是：几何 15/15 一致，完整数组 4/15 一致，生产会使用的 used channels 也只有 4/15 一致；11 个不一致病例合计 120 个语义体素变化，差异不是只落在将被 MoSAIC 替换的 scar 通道。

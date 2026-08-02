@@ -1,0 +1,7 @@
+phase,status,evidence
+sync_and_protocol,PASS,controller prompt saved; required protocol files read
+nnunet_fingerprint,PASS,/users/a/e/aereinh/CARE/results/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/nnunet_environment_fingerprint.json
+collaborator_archive_download,PASS,/users/a/e/aereinh/CARE/results/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/collaborator_archive_manifest.json
+myops_source_revision,PASS,/users/a/e/aereinh/CARE/docker/CARE2026_Myocardium/MyoPS
+frozen_output_reuse,PASS,/users/a/e/aereinh/CARE/results/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/pure_nnunet_myops_15case_manifest.json
+transfer_bundle,PASS,/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/transfer

@@ -1,0 +1,16 @@
+{
+  "nnunetv2_module_file": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/__init__.py",
+  "packages": {
+    "SimpleITK": "2.5.0",
+    "acvl-utils": "0.2.6",
+    "batchgenerators": "0.25.1",
+    "dynamic-network-architectures": "0.4.3",
+    "nibabel": "5.3.2",
+    "nnunetv2": "2.7.0",
+    "numpy": "1.26.4",
+    "scipy": "1.15.2",
+    "torch": "2.11.0"
+  },
+  "platform": "Linux-5.14.0-611.16.1.el9_7.x86_64-x86_64-with-glibc2.34",
+  "python": "3.12.13 | packaged by conda-forge | (main, Mar  5 2026, 16:50:00) [GCC 14.3.0]"
+}

@@ -1,0 +1,796 @@
+{
+  "case_count": 15,
+  "case_ids": [
+    "Case1001",
+    "Case1002",
+    "Case1003",
+    "Case1004",
+    "Case1005",
+    "Case1006",
+    "Case1007",
+    "Case1008",
+    "Case1009",
+    "Case1010",
+    "Case1011",
+    "Case1012",
+    "Case1013",
+    "Case1014",
+    "Case1015"
+  ],
+  "command_semantics": {
+    "checkpoint_name": "checkpoint_best.pth",
+    "configuration_name": "3d_fullres",
+    "dataset_or_id": 501,
+    "disable_tta": false,
+    "folds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "output_folder_or_list_of_truncated_output_files": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops",
+    "source_args_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/predict_from_raw_data_args.json",
+    "source_replay_script": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/scripts/run_fresh_replays.sh",
+    "trainer_name": "nnUNetTrainer_500epochs",
+    "verified_from_replay_script": true
+  },
+  "created_at_utc": "2026-08-02T14:27:00.174732Z",
+  "fresh_output_source_dir": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops",
+  "historical_package_a_used_as_model_input": false,
+  "records": [
+    {
+      "case_id": "Case1001",
+      "direction": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "official_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "official_output_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/pure_nnunet_myops_official_15case/Case1001_pred.nii.gz",
+      "official_sha256": "436c0000eebf649f6b75065d1c76b922fe92086ffe5ba919570ff1c50cab2223",
+      "origin_xyz": [
+        0.0,
+        0.0,
+        10.0
+      ],
+      "raw_labels": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "raw_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1001.nii.gz",
+      "raw_sha256": "477e392431fbb12a109e54e8a77717dbf1547350a87d6a11a1d453a3fa76dcc9",
+      "shape_zyx": [
+        6,
+        251,
+        212
+      ],
+      "spacing_xyz": [
+        1.328125,
+        1.328125,
+        10.0
+      ],
+      "voxel_count": 319272
+    },
+    {
+      "case_id": "Case1002",
+      "direction": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "official_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "official_output_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/pure_nnunet_myops_official_15case/Case1002_pred.nii.gz",
+      "official_sha256": "088897469de6a71c64900cc5d62ab5cb971eae2305c2b383f7c5afd901935d4f",
+      "origin_xyz": [
+        0.0,
+        0.0,
+        10.0
+      ],
+      "raw_labels": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "raw_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1002.nii.gz",
+      "raw_sha256": "3ae149a26c695ac941730797242a407e7ca19ddee1b24699b4d3d492c327337e",
+      "shape_zyx": [
+        6,
+        257,
+        227
+      ],
+      "spacing_xyz": [
+        1.328125,
+        1.328125,
+        10.0
+      ],
+      "voxel_count": 350034
+    },
+    {
+      "case_id": "Case1003",
+      "direction": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "official_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "official_output_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/pure_nnunet_myops_official_15case/Case1003_pred.nii.gz",
+      "official_sha256": "42c6202ea7cfef4048618e391482a3a637e05d097c10d04b1c141d7f7af8f5aa",
+      "origin_xyz": [
+        0.0,
+        0.0,
+        10.0
+      ],
+      "raw_labels": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "raw_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1003.nii.gz",
+      "raw_sha256": "07c365c8450f7d6c881c00c5f6ce0387d4837c1585c18102c08cc5d140fcf276",
+      "shape_zyx": [
+        6,
+        248,
+        235
+      ],
+      "spacing_xyz": [
+        1.328125,
+        1.328125,
+        10.0
+      ],
+      "voxel_count": 349680
+    },
+    {
+      "case_id": "Case1004",
+      "direction": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "official_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "official_output_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/pure_nnunet_myops_official_15case/Case1004_pred.nii.gz",
+      "official_sha256": "7cf7b1a41aac87b4f11c73e6ecdb4ecf0138c6b035351f89a7566093dc3b7f30",
+      "origin_xyz": [
+        0.0,
+        0.0,
+        10.0
+      ],
+      "raw_labels": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "raw_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1004.nii.gz",
+      "raw_sha256": "7e56caca3ab1d086001e60438b55ef0fb16feebef631977cc626e802e28f48ec",
+      "shape_zyx": [
+        7,
+        253,
+        220
+      ],
+      "spacing_xyz": [
+        1.7708333730697632,
+        1.7708333730697632,
+        10.0
+      ],
+      "voxel_count": 389620
+    },
+    {
+      "case_id": "Case1005",
+      "direction": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "official_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "official_output_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/pure_nnunet_myops_official_15case/Case1005_pred.nii.gz",
+      "official_sha256": "beed443abcb01fdc0de5910e620393c07150072ccb88494632a0c718dbe22194",
+      "origin_xyz": [
+        0.0,
+        0.0,
+        10.0
+      ],
+      "raw_labels": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "raw_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1005.nii.gz",
+      "raw_sha256": "37fe5b2ebbeb1617e8ea9352d9c71d16c3d9fc852f08c57380fcd1692746f0a3",
+      "shape_zyx": [
+        5,
+        260,
+        258
+      ],
+      "spacing_xyz": [
+        1.7708333730697632,
+        1.7708333730697632,
+        10.0
+      ],
+      "voxel_count": 335400
+    },
+    {
+      "case_id": "Case1006",
+      "direction": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "official_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "official_output_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/pure_nnunet_myops_official_15case/Case1006_pred.nii.gz",
+      "official_sha256": "17fb46044078a162609be1463f3fc4b534b220d2864abed36e78c77cf9a890a3",
+      "origin_xyz": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "raw_labels": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "raw_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1006.nii.gz",
+      "raw_sha256": "6d1f63a48662a2fd55fdc733e1ddeb7fba00d3bc096c6e3882bca90971a12362",
+      "shape_zyx": [
+        3,
+        260,
+        252
+      ],
+      "spacing_xyz": [
+        1.6015625,
+        1.6015625,
+        10.0
+      ],
+      "voxel_count": 196560
+    },
+    {
+      "case_id": "Case1007",
+      "direction": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "official_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "official_output_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/pure_nnunet_myops_official_15case/Case1007_pred.nii.gz",
+      "official_sha256": "91c9bd9a7574ab795c4dd1a29dfec03b18f7c47cc9053d168bb23922083cc207",
+      "origin_xyz": [
+        0.0,
+        0.0,
+        10.0
+      ],
+      "raw_labels": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "raw_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1007.nii.gz",
+      "raw_sha256": "7acde31bb5261ab81729462432eb52fc5ca530a117e90ac52aa57efcf6074c6f",
+      "shape_zyx": [
+        5,
+        255,
+        257
+      ],
+      "spacing_xyz": [
+        1.328125,
+        1.328125,
+        10.0
+      ],
+      "voxel_count": 327675
+    },
+    {
+      "case_id": "Case1008",
+      "direction": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "official_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "official_output_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/pure_nnunet_myops_official_15case/Case1008_pred.nii.gz",
+      "official_sha256": "536eb339378760f9a67387f394cbdbf620a25d79dc287a6ba7b9ffb06c0b9926",
+      "origin_xyz": [
+        0.0,
+        0.0,
+        10.0
+      ],
+      "raw_labels": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "raw_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1008.nii.gz",
+      "raw_sha256": "43ab196a1dd7d97b15800015e27c03c59d7449569f748b8fe60393781d8d5280",
+      "shape_zyx": [
+        3,
+        259,
+        240
+      ],
+      "spacing_xyz": [
+        1.328125,
+        1.328125,
+        10.0
+      ],
+      "voxel_count": 186480
+    },
+    {
+      "case_id": "Case1009",
+      "direction": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "official_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "official_output_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/pure_nnunet_myops_official_15case/Case1009_pred.nii.gz",
+      "official_sha256": "9fa56322a4a1642e5c5e30489a4a16dc62f1bd2ae5e79e7891908800502b603f",
+      "origin_xyz": [
+        0.0,
+        0.0,
+        10.0
+      ],
+      "raw_labels": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "raw_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1009.nii.gz",
+      "raw_sha256": "20c92527ac312c6f02941492d4c0e36dcd49a9b4c10c766a597a241e9cc1ff77",
+      "shape_zyx": [
+        4,
+        256,
+        247
+      ],
+      "spacing_xyz": [
+        1.328125,
+        1.328125,
+        10.0
+      ],
+      "voxel_count": 252928
+    },
+    {
+      "case_id": "Case1010",
+      "direction": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "official_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "official_output_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/pure_nnunet_myops_official_15case/Case1010_pred.nii.gz",
+      "official_sha256": "7f447e51ee9054f1423dfbf9053105779ffa39b8d80d9fb7534ca8e4208e0058",
+      "origin_xyz": [
+        0.0,
+        0.0,
+        10.0
+      ],
+      "raw_labels": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "raw_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1010.nii.gz",
+      "raw_sha256": "7f77d8bd90db1ee68ccd1218e73b6b0c2a0d621ffd3b296a1c8408c05aea529d",
+      "shape_zyx": [
+        4,
+        244,
+        255
+      ],
+      "spacing_xyz": [
+        1.328125,
+        1.328125,
+        10.0
+      ],
+      "voxel_count": 248880
+    },
+    {
+      "case_id": "Case1011",
+      "direction": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "official_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "official_output_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/pure_nnunet_myops_official_15case/Case1011_pred.nii.gz",
+      "official_sha256": "51be12fc3be2ca5ee0b6e69ea66e73b6b4e9ce40a6ec5ea3d10b208666967001",
+      "origin_xyz": [
+        0.0,
+        0.0,
+        10.0
+      ],
+      "raw_labels": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "raw_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1011.nii.gz",
+      "raw_sha256": "1a113cff3d876072ff6591364cc9d9e9e6146a54ff2f7b441ab70ef3c2476c73",
+      "shape_zyx": [
+        6,
+        264,
+        227
+      ],
+      "spacing_xyz": [
+        1.7708333730697632,
+        1.7708333730697632,
+        10.0
+      ],
+      "voxel_count": 359568
+    },
+    {
+      "case_id": "Case1012",
+      "direction": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "official_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "official_output_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/pure_nnunet_myops_official_15case/Case1012_pred.nii.gz",
+      "official_sha256": "1a9a95ace46d46072ada5a92ac12cf07e00c8754e2132bc783473cda1c269f57",
+      "origin_xyz": [
+        0.0,
+        0.0,
+        10.0
+      ],
+      "raw_labels": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "raw_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1012.nii.gz",
+      "raw_sha256": "dedd153bc40b9fe35df20564aa164e1b136888641d67eedd32c31e9dd14f37fe",
+      "shape_zyx": [
+        4,
+        158,
+        160
+      ],
+      "spacing_xyz": [
+        1.7708333730697632,
+        1.7708333730697632,
+        10.0
+      ],
+      "voxel_count": 101120
+    },
+    {
+      "case_id": "Case1013",
+      "direction": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "official_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "official_output_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/pure_nnunet_myops_official_15case/Case1013_pred.nii.gz",
+      "official_sha256": "61f464d69d9b2c3852030f80e1d6beb604cf807489c600727d5ae164d078a479",
+      "origin_xyz": [
+        0.0,
+        0.0,
+        10.0
+      ],
+      "raw_labels": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "raw_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1013.nii.gz",
+      "raw_sha256": "9e36240ecdc06b4233ebcaf22ad82e93bd8bda8926781161dd0c1a9b9a672b95",
+      "shape_zyx": [
+        6,
+        168,
+        169
+      ],
+      "spacing_xyz": [
+        1.8645833730697632,
+        1.8645833730697632,
+        10.0
+      ],
+      "voxel_count": 170352
+    },
+    {
+      "case_id": "Case1014",
+      "direction": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "official_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "official_output_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/pure_nnunet_myops_official_15case/Case1014_pred.nii.gz",
+      "official_sha256": "96aa7067c4892aaf0a5374a0474816648627b4a17afb4ee90b620b4f8ebeac58",
+      "origin_xyz": [
+        0.0,
+        0.0,
+        10.0
+      ],
+      "raw_labels": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "raw_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1014.nii.gz",
+      "raw_sha256": "bf5e571e30333bbe9adbc82fa3eb57e55f9947583f8f8a40791afa5b72ee312b",
+      "shape_zyx": [
+        6,
+        262,
+        232
+      ],
+      "spacing_xyz": [
+        1.48046875,
+        1.48046875,
+        10.0
+      ],
+      "voxel_count": 364704
+    },
+    {
+      "case_id": "Case1015",
+      "direction": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "official_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "official_output_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle/pure_nnunet_myops_official_15case/Case1015_pred.nii.gz",
+      "official_sha256": "533232acc87f00d1b04f976dffb0668fd38d76f9cba1716e1e644df6e75a9528",
+      "origin_xyz": [
+        0.0,
+        0.0,
+        10.0
+      ],
+      "raw_labels": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "raw_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_test_docker_cross_machine/fresh_nnunet_myops/Case1015.nii.gz",
+      "raw_sha256": "1ab713a99385452489bf5089feb4e00907eefbbbbe8dbf8fc3f856825e08a451",
+      "shape_zyx": [
+        4,
+        260,
+        243
+      ],
+      "spacing_xyz": [
+        1.328125,
+        1.328125,
+        10.0
+      ],
+      "voxel_count": 252720
+    }
+  ],
+  "reused_existing_fresh_outputs": true,
+  "status": "PASS",
+  "task": "20260802_care_test_docker_nnunet_myops_collaborator_cine_rebundle"
+}
