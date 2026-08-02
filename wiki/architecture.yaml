@@ -1,10 +1,10 @@
-architecture_version: CARE_ARC_W3_CONTOUR_LIMITED_STOP_20260729
-verified_at_utc: '2026-07-29T10:42:25Z'
-verified_milestone: care_arc_clean_fold1_w3_stop
-review_token: OPERATIONALLY_BLOCKED_BY_W3_MECHANISM_GATE
-verification_base_commit: 59a664bd15b936e9adc9774340ababce9a3a0323
-code_fingerprint: care_arc.py=8e891ff3;care_arc_dataset.py=4f4d3bf3;care_arc_trainer.py=b0017f68;care_arc_predictor.py=e805b311;run_care_arc.py=eb520ea0;run_care_arc_development.py=05c435f2;evaluate_care_arc.py=0e645490;validate_care_arc_packet.py=0a1960c2
-evidence_fingerprint: CARE-ARC-W0-W3;see results/20260729_care_arc_clean_fold1/fold0_development_adequacy_gate.json
+architecture_version: CARE_ASE_FINAL_MODEL_FOLD2_FOLD3_OUTER_20260802
+verified_at_utc: '2026-08-02T16:25:00Z'
+verified_milestone: 20260801_care_ase_final_model
+review_token: VERIFIED_COMPLETE
+verification_base_commit: 21bfa5a1fbedffcf972005a7183983d1364b1305
+code_fingerprint: care_ase.py=95b475e9;care_ase_trainer.py=a01dad2e;care_ase_splits.py=81303a9d;evaluate_care_ase_outer.py=2fa78e34;aggregate_care_ase_final.py=0ddbb5a9
+evidence_fingerprint: CARE-ASE-W4-W5;see results/20260801_care_ase_final_model/w5_aggregation_receipt.json
 nodes:
 - id: batch6_final_objective_alignment
   label: final objective and production gate alignment
@@ -219,11 +219,55 @@ nodes:
 - id: care_arc_w3_mechanism_gate
   label: fold0 development mechanism gate
   branch: MyoPS
-  current_status: failed_contour_limited
+  current_status: partial
   target_status: implemented
   source_file: scripts/evaluation/evaluate_care_arc.py
   symbol: W3_FOLD0_ZERO_CREDIT_DEVELOPMENT
+- id: care_ase_stock_inheritance
+  label: CARE-ASE same-fold stock inheritance
+  branch: MyoPS
+  current_status: implemented
+  target_status: implemented
+  source_file: src/care_myocardium/models/care_ase.py
+  symbol: CAREASE
+- id: care_ase_training_contract
+  label: CARE-ASE fixed 14000-step training and exact resume
+  branch: MyoPS
+  current_status: implemented
+  target_status: implemented
+  source_file: src/care_myocardium/training/care_ase_trainer.py
+  symbol: train_care_ase_steps
+- id: care_ase_outer_evaluator
+  label: CARE-ASE one-time outer sliding-window evaluator
+  branch: MyoPS
+  current_status: implemented
+  target_status: implemented
+  source_file: scripts/evaluation/care_ase/evaluate_care_ase_outer.py
+  symbol: sliding_window_final_logits
+- id: care_ase_module_intervention
+  label: CARE-ASE module-off final-output intervention audit
+  branch: MyoPS
+  current_status: implemented
+  target_status: implemented
+  source_file: scripts/evaluation/care_ase/aggregate_care_ase_final.py
+  symbol: intervention_rows
 edges:
+- from: care_ase_stock_inheritance
+  to: care_ase_training_contract
+  kind: training
+  condition: same-fold stock initialization and cloned decoder paths train under fixed budget
+- from: care_ase_training_contract
+  to: care_ase_outer_evaluator
+  kind: freeze
+  condition: fixed checkpoint_step14000.pt only after W4 reload parity
+- from: care_ase_outer_evaluator
+  to: care_ase_module_intervention
+  kind: evidence
+  condition: same checkpoint, same inputs, same sliding-window logits, same decode
+- from: care_ase_module_intervention
+  to: mapper_wiki_observability
+  kind: governance
+  condition: final-output component activity recorded for controller finalization
 - from: inputs_availability
   to: modality_stems_encoders
   kind: data

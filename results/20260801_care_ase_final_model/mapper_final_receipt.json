@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "task_key": "20260801_care_ase_final_model",
+  "mapper_report_final": "results/20260801_care_ase_final_model/mapper_report_final.md",
+  "wiki_files_updated": [
+    "wiki/README.md",
+    "wiki/MODEL.md",
+    "wiki/COMPONENTS.csv",
+    "wiki/architecture.yaml",
+    "wiki/current_state.yaml",
+    "wiki/figures/model-current.d2",
+    "wiki/figures/model-current.svg",
+    "wiki/figures/model-current.png",
+    "wiki/figures/model-gap.d2",
+    "wiki/figures/model-gap.svg",
+    "wiki/figures/model-gap.png",
+    "wiki/figures/execution-flow.d2",
+    "wiki/figures/execution-flow.svg",
+    "wiki/figures/execution-flow.png"
+  ],
+  "toolkit_healthcheck": "wiki/toolkit_healthcheck.json",
+  "review_token": "W5_AGGREGATION_PASS_PENDING_FINAL_VALIDATOR",
+  "architecture_mapping_status": "CARE_ASE_W5_MAPPED",
+  "hosted_metric_claim_authorized": false,
+  "validation_upload_authorized": false,
+  "docker_upload_authorized": false
+}

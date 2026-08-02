@@ -1,21 +1,21 @@
-current_milestone_id: care_test_docker_myops_context_hotfix_workstation_handoff
-current_task_key: 20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff
-method_name: CARE2026 myocardium MyoPS Docker context hotfix and workstation handoff
-short_method_name: CARE_TEST_DOCKER_MYOPS_CONTEXT_HOTFIX
-execution_label: MyoPS Dockerfile models copy fixed; workstation transfer refreshed
-execution_code: SERVER-BUNDLE-READY
-updated_at: '2026-08-03'
-current_result_root: results/20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff
-current_review_path: results/20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff/controller_report.md
+current_milestone_id: 20260801_care_ase_final_model
+current_task_key: 20260801_care_ase_final_model
+method_name: CARE-ASE final asymmetric pathology model
+short_method_name: CARE_ASE
+execution_label: fold2/fold3 fixed step14000 outer once with sliding-window logits
+execution_code: VERIFIED-COMPLETE-PENDING-FINAL-PUSH-NOTIFY
+updated_at: '2026-08-02'
+current_result_root: results/20260801_care_ase_final_model
+current_review_path: results/20260801_care_ase_final_model/controller_report.md
 current_review_token: VERIFIED_COMPLETE
-wiki_fingerprint_status: MYOPS_CONTEXT_HOTFIX_WORKSTATION_HANDOFF_READY
-entrypoints_authority_status: WORKSTATION_CPU_DOCKER_DETERMINISM_GATE_NEXT
-current_transfer_root: /users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff/transfer
-base_model_contract_commit: b94d3f916b04461d6b88a311959e0ed581e64555
-selected_myops: dataset501_nnunet_v2_5fold_best_default_tta_all_six_classes
-selected_cinemyops: collaborator_provided_prebuilt_mosaic_docker
-myops_context_models_copy_fixed: true
-model_contract_changed: false
+wiki_fingerprint_status: CARE_ASE_VERIFIED_COMPLETE_PENDING_FINAL_PUSH_NOTIFY
+entrypoints_authority_status: VALIDATION_DOCKER_HOSTED_CLAIMS_FORBIDDEN
+current_transfer_root: null
+base_model_contract_commit: 21bfa5a1fbedffcf972005a7183983d1364b1305
+selected_myops: care_ase_fold2_fold3_checkpoint_step14000
+selected_cinemyops: none
+myops_context_models_copy_fixed: false
+model_contract_changed: true
 server_docker_run_performed: false
 challenge_upload_authorized: false
 validation_upload_authorized: false
@@ -24,6 +24,24 @@ main_only:
   branch: main
   worktree: /users/a/e/aereinh/CARE
   route_worktree_development_authorized: false
+care_ase_final_model:
+  status: VERIFIED_COMPLETE_PENDING_FINAL_PUSH_NOTIFY
+  implementation_snapshot_commit_sha: 9517fe1738be5a03bc5d9115dade618ca3bc31b8
+  implementation_snapshot_audit_package_sha256: 72a05df1bbc882f63780356a423bdeee74b50d5d98df51de1285d9eeffdf2227
+  w45_push_receipt: results/20260801_care_ase_final_model/w45_implementation_snapshot/w45_implementation_snapshot_push_receipt.json
+  fold2_checkpoint_step: 14000
+  fold3_checkpoint_step: 14000
+  full_reload_final_logits_max_abs_error: 0.0
+  outer_access_count_before_freeze: 0
+  outer_cases_per_fold: 44
+  inference_method: tiled_sliding_window_average_logits
+  pooled_outer_dice:
+    scar: 0.523500573079597
+    edema: 0.7953093461967583
+  evidence_paths:
+  - results/20260801_care_ase_final_model/w5_aggregation_receipt.json
+  - results/20260801_care_ase_final_model/module_intervention_outer.csv
+  - results/20260801_care_ase_final_model/hard_case_atlas.md
 mosaic_hosted_gap_forensics:
   status: VERIFIED_COMPLETE
   result_root: results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint

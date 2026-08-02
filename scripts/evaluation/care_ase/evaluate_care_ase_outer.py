@@ -211,7 +211,7 @@ def class_metrics(pred: np.ndarray, gt: np.ndarray, cls: int, spacing: tuple[flo
 def write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=list(rows[0]) if rows else ["case_id"])
+        writer = csv.DictWriter(f, fieldnames=list(rows[0]) if rows else ["case_id"], lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
 

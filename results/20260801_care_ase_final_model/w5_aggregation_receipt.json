@@ -1,0 +1,244 @@
+{
+  "component_output_activity": {
+    "edema_boundary": true,
+    "edema_context": true,
+    "edema_injury": true,
+    "extent_wall": true,
+    "scar_center": true,
+    "scar_context": true,
+    "scar_proposal": true
+  },
+  "hard_case_atlas_csv": "results/20260801_care_ase_final_model/hard_case_atlas.csv",
+  "hard_case_atlas_md": "results/20260801_care_ase_final_model/hard_case_atlas.md",
+  "implementation_validity_status": "VALID_UNLESS_SNAPSHOT_REVIEW_FINDS_ERROR",
+  "intervention_case_count": 11,
+  "intervention_cases": [
+    {
+      "case_id": "Case1016",
+      "fold": 2
+    },
+    {
+      "case_id": "Case1020",
+      "fold": 2
+    },
+    {
+      "case_id": "Case2009",
+      "fold": 2
+    },
+    {
+      "case_id": "Case2019",
+      "fold": 2
+    },
+    {
+      "case_id": "Case2034",
+      "fold": 2
+    },
+    {
+      "case_id": "Case3008",
+      "fold": 2
+    },
+    {
+      "case_id": "Case3027",
+      "fold": 2
+    },
+    {
+      "case_id": "Case1035",
+      "fold": 3
+    },
+    {
+      "case_id": "Case1050",
+      "fold": 3
+    },
+    {
+      "case_id": "Case2012",
+      "fold": 3
+    },
+    {
+      "case_id": "Case3009",
+      "fold": 3
+    }
+  ],
+  "module_intervention_inference_method": "tiled_sliding_window_average_logits",
+  "module_intervention_outer_csv": "results/20260801_care_ase_final_model/module_intervention_outer.csv",
+  "module_intervention_patch_size": [
+    20,
+    256,
+    256
+  ],
+  "outer_evaluation_receipts": [
+    {
+      "case_count": 44,
+      "checkpoint": "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step14000.pt",
+      "edema_mean_Dice": 0.8098634796042546,
+      "edema_mean_HD95_mm": 7.817218394130247,
+      "edema_mean_HD95_vox": 2.7487336171179817,
+      "edema_mean_blood_pool_adjacent_fp_volume_mm3": 1034.0530608923734,
+      "edema_mean_remote_fp_volume_mm3": 988.9636661297903,
+      "fold": 2,
+      "force_overwrite_used": false,
+      "global_optimizer_step": 14000,
+      "inference_method": "tiled_sliding_window_average_logits",
+      "one_time_outer_evaluation": true,
+      "overlap": 0.5,
+      "patch_count_max": 8,
+      "patch_count_min": 1,
+      "patch_size": [
+        20,
+        256,
+        256
+      ],
+      "scar_mean_Dice": 0.5640013345332368,
+      "scar_mean_HD95_mm": 24.420888812113066,
+      "scar_mean_HD95_vox": 6.373397433072352,
+      "scar_mean_blood_pool_adjacent_fp_volume_mm3": 6868.162763007369,
+      "scar_mean_remote_fp_volume_mm3": 4016.4664352349587,
+      "status": "PASS"
+    },
+    {
+      "case_count": 44,
+      "checkpoint": "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step14000.pt",
+      "edema_mean_Dice": 0.7807552127892621,
+      "edema_mean_HD95_mm": 6.349621518291631,
+      "edema_mean_HD95_vox": 3.2083238830359164,
+      "edema_mean_blood_pool_adjacent_fp_volume_mm3": 1022.9467656997258,
+      "edema_mean_remote_fp_volume_mm3": 1232.8581211014632,
+      "fold": 3,
+      "force_overwrite_used": false,
+      "global_optimizer_step": 14000,
+      "inference_method": "tiled_sliding_window_average_logits",
+      "one_time_outer_evaluation": true,
+      "overlap": 0.5,
+      "patch_count_max": 8,
+      "patch_count_min": 1,
+      "patch_size": [
+        20,
+        256,
+        256
+      ],
+      "scar_mean_Dice": 0.4829998116259571,
+      "scar_mean_HD95_mm": 21.377261043562804,
+      "scar_mean_HD95_vox": 9.621890630359815,
+      "scar_mean_blood_pool_adjacent_fp_volume_mm3": 6071.785913908718,
+      "scar_mean_remote_fp_volume_mm3": 3772.523972175617,
+      "status": "PASS"
+    }
+  ],
+  "pooled_statistics_path": "results/20260801_care_ase_final_model/pooled_fold2_fold3_statistics.csv",
+  "primary_outer_summary": {
+    "edema__all_outer": {
+      "case_metric_rows": 88,
+      "class": "edema",
+      "mean_Dice": 0.7953093461967583,
+      "mean_HD95_mm": 7.083419956210938,
+      "mean_blood_pool_adjacent_fp_volume_mm3": 1028.4999132960495,
+      "mean_component_count": 4.75,
+      "mean_exact_HD_mm": 12.932929685401335,
+      "mean_precision": 0.8528355923384122,
+      "mean_remote_fp_volume_mm3": 1110.910893615627,
+      "mean_sensitivity": 0.7789476082483149,
+      "mean_volume_ratio": 0.2577074231180452,
+      "subset": "all_outer"
+    },
+    "edema__centerB": {
+      "case_metric_rows": 14,
+      "class": "edema",
+      "mean_Dice": 0.52086444660442,
+      "mean_HD95_mm": 19.82815604370926,
+      "mean_blood_pool_adjacent_fp_volume_mm3": 3887.7418741518777,
+      "mean_component_count": 10.0,
+      "mean_exact_HD_mm": 39.51213648288582,
+      "mean_precision": 0.6143195275074327,
+      "mean_remote_fp_volume_mm3": 5953.3807697957245,
+      "mean_sensitivity": 0.4962865577401399,
+      "mean_volume_ratio": 0.8412104705771445,
+      "subset": "centerB"
+    },
+    "edema__centerC": {
+      "case_metric_rows": 18,
+      "class": "edema",
+      "mean_Dice": 0.3719511229362696,
+      "mean_HD95_mm": 19.208153974146274,
+      "mean_blood_pool_adjacent_fp_volume_mm3": 2004.4225628847812,
+      "mean_component_count": 15.444444444444445,
+      "mean_exact_HD_mm": 32.49599453082866,
+      "mean_precision": 0.5805032633709014,
+      "mean_remote_fp_volume_mm3": 800.7126589463901,
+      "mean_sensitivity": 0.3110765398605418,
+      "mean_volume_ratio": 0.6056281470171085,
+      "subset": "centerC"
+    },
+    "edema__sentinel_outer": {
+      "case_metric_rows": 7,
+      "class": "edema",
+      "mean_Dice": 0.3564320981932369,
+      "mean_HD95_mm": 31.48854415586256,
+      "mean_blood_pool_adjacent_fp_volume_mm3": 2451.2837238862244,
+      "mean_component_count": 8.714285714285714,
+      "mean_exact_HD_mm": 44.45689752815007,
+      "mean_precision": 0.4455839952276279,
+      "mean_remote_fp_volume_mm3": 3550.2315200323987,
+      "mean_sensitivity": 0.37005648332151264,
+      "mean_volume_ratio": 0.8401035392183578,
+      "subset": "sentinel_outer"
+    },
+    "scar__all_outer": {
+      "case_metric_rows": 88,
+      "class": "scar",
+      "mean_Dice": 0.523500573079597,
+      "mean_HD95_mm": 22.899074927837937,
+      "mean_blood_pool_adjacent_fp_volume_mm3": 6469.974338458042,
+      "mean_component_count": 4.863636363636363,
+      "mean_exact_HD_mm": 45.21542023104784,
+      "mean_precision": 0.5571567770942838,
+      "mean_remote_fp_volume_mm3": 3894.4952037052876,
+      "mean_sensitivity": 0.5798703810407247,
+      "mean_volume_ratio": 8.446722340910263,
+      "subset": "all_outer"
+    },
+    "scar__centerB": {
+      "case_metric_rows": 14,
+      "class": "scar",
+      "mean_Dice": 0.6919581371709524,
+      "mean_HD95_mm": 13.149366594073097,
+      "mean_blood_pool_adjacent_fp_volume_mm3": 3327.151822704408,
+      "mean_component_count": 2.0714285714285716,
+      "mean_exact_HD_mm": 30.9418235772631,
+      "mean_precision": 0.7111235018257137,
+      "mean_remote_fp_volume_mm3": 2615.5189336091285,
+      "mean_sensitivity": 0.6959842437881409,
+      "mean_volume_ratio": 0.996713496355645,
+      "subset": "centerB"
+    },
+    "scar__centerC": {
+      "case_metric_rows": 18,
+      "class": "scar",
+      "mean_Dice": 0.6206534626125496,
+      "mean_HD95_mm": 29.906696405181656,
+      "mean_blood_pool_adjacent_fp_volume_mm3": 3808.6071347037287,
+      "mean_component_count": 2.0,
+      "mean_exact_HD_mm": 39.838815457686785,
+      "mean_precision": 0.623313628245887,
+      "mean_remote_fp_volume_mm3": 3710.152678088466,
+      "mean_sensitivity": 0.7687828470680057,
+      "mean_volume_ratio": 23.60372223441955,
+      "subset": "centerC"
+    },
+    "scar__sentinel_outer": {
+      "case_metric_rows": 7,
+      "class": "scar",
+      "mean_Dice": 0.5816865458195701,
+      "mean_HD95_mm": 42.69071049669315,
+      "mean_blood_pool_adjacent_fp_volume_mm3": 6243.584462076443,
+      "mean_component_count": 1.8571428571428572,
+      "mean_exact_HD_mm": 48.96819634740693,
+      "mean_precision": 0.5980091193229775,
+      "mean_remote_fp_volume_mm3": 6666.4412213861115,
+      "mean_sensitivity": 0.6474726343844605,
+      "mean_volume_ratio": 1.4755759235859849,
+      "subset": "sentinel_outer"
+    }
+  },
+  "promotion_gate_scientific_decision": "PENDING_CONTROLLER_REPORT",
+  "status": "PASS",
+  "stock_comparison_boundary": "Full same-split stock Dice/HD is not recomputed here; frozen hard-negative manifests provide stock error context only. No hosted metric claim is authorized."
+}

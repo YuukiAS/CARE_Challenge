@@ -2,6 +2,19 @@
 
 本页记录当前架构状态，供规划者、mapper 和 reviewer 使用。它不是路线晋级结论。
 
+## 2026-08-02 CARE-ASE final model
+
+CARE-ASE 是当前 main 上已实现并完成 fold2/fold3 outer once 的非对称 pathology 模型。它继承同 fold stock nnU-Net 的 encoder、bottleneck 和低中分辨率 decoder；最高两级 decoder 对 scar 与 pure-edema 分支分别 deep-copy，正常 inference 不读取 stock class4/class5 logits。额外证据只通过 zero-initialized residual projection 进入 final pathology logits，并由 W5 module-off intervention 证明会改变 final logits/final labels。
+
+固定评价合同：每 fold 只使用 `checkpoint_step14000.pt`，不使用 inner checkpoint selection；W4 reload parity final-logit max error 为 `0.0`；W5 outer 使用 `tiled_sliding_window_average_logits` 和固定 argmax decode。pooled fold2+fold3 outer 结果是 scar mean Dice `0.5235`，pure-edema mean Dice `0.7953`。这不是 hosted metric claim，也没有授权 validation 或 Docker 上传。
+
+| 组件 | 当前状态 | 证据 |
+| --- | --- | --- |
+| `care_ase_stock_inheritance` | implemented/verified | `results/20260801_care_ase_final_model/stock_clone_and_parity_receipt.json` |
+| `care_ase_no_t2_safety` | implemented/verified | `results/20260801_care_ase_final_model/w2_preflight_receipt.json` |
+| `care_ase_outer_evaluator` | implemented/verified | `results/20260801_care_ase_final_model/outer_eval/fold_2/evaluation_receipt.json`; `results/20260801_care_ase_final_model/outer_eval/fold_3/evaluation_receipt.json` |
+| `care_ase_module_intervention` | implemented/verified | `results/20260801_care_ase_final_model/module_intervention_outer.csv` |
+
 目标路线仍是 SRR-v3：availability-aware selective retrieval、semantic representation retrieval bank、anatomy-guided lesion proposal、scar/edema pathology-specific soft-ROI refinement，以及 explicit objectives。`nnU-Net` 只能作为 anchor、context、evidence 或 safety source，不能把 SRR 降级成普通后处理。
 
 M9 follow-up 的证据已经完成一致性修复并通过独立 review，但结论仍是 `M9_NO_PROMOTION_DIAGNOSTIC_ONLY`。这表示当前 formal SRR-main candidates 没有超过 tracked M8 `nnU-Net` anchor；它不等于 SRR 路线被科学证伪。

@@ -1,5 +1,35 @@
 # CARE 架构 Wiki
 
+architecture_version: `care-ase-final-model-fold2-fold3-outer-20260802`
+latest_verified_runtime: `CARE-ASE fold2/fold3 fixed step14000 checkpoints reloaded with final-logit parity 0.0; W5 outer evaluation used tiled sliding-window average logits on 44 outer cases per fold`
+latest_scientific_status: `CARE_ASE_VERIFIED_COMPLETE_NO_HOSTED_CLAIM: pooled fold2+fold3 outer Dice scar 0.5235 and pure-edema 0.7953; full same-split stock Dice/HD was not recomputed in this packet`
+latest_controller_task: `20260801_care_ase_final_model`
+route_status: `MAIN_ONLY_CARE_ASE_VERIFIED_COMPLETE_PENDING_FINAL_PUSH_NOTIFY`
+
+当前 CARE-ASE 证据来自冻结的 fold2/fold3 `checkpoint_step14000.pt`，不是 inner 选择、阈值搜索或 hosted leaderboard。实现快照已在 W4.5 非阻塞提交并 push；W5 outer once 随后直接执行。两个 fold 的 checkpoint reload final logits 最大误差都是 `0.0`，freeze 前 outer access count 是 `0`。W5 使用全体积 tiled sliding-window average logits，fold2/fold3 各 44 个 outer case；pooled scar mean Dice `0.5235`，pure-edema mean Dice `0.7953`。该结果仍未授权 validation upload、Docker upload 或 hosted metric claim。
+
+关键证据：
+
+```text
+results/20260801_care_ase_final_model/checkpoint_freeze_receipt.json
+results/20260801_care_ase_final_model/full_reload_parity_receipt.json
+results/20260801_care_ase_final_model/outer_access_audit_receipt.json
+results/20260801_care_ase_final_model/w45_implementation_snapshot/w45_implementation_snapshot_push_receipt.json
+results/20260801_care_ase_final_model/outer_eval/fold_2/evaluation_receipt.json
+results/20260801_care_ase_final_model/outer_eval/fold_3/evaluation_receipt.json
+results/20260801_care_ase_final_model/w5_aggregation_receipt.json
+results/20260801_care_ase_final_model/module_intervention_outer.csv
+results/20260801_care_ase_final_model/hard_case_atlas.md
+```
+
+当前生成图：
+
+```text
+wiki/figures/model-current.png
+wiki/figures/model-gap.png
+wiki/figures/execution-flow.png
+```
+
 architecture_version: `care-test-docker-myops-context-hotfix-workstation-handoff-20260803`
 latest_verified_runtime: `b94d3f frozen model contract unchanged; MyoPS Dockerfile now copies models into /app/models; refreshed workstation transfer contains five nnU-Net checkpoints and byte-preserved collaborator Cine archive`
 latest_scientific_status: `SERVER_BUNDLE_READY: workstation WSL can start Docker build/load/run/save; server did not run Docker, train, upload, or send organizer email`

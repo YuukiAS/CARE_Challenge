@@ -1,0 +1,28 @@
+{
+  "case_count": 44,
+  "checkpoint": "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step14000.pt",
+  "edema_mean_Dice": 0.8098634796042546,
+  "edema_mean_HD95_mm": 7.817218394130247,
+  "edema_mean_HD95_vox": 2.7487336171179817,
+  "edema_mean_blood_pool_adjacent_fp_volume_mm3": 1034.0530608923734,
+  "edema_mean_remote_fp_volume_mm3": 988.9636661297903,
+  "fold": 2,
+  "force_overwrite_used": false,
+  "global_optimizer_step": 14000,
+  "inference_method": "tiled_sliding_window_average_logits",
+  "one_time_outer_evaluation": true,
+  "overlap": 0.5,
+  "patch_count_max": 8,
+  "patch_count_min": 1,
+  "patch_size": [
+    20,
+    256,
+    256
+  ],
+  "scar_mean_Dice": 0.5640013345332368,
+  "scar_mean_HD95_mm": 24.420888812113066,
+  "scar_mean_HD95_vox": 6.373397433072352,
+  "scar_mean_blood_pool_adjacent_fp_volume_mm3": 6868.162763007369,
+  "scar_mean_remote_fp_volume_mm3": 4016.4664352349587,
+  "status": "PASS"
+}

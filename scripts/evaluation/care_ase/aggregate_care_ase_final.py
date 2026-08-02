@@ -52,7 +52,7 @@ def read_csv(path: Path) -> list[dict[str, str]]:
 def write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=list(rows[0]) if rows else ["status"])
+        writer = csv.DictWriter(f, fieldnames=list(rows[0]) if rows else ["status"], lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
 
@@ -286,7 +286,7 @@ def main() -> int:
         for name in INTERVENTIONS
     }
     primary = {
-        (row["class"], row["subset"]): row
+        f"{row['class']}__{row['subset']}": row
         for row in pooled
         if row["subset"] in {"all_outer", "sentinel_outer", "centerB", "centerC"}
     }

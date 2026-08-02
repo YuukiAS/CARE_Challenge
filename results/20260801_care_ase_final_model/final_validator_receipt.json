@@ -1,0 +1,101 @@
+{
+  "checks": [
+    {
+      "evidence": "results/20260801_care_ase_final_model/contract_coverage.json",
+      "name": "w1_contract_coverage_pass",
+      "status": "PASS"
+    },
+    {
+      "evidence": "results/20260801_care_ase_final_model/w2_preflight_receipt.json",
+      "name": "w2_preflight_pass",
+      "status": "PASS"
+    },
+    {
+      "evidence": "results/20260801_care_ase_final_model/split_authority_receipt.json",
+      "name": "split_authority_pass",
+      "status": "PASS"
+    },
+    {
+      "evidence": "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step14000.pt",
+      "name": "fold2_checkpoint_step14000_exists",
+      "status": "PASS"
+    },
+    {
+      "evidence": "results/20260801_care_ase_final_model/runtime/fold_2/training_terminal_receipt.json",
+      "name": "fold2_training_terminal_pass",
+      "status": "PASS"
+    },
+    {
+      "evidence": "results/20260801_care_ase_final_model/runtime/fold_2/training_start_receipt.json",
+      "name": "fold2_training_inner_excluded",
+      "status": "PASS"
+    },
+    {
+      "evidence": "results/20260801_care_ase_final_model/outer_eval/fold_2/evaluation_receipt.json",
+      "name": "fold2_outer_eval_pass",
+      "status": "PASS"
+    },
+    {
+      "evidence": "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step14000.pt",
+      "name": "fold3_checkpoint_step14000_exists",
+      "status": "PASS"
+    },
+    {
+      "evidence": "results/20260801_care_ase_final_model/runtime/fold_3/training_terminal_receipt.json",
+      "name": "fold3_training_terminal_pass",
+      "status": "PASS"
+    },
+    {
+      "evidence": "results/20260801_care_ase_final_model/runtime/fold_3/training_start_receipt.json",
+      "name": "fold3_training_inner_excluded",
+      "status": "PASS"
+    },
+    {
+      "evidence": "results/20260801_care_ase_final_model/outer_eval/fold_3/evaluation_receipt.json",
+      "name": "fold3_outer_eval_pass",
+      "status": "PASS"
+    },
+    {
+      "evidence": "results/20260801_care_ase_final_model/checkpoint_freeze_receipt.json",
+      "name": "w4_checkpoint_freeze_pass",
+      "status": "PASS"
+    },
+    {
+      "evidence": "results/20260801_care_ase_final_model/full_reload_parity_receipt.json",
+      "name": "w4_full_reload_parity_pass",
+      "status": "PASS"
+    },
+    {
+      "evidence": "results/20260801_care_ase_final_model/outer_access_audit_receipt.json",
+      "name": "w4_outer_access_before_freeze_zero",
+      "status": "PASS"
+    },
+    {
+      "evidence": "results/20260801_care_ase_final_model/w45_implementation_snapshot/w45_implementation_snapshot_receipt.json",
+      "name": "w45_implementation_snapshot_pass",
+      "status": "PASS"
+    },
+    {
+      "evidence": "results/20260801_care_ase_final_model/w45_implementation_snapshot/w45_implementation_snapshot_push_receipt.json",
+      "name": "w45_implementation_snapshot_push_pass",
+      "status": "PASS"
+    },
+    {
+      "evidence": "results/20260801_care_ase_final_model/w5_aggregation_receipt.json",
+      "name": "w5_aggregation_pass",
+      "status": "PASS"
+    },
+    {
+      "evidence": "results/20260801_care_ase_final_model/mapper_final_receipt.json",
+      "name": "mapper_final_receipt_exists",
+      "status": "PASS"
+    },
+    {
+      "evidence": "results/20260801_care_ase_final_model/controller_report.md",
+      "name": "controller_report_exists",
+      "status": "PASS"
+    }
+  ],
+  "controller_verification_decision_if_used_now": "VERIFIED_COMPLETE",
+  "status": "PASS"
+}
