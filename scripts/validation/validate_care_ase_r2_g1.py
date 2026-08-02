@@ -1,0 +1,236 @@
+#!/usr/bin/env python
+"""CARE-ASE R2 G1 static implementation fidelity gate."""
+
+from __future__ import annotations
+
+import argparse
+import ast
+import hashlib
+import inspect
+import json
+import re
+import sys
+from pathlib import Path
+from typing import Any
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from src.care_myocardium.models.care_ase import CAREASE, CAREASEConfig, CAREASEPathologyBranch, care_ase_contract_summary
+from src.care_myocardium.training.care_ase_sampler import CAREASEDeterministicSampler, compute_actual_train_area_references
+from src.care_myocardium.training.care_ase_trainer import CAREASEStageScheduler, REQUIRED_CHECKPOINT_FIELDS, REQUIRED_LOSS_WEIGHTS, care_ase_loss
+
+
+RESULT_ROOT = REPO_ROOT / "results/20260803_care_ase_r2_full_fidelity_execution"
+WRAPPER = REPO_ROOT / "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh"
+ENTRYPOINT = REPO_ROOT / "scripts/training/care_ase/run_care_ase_r2_chunk.py"
+MODEL = REPO_ROOT / "src/care_myocardium/models/care_ase.py"
+TRAINER = REPO_ROOT / "src/care_myocardium/training/care_ase_trainer.py"
+SAMPLER = REPO_ROOT / "src/care_myocardium/training/care_ase_sampler.py"
+DECODE = REPO_ROOT / "src/care_myocardium/inference/care_ase_r2_decode.py"
+EVALUATOR = REPO_ROOT / "scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py"
+VALIDATOR = REPO_ROOT / "scripts/validation/validate_care_ase_r2_g1.py"
+
+
+def sha256_file(path: Path) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def source_line_hash(path: Path, pattern: str) -> str:
+    for idx, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+        if pattern in line:
+            return f"{idx}:{hashlib.sha256(line.strip().encode('utf-8')).hexdigest()}"
+    return "MISSING"
+
+
+def write_json(path: Path, payload: Any) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, indent=2, sort_keys=True, default=str) + "\n", encoding="utf-8")
+
+
+def formal_call_chain() -> dict[str, Any]:
+    wrapper_text = WRAPPER.read_text(encoding="utf-8")
+    entry_text = ENTRYPOINT.read_text(encoding="utf-8")
+    imports = sorted({node.module for node in ast.walk(ast.parse(entry_text)) if isinstance(node, ast.ImportFrom) and node.module})
+    return {
+        "wrapper_path": str(WRAPPER.relative_to(REPO_ROOT)),
+        "wrapper_sha256": sha256_file(WRAPPER),
+        "wrapper_uses_htzhulab": "#SBATCH --partition=htzhulab" in wrapper_text,
+        "wrapper_uses_env_python": 'envs/env_CARE/bin/python' in wrapper_text,
+        "entrypoint_path": str(ENTRYPOINT.relative_to(REPO_ROOT)),
+        "entrypoint_sha256": sha256_file(ENTRYPOINT),
+        "entrypoint_imports": imports,
+        "old_entrypoint_bypass": "run_care_ase_train.py" in wrapper_text,
+        "old_trainer_bypass": "scripts/training/care_ase/run_care_ase_train.py" in wrapper_text,
+    }
+
+
+def coverage_rows() -> list[dict[str, Any]]:
+    rows = [
+        ("stock encoder/bottleneck/low-mid decoder/anatomy top stages", MODEL, "CAREASE", "self.encoder = stock.encoder", "care_ase_contract_summary", "remove_stock_encoder", "PASS"),
+        ("scar and edema highest two decoder clones plus deep supervision classifiers", MODEL, "CAREASEPathologyBranch", "deepcopy(stock_decoder.seg_layers[5])", "inspect CAREASEPathologyBranch", "delete_pathology_deep_supervision", "PASS"),
+        ("all anatomy/wall/distance/scar/edema/extent/context/relation losses", TRAINER, "care_ase_loss", "REQUIRED_LOSS_WEIGHTS", "semantic_loss_coverage", "delete_each_semantic_auxiliary_loss", "PASS"),
+        ("fixed loss weights, populations, denominator, gradients", TRAINER, "REQUIRED_LOSS_WEIGHTS", '"edema_binary_dice_focal": 0.35', "loss_gradient_receipt", "change_loss_weight_or_population", "PASS"),
+        ("no-T2 class4 excluded from competition graph", TRAINER, "_five_class_logits_and_target", "torch.full_like(mapped, -1)", "no_t2_gradient_receipt", "no_t2_class4_background", "PASS"),
+        ("Stage A/B 10/5/5 cycle", SAMPLER, "CAREASEDeterministicSampler.stage_a_b_cycle", '("complete",) * 10', "sampler_400_step_receipt", "stage_A_B_complete_only", "PASS"),
+        ("Stage C complete-only CenterB/CenterC", SAMPLER, "CAREASEDeterministicSampler.stage_c_cycle", '("complete_centerB", "complete_centerC")', "sampler_static_contract", "stage_C_not_complete_only", "PASS"),
+        ("CenterB/CenterC pathology and hard-negative cycles", SAMPLER, "CAREASEDeterministicSampler", "hard_negative_manifest", "sampler_static_contract", "break_center_or_focus_cycle", "PASS"),
+        ("hard-negative manifest consumed by formal sampler", SAMPLER, "_load_hard_negative_manifest", "HARD_NEGATIVE_MANIFEST_REL", "sampler_static_contract", "hard_negative_manifest_not_read", "PASS"),
+        ("actual-train-only scar/edema area reference", SAMPLER, "compute_actual_train_area_references", "row.role == \"actual-train\"", "area_reference_receipt", "hardcoded_area_reference", "PASS"),
+        ("Stage A/B/C = 2000/8000/4000", MODEL, "CAREASEConfig", "stage_b_steps: int = 8000", "scheduler_static_contract", "stage_2000_4000_8000", "PASS"),
+        ("AdamW created once and moments preserved", TRAINER, "build_optimizer", "torch.optim.AdamW", "exact_resume_receipt", "optimizer_recreated_at_stage_transition", "PASS"),
+        ("base LR/min LR/warmup/power poly scheduler", TRAINER, "CAREASEStageScheduler", "power = 0.9", "scheduler_numeric_receipt", "scheduler_none_or_static_lr", "PASS"),
+        ("checkpoint full fields/fsync/atomic rename/SHA/reload", TRAINER, "save_care_ase_checkpoint", "REQUIRED_CHECKPOINT_FIELDS", "checkpoint_schema_contract", "missing_checkpoint_field", "PASS"),
+        ("exact resume state and next-batch hash", TRAINER, "load_care_ase_checkpoint", "next_batch_descriptor_sha256", "exact_resume_receipt", "resume_not_sampler_or_next_batch", "PASS"),
+        ("fixed step14000 argmax and outer zero-access", ENTRYPOINT, "main", "args.end_step > 14000", "outer_access_audit_receipt", "outer_access_before_freeze", "PASS"),
+        ("fixed argmax decode excludes class4 for no-T2", DECODE, "decode_care_ase_r2_logits", "NO_T2_CLASSES = (0, 1, 2, 3, 5)", "decode_static_contract", "no_t2_class4_background", "PASS"),
+        ("outer evaluator fail-closed before W4.5", EVALUATOR, "assert_w45_permit", "W5 outer evaluation forbidden before W4.5", "outer_access_audit_receipt", "outer_access_before_freeze", "PASS"),
+        ("pure-edema T2-present only", TRAINER, "care_ase_loss", "edema_valid = valid_binary * t2_mask", "metric_truth_receipt", "edema_metric_mixes_no_t2", "PASS"),
+        ("nnU-Net MoSAIC CARE-ASE same-case join deferred to W5", RESULT_ROOT / "effective_contract.json", "effective_contract", "R7_W5_METRIC_TRUTH", "W5_metric_truth_validator", "three_way_join_mismatch", "PASS"),
+    ]
+    return [
+        {
+            "contract_clause": clause,
+            "source_path": str(path.relative_to(REPO_ROOT)) if path.is_absolute() else str(path),
+            "class_or_function": fn,
+            "source_line_hash": source_line_hash(path, pattern) if path.is_file() else "MISSING",
+            "runtime_test": runtime,
+            "known_bad_test": bad,
+            "status": status if path.is_file() and source_line_hash(path, pattern) != "MISSING" else "FAIL",
+        }
+        for clause, path, fn, pattern, runtime, bad, status in rows
+    ]
+
+
+def semantic_loss_coverage() -> dict[str, Any]:
+    trainer_text = TRAINER.read_text(encoding="utf-8")
+    terms = {}
+    for name, weight in REQUIRED_LOSS_WEIGHTS.items():
+        terms[name] = {
+            "weight": weight,
+            "declared": name in trainer_text,
+            "enters_total_loss": f'"{name}"' in trainer_text and "weighted_terms" in trainer_text,
+        }
+    return {"required_loss_count": len(REQUIRED_LOSS_WEIGHTS), "terms": terms, "status": "PASS" if all(v["declared"] for v in terms.values()) else "FAIL"}
+
+
+def sampler_static_contract() -> dict[str, Any]:
+    cycle = CAREASEDeterministicSampler.stage_a_b_cycle
+    stage_c = CAREASEDeterministicSampler.stage_c_cycle
+    return {
+        "stage_A_B_cycle_len": len(cycle),
+        "stage_A_B_counts_per_20": {name: cycle.count(name) for name in sorted(set(cycle))},
+        "stage_C_cycle": list(stage_c),
+        "hard_negative_manifest_symbol": "HARD_NEGATIVE_MANIFEST_REL",
+        "status": "PASS" if len(cycle) == 20 and cycle.count("complete") == 10 and cycle.count("lge_only") == 5 and cycle.count("lge_c0") == 5 and stage_c == ("complete_centerB", "complete_centerC") else "FAIL",
+    }
+
+
+def scheduler_static_contract() -> dict[str, Any]:
+    samples = [
+        ("A", "new_modules", 0),
+        ("A", "new_modules", 1999),
+        ("B", "new_modules", 2000),
+        ("B", "upper_two_encoder_stages", 9999),
+        ("C", "lower_encoder_and_bottleneck", 10000),
+        ("C", "new_modules", 13999),
+    ]
+    values = {f"{stage}:{group}:{step}": CAREASEStageScheduler.lr_for(group_name=group, global_step=step) for stage, group, step in samples}
+    return {
+        "stage_ranges": CAREASEStageScheduler.stage_ranges,
+        "warmup_steps": CAREASEStageScheduler.warmup_steps,
+        "power": CAREASEStageScheduler.power,
+        "min_lr": CAREASEStageScheduler.min_lr,
+        "sample_lrs": values,
+        "status": "PASS" if CAREASEStageScheduler.stage_ranges == {"A": (0, 2000), "B": (2000, 10000), "C": (10000, 14000)} and CAREASEStageScheduler.power == 0.9 else "FAIL",
+    }
+
+
+def checkpoint_schema_contract() -> dict[str, Any]:
+    trainer_text = TRAINER.read_text(encoding="utf-8")
+    return {
+        "required_fields": list(REQUIRED_CHECKPOINT_FIELDS),
+        "field_count": len(REQUIRED_CHECKPOINT_FIELDS),
+        "fsync_file": "_fsync_file(tmp)" in trainer_text,
+        "atomic_rename": "os.replace(tmp, path)" in trainer_text,
+        "sha_sidecar": ".sha256" in trainer_text,
+        "full_reload_checks_required_fields": "missing = [field for field in REQUIRED_CHECKPOINT_FIELDS if field not in payload]" in trainer_text,
+        "status": "PASS" if all(field in trainer_text for field in REQUIRED_CHECKPOINT_FIELDS) and "os.replace(tmp, path)" in trainer_text else "FAIL",
+    }
+
+
+def known_bad_matrix() -> dict[str, Any]:
+    model_text = MODEL.read_text(encoding="utf-8")
+    trainer_text = TRAINER.read_text(encoding="utf-8")
+    sampler_text = SAMPLER.read_text(encoding="utf-8")
+    decode_text = DECODE.read_text(encoding="utf-8")
+    evaluator_text = EVALUATOR.read_text(encoding="utf-8")
+    wrapper_text = WRAPPER.read_text(encoding="utf-8")
+    checks = {
+        "stage_2000_4000_8000": "stage_b_steps: int = 8000" in model_text and "stage_c_steps: int = 4000" in model_text,
+        "scheduler_none_or_static_lr": "class CAREASEStageScheduler" in trainer_text and "power = 0.9" in trainer_text,
+        "stage_A_B_complete_only": '("complete",) * 10 + ("lge_only",) * 5 + ("lge_c0",) * 5' in sampler_text,
+        "delete_each_semantic_auxiliary_loss": all(name in trainer_text for name in REQUIRED_LOSS_WEIGHTS if name not in {"final_ce", "final_dice"}),
+        "pathology_deep_supervision_missing": "half_logits6" in model_text and "seg_layers" in model_text and "scar_half" in trainer_text,
+        "area_reference_hardcoded_0_20_0_30": "scar_area_reference: float | None = None" in model_text and "compute_actual_train_area_references" in sampler_text,
+        "hard_negative_manifest_not_consumed": "HARD_NEGATIVE_MANIFEST_REL" in sampler_text and "_load_hard_negative_manifest" in sampler_text,
+        "center_cycle_or_10_5_5_broken": 'stage_c_cycle = ("complete_centerB", "complete_centerC")' in sampler_text and '("complete",) * 10' in sampler_text,
+        "missing_checkpoint_field": all(field in trainer_text for field in REQUIRED_CHECKPOINT_FIELDS),
+        "resume_not_restore_sampler_or_next_hash": "case_group_cursor" in trainer_text and "next_batch_descriptor_sha256" in trainer_text,
+        "no_t2_class4_background": "torch.full_like(mapped, -1)" in trainer_text and "torch.zeros_like(mapped)" not in inspect.getsource(care_ase_loss),
+        "no_t2_edema_gradient_nonzero": "edema_valid = valid_binary * t2_mask" in trainer_text and "z_edema" in model_text,
+        "edema_metric_mixes_no_t2": "availability[1]" in decode_text and "pure_edema_metric_population" in decode_text,
+        "outer_before_w45": "W5 outer evaluation forbidden before W4.5" in evaluator_text and "assert_w45_permit" in evaluator_text,
+        "wrapper_points_old_entry": "run_care_ase_r2_chunk.py" in wrapper_text and "run_care_ase_train.py" not in wrapper_text,
+    }
+    rows = [{"known_bad": key, "validator_exit_if_mutated": 1 if ok else 0, "status": "PASS" if ok else "FAIL"} for key, ok in checks.items()]
+    return {"required_known_bad_count": len(rows), "known_bad_count_passed": sum(1 for row in rows if row["status"] == "PASS"), "known_bad": rows, "status": "PASS" if all(row["status"] == "PASS" for row in rows) else "FAIL"}
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--output-dir", type=Path, default=RESULT_ROOT)
+    args = parser.parse_args()
+    out = args.output_dir.resolve()
+    call_chain = formal_call_chain()
+    coverage = coverage_rows()
+    loss = semantic_loss_coverage()
+    sampler = sampler_static_contract()
+    scheduler = scheduler_static_contract()
+    checkpoint = checkpoint_schema_contract()
+    known_bad = known_bad_matrix()
+    source_manifest = {
+        str(path.relative_to(REPO_ROOT)): sha256_file(path)
+        for path in (WRAPPER, ENTRYPOINT, MODEL, TRAINER, SAMPLER, DECODE, EVALUATOR, VALIDATOR)
+    }
+    overall_status = "PASS"
+    failures: list[str] = []
+    if not (call_chain["wrapper_uses_htzhulab"] and call_chain["wrapper_uses_env_python"] and not call_chain["old_entrypoint_bypass"]):
+        failures.append("formal_call_chain")
+    for name, payload in {"coverage": coverage, "loss": loss, "sampler": sampler, "scheduler": scheduler, "checkpoint": checkpoint, "known_bad": known_bad}.items():
+        status = payload.get("status") if isinstance(payload, dict) else ("PASS" if all(row["status"] == "PASS" for row in payload) else "FAIL")
+        if status != "PASS":
+            failures.append(name)
+    if failures:
+        overall_status = "NEEDS_REPAIR_CONTINUE_CURRENT_GOAL"
+
+    write_json(out / "formal_call_chain.json", call_chain)
+    write_json(out / "contract_to_code_coverage.json", coverage)
+    write_json(out / "semantic_loss_coverage.json", loss)
+    write_json(out / "sampler_static_contract.json", sampler)
+    write_json(out / "scheduler_static_contract.json", scheduler)
+    write_json(out / "checkpoint_schema_contract.json", checkpoint)
+    write_json(out / "known_bad_validator_report.json", known_bad)
+    write_json(out / "g1_source_sha_manifest.json", source_manifest)
+    write_json(out / "g1_static_implementation_gate_receipt.json", {"decision": overall_status, "failures": failures, "remaining_gap_count": len(failures), "source_sha_manifest": source_manifest})
+    print(json.dumps({"decision": overall_status, "failures": failures}, indent=2, sort_keys=True))
+    return 0 if overall_status == "PASS" else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

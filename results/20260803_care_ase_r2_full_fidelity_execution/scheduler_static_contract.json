@@ -1,0 +1,28 @@
+{
+  "min_lr": 1e-06,
+  "power": 0.9,
+  "sample_lrs": {
+    "A:new_modules:0": 2.9999999999999997e-05,
+    "A:new_modules:1999": 1e-06,
+    "B:new_modules:2000": 2.9999999999999997e-05,
+    "B:upper_two_encoder_stages:9999": 1e-06,
+    "C:lower_encoder_and_bottleneck:10000": 1.0000000000000002e-06,
+    "C:new_modules:13999": 1e-06
+  },
+  "stage_ranges": {
+    "A": [
+      0,
+      2000
+    ],
+    "B": [
+      2000,
+      10000
+    ],
+    "C": [
+      10000,
+      14000
+    ]
+  },
+  "status": "PASS",
+  "warmup_steps": 250
+}

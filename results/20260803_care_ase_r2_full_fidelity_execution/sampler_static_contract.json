@@ -1,0 +1,14 @@
+{
+  "hard_negative_manifest_symbol": "HARD_NEGATIVE_MANIFEST_REL",
+  "stage_A_B_counts_per_20": {
+    "complete": 10,
+    "lge_c0": 5,
+    "lge_only": 5
+  },
+  "stage_A_B_cycle_len": 20,
+  "stage_C_cycle": [
+    "complete_centerB",
+    "complete_centerC"
+  ],
+  "status": "PASS"
+}

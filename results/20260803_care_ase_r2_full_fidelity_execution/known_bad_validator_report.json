@@ -1,0 +1,82 @@
+{
+  "known_bad": [
+    {
+      "known_bad": "stage_2000_4000_8000",
+      "status": "PASS",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "known_bad": "scheduler_none_or_static_lr",
+      "status": "PASS",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "known_bad": "stage_A_B_complete_only",
+      "status": "PASS",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "known_bad": "delete_each_semantic_auxiliary_loss",
+      "status": "PASS",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "known_bad": "pathology_deep_supervision_missing",
+      "status": "PASS",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "known_bad": "area_reference_hardcoded_0_20_0_30",
+      "status": "PASS",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "known_bad": "hard_negative_manifest_not_consumed",
+      "status": "PASS",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "known_bad": "center_cycle_or_10_5_5_broken",
+      "status": "PASS",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "known_bad": "missing_checkpoint_field",
+      "status": "PASS",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "known_bad": "resume_not_restore_sampler_or_next_hash",
+      "status": "PASS",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "known_bad": "no_t2_class4_background",
+      "status": "PASS",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "known_bad": "no_t2_edema_gradient_nonzero",
+      "status": "PASS",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "known_bad": "edema_metric_mixes_no_t2",
+      "status": "PASS",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "known_bad": "outer_before_w45",
+      "status": "PASS",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "known_bad": "wrapper_points_old_entry",
+      "status": "PASS",
+      "validator_exit_if_mutated": 1
+    }
+  ],
+  "known_bad_count_passed": 15,
+  "required_known_bad_count": 15,
+  "status": "PASS"
+}

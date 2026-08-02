@@ -1,0 +1,9 @@
+{
+  "candidate_commit_sha": null,
+  "effective_contract_sha256": "b3ea5986b7a2458f758f7353ab023cea85a9cb67a6fb7c7bf12e5bc10e61d09c",
+  "mutable_worktree_review": "forbidden",
+  "next_review_trigger": "first_behaviorally_complete_W1_candidate_exists",
+  "reviewer_session_id": "019fc386-dba4-7b72-a29f-06a657b4fc5f",
+  "round_id": "R0_W1_EARLY_DIFF",
+  "status": "INITIALIZED_WAITING_FOR_IMMUTABLE_CANDIDATE_COMMIT"
+}

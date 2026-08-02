@@ -1,0 +1,4 @@
+timestamp_utc,phase,git_head,decision,next_action,notes
+2026-08-02T17:19:04.476651+00:00,W0_G0,1622d0ddb7f983113a8947449ca1b4b75373d023,PASS,W1_G1_IMPLEMENTATION_REPAIR,No formal training submitted; outer labels/images not read; latest amendment removes G2.4/reviewer and fixes pretraining flow to G1->G2->G2.5->W3.
+2026-08-02T17:31:39.179825+00:00,CONTRACT_SYNC_CONTINUOUS_REVIEWER,6be72cc6b55b28765e737b5ede7fa144845a02ca,PASS,W1_G1_IMPLEMENTATION_REPAIR_THEN_R0,Absorbed continuous independent reviewer amendment; reviewer_session_id=019fc386-dba4-7b72-a29f-06a657b4fc5f; no manual gate; review failures force same-goal repair.
+2026-08-02T17:42:12.776727+00:00,W1_G1_STATIC_IMPLEMENTATION,6be72cc6b55b28765e737b5ede7fa144845a02ca,PASS_FOR_R0_CANDIDATE_PREP,CREATE_IMMUTABLE_R0_CANDIDATE_COMMIT_AND_SUBMIT_TO_REVIEWER,py_compile PASS; validate_care_ase_r2_g1 PASS; pytest tests/care_ase PASS; no formal training submitted.

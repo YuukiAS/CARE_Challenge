@@ -68,9 +68,12 @@ class CAREASEConfig:
     gradient_accumulation: int = 4
     gradient_clip_global_norm: float = 12.0
     stage_a_steps: int = 2000
-    stage_b_steps: int = 4000
-    stage_c_steps: int = 8000
+    stage_b_steps: int = 8000
+    stage_c_steps: int = 4000
     max_optimizer_steps: int = 14000
+    scar_area_reference: float | None = None
+    edema_area_reference: float | None = None
+    area_reference_source: str = "unset"
 
     @property
     def nnunet_config(self) -> CAREPRISMConfig:
@@ -228,8 +231,11 @@ class CAREASE(nn.Module):
         self.scar_c0_adapter = ModalityAdapter(out_channels=8)
         self.edema_t2_adapter = ModalityAdapter(out_channels=8)
         self.edema_c0_adapter = ModalityAdapter(out_channels=8)
-        self.register_buffer("scar_area_reference", torch.tensor(0.20, dtype=torch.float32))
-        self.register_buffer("edema_area_reference", torch.tensor(0.30, dtype=torch.float32))
+        scar_ref = 0.0 if config.scar_area_reference is None else float(config.scar_area_reference)
+        edema_ref = 0.0 if config.edema_area_reference is None else float(config.edema_area_reference)
+        self.register_buffer("scar_area_reference", torch.tensor(scar_ref, dtype=torch.float32))
+        self.register_buffer("edema_area_reference", torch.tensor(edema_ref, dtype=torch.float32))
+        self.area_reference_source = str(config.area_reference_source)
 
     @property
     def final_output_classes(self) -> tuple[int, ...]:
@@ -262,6 +268,13 @@ class CAREASE(nn.Module):
         prob = probability.clamp(0.01, 0.99)
         ref = torch.as_tensor(reference, dtype=prob.dtype, device=prob.device).clamp(0.01, 0.99)
         return torch.logit(prob) - torch.logit(ref)
+
+    def set_area_references(self, *, scar: float, edema: float, source: str) -> None:
+        if source != "actual_train_only":
+            raise ValueError("CARE-ASE R2 area references must be computed from actual-train cases only")
+        self.scar_area_reference.fill_(float(scar))
+        self.edema_area_reference.fill_(float(edema))
+        self.area_reference_source = source
 
     @staticmethod
     def extent_wall_ramp(global_step: int) -> float:
@@ -429,6 +442,33 @@ def build_care_ase_for_fold(fold: int, *, map_location: str | torch.device = "cp
     return CAREASE(CAREASEConfig.for_fold(fold), map_location=map_location)
 
 
+def build_care_ase_for_fold_with_area_references(
+    fold: int,
+    *,
+    scar_area_reference: float,
+    edema_area_reference: float,
+    map_location: str | torch.device = "cpu",
+) -> CAREASE:
+    base = CAREASEConfig.for_fold(fold)
+    config = CAREASEConfig(
+        fold=base.fold,
+        plans_path=base.plans_path,
+        checkpoint_path=base.checkpoint_path,
+        configuration=base.configuration,
+        split_before_highest_decoder_resolutions=base.split_before_highest_decoder_resolutions,
+        gradient_accumulation=base.gradient_accumulation,
+        gradient_clip_global_norm=base.gradient_clip_global_norm,
+        stage_a_steps=base.stage_a_steps,
+        stage_b_steps=base.stage_b_steps,
+        stage_c_steps=base.stage_c_steps,
+        max_optimizer_steps=base.max_optimizer_steps,
+        scar_area_reference=float(scar_area_reference),
+        edema_area_reference=float(edema_area_reference),
+        area_reference_source="actual_train_only",
+    )
+    return CAREASE(config, map_location=map_location)
+
+
 def care_ase_contract_summary(model: CAREASE) -> dict[str, Any]:
     named_params = dict(model.named_parameters())
     zero_projection_max_abs = {
@@ -449,6 +489,15 @@ def care_ase_contract_summary(model: CAREASE) -> dict[str, Any]:
         "normal_forward_must_not_read_stock_pathology_logits": True,
         "normal_forward_reads_stock_pathology_logits": False,
         "zero_init_projection_parameter_max_abs": zero_projection_max_abs,
+        "stage_steps": {
+            "A": model.config.stage_a_steps,
+            "B": model.config.stage_b_steps,
+            "C": model.config.stage_c_steps,
+            "total": model.config.max_optimizer_steps,
+        },
+        "area_reference_source": model.area_reference_source,
+        "scar_area_reference": float(model.scar_area_reference.detach().cpu()),
+        "edema_area_reference": float(model.edema_area_reference.detach().cpu()),
         "declared_component_entries": [
             "scar_coarse_proposal",
             "scar_component_center",

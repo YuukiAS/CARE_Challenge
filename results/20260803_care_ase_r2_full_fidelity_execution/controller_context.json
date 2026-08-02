@@ -1,0 +1,71 @@
+{
+  "branch_policy": "main_only",
+  "continuous_reviewer_addendum_path": "prompts/tasks/20260803_care_ase_r2_continuous_reviewer_addendum.md",
+  "continuous_reviewer_addendum_sha256": "211d8d3d60da7bbb54b45fd8180480efd631edf9494c6f76be72da703835695e",
+  "continuous_reviewer_amendment_path": "prompts/blueprints/CARE_ASE_R2_continuous_independent_reviewer_amendment_20260803.yaml",
+  "continuous_reviewer_amendment_sha256": "d51167acd31c46bb93944b2ec8ecb9e89c8acea52abc356adbef483f44be9f8d",
+  "continuous_reviewer_name": "care_ase_r2_continuous_reviewer",
+  "created_at_utc": "2026-08-02T17:19:04.476651+00:00",
+  "forbidden_old_goals": [
+    "CARE_ASE_R1_12h_faithful_repair",
+    "CARE_ASE_metric_truth_repair"
+  ],
+  "forbidden_pretraining_features": [
+    "G2.4",
+    "independent_reviewer",
+    "planning_critic",
+    "second_manual_continue_gate",
+    "science_metric_gate_before_W5"
+  ],
+  "g2_4_enabled": false,
+  "gate_failure_state": "NEEDS_REPAIR_CONTINUE_CURRENT_GOAL",
+  "head": "6be72cc6b55b28765e737b5ede7fa144845a02ca",
+  "latest_user_amendment_summary": "Continuous independent Reviewer amendment is active and supersedes prior no-reviewer/final-only-reviewer fields: review_required=true, review_mode=independent_thread, reviewer=separate_readonly, manual_continue_gate=false, review_failure_terminal_block=false. Reviewer failures return REVISE_CONTINUE_CURRENT_GOAL and force same-goal repair/re-review; they never terminate the Goal or ask the user, and they do not permit known-bad code to progress into irreversible stages.",
+  "manual_continue_gate": false,
+  "origin_main": "6be72cc6b55b28765e737b5ede7fa144845a02ca",
+  "phase": "W0_G0_SOURCE_SPLIT_RESOURCE_FREEZE",
+  "planning_critic_enabled": false,
+  "pretraining_flow": [
+    "G1_FULL_IMPLEMENTATION_GATE",
+    "R1_PASS_CONTINUE",
+    "G2_REAL_GPU_FIDELITY_GATE",
+    "R2_PASS_CONTINUE",
+    "G2_5_IMMUTABLE_TRAINING_SOURCE_COMMIT_PUSH_GATE",
+    "R3_PASS_CONTINUE",
+    "W3_FORMAL_TRAINING"
+  ],
+  "repo": "/users/a/e/aereinh/CARE",
+  "review_failure_terminal_block": false,
+  "review_mode": "independent_thread",
+  "review_required": true,
+  "review_rounds": [
+    "R0_W1_EARLY_DIFF",
+    "R1_G1_STATIC_FIDELITY",
+    "R2_G2_REAL_GPU_FIDELITY",
+    "R3_G2_5_FROZEN_SOURCE",
+    "R4_W3_FIRST_CHUNK",
+    "R5_W3_STAGE_C_TRANSITION",
+    "R6_W4_W4_5_FREEZE",
+    "R7_W5_METRIC_TRUTH",
+    "R8_W6_TERMINAL"
+  ],
+  "reviewer": "separate_readonly",
+  "reviewer_can_declare_goal_blocked": false,
+  "reviewer_decisions": [
+    "PASS_CONTINUE",
+    "REVISE_CONTINUE_CURRENT_GOAL"
+  ],
+  "reviewer_is_final_only": false,
+  "reviewer_isolation": {
+    "checkout_mode": "detached_readonly",
+    "mutable_worktree_review": "forbidden",
+    "suggested_checkout_root": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2",
+    "temporary_output_root": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_full_fidelity_execution/reviewer",
+    "tracked_summary_root": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer"
+  },
+  "reviewer_lifetime": "first_W1_candidate_through_W6_terminal_packet",
+  "reviewer_session_id": "019fc386-dba4-7b72-a29f-06a657b4fc5f",
+  "second_manual_gate": false,
+  "task_key": "20260803_care_ase_r2_full_fidelity_execution",
+  "user_amendment_summary": "Continuous independent Reviewer amendment is active and supersedes prior no-reviewer/final-only-reviewer fields: review_required=true, review_mode=independent_thread, reviewer=separate_readonly, manual_continue_gate=false, review_failure_terminal_block=false. Reviewer failures return REVISE_CONTINUE_CURRENT_GOAL and force same-goal repair/re-review; they never terminate the Goal or ask the user, and they do not permit known-bad code to progress into irreversible stages."
+}
