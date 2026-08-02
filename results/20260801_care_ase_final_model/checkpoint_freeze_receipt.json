@@ -1,0 +1,53 @@
+{
+  "fixed_checkpoint_name": "checkpoint_step14000.pt",
+  "folds": [
+    {
+      "batch_cursor_state": 0,
+      "checkpoint_path": "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step14000.pt",
+      "checkpoint_sha256": "53c05b86c17176852ac20c8645fc5ae8748496b9c7368da38b5fec3c911cb8d7",
+      "checkpoint_size_bytes": 546265867,
+      "extent_wall_ramp_value": 1.0,
+      "fold": 2,
+      "full_reload_final_logits_max_abs_error": 0.0,
+      "full_reload_parity_case_id": "Case2002",
+      "global_optimizer_step": 14000,
+      "has_optimizer_state": true,
+      "has_rng_state": true,
+      "inner_excluded": true,
+      "microbatch_cursor": 0,
+      "model_state_reload_max_abs_error": 0.0,
+      "next_batch_hash": "911de38c64309b530452362a3b923e2e00f3408fc787c9cd4069e3c19c7849bb",
+      "optimizer_state_loaded": true,
+      "payloads_identical_step": true,
+      "scheduler_state": "none_static_lr_contract",
+      "stage_id": "C",
+      "status": "PASS"
+    },
+    {
+      "batch_cursor_state": 0,
+      "checkpoint_path": "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step14000.pt",
+      "checkpoint_sha256": "d36917cd57ee2b0aa9fc212ae1483d3acc4d1cd06d28f8246485d62f7130d631",
+      "checkpoint_size_bytes": 546265803,
+      "extent_wall_ramp_value": 1.0,
+      "fold": 3,
+      "full_reload_final_logits_max_abs_error": 0.0,
+      "full_reload_parity_case_id": "Case2001",
+      "global_optimizer_step": 14000,
+      "has_optimizer_state": true,
+      "has_rng_state": true,
+      "inner_excluded": true,
+      "microbatch_cursor": 0,
+      "model_state_reload_max_abs_error": 0.0,
+      "next_batch_hash": "bab1f76eba7423960ff05f53ed42a45874c1964ecbd6badb849c97dd95e46501",
+      "optimizer_state_loaded": true,
+      "payloads_identical_step": true,
+      "scheduler_state": "none_static_lr_contract",
+      "stage_id": "C",
+      "status": "PASS"
+    }
+  ],
+  "no_checkpoint_selection": true,
+  "outer_access_count_before_freeze": 0,
+  "outer_access_receipts_before_freeze": [],
+  "status": "PASS"
+}

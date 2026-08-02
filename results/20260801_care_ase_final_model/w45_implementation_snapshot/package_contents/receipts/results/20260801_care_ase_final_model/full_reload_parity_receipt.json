@@ -1,0 +1,17 @@
+{
+  "folds": [
+    {
+      "fold": 2,
+      "full_reload_final_logits_max_abs_error": 0.0,
+      "full_reload_parity_case_id": "Case2002",
+      "model_state_reload_max_abs_error": 0.0
+    },
+    {
+      "fold": 3,
+      "full_reload_final_logits_max_abs_error": 0.0,
+      "full_reload_parity_case_id": "Case2001",
+      "model_state_reload_max_abs_error": 0.0
+    }
+  ],
+  "status": "PASS"
+}

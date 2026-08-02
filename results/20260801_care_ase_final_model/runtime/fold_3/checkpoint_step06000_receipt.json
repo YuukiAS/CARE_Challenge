@@ -1,0 +1,12 @@
+{
+  "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step06000.pt",
+  "extent_wall_ramp_value": 1.0,
+  "fixed_terminal_step14000": false,
+  "global_optimizer_step": 6000,
+  "has_optimizer_state": true,
+  "has_rng_state": true,
+  "microbatch_cursor": 0,
+  "next_batch_hash": "5d35913b07951016ed57d999d10d51ca8b298e27043a1135724d289ed5f6eb93",
+  "schema_version": 1,
+  "stage_id": "B"
+}

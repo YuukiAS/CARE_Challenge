@@ -1,0 +1,14 @@
+?? scripts/evaluation/care_ase/aggregate_care_ase_final.py
+?? scripts/evaluation/care_ase/build_hard_negative_manifest.py
+?? scripts/evaluation/care_ase/build_w45_implementation_snapshot.py
+?? scripts/evaluation/care_ase/evaluate_care_ase_outer.py
+?? scripts/training/care_ase/run_care_ase_train.py
+?? scripts/validation/validate_care_ase_final.py
+?? scripts/validation/validate_care_ase_freeze_reload.py
+?? scripts/validation/validate_care_ase_implementation.py
+?? scripts/validation/validate_care_ase_preflight.py
+?? scripts/validation/validate_care_ase_split_authority.py
+?? src/care_myocardium/models/care_ase.py
+?? src/care_myocardium/training/care_ase_trainer.py
+?? tests/care_ase/test_loss_and_gradient_contract.py
+?? tests/care_ase/test_no_t2_safety.py

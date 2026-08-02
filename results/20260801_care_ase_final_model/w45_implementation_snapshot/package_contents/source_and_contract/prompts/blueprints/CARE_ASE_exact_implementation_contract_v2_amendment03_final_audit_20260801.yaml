@@ -1,0 +1,307 @@
+contract_id: CARE_ASE_EXACT_IMPLEMENTATION_V2_AMENDMENT03_FINAL_AUDIT_20260801
+status: DESIGN_FINAL_AUDITED_NOT_AUTHORIZED
+base_contract: prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_20260801.yaml
+prior_amendments:
+  - prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_amendment01_20260801.yaml
+  - prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_amendment02_controller_only_interactive_20260801.yaml
+precedence: this_amendment_overrides_all_conflicting_base_prior_amendment_and_controller_draft_fields
+
+scientific_scope_override:
+  final_goal: simultaneously_beat_same_split_stock_nnunet_on_scar_and_pure_edema_without_using_stock_pathology_logits_at_normal_inference
+  no_new_component_classes_authorized: true
+  forbidden_shortcuts:
+    - selector_or_ensemble_between_care_ase_stock_or_mosaic
+    - posthoc_threshold_search
+    - per_case_decode_or_case_specific_coefficient
+    - outer_or_sentinel_driven_model_change
+    - auxiliary_head_claim_without_final_logit_intervention
+
+final_logit_authority_override:
+  anatomy_logits_0_3_source: retained_stock_anatomy_decoder_path
+  scar_logit_source: cloned_stock_highest_two_scar_decoder_stages_plus_zero_initialized_declared_evidence_injections
+  pure_edema_logit_source: cloned_stock_highest_two_edema_decoder_stages_plus_zero_initialized_declared_evidence_injections
+  stock_class4_class5_logit_read_add_distill_fallback_in_normal_forward: forbidden
+  t2_present_final_decode: argmax_softmax_over_z0_z1_z2_z3_z4_z5
+  no_t2_final_decode: argmax_softmax_over_z0_z1_z2_z3_z5
+  fixed_scar_priority_or_pathology_overwrite: forbidden
+
+component_entry_override:
+  scar_coarse_proposal:
+    tensors: [quarter_occupancy_logit, half_occupancy_logit]
+    final_entry: upsample_each_to_target_stage_then_separate_zero_init_1x1_projection_into_scar_half_and_full_resolution_cloned_stages
+    intended_error: full_volume_scar_false_negative_localization
+    intervention: zero_proposal_tensors_after_head_before_projection
+  scar_component_center:
+    tensors: [quarter_component_center_heatmap, half_component_center_heatmap]
+    final_entry: upsample_each_to_target_stage_then_separate_zero_init_1x1_projection_into_scar_half_and_full_resolution_cloned_stages
+    intended_error: small_thin_or_multicomponent_scar_location_recall
+    intervention: zero_center_heatmaps_after_head_before_projection
+  scar_context_negative_space:
+    tensor: scar_four_class_context_logits
+    final_entry: zero_init_1x1_projection_of_all_four_logits_into_scar_half_and_full_resolution_cloned_stages
+    intended_error: blood_pool_adjacent_and_remote_false_positive_suppression
+    intervention: zero_context_logits_after_head_before_projection
+  edema_injury_support:
+    tensor: half_resolution_injury_feature
+    final_entry: upsample_to_full_resolution_then_zero_init_1x1_projection_into_edema_full_resolution_cloned_stage
+    intended_error: center_c_whole_lesion_underactivation_and_scar_edema_relation_support
+    intervention: zero_injury_feature_after_head_before_projection
+  edema_boundary:
+    tensor: half_resolution_signed_boundary_prediction
+    final_entry: upsample_to_full_resolution_then_zero_init_1x1_projection_into_edema_full_resolution_cloned_stage
+    intended_error: diffuse_boundary_control_and_continuous_overexpansion
+    intervention: zero_boundary_prediction_after_head_before_projection
+  edema_context_negative_space:
+    tensor: edema_four_class_context_logits
+    final_entry: zero_init_1x1_projection_of_all_four_logits_into_edema_half_and_full_resolution_cloned_stages
+    intended_error: blood_pool_adjacent_and_remote_false_positive_suppression
+    intervention: zero_context_logits_after_head_before_projection
+  slice_extent_and_soft_wall:
+    final_entry: deterministic_additive_bias_to_final_scar_or_edema_logit_before_conditional_multiclass_competition
+    intended_error: slice_range_volume_calibration_and_soft_anatomy_support
+    intervention: set_ramp_multiplier_to_zero_only_for_intervention_forward
+  duplicate_scar_slice_presence_head_forbidden: true
+  scar_proposal_slice_presence_is_same_tensor_as_scar_extent_presence: true
+  every_intervention_uses_same_checkpoint_case_input_sliding_window_and_decode: true
+  intervention_receipt_metrics: [max_abs_final_logit_delta, changed_final_labels, Dice, HD95_mm, exact_HD_mm, component_count, remote_FP_volume_mm3, blood_pool_adjacent_FP_volume_mm3, volume_ratio]
+  inactive_component_rule:
+    condition: max_abs_final_logit_delta_le_1e_7_and_changed_final_labels_eq_0_on_all_predeclared_outer_cases_and_replacement_subgroups
+    status: INACTIVE_NO_MECHANISM_CLAIM
+    training_or_evaluation_may_still_complete: true
+    promotion_claim_from_component: forbidden
+
+extent_wall_bias_override:
+  ramp_global_step_definition: completed_optimizer_updates_before_current_forward
+  ramp_formula:
+    step_le_500: 0.0
+    step_gt_500_and_lt_2000: (global_optimizer_step_minus_500)_div_1500
+    step_ge_2000: 1.0
+  exact_boundary_values: {step_0: 0.0, step_500: 0.0, step_2000: 1.0}
+  ramp_evaluated_once_per_optimizer_step_and_shared_by_four_accumulation_microbatches: true
+  ramp_checkpoint_fields: [global_optimizer_step, stage_id, stage_step, extent_wall_ramp_value]
+  ramp_reload_assertion_max_abs_error: 0.0
+  ramp_reset_repeat_skip_or_recompute_from_stage_local_step: forbidden
+  probability_clamp: [0.01, 0.99]
+  area_reference_source: fold_actual_train_only
+  area_reference_population:
+    scar: positive_slices_with_gt_wall_voxels_gt_0
+    edema: t2_present_positive_slices_with_gt_wall_voxels_gt_0
+  area_reference_statistic: median_gt_pathology_voxels_div_gt_wall_voxels
+  area_reference_receipt: results/20260801_care_ase_final_model/extent_area_reference_receipt.json
+  centered_logit: logit_clamped_probability_minus_logit_clamped_reference
+  final_bias_formula:
+    scar: ramp_times_0_30_centered_logit_presence_plus_0_20_centered_logit_area_plus_0_15_logit_clamped_p_wall
+    edema: ramp_times_0_35_centered_logit_presence_plus_0_30_centered_logit_area_plus_0_10_logit_clamped_p_wall
+  presence_reference: 0.50
+  wall_reference: 0.50
+  per_slice_presence_and_area_broadcast_over_xyz: true
+  per_voxel_wall_bias: true
+  no_t2_edema_bias_computation_and_graph_entry: forbidden
+  hard_slice_zeroing_hard_wall_multiply_or_crop: forbidden
+
+context_and_oof_definition_override:
+  scar_context_priority: [scar, blood_pool_adjacent, normal_myocardium, remote_background, ignore]
+  edema_context_priority: [pure_edema, blood_pool_adjacent, normal_myocardium, remote_background, ignore]
+  scar_context_definitions:
+    scar: gt_label_5
+    blood_pool_adjacent: non_pathology_voxel_with_physical_distance_to_gt_lv_or_rv_le_3mm
+    normal_myocardium: gt_label_1_and_distance_to_gt_labels_2_3_4_5_gt_3mm
+    remote_background: gt_label_0_and_distance_to_gt_wall_union_ge_10mm
+    ignore: all_remaining_voxels
+  edema_context_definitions:
+    pure_edema: gt_label_4
+    blood_pool_adjacent: non_pathology_voxel_with_physical_distance_to_gt_lv_or_rv_le_3mm
+    normal_myocardium: gt_label_1_and_distance_to_gt_labels_2_3_4_5_gt_3mm
+    remote_background: gt_label_0_and_distance_to_gt_wall_union_ge_10mm
+    ignore: gt_label_5_or_all_remaining_voxels
+  edema_scar_voxels_as_normal_negative: forbidden
+  oof_low_volume_edema_case: gt_pure_edema_positive_and_stock_predicted_pure_edema_volume_div_gt_volume_le_0_25
+  oof_edema_fn_component: gt_pure_edema_component_recall_le_0_50
+  oof_edema_safe_fp_component: stock_predicted_pure_edema_component_precision_le_0_10_on_t2_present_case
+  oof_scar_fn_component: gt_scar_component_recall_le_0_50
+  oof_scar_fp_component: stock_predicted_scar_component_precision_le_0_10
+  oof_prediction_source: canonical_stock_fold_that_did_not_train_the_case
+  current_care_ase_online_or_in_sample_error_refresh: forbidden
+
+sampler_and_cursor_override:
+  patch_descriptor_is_frozen_before_loading_voxels: true
+  accumulation_microbatches_per_optimizer_step: 4
+  checkpoint_only_after_completed_optimizer_step_with_microbatch_cursor_zero: true
+  stage_a_and_b_case_supercycle_optimizer_steps:
+    length: 20
+    complete: 10
+    lge_only: 5
+    lge_c0: 5
+  complete_case_center_supercycle: alternating_center_b_center_c_with_replacement
+  complete_case_pathology_focus: alternating_scar_edema
+  partial_case_pathology_focus: scar_only
+  stage_c_case_supercycle_optimizer_steps:
+    length: 2
+    complete_center_b: 1
+    complete_center_c: 1
+  stage_c_pathology_focus: alternating_scar_edema
+  within_focus_sampling_percentages:
+    scar: {gt_component: 35, small_component: 20, oof_fn: 20, oof_fp: 15, random: 10}
+    edema: {positive: 35, oof_fn_or_low_volume: 20, boundary: 20, safe_fp: 15, random: 10}
+  deterministic_state_fields: [case_supercycle_cursor, center_cursor, pathology_focus_cursor, within_focus_cursor, sampler_rng_state, batch_descriptor_cursor, next_batch_descriptor_sha256]
+  resume_next_batch_descriptor_must_match_pre_save_prediction: true
+
+optimizer_scheduler_precision_override:
+  optimizer: AdamW
+  optimizer_moments_preserved_across_stage_transitions: true
+  parameter_assignment_rule: every_trainable_parameter_exactly_one_named_group_and_every_frozen_parameter_zero_groups
+  stage_a_groups:
+    new_modules: {lr: 5.0e-4, weight_decay: 1.0e-4}
+    cloned_scar_edema_transition_skip_and_conv_blocks: {lr: 1.0e-4, weight_decay: 1.0e-4}
+    cloned_pathology_deep_supervision_classifiers: {lr: 2.0e-4, weight_decay: 1.0e-4}
+  stage_b_groups:
+    all_new_modules: {lr: 3.0e-4, weight_decay: 1.0e-4}
+    all_decoder_paths_including_anatomy_and_cloned_pathology_stages: {lr: 1.0e-4, weight_decay: 1.0e-4}
+    upper_two_encoder_stages: {lr: 5.0e-5, weight_decay: 1.0e-4}
+  stage_c_groups:
+    all_new_modules: {lr: 1.0e-4, weight_decay: 1.0e-4}
+    all_decoder_paths_and_upper_two_encoder_stages: {lr: 5.0e-5, weight_decay: 1.0e-4}
+    lower_encoder_and_bottleneck: {lr: 1.0e-5, weight_decay: 1.0e-4}
+  scheduler: stage_local_linear_warmup_then_polynomial_decay_power_0_9_to_declared_min_lr
+  stage_a_warmup_optimizer_steps: 200
+  stage_b_warmup_optimizer_steps: 500
+  stage_c_warmup_optimizer_steps: 0
+  warmup_start_multiplier: 0.10
+  stage_transition_lr_change_is_contractual_and_optimizer_moments_do_not_reset: true
+  scheduler_uses_global_step_and_frozen_stage_boundaries: true
+  scheduler_state_fields: [global_optimizer_step, stage_id, stage_step, named_group_base_lrs, named_group_current_lrs, warmup_progress, polynomial_progress]
+  precision:
+    autocast: torch_cuda_bfloat16
+    grad_scaler: disabled
+    fp32_operations: [softmax_dice_reduction, focal_reduction, component_tversky, signed_edt_losses, relation_loss, metric_accumulation]
+  gradient_clip_global_norm: 12.0
+
+checkpoint_and_resume_override:
+  fixed_training_terminal_checkpoint_step: 14000
+  model_selection_from_inner: forbidden
+  inner_full_volume_evaluation_every_2000_steps: descriptive_monitor_only
+  inner_monitor_must_not_change: [checkpoint, learning_rate, stage_transition, loss_weight, decode, threshold, coefficient, sampler, training_duration, promotion]
+  checkpoint_save_steps: [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 11000, 12000, 13000, 14000]
+  checkpoint_atomic_protocol: write_tmp_fsync_file_fsync_parent_atomic_rename_sha256_then_full_reload
+  complete_checkpoint_required_fields:
+    - model
+    - optimizer
+    - scheduler
+    - precision_mode
+    - global_optimizer_step
+    - stage_id
+    - stage_step
+    - accumulation_microbatch_cursor
+    - python_rng
+    - numpy_rng
+    - torch_cpu_rng
+    - torch_cuda_rng_all_devices
+    - dataloader_worker_seed_state
+    - sampler_cursor
+    - batch_descriptor_cursor
+    - next_batch_descriptor_sha256
+    - extent_wall_ramp_value
+    - code_hash
+    - config_hash
+    - split_hash
+    - plans_hash
+    - stock_checkpoint_hash
+  exact_resume_assertions:
+    - accumulation_microbatch_cursor_eq_0
+    - next_global_optimizer_step_eq_saved_plus_1
+    - stage_and_scheduler_continuity
+    - next_batch_descriptor_sha256_match
+    - extent_wall_ramp_exact_match
+    - no_overlap_gap_or_duplicate_optimizer_step
+  partial_tmp_or_unreloadable_checkpoint_training_credit: zero
+
+fairness_and_outer_override:
+  reason_for_fixed_terminal_checkpoint: fold_specific_stock_initialization_has_seen_development_pool_inner_cases_so_inner_cannot_be_an_independent_checkpoint_selector
+  outer_access_before_step14000_checkpoint_sha_freeze: forbidden
+  final_checkpoint_per_fold: step14000_full_state_only
+  pooled_outer_aggregation: concatenate_fold2_and_fold3_outer_casewise_rows_then_compute_predeclared_metrics
+  same_case_baseline: corresponding_patient_held_out_stock_nnunet_prediction
+  decode_is_frozen_argmax_without_posthoc_search: true
+  sentinel_or_subgroup_results_cannot_change_model: true
+  if_case3008_or_case3009_nonouter_and_severe_subgroup_count_lt_2:
+    fallback_subgroup: two_outer_t2_present_center_c_cases_with_lowest_frozen_stock_pure_edema_sensitivity
+    freeze_time: before_any_care_ase_outer_prediction_is_read
+  if_fewer_than_two_outer_t2_present_center_c_cases_exist:
+    edema_promotion_gate: fail_without_operational_block
+  case2009_nonouter: descriptive_only
+
+runtime_continuity_and_no_run_override:
+  required_runtime_helper_files:
+    - scripts/ops/care_ase_controller_runtime.py
+    - tests/ops/test_care_ase_controller_runtime.py
+  primary_existing_allocation_job_id: 61220581
+  primary_command_prefix: srun_--jobid_61220581_--overlap
+  pre_w3_throughput_probe:
+    minimum_measured_optimizer_steps: 20
+    include_forward_backward_optimizer_checkpoint_and_one_full_volume_eval_overhead: true
+    estimator: p90_seconds_per_optimizer_step_times_remaining_steps_plus_measured_checkpoint_eval_overhead_plus_2_hours
+    compare_against_scontrol_end_time: true
+  storage_preflight:
+    filesystems: [runtime_root, checkpoint_root, log_root, lock_root]
+    checks: [df_bytes, df_inodes, user_quota_when_available, write_fsync_atomic_rename_probe]
+    required_free_bytes_formula: 1_25_times_remaining_checkpoint_count_times_measured_checkpoint_bytes_plus_3_times_measured_checkpoint_bytes_plus_20_GiB
+    safe_cleanup_scope: task_local_tmp_logs_and_superseded_incomplete_checkpoints_only
+    baseline_checkpoint_raw_data_and_other_task_results_deletion: forbidden
+  replacement_htzhulab_allocation:
+    trigger: estimated_completion_plus_2_hour_buffer_exceeds_current_scontrol_end_time
+    submit_before_current_allocation_expiry: true
+    exact_command_template: sbatch_--parsable_--partition=htzhulab_--qos=gpu_access_--ntasks=1_--cpus-per-task=8_--mem=64G_--gres=gpu:1_--time=5-00:00:00_--job-name=CareASE5d_--wrap=controller_allocation_holder
+    holder_behavior: trap_term_int_then_sleep_300_loop_with_heartbeat
+    captured_fields: [job_id, submit_time, partition, qos, tres, requested_end_time, command_sha256]
+    pending_monitor_interval_seconds: 300
+    when_running: switch_new_chunks_only_after_current_chunk_terminal_and_checkpoint_reload_pass
+    exact_resume_required: true
+  fold3_batch_interactive_race:
+    shared_lock_root: runtime/20260801_care_ase_final_model/locks/fold3
+    lock_primitive: atomic_mkdir_per_fold_per_chunk
+    owner_values: [batch_job_id, interactive_allocation_job_id]
+    winner_writes_owner_json_and_heartbeat: true
+    loser_exits_before_loading_training_batch_with_zero_credit: true
+    completed_chunk_done_receipt_prevents_duplicate_resume: true
+    if_batch_pending_after_fold2_complete: scancel_then_poll_squeue_every_15_seconds_for_300_seconds
+    if_batch_transitions_to_running_during_cancel: atomic_lock_decides_winner
+    duplicate_optimizer_step_across_attempts: forbidden
+  tmux_watcher:
+    session: care_ase_final_model
+    windows: [controller, allocation, fold2, fold3, finalizer]
+    heartbeat_interval_seconds: 60
+    state_path: results/20260801_care_ase_final_model/controller_runtime_state.json
+    restart_behavior: read_state_verify_hashes_and_resume_first_nonterminal_wave
+    watcher_exit_allowed_only_after_terminal_push_sha_equality_and_notification_receipt: true
+  slurm_accounting_delay:
+    sacct_poll_interval_seconds: 300
+    primary_wait_seconds: 3600
+    after_primary_wait: require_two_secondary_terminal_checks_600_seconds_apart_using_scontrol_log_exit_marker_and_checkpoint_terminal_receipt
+    secondary_accounting_receipt: results/20260801_care_ase_final_model/secondary_accounting_receipt.json
+    sacct_latency_alone_is_not_operational_block: true
+  push_retry:
+    attempts: 6
+    backoff_minutes: [1, 2, 4, 8, 16, 30]
+    fetch_origin_main_before_each_attempt: true
+    force_push: forbidden
+    remote_advanced_without_conflict: rebase_lightweight_task_commit_rerun_validators_then_retry
+    conflict: same_goal_reapply_reviewed_task_scope_rerun_validators_then_retry
+    success_requires_local_main_eq_origin_main_sha: true
+
+formal_activation_override:
+  current_design_audit_execution_authorized: false
+  current_design_audit_training_authorized: false
+  current_design_audit_slurm_submission_authorized: false
+  current_design_audit_validation_or_docker_authorized: false
+  future_formal_controller_must_reference_this_amendment: true
+  future_formal_controller_start_fields:
+    status: AUTHORIZED_BY_USER
+    allow_git_commit: true
+    auto_git_commit: true
+    allow_git_push: true
+    auto_git_push: true
+    new_training_authorized: true
+    validation_upload_authorized: false
+    docker_upload_authorized: false
+    hosted_metric_claim_authorized: false
+  missing_or_false_required_start_field_is_w0_fail_closed_repair_not_no_run: true

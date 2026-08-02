@@ -1,0 +1,12 @@
+{
+  "allocation_lock_helper_scope": "interactive-first via srun --jobid=61220581 --overlap; fold3 htzhulab-only lock handled by training entrypoint",
+  "checkpoint_path": "results/20260801_care_ase_final_model/w1_runtime_helper_smoke_checkpoint.pt",
+  "extent_wall_ramp_value": 0.0,
+  "global_optimizer_step": 0,
+  "has_optimizer_state": true,
+  "has_rng_state": true,
+  "microbatch_cursor": 0,
+  "schema_version": 1,
+  "stage_id": "A",
+  "status": "PASS"
+}

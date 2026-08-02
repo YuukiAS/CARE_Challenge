@@ -1,0 +1,16 @@
+{
+  "ast_forbidden_findings": [],
+  "coverage_items": {
+    "forbidden_ast_tokens_absent": true,
+    "no_t2_edema_gradient_zero": true,
+    "normal_forward_no_stock_pathology_logits": true,
+    "optimizer_groups_and_runtime_checkpoint": true,
+    "scar_edema_clone_highest_two_decoder_stages": true,
+    "step0_anatomy_scar_edema_parity": true,
+    "stock_encoder_bottleneck_low_mid_decoder": true,
+    "zero_init_component_final_logit_entries": true
+  },
+  "remaining_gap_count": 0,
+  "remaining_gaps": [],
+  "status": "PASS"
+}

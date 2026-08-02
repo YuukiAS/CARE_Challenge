@@ -1,0 +1,14 @@
+{
+  "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step14000.pt",
+  "extent_wall_ramp_value": 1.0,
+  "fixed_terminal_step14000": true,
+  "global_optimizer_step": 14000,
+  "has_optimizer_state": true,
+  "has_rng_state": true,
+  "log_path": "results/20260801_care_ase_final_model/runtime/fold_2/training_log.csv",
+  "microbatch_cursor": 0,
+  "next_batch_hash": "911de38c64309b530452362a3b923e2e00f3408fc787c9cd4069e3c19c7849bb",
+  "schema_version": 1,
+  "stage_id": "C",
+  "status": "PASS"
+}

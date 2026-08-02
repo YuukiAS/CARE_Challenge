@@ -1,0 +1,574 @@
+{
+  "excluded_large_artifact_patterns": [
+    "*.pt",
+    "*.pth",
+    "*.nii.gz",
+    "*.npz",
+    "*.npy",
+    "*.b2nd",
+    "training_log.csv"
+  ],
+  "included_files": [
+    {
+      "path": "prompts/blueprints/CARE_ASE_final_model_blueprint_20260801.md",
+      "sha256": "e36b7fad734a5daad99e4c5a75750c08f256e0c76a6a45d1897e63f9e6a92fb1",
+      "size_bytes": 27939,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "prompts/blueprints/CARE_ASE_final_model_blueprint_v2_20260801.md",
+      "sha256": "f6886e5ae5f59f763a460a9b1ac5dbfbf43e470e2d07c8ca0db605f41a1ccddb",
+      "size_bytes": 14413,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "prompts/blueprints/CARE_ASE_exact_implementation_contract_20260801.yaml",
+      "sha256": "3b9c681b3989ab580adb153a604496e8df01a6fa36190bb7c724f0176d91fe4f",
+      "size_bytes": 13795,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_20260801.yaml",
+      "sha256": "c67c0594e2e70140d8f645562ba4f7eb559b1b01eef621c16e6c11b1c881f513",
+      "size_bytes": 15077,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_amendment01_20260801.yaml",
+      "sha256": "e8c9dc7589026fc87d2917753422d51133c8a372a2e7a6a20d6da0cec7d36a96",
+      "size_bytes": 2262,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_amendment02_controller_only_interactive_20260801.yaml",
+      "sha256": "aa2650b6c3b1ddfd9604faeeac02c9d52fbd925da77d2b66d10e85c04d36d5e1",
+      "size_bytes": 7171,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_amendment03_final_audit_20260801.yaml",
+      "sha256": "8b7c7c04a191d938df52f70a8ef0ed6cea2ad32c893fe42fbb867e77b92fd62e",
+      "size_bytes": 17519,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "src/care_myocardium/models/care_ase.py",
+      "sha256": "95b475e9a5e2ff1c1d51d523db1eda76f4aeac81360246febfde2c296279b4b8",
+      "size_bytes": 23463,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "src/care_myocardium/training/care_ase_trainer.py",
+      "sha256": "a01dad2e0d4c52036362472933d7d1d4efeedc8b6221d21f2b6aa5e6ed24baf6",
+      "size_bytes": 10341,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "src/care_myocardium/data/care_ase_splits.py",
+      "sha256": "81303a9db1fa3171b907bd2a0e42185b86345c27871029457dccd6e2a2e9dbf5",
+      "size_bytes": 6329,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "src/care_myocardium/data/case_metadata.py",
+      "sha256": "56863a81160127dc820e0643b4a6848d6ccf808be72c90c89bcefe7698246983",
+      "size_bytes": 2521,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "scripts/training/care_ase/run_care_ase_train.py",
+      "sha256": "d4a613bc6160267538de83b71bf615ea4d87c15c2b06240af126973428e540b6",
+      "size_bytes": 10080,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "scripts/evaluation/care_ase/evaluate_care_ase_outer.py",
+      "sha256": "2fa78e3479af2042c2ba0215133890d9ceb148618342b3428e0d6842afdd583f",
+      "size_bytes": 15120,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "scripts/evaluation/care_ase/build_hard_negative_manifest.py",
+      "sha256": "0f7b3a3534dc5b8046e05e9111acc903fa46225743a0be3c5085f1e8bba8a5a7",
+      "size_bytes": 4602,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "scripts/evaluation/care_ase/aggregate_care_ase_final.py",
+      "sha256": "eb4921100c9148f88ba75e88804ed81332fbc11636fe9e90c8688adc4405bedd",
+      "size_bytes": 15861,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "scripts/evaluation/care_ase/build_w45_implementation_snapshot.py",
+      "sha256": "a448ad996a3f2e941da22baabbb6f8855b8cdec3382a79251dd678a23420e0de",
+      "size_bytes": 12869,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "scripts/validation/validate_care_ase_implementation.py",
+      "sha256": "cc69a1004c683c2d8a7858dded90723d151a15b1960e9d40c2ee8812346fb811",
+      "size_bytes": 10397,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "scripts/validation/validate_care_ase_preflight.py",
+      "sha256": "abed6651fc57af21208565a9a03f0178f7244875f2ae2a62e27acac4ca370310",
+      "size_bytes": 12595,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "scripts/validation/validate_care_ase_split_authority.py",
+      "sha256": "b0c5bef328ea8a0e57fa68edb8c1f8328312fcdc832f91a3c2f59a19e99fdd4a",
+      "size_bytes": 3153,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "scripts/validation/validate_care_ase_freeze_reload.py",
+      "sha256": "e0c41a1367eea2d2bffea62df7679428c0b1adad511057851787a13843977800",
+      "size_bytes": 7588,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "scripts/validation/validate_care_ase_final.py",
+      "sha256": "044c621b4610aef9d9caf93ed42bdac8c7c620285ccc1564a97b347aad46fe7f",
+      "size_bytes": 6515,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "tests/care_ase/test_loss_and_gradient_contract.py",
+      "sha256": "aa6c414226114ed1efdfc6b6f919fdc3af80a0086adb9382f550997c411b3b43",
+      "size_bytes": 1527,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "tests/care_ase/test_no_t2_safety.py",
+      "sha256": "37065d90dac1ebed9ecc2a14bbb20a0d56b5d06dc96b96748304918630bd54c3",
+      "size_bytes": 1063,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/contract_coverage.json",
+      "sha256": "fe42635ec26e8f8a420fdd5d38235a24172a47a92d7344fb7b5205d1d7fabd85",
+      "size_bytes": 529,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/stock_clone_and_parity_receipt.json",
+      "sha256": "c4e5dadd4f11732bcfe97d64c7a343a384d6372cfec5f0d1415bd5d5f16707bd",
+      "size_bytes": 862,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/parameter_group_coverage_receipt.json",
+      "sha256": "b8b81bd327a2fd4209975cb194b18204333baee01befcd90b58fa862321c9ca5",
+      "size_bytes": 1033,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/component_final_logit_wiring_receipt.json",
+      "sha256": "441af7733ff34920fed784e552da2aca20ce12af660d62ca46f7b6c334b20d63",
+      "size_bytes": 1778,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime_helper_contract_receipt.json",
+      "sha256": "e4503f4dc88231e618424f95d5f3baa6663dc1886c22b947b87858bd2ded87c3",
+      "size_bytes": 458,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/w2_preflight_receipt.json",
+      "sha256": "a274d12ebec9ec3c457d90dbaefd2f3cee3a30c67d3c17865ce89275204fe70b",
+      "size_bytes": 5892,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/w2_preflight_casewise.csv",
+      "sha256": "7c8209501ad0b3b9cc4c32b97c0b5d1f2b71c93c34d9e1557e2898eebb0c468a",
+      "size_bytes": 306,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/split_authority_receipt.json",
+      "sha256": "c57897e400e7d0126cc85a1d807c9f6c64032748f21c4b44b423a36eb0d13e19",
+      "size_bytes": 14622,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/split_authority_fold2.csv",
+      "sha256": "2c00a2bb4cbf949723b860be35bbba2fecb4278c66d80f3e80e35006e04b95fd",
+      "size_bytes": 29865,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/split_authority_fold3.csv",
+      "sha256": "020976da1a6e2da2d4b9eb41f90ba30444f33419d7965428d85d356660ab6d81",
+      "size_bytes": 29865,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/checkpoint_freeze_receipt.json",
+      "sha256": "77815a3fe0b0554c2ead87fee56b9175a1789e0a84cd895634977006d80b00ed",
+      "size_bytes": 2051,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/full_reload_parity_receipt.json",
+      "sha256": "b7b1a11b0c0921a5d1e3375331e0d445b048c891c2829dcec053f5bcc8401ed4",
+      "size_bytes": 394,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/outer_access_audit_receipt.json",
+      "sha256": "49dd279ffdec4acfd4f0bc025606e1f6bd25fdf810c8c534e65d24ef9bb08a68",
+      "size_bytes": 82,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_2/training_start_receipt.json",
+      "sha256": "6013280bf949564d027f4631cc83c584526ef81ca618ddfeb689df006fb37303",
+      "size_bytes": 1162,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_2/training_terminal_receipt.json",
+      "sha256": "76cc8c779603438679c64f2f67a3b82ccf5223c35895087ba8cc9ca33506210c",
+      "size_bytes": 551,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step01000_receipt.json",
+      "sha256": "88f2145bf87b3134bfb93c770ee73993829205f3bf918053faa311ded885a929",
+      "size_bytes": 459,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step02000_receipt.json",
+      "sha256": "d650ac675e2d2ce4885ccdfc37cffc0cd6538f972d883a4f69baffa8a06adc9f",
+      "size_bytes": 444,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step03000_receipt.json",
+      "sha256": "7c9a48dd76dba1609713e4691620d4d94b32a8ebecf8aba7055dcd8d888766ca",
+      "size_bytes": 444,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step04000_receipt.json",
+      "sha256": "a2362be3a9d4e1c11d7e32cfd316517f0d04b5be8a1dc4b59714ffa1e57004fe",
+      "size_bytes": 444,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step05000_receipt.json",
+      "sha256": "f9fd87701ee695d79f61e149891c6703f31f62297a47dc6b59bd372a3c6117bb",
+      "size_bytes": 444,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step06000_receipt.json",
+      "sha256": "9da3deab077c95c202ae08c159b8c8f847885e576bc6b48afed8f18585100d8a",
+      "size_bytes": 444,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step07000_receipt.json",
+      "sha256": "d9359d1c1afeae69af14ee9b65bf6d5e132fbca6c3160f7882850bb8a914cea6",
+      "size_bytes": 444,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step08000_receipt.json",
+      "sha256": "8edfd1fba8974fbe73bed6c98e6dfece72152e12fb90b7dbb1f4371624ea1c31",
+      "size_bytes": 444,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step09000_receipt.json",
+      "sha256": "3ab88395466eaeebbcb5eb32a6ab4b96af60eb97855e97c235e053cf7173f8cd",
+      "size_bytes": 444,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step10000_receipt.json",
+      "sha256": "18fcc27d45bd594e7574c86aee95d2f989d92ee9644f3394d4354c7fbf5f87ef",
+      "size_bytes": 445,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step11000_receipt.json",
+      "sha256": "bd01d45fa0afe346029622f6603e4bb76b82f7209d1fb9962a4129306a39d12e",
+      "size_bytes": 445,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step12000_receipt.json",
+      "sha256": "357f98c1688bcf7ddbc218ffef992abeb052a2b3602b2707ed3ba653d1d3888f",
+      "size_bytes": 445,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step13000_receipt.json",
+      "sha256": "a6e91094cb72d8bd3a771f4dbc1151cedd2fc991f057e7af4ed55b926a5d544d",
+      "size_bytes": 445,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step14000_receipt.json",
+      "sha256": "139c3ef9c40abbf69a0f4f332a4d4b8d651d3e708a1078066dc2d6b9f0111531",
+      "size_bytes": 444,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_3/training_start_receipt.json",
+      "sha256": "4bd61a48ca183b9ceb9e53493026aa8c41554604d17741cb17f5a7f912859df6",
+      "size_bytes": 1162,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_3/training_terminal_receipt.json",
+      "sha256": "9e50c1537a52b54c86bf1e2e4988ed9fa7ee34a89ccaf531518d1224c7d38625",
+      "size_bytes": 551,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step01000_receipt.json",
+      "sha256": "9c7878fcdf70a9e9e4e48259c56d68f0f6727211b6b5377a87f6dda2781cb16b",
+      "size_bytes": 459,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step02000_receipt.json",
+      "sha256": "3ca85d88024d1acefcaaf40d3907f8e212b8b8b7fc8fb53d99f7d06c898219ab",
+      "size_bytes": 444,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step03000_receipt.json",
+      "sha256": "86f047182ac07c367ebb2643d5ea6b7963a9fdee58f3c1e0e742c78dfd519389",
+      "size_bytes": 444,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step04000_receipt.json",
+      "sha256": "653ee576f0d5f7f745ed31e987d4d888b52ff8a47621cc3a33c74a77d1259f8c",
+      "size_bytes": 444,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step05000_receipt.json",
+      "sha256": "a120e367dff138f7bef93b9cdfdd46b9a78b461e72f4339ffed663b7efd1fde6",
+      "size_bytes": 444,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step06000_receipt.json",
+      "sha256": "7c41bcf79b18586af2d9a7195fb2f72e0f45af373b0d29c3b862f2873cc90a11",
+      "size_bytes": 444,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step07000_receipt.json",
+      "sha256": "5c4a05f023871a1a9003f1c6357b5eef2d43b5b3398309323974c9cf9c923160",
+      "size_bytes": 444,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step08000_receipt.json",
+      "sha256": "dd395a8e67613de665ec8df55215b574afef5a4649eed2dbc43ea7dc0249ee46",
+      "size_bytes": 444,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step09000_receipt.json",
+      "sha256": "6d59e91bf7c55e09b93acc27e9f7763ded6552039f5554b4e7cebf71f351a481",
+      "size_bytes": 444,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step10000_receipt.json",
+      "sha256": "c7a751f17932e8065f4bf4766913bfcb34cee015b16cce4addc562c6dea00e26",
+      "size_bytes": 445,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step11000_receipt.json",
+      "sha256": "2d5311300342fa64d270f52e0c4a1dfd3ce93bde8023a62d1f4e51cd42333230",
+      "size_bytes": 445,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step12000_receipt.json",
+      "sha256": "126ce4adad98fa3bdc5e31223e18bd1d2d3d37b9319f0680d1441346127ee240",
+      "size_bytes": 445,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step13000_receipt.json",
+      "sha256": "e149e0215b82a8ce957abd4847c1fc706b36483049d4a477de56ba945ea4c2fb",
+      "size_bytes": 445,
+      "status": "INCLUDED"
+    },
+    {
+      "path": "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step14000_receipt.json",
+      "sha256": "bc8e6c2b71654176253ba3c7b09c2282f2fff4982373621c21e310e0c50fd8ea",
+      "size_bytes": 444,
+      "status": "INCLUDED"
+    }
+  ],
+  "non_blocking": true,
+  "not_a_critic_or_reviewer_gate": true,
+  "preconditions": {
+    "checks": {
+      "checkpoint_freeze_pass": true,
+      "fold2_step_14000": true,
+      "fold3_step_14000": true,
+      "full_reload_parity_pass": true,
+      "outer_access_count_before_freeze_zero": true
+    },
+    "freeze": {
+      "fixed_checkpoint_name": "checkpoint_step14000.pt",
+      "folds": [
+        {
+          "batch_cursor_state": 0,
+          "checkpoint_path": "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step14000.pt",
+          "checkpoint_sha256": "53c05b86c17176852ac20c8645fc5ae8748496b9c7368da38b5fec3c911cb8d7",
+          "checkpoint_size_bytes": 546265867,
+          "extent_wall_ramp_value": 1.0,
+          "fold": 2,
+          "full_reload_final_logits_max_abs_error": 0.0,
+          "full_reload_parity_case_id": "Case2002",
+          "global_optimizer_step": 14000,
+          "has_optimizer_state": true,
+          "has_rng_state": true,
+          "inner_excluded": true,
+          "microbatch_cursor": 0,
+          "model_state_reload_max_abs_error": 0.0,
+          "next_batch_hash": "911de38c64309b530452362a3b923e2e00f3408fc787c9cd4069e3c19c7849bb",
+          "optimizer_state_loaded": true,
+          "payloads_identical_step": true,
+          "scheduler_state": "none_static_lr_contract",
+          "stage_id": "C",
+          "status": "PASS"
+        },
+        {
+          "batch_cursor_state": 0,
+          "checkpoint_path": "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step14000.pt",
+          "checkpoint_sha256": "d36917cd57ee2b0aa9fc212ae1483d3acc4d1cd06d28f8246485d62f7130d631",
+          "checkpoint_size_bytes": 546265803,
+          "extent_wall_ramp_value": 1.0,
+          "fold": 3,
+          "full_reload_final_logits_max_abs_error": 0.0,
+          "full_reload_parity_case_id": "Case2001",
+          "global_optimizer_step": 14000,
+          "has_optimizer_state": true,
+          "has_rng_state": true,
+          "inner_excluded": true,
+          "microbatch_cursor": 0,
+          "model_state_reload_max_abs_error": 0.0,
+          "next_batch_hash": "bab1f76eba7423960ff05f53ed42a45874c1964ecbd6badb849c97dd95e46501",
+          "optimizer_state_loaded": true,
+          "payloads_identical_step": true,
+          "scheduler_state": "none_static_lr_contract",
+          "stage_id": "C",
+          "status": "PASS"
+        }
+      ],
+      "no_checkpoint_selection": true,
+      "outer_access_count_before_freeze": 0,
+      "outer_access_receipts_before_freeze": [],
+      "status": "PASS"
+    },
+    "full_reload_parity": {
+      "folds": [
+        {
+          "fold": 2,
+          "full_reload_final_logits_max_abs_error": 0.0,
+          "full_reload_parity_case_id": "Case2002",
+          "model_state_reload_max_abs_error": 0.0
+        },
+        {
+          "fold": 3,
+          "full_reload_final_logits_max_abs_error": 0.0,
+          "full_reload_parity_case_id": "Case2001",
+          "model_state_reload_max_abs_error": 0.0
+        }
+      ],
+      "status": "PASS"
+    },
+    "outer_access_audit": {
+      "evidence": [],
+      "outer_access_count_before_freeze": 0,
+      "status": "PASS"
+    },
+    "status": "PASS"
+  },
+  "snapshot_kind": "W4.5_IMPLEMENTATION_SNAPSHOT",
+  "status": "PASS",
+  "w3_stage_scheduler_checkpoint_summary": {
+    "csv": "results/20260801_care_ase_final_model/w45_implementation_snapshot/package_contents/receipts/w3_stage_scheduler_checkpoint_summary.csv",
+    "json": "results/20260801_care_ase_final_model/w45_implementation_snapshot/package_contents/receipts/w3_stage_scheduler_checkpoint_summary.json",
+    "summary": {
+      "fold_2": {
+        "checkpoint_receipts": [
+          "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step01000_receipt.json",
+          "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step02000_receipt.json",
+          "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step03000_receipt.json",
+          "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step04000_receipt.json",
+          "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step05000_receipt.json",
+          "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step06000_receipt.json",
+          "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step07000_receipt.json",
+          "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step08000_receipt.json",
+          "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step09000_receipt.json",
+          "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step10000_receipt.json",
+          "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step11000_receipt.json",
+          "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step12000_receipt.json",
+          "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step13000_receipt.json",
+          "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step14000_receipt.json"
+        ],
+        "first_step": 1,
+        "last_step": 14000,
+        "resume_receipts": [],
+        "scheduler_state": "none_static_lr_contract",
+        "stage_counts": {
+          "A": 2000,
+          "B": 4000,
+          "C": 8000
+        },
+        "terminal_global_optimizer_step": 14000,
+        "terminal_receipt": "results/20260801_care_ase_final_model/runtime/fold_2/training_terminal_receipt.json"
+      },
+      "fold_3": {
+        "checkpoint_receipts": [
+          "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step01000_receipt.json",
+          "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step02000_receipt.json",
+          "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step03000_receipt.json",
+          "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step04000_receipt.json",
+          "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step05000_receipt.json",
+          "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step06000_receipt.json",
+          "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step07000_receipt.json",
+          "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step08000_receipt.json",
+          "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step09000_receipt.json",
+          "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step10000_receipt.json",
+          "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step11000_receipt.json",
+          "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step12000_receipt.json",
+          "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step13000_receipt.json",
+          "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step14000_receipt.json"
+        ],
+        "first_step": 1,
+        "last_step": 14000,
+        "resume_receipts": [],
+        "scheduler_state": "none_static_lr_contract",
+        "stage_counts": {
+          "A": 2000,
+          "B": 4000,
+          "C": 8000
+        },
+        "terminal_global_optimizer_step": 14000,
+        "terminal_receipt": "results/20260801_care_ase_final_model/runtime/fold_3/training_terminal_receipt.json"
+      }
+    }
+  }
+}

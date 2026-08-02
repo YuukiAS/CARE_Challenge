@@ -1,0 +1,60 @@
+{
+  "fold_2": {
+    "checkpoint_receipts": [
+      "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step01000_receipt.json",
+      "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step02000_receipt.json",
+      "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step03000_receipt.json",
+      "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step04000_receipt.json",
+      "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step05000_receipt.json",
+      "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step06000_receipt.json",
+      "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step07000_receipt.json",
+      "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step08000_receipt.json",
+      "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step09000_receipt.json",
+      "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step10000_receipt.json",
+      "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step11000_receipt.json",
+      "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step12000_receipt.json",
+      "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step13000_receipt.json",
+      "results/20260801_care_ase_final_model/runtime/fold_2/checkpoint_step14000_receipt.json"
+    ],
+    "first_step": 1,
+    "last_step": 14000,
+    "resume_receipts": [],
+    "scheduler_state": "none_static_lr_contract",
+    "stage_counts": {
+      "A": 2000,
+      "B": 4000,
+      "C": 8000
+    },
+    "terminal_global_optimizer_step": 14000,
+    "terminal_receipt": "results/20260801_care_ase_final_model/runtime/fold_2/training_terminal_receipt.json"
+  },
+  "fold_3": {
+    "checkpoint_receipts": [
+      "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step01000_receipt.json",
+      "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step02000_receipt.json",
+      "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step03000_receipt.json",
+      "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step04000_receipt.json",
+      "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step05000_receipt.json",
+      "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step06000_receipt.json",
+      "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step07000_receipt.json",
+      "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step08000_receipt.json",
+      "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step09000_receipt.json",
+      "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step10000_receipt.json",
+      "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step11000_receipt.json",
+      "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step12000_receipt.json",
+      "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step13000_receipt.json",
+      "results/20260801_care_ase_final_model/runtime/fold_3/checkpoint_step14000_receipt.json"
+    ],
+    "first_step": 1,
+    "last_step": 14000,
+    "resume_receipts": [],
+    "scheduler_state": "none_static_lr_contract",
+    "stage_counts": {
+      "A": 2000,
+      "B": 4000,
+      "C": 8000
+    },
+    "terminal_global_optimizer_step": 14000,
+    "terminal_receipt": "results/20260801_care_ase_final_model/runtime/fold_3/training_terminal_receipt.json"
+  }
+}
