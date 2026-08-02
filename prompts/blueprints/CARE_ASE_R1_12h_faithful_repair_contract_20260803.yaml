@@ -1,0 +1,334 @@
+contract_id: CARE_ASE_R1_12H_FAITHFUL_REPAIR_20260803
+status: AUTHORIZED_BY_USER
+repository: /users/a/e/aereinh/CARE
+remote: YuukiAS/CARE_Challenge
+branch_policy: main_only
+base_main_commit: 64a69d42bc84fe458757cc3ff545cdcf02a69520
+supersedes_as_single_active_goal:
+  - prompts/blueprints/CARE_ASE_metric_truth_repair_contract_20260803.yaml
+  - prompts/tasks/20260803_care_ase_metric_truth_repair_controller.md
+
+purpose:
+  primary: repair_the_known_CARE_ASE_implementation_deviations_and_run_a_faithful_12_hour_retraining_replication
+  scientific_target: beat_same_case_nnunet_oof_and_mosaic_clean_oof_on_both_scar_and_pure_edema
+  guarantee_policy: target_not_guarantee_results_must_be_reported_truthfully
+  secondary: complete_metric_truth_repair_for_the_prior_fold2_fold3_run
+
+authorization:
+  new_training_authorized: true
+  max_controller_wallclock_hours: 12
+  model_implementation_repair_authorized: true
+  train_folds: [1, 4]
+  validation_upload_authorized: false
+  docker_upload_authorized: false
+  challenge_upload_authorized: false
+  hosted_metric_claim_authorized: false
+  external_model_or_data_authorized: false
+  threshold_search_authorized: false
+  checkpoint_selection_authorized: false
+  outer_driven_design_authorized: false
+
+scientific_independence:
+  fold2_fold3_outer_already_accessed: true
+  fold2_fold3_role: posthoc_diagnostic_only
+  new_primary_replication_folds: [1, 4]
+  fold1_fold4_outer_must_not_be_read_before_W4_5_freeze: true
+  repair_decisions_must_be_derived_only_from_original_contract_and_implementation_audit: true
+  fold1_fold4_outer_results_must_not_change_model_checkpoint_decode_threshold_or_loss: true
+  note: fold1_and_fold4_are_fresh_for_CARE_ASE_but_not_claimed_never_seen_by_the_wider_project
+
+source_of_truth_precedence:
+  - prompts/blueprints/CARE_ASE_final_model_blueprint_v2_20260801.md
+  - prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_20260801.yaml
+  - prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_amendment01_20260801.yaml
+  - prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_amendment02_controller_only_interactive_20260801.yaml
+  - prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_amendment03_final_audit_20260801.yaml
+  - this_contract
+
+allowed_12h_overrides:
+  development_folds: [1, 4]
+  source_layout: existing_compact_python_layout_may_be_retained_to_avoid_risky_refactor
+  source_layout_condition: every_behavioral_model_loss_sampler_scheduler_checkpoint_and_metric_contract_must_be_exactly_enforced
+  fixed_terminal_checkpoint_per_fold: checkpoint_step14000.pt
+  model_selection_from_inner: forbidden
+  training_budget_reduction: forbidden
+  architecture_reduction: forbidden
+  auxiliary_loss_removal: forbidden
+  sampler_reduction: forbidden
+
+known_current_implementation_failures_that_must_be_repaired_before_training:
+  - id: stage_budget_mismatch
+    required: {stage_A: [0, 2000], stage_B: [2000, 10000], stage_C: [10000, 14000]}
+    observed_old_run: {stage_A_steps: 2000, stage_B_steps: 4000, stage_C_steps: 8000}
+  - id: scheduler_missing
+    required: stage_local_linear_warmup_then_polynomial_decay_power_0_9
+    observed_old_run: static_learning_rates_scheduler_state_none
+  - id: partial_modality_training_missing
+    required_stage_A_B_supercycle: {length: 20, complete: 10, lge_only: 5, lge_c0: 5}
+    observed_old_run: complete_only_true_for_all_14000_steps
+  - id: semantic_auxiliary_losses_missing
+    required: [anatomy4, wall, signed_endo_epi_distance, scar_dense, scar_component, scar_center, scar_extent, scar_context, edema_dense, injury, edema_boundary, edema_extent, edema_context, relation, pathology_deep_supervision]
+    observed_old_run: [multiclass, anatomy_ce, scar_binary, t2_gated_edema_binary]
+  - id: sampler_contract_simplified
+    required: [centerB_centerC_balance, pathology_focus_cycle, small_component, oof_fn, oof_fp, boundary, safe_negative]
+    observed_old_run: deterministic_case_cycle_and_region_type_rotation
+  - id: area_reference_hardcoded
+    required: actual_train_only_median_pathology_to_wall_area_fraction
+    observed_old_run: {scar: 0.20, edema: 0.30}
+  - id: exact_resume_incomplete
+    required: [model, optimizer, scheduler, precision_mode, global_step, stage_id, stage_step, microbatch_cursor, python_rng, numpy_rng, torch_cpu_rng, torch_cuda_rng_all, worker_seed, sampler_cursor, batch_descriptor_cursor, next_batch_sha, ramp, code_hash, config_hash, split_hash, plans_hash, stock_checkpoint_hash]
+    observed_old_run: basic_subset_only
+  - id: validator_false_pass
+    required: parse_effective_contract_and_fail_on_every_known_deviation
+    observed_old_run: presence_shape_and_smoke_only
+  - id: metric_population_error
+    required: pure_edema_T2_present_only
+    observed_old_run: no_T2_empty_empty_Dice_1_rows_in_all_outer_mean
+  - id: baseline_comparison_missing
+    required: same_case_CARE_ASE_vs_nnunet_oof_vs_mosaic_clean_oof
+    observed_old_run: CARE_ASE_only
+
+model_contract:
+  input_order: [LGE, T2, C0]
+  labels: {background: 0, healthy_myocardium: 1, lv: 2, rv: 3, pure_edema: 4, scar: 5}
+  stock_inheritance: complete_encoder_bottleneck_low_mid_decoder_and_anatomy_top_stages
+  scar_top_path: exact_clone_of_stock_highest_two_decoder_stages
+  edema_top_path: exact_clone_of_stock_highest_two_decoder_stages
+  clone_includes: [transition, skip_fusion, convolution_blocks, deep_supervision_classifier]
+  pathology_extra_evidence_entry: separate_zero_initialized_residual_projections
+  normal_inference_reads_stock_class4_or_class5_logits: false
+  step0_final_logit_parity_max_abs: 1.0e-6
+  stock_parameter_byte_coverage_min: 0.99
+  hard_roi_crop: forbidden
+  hard_wall_transform: forbidden
+  selector_or_ensemble: forbidden
+  fixed_scar_priority: forbidden
+  posthoc_threshold_search: forbidden
+
+anatomy_and_context_contract:
+  anatomy_target: remap_labels_4_and_5_to_1
+  required_outputs: [anatomy_logits_0_3, p_wall_union, p_lv, p_rv, signed_endo_distance, signed_epi_distance, wall_depth_rho]
+  wall_union_labels: [1, 4, 5]
+  pathology_context_detached: true
+  distance_target: physical_signed_edt_clipped_10mm_divided_10
+  hard_anatomy_multiply_or_crop: forbidden
+
+semantic_auxiliary_contract:
+  scar:
+    proposal_scales: [quarter, half]
+    targets: [occupancy, component_center_heatmap, slice_presence, slice_area, four_class_context]
+    context_priority: [scar, blood_pool_adjacent, normal_myocardium, remote_background, ignore]
+    component_connectivity: 26
+    center_sigma_inplane_mm: 4.0
+    center_sigma_z_slices: 1.0
+    keep_all_gt_components: true
+  edema:
+    targets: [pure_edema_dense, injury_4_or_5, signed_boundary, slice_presence, slice_area, four_class_context]
+    context_priority: [pure_edema, blood_pool_adjacent, normal_myocardium, remote_background, ignore]
+    scar_voxels_in_edema_context: ignore
+    t2_present_only: true
+    no_t2_negative_sampling: forbidden
+  deep_supervision:
+    scar_and_edema_highest_two_scales: required
+    weights: exact_stock_nnunet_scale_weights_normalized_over_available_scales
+  loss_weights_source: prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_20260801.yaml
+  every_loss_requires: [denominator_receipt, nonzero_gradient_on_valid_fixture, exact_zero_on_invalid_population, on_off_receipt]
+
+sampler_contract:
+  patch_descriptor_frozen_before_voxel_loading: true
+  gradient_accumulation_microbatches: 4
+  stage_A_B_supercycle: {length: 20, complete: 10, lge_only: 5, lge_c0: 5}
+  complete_center_cycle: alternating_CenterB_CenterC_with_replacement
+  complete_pathology_focus: alternating_scar_edema
+  partial_pathology_focus: scar_only
+  stage_C_supercycle: {length: 2, centerB_complete: 1, centerC_complete: 1}
+  stage_C_pathology_focus: alternating_scar_edema
+  scar_focus_percentages: {gt_component: 35, small_component: 20, oof_fn: 20, oof_fp: 15, random: 10}
+  edema_focus_percentages: {positive: 35, oof_fn_or_low_volume: 20, boundary: 20, safe_fp: 15, random: 10}
+  oof_source: canonical_patient_held_out_stock_prediction
+  hard_negative_manifest_must_be_consumed_by_sampler: true
+  current_model_online_error_refresh: forbidden
+
+training_contract:
+  optimizer: AdamW
+  physical_batch: 1
+  gradient_accumulation: 4
+  gradient_clip_global_norm: 12.0
+  precision: bf16_autocast_with_sensitive_reductions_fp32
+  weight_decay: 1.0e-4
+  total_optimizer_steps_per_fold: 14000
+  stages:
+    A:
+      range: [0, 2000]
+      warmup_steps: 200
+      new_modules_lr: 5.0e-4
+      cloned_top_blocks_lr: 1.0e-4
+      cloned_pathology_classifiers_lr: 2.0e-4
+    B:
+      range: [2000, 10000]
+      warmup_steps: 500
+      new_modules_lr: 3.0e-4
+      all_decoder_lr: 1.0e-4
+      upper_two_encoder_stages_lr: 5.0e-5
+      lower_encoder_frozen: true
+    C:
+      range: [10000, 14000]
+      warmup_steps: 0
+      population: actual_train_complete_only
+      new_modules_lr: 1.0e-4
+      all_decoder_and_upper_two_encoder_lr: 5.0e-5
+      lower_encoder_and_bottleneck_lr: 1.0e-5
+  scheduler: stage_local_linear_warmup_then_polynomial_decay_power_0_9
+  optimizer_moments_preserved_across_stage_transitions: true
+  fixed_checkpoint: step14000_only
+  inner_monitor_only: true
+  early_stop_or_stage_skip: forbidden
+
+area_reference_contract:
+  source_population: fold_specific_actual_train_only
+  scar_reference: median_scar_to_gt_wall_area_fraction_on_scar_positive_slices
+  edema_reference: median_pure_edema_to_gt_wall_area_fraction_on_T2_present_edema_positive_slices
+  inner_or_outer_access: forbidden
+  receipt_required: true
+
+checkpoint_resume_contract:
+  save_every_steps: 1000
+  save_only_after_completed_optimizer_step_and_microbatch_cursor_zero: true
+  atomic_protocol: tmp_write_fsync_file_fsync_parent_atomic_rename_sha256_full_reload
+  complete_fields: [model, optimizer, scheduler, precision_mode, global_step, stage_id, stage_step, microbatch_cursor, python_rng, numpy_rng, torch_cpu_rng, torch_cuda_rng_all, dataloader_worker_seed, sampler_cursor, batch_descriptor_cursor, next_batch_descriptor_sha256, extent_wall_ramp_value, code_hash, config_hash, split_hash, plans_hash, stock_checkpoint_hash]
+  resume_assertions: [next_global_step_saved_plus_1, stage_scheduler_continuity, next_batch_hash_match, ramp_match, no_overlap_gap_duplicate]
+
+validator_contract:
+  effective_contract_json_required: true
+  validator_must_parse_all_source_contracts: true
+  known_bad_fixtures:
+    - old_stage_2000_4000_8000_must_fail
+    - scheduler_none_must_fail
+    - complete_only_all_steps_must_fail
+    - missing_each_semantic_auxiliary_loss_must_fail
+    - hardcoded_area_reference_must_fail
+    - hard_negative_manifest_not_consumed_must_fail
+    - missing_each_checkpoint_field_must_fail
+    - no_t2_edema_gradient_nonzero_must_fail
+    - no_t2_edema_in_metric_denominator_must_fail
+  W1_pass_requires_remaining_gap_count: 0
+  W2_required_runtime_checks:
+    - step0_final_logit_parity
+    - each_auxiliary_loss_valid_gradient
+    - each_invalid_population_exact_zero
+    - sampler_200_step_composition_exact
+    - stage_trainability_and_lr_at_boundary_steps
+    - scheduler_values_at_predeclared_steps
+    - area_reference_recomputation_match
+    - one_batch_overfit
+    - full_volume_inference_smoke
+    - save_reload_and_next_batch_hash
+    - module_off_final_logit_and_label_effect
+
+runtime_12h_contract:
+  clock_start: controller_start_utc
+  hard_deadline_hours: 12
+  target_phase_deadlines_hours: {W0_W1: 1.5, W2: 2.5, W3: 10.0, W4_W5_W6: 12.0}
+  primary_partition: htzhulab
+  preferred_existing_allocation: 61220581
+  train_folds_parallel: [1, 4]
+  one_executor_multiple_isolated_slurm_steps_allowed: true
+  separate_runtime_dirs_locks_logs_and_gpu_binding_required: true
+  throughput_probe_steps_per_fold: 50
+  P90_training_plus_eval_estimate_must_fit_remaining_deadline: true
+  if_two_training_lanes_not_available_by_hour_1_5:
+    launch_fold4_immediately_on_available_lane: true
+    continue_requesting_fold1_lane_until_hour_2_0: true
+  if_fold1_cannot_start_by_hour_2_0:
+    fold4_only_fallback: true
+    two_fold_superiority_claim_authorized: false
+    scientific_token_must_include: ONE_FOLD_REPLICATION_ONLY
+  forbidden_partitions: [a100, volta]
+  submitted_pending_running_preempted_awaiting_sacct: nonterminal
+  controller_must_remain_until_terminal_push_and_notification: true
+
+wave_graph:
+  W0: sync_sources_freeze_time_budget_and_fresh_fold_authority
+  W1: repair_full_behavioral_contract_and_build_runtime_target_cache
+  W2: strict_static_and_real_GPU_preflight_then_commit_push_exact_training_source
+  W3: parallel_fold1_fold4_fixed_14000_step_training
+  W4: full_reload_freeze_and_zero_fresh_outer_access_audit
+  W4_5: nonblocking_snapshot_commit_push_then_immediate_outer
+  W5: fresh_fold_outer_once_same_case_three_way_comparison_and_old_fold_metric_truth_repair
+  W6: mapper_validator_controller_report_commit_push_SHA_notify
+
+fresh_outer_evaluation_contract:
+  checkpoint: step14000_only
+  decode: fixed_argmax
+  t2_present: six_class_0_1_2_3_4_5
+  no_t2: five_class_0_1_2_3_5
+  folds: [1, 4]
+  scar_population: all_unique_outer_cases
+  pure_edema_population: T2_present_outer_cases_only
+  baselines: [nnunet_oof, mosaic_clean_oof]
+  baseline_source: results/20260730_care_failure_forensics_deep_research_packet/standardized_casewise_metrics.csv
+  join_key: case_id
+  same_case_set_required: true
+  required_outputs: [casewise_three_way, mean_median, help_harm_neutral, centerB_centerC, complete_noT2_scar, gt_positive, empty_prediction_audit, infinite_HD_audit]
+  physical_metric_comparison: only_when_same_metric_implementation_and_prediction_source_are_bound_for_all_models
+  fold2_fold3_old_result_role: posthoc_secondary_only
+
+scientific_decision:
+  primary_gate_population: completed_fresh_folds_only
+  beat_both_scar: care_ase_mean_scar_dice_gt_max_nnunet_mosaic
+  beat_both_edema: care_ase_mean_pure_edema_dice_gt_max_nnunet_mosaic
+  stability_requirements:
+    care_ase_harm_fraction_vs_nnunet_each_pathology_max: 0.50
+    no_catastrophic_empty_prediction_increase: true
+    centerC_edema_sensitivity_must_not_be_below_nnunet_when_bound: true
+  tokens:
+    - CARE_ASE_R1_BEATS_BOTH_ON_FRESH_FOLDS
+    - CARE_ASE_R1_PARTIAL_GAIN
+    - CARE_ASE_R1_NO_GAIN
+    - CARE_ASE_R1_ONE_FOLD_REPLICATION_ONLY
+    - CARE_ASE_R1_OPERATIONALLY_BLOCKED
+  truthful_negative_is_valid_completion: true
+
+required_result_root: results/20260803_care_ase_r1_12h_faithful_repair
+required_outputs:
+  - controller_context.json
+  - time_budget_ledger.json
+  - source_hash_manifest.json
+  - effective_contract.json
+  - implementation_gap_closure.json
+  - known_bad_validator_report.json
+  - target_cache_receipt.json
+  - sampler_contract_receipt.json
+  - optimizer_scheduler_contract_receipt.json
+  - loss_gradient_contract_receipt.json
+  - area_reference_receipt.json
+  - preflight_receipt.json
+  - training_source_commit_receipt.json
+  - fold1_or_fallback_training_receipts
+  - fold4_training_receipts
+  - checkpoint_freeze_receipt.json
+  - w45_snapshot_receipt.json
+  - fresh_three_way_casewise.csv
+  - fresh_three_way_summary.csv
+  - help_harm_summary.csv
+  - old_fold_metric_truth_repair.csv
+  - scientific_interpretation.md
+  - mapper_final_receipt.json
+  - strict_validator_report.json
+  - controller_report.md
+  - notification_brief.json
+
+agent_and_terminal_contract:
+  one_controller: true
+  one_executor: true
+  mapper_required: true
+  planning_critic: false
+  independent_reviewer: false
+  manual_continue_gate: false
+  same_goal_repair_until_terminal: true
+  executor_cannot_declare_goal_complete: true
+  commit_main: true
+  push_origin_main: true
+  force_push: false
+  notification_command: ./envs/env_CARE/bin/python controller_notifications/notify_goal_watcher.py --once
+  both_complete_and_blocked_require_commit_push_notify: true
