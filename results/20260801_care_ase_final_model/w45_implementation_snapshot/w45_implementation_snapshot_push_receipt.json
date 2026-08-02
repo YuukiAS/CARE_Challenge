@@ -1,0 +1,9 @@
+{
+  "audit_package_path": "results/20260801_care_ase_final_model/w45_implementation_snapshot/care_ase_w45_implementation_snapshot.tar",
+  "audit_package_sha256": "72a05df1bbc882f63780356a423bdeee74b50d5d98df51de1285d9eeffdf2227",
+  "implementation_snapshot_commit_sha": "9517fe1738be5a03bc5d9115dade618ca3bc31b8",
+  "invalid_implementation_run_policy": "If later GPT review finds a true contract implementation error, mark current W5 output INVALID_IMPLEMENTATION_RUN and rerun only the fixed evaluation contract from frozen step14000 checkpoints.",
+  "origin_main_sha_after_snapshot_push": "9517fe1738be5a03bc5d9115dade618ca3bc31b8",
+  "status": "PASS",
+  "w5_must_continue_without_manual_gate": true
+}
