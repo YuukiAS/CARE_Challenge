@@ -1,0 +1,17 @@
+{
+  "blocked_or_failure_reason": "",
+  "commit_status": "complete",
+  "evidence_paths": [
+    "/users/a/e/aereinh/CARE/results/20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff/docker_context_hotfix_receipt.json",
+    "/users/a/e/aereinh/CARE/results/20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff/myops_bundle_manifest.json",
+    "/users/a/e/aereinh/CARE/results/20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff/strict_validator_report.json",
+    "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff/transfer/WORKSTATION_HANDOFF.json",
+    "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff/transfer/SERVER_BUNDLE_READY.json"
+  ],
+  "final_status": "complete",
+  "key_conclusion": "MyoPS Dockerfile \u5df2\u4fee\u590d models \u590d\u5236\u7f3a\u53e3\uff0c\u65b0 workstation transfer \u5df2\u51c6\u5907\uff1bb94d3f \u51bb\u7ed3\u6a21\u578b\u5408\u540c\u4fdd\u6301\u4e0d\u53d8\uff0cCine archive \u539f\u5b57\u8282\u4fdd\u6301\u3002",
+  "next_step": "\u5de5\u4f4d WSL \u53ef\u5f00\u59cb MyoPS build/run/save \u548c Cine load/run/save\u3002",
+  "push_status": "complete",
+  "slurm_terminal_status": "No Slurm jobs were needed for this packaging-only hotfix.",
+  "task_name": "20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff"
+}

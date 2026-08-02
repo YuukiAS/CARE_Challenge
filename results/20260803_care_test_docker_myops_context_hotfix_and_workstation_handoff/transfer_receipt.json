@@ -1,0 +1,246 @@
+{
+  "cine": {
+    "archive_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff/transfer/CineMyoPS-OrganAgent.tar.gz",
+    "archive_sha256": "c02db56bd52d14d3b5bbda9d204a20b7e4c061fd5e6012ffa1cebc67fb92c136",
+    "archive_size_bytes": 672040570,
+    "cine_sentinel_cases": [
+      "Case1011",
+      "Case1006",
+      "Case1003"
+    ]
+  },
+  "created_at_utc": "2026-08-02T16:12:29.869475Z",
+  "myops_bundle": {
+    "all_bundle_files": [
+      {
+        "path": "README.md",
+        "sha256": "1dd32460f6971feb5e529e4a8791b86fd7214e5a6efbf3bb1a1b8475a62a5d4e",
+        "size_bytes": 676
+      },
+      {
+        "path": "contexts/MyoPS/Dockerfile",
+        "sha256": "46e533d7c7d74f2ec80202ef0c02ac6171473c51c50c7abb0b01b4709b755da6",
+        "size_bytes": 674
+      },
+      {
+        "path": "contexts/MyoPS/README.md",
+        "sha256": "9f88e41c4629fd476fbcefb2e30f002bd12cc612540b179fea1136021e35d780",
+        "size_bytes": 1022
+      },
+      {
+        "path": "contexts/MyoPS/entrypoint.sh",
+        "sha256": "6bd7b80ba80a7aee26638f1fce81d4e3cf99f3e5af7a97c4bff9924d71cfa53b",
+        "size_bytes": 71
+      },
+      {
+        "path": "contexts/MyoPS/models/.gitkeep",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_bytes": 0
+      },
+      {
+        "path": "contexts/MyoPS/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/dataset.json",
+        "sha256": "8437262d92fb898c8d16a89150efd4629602dd71e0fa5bbcf1c6c80cc3b535ae",
+        "size_bytes": 675
+      },
+      {
+        "path": "contexts/MyoPS/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_best.pth",
+        "sha256": "f139ca5525322d340a0284c6562a9bcb9cb9cae0a512e14ef40ce85a66f53278",
+        "size_bytes": 357374639
+      },
+      {
+        "path": "contexts/MyoPS/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/checkpoint_best.pth",
+        "sha256": "b92d56b1e24ce826081671acc4e048e5d48b191f6dcb9836747ae82d93acd1e2",
+        "size_bytes": 357341103
+      },
+      {
+        "path": "contexts/MyoPS/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_2/checkpoint_best.pth",
+        "sha256": "9e328bf4bd6ed9eeadac6f41c5de303c69dfc078dfeac3e64b26e18d3e09d38d",
+        "size_bytes": 357327215
+      },
+      {
+        "path": "contexts/MyoPS/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_3/checkpoint_best.pth",
+        "sha256": "9c2c2cf0dea4eb8a691c6680fabc66f6456233ba83867466a06ffd5abda3462b",
+        "size_bytes": 357354799
+      },
+      {
+        "path": "contexts/MyoPS/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_4/checkpoint_best.pth",
+        "sha256": "11c6ccfec5dc51be7c08f1713058412694e1b7def1c5d8cd5520f7f7568aeff2",
+        "size_bytes": 357367855
+      },
+      {
+        "path": "contexts/MyoPS/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/plans.json",
+        "sha256": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
+        "size_bytes": 11947
+      },
+      {
+        "path": "contexts/MyoPS/predict.py",
+        "sha256": "97238913481c2d39c5bc241361de0c36e8536ce634da452f787fa37eb098fefc",
+        "size_bytes": 5022
+      },
+      {
+        "path": "contexts/MyoPS/requirements.lock",
+        "sha256": "1969d7605484165bb2c669d48f228395e65613b852261eb4f831d3de581ab5d7",
+        "size_bytes": 274
+      },
+      {
+        "path": "evidence/collaborator_cinemyops_archive_audit.json",
+        "sha256": "fd1bf46222e622fdfa72047709e10f0b1dc1dd6014388b446f1ba42eb8d9db9d",
+        "size_bytes": 2526
+      },
+      {
+        "path": "evidence/nnunet_environment_fingerprint.json",
+        "sha256": "0d8f0e82573457cfa1392c6fa5a252b0e3166dd1fe2f8790ab80ef90326edd69",
+        "size_bytes": 558
+      },
+      {
+        "path": "evidence/nnunet_source_manifest.json",
+        "sha256": "42b2a4b780f6bf7457285e4dbf628d24f1cf227964918ebcb734eec21b8c7463",
+        "size_bytes": 65522
+      },
+      {
+        "path": "evidence/pure_nnunet_myops_15case_manifest.json",
+        "sha256": "bf91403703b9692a408d732967cfb776b43730e0891dd68a7386bf3c4d189f1e",
+        "size_bytes": 18683
+      },
+      {
+        "path": "evidence/pure_nnunet_myops_host_smoke_receipt.json",
+        "sha256": "0b1671baeeb578e408ca9a3e470ee5705de9c75e4f3e91832bcb9ca527ee954e",
+        "size_bytes": 2558
+      },
+      {
+        "path": "evidence/pure_nnunet_myops_sentinel_manifest.json",
+        "sha256": "8b61cbd3b932742e170648d072be64b8e76dcf4d2a75cc73dd43ad0ac5a766aa",
+        "size_bytes": 4075
+      },
+      {
+        "path": "evidence/revised_final_submission_model_contract.json",
+        "sha256": "f161d109e7f9524f2aa294b33b306c11cbc1177aafc946d22e6f6bf0b6b9e987",
+        "size_bytes": 4650
+      },
+      {
+        "path": "expected_outputs/myops/Case1001_pred.nii.gz",
+        "sha256": "436c0000eebf649f6b75065d1c76b922fe92086ffe5ba919570ff1c50cab2223",
+        "size_bytes": 3092
+      },
+      {
+        "path": "expected_outputs/myops/Case1004_pred.nii.gz",
+        "sha256": "7cf7b1a41aac87b4f11c73e6ecdb4ecf0138c6b035351f89a7566093dc3b7f30",
+        "size_bytes": 3489
+      },
+      {
+        "path": "expected_outputs/myops/Case1012_pred.nii.gz",
+        "sha256": "1a9a95ace46d46072ada5a92ac12cf07e00c8754e2132bc783473cda1c269f57",
+        "size_bytes": 1341
+      },
+      {
+        "path": "sentinel_inputs/myops/Case1001/Case1001_C0.nii.gz",
+        "sha256": "06c735d2726dd213402482f55163b98ffcf7276f28e69c2ca989bcc15113eafb",
+        "size_bytes": 298713
+      },
+      {
+        "path": "sentinel_inputs/myops/Case1001/Case1001_LGE.nii.gz",
+        "sha256": "7caea6328ed9ee26371bbb9d38f0b2c90898a8a1bb99de313cde5ebae256353a",
+        "size_bytes": 441219
+      },
+      {
+        "path": "sentinel_inputs/myops/Case1001/Case1001_T2.nii.gz",
+        "sha256": "33cee518f5ef5d9e8d047636e70e7094d67527a5f59ef9c66f2444a2ddd3cf97",
+        "size_bytes": 258022
+      },
+      {
+        "path": "sentinel_inputs/myops/Case1004/Case1004_C0.nii.gz",
+        "sha256": "72175f323e26aa285afe8e08ffd67fd3218897cc17b0c93004eedc07b80ab8d7",
+        "size_bytes": 387498
+      },
+      {
+        "path": "sentinel_inputs/myops/Case1004/Case1004_LGE.nii.gz",
+        "sha256": "fd43077c562dad7c7214a76845f2348ba1afa949ec23c67b6cb112583590505d",
+        "size_bytes": 530332
+      },
+      {
+        "path": "sentinel_inputs/myops/Case1004/Case1004_T2.nii.gz",
+        "sha256": "555d90a804e920501c9b8fe75ef307247986024445655cffadedfcc83dfee301",
+        "size_bytes": 331312
+      },
+      {
+        "path": "sentinel_inputs/myops/Case1012/Case1012_C0.nii.gz",
+        "sha256": "15edf84abf55c8ab98c515f05973e127d49104e47c1ea001e583f07772d178a0",
+        "size_bytes": 104646
+      },
+      {
+        "path": "sentinel_inputs/myops/Case1012/Case1012_LGE.nii.gz",
+        "sha256": "afdf36aeddc59ceebde633548ce51494ca1ad33f75b604dc7c25682f934049a1",
+        "size_bytes": 142961
+      },
+      {
+        "path": "sentinel_inputs/myops/Case1012/Case1012_T2.nii.gz",
+        "sha256": "a65925c80fc15adf2ca682946f650460bc8d204b4d6766727df3963351d6d4c9",
+        "size_bytes": 93154
+      },
+      {
+        "path": "verification/verify_cine_archive_sha256.py",
+        "sha256": "ff4005c300c28924731679eefcf3fd535286d1e05fa4b96bdc8a396f0cae6d12",
+        "size_bytes": 631
+      },
+      {
+        "path": "verification/verify_myops_outputs.py",
+        "sha256": "ed19fd9664ef3b0c00144b1d6970bf98f93e67ddce9ca7ad326524065c71cb46",
+        "size_bytes": 1985
+      }
+    ],
+    "bundle_file_count": 35,
+    "bundle_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff/transfer/MyoPS-nnUNet-workstation-bundle.tar.gz",
+    "bundle_sha256": "380a42404b4ec13e52f16627f562263516327faf6a8c88f8ee456d0c8d18326d",
+    "bundle_size_bytes": 1660518457,
+    "checkpoint_count": 5,
+    "context_models_size_bytes": 1786778233,
+    "context_path_in_bundle": "contexts/MyoPS",
+    "models_manifest": [
+      {
+        "path": ".gitkeep",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_bytes": 0
+      },
+      {
+        "path": "nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/dataset.json",
+        "sha256": "8437262d92fb898c8d16a89150efd4629602dd71e0fa5bbcf1c6c80cc3b535ae",
+        "size_bytes": 675
+      },
+      {
+        "path": "nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_best.pth",
+        "sha256": "f139ca5525322d340a0284c6562a9bcb9cb9cae0a512e14ef40ce85a66f53278",
+        "size_bytes": 357374639
+      },
+      {
+        "path": "nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/checkpoint_best.pth",
+        "sha256": "b92d56b1e24ce826081671acc4e048e5d48b191f6dcb9836747ae82d93acd1e2",
+        "size_bytes": 357341103
+      },
+      {
+        "path": "nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_2/checkpoint_best.pth",
+        "sha256": "9e328bf4bd6ed9eeadac6f41c5de303c69dfc078dfeac3e64b26e18d3e09d38d",
+        "size_bytes": 357327215
+      },
+      {
+        "path": "nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_3/checkpoint_best.pth",
+        "sha256": "9c2c2cf0dea4eb8a691c6680fabc66f6456233ba83867466a06ffd5abda3462b",
+        "size_bytes": 357354799
+      },
+      {
+        "path": "nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_4/checkpoint_best.pth",
+        "sha256": "11c6ccfec5dc51be7c08f1713058412694e1b7def1c5d8cd5520f7f7568aeff2",
+        "size_bytes": 357367855
+      },
+      {
+        "path": "nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/plans.json",
+        "sha256": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
+        "size_bytes": 11947
+      }
+    ],
+    "status": "PASS"
+  },
+  "server_docker_run_performed": false,
+  "status": "PASS",
+  "task": "20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff",
+  "transfer_root": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff/transfer"
+}

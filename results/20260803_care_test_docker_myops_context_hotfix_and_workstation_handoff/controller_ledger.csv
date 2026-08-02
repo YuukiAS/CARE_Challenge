@@ -1,0 +1,6 @@
+phase,status,evidence
+sync,PASS,b94d3f is origin/main ancestor
+dockerfile_hotfix,PASS,/users/a/e/aereinh/CARE/results/20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff/docker_context_hotfix_receipt.json
+myops_bundle_refresh,PASS,/users/a/e/aereinh/CARE/results/20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff/myops_bundle_manifest.json
+cine_archive_copy,PASS,/users/a/e/aereinh/CARE/results/20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff/transfer_receipt.json
+workstation_handoff,PASS,/users/a/e/aereinh/CARE/results/20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff/workstation_handoff_receipt.json

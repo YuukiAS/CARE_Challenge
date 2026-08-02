@@ -1,0 +1,15 @@
+{
+  "checks": [
+    "Dockerfile COPY models and known-bad deletion fixture",
+    "bundle context models/checkpoints",
+    "checkpoint SHA equality",
+    "fixed command and label map",
+    "Cine archive SHA and sentinels",
+    "transfer symlink/path safety",
+    "WORKSTATION_HANDOFF/SERVER_BUNDLE_READY",
+    "heavy staged artifact guard"
+  ],
+  "failures": [],
+  "status": "PASS",
+  "task": "20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff"
+}

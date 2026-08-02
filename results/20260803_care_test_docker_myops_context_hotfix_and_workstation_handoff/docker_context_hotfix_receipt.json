@@ -1,0 +1,13 @@
+{
+  "base_commit": "b94d3f916b04461d6b88a311959e0ed581e64555",
+  "created_at_utc": "2026-08-02T16:10:44.411031Z",
+  "dockerfile_contains_copy_models": true,
+  "dockerfile_creates_nnunet_raw_preprocessed": true,
+  "dockerfile_path": "/users/a/e/aereinh/CARE/docker/CARE2026_Myocardium/MyoPS/Dockerfile",
+  "dockerignore_excludes_models": false,
+  "dockerignore_path": "",
+  "forbidden_runtime_components_reintroduced": false,
+  "model_contract_changed": false,
+  "status": "PASS",
+  "task": "20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff"
+}

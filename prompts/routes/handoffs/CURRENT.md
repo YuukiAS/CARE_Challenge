@@ -1,5 +1,50 @@
 # CARE 当前开发状态
 
+## 2026-08-03 最新机器真值：MyoPS Dockerfile 已修复 models 复制缺口，工位交接包已刷新
+
+`b94d3f916b04461d6b88a311959e0ed581e64555` 的模型合同保持不变：MyoPS 仍是 Dataset501_CAREMyoPS 五折 nnU-Net、`nnUNetTrainer_500epochs`、`3d_fullres`、folds `0-4`、`checkpoint_best.pth`、default TTA，raw `0/1/2/3/4/5` 直接映射 official `0/200/500/600/1220/2221`。本次只修复 packaging 缺口：`docker/CARE2026_Myocardium/MyoPS/Dockerfile` 现在把 bundle context 中的 `models/` 复制到 `/app/models`，使运行时 `/app/models/nnunet/nnUNet_results` 能看到五折 checkpoint。
+
+新 transfer 已准备，CineMyoPS 合作者 archive 继续保持原字节 SHA `c02db56bd52d14d3b5bbda9d204a20b7e4c061fd5e6012ffa1cebc67fb92c136`。服务器未运行 Docker、未训练、未上传 challenge/validation/网盘、未给组织方发送邮件；工位 WSL 可以开始 MyoPS build/run/save 和 Cine load/run/save。
+
+```text
+state_id: care_test_docker_myops_context_hotfix_workstation_handoff_20260803
+active_development_branch: main
+active_worktree: /users/a/e/aereinh/CARE
+single_active_scientific_line: CARE_TEST_DOCKER_MYOPS_CONTEXT_HOTFIX_READY_FOR_WORKSTATION
+base_model_contract_commit: b94d3f916b04461d6b88a311959e0ed581e64555
+result_root: results/20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff
+runtime_root: /users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff
+transfer_root: /users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff/transfer
+terminal_state: SERVER_BUNDLE_READY
+controller_verification_decision: VERIFIED_COMPLETE
+myops_context_models_copy_fixed: true
+model_contract_changed: false
+myops_checkpoint_count_in_bundle: 5
+myops_sentinel_cases: Case1012,Case1001,Case1004
+cine_sentinel_cases: Case1011,Case1006,Case1003
+cinemyops_archive_byte_preserved: true
+server_docker_run_performed: false
+new_training_performed: false
+validation_upload_authorized: false
+challenge_upload_authorized: false
+netdisk_upload_authorized: false
+organizer_email_send_authorized: false
+```
+
+关键证据：
+
+```text
+results/20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff/docker_context_hotfix_receipt.json
+results/20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff/myops_bundle_manifest.json
+results/20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff/cine_sentinel_manifest.json
+results/20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff/workstation_handoff_receipt.json
+results/20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff/strict_validator_report.json
+/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff/transfer/WORKSTATION_HANDOFF.json
+/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff/transfer/SERVER_BUNDLE_READY.json
+```
+
+下一步只允许工位 WSL 使用本 transfer 做 Docker build/load/run/save，并把工位回传证据放到 `/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_workstation_return`。不得把该服务器热修复解释为服务器已运行 Docker。
+
 ## 2026-08-02 最新机器真值：MyoPS 已修订为纯五折 nnU-Net，CineMyoPS 固定为合作者 Docker archive
 
 旧 `c2f946b9376f4b39700f04b39c6d7a16e7154e67` 的 mixed MyoPS bundle 已被用户修订取代。本次服务器端没有运行 Docker，也没有安装 Docker/Podman/Buildah/Apptainer；服务器只完成版本冻结、合作者 archive 下载与静态审计、纯 nnU-Net MyoPS context、3-case host smoke、transfer bundle 和轻量 Git 证据。

@@ -1,0 +1,148 @@
+{
+  "case_ids": [
+    "Case1011",
+    "Case1006",
+    "Case1003"
+  ],
+  "contains_ground_truth": false,
+  "records": [
+    {
+      "case_id": "Case1011",
+      "direction": [
+        0.7844475780077763,
+        0.24638084722216672,
+        -0.5691559112740581,
+        0.0,
+        0.5899200941801033,
+        -0.5796440450055963,
+        0.5621450780629916,
+        0.0,
+        0.19140606009286104,
+        0.7767298495691006,
+        0.6000453815098902,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "frame_count": 30,
+      "origin": [
+        -123.79002380371094,
+        -69.89326477050781,
+        -171.7962188720703,
+        0.0
+      ],
+      "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff/transfer/cine_sentinel_inputs/Case1011_Cine.nii.gz",
+      "sha256": "2ec31fd53a26a7e5710a1d507770dfa475ba2ee1c6c6f7f1d7b1ba2889e41275",
+      "shape_sitk": [
+        256,
+        256,
+        3,
+        30
+      ],
+      "size_bytes": 4221139,
+      "source_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/CineMyoPS_val/AnonymousCenter/Case1011_Cine.nii.gz",
+      "spacing": [
+        1.25,
+        1.25,
+        23.0,
+        0.003163199871778488
+      ],
+      "voxel_count": 5898240
+    },
+    {
+      "case_id": "Case1006",
+      "direction": [
+        -1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "frame_count": 30,
+      "origin": [
+        -0.0,
+        -0.0,
+        -16.0,
+        0.0
+      ],
+      "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff/transfer/cine_sentinel_inputs/Case1006_Cine.nii.gz",
+      "sha256": "e94a675d73376fc5641f185560e651a1d1d7ecf9c36ec039a86c6e06312045b3",
+      "shape_sitk": [
+        256,
+        256,
+        20,
+        30
+      ],
+      "size_bytes": 35936151,
+      "source_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/CineMyoPS_val/AnonymousCenter/Case1006_Cine.nii.gz",
+      "spacing": [
+        1.3280999660491943,
+        1.3280999660491943,
+        4.0,
+        1.0
+      ],
+      "voxel_count": 39321600
+    },
+    {
+      "case_id": "Case1003",
+      "direction": [
+        -1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "frame_count": 50,
+      "origin": [
+        -0.0,
+        -0.0,
+        -32.0,
+        0.0
+      ],
+      "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff/transfer/cine_sentinel_inputs/Case1003_Cine.nii.gz",
+      "sha256": "39fe24fa640d064daaca701de8a21f94a0dcddc7af76fb0c2a63d3fa5616a9f3",
+      "shape_sitk": [
+        256,
+        256,
+        5,
+        50
+      ],
+      "size_bytes": 17761258,
+      "source_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/CineMyoPS_val/AnonymousCenter/Case1003_Cine.nii.gz",
+      "spacing": [
+        1.5937999486923218,
+        1.5937999486923218,
+        8.0,
+        1.0
+      ],
+      "voxel_count": 16384000
+    }
+  ],
+  "selection_rule": "CineMyoPS validation inputs sorted by frame count then voxel count: min, median, max",
+  "server_expected_outputs_generated": false,
+  "status": "PASS"
+}
