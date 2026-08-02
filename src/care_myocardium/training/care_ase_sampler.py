@@ -241,7 +241,8 @@ class CAREASEDeterministicSampler:
             if group in self.by_group:
                 self.by_group[group].append(row.case_id)
             if group == "complete" and row.center in {"CenterB", "CenterC"}:
-                self.by_group[f"complete_{row.center}"].append(row.case_id)
+                center_group = {"CenterB": "complete_centerB", "CenterC": "complete_centerC"}[row.center]
+                self.by_group[center_group].append(row.case_id)
             self.case_meta[row.case_id] = (row.center, availability)
         for key, values in self.by_group.items():
             if values:
