@@ -1,0 +1,154 @@
+contract_id: CARE_ASE_METRIC_TRUTH_REPAIR_20260803
+status: AUTHORIZED_DESIGN_NOT_YET_EXECUTED
+base_result_commit: 169929244d3ebcb1c463a0e6f68297714d6e7fd8
+implementation_snapshot_commit: 9517fe1738be5a03bc5d9115dade618ca3bc31b8
+snapshot_push_receipt_commit: 21bfa5a1fbedffcf972005a7183983d1364b1305
+branch_policy: main_only
+
+purpose:
+  primary: produce_a_fair_same_case_same_population_three_way_comparison_of_care_ase_nnunet_oof_and_mosaic_clean_oof
+  secondary: record_posthoc_implementation_contract_deviations_without_retraining_or_reinterpreting_them_as_runtime_blocks
+
+current_result_interpretation:
+  care_ase_outer_scar_all_88_mean_dice: 0.523500573079597
+  reported_all_outer_edema_88_mean_dice: 0.7953093461967583
+  valid_t2_present_edema_population_case_count: 32
+  valid_t2_present_edema_mean_dice_from_existing_pooled_table: 0.43710070204108536
+  no_t2_edema_rows_case_count: 56
+  no_t2_edema_rows_mean_dice: 1.0
+  rule: reported_all_outer_edema_88_mean_dice_is_invalid_as_a_pure_edema_headline_because_it_includes_no_t2_empty_empty_rows
+  current_three_way_superiority_claim_authorized: false
+  faithful_exact_contract_care_ase_claim_authorized: false
+
+known_implementation_deviations_to_bind_not_repair_in_this_goal:
+  - id: stage_budget_mismatch
+    required: stage_A_2000_stage_B_8000_stage_C_4000
+    observed: stage_A_2000_stage_B_4000_stage_C_8000
+  - id: scheduler_missing
+    required: stage_local_warmup_and_polynomial_decay_power_0_9
+    observed: static_learning_rates_scheduler_state_none
+  - id: partial_modality_training_missing
+    required: stage_A_B_complete_lge_only_lge_c0_supercycle_10_5_5
+    observed: complete_only_true_for_all_14000_steps
+  - id: semantic_auxiliary_losses_missing
+    required: proposal_center_context_injury_boundary_extent_relation_and_pathology_deep_supervision_losses
+    observed: main_multiclass_anatomy_scar_binary_and_t2_gated_edema_binary_losses_only
+  - id: sampler_contract_simplified
+    required: center_balance_pathology_focus_oof_fn_fp_small_component_boundary_and_safe_negative_sampling
+    observed: deterministic_case_cycle_and_region_type_rotation
+  - id: exact_resume_contract_incomplete
+    required: scheduler_worker_seed_sampler_cursor_batch_descriptor_code_config_split_plans_and_stock_hash_state
+    observed: model_optimizer_basic_rng_global_step_next_batch_hash_and_ramp_only
+  - id: validator_coverage_false_pass
+    required: validators_parse_and_enforce_all_above_fields
+    observed: validators_checked_presence_shapes_and_basic_smokes_but_not_full_contract
+
+frozen_inputs:
+  care_ase_casewise_fold2: results/20260801_care_ase_final_model/outer_eval/fold_2/casewise_metrics.csv
+  care_ase_casewise_fold3: results/20260801_care_ase_final_model/outer_eval/fold_3/casewise_metrics.csv
+  care_ase_split_fold2: results/20260801_care_ase_final_model/split_authority_fold2.csv
+  care_ase_split_fold3: results/20260801_care_ase_final_model/split_authority_fold3.csv
+  canonical_baseline_casewise: results/20260730_care_failure_forensics_deep_research_packet/standardized_casewise_metrics.csv
+  canonical_baseline_models: [nnunet_oof, mosaic_clean_oof]
+  metric_semantics: results/20260731_care_metric_truth_reconciliation/metric_semantics_contract.json
+  no_new_checkpoint_selection: true
+  no_threshold_or_decode_change: true
+
+population_contract:
+  scar:
+    case_set: union_of_fold2_and_fold3_outer_cases
+    denominator: all_88_unique_outer_cases
+    secondary_population: gt_positive_cases
+  pure_edema:
+    case_set: union_of_fold2_and_fold3_outer_cases_intersect_t2_present
+    denominator: exactly_32_unique_t2_present_outer_cases
+    no_t2_rows_excluded_from_all_edema_means_help_harm_and_hd_statistics: true
+    secondary_population: gt_positive_t2_present_cases
+  case_identity_join_key: case_id
+  required_case_set_equality_across_models: true
+  duplicate_case_ids_for_same_pathology_forbidden: true
+
+metric_contract:
+  primary: Dice
+  required_models: [care_ase_simplified_complete_modality_variant, nnunet_oof, mosaic_clean_oof]
+  required_casewise_columns:
+    - case_id
+    - fold
+    - center
+    - modality_group
+    - pathology
+    - t2_present
+    - gt_positive
+    - care_ase_dice
+    - nnunet_dice
+    - mosaic_dice
+    - delta_care_ase_minus_nnunet
+    - delta_care_ase_minus_mosaic
+    - best_case_model
+    - care_ase_help_harm_vs_nnunet
+    - care_ase_help_harm_vs_mosaic
+  help_threshold_abs_dice: 0.001
+  required_summary_populations:
+    - primary_denominator
+    - gt_positive
+    - centerB
+    - centerC
+    - complete_modality
+    - no_t2_scar_only
+    - small_scar_when_bound
+  physical_metrics:
+    rule: report_only_when_all_three_models_have_prediction_level_or_casewise_source_bound_to_the_same_metric_implementation
+    unavailable_value: NOT_BOUND_DO_NOT_INFER
+    infinite_hd_cases_must_be_counted_not_silently_dropped: true
+  empty_case_rule:
+    scar: report_empty_gt_and_empty_pred_counts_separately
+    pure_edema: exclude_no_t2_rows_entirely_then_report_empty_gt_and_empty_pred_within_t2_present
+
+execution_scope:
+  new_training_authorized: false
+  model_or_checkpoint_change_authorized: false
+  outer_driven_tuning_authorized: false
+  fixed_checkpoint_reinference_authorized_only_if_required_to_repair_metric_computation: true
+  reinference_must_use_frozen_step14000_checkpoint_fixed_argmax_and_original_sliding_window: true
+  validation_upload_authorized: false
+  docker_upload_authorized: false
+  hosted_metric_claim_authorized: false
+
+required_outputs:
+  root: results/20260803_care_ase_metric_truth_repair
+  files:
+    - controller_context.json
+    - source_hash_manifest.json
+    - implementation_deviation_receipt.json
+    - population_and_join_validator.json
+    - three_way_casewise.csv
+    - three_way_summary.csv
+    - center_and_modality_summary.csv
+    - help_harm_summary.csv
+    - empty_and_infinite_metric_audit.csv
+    - metric_truth_receipt.json
+    - scientific_interpretation.md
+    - strict_validator_report.json
+    - controller_report.md
+    - notification_brief.json
+
+scientific_decision_tokens:
+  - CARE_ASE_SIMPLIFIED_VARIANT_BEATS_BOTH_ON_SCAR_AND_EDEMA
+  - CARE_ASE_SIMPLIFIED_VARIANT_PARTIAL_GAIN
+  - CARE_ASE_SIMPLIFIED_VARIANT_NO_GAIN
+  - METRIC_TRUTH_INSUFFICIENT_SOURCE_BINDING
+
+runtime_and_agent_contract:
+  one_controller_goal: true
+  one_executor: true
+  mapper_final: true
+  planning_critic: false
+  independent_reviewer: false
+  manual_continue_gate: false
+  same_goal_repair_until_terminal: true
+  no_run_for_implementation_gap_forbidden: true
+  controller_must_remain_until_aggregation_commit_push_sha_verification_and_notification: true
+  commit_main: true
+  push_origin_main: true
+  force_push: false
+  notification_command: ./envs/env_CARE/bin/python controller_notifications/notify_goal_watcher.py --once
