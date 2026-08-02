@@ -1,0 +1,18 @@
+{
+  "round_id": "R1_G1_STATIC_FIDELITY_REREVIEW02",
+  "reviewer_session_id": "019fc386-dba4-7b72-a29f-06a657b4fc5f",
+  "candidate_commit_sha": "13bd50c839d0b8494956ad5247a4672f77ce7479",
+  "effective_contract_sha256": "b3ea5986b7a2458f758f7353ab023cea85a9cb67a6fb7c7bf12e5bc10e61d09c",
+  "decision": "PASS_CONTINUE",
+  "findings": [],
+  "critical_finding_count": 0,
+  "invalidated_wave_or_none": "none",
+  "required_repair_scope": "none",
+  "next_review_trigger": "next contracted CARE-ASE R2 continuous-review milestone",
+  "review_notes": {
+    "sampler_runtime_repair": "PASS: src/care_myocardium/training/care_ase_sampler.py maps CenterB/CenterC to complete_centerB/complete_centerC before Stage C runtime selection; an independent in-memory runtime probe selected complete_centerB at step 10000 and complete_centerC at step 10001.",
+    "new_regression_test": "PASS_SOURCE_COVERAGE: tests/care_ase/test_sampler_runtime_contract.py directly advances through steps 0-9999 and asserts Stage C CenterB/CenterC group and center selection at steps 10000/10001. Direct pytest execution in the detached checkout exited 1 before assertions because non-versioned data/benchmarks/protocol/cases_MyoPS.json is absent from the detached checkout.",
+    "known_bad_validator": "PASS: independent detached rerun of validate_care_ase_r2_g1.py into /tmp returned decision PASS and regenerated 31/31 known-bad fixtures with nonzero exits and REJECTED_AS_EXPECTED.",
+    "regression_check": "PASS: formal wrapper, entrypoint, model, target/loss, optimizer, scheduler, checkpoint, evaluator, and decode evidence remains PASS; source SHA changes are limited to sampler source and evidence receipts versus REREVIEW01."
+  }
+}

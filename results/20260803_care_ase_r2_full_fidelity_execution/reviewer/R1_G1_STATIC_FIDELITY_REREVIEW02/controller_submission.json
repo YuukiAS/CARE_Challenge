@@ -1,0 +1,38 @@
+{
+  "candidate_commit_sha": "13bd50c839d0b8494956ad5247a4672f77ce7479",
+  "created_at_utc": "2026-08-02T18:49:35.255623+00:00",
+  "decision_requested": [
+    "PASS_CONTINUE",
+    "REVISE_CONTINUE_CURRENT_GOAL"
+  ],
+  "detached_checkout_root": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R1_G1_STATIC_FIDELITY_REREVIEW02/13bd50c839d0b8494956ad5247a4672f77ce7479",
+  "effective_contract_sha256": "b3ea5986b7a2458f758f7353ab023cea85a9cb67a6fb7c7bf12e5bc10e61d09c",
+  "evidence_sha256_manifest": {
+    "results/20260803_care_ase_r2_full_fidelity_execution/checkpoint_schema_contract.json": "1681a349d71e06820a51171f8621bf27da76c09b56bde0cc445b7eb9f8ad4507",
+    "results/20260803_care_ase_r2_full_fidelity_execution/contract_to_code_coverage.json": "b8d99bda9125b5014dd2ac2d8163cdde07ae310e1f94370cd952085dc3086b67",
+    "results/20260803_care_ase_r2_full_fidelity_execution/controller_ledger.csv": "555e77d4a5e7ef21e4439fc8ed368279c513de081b222971a5f26ef1d89275b1",
+    "results/20260803_care_ase_r2_full_fidelity_execution/effective_contract.json": "b3ea5986b7a2458f758f7353ab023cea85a9cb67a6fb7c7bf12e5bc10e61d09c",
+    "results/20260803_care_ase_r2_full_fidelity_execution/formal_call_chain.json": "37201267c0d73d4345f274d35fbb7fb4dbabc4262ad70944ff5701dfc330483b",
+    "results/20260803_care_ase_r2_full_fidelity_execution/g1_source_sha_manifest.json": "7358ed5523a59968d86ceb64a9979d60b77687a2d8c40d4a66d6b2288f8d9b36",
+    "results/20260803_care_ase_r2_full_fidelity_execution/g1_static_implementation_gate_receipt.json": "a1968c0bda7983297f123db353a34dee30394f67eb3f5fe7bd859a4981c399f6",
+    "results/20260803_care_ase_r2_full_fidelity_execution/known_bad_validator_report.json": "57d9f8e24356622d77e045d8a32c4316f04561a701eeea4faa0f735393f25e82",
+    "results/20260803_care_ase_r2_full_fidelity_execution/sampler_static_contract.json": "ee859c7186e3dd7f36f29b2dbcd5f3114acdc9dd03fd1bb5806fa31a861432a6",
+    "results/20260803_care_ase_r2_full_fidelity_execution/scheduler_static_contract.json": "d26b7cfda4155cdd874fdd45ff51e2f5dbd191bb588a8925efdd82488dc0d520",
+    "results/20260803_care_ase_r2_full_fidelity_execution/semantic_loss_coverage.json": "84a8bb9ed77e6c311000d3fa246821f931d155e8a0a88314221a38bdee29d6fc"
+  },
+  "fixed_evidence_directory": "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R1_G1_STATIC_FIDELITY_REREVIEW02",
+  "formal_entrypoint": "scripts/training/care_ase/run_care_ase_r2_chunk.py",
+  "formal_wrapper": "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh",
+  "g1_validator": "scripts/validation/validate_care_ase_r2_g1.py",
+  "g1_validator_command": "./envs/env_CARE/bin/python scripts/validation/validate_care_ase_r2_g1.py --output-dir results/20260803_care_ase_r2_full_fidelity_execution",
+  "known_bad_passed": 31,
+  "known_bad_required": 31,
+  "outer_access_before_freeze": 0,
+  "pytest_command": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+  "repair_addressed": "G2 preflight sampler runtime key mismatch for CenterB/CenterC stage-C groups",
+  "reviewer_session_id": "019fc386-dba4-7b72-a29f-06a657b4fc5f",
+  "round_id": "R1_G1_STATIC_FIDELITY_REREVIEW02",
+  "runtime_regression_test": "tests/care_ase/test_sampler_runtime_contract.py::test_sampler_stage_c_center_groups_are_runtime_selectable",
+  "supersedes_round_id": "R1_G1_STATIC_FIDELITY_REREVIEW01",
+  "temporary_reviewer_output_root": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_full_fidelity_execution/reviewer/R1_G1_STATIC_FIDELITY_REREVIEW02"
+}

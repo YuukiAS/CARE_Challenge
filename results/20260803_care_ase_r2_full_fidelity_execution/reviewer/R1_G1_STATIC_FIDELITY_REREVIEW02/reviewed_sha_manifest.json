@@ -1,0 +1,65 @@
+{
+  "round_id": "R1_G1_STATIC_FIDELITY_REREVIEW02",
+  "candidate_commit_sha": "13bd50c839d0b8494956ad5247a4672f77ce7479",
+  "detached_checkout": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R1_G1_STATIC_FIDELITY_REREVIEW02/13bd50c839d0b8494956ad5247a4672f77ce7479",
+  "effective_contract_sha256": "b3ea5986b7a2458f758f7353ab023cea85a9cb67a6fb7c7bf12e5bc10e61d09c",
+  "actual_imported_source_paths": {
+    "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh": "ebef044dcf0a020d1818a0a48907ce0701640b966089c96aaf2a9e8a677a5cd9",
+    "scripts/training/care_ase/run_care_ase_r2_chunk.py": "af6ac65dd93f1e194950d21fa9aac594fbac901d0b85631357febe01276e1097",
+    "src/care_myocardium/models/care_ase.py": "62eea3d23392b95a604343b175e643bde02c62242add4fbb357dbae6a6bccd87",
+    "src/care_myocardium/training/care_ase_trainer.py": "4bf5e6f62ca4315fa6a1aba2a0686ad8b88664f67230ecb66a8415fe1cf61e4c",
+    "src/care_myocardium/training/care_ase_sampler.py": "c04af32585b45268640dc15845741b3888e4ecbcd947bd253597ec52d1320a2d",
+    "src/care_myocardium/inference/care_ase_r2_decode.py": "7fea71edba56d259dbbb31c3832b74709bd83d5af1f8b680a85c2e0a41acb05b",
+    "scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py": "637cfc9d76f6f78c8d99212cc58e8fa877b2ecd5dcf2a359a358b59d098beb80",
+    "scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py": "c8692a48a5dbf95bf40dbe40a90eae31490e6d65f229b3bbaf24d55052a01861",
+    "scripts/validation/validate_care_ase_r2_g1.py": "a68088920deac2c4cc6b2d791a88d3fcd47dd9ca0735f0631fbd643aa356716d",
+    "tests/care_ase/test_sampler_runtime_contract.py": "9e22fa8bc6b5c70ea1e947235de210f4539108db94571d7dee2397851dcab621"
+  },
+  "reviewed_evidence_paths": {
+    "results/20260803_care_ase_r2_full_fidelity_execution/g1_static_implementation_gate_receipt.json": "a1968c0bda7983297f123db353a34dee30394f67eb3f5fe7bd859a4981c399f6",
+    "results/20260803_care_ase_r2_full_fidelity_execution/known_bad_validator_report.json": "57d9f8e24356622d77e045d8a32c4316f04561a701eeea4faa0f735393f25e82",
+    "results/20260803_care_ase_r2_full_fidelity_execution/contract_to_code_coverage.json": "b8d99bda9125b5014dd2ac2d8163cdde07ae310e1f94370cd952085dc3086b67",
+    "results/20260803_care_ase_r2_full_fidelity_execution/formal_call_chain.json": "37201267c0d73d4345f274d35fbb7fb4dbabc4262ad70944ff5701dfc330483b",
+    "results/20260803_care_ase_r2_full_fidelity_execution/semantic_loss_coverage.json": "84a8bb9ed77e6c311000d3fa246821f931d155e8a0a88314221a38bdee29d6fc",
+    "results/20260803_care_ase_r2_full_fidelity_execution/sampler_static_contract.json": "ee859c7186e3dd7f36f29b2dbcd5f3114acdc9dd03fd1bb5806fa31a861432a6",
+    "results/20260803_care_ase_r2_full_fidelity_execution/scheduler_static_contract.json": "d26b7cfda4155cdd874fdd45ff51e2f5dbd191bb588a8925efdd82488dc0d520",
+    "results/20260803_care_ase_r2_full_fidelity_execution/checkpoint_schema_contract.json": "1681a349d71e06820a51171f8621bf27da76c09b56bde0cc445b7eb9f8ad4507"
+  },
+  "independent_validator_probe": {
+    "command": [
+      "PYTHONDONTWRITEBYTECODE=1",
+      "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+      "scripts/validation/validate_care_ase_r2_g1.py",
+      "--output-dir",
+      "/tmp/care_ase_r2_r1_g1_rereview02_validator_probe"
+    ],
+    "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R1_G1_STATIC_FIDELITY_REREVIEW02/13bd50c839d0b8494956ad5247a4672f77ce7479",
+    "exit_code": 0,
+    "known_bad_summary": {
+      "status": "PASS",
+      "required_known_bad_count": 31,
+      "known_bad_count_passed": 31,
+      "nonzero_exit_count": 31,
+      "rejected_as_expected_count": 31,
+      "fail_rows": []
+    }
+  },
+  "sampler_runtime_probe": {
+    "status": "PASS",
+    "method": "in-memory monkeypatch of sampler data loaders, no outer data read",
+    "step_10000": {
+      "case_group": "complete_centerB",
+      "center": "CenterB"
+    },
+    "step_10001": {
+      "case_group": "complete_centerC",
+      "center": "CenterC"
+    }
+  },
+  "focused_pytest_attempt": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 /users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m pytest -p no:cacheprovider tests/care_ase/test_sampler_runtime_contract.py::test_sampler_stage_c_center_groups_are_runtime_selectable -q",
+    "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R1_G1_STATIC_FIDELITY_REREVIEW02/13bd50c839d0b8494956ad5247a4672f77ce7479",
+    "exit_code": 1,
+    "failure_reason": "Detached checkout lacks non-versioned data/benchmarks/protocol/cases_MyoPS.json; failure occurred before test assertions."
+  }
+}
