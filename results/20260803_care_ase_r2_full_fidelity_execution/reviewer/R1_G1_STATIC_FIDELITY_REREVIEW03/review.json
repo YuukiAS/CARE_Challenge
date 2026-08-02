@@ -1,0 +1,17 @@
+{
+  "round_id": "R1_G1_STATIC_FIDELITY_REREVIEW03",
+  "reviewer_session_id": "019fc386-dba4-7b72-a29f-06a657b4fc5f",
+  "candidate_commit_sha": "51863825b286269f554b5c74010ad24f02121c6a",
+  "effective_contract_sha256": "b3ea5986b7a2458f758f7353ab023cea85a9cb67a6fb7c7bf12e5bc10e61d09c",
+  "decision": "PASS_CONTINUE",
+  "findings": [],
+  "critical_finding_count": 0,
+  "invalidated_wave_or_none": "none",
+  "required_repair_scope": "none",
+  "next_review_trigger": "next contracted CARE-ASE R2 continuous-review milestone",
+  "review_notes": {
+    "manifest_builder_provenance": "PASS: build_care_ase_r2_hard_negative_manifest.py filters case roles to actual-train and records source=actual_train_only_hard_negative_manifest_from_configured_prediction_roots, prediction_root_count, prediction_roots, and per-case prediction_sources with path and sha256.",
+    "known_bad_validator": "PASS: independent detached rerun of validate_care_ase_r2_g1.py into /tmp returned decision PASS and regenerated 31/31 known-bad fixtures with nonzero exits and REJECTED_AS_EXPECTED.",
+    "regression_check": "PASS: formal wrapper, entrypoint, model, target/loss, sampler, optimizer/scheduler, checkpoint, evaluator, and decode evidence remains PASS. Source SHA changes are limited to the manifest builder and regenerated receipts versus REREVIEW02."
+  }
+}
