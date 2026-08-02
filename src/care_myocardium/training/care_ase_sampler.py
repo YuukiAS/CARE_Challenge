@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import csv
 from dataclasses import asdict, dataclass
 import hashlib
 import json
@@ -18,7 +19,8 @@ from src.care_myocardium.data.care_ase_splits import PREPROCESSED_REL, build_car
 from src.care_myocardium.data.case_metadata import load_myops_case_metadata
 
 
-HARD_NEGATIVE_MANIFEST_REL = Path("results/20260801_care_ase_final_model/hard_negative_manifest.json")
+HARD_NEGATIVE_MANIFEST_TEMPLATE = "results/20260803_care_ase_r2_full_fidelity_execution/hard_negative_manifest_fold{fold}.csv"
+LEGACY_HARD_NEGATIVE_MANIFEST_TEMPLATE = "results/20260801_care_ase_final_model/hard_negative_manifest_fold{fold}.csv"
 
 
 @dataclass(frozen=True)
@@ -33,6 +35,8 @@ class CAREASEBatchDescriptor:
     within_focus: str
     availability: tuple[float, float, float]
     hard_negative_category: str
+    hard_negative_counts: dict[str, int]
+    fallback_sequence: tuple[str, ...]
 
     def sha256(self) -> str:
         payload = json.dumps(asdict(self), sort_keys=True).encode("utf-8")
@@ -61,26 +65,77 @@ def _case_group_from_availability(availability: tuple[float, float, float]) -> s
     return "other"
 
 
-def _load_hard_negative_manifest(repo_root: Path) -> dict[str, Any]:
-    path = repo_root / HARD_NEGATIVE_MANIFEST_REL
+def _load_hard_negative_manifest(repo_root: Path, fold: int) -> dict[str, Any]:
+    candidates = [
+        repo_root / HARD_NEGATIVE_MANIFEST_TEMPLATE.format(fold=int(fold)),
+        repo_root / LEGACY_HARD_NEGATIVE_MANIFEST_TEMPLATE.format(fold=int(fold)),
+    ]
+    path = next((item for item in candidates if item.is_file()), candidates[0])
     if not path.is_file():
         return {"manifest_path": str(path), "manifest_sha256": "MISSING", "cases": {}}
+    if path.suffix == ".csv":
+        cases: dict[str, dict[str, int]] = {}
+        with path.open(newline="", encoding="utf-8") as f:
+            for row in csv.DictReader(f):
+                cases[str(row["case_id"])] = {
+                    "scar_fp_voxels": int(float(row.get("scar_fp_voxels", 0) or 0)),
+                    "scar_fn_voxels": int(float(row.get("scar_fn_voxels", 0) or 0)),
+                    "edema_fp_voxels": int(float(row.get("edema_fp_voxels", 0) or 0)),
+                    "edema_fn_voxels": int(float(row.get("edema_fn_voxels", 0) or 0)),
+                }
+        return {"manifest_path": str(path), "manifest_sha256": sha256_file(path), "cases": cases}
     data = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(data, dict):
         raise ValueError(f"hard-negative manifest is not a JSON object: {path}")
-    data.setdefault("manifest_path", str(path))
+    data.setdefault("cases", {})
+    data["manifest_path"] = str(path)
     data["manifest_sha256"] = sha256_file(path)
     return data
 
 
-def _hard_negative_category(manifest: dict[str, Any], case_id: str, pathology_focus: str) -> str:
+def _hard_negative_category(manifest: dict[str, Any], case_id: str, pathology_focus: str, within_focus: str) -> tuple[str, dict[str, int]]:
     cases = manifest.get("cases", {})
     value = cases.get(case_id, {}) if isinstance(cases, dict) else {}
     if isinstance(value, dict):
-        item = value.get(pathology_focus) or value.get("category")
-        if item:
-            return str(item)
-    return "manifest_consumed_no_category"
+        counts = {
+            "scar_fp_voxels": int(value.get("scar_fp_voxels", 0) or 0),
+            "scar_fn_voxels": int(value.get("scar_fn_voxels", 0) or 0),
+            "edema_fp_voxels": int(value.get("edema_fp_voxels", 0) or 0),
+            "edema_fn_voxels": int(value.get("edema_fn_voxels", 0) or 0),
+        }
+        if pathology_focus == "scar" and within_focus == "oof_fn" and counts["scar_fn_voxels"] > 0:
+            return "scar_oof_fn", counts
+        if pathology_focus == "scar" and within_focus == "oof_fp" and counts["scar_fp_voxels"] > 0:
+            return "scar_oof_fp", counts
+        if pathology_focus == "edema" and within_focus == "oof_fn_or_low_volume" and counts["edema_fn_voxels"] > 0:
+            return "edema_oof_fn_or_low_volume", counts
+        if pathology_focus == "edema" and within_focus == "safe_fp" and counts["edema_fp_voxels"] > 0:
+            return "edema_safe_fp", counts
+        return "manifest_consumed_no_matching_oof", counts
+    return "manifest_missing_case", {"scar_fp_voxels": 0, "scar_fn_voxels": 0, "edema_fp_voxels": 0, "edema_fn_voxels": 0}
+
+
+def _fallback_sequence(pathology_focus: str, within_focus: str, hard_category: str) -> tuple[str, ...]:
+    if pathology_focus == "scar":
+        mapping = {
+            "small_component": ("small_component", "gt_component", "random_wall"),
+            "oof_fn": ("oof_fn", "gt_component", "random_wall"),
+            "oof_fp": ("oof_fp", "remote_background", "blood_pool_adjacent", "random_background"),
+            "gt_component": ("gt_component", "random_wall", "background"),
+            "random": ("random_wall", "background"),
+        }
+    else:
+        mapping = {
+            "oof_fn_or_low_volume": ("oof_fn_or_low_volume", "positive", "boundary"),
+            "safe_fp": ("safe_fp", "boundary", "positive"),
+            "positive": ("positive", "boundary", "random_wall"),
+            "boundary": ("boundary", "positive", "random_wall"),
+            "random": ("random_wall", "positive"),
+        }
+    first = mapping.get(within_focus, (within_focus,))
+    if hard_category.startswith(("scar_oof", "edema_oof", "edema_safe")):
+        return (hard_category, *tuple(item for item in first if item != hard_category))
+    return first
 
 
 class CAREASEDeterministicSampler:
@@ -181,7 +236,7 @@ class CAREASEDeterministicSampler:
         for key, values in self.by_group.items():
             if values:
                 self.by_group[key] = sorted(values)
-        self.hard_negative_manifest = _load_hard_negative_manifest(self.repo_root)
+        self.hard_negative_manifest = _load_hard_negative_manifest(self.repo_root, self.fold)
         self.case_group_cursor = 0
         self.center_cursor = 0
         self.pathology_focus_cursor = 0
@@ -220,6 +275,7 @@ class CAREASEDeterministicSampler:
             self.edema_focus_cursor += 1
         self.batch_descriptor_cursor += 1
         center, availability = self.case_meta[case_id]
+        hard_category, hard_counts = _hard_negative_category(self.hard_negative_manifest, case_id, pathology, within_focus)
         return CAREASEBatchDescriptor(
             fold=self.fold,
             global_step=int(global_step),
@@ -230,7 +286,9 @@ class CAREASEDeterministicSampler:
             pathology_focus=pathology,
             within_focus=within_focus,
             availability=availability,
-            hard_negative_category=_hard_negative_category(self.hard_negative_manifest, case_id, pathology),
+            hard_negative_category=hard_category,
+            hard_negative_counts=hard_counts,
+            fallback_sequence=_fallback_sequence(pathology, within_focus, hard_category),
         )
 
     def peek_descriptor_for_step(self, global_step: int) -> CAREASEBatchDescriptor:
@@ -249,6 +307,7 @@ class CAREASEDeterministicSampler:
             "batch_descriptor_cursor": self.batch_descriptor_cursor,
             "hard_negative_manifest_path": self.hard_negative_manifest.get("manifest_path"),
             "hard_negative_manifest_sha256": self.hard_negative_manifest.get("manifest_sha256"),
+            "hard_negative_manifest_case_count": len(self.hard_negative_manifest.get("cases", {})),
         }
         if next_descriptor is not None:
             state["next_batch_descriptor_sha256"] = next_descriptor.sha256()

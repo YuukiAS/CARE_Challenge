@@ -1,4 +1,5 @@
 {
+  "deterministic_fallbacks": "_fallback_sequence",
   "edema_within_focus_cycle": [
     "positive",
     "positive",
@@ -21,7 +22,8 @@
     "random",
     "random"
   ],
-  "hard_negative_manifest_symbol": "HARD_NEGATIVE_MANIFEST_REL",
+  "hard_negative_manifest_consumption": "_hard_negative_category",
+  "hard_negative_manifest_symbol": "HARD_NEGATIVE_MANIFEST_TEMPLATE",
   "scar_within_focus_cycle": [
     "gt_component",
     "gt_component",

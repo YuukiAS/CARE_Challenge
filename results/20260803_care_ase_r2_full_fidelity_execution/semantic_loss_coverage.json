@@ -18,6 +18,14 @@
   },
   "required_loss_count": 15,
   "status": "PASS",
+  "target_builder_semantics": {
+    "context_distance_adjacency": true,
+    "gaussian_center": true,
+    "per_gt_component": true,
+    "physical_edt": true,
+    "relation_stopgrad": true,
+    "signed_edema_boundary": true
+  },
   "terms": {
     "anatomy4": {
       "declared": true,

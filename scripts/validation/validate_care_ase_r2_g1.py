@@ -80,13 +80,14 @@ def coverage_rows() -> list[dict[str, Any]]:
         ("Stage A/B 10/5/5 alternating cycle", SAMPLER, "CAREASEDeterministicSampler.stage_a_b_cycle", '"lge_only",', "sampler_400_step_receipt", "stage_A_B_complete_only", "PASS"),
         ("Stage C complete-only CenterB/CenterC", SAMPLER, "CAREASEDeterministicSampler.stage_c_cycle", '("complete_centerB", "complete_centerC")', "sampler_static_contract", "stage_C_not_complete_only", "PASS"),
         ("CenterB/CenterC pathology and hard-negative cycles", SAMPLER, "CAREASEDeterministicSampler", "hard_negative_manifest", "sampler_static_contract", "break_center_or_focus_cycle", "PASS"),
-        ("hard-negative manifest consumed by formal sampler", SAMPLER, "_load_hard_negative_manifest", "HARD_NEGATIVE_MANIFEST_REL", "sampler_static_contract", "hard_negative_manifest_not_read", "PASS"),
+        ("hard-negative manifest consumed by formal sampler", SAMPLER, "_load_hard_negative_manifest", "HARD_NEGATIVE_MANIFEST_TEMPLATE", "sampler_static_contract", "hard_negative_manifest_not_read", "PASS"),
         ("actual-train-only scar/edema area reference", SAMPLER, "compute_actual_train_area_references", "row.role == \"actual-train\"", "area_reference_receipt", "hardcoded_area_reference", "PASS"),
         ("Stage A/B/C = 2000/8000/4000", MODEL, "CAREASEConfig", "stage_b_steps: int = 8000", "scheduler_static_contract", "stage_2000_4000_8000", "PASS"),
         ("AdamW created once and moments preserved", TRAINER, "build_optimizer", "torch.optim.AdamW", "exact_resume_receipt", "optimizer_recreated_at_stage_transition", "PASS"),
         ("base LR/min LR/warmup/power poly scheduler", TRAINER, "CAREASEStageScheduler", "stage_warmup_steps", "scheduler_numeric_receipt", "scheduler_none_or_static_lr", "PASS"),
         ("checkpoint full fields/fsync/atomic rename/SHA/reload", TRAINER, "save_care_ase_checkpoint", "REQUIRED_CHECKPOINT_FIELDS", "checkpoint_schema_contract", "missing_checkpoint_field", "PASS"),
         ("exact resume state and next-batch hash", TRAINER, "load_care_ase_checkpoint", "next_batch_descriptor_sha256", "exact_resume_receipt", "resume_not_sampler_or_next_batch", "PASS"),
+        ("physical EDT/context/center target builders", TRAINER, "build_care_ase_targets", "_geometry_targets_numpy", "target_builder_static_contract", "proxy_loss_targets", "PASS"),
         ("fixed step14000 argmax and outer zero-access", ENTRYPOINT, "main", "args.end_step > 14000", "outer_access_audit_receipt", "outer_access_before_freeze", "PASS"),
         ("fixed argmax decode excludes class4 for no-T2", DECODE, "decode_care_ase_r2_logits", "NO_T2_CLASSES = (0, 1, 2, 3, 5)", "decode_static_contract", "no_t2_class4_background", "PASS"),
         ("outer evaluator fail-closed before W4.5 and loads frozen checkpoint", EVALUATOR, "assert_w45_permit", "load_care_ase_checkpoint", "outer_access_audit_receipt", "outer_access_before_freeze", "PASS"),
@@ -137,7 +138,28 @@ def semantic_loss_coverage() -> dict[str, Any]:
         "required_loss_count": len(REQUIRED_LOSS_WEIGHTS),
         "terms": terms,
         "expected_exact_weights": expected,
-        "status": "PASS" if REQUIRED_LOSS_WEIGHTS == expected and all(v["declared"] and v["enters_total_loss"] for v in terms.values()) else "FAIL",
+        "target_builder_semantics": {
+            "physical_edt": "_signed_distance" in trainer_text and "distance_transform_edt" in trainer_text,
+            "gaussian_center": "_component_center_heatmap" in trainer_text,
+            "per_gt_component": "per_gt_component_tversky" in trainer_text,
+            "context_distance_adjacency": "_context_target_numpy" in trainer_text and "dist_blood" in trainer_text and "dist_wall" in trainer_text,
+            "signed_edema_boundary": "edema_boundary_target" in trainer_text and "_signed_distance" in trainer_text,
+            "relation_stopgrad": ".detach()" in trainer_text and '"relation"' in trainer_text,
+        },
+        "status": "PASS"
+        if REQUIRED_LOSS_WEIGHTS == expected
+        and all(v["declared"] and v["enters_total_loss"] for v in terms.values())
+        and all(
+            [
+                "_signed_distance" in trainer_text and "distance_transform_edt" in trainer_text,
+                "_component_center_heatmap" in trainer_text,
+                "per_gt_component_tversky" in trainer_text,
+                "_context_target_numpy" in trainer_text and "dist_blood" in trainer_text and "dist_wall" in trainer_text,
+                "edema_boundary_target" in trainer_text,
+                ".detach()" in trainer_text and '"relation"' in trainer_text,
+            ]
+        )
+        else "FAIL",
     }
 
 
@@ -155,7 +177,9 @@ def sampler_static_contract() -> dict[str, Any]:
         "stage_C_cycle": list(stage_c),
         "scar_within_focus_cycle": list(CAREASEDeterministicSampler.scar_within_focus_cycle),
         "edema_within_focus_cycle": list(CAREASEDeterministicSampler.edema_within_focus_cycle),
-        "hard_negative_manifest_symbol": "HARD_NEGATIVE_MANIFEST_REL",
+        "hard_negative_manifest_symbol": "HARD_NEGATIVE_MANIFEST_TEMPLATE",
+        "hard_negative_manifest_consumption": "_hard_negative_category",
+        "deterministic_fallbacks": "_fallback_sequence",
         "status": "PASS" if cycle == expected_cycle and stage_c == ("complete_centerB", "complete_centerC") and len(CAREASEDeterministicSampler.scar_within_focus_cycle) == 20 and len(CAREASEDeterministicSampler.edema_within_focus_cycle) == 20 else "FAIL",
     }
 
@@ -212,17 +236,18 @@ def known_bad_matrix() -> dict[str, Any]:
         "stage_2000_4000_8000": "stage_b_steps: int = 8000" in model_text and "stage_c_steps: int = 4000" in model_text,
         "scheduler_none_or_static_lr": "class CAREASEStageScheduler" in trainer_text and "power = 0.9" in trainer_text,
         "stage_A_B_complete_only": '"complete",\n        "lge_only",' in sampler_text and '"complete",\n        "lge_c0",' in sampler_text,
-        "delete_each_semantic_auxiliary_loss": all(name in trainer_text for name in REQUIRED_LOSS_WEIGHTS if name not in {"final_ce", "final_dice"}),
+        "delete_each_semantic_auxiliary_loss": all(name in trainer_text for name in REQUIRED_LOSS_WEIGHTS),
         "pathology_deep_supervision_missing": "half_logits6" in model_text and "seg_layers" in model_text and "scar_half_dense" in trainer_text,
         "area_reference_hardcoded_0_20_0_30": "scar_area_reference: float | None = None" in model_text and "compute_actual_train_area_references" in sampler_text,
-        "hard_negative_manifest_not_consumed": "HARD_NEGATIVE_MANIFEST_REL" in sampler_text and "_load_hard_negative_manifest" in sampler_text,
-        "center_cycle_or_10_5_5_broken": 'stage_c_cycle = ("complete_centerB", "complete_centerC")' in sampler_text and 'scar_within_focus_cycle' in sampler_text and 'edema_within_focus_cycle' in sampler_text,
+        "hard_negative_manifest_not_consumed": "_load_hard_negative_manifest" in sampler_text and "_hard_negative_category" in sampler_text and "hard_negative_counts" in sampler_text,
+        "center_cycle_or_10_5_5_broken": 'stage_c_cycle = ("complete_centerB", "complete_centerC")' in sampler_text and 'scar_within_focus_cycle' in sampler_text and 'edema_within_focus_cycle' in sampler_text and "_fallback_sequence" in sampler_text,
         "missing_checkpoint_field": all(field in trainer_text for field in REQUIRED_CHECKPOINT_FIELDS),
         "resume_not_restore_sampler_or_next_hash": "case_group_cursor" in trainer_text and "next_batch_descriptor_sha256" in trainer_text,
         "no_t2_class4_background": "torch.full_like(mapped, -1)" in trainer_text and "torch.zeros_like(mapped)" not in inspect.getsource(care_ase_loss),
         "no_t2_edema_gradient_nonzero": "edema_valid = valid_binary * t2_mask" in trainer_text and "z_edema" in model_text,
         "edema_metric_mixes_no_t2": "availability[1]" in decode_text and "pure_edema_metric_population" in decode_text,
         "outer_before_w45": "W5 outer evaluation forbidden before W4.5" in evaluator_text and "load_care_ase_checkpoint" in evaluator_text and "sliding_window_logits" in evaluator_text,
+        "proxy_loss_targets": "_geometry_targets_numpy" in trainer_text and "_component_center_heatmap" in trainer_text and "per_gt_component_tversky" in trainer_text,
         "wrapper_points_old_entry": "run_care_ase_r2_chunk.py" in wrapper_text and "run_care_ase_train.py" not in wrapper_text,
     }
     rows = [{"known_bad": key, "validator_exit_if_mutated": 1 if ok else 0, "status": "PASS" if ok else "FAIL"} for key, ok in checks.items()]

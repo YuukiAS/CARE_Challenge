@@ -15,6 +15,7 @@ from typing import Any
 
 import blosc2
 import numpy as np
+from scipy.ndimage import label as ndimage_label
 import torch
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -98,27 +99,49 @@ def deterministic_center(
     descriptor_sha: str,
     pathology_focus: str,
     within_focus: str,
+    hard_negative_category: str,
+    fallback_sequence: tuple[str, ...],
     micro: int,
     patch_size: tuple[int, int, int],
 ) -> tuple[int, int, int]:
     wall = (seg == 1) | (seg == 4) | (seg == 5)
+    blood = (seg == 2) | (seg == 3)
     background = seg == 0
-    if pathology_focus == "scar":
-        primary = seg == 5
-        fallback = wall | background
-    else:
-        primary = seg == 4
-        fallback = wall
-    if within_focus in {"oof_fp", "safe_fp"}:
-        mask = background
-    elif within_focus in {"boundary", "random_wall"}:
-        mask = fallback
-    elif within_focus in {"random"}:
-        mask = wall | background
-    else:
-        mask = primary
-    if not bool(mask.any()):
-        mask = fallback
+    scar = seg == 5
+    edema = seg == 4
+    lesion = scar if pathology_focus == "scar" else edema
+    labels, count = ndimage_label(lesion)
+    small_component = np.zeros_like(lesion, dtype=bool)
+    if count > 0:
+        sizes = [(labels == idx).sum() for idx in range(1, count + 1)]
+        smallest = int(np.argmin(sizes)) + 1
+        small_component = labels == smallest
+    masks = {
+        "gt_component": lesion,
+        "small_component": small_component,
+        "oof_fn": lesion,
+        "scar_oof_fn": lesion,
+        "scar_oof_fp": background,
+        "oof_fp": background,
+        "edema_oof_fn_or_low_volume": lesion,
+        "oof_fn_or_low_volume": lesion,
+        "edema_safe_fp": background,
+        "safe_fp": background,
+        "positive": lesion,
+        "boundary": wall,
+        "remote_background": background,
+        "blood_pool_adjacent": blood,
+        "random_wall": wall,
+        "random_background": background,
+        "background": background,
+        "random": wall | background,
+    }
+    mask = np.zeros_like(lesion, dtype=bool)
+    for item in (hard_negative_category, within_focus, *fallback_sequence, "random"):
+        candidate = masks.get(str(item), mask)
+        if bool(candidate.any()):
+            mask = candidate
+            break
     coords = np.argwhere(mask)
     if coords.size == 0:
         return tuple(int(v // 2) for v in seg.shape)
@@ -134,6 +157,8 @@ def make_batch(descriptor: Any, *, descriptor_sha: str, micro: int, patch_size: 
         descriptor_sha=descriptor_sha,
         pathology_focus=descriptor.pathology_focus,
         within_focus=descriptor.within_focus,
+        hard_negative_category=descriptor.hard_negative_category,
+        fallback_sequence=descriptor.fallback_sequence,
         micro=micro,
         patch_size=patch_size,
     )
@@ -277,6 +302,9 @@ def main() -> int:
             "center": descriptor.center,
             "pathology_focus": descriptor.pathology_focus,
             "within_focus": descriptor.within_focus,
+            "hard_negative_category": descriptor.hard_negative_category,
+            "hard_negative_counts": json.dumps(descriptor.hard_negative_counts, sort_keys=True),
+            "fallback_sequence": "|".join(descriptor.fallback_sequence),
             "descriptor_sha256": desc_sha,
             "loss": loss_total / 4.0,
             "grad_norm": float(grad_norm.detach().cpu() if torch.is_tensor(grad_norm) else grad_norm),

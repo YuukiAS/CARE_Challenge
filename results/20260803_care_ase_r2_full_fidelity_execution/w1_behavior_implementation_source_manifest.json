@@ -1,26 +1,23 @@
 {
-  "created_at_utc": "2026-08-02T17:56:55.072886+00:00",
+  "created_at_utc": "2026-08-02T18:06:42.929576+00:00",
   "g1_static_validator": "PASS",
   "outer_access_before_freeze": 0,
-  "prior_candidate_invalidated": "b1167d0d242e7b28f2b1fe07768b2c76109522d5",
-  "pytest_tests_care_ase": "3 passed in 10.38s",
+  "prior_candidate_invalidated": "767187e75f4813034dfa7c7fcfba2569aa23f1b1",
+  "pytest_tests_care_ase": "3 passed in 11.07s",
   "r0_findings_repaired": [
-    "R0-F001",
-    "R0-F002",
-    "R0-F003",
-    "R0-F004",
-    "R0-F005",
-    "R0-F006"
+    "R0-F002-REREVIEW01",
+    "R0-F003-REREVIEW01",
+    "R0-F005-REREVIEW01"
   ],
   "source_sha256": {
     "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh": "ebef044dcf0a020d1818a0a48907ce0701640b966089c96aaf2a9e8a677a5cd9",
     "scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py": "c8692a48a5dbf95bf40dbe40a90eae31490e6d65f229b3bbaf24d55052a01861",
-    "scripts/training/care_ase/run_care_ase_r2_chunk.py": "e62d85781874493a17cf3033521a711478832c9f76d22cc1dd9e8ce2c84f2d83",
-    "scripts/validation/validate_care_ase_r2_g1.py": "e7626899771a55eeab0d8d8db2c42043ddcdec127675a5661bd2599aa7ad83fc",
+    "scripts/training/care_ase/run_care_ase_r2_chunk.py": "1e1051758fc506680119efb275c91a53c91f07f2f7d38a59251afca8a7bc4bea",
+    "scripts/validation/validate_care_ase_r2_g1.py": "9278830f0a4a9f9b5b05ba22fd9cd3ee20968123e1838f7e68f45b73d258649a",
     "src/care_myocardium/inference/care_ase_r2_decode.py": "7fea71edba56d259dbbb31c3832b74709bd83d5af1f8b680a85c2e0a41acb05b",
     "src/care_myocardium/models/care_ase.py": "62eea3d23392b95a604343b175e643bde02c62242add4fbb357dbae6a6bccd87",
-    "src/care_myocardium/training/care_ase_sampler.py": "4f2360d50dd511e0d8717eb84f23e5c14b231bf3b8871726fb671bf15e33923e",
-    "src/care_myocardium/training/care_ase_trainer.py": "687e40401adcbc91afe1e809f1138f03aadf6ee28922100b9183353426f8df6c"
+    "src/care_myocardium/training/care_ase_sampler.py": "cf990df4045fa2d8fcd6cad4d6089acbb17ce57982736ce7094cdfe0d514d615",
+    "src/care_myocardium/training/care_ase_trainer.py": "4bf5e6f62ca4315fa6a1aba2a0686ad8b88664f67230ecb66a8415fe1cf61e4c"
   },
-  "status": "W1_BEHAVIOR_IMPLEMENTATION_READY_FOR_R0_REREVIEW"
+  "status": "W1_BEHAVIOR_IMPLEMENTATION_READY_FOR_R0_REREVIEW_02"
 }

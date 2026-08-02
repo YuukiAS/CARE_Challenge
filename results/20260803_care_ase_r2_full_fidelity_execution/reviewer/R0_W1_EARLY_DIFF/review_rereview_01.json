@@ -1,0 +1,49 @@
+{
+  "candidate_commit_sha": "767187e75f4813034dfa7c7fcfba2569aa23f1b1",
+  "critical_finding_count": 2,
+  "decision": "REVISE_CONTINUE_CURRENT_GOAL",
+  "effective_contract_sha256": "b3ea5986b7a2458f758f7353ab023cea85a9cb67a6fb7c7bf12e5bc10e61d09c",
+  "findings": [
+    {
+      "affected_training_credit": "none_yet_pretraining_not_started",
+      "contract_clause": "loss_contract; scar_contract; edema_contract; anatomy_contract",
+      "expected": "physical EDT targets, per-GT scar component Tversky, Gaussian center heatmaps, distance/adjacency context, signed edema boundary, relation semantics",
+      "finding_id": "R0-F002-REREVIEW01",
+      "function_or_field": "care_ase_loss",
+      "observed": "loss names/weights fixed but target builders remained proxy",
+      "repair_scope": "implement actual target builders and semantic validator checks",
+      "reproducer_command": "nl -ba src/care_myocardium/training/care_ase_trainer.py | sed -n '156,248p'",
+      "severity": "critical",
+      "source_path_or_evidence_path": "src/care_myocardium/training/care_ase_trainer.py"
+    },
+    {
+      "affected_training_credit": "none_yet_pretraining_not_started",
+      "contract_clause": "sampler_contract.oof_definitions; deterministic_fallbacks; hard_negative_manifest_consumption",
+      "expected": "focus cycles drive patch selection using GT component analysis, OOF manifest counts, and deterministic fallback order",
+      "finding_id": "R0-F003-REREVIEW01",
+      "function_or_field": "descriptor_for_step; deterministic_center",
+      "observed": "focus labels recorded but not semantically consumed by patch selection",
+      "repair_scope": "descriptor carries OOF counts/fallbacks; patch selection consumes hard category and fallback sequence",
+      "reproducer_command": "rg -n \"hard_negative_category|oof_fn|safe_fp|small_component|fallback|precision|recall\" src/care_myocardium/training/care_ase_sampler.py scripts/training/care_ase/run_care_ase_r2_chunk.py",
+      "severity": "critical",
+      "source_path_or_evidence_path": "src/care_myocardium/training/care_ase_sampler.py; scripts/training/care_ase/run_care_ase_r2_chunk.py"
+    },
+    {
+      "affected_training_credit": "none_yet_pretraining_not_started",
+      "contract_clause": "anatomy_contract.outputs; signed_distance_target; wall_depth_formula",
+      "expected": "geometry outputs trained against physical EDT/rho targets with invalid topology masking",
+      "finding_id": "R0-F005-REREVIEW01",
+      "function_or_field": "CAREASE.forward; distance_loss",
+      "observed": "geometry fields were probability proxies and loss drove them to zero",
+      "repair_scope": "add EDT/rho target construction and SmoothL1 loss",
+      "reproducer_command": "nl -ba src/care_myocardium/models/care_ase.py | sed -n \"331,392p\" && nl -ba src/care_myocardium/training/care_ase_trainer.py | sed -n \"191,196p\"",
+      "severity": "major",
+      "source_path_or_evidence_path": "src/care_myocardium/models/care_ase.py; src/care_myocardium/training/care_ase_trainer.py"
+    }
+  ],
+  "invalidated_wave_or_none": null,
+  "next_review_trigger": "R0_REVIEW_FIXED_CANDIDATE_02",
+  "required_repair_scope": "W1_R0_semantic_repair_no_training_started",
+  "reviewer_session_id": "019fc386-dba4-7b72-a29f-06a657b4fc5f",
+  "round_id": "R0_W1_EARLY_DIFF_REREVIEW_01"
+}

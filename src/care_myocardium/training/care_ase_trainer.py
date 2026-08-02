@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
+from scipy import ndimage
 import torch
 from torch import nn
 import torch.nn.functional as F
@@ -153,6 +154,104 @@ def _context_target(target: torch.Tensor) -> torch.Tensor:
     return out
 
 
+def _signed_distance(mask: np.ndarray, *, clip: float = 10.0) -> np.ndarray:
+    mask = np.asarray(mask, dtype=bool)
+    outside = ndimage.distance_transform_edt(~mask)
+    inside = ndimage.distance_transform_edt(mask)
+    return np.clip(outside - inside, -clip, clip).astype(np.float32) / float(clip)
+
+
+def _geometry_targets_numpy(seg: np.ndarray) -> dict[str, np.ndarray]:
+    wall = (seg == 1) | (seg == 4) | (seg == 5)
+    lv = seg == 2
+    exterior = ~(wall | lv | (seg == 3))
+    d_endo = np.abs(_signed_distance(lv, clip=10.0))
+    d_epi = np.abs(_signed_distance(exterior, clip=10.0))
+    rho = d_endo / (d_endo + d_epi + 1.0e-6)
+    valid = wall.astype(np.float32)
+    return {
+        "signed_endo_distance": _signed_distance(lv, clip=10.0),
+        "signed_epi_distance": _signed_distance(exterior, clip=10.0),
+        "wall_depth_rho": rho.astype(np.float32),
+        "geometry_valid": valid,
+    }
+
+
+def _context_target_numpy(seg: np.ndarray, *, edema: bool) -> np.ndarray:
+    out = np.full(seg.shape, -1, dtype=np.int64)
+    pathology = seg == (4 if edema else 5)
+    blood = (seg == 2) | (seg == 3)
+    wall_union = (seg == 1) | (seg == 4) | (seg == 5)
+    dist_blood = ndimage.distance_transform_edt(~blood)
+    dist_wall = ndimage.distance_transform_edt(~wall_union)
+    out[pathology] = 0
+    out[(out < 0) & (dist_blood <= 3.0)] = 1
+    normal = (seg == 1) & (dist_blood > 3.0)
+    out[(out < 0) & normal] = 2
+    remote = (seg == 0) & (dist_wall >= 10.0)
+    out[(out < 0) & remote] = 3
+    if edema:
+        out[seg == 5] = -1
+    return out
+
+
+def _component_center_heatmap(seg: np.ndarray, label_value: int, out_shape: tuple[int, int, int]) -> np.ndarray:
+    mask = seg == int(label_value)
+    labels, count = ndimage.label(mask, structure=np.ones((3, 3, 3), dtype=np.uint8))
+    heat = np.zeros(seg.shape, dtype=np.float32)
+    zz, yy, xx = np.indices(seg.shape)
+    for comp_id in range(1, int(count) + 1):
+        coords = np.argwhere(labels == comp_id)
+        if coords.size == 0:
+            continue
+        cz, cy, cx = coords.mean(axis=0)
+        gaussian = np.exp(-(((zz - cz) ** 2) / (2.0 * 1.0**2) + ((yy - cy) ** 2 + (xx - cx) ** 2) / (2.0 * 4.0**2)))
+        heat = np.maximum(heat, gaussian.astype(np.float32))
+    tensor = torch.from_numpy(heat[None, None])
+    return F.interpolate(tensor, size=out_shape, mode="trilinear", align_corners=False)[0, 0].numpy().astype(np.float32)
+
+
+def build_care_ase_targets(target: torch.Tensor, availability: torch.Tensor, outputs: dict[str, Any]) -> dict[str, torch.Tensor]:
+    device = target.device
+    rows = []
+    scar_context = []
+    edema_context = []
+    scar_center_quarter = []
+    scar_center_half = []
+    for item in target.detach().cpu().numpy().astype(np.int16):
+        rows.append(_geometry_targets_numpy(item))
+        scar_context.append(_context_target_numpy(item, edema=False))
+        edema_context.append(_context_target_numpy(item, edema=True))
+        scar_center_quarter.append(_component_center_heatmap(item, 5, outputs["components"]["scar_quarter_center"].shape[-3:]))
+        scar_center_half.append(_component_center_heatmap(item, 5, outputs["components"]["scar_half_center"].shape[-3:]))
+    stacked = {
+        key: torch.from_numpy(np.stack([row[key] for row in rows])[:, None]).to(device=device, dtype=torch.float32)
+        for key in ("signed_endo_distance", "signed_epi_distance", "wall_depth_rho", "geometry_valid")
+    }
+    stacked["scar_context_target"] = torch.from_numpy(np.stack(scar_context)).to(device=device, dtype=torch.long)
+    stacked["edema_context_target"] = torch.from_numpy(np.stack(edema_context)).to(device=device, dtype=torch.long)
+    stacked["scar_center_quarter"] = torch.from_numpy(np.stack(scar_center_quarter)[:, None]).to(device=device, dtype=torch.float32)
+    stacked["scar_center_half"] = torch.from_numpy(np.stack(scar_center_half)[:, None]).to(device=device, dtype=torch.float32)
+    stacked["availability"] = availability
+    return stacked
+
+
+def per_gt_component_tversky(logit: torch.Tensor, target: torch.Tensor, valid_mask: torch.Tensor) -> torch.Tensor:
+    losses: list[torch.Tensor] = []
+    labels_np = target.detach().cpu().numpy().astype(bool)
+    for b, mask in enumerate(labels_np[:, 0]):
+        comp, count = ndimage.label(mask, structure=np.ones((3, 3, 3), dtype=np.uint8))
+        for comp_id in range(1, int(count) + 1):
+            comp_mask_np = comp == comp_id
+            volume = float(comp_mask_np.sum())
+            weight = min(max((1000.0 / max(volume, 1.0)) ** 0.5, 1.0), 4.0)
+            comp_mask = torch.from_numpy(comp_mask_np[None, None]).to(device=logit.device, dtype=logit.dtype)
+            losses.append(float(weight) * component_tversky(logit[b : b + 1], comp_mask, valid_mask[b : b + 1]))
+    if not losses:
+        return logit.sum() * 0.0
+    return torch.stack(losses).mean()
+
+
 def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor]) -> tuple[torch.Tensor, dict[str, float]]:
     logits = outputs["final_logits"]
     target = batch["seg"].to(device=logits.device, dtype=torch.long)
@@ -188,11 +287,12 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor]) -> tu
     edema_valid = valid_binary * t2_mask
     p_wall = outputs["p_wall_union"]
     components = outputs["components"]
+    built_targets = build_care_ase_targets(target, availability, outputs)
     wall_loss = binary_dice_bce(torch.logit(p_wall.clamp(1.0e-4, 1.0 - 1.0e-4)), wall_target, valid_binary)
     distance_loss = (
-        _masked_mean_loss(outputs["signed_endo_distance"].abs(), valid_binary)
-        + _masked_mean_loss(outputs["signed_epi_distance"].abs(), valid_binary)
-        + _masked_mean_loss(outputs["wall_depth_rho"].clamp(0.0, 1.0), valid_binary)
+        _masked_mean_loss(F.smooth_l1_loss(outputs["signed_endo_distance"], built_targets["signed_endo_distance"], reduction="none"), built_targets["geometry_valid"])
+        + _masked_mean_loss(F.smooth_l1_loss(outputs["signed_epi_distance"], built_targets["signed_epi_distance"], reduction="none"), built_targets["geometry_valid"])
+        + _masked_mean_loss(F.smooth_l1_loss(outputs["wall_depth_rho"], built_targets["wall_depth_rho"], reduction="none"), built_targets["geometry_valid"])
     ) / 3.0
     scar_full = binary_dice_focal(outputs["z_scar"], scar_target, valid_binary, alpha=0.25, gamma=2.0)
     scar_half_logit = F.interpolate(outputs["scar"]["half_logits6"][:, 5:6], size=target.shape[-3:], mode="trilinear", align_corners=False)
@@ -204,12 +304,16 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor]) -> tu
     edema_dense = 0.5 * edema_full + 0.5 * edema_half_dense
     scar_half = F.interpolate(outputs["scar"]["half_logits6"][:, 5:6], size=target.shape[-3:], mode="trilinear", align_corners=False)
     edema_half = F.interpolate(outputs["edema"]["half_logits6"][:, 4:5], size=target.shape[-3:], mode="trilinear", align_corners=False)
-    scar_component = component_tversky(scar_half, scar_target.float(), valid_binary)
+    scar_component = per_gt_component_tversky(scar_half, scar_target.float(), valid_binary)
     scar_occ_quarter = _downsample_target(scar_target, components["scar_quarter_occupancy"].shape[-3:])
     scar_occ_half = _downsample_target(scar_target, components["scar_half_occupancy"].shape[-3:])
-    scar_center = 0.5 * binary_dice_focal(components["scar_quarter_center"], scar_occ_quarter, None, alpha=0.25, gamma=2.0) + 0.5 * binary_dice_focal(components["scar_half_center"], scar_occ_half, None, alpha=0.25, gamma=2.0)
+    scar_center = 0.5 * binary_dice_focal(components["scar_quarter_center"], built_targets["scar_center_quarter"], None, alpha=0.25, gamma=2.0) + 0.5 * binary_dice_focal(components["scar_half_center"], built_targets["scar_center_half"], None, alpha=0.25, gamma=2.0)
     scar_occupancy = 0.5 * binary_dice_focal(components["scar_quarter_occupancy"], scar_occ_quarter, None, alpha=0.25, gamma=2.0) + 0.5 * binary_dice_focal(components["scar_half_occupancy"], scar_occ_half, None, alpha=0.25, gamma=2.0)
-    edema_boundary = _masked_mean_loss((torch.sigmoid(edema_half) - edema_target.float()).abs(), edema_valid)
+    edema_boundary_target = torch.from_numpy(
+        np.stack([_signed_distance((item.detach().cpu().numpy() == 4), clip=10.0) for item in target])
+    )[:, None].to(device=logits.device, dtype=logits.dtype)
+    edema_boundary_valid = ((edema_boundary_target.abs() <= 1.0) | edema_target).to(logits) * t2_mask
+    edema_boundary = _masked_mean_loss(F.smooth_l1_loss(torch.tanh(edema_half), edema_boundary_target, reduction="none"), edema_boundary_valid)
     injury_logit = F.interpolate(components["edema_injury"], size=target.shape[-3:], mode="trilinear", align_corners=False)
     injury = binary_dice_focal(injury_logit, injury_target, edema_valid, alpha=0.35, gamma=2.0)
     scar_presence = F.binary_cross_entropy_with_logits(components["scar_extent_presence"].mean(dim=(-3, -2, -1)), (scar_target.flatten(1).any(1)).float().unsqueeze(1))
@@ -218,8 +322,8 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor]) -> tu
     scar_area = F.smooth_l1_loss(torch.sigmoid(components["scar_extent_area"]).mean(dim=(-3, -2, -1)), scar_target.float().mean(dim=(-3, -2, -1)))
     edema_area_raw = F.smooth_l1_loss(torch.sigmoid(components["edema_extent_area"]).mean(dim=(-3, -2, -1)), edema_target.float().mean(dim=(-3, -2, -1)), reduction="none")
     edema_area = (edema_area_raw * availability[:, 1:2]).sum() / availability[:, 1:2].sum().clamp_min(1.0)
-    scar_context_target = _context_target(_downsample_target(target.unsqueeze(1), components["scar_context"].shape[-3:]).squeeze(1))
-    edema_context_target = _context_target(_downsample_target(target.unsqueeze(1), components["edema_context"].shape[-3:]).squeeze(1))
+    scar_context_target = _downsample_target(built_targets["scar_context_target"].unsqueeze(1), components["scar_context"].shape[-3:]).squeeze(1)
+    edema_context_target = _downsample_target(built_targets["edema_context_target"].unsqueeze(1), components["edema_context"].shape[-3:]).squeeze(1)
     scar_context = F.cross_entropy(components["scar_context"], scar_context_target, ignore_index=-1)
     edema_context_raw = F.cross_entropy(components["edema_context"], edema_context_target, ignore_index=-1, reduction="none")
     edema_context = (edema_context_raw * availability[:, 1].view(-1, 1, 1, 1)).sum() / availability[:, 1].sum().clamp_min(1.0)
