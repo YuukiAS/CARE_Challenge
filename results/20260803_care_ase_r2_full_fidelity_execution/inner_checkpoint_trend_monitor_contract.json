@@ -1,0 +1,152 @@
+{
+  "allowed_uses": [
+    "learning trend",
+    "implementation or numeric anomaly detection",
+    "user progress report"
+  ],
+  "baseline_casewise_sha256": "a4e71b119deb59da3a792fd08d098ad6621b449616877cd4f3f501f5b2100251",
+  "baseline_join": "same case_id with nnunet_oof and mosaic_clean_oof from results/20260801_care_nnunet_mosaic_complementarity_closure/oof_complementarity_casewise.csv",
+  "created_utc": "2026-08-02T23:56:06.342202+00:00",
+  "decode": "decode_care_ase_r2_logits fixed argmax",
+  "fixed_checkpoint_steps": [
+    4000,
+    6000,
+    8000,
+    10000,
+    12000,
+    14000
+  ],
+  "fold_inner_cases": {
+    "1": {
+      "case_count": 35,
+      "case_ids": [
+        "Case1008",
+        "Case1009",
+        "Case1016",
+        "Case1025",
+        "Case1027",
+        "Case1032",
+        "Case1042",
+        "Case1047",
+        "Case1048",
+        "Case1052",
+        "Case1060",
+        "Case1073",
+        "Case1081",
+        "Case2011",
+        "Case2015",
+        "Case2018",
+        "Case2019",
+        "Case2029",
+        "Case2031",
+        "Case3009",
+        "Case3013",
+        "Case3015",
+        "Case3031",
+        "Case3036",
+        "Case3039",
+        "Case3045",
+        "Case5002",
+        "Case6003",
+        "Case7001",
+        "Case7006",
+        "Case8009",
+        "Case8011",
+        "Case8014",
+        "Case8018",
+        "Case8030"
+      ],
+      "case_ids_sha256": "4c67bfb6cf559f12a66ff952f45eda1dc4ffbdab1aaeae4b7ef64b79081e474e",
+      "overlap_with_outer_count": 0
+    },
+    "4": {
+      "case_count": 35,
+      "case_ids": [
+        "Case1009",
+        "Case1012",
+        "Case1018",
+        "Case1019",
+        "Case1024",
+        "Case1028",
+        "Case1030",
+        "Case1034",
+        "Case1043",
+        "Case1055",
+        "Case1056",
+        "Case1063",
+        "Case1070",
+        "Case2006",
+        "Case2008",
+        "Case2018",
+        "Case2019",
+        "Case2032",
+        "Case2033",
+        "Case3007",
+        "Case3012",
+        "Case3020",
+        "Case3027",
+        "Case3030",
+        "Case3035",
+        "Case3038",
+        "Case5006",
+        "Case6002",
+        "Case7002",
+        "Case8004",
+        "Case8005",
+        "Case8020",
+        "Case8022",
+        "Case8027",
+        "Case8031"
+      ],
+      "case_ids_sha256": "fe48bb9eee3451297baf54239b05385b083c165d66746dd4e6fa36307bfa7094",
+      "overlap_with_outer_count": 0
+    }
+  },
+  "fold_outer_population_fingerprints_no_case_list_disclosure_for_monitor": {
+    "1": {
+      "case_count": 44,
+      "case_ids_sha256": "c88fe9f95a43b7467459b1eed8f186d44c4ec0c5cce92ef9dcce26a2500b7ab0"
+    },
+    "4": {
+      "case_count": 44,
+      "case_ids_sha256": "f11419b49017fe180375c332b1dc20a4071663de2eddc81f8ce66cd6464da3ba"
+    }
+  },
+  "forbidden_uses": [
+    "early stop",
+    "formal checkpoint selection",
+    "model/loss/sampler/scheduler change",
+    "threshold tuning",
+    "training budget change",
+    "final superiority claim"
+  ],
+  "frozen_inner_source": "results/20260803_care_ase_r2_full_fidelity_execution/split_case_lists.csv",
+  "frozen_inner_source_sha256": "c6e1c97af05a34a2d2ebc701f257bcbf761dc11803d26c00d9297873f5d2caf5",
+  "monitor_type": "ASYNC_INNER_TREND_ONLY_NON_BLOCKING",
+  "outer_access_count_delta": 0,
+  "outputs_per_checkpoint": [
+    "scar Dice mean/median",
+    "pure-edema Dice mean/median",
+    "help/harm/neutral vs nnU-Net",
+    "help/harm/neutral vs MoSAIC",
+    "CenterB/CenterC",
+    "small scar",
+    "no-T2 scar",
+    "sensitivity",
+    "empty prediction",
+    "volume ratio",
+    "immutable monitor packet"
+  ],
+  "pure_edema_population": "T2-present inner cases only",
+  "reviewer_checks": [
+    "case population",
+    "checkpoint SHA",
+    "decode",
+    "baseline join"
+  ],
+  "script_path": "scripts/evaluation/care_ase/monitor_care_ase_r2_inner_trend.py",
+  "script_sha256": "1726883ad48e5012c653c1a30ea31b294ae4b441ad9bfa4baa64836e8c42da78",
+  "status": "PASS",
+  "wrapper_path": "jobs/care_ase_r2/run_inner_monitor_htzhulab.sh",
+  "wrapper_sha256": "4a571f683229242941268ee7b78124db5d8f3697788110e5902eaf49aa8096dd"
+}
