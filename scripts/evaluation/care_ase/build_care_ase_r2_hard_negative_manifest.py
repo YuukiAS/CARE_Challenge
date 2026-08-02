@@ -126,7 +126,9 @@ def main() -> int:
     payload = {
         "status": "PASS",
         "fold": int(args.fold),
-        "source": "canonical_patient_held_out_stock_fold_that_did_not_train_case",
+        "source": "actual_train_only_hard_negative_manifest_from_configured_prediction_roots",
+        "prediction_root_count": len(roots),
+        "prediction_roots": [str(path) for path in roots],
         "case_count": len(cases),
         "coord_limit_per_target": int(args.coord_limit),
         "prediction_sources": prediction_sources,

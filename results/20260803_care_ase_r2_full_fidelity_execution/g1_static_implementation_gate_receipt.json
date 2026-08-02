@@ -4,7 +4,7 @@
   "remaining_gap_count": 0,
   "source_sha_manifest": {
     "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh": "ebef044dcf0a020d1818a0a48907ce0701640b966089c96aaf2a9e8a677a5cd9",
-    "scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py": "637cfc9d76f6f78c8d99212cc58e8fa877b2ecd5dcf2a359a358b59d098beb80",
+    "scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py": "10e3a275914f76f47ba709d5b28e765a72e2981043f0ea9f88c49d4c631f43e7",
     "scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py": "c8692a48a5dbf95bf40dbe40a90eae31490e6d65f229b3bbaf24d55052a01861",
     "scripts/training/care_ase/run_care_ase_r2_chunk.py": "af6ac65dd93f1e194950d21fa9aac594fbac901d0b85631357febe01276e1097",
     "scripts/validation/validate_care_ase_r2_g1.py": "a68088920deac2c4cc6b2d791a88d3fcd47dd9ca0735f0631fbd643aa356716d",
