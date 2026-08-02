@@ -1,91 +1,98 @@
 {
-  "required_loss_count": 17,
+  "expected_exact_weights": {
+    "anatomy4": 0.5,
+    "distance": 0.1,
+    "edema_boundary": 0.1,
+    "edema_context": 0.1,
+    "edema_dense": 1.0,
+    "edema_extent": 0.2,
+    "final_competition": 1.0,
+    "injury": 0.4,
+    "relation": 0.05,
+    "scar_center": 0.1,
+    "scar_component": 0.25,
+    "scar_context": 0.1,
+    "scar_dense": 1.0,
+    "scar_extent": 0.15,
+    "wall": 0.25
+  },
+  "required_loss_count": 15,
   "status": "PASS",
   "terms": {
-    "anatomy_ce": {
+    "anatomy4": {
       "declared": true,
       "enters_total_loss": true,
-      "weight": 0.25
+      "weight": 0.5
     },
-    "anatomy_dice": {
-      "declared": true,
-      "enters_total_loss": true,
-      "weight": 0.25
-    },
-    "edema_binary_dice_focal": {
-      "declared": true,
-      "enters_total_loss": true,
-      "weight": 0.35
-    },
-    "edema_boundary_distance": {
-      "declared": true,
-      "enters_total_loss": true,
-      "weight": 0.08
-    },
-    "edema_context_relation": {
-      "declared": true,
-      "enters_total_loss": true,
-      "weight": 0.05
-    },
-    "edema_extent_area": {
+    "distance": {
       "declared": true,
       "enters_total_loss": true,
       "weight": 0.1
     },
-    "edema_extent_presence": {
+    "edema_boundary": {
       "declared": true,
       "enters_total_loss": true,
       "weight": 0.1
     },
-    "edema_extent_wall": {
+    "edema_context": {
+      "declared": true,
+      "enters_total_loss": true,
+      "weight": 0.1
+    },
+    "edema_dense": {
+      "declared": true,
+      "enters_total_loss": true,
+      "weight": 1.0
+    },
+    "edema_extent": {
+      "declared": true,
+      "enters_total_loss": true,
+      "weight": 0.2
+    },
+    "final_competition": {
+      "declared": true,
+      "enters_total_loss": true,
+      "weight": 1.0
+    },
+    "injury": {
+      "declared": true,
+      "enters_total_loss": true,
+      "weight": 0.4
+    },
+    "relation": {
       "declared": true,
       "enters_total_loss": true,
       "weight": 0.05
     },
-    "final_ce": {
+    "scar_center": {
+      "declared": true,
+      "enters_total_loss": true,
+      "weight": 0.1
+    },
+    "scar_component": {
+      "declared": true,
+      "enters_total_loss": true,
+      "weight": 0.25
+    },
+    "scar_context": {
+      "declared": true,
+      "enters_total_loss": true,
+      "weight": 0.1
+    },
+    "scar_dense": {
       "declared": true,
       "enters_total_loss": true,
       "weight": 1.0
     },
-    "final_dice": {
-      "declared": true,
-      "enters_total_loss": true,
-      "weight": 1.0
-    },
-    "scar_binary_dice_focal": {
-      "declared": true,
-      "enters_total_loss": true,
-      "weight": 0.35
-    },
-    "scar_component_tversky": {
+    "scar_extent": {
       "declared": true,
       "enters_total_loss": true,
       "weight": 0.15
     },
-    "scar_context_relation": {
+    "wall": {
       "declared": true,
       "enters_total_loss": true,
-      "weight": 0.05
-    },
-    "scar_extent_area": {
-      "declared": true,
-      "enters_total_loss": true,
-      "weight": 0.1
-    },
-    "scar_extent_presence": {
-      "declared": true,
-      "enters_total_loss": true,
-      "weight": 0.1
-    },
-    "scar_extent_wall": {
-      "declared": true,
-      "enters_total_loss": true,
-      "weight": 0.05
-    },
-    "wall_distance": {
-      "declared": true,
-      "enters_total_loss": true,
-      "weight": 0.05
+      "weight": 0.25
     }
   }
 }

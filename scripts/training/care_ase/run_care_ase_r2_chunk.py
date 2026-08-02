@@ -92,9 +92,33 @@ def crop_or_pad(array: np.ndarray, center: tuple[int, int, int], patch_size: tup
     return out
 
 
-def deterministic_center(seg: np.ndarray, *, descriptor_sha: str, micro: int, patch_size: tuple[int, int, int]) -> tuple[int, int, int]:
-    masks = [seg == 5, seg == 4, (seg == 1) | (seg == 4) | (seg == 5), seg == 0]
-    mask = masks[int(micro) % len(masks)]
+def deterministic_center(
+    seg: np.ndarray,
+    *,
+    descriptor_sha: str,
+    pathology_focus: str,
+    within_focus: str,
+    micro: int,
+    patch_size: tuple[int, int, int],
+) -> tuple[int, int, int]:
+    wall = (seg == 1) | (seg == 4) | (seg == 5)
+    background = seg == 0
+    if pathology_focus == "scar":
+        primary = seg == 5
+        fallback = wall | background
+    else:
+        primary = seg == 4
+        fallback = wall
+    if within_focus in {"oof_fp", "safe_fp"}:
+        mask = background
+    elif within_focus in {"boundary", "random_wall"}:
+        mask = fallback
+    elif within_focus in {"random"}:
+        mask = wall | background
+    else:
+        mask = primary
+    if not bool(mask.any()):
+        mask = fallback
     coords = np.argwhere(mask)
     if coords.size == 0:
         return tuple(int(v // 2) for v in seg.shape)
@@ -102,14 +126,21 @@ def deterministic_center(seg: np.ndarray, *, descriptor_sha: str, micro: int, pa
     return tuple(int(v) for v in coords[idx])
 
 
-def make_batch(case_id: str, availability: tuple[float, float, float], *, descriptor_sha: str, micro: int, patch_size: tuple[int, int, int], device: torch.device) -> dict[str, torch.Tensor]:
-    image = read_b2nd(PREPROCESSED / f"{case_id}.b2nd").astype(np.float32, copy=False)
-    seg = read_b2nd(PREPROCESSED / f"{case_id}_seg.b2nd")[0].astype(np.int64, copy=False)
-    center = deterministic_center(seg, descriptor_sha=descriptor_sha, micro=micro, patch_size=patch_size)
+def make_batch(descriptor: Any, *, descriptor_sha: str, micro: int, patch_size: tuple[int, int, int], device: torch.device) -> dict[str, torch.Tensor]:
+    image = read_b2nd(PREPROCESSED / f"{descriptor.case_id}.b2nd").astype(np.float32, copy=False)
+    seg = read_b2nd(PREPROCESSED / f"{descriptor.case_id}_seg.b2nd")[0].astype(np.int64, copy=False)
+    center = deterministic_center(
+        seg,
+        descriptor_sha=descriptor_sha,
+        pathology_focus=descriptor.pathology_focus,
+        within_focus=descriptor.within_focus,
+        micro=micro,
+        patch_size=patch_size,
+    )
     return {
         "image": torch.from_numpy(crop_or_pad(image, center, patch_size)[None]).to(device=device, dtype=torch.float32),
         "seg": torch.from_numpy(crop_or_pad(seg[None], center, patch_size)[0][None]).to(device=device, dtype=torch.long),
-        "availability": torch.tensor([availability], device=device, dtype=torch.float32),
+        "availability": torch.tensor([descriptor.availability], device=device, dtype=torch.float32),
     }
 
 
@@ -230,7 +261,7 @@ def main() -> int:
         loss_total = 0.0
         metrics: dict[str, float] = {}
         for micro in range(4):
-            batch = make_batch(descriptor.case_id, descriptor.availability, descriptor_sha=desc_sha, micro=micro, patch_size=patch_size, device=device)
+            batch = make_batch(descriptor, descriptor_sha=desc_sha, micro=micro, patch_size=patch_size, device=device)
             with torch.autocast(device_type="cuda", dtype=torch.bfloat16, enabled=(device.type == "cuda")):
                 outputs = model(batch["image"], batch["availability"], global_step=step)
                 loss, metrics = care_ase_loss(outputs, batch)
@@ -245,6 +276,7 @@ def main() -> int:
             "case_group": descriptor.case_group,
             "center": descriptor.center,
             "pathology_focus": descriptor.pathology_focus,
+            "within_focus": descriptor.within_focus,
             "descriptor_sha256": desc_sha,
             "loss": loss_total / 4.0,
             "grad_norm": float(grad_norm.detach().cpu() if torch.is_tensor(grad_norm) else grad_norm),

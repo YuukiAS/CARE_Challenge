@@ -12,8 +12,18 @@
 
 set -euo pipefail
 
-CARE_ROOT="${CARE_ROOT:-/users/a/e/aereinh/CARE}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CARE_ROOT="${CARE_ROOT:-$(cd "${SCRIPT_DIR}/../.." && pwd)}"
 cd "${CARE_ROOT}"
+CURRENT_SOURCE_SHA="$(git rev-parse HEAD)"
+if [[ -z "${EXPECTED_TRAINING_SOURCE_SHA:-}" && "${ALLOW_UNREVIEWED_LOCAL_SMOKE:-0}" != "1" ]]; then
+  echo "EXPECTED_TRAINING_SOURCE_SHA is required for formal CARE-ASE R2 execution" >&2
+  exit 64
+fi
+if [[ -n "${EXPECTED_TRAINING_SOURCE_SHA:-}" && "${CURRENT_SOURCE_SHA}" != "${EXPECTED_TRAINING_SOURCE_SHA}" ]]; then
+  echo "source SHA mismatch: current=${CURRENT_SOURCE_SHA} expected=${EXPECTED_TRAINING_SOURCE_SHA}" >&2
+  exit 65
+fi
 source "${CARE_ROOT}/.care-codex-env.sh"
 source "${CARE_ROOT}/env_nnunet.sh"
 export PATH="/users/a/e/aereinh/codex-runtime/bin:${CARE_ROOT}/envs/env_CARE/bin:${PATH}"

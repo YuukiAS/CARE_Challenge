@@ -49,23 +49,21 @@ REQUIRED_CHECKPOINT_FIELDS = (
     "stock_checkpoint_hash",
 )
 REQUIRED_LOSS_WEIGHTS = {
-    "final_ce": 1.0,
-    "final_dice": 1.0,
-    "anatomy_ce": 0.25,
-    "anatomy_dice": 0.25,
-    "wall_distance": 0.05,
-    "scar_binary_dice_focal": 0.35,
-    "scar_component_tversky": 0.15,
-    "scar_extent_presence": 0.10,
-    "scar_extent_area": 0.10,
-    "scar_extent_wall": 0.05,
-    "scar_context_relation": 0.05,
-    "edema_binary_dice_focal": 0.35,
-    "edema_boundary_distance": 0.08,
-    "edema_extent_presence": 0.10,
-    "edema_extent_area": 0.10,
-    "edema_extent_wall": 0.05,
-    "edema_context_relation": 0.05,
+    "final_competition": 1.00,
+    "anatomy4": 0.50,
+    "wall": 0.25,
+    "distance": 0.10,
+    "scar_dense": 1.00,
+    "scar_component": 0.25,
+    "scar_center": 0.10,
+    "scar_extent": 0.15,
+    "scar_context": 0.10,
+    "edema_dense": 1.00,
+    "injury": 0.40,
+    "edema_boundary": 0.10,
+    "edema_extent": 0.20,
+    "edema_context": 0.10,
+    "relation": 0.05,
 }
 
 
@@ -142,6 +140,19 @@ def _masked_mean_loss(value: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
     return (value * mask).sum() / mask.sum().clamp_min(1.0)
 
 
+def _downsample_target(target: torch.Tensor, size: tuple[int, int, int]) -> torch.Tensor:
+    return F.interpolate(target.float(), size=size, mode="nearest").to(dtype=target.dtype)
+
+
+def _context_target(target: torch.Tensor) -> torch.Tensor:
+    out = torch.full_like(target, -1)
+    out = torch.where(target == 5, torch.zeros_like(out), out)
+    out = torch.where((target == 2) | (target == 3), torch.ones_like(out), out)
+    out = torch.where(target == 1, torch.full_like(out, 2), out)
+    out = torch.where(target == 0, torch.full_like(out, 3), out)
+    return out
+
+
 def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor]) -> tuple[torch.Tensor, dict[str, float]]:
     logits = outputs["final_logits"]
     target = batch["seg"].to(device=logits.device, dtype=torch.long)
@@ -155,7 +166,7 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor]) -> tu
         dice6 = dice_loss_softmax(logits[idx], target[idx], classes=(1, 2, 3, 4, 5))
         metrics["six_class_ce"] = ce6
         metrics["six_class_dice"] = dice6
-        final_terms.append(REQUIRED_LOSS_WEIGHTS["final_ce"] * ce6 + REQUIRED_LOSS_WEIGHTS["final_dice"] * dice6)
+        final_terms.append(ce6 + dice6)
     if bool((~t2_present).any()):
         idx = ~t2_present
         five_logits, five_target = _five_class_logits_and_target(logits[idx], target[idx])
@@ -163,53 +174,77 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor]) -> tu
         dice5 = dice_loss_softmax(five_logits, five_target, classes=(1, 2, 3, 4))
         metrics["five_class_ce_without_class4"] = ce5
         metrics["five_class_dice_without_class4"] = dice5
-        final_terms.append(REQUIRED_LOSS_WEIGHTS["final_ce"] * ce5 + REQUIRED_LOSS_WEIGHTS["final_dice"] * dice5)
+        final_terms.append(ce5 + dice5)
     anatomy_target = target.clone()
     anatomy_target = torch.where((anatomy_target == 4) | (anatomy_target == 5), torch.ones_like(anatomy_target), anatomy_target)
     anatomy_ce = F.cross_entropy(outputs["anatomy_logits_0_3"], anatomy_target.clamp(-1, 3), ignore_index=-1)
     anatomy_dice = dice_loss_softmax(outputs["anatomy_logits_0_3"], anatomy_target.clamp(-1, 3), classes=(1, 2, 3))
     valid_binary = (target >= 0).unsqueeze(1).to(logits)
+    wall_target = ((target == 1) | (target == 4) | (target == 5)).unsqueeze(1)
     scar_target = (target == 5).unsqueeze(1)
     edema_target = (target == 4).unsqueeze(1)
+    injury_target = ((target == 4) | (target == 5)).unsqueeze(1)
     t2_mask = availability[:, 1].view(-1, 1, 1, 1, 1)
     edema_valid = valid_binary * t2_mask
     p_wall = outputs["p_wall_union"]
     components = outputs["components"]
-    scar_loss = binary_dice_focal(outputs["z_scar"], scar_target, valid_binary, alpha=0.25, gamma=2.0)
-    edema_loss = binary_dice_focal(outputs["z_pure_edema"], edema_target, edema_valid, alpha=0.35, gamma=2.0)
+    wall_loss = binary_dice_bce(torch.logit(p_wall.clamp(1.0e-4, 1.0 - 1.0e-4)), wall_target, valid_binary)
+    distance_loss = (
+        _masked_mean_loss(outputs["signed_endo_distance"].abs(), valid_binary)
+        + _masked_mean_loss(outputs["signed_epi_distance"].abs(), valid_binary)
+        + _masked_mean_loss(outputs["wall_depth_rho"].clamp(0.0, 1.0), valid_binary)
+    ) / 3.0
+    scar_full = binary_dice_focal(outputs["z_scar"], scar_target, valid_binary, alpha=0.25, gamma=2.0)
+    scar_half_logit = F.interpolate(outputs["scar"]["half_logits6"][:, 5:6], size=target.shape[-3:], mode="trilinear", align_corners=False)
+    scar_half_dense = binary_dice_focal(scar_half_logit, scar_target, valid_binary, alpha=0.25, gamma=2.0)
+    scar_dense = 0.5 * scar_full + 0.5 * scar_half_dense
+    edema_full = binary_dice_focal(outputs["z_pure_edema"], edema_target, edema_valid, alpha=0.35, gamma=2.0)
+    edema_half_logit = F.interpolate(outputs["edema"]["half_logits6"][:, 4:5], size=target.shape[-3:], mode="trilinear", align_corners=False)
+    edema_half_dense = binary_dice_focal(edema_half_logit, edema_target, edema_valid, alpha=0.35, gamma=2.0)
+    edema_dense = 0.5 * edema_full + 0.5 * edema_half_dense
     scar_half = F.interpolate(outputs["scar"]["half_logits6"][:, 5:6], size=target.shape[-3:], mode="trilinear", align_corners=False)
     edema_half = F.interpolate(outputs["edema"]["half_logits6"][:, 4:5], size=target.shape[-3:], mode="trilinear", align_corners=False)
-    scar_tversky = component_tversky(scar_half, scar_target.float(), valid_binary)
+    scar_component = component_tversky(scar_half, scar_target.float(), valid_binary)
+    scar_occ_quarter = _downsample_target(scar_target, components["scar_quarter_occupancy"].shape[-3:])
+    scar_occ_half = _downsample_target(scar_target, components["scar_half_occupancy"].shape[-3:])
+    scar_center = 0.5 * binary_dice_focal(components["scar_quarter_center"], scar_occ_quarter, None, alpha=0.25, gamma=2.0) + 0.5 * binary_dice_focal(components["scar_half_center"], scar_occ_half, None, alpha=0.25, gamma=2.0)
+    scar_occupancy = 0.5 * binary_dice_focal(components["scar_quarter_occupancy"], scar_occ_quarter, None, alpha=0.25, gamma=2.0) + 0.5 * binary_dice_focal(components["scar_half_occupancy"], scar_occ_half, None, alpha=0.25, gamma=2.0)
     edema_boundary = _masked_mean_loss((torch.sigmoid(edema_half) - edema_target.float()).abs(), edema_valid)
-    wall_distance = _masked_mean_loss((p_wall - (anatomy_target == 1).unsqueeze(1).to(p_wall)).abs(), valid_binary)
+    injury_logit = F.interpolate(components["edema_injury"], size=target.shape[-3:], mode="trilinear", align_corners=False)
+    injury = binary_dice_focal(injury_logit, injury_target, edema_valid, alpha=0.35, gamma=2.0)
     scar_presence = F.binary_cross_entropy_with_logits(components["scar_extent_presence"].mean(dim=(-3, -2, -1)), (scar_target.flatten(1).any(1)).float().unsqueeze(1))
     edema_presence_raw = F.binary_cross_entropy_with_logits(components["edema_extent_presence"].mean(dim=(-3, -2, -1)), (edema_target.flatten(1).any(1)).float().unsqueeze(1), reduction="none")
     edema_presence = (edema_presence_raw * availability[:, 1:2]).sum() / availability[:, 1:2].sum().clamp_min(1.0)
     scar_area = F.smooth_l1_loss(torch.sigmoid(components["scar_extent_area"]).mean(dim=(-3, -2, -1)), scar_target.float().mean(dim=(-3, -2, -1)))
     edema_area_raw = F.smooth_l1_loss(torch.sigmoid(components["edema_extent_area"]).mean(dim=(-3, -2, -1)), edema_target.float().mean(dim=(-3, -2, -1)), reduction="none")
     edema_area = (edema_area_raw * availability[:, 1:2]).sum() / availability[:, 1:2].sum().clamp_min(1.0)
-    scar_context_relation = components["scar_context"].abs().mean()
-    edema_context_relation = components["edema_context"].abs().mean() * availability[:, 1].mean()
+    scar_context_target = _context_target(_downsample_target(target.unsqueeze(1), components["scar_context"].shape[-3:]).squeeze(1))
+    edema_context_target = _context_target(_downsample_target(target.unsqueeze(1), components["edema_context"].shape[-3:]).squeeze(1))
+    scar_context = F.cross_entropy(components["scar_context"], scar_context_target, ignore_index=-1)
+    edema_context_raw = F.cross_entropy(components["edema_context"], edema_context_target, ignore_index=-1, reduction="none")
+    edema_context = (edema_context_raw * availability[:, 1].view(-1, 1, 1, 1)).sum() / availability[:, 1].sum().clamp_min(1.0)
+    relation = F.relu(outputs["z_scar"].detach().sigmoid() + outputs["z_pure_edema"].sigmoid().detach() - torch.sigmoid(injury_logit)).mul(edema_valid).sum() / edema_valid.sum().clamp_min(1.0)
     zero = logits.sum() * 0.0
     if not final_terms:
         final_terms.append(zero)
+    scar_extent = 0.5 * scar_presence + 0.5 * scar_area
+    edema_extent = 0.5 * edema_presence + 0.5 * edema_area
     weighted_terms = {
-        "final": torch.stack(final_terms).mean(),
-        "anatomy_ce": REQUIRED_LOSS_WEIGHTS["anatomy_ce"] * anatomy_ce,
-        "anatomy_dice": REQUIRED_LOSS_WEIGHTS["anatomy_dice"] * anatomy_dice,
-        "wall_distance": REQUIRED_LOSS_WEIGHTS["wall_distance"] * wall_distance,
-        "scar_binary_dice_focal": REQUIRED_LOSS_WEIGHTS["scar_binary_dice_focal"] * scar_loss,
-        "scar_component_tversky": REQUIRED_LOSS_WEIGHTS["scar_component_tversky"] * scar_tversky,
-        "scar_extent_presence": REQUIRED_LOSS_WEIGHTS["scar_extent_presence"] * scar_presence,
-        "scar_extent_area": REQUIRED_LOSS_WEIGHTS["scar_extent_area"] * scar_area,
-        "scar_extent_wall": REQUIRED_LOSS_WEIGHTS["scar_extent_wall"] * wall_distance,
-        "scar_context_relation": REQUIRED_LOSS_WEIGHTS["scar_context_relation"] * scar_context_relation,
-        "edema_binary_dice_focal": REQUIRED_LOSS_WEIGHTS["edema_binary_dice_focal"] * edema_loss,
-        "edema_boundary_distance": REQUIRED_LOSS_WEIGHTS["edema_boundary_distance"] * edema_boundary,
-        "edema_extent_presence": REQUIRED_LOSS_WEIGHTS["edema_extent_presence"] * edema_presence,
-        "edema_extent_area": REQUIRED_LOSS_WEIGHTS["edema_extent_area"] * edema_area,
-        "edema_extent_wall": REQUIRED_LOSS_WEIGHTS["edema_extent_wall"] * wall_distance * availability[:, 1].mean(),
-        "edema_context_relation": REQUIRED_LOSS_WEIGHTS["edema_context_relation"] * edema_context_relation,
+        "final_competition": REQUIRED_LOSS_WEIGHTS["final_competition"] * torch.stack(final_terms).mean(),
+        "anatomy4": REQUIRED_LOSS_WEIGHTS["anatomy4"] * (anatomy_ce + anatomy_dice),
+        "wall": REQUIRED_LOSS_WEIGHTS["wall"] * wall_loss,
+        "distance": REQUIRED_LOSS_WEIGHTS["distance"] * distance_loss,
+        "scar_dense": REQUIRED_LOSS_WEIGHTS["scar_dense"] * scar_dense,
+        "scar_component": REQUIRED_LOSS_WEIGHTS["scar_component"] * (0.5 * scar_component + 0.5 * scar_occupancy),
+        "scar_center": REQUIRED_LOSS_WEIGHTS["scar_center"] * scar_center,
+        "scar_extent": REQUIRED_LOSS_WEIGHTS["scar_extent"] * scar_extent,
+        "scar_context": REQUIRED_LOSS_WEIGHTS["scar_context"] * scar_context,
+        "edema_dense": REQUIRED_LOSS_WEIGHTS["edema_dense"] * edema_dense,
+        "injury": REQUIRED_LOSS_WEIGHTS["injury"] * injury,
+        "edema_boundary": REQUIRED_LOSS_WEIGHTS["edema_boundary"] * edema_boundary,
+        "edema_extent": REQUIRED_LOSS_WEIGHTS["edema_extent"] * edema_extent,
+        "edema_context": REQUIRED_LOSS_WEIGHTS["edema_context"] * edema_context,
+        "relation": REQUIRED_LOSS_WEIGHTS["relation"] * relation,
     }
     total = torch.stack(list(weighted_terms.values())).sum()
     metrics.update(
@@ -217,21 +252,25 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor]) -> tu
             "loss": total,
             "anatomy_ce": anatomy_ce,
             "anatomy_dice": anatomy_dice,
-            "wall_distance": wall_distance,
-            "scar_binary_dice_focal": scar_loss,
-            "scar_component_tversky": scar_tversky,
+            "wall": wall_loss,
+            "distance": distance_loss,
+            "scar_dense": scar_dense,
+            "scar_component": scar_component,
+            "scar_center": scar_center,
             "scar_extent_presence": scar_presence,
             "scar_extent_area": scar_area,
-            "scar_extent_wall": wall_distance,
-            "scar_context_relation": scar_context_relation,
-            "edema_binary_dice_focal": edema_loss,
-            "edema_binary_t2_gated": edema_loss,
-            "edema_boundary_distance": edema_boundary,
+            "scar_extent": scar_extent,
+            "scar_context": scar_context,
+            "edema_dense": edema_dense,
+            "edema_binary_t2_gated": edema_dense,
+            "injury": injury,
+            "edema_boundary": edema_boundary,
             "edema_extent_presence": edema_presence,
             "edema_extent_area": edema_area,
-            "edema_extent_wall": wall_distance * availability[:, 1].mean(),
-            "edema_context_relation": edema_context_relation,
-            "no_t2_edema_exclusive_total_loss": zero if not bool(t2_present.any()) else edema_loss,
+            "edema_extent": edema_extent,
+            "edema_context": edema_context,
+            "relation": relation,
+            "no_t2_edema_exclusive_total_loss": zero if not bool(t2_present.any()) else edema_dense + injury + edema_boundary + edema_extent + edema_context + relation,
             "all_finite": torch.isfinite(total).to(total),
             "all_nonnegative": (total >= 0).to(total),
         }
@@ -286,9 +325,9 @@ def optimizer_parameter_groups(model: CAREASE) -> list[dict[str, Any]]:
         else:
             groups["new_modules"].append(param)
     lr = {
-        "new_modules": 3.0e-4,
+        "new_modules": 5.0e-4,
         "cloned_pathology_blocks": 1.0e-4,
-        "cloned_pathology_classifiers": 1.0e-4,
+        "cloned_pathology_classifiers": 2.0e-4,
         "anatomy_top": 1.0e-4,
         "shared_low_mid_decoder": 1.0e-4,
         "upper_two_encoder_stages": 5.0e-5,
@@ -304,15 +343,15 @@ def build_optimizer(model: CAREASE) -> torch.optim.Optimizer:
 class CAREASEStageScheduler:
     """Stage-local warmup plus poly decay; optimizer object is never recreated."""
 
-    min_lr = 1.0e-6
     power = 0.9
-    warmup_steps = 250
     stage_ranges = {"A": (0, 2000), "B": (2000, 10000), "C": (10000, 14000)}
+    stage_warmup_steps = {"A": 200, "B": 500, "C": 0}
+    stage_min_lrs = {"A": 5.0e-6, "B": 1.0e-6, "C": 1.0e-6}
     stage_base_lrs = {
         "A": {
-            "new_modules": 3.0e-4,
+            "new_modules": 5.0e-4,
             "cloned_pathology_blocks": 1.0e-4,
-            "cloned_pathology_classifiers": 1.0e-4,
+            "cloned_pathology_classifiers": 2.0e-4,
         },
         "B": {
             "new_modules": 3.0e-4,
@@ -360,11 +399,12 @@ class CAREASEStageScheduler:
             return 0.0
         stage_step = int(global_step) - start
         length = end - start
-        warmup = min(cls.warmup_steps, length)
+        warmup = min(cls.stage_warmup_steps[stage], length)
+        min_lr = cls.stage_min_lrs[stage]
         if warmup > 0 and stage_step < warmup:
             return base * (0.1 + 0.9 * stage_step / max(warmup - 1, 1))
         t = (stage_step - warmup) / max(length - warmup - 1, 1)
-        return cls.min_lr + (base - cls.min_lr) * ((1.0 - min(max(t, 0.0), 1.0)) ** cls.power)
+        return min_lr + (base - min_lr) * ((1.0 - min(max(t, 0.0), 1.0)) ** cls.power)
 
     def step(self, global_step: int) -> None:
         self.last_global_step = int(global_step)
@@ -374,9 +414,9 @@ class CAREASEStageScheduler:
     def state_dict(self) -> dict[str, Any]:
         return {
             "last_global_step": self.last_global_step,
-            "min_lr": self.min_lr,
             "power": self.power,
-            "warmup_steps": self.warmup_steps,
+            "stage_min_lrs": self.stage_min_lrs,
+            "stage_warmup_steps": self.stage_warmup_steps,
             "stage_ranges": self.stage_ranges,
             "stage_base_lrs": self.stage_base_lrs,
         }

@@ -330,7 +330,13 @@ class CAREASE(nn.Module):
         skips = self._encode(images, availability)
         stock_anatomy_logits6 = self.anatomy_decoder(skips)
         anatomy_logits = stock_anatomy_logits6[:, :4]
-        p_wall = torch.softmax(stock_anatomy_logits6[:, :4], dim=1)[:, 1:2]
+        anatomy_prob = torch.softmax(stock_anatomy_logits6[:, :4], dim=1)
+        p_wall = anatomy_prob[:, 1:2]
+        p_lv = anatomy_prob[:, 2:3]
+        p_rv = anatomy_prob[:, 3:4]
+        signed_endo_distance = torch.tanh(p_lv - p_wall)
+        signed_epi_distance = torch.tanh(anatomy_prob[:, 0:1] - p_wall)
+        wall_depth_rho = p_lv / (p_lv + p_rv + 1.0e-6)
         quarter, low_mid = self._decode_low_mid(skips)
         half_seed = F.interpolate(quarter[:, :64], size=skips[1].shape[-3:], mode="trilinear", align_corners=False)
         components = self.component_heads(quarter, half_seed)
@@ -379,6 +385,11 @@ class CAREASE(nn.Module):
             "final_logits": final_logits,
             "anatomy_logits_0_3": anatomy_logits,
             "p_wall_union": p_wall,
+            "p_lv": p_lv,
+            "p_rv": p_rv,
+            "signed_endo_distance": signed_endo_distance,
+            "signed_epi_distance": signed_epi_distance,
+            "wall_depth_rho": wall_depth_rho,
             "skips": skips,
             "low_mid_decoder_features": low_mid,
             "shared_quarter_feature": quarter,
@@ -506,5 +517,25 @@ def care_ase_contract_summary(model: CAREASE) -> dict[str, Any]:
             "edema_boundary",
             "edema_context_negative_space",
             "slice_extent_and_soft_wall",
+        ],
+        "anatomy_outputs": [
+            "anatomy_logits_0_3",
+            "p_wall_union",
+            "p_lv",
+            "p_rv",
+            "signed_endo_distance",
+            "signed_epi_distance",
+            "wall_depth_rho",
+        ],
+        "pathology_outputs": [
+            "full_resolution_z_scar",
+            "half_and_quarter_occupancy_logits",
+            "half_and_quarter_component_center_heatmaps",
+            "slice_presence_logits",
+            "slice_area_fraction",
+            "four_class_context_logits",
+            "full_resolution_z_pure_edema",
+            "injury_support_logit_labels_4_or_5",
+            "signed_pure_edema_boundary",
         ],
     }

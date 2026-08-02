@@ -1,0 +1,28 @@
+{
+  "candidate_commit_sha": "b1167d0d242e7b28f2b1fe07768b2c76109522d5",
+  "created_at_utc": "2026-08-02T17:44:24.379550+00:00",
+  "decision_requested": [
+    "PASS_CONTINUE",
+    "REVISE_CONTINUE_CURRENT_GOAL"
+  ],
+  "detached_checkout_root": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/R0_W1_EARLY_DIFF/b1167d0d242e7b28f2b1fe07768b2c76109522d5",
+  "effective_contract_sha256": "b3ea5986b7a2458f758f7353ab023cea85a9cb67a6fb7c7bf12e5bc10e61d09c",
+  "evidence_sha256_manifest": {
+    "results/20260803_care_ase_r2_full_fidelity_execution/checkpoint_schema_contract.json": "1681a349d71e06820a51171f8621bf27da76c09b56bde0cc445b7eb9f8ad4507",
+    "results/20260803_care_ase_r2_full_fidelity_execution/contract_to_code_coverage.json": "0f864907506f6bf59197bb0f5c5e2eb8461046a9afa9f942569e66347099ecb4",
+    "results/20260803_care_ase_r2_full_fidelity_execution/effective_contract.json": "b3ea5986b7a2458f758f7353ab023cea85a9cb67a6fb7c7bf12e5bc10e61d09c",
+    "results/20260803_care_ase_r2_full_fidelity_execution/formal_call_chain.json": "a41c73a82d77bafe97a757020a48f54202c2b9977aee35d3d10ebcf12aabb960",
+    "results/20260803_care_ase_r2_full_fidelity_execution/g1_static_implementation_gate_receipt.json": "6df2f9c652400de8b2a7d541224d95d5010243aa319ac865d06e859cfc481e6d",
+    "results/20260803_care_ase_r2_full_fidelity_execution/known_bad_validator_report.json": "aef0fe31943edc81cc99d78d5bd1b69ebec9b485e126f55e769febafad091a60",
+    "results/20260803_care_ase_r2_full_fidelity_execution/sampler_static_contract.json": "95e1603d69b11777a8035f0bd0b7fb4f683436585f94e2c4ed611a606ad00ad8",
+    "results/20260803_care_ase_r2_full_fidelity_execution/scheduler_static_contract.json": "fe6ef87d905fd4e8fed32573a7dbf2ffc2101a63cfde4e43e64c05c504024e23",
+    "results/20260803_care_ase_r2_full_fidelity_execution/semantic_loss_coverage.json": "99aa10d9e49663521fa9da22d0edd32ea48fcd27847cad681408bacc730aa933",
+    "results/20260803_care_ase_r2_full_fidelity_execution/w1_behavior_implementation_source_manifest.json": "265d1ff277b3f5c365a3bd37a4946497f1d63bb49b1ec127aadc1229d1de3833"
+  },
+  "fixed_evidence_directory": "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_full_fidelity_execution/reviewer/R0_W1_EARLY_DIFF",
+  "formal_entrypoint": "scripts/training/care_ase/run_care_ase_r2_chunk.py",
+  "formal_wrapper": "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh",
+  "outer_access_before_freeze": 0,
+  "reviewer_session_id": "019fc386-dba4-7b72-a29f-06a657b4fc5f",
+  "round_id": "R0_W1_EARLY_DIFF"
+}

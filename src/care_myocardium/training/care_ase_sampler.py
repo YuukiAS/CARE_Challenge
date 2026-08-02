@@ -30,6 +30,7 @@ class CAREASEBatchDescriptor:
     case_group: str
     center: str
     pathology_focus: str
+    within_focus: str
     availability: tuple[float, float, float]
     hard_negative_category: str
 
@@ -90,9 +91,74 @@ class CAREASEDeterministicSampler:
     without touching outer labels.
     """
 
-    stage_a_b_cycle = ("complete",) * 10 + ("lge_only",) * 5 + ("lge_c0",) * 5
+    stage_a_b_cycle = (
+        "complete",
+        "lge_only",
+        "complete",
+        "lge_c0",
+        "complete",
+        "lge_only",
+        "complete",
+        "lge_c0",
+        "complete",
+        "lge_only",
+        "complete",
+        "lge_c0",
+        "complete",
+        "lge_only",
+        "complete",
+        "lge_c0",
+        "complete",
+        "lge_only",
+        "complete",
+        "lge_c0",
+    )
     stage_c_cycle = ("complete_centerB", "complete_centerC")
     pathology_cycle = ("scar", "edema")
+    scar_within_focus_cycle = (
+        "gt_component",
+        "gt_component",
+        "gt_component",
+        "gt_component",
+        "gt_component",
+        "gt_component",
+        "gt_component",
+        "small_component",
+        "small_component",
+        "small_component",
+        "small_component",
+        "oof_fn",
+        "oof_fn",
+        "oof_fn",
+        "oof_fn",
+        "oof_fp",
+        "oof_fp",
+        "oof_fp",
+        "random",
+        "random",
+    )
+    edema_within_focus_cycle = (
+        "positive",
+        "positive",
+        "positive",
+        "positive",
+        "positive",
+        "positive",
+        "positive",
+        "oof_fn_or_low_volume",
+        "oof_fn_or_low_volume",
+        "oof_fn_or_low_volume",
+        "oof_fn_or_low_volume",
+        "boundary",
+        "boundary",
+        "boundary",
+        "boundary",
+        "safe_fp",
+        "safe_fp",
+        "safe_fp",
+        "random",
+        "random",
+    )
 
     def __init__(self, repo_root: Path, fold: int, *, seed: int = 20260803) -> None:
         self.repo_root = repo_root.resolve()
@@ -141,11 +207,16 @@ class CAREASEDeterministicSampler:
             self.center_cursor += 1
         else:
             raise ValueError(f"global_step outside formal training range: {global_step}")
-        pathology = self.pathology_cycle[self.pathology_focus_cursor % len(self.pathology_cycle)]
+        if group in {"lge_only", "lge_c0"}:
+            pathology = "scar"
+        else:
+            pathology = self.pathology_cycle[self.pathology_focus_cursor % len(self.pathology_cycle)]
         self.pathology_focus_cursor += 1
         if pathology == "scar":
+            within_focus = self.scar_within_focus_cycle[self.scar_focus_cursor % len(self.scar_within_focus_cycle)]
             self.scar_focus_cursor += 1
         else:
+            within_focus = self.edema_within_focus_cycle[self.edema_focus_cursor % len(self.edema_within_focus_cycle)]
             self.edema_focus_cursor += 1
         self.batch_descriptor_cursor += 1
         center, availability = self.case_meta[case_id]
@@ -157,6 +228,7 @@ class CAREASEDeterministicSampler:
             case_group=group,
             center=center,
             pathology_focus=pathology,
+            within_focus=within_focus,
             availability=availability,
             hard_negative_category=_hard_negative_category(self.hard_negative_manifest, case_id, pathology),
         )

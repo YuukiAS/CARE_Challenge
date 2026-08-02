@@ -1,0 +1,85 @@
+{
+  "candidate_commit_sha": "b1167d0d242e7b28f2b1fe07768b2c76109522d5",
+  "critical_finding_count": 4,
+  "decision": "REVISE_CONTINUE_CURRENT_GOAL",
+  "effective_contract_sha256": "b3ea5986b7a2458f758f7353ab023cea85a9cb67a6fb7c7bf12e5bc10e61d09c",
+  "findings": [
+    {
+      "affected_training_credit": "none_yet_pretraining_not_started",
+      "contract_clause": "reviewer_isolation.candidate_source; R0 formal_wrapper_to_entrypoint_call_graph",
+      "expected": "formal wrapper binds execution to immutable reviewed/frozen source SHA",
+      "finding_id": "R0-F001",
+      "function_or_field": "CARE_ROOT default / formal command",
+      "observed": "defaulted to mutable main without required EXPECTED_TRAINING_SOURCE_SHA",
+      "repair_scope": "wrapper source SHA fail-closed binding",
+      "reproducer_command": "nl -ba jobs/care_ase_r2/run_fold_chunk_htzhulab.sh | sed -n '13,36p'",
+      "severity": "critical",
+      "source_path_or_evidence_path": "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh"
+    },
+    {
+      "affected_training_credit": "none_yet_pretraining_not_started",
+      "contract_clause": "loss_contract.total_weights; anatomy/scar/edema declared losses",
+      "expected": "exact R2 loss terms/weights and declared populations enter total loss",
+      "finding_id": "R0-F002",
+      "function_or_field": "REQUIRED_LOSS_WEIGHTS; care_ase_loss",
+      "observed": "proxy 17-term loss with missing distance/center/injury/context/relation semantics",
+      "repair_scope": "replace proxy loss naming/weights and wire declared targets",
+      "reproducer_command": "nl -ba src/care_myocardium/training/care_ase_trainer.py | sed -n '51,214p'",
+      "severity": "critical",
+      "source_path_or_evidence_path": "src/care_myocardium/training/care_ase_trainer.py"
+    },
+    {
+      "affected_training_credit": "none_yet_pretraining_not_started",
+      "contract_clause": "sampler_contract cycles and hard-negative manifest consumption",
+      "expected": "exact A/B alternating cycle, focus cycles, descriptor-driven patches",
+      "finding_id": "R0-F003",
+      "function_or_field": "CAREASEDeterministicSampler; make_batch",
+      "observed": "count-only cycle and microbatch-modulo crop masks",
+      "repair_scope": "implement exact descriptor cycle and focus-driven patch selection",
+      "reproducer_command": "nl -ba src/care_myocardium/training/care_ase_sampler.py | sed -n '85,162p'",
+      "severity": "critical",
+      "source_path_or_evidence_path": "src/care_myocardium/training/care_ase_sampler.py; scripts/training/care_ase/run_care_ase_r2_chunk.py"
+    },
+    {
+      "affected_training_credit": "none_yet_pretraining_not_started",
+      "contract_clause": "optimizer_scheduler_contract.stages; scheduler_formula",
+      "expected": "exact per-stage LR/minLR/warmup",
+      "finding_id": "R0-F004",
+      "function_or_field": "CAREASEStageScheduler",
+      "observed": "global warmup/minLR and wrong Stage A LR",
+      "repair_scope": "implement exact scheduler table",
+      "reproducer_command": "nl -ba src/care_myocardium/training/care_ase_trainer.py | sed -n '304,382p'",
+      "severity": "critical",
+      "source_path_or_evidence_path": "src/care_myocardium/training/care_ase_trainer.py"
+    },
+    {
+      "affected_training_credit": "none_yet_pretraining_not_started",
+      "contract_clause": "anatomy_contract.outputs",
+      "expected": "signed_endo_distance signed_epi_distance wall_depth_rho outputs",
+      "finding_id": "R0-F005",
+      "function_or_field": "CAREASE.forward",
+      "observed": "geometry outputs missing",
+      "repair_scope": "add anatomy geometry outputs and loss wiring",
+      "reproducer_command": "rg -n \"signed_endo|signed_epi|wall_depth|rho\" src/care_myocardium/models/care_ase.py src/care_myocardium/training/care_ase_trainer.py",
+      "severity": "major",
+      "source_path_or_evidence_path": "src/care_myocardium/models/care_ase.py"
+    },
+    {
+      "affected_training_credit": "none_yet_pretraining_not_started",
+      "contract_clause": "R0 evaluator/decode path binding; W5 outer once same-case comparison",
+      "expected": "load frozen checkpoint, fixed decode, full-volume inference, casewise output",
+      "finding_id": "R0-F006",
+      "function_or_field": "main",
+      "observed": "synthetic-only smoke receipt",
+      "repair_scope": "implement fail-closed real evaluator skeleton",
+      "reproducer_command": "nl -ba scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py | sed -n '44,79p'",
+      "severity": "major",
+      "source_path_or_evidence_path": "scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py"
+    }
+  ],
+  "invalidated_wave_or_none": null,
+  "next_review_trigger": "R0_REVIEW_FIXED_CANDIDATE",
+  "required_repair_scope": "W1_R0_source_repair_no_training_started",
+  "reviewer_session_id": "019fc386-dba4-7b72-a29f-06a657b4fc5f",
+  "round_id": "R0_W1_EARLY_DIFF"
+}
