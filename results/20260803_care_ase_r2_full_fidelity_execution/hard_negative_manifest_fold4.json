@@ -1,0 +1,3127 @@
+{
+  "case_count": 141,
+  "cases": {
+    "Case1001": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1002": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1003": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1004": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1005": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1006": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1007": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1010": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1011": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1014": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1016": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1020": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1021": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1022": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1023": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1025": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1026": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1027": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1029": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1031": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1033": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1035": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1036": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1038": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1039": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1040": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1042": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1044": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1045": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1047": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1048": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1050": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1051": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1053": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1054": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1057": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1058": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1059": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1061": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1062": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1065": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1066": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1068": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1069": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1071": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1072": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1073": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1074": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1077": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1078": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1080": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case1081": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case2001": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case2002": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case2004": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case2005": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case2007": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case2009": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case2010": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case2012": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case2014": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case2016": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case2017": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case2020": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case2021": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case2022": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case2023": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case2024": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case2026": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case2027": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case2029": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case2030": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case2031": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case2034": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case3002": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case3003": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case3004": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case3006": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case3008": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case3009": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case3010": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case3011": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case3014": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case3015": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case3016": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case3017": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case3018": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case3019": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case3021": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case3023": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case3024": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case3025": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case3026": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case3028": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case3029": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case3032": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case3033": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case3034": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case3037": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case3040": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case3041": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case3044": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case3045": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case5001": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case5002": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case5005": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case5007": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case5010": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case6001": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case6003": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case6004": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case6005": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case6006": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case6010": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case7001": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case7004": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case7005": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case7008": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case7010": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case8002": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case8003": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case8006": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case8008": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case8009": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case8010": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case8011": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case8013": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case8015": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case8016": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case8017": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case8018": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case8019": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case8021": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case8023": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case8024": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case8025": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case8028": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case8029": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case8032": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case8033": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    },
+    "Case8034": {
+      "edema_fn_voxels": 0,
+      "edema_fp_voxels": 0,
+      "scar_fn_voxels": 0,
+      "scar_fp_voxels": 0,
+      "target_coordinate_counts": {
+        "edema_oof_fn_or_low_volume": 0,
+        "edema_safe_fp": 0,
+        "scar_oof_fn": 0,
+        "scar_oof_fp": 0
+      },
+      "targets": {
+        "edema_oof_fn_or_low_volume": [],
+        "edema_safe_fp": [],
+        "scar_oof_fn": [],
+        "scar_oof_fp": []
+      }
+    }
+  },
+  "coord_limit_per_target": 32,
+  "fold": 4,
+  "payload_sha256": "ebaba89bca68278b2693a92b61fbe39c6b371769d64009b8f6b125d0d344e720",
+  "prediction_root_count": 10,
+  "prediction_roots": [
+    "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation",
+    "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_postprocess_sweep/variants/nnunet_pathology_teacher_srr_refiner_signal_seek__pathology_overlap_dilate2/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek__pathology_overlap_dilate2/validation",
+    "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold0/oof_predictions/official",
+    "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official",
+    "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official",
+    "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official",
+    "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold4/oof_predictions/official",
+    "/users/a/e/aereinh/CARE/results/srr_production/inference/anchor_identity_control/predictions",
+    "/users/a/e/aereinh/CARE/results/srr_production/inference/srr_no_anchor_control/predictions",
+    "/users/a/e/aereinh/CARE/results/srr_production/inference/anchor_bounded_srr_correction/predictions"
+  ],
+  "prediction_sources": {
+    "Case1001": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case1001.nii.gz",
+      "sha256": "19b0f4081d8f8e27559380bdae261e0a3ba761c59da696834ed6697fd9d56433"
+    },
+    "Case1002": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case1002.nii.gz",
+      "sha256": "96e8d177a73d42cf1ab35f250152da883106a1d2c499cabc77adffebeec6d0a3"
+    },
+    "Case1003": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case1003.nii.gz",
+      "sha256": "0e6dc803dbf6e51410e94487762d047f6cb02aad2ada757a3a3ae27d1c1a0c19"
+    },
+    "Case1004": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case1004.nii.gz",
+      "sha256": "6563c1c1e5dcf357494f4aeaeec2e7d03fd66d55d97c09c34bb185adcd436474"
+    },
+    "Case1005": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case1005.nii.gz",
+      "sha256": "c475df0f816ce8c850e05b70b982b47e35351577d4a6f55c916583622dbc890f"
+    },
+    "Case1006": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case1006.nii.gz",
+      "sha256": "26f5c040d92357bb9b39641314c4a28b3ff2f4689339467c1142a56fd07f9a82"
+    },
+    "Case1007": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case1007.nii.gz",
+      "sha256": "39cb6c350811d667e1fd07b2f4702cc5b28eca0a60ae5c33f4cc713b58bbb8e9"
+    },
+    "Case1010": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case1010.nii.gz",
+      "sha256": "bf449c4a899393ed2fe27d001e16fa7112d0b3d3dc27d51a2a71ca59f4a96358"
+    },
+    "Case1011": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case1011.nii.gz",
+      "sha256": "53acc045e1f35274fa13b2673f0e948e9a08c824708d9c1933be1916dd6ae5b5"
+    },
+    "Case1014": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case1014.nii.gz",
+      "sha256": "81232df47667eb6ddf15056e297a5bb1fa34e7146f08bf65c727c70d7d50bf3c"
+    },
+    "Case1016": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case1016.nii.gz",
+      "sha256": "c4c0d81ce37fd58cf6784cb69a2b92c9392fb5683a02bfb3bd7a535fee1f28a0"
+    },
+    "Case1020": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case1020.nii.gz",
+      "sha256": "283e3d1440a9eca58375d1ee476f775c14707fc9d2604b0d45893d430f8dca03"
+    },
+    "Case1021": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case1021.nii.gz",
+      "sha256": "9f42e6928150343dbf460a0289eeec6ca62331bca1b245add9e86e45d6edcc81"
+    },
+    "Case1022": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case1022.nii.gz",
+      "sha256": "90c428595c0e0a3deb5f0306f01aa1b27617ca972ec59f2eb1cb9b3e2c18f3e5"
+    },
+    "Case1023": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case1023.nii.gz",
+      "sha256": "31c3131165c9d9f4a7c2ed8d149298109244a9d67b14c3e1938938ecd560480e"
+    },
+    "Case1025": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case1025.nii.gz",
+      "sha256": "1406e2fa4c4f27c6bfbe9b454ef7c2986dc1d666e4d96245efa1abe2315fc8d0"
+    },
+    "Case1026": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case1026.nii.gz",
+      "sha256": "47e1c6e812aeb0195da5e4c178533f28b3ed359a7c4eacf9522bff171f03882f"
+    },
+    "Case1027": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case1027.nii.gz",
+      "sha256": "a772cc398cf7c0384d0ce07225fefc12cb1e959435d2673e8e84d401bb2ffd0a"
+    },
+    "Case1029": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case1029.nii.gz",
+      "sha256": "f23ecd6e934724b7d4f91c57bdf6f96b6d71ab4820a41e939e1ba5628d077e8b"
+    },
+    "Case1031": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case1031.nii.gz",
+      "sha256": "aff118792ff1c8a660f17832d40cfdcfca69a18a51635b05fefa13e8f4e122bb"
+    },
+    "Case1033": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case1033.nii.gz",
+      "sha256": "f6ef9107ea3cfed1b603bdf97afb6f3c5994f1f9b4cbbc5610ca42602e4d302d"
+    },
+    "Case1035": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case1035.nii.gz",
+      "sha256": "15e8cc5e45a188487d6e05c26a1a8aacef1dff289c5ab4a4c9d04fa2e2eefe95"
+    },
+    "Case1036": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case1036.nii.gz",
+      "sha256": "4743b8442a16c625ffe73c8921b117826c6179af28a25914cf936fe7d4dbdebd"
+    },
+    "Case1038": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case1038.nii.gz",
+      "sha256": "642703faf85f91fa995770766d7b50d43e37b28bfad29792a0e84196aa8400da"
+    },
+    "Case1039": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case1039.nii.gz",
+      "sha256": "8649a6b90c65472020bf68eb44c619c073f57364c27af2be141c96418465cc02"
+    },
+    "Case1040": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case1040.nii.gz",
+      "sha256": "8210869e9c422b27c5029837b8c1b56ca674dc4f7a0dd0a6221313d7c5fbbead"
+    },
+    "Case1042": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case1042.nii.gz",
+      "sha256": "05765b940dadcdbf21f47191b5ec194d60501cc0c93ba8ab8da472002b02a806"
+    },
+    "Case1044": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case1044.nii.gz",
+      "sha256": "c9d91a7ee9b1a5fc2f0f5b3621616ecd4267b264336922c69f49a90585eb7929"
+    },
+    "Case1045": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case1045.nii.gz",
+      "sha256": "21bc6523a16982286191693de07a6b75471baf676ac92d813b8ef79f7973ad88"
+    },
+    "Case1047": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case1047.nii.gz",
+      "sha256": "e290a566be4f8ab95a44fce93062a70b57f78765b074f17fc2929cc67b79d496"
+    },
+    "Case1048": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case1048.nii.gz",
+      "sha256": "734c9a180b37e999e0c292b49a0447c0752013c53bf2ca016a79d1df988d5151"
+    },
+    "Case1050": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case1050.nii.gz",
+      "sha256": "09cec877b4bd5f39c4902018c8373a455fd93f6c35f84fa74bedf6e66bac8a44"
+    },
+    "Case1051": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case1051.nii.gz",
+      "sha256": "db4ade782fcbb3b67df5e97d8b051ea4aa0002ed42212e9bc674aaa89256d026"
+    },
+    "Case1053": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case1053.nii.gz",
+      "sha256": "592ca8519068036a947e9a324301919035c8b1ee16400e63424278618547fd35"
+    },
+    "Case1054": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case1054.nii.gz",
+      "sha256": "b81c8d6d2f00301b9817a35cec4b21be3b4f635f13cc5f58568b8ca15f4ec607"
+    },
+    "Case1057": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case1057.nii.gz",
+      "sha256": "30e75cb5baaa8a6948ea533fdf50cf1d3cf96bc6239fb64866f5246e9b5c0d64"
+    },
+    "Case1058": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case1058.nii.gz",
+      "sha256": "226f02f340bd77e2c99b8d2b056865c6adec21fc834abd0952a6209f3f121005"
+    },
+    "Case1059": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case1059.nii.gz",
+      "sha256": "5e2a710bc49e393f811b65d57fe5d0702152a1ee0788ad89fe90985197b84f47"
+    },
+    "Case1061": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case1061.nii.gz",
+      "sha256": "92833fd1ae3d2c920d2a2f7c6778cb2ceed288b324680474b34a54a0260b9a3c"
+    },
+    "Case1062": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case1062.nii.gz",
+      "sha256": "5fcdef8a2e22ec5132fe8a63a44358c5c416460d0d3b7f0d711d528bd72ba689"
+    },
+    "Case1065": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case1065.nii.gz",
+      "sha256": "19f7c86e055833e8af2c8e34745b8f445ce2b52b02d9922b453dd128935ffec2"
+    },
+    "Case1066": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case1066.nii.gz",
+      "sha256": "a9a563c911e3c0b66070ed5fec46ea8a9bcb7871550ddf0e21af1191c8cd82e8"
+    },
+    "Case1068": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case1068.nii.gz",
+      "sha256": "ecf51608c912a7433f2822c48515230e71d74a5fff7ad0d05d72a1abd9a6153e"
+    },
+    "Case1069": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case1069.nii.gz",
+      "sha256": "57964011dbcc55a6e222a231b200b14f4f686d11b409c7a59a0e63d6408144de"
+    },
+    "Case1071": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case1071.nii.gz",
+      "sha256": "f311d6338ba9445aad50dbbbca077e528f38c739907996725eacc17a4fe5bc3a"
+    },
+    "Case1072": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case1072.nii.gz",
+      "sha256": "c46083d9fad728f6c90815d98a779f878a8410c23c1e769a3d2a36d5d26c6b35"
+    },
+    "Case1073": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case1073.nii.gz",
+      "sha256": "e9507edc5dcae1cbf4aef17c1beb27596052847ca5795dd4770c85ea1cfdaf95"
+    },
+    "Case1074": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case1074.nii.gz",
+      "sha256": "9221b0a3b0f4a4bdaa842e7cc6db2acac1af186b174d77721269d23ab09249d9"
+    },
+    "Case1077": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case1077.nii.gz",
+      "sha256": "e39b81dfe558760c49dd7dfdef5c114dc6ab27440f7c8e0b323abf9974509968"
+    },
+    "Case1078": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case1078.nii.gz",
+      "sha256": "a748a6f6db0b4b04736fe9722acbaeea76f92ffcfcdeb46fcf43a76dc098a318"
+    },
+    "Case1080": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case1080.nii.gz",
+      "sha256": "27425a37fadff02085b5dc9b36fd9da2b3ade708c00ba123b6cb385e025d3829"
+    },
+    "Case1081": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case1081.nii.gz",
+      "sha256": "37f4de9e0637dc7e7c3da88cb775347e1c528008ad3a31481d3bd5d41462b878"
+    },
+    "Case2001": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case2001.nii.gz",
+      "sha256": "46b6f6a144128f4607c67fb6688861c6f99e7a4553511b29cc954b79d057cf45"
+    },
+    "Case2002": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case2002.nii.gz",
+      "sha256": "444643e86ab0ecb475cf5a1878f75d515902168203d5d9736d7124266aa85a7b"
+    },
+    "Case2004": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case2004.nii.gz",
+      "sha256": "fba471d8686e81ded975a10a2360a5c2f0ddc48aecc412e46989ad09760a416b"
+    },
+    "Case2005": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case2005.nii.gz",
+      "sha256": "63856cd2ad0177f30c7cba889af472715627bd9e7206d8fbb26dce2e9363c5ce"
+    },
+    "Case2007": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case2007.nii.gz",
+      "sha256": "fe952daadef9c1d404d20cb301a2dced9e92435dac133a38256b722949086ae4"
+    },
+    "Case2009": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case2009.nii.gz",
+      "sha256": "d13d973b5727fd773fdd771852b81f5d422ec0fd64c2d09f13dff1fc90684477"
+    },
+    "Case2010": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case2010.nii.gz",
+      "sha256": "35e3cc5cf2ad19015e6d23b234e12ec751d78e3daf3f8261afbfe29cf43a07f6"
+    },
+    "Case2012": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case2012.nii.gz",
+      "sha256": "45e7c57d0b9d1c8ed4306d8776ab34af1cf9fb86fdbf945536f8ec38b72e037d"
+    },
+    "Case2014": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case2014.nii.gz",
+      "sha256": "e063b2ccb531138d735f349a7adafe604265a678af66b2d39dd260d89f00f560"
+    },
+    "Case2016": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case2016.nii.gz",
+      "sha256": "900ea8a1209b61c768c1ff13657c542e3af7796dbc8d02749092e96e508caeab"
+    },
+    "Case2017": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case2017.nii.gz",
+      "sha256": "199a41b4ae902721d2e391ec7638c05e7a1ff96eada1bae1d835780af4d5676b"
+    },
+    "Case2020": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case2020.nii.gz",
+      "sha256": "a047015c1f65b74b070ce3fa86d669f2e77bc6fd9ba5339b09ed2470b04140a9"
+    },
+    "Case2021": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case2021.nii.gz",
+      "sha256": "5fd8b3375bab53fb6f77f3320c7dd292db8fb892ba3a2bcf8262fb7969f47e49"
+    },
+    "Case2022": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case2022.nii.gz",
+      "sha256": "be598503f4190cbf754f51d69780a6022a2d66abfb8877a2958b879fe416f88c"
+    },
+    "Case2023": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case2023.nii.gz",
+      "sha256": "635e2075a77ecdd9a5cd0581b50f20f5f04483e6915006159b5f16587ec6248d"
+    },
+    "Case2024": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case2024.nii.gz",
+      "sha256": "2638e5109cb0a9bdbe8cd6b47e807543ff441df740ab2f8e8484146c548137d1"
+    },
+    "Case2026": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case2026.nii.gz",
+      "sha256": "d4b5ed65d92fab2bfcbd8dd770be48c973f5b43971342b7f3777ce6183f431a9"
+    },
+    "Case2027": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case2027.nii.gz",
+      "sha256": "a91e429659d27f85abf7c44db64a37d6b7e537ee5ef72d2cd125b32315ec3b84"
+    },
+    "Case2029": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case2029.nii.gz",
+      "sha256": "d332621a16d4b6f366de8107be12841d743fef497da2e1099fb6e6ebf47cf2bb"
+    },
+    "Case2030": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case2030.nii.gz",
+      "sha256": "3f57bbc735c8a52b20417465b1c280523c7271a35972edb870064fc96bb6829c"
+    },
+    "Case2031": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case2031.nii.gz",
+      "sha256": "fdc8519712ce1c9b1650a4966ed9776f9e8a39f8780c3e425ca072effbb793e8"
+    },
+    "Case2034": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case2034.nii.gz",
+      "sha256": "5c6d06dccceebb22ff03b4356e3c8f70769d04f1a422a5744fd366112774fcc9"
+    },
+    "Case3002": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case3002.nii.gz",
+      "sha256": "62f81fea7f38626bb2a8cdab77fddc1e4c7d339a06096939395a539c7f50d8aa"
+    },
+    "Case3003": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case3003.nii.gz",
+      "sha256": "25eadfab1bd9d21fd4dd3b1477783f82d90c306e3721210a0e133e1085955679"
+    },
+    "Case3004": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case3004.nii.gz",
+      "sha256": "b661ecb1c0ff8880ebaa09072bdb6265c8bede13d0c96a7a17d0c6873fa2a138"
+    },
+    "Case3006": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case3006.nii.gz",
+      "sha256": "513072228a7f893e052b018f139827a6ae27a0809b7a0e853ae5c3c7367360ab"
+    },
+    "Case3008": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case3008.nii.gz",
+      "sha256": "4d3fa46f0fe13b48eec4d81770395b7297d1e9e9df9191581a6cea207a2c6db3"
+    },
+    "Case3009": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case3009.nii.gz",
+      "sha256": "9ea8c3617e889aaa9c3a9eff75709c8cdd02c39da71a81ef438790ce2f794d43"
+    },
+    "Case3010": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case3010.nii.gz",
+      "sha256": "f19c483f2b13494dae0632cea465741b7a2a4b91c5f26a6b4d75609333889fd1"
+    },
+    "Case3011": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case3011.nii.gz",
+      "sha256": "a2d27b583beeb6e0a254bef6dee7f79ec725223bc3463801512610b60a5625d9"
+    },
+    "Case3014": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case3014.nii.gz",
+      "sha256": "bc65d16dd63bda2f2a0eae7b473c169759465062943673d56504dd37cf3e14d2"
+    },
+    "Case3015": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case3015.nii.gz",
+      "sha256": "0b479dfb7cd91ea357a20fc41c2cba6bde303eca86afd1aa1008ff5f914e1342"
+    },
+    "Case3016": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case3016.nii.gz",
+      "sha256": "a0681ca1a8e2c84885fe121159c0b2dce54bc1045b0e10fc68ebb5c206a763b9"
+    },
+    "Case3017": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case3017.nii.gz",
+      "sha256": "c83da51347197e650ef3eb9c9d8081742b79a60366a8b942adc5d10949d487a9"
+    },
+    "Case3018": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case3018.nii.gz",
+      "sha256": "7089a5c8def56c9e3e0d9a8fe1931538c2acee4a3ab2edaa0e717863f77d88e2"
+    },
+    "Case3019": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case3019.nii.gz",
+      "sha256": "515324114518599361aae0382740eab2151d620d98464fe821efb2043e59782e"
+    },
+    "Case3021": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case3021.nii.gz",
+      "sha256": "3b5d0fe5c97847346bb8fff364af44ed7f06bf0de6c001bdf5ea27d6436d60ef"
+    },
+    "Case3023": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case3023.nii.gz",
+      "sha256": "ac71487e91c141c31807677171d94b409aa346aa43148a3a5df6ab5cc3a9fb71"
+    },
+    "Case3024": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case3024.nii.gz",
+      "sha256": "7edf90a1df4be327a9857693f761e48dd7d486e2e97fe98938767d0464336763"
+    },
+    "Case3025": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case3025.nii.gz",
+      "sha256": "603b6fc5961cd59884fcec3c180cd7649fa342338eb2ed67fafef060594669ba"
+    },
+    "Case3026": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case3026.nii.gz",
+      "sha256": "311cf69d98d13b7d1e8b230ae6312b7366f51f3da49e8ef10f4a9d1b85ae181d"
+    },
+    "Case3028": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case3028.nii.gz",
+      "sha256": "566c50c26c3a146ecc15002ffb0b255b4276f28bf1851232c69a95a769b06e1d"
+    },
+    "Case3029": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case3029.nii.gz",
+      "sha256": "fbb95b33940b1cc5101546e8297a29ba575f8a46f63f5739d2ed6fd0276d8b4c"
+    },
+    "Case3032": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case3032.nii.gz",
+      "sha256": "26c6de802763392dfc36a400c67b984b5ca63069fcaed6df6fc1f627fb86e93f"
+    },
+    "Case3033": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case3033.nii.gz",
+      "sha256": "c315674bf69fa894bd289e4f359200fb7bc58938c31d02a852963c2f654fd8d7"
+    },
+    "Case3034": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case3034.nii.gz",
+      "sha256": "6e23b1760b573a99dd25057e8ffed7e6994fbb2295688bdc74099a8740232405"
+    },
+    "Case3037": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case3037.nii.gz",
+      "sha256": "d6109f5edf27827bb56d97ddae4902c908dce03107d9ff957236960fc0ee0243"
+    },
+    "Case3040": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case3040.nii.gz",
+      "sha256": "8072acc7143a3a6da0573b1abc71b1371e7c75e76915de379129d4d06fb48a8a"
+    },
+    "Case3041": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case3041.nii.gz",
+      "sha256": "3c0ad48aeab257caa3fabd73ca43231d4c3cfc2ee458972e26152225ab87f8b9"
+    },
+    "Case3044": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case3044.nii.gz",
+      "sha256": "912918ba9d8685f1a1f18fec01198e8737f4bb3cd727970bc7956d43608821d3"
+    },
+    "Case3045": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case3045.nii.gz",
+      "sha256": "616da573480f6a3401f1b7a66387710537bae4aebe4217ebd2680674ca92f942"
+    },
+    "Case5001": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case5001.nii.gz",
+      "sha256": "5bcd4b3e2db82642c54c46e0c29d02864fa4adf92896e9fd7d3c457e23d5ffe9"
+    },
+    "Case5002": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case5002.nii.gz",
+      "sha256": "02c77eaeae42e90026323f459307ec4d789eaee1109eaa00102fc8bd618f2f74"
+    },
+    "Case5005": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case5005.nii.gz",
+      "sha256": "359db626e460a904a7368d99529bb37b69b6b280caf7e89342f8ebdd72c6e1d2"
+    },
+    "Case5007": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case5007.nii.gz",
+      "sha256": "d8348b73d5f6c2d411a1b86a7eb785f2f5d122664b62211b9898339b8d752380"
+    },
+    "Case5010": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case5010.nii.gz",
+      "sha256": "f848d64cb8a5c7aa087b7069e548c95af0c069f0fa6fced2500c6b38f5536ddf"
+    },
+    "Case6001": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case6001.nii.gz",
+      "sha256": "63cf1e5818069cda5b51ecf40922c850afd946203c42e9a37682948e4f20e233"
+    },
+    "Case6003": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case6003.nii.gz",
+      "sha256": "09f21338803217cd47d12e1d318983451aa15a7606019347877da8ee8e479ab8"
+    },
+    "Case6004": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case6004.nii.gz",
+      "sha256": "9dec07ca7a9988a79bba969ffaeee5c58eafdd55e05c28423408b0257a8063df"
+    },
+    "Case6005": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case6005.nii.gz",
+      "sha256": "6fb072eecb56ff763f99b82b235c6c663350d3641dcc6d1cb8be46f904b5ff8d"
+    },
+    "Case6006": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case6006.nii.gz",
+      "sha256": "9cc7a33c2c0f6d5b98b8fa7633aa73929b2ebed40463bfd35ebec9490796db32"
+    },
+    "Case6010": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case6010.nii.gz",
+      "sha256": "0a90eef359b234ba3e4530cba9bbe3eb4b148cd259bedc74c4f6ac80521b6809"
+    },
+    "Case7001": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case7001.nii.gz",
+      "sha256": "612811a35720e04e5e4c436af9fbf54acda9e87da9ada4d4b98e6b9666e8ae61"
+    },
+    "Case7004": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case7004.nii.gz",
+      "sha256": "d5361f2db97e7bd2beda1e67dc5cf0646c7e9a45a7ac6b6ed2f7873d0d142b8b"
+    },
+    "Case7005": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case7005.nii.gz",
+      "sha256": "6add255470b33684a1a087a7e7a69110fa5e7d30dd36d942537c24fa499b60b2"
+    },
+    "Case7008": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case7008.nii.gz",
+      "sha256": "522af9109873bc84fc0dc821c88e32ea68110cde9c55aeedad1610cb90d589d5"
+    },
+    "Case7010": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case7010.nii.gz",
+      "sha256": "5b924c2b11d282d5612746226c06b25134dd83edcf9a9ea6bbb2e8f11f4198a4"
+    },
+    "Case8002": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case8002.nii.gz",
+      "sha256": "b01eb0e0920cd948a47ce79af38a006e3bddb3232cd696993876fe535d8569da"
+    },
+    "Case8003": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case8003.nii.gz",
+      "sha256": "72a72af68e2fc7ce181110d1ccab3a09ef68b0d3d6b1099d75d84f84de538681"
+    },
+    "Case8006": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case8006.nii.gz",
+      "sha256": "7fb5fdaf6935f9d615fa5e064bca564cfc4d9d892d6786fbcafd5115adfd7a32"
+    },
+    "Case8008": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case8008.nii.gz",
+      "sha256": "3397889b8521d4cd572ba32a0366d3b57d4a6c8751aa4a5402adc642e351bf3d"
+    },
+    "Case8009": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case8009.nii.gz",
+      "sha256": "5e2fc27f2a222b6cc91704adad0a31548084610d7948b86058bc3a77bb0b93b6"
+    },
+    "Case8010": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case8010.nii.gz",
+      "sha256": "6c80c0694b232766d4f6f04c80c319eeea8e0afe6e4ae14b0427db52de5381ea"
+    },
+    "Case8011": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case8011.nii.gz",
+      "sha256": "082a5f5e317609a70080db90f0fc5b95b4a8fe41fa7d9b7e330bb4a7a2f37ae5"
+    },
+    "Case8013": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case8013.nii.gz",
+      "sha256": "e33c9d014a88358e540963d6b815f26855caf904c45f53ec794c3e7c7ace597d"
+    },
+    "Case8015": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case8015.nii.gz",
+      "sha256": "95b8b34c4396c2f405808507d03794bb6a989dd4deae09b67a0e388060891979"
+    },
+    "Case8016": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case8016.nii.gz",
+      "sha256": "ea37720b63f6c6f29d53dbacd994cd41cf550d0422dbedf4c7270c616a856311"
+    },
+    "Case8017": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case8017.nii.gz",
+      "sha256": "57b948cdfad84f63e95a02a35ca641ecf6cf338d47abdc39ebfc2a26a69dbcc2"
+    },
+    "Case8018": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case8018.nii.gz",
+      "sha256": "31da1a2c87f8a1d47c501bc0ec35ae263b146140739f1981a40d4f8ab1588f91"
+    },
+    "Case8019": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case8019.nii.gz",
+      "sha256": "dd1bfccbd16ea524f90b9aaeb36b38dcea3cd92b78e2ea62095435847eba3358"
+    },
+    "Case8021": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case8021.nii.gz",
+      "sha256": "92e173c86cb2fc1f678b730a0e3d995009a47e5712e4373009f363b7aa005381"
+    },
+    "Case8023": {
+      "path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation/Case8023.nii.gz",
+      "sha256": "286c6fe923e0630cab1b79a2adbd6e9098c4681b39594bc68907fd994f2cb185"
+    },
+    "Case8024": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case8024.nii.gz",
+      "sha256": "49a41e52d407f7169ead55df23341f9846dc9e81bf57ad1eb4d7da2881f3a416"
+    },
+    "Case8025": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case8025.nii.gz",
+      "sha256": "e7bed684b67ea2809edd727fde1071a70efe57f642a4224c641b1e5c6bc25a36"
+    },
+    "Case8028": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case8028.nii.gz",
+      "sha256": "6014751daf8c2075706bf533030a7ba8254612a6d3f5d7161eabf60de51c71f4"
+    },
+    "Case8029": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official/Case8029.nii.gz",
+      "sha256": "00c8b072c411bd860a768ef1eee6915d8b28064ad1ad41ef0da23d3f09ce9854"
+    },
+    "Case8032": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case8032.nii.gz",
+      "sha256": "5ea901ea978c4901ff3a81373420c6b49433614c73142cd0ec0f660c113aed0b"
+    },
+    "Case8033": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official/Case8033.nii.gz",
+      "sha256": "c6b94f4e457ceccbe48f001c1ac0bc01dd928a9b1468bbda83989240d66d9e97"
+    },
+    "Case8034": {
+      "path": "/users/a/e/aereinh/CARE/results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official/Case8034.nii.gz",
+      "sha256": "0eec05e46316f99e63a0c2078a412ed0636b8c2d308d347a638ca08071c33b51"
+    }
+  },
+  "source": "actual_train_only_hard_negative_manifest_from_configured_prediction_roots",
+  "status": "PASS"
+}

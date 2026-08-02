@@ -1,0 +1,40 @@
+{
+  "coord_limit": 32,
+  "created_at_utc": "2026-08-02T19:20:24.383532+00:00",
+  "manifest_generation_commands": [
+    "./envs/env_CARE/bin/python scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py --fold 1 --coord-limit 32 --stock-pred-root results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation --stock-pred-root results/20260629_cascade_teacher_route/revision_postprocess_sweep/variants/nnunet_pathology_teacher_srr_refiner_signal_seek__pathology_overlap_dilate2/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek__pathology_overlap_dilate2/validation --stock-pred-root results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold0/oof_predictions/official --stock-pred-root results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official --stock-pred-root results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official --stock-pred-root results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official --stock-pred-root results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold4/oof_predictions/official --stock-pred-root results/srr_production/inference/anchor_identity_control/predictions --stock-pred-root results/srr_production/inference/srr_no_anchor_control/predictions --stock-pred-root results/srr_production/inference/anchor_bounded_srr_correction/predictions",
+    "./envs/env_CARE/bin/python scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py --fold 4 --coord-limit 32 --stock-pred-root results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation --stock-pred-root results/20260629_cascade_teacher_route/revision_postprocess_sweep/variants/nnunet_pathology_teacher_srr_refiner_signal_seek__pathology_overlap_dilate2/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek__pathology_overlap_dilate2/validation --stock-pred-root results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold0/oof_predictions/official --stock-pred-root results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official --stock-pred-root results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official --stock-pred-root results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official --stock-pred-root results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold4/oof_predictions/official --stock-pred-root results/srr_production/inference/anchor_identity_control/predictions --stock-pred-root results/srr_production/inference/srr_no_anchor_control/predictions --stock-pred-root results/srr_production/inference/anchor_bounded_srr_correction/predictions"
+  ],
+  "manifests": {
+    "fold1": {
+      "case_count": 141,
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/hard_negative_manifest_fold1.json",
+      "payload_sha256": "d3064b736813f9156a706962527d83c038665d7a36999d62824197b801916a1f",
+      "prediction_root_count": 10,
+      "sha256": "83499357657390bcc851758e5eecb8803d4787b7e1470898ae24daa1fdf582a9",
+      "source": "actual_train_only_hard_negative_manifest_from_configured_prediction_roots"
+    },
+    "fold4": {
+      "case_count": 141,
+      "path": "results/20260803_care_ase_r2_full_fidelity_execution/hard_negative_manifest_fold4.json",
+      "payload_sha256": "ebaba89bca68278b2693a92b61fbe39c6b371769d64009b8f6b125d0d344e720",
+      "prediction_root_count": 10,
+      "sha256": "2ba11f9b1cd655e66f9feb17acff00928239bc3df768c04dd7edb034ddbae85c",
+      "source": "actual_train_only_hard_negative_manifest_from_configured_prediction_roots"
+    }
+  },
+  "outer_access_count_before_freeze": 0,
+  "prediction_roots": [
+    "results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation",
+    "results/20260629_cascade_teacher_route/revision_postprocess_sweep/variants/nnunet_pathology_teacher_srr_refiner_signal_seek__pathology_overlap_dilate2/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek__pathology_overlap_dilate2/validation",
+    "results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold0/oof_predictions/official",
+    "results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold1/oof_predictions/official",
+    "results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold2/oof_predictions/official",
+    "results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold3/oof_predictions/official",
+    "results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold4/oof_predictions/official",
+    "results/srr_production/inference/anchor_identity_control/predictions",
+    "results/srr_production/inference/srr_no_anchor_control/predictions",
+    "results/srr_production/inference/anchor_bounded_srr_correction/predictions"
+  ],
+  "status": "PASS"
+}
