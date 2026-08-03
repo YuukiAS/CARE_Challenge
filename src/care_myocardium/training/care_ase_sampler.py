@@ -19,7 +19,11 @@ from src.care_myocardium.data.care_ase_splits import PREPROCESSED_REL, build_car
 from src.care_myocardium.data.case_metadata import load_myops_case_metadata
 
 
-HARD_NEGATIVE_MANIFEST_TEMPLATE = "results/20260803_care_ase_r2_last_hotfix_v9/hard_negative_manifest_fold{fold}.json"
+HARD_NEGATIVE_MANIFEST_TEMPLATE = "results/20260804_care_ase_r2_emergency_9h_training_docker/hard_negative_manifest_fold{fold}.json"
+ALLOWED_HARD_NEGATIVE_TASK_KEYS = {
+    "20260804_care_ase_r2_emergency_9h_training_docker",
+    "20260803_care_ase_r2_last_hotfix_v9",
+}
 
 
 @dataclass(frozen=True)
@@ -96,7 +100,7 @@ def _load_hard_negative_manifest(repo_root: Path, fold: int, manifest_path: Path
         if not path.is_absolute():
             path = repo_root / path
     if not path.is_file():
-        raise FileNotFoundError(f"canonical CARE-ASE R2 v9 hard-negative JSON manifest is required: {path}")
+        raise FileNotFoundError(f"canonical CARE-ASE R2 hard-negative JSON manifest is required: {path}")
     data = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(data, dict):
         raise ValueError(f"hard-negative manifest is not a JSON object: {path}")
@@ -104,8 +108,8 @@ def _load_hard_negative_manifest(repo_root: Path, fold: int, manifest_path: Path
         raise ValueError(f"hard-negative manifest source is not canonical stock OOF only: {data.get('source')}")
     if data.get("v9_manifest") is not True:
         raise ValueError("hard-negative manifest must declare v9_manifest=true")
-    if data.get("task_key") != "20260803_care_ase_r2_last_hotfix_v9":
-        raise ValueError(f"hard-negative manifest task_key is not v9 last hotfix: {data.get('task_key')}")
+    if data.get("task_key") not in ALLOWED_HARD_NEGATIVE_TASK_KEYS:
+        raise ValueError(f"hard-negative manifest task_key is not an allowed CARE-ASE R2 task: {data.get('task_key')}")
     if data.get("forbidden_old_manifest_paths_rejected") is not True:
         raise ValueError("hard-negative manifest must prove old manifest paths are rejected")
     cases = data.setdefault("cases", {})

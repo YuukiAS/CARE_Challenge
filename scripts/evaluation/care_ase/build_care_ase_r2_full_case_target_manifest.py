@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Build lightweight full-case target-cache manifest for CARE-ASE R2 v9."""
+"""Build lightweight full-case target-cache manifest for CARE-ASE R2."""
 
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ from src.care_myocardium.data.care_ase_splits import PREPROCESSED_REL, build_car
 from src.care_myocardium.training.care_ase_trainer import build_full_case_target_cache
 
 
-TASK_KEY = "20260803_care_ase_r2_last_hotfix_v9"
+TASK_KEY = "20260804_care_ase_r2_emergency_9h_training_docker"
 
 
 def sha256_array(array: np.ndarray) -> str:

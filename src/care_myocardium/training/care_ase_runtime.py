@@ -1,4 +1,4 @@
-"""Authoritative CARE-ASE R2 v9 formal/probe runtime.
+"""Authoritative CARE-ASE R2 formal/probe runtime.
 
 The Slurm/Python wrapper is intentionally thin. This module owns descriptor
 bundles, case materialization, stock augmentation, target-cache binding,
@@ -75,15 +75,16 @@ from src.care_myocardium.training.care_ase_trainer import (
 
 PREPROCESSED = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans_3d_fullres"
 SPLITS = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/splits_final.json"
-TASK_KEY = "20260803_care_ase_r2_last_hotfix_v9"
+TASK_KEY = "20260804_care_ase_r2_emergency_9h_training_docker"
 RESULT_DIR = REPO_ROOT / "results" / TASK_KEY
 STATIC_REVIEW_INPUT_DIR = RESULT_DIR
 V8_RESULT_DIR = REPO_ROOT / "results/20260803_care_ase_r2_final_pretraining_closure_v8"
 PROBE_RUNTIME_DIR = Path("/users/a/e/aereinh/.tmp/codex-CARE") / TASK_KEY
-FORMAL_RUNTIME_PREFIX = "20260803_care_ase_r2_formal_training_"
+FORMAL_RUNTIME_PREFIX = "20260804_care_ase_r2_formal_training_"
 EFFECTIVE_CONTRACT = REPO_ROOT / "prompts/blueprints/CARE_ASE_R2_effective_contract_v9_20260803.yaml"
 CRITICAL_SOURCE_SEED_PATHS = (
     "prompts/blueprints/CARE_ASE_R2_effective_contract_v9_20260803.yaml",
+    "prompts/tasks/20260804_care_ase_r2_emergency_9h_training_docker_controller.md",
     "prompts/tasks/20260803_care_ase_r2_last_hotfix_v9.md",
     "prompts/tasks/20260803_care_ase_r2_last_hotfix_v9_executor_plan.yaml",
     "prompts/tasks/20260803_care_ase_r2_last_hotfix_v9_final_addendum.md",
@@ -455,10 +456,12 @@ def load_formal_runtime_input_bundle(
     elif binding_mode in {
         "external_review_request_and_external_permit",
         "external_review_and_permit_bind_actual_origin_main_head",
+        "controller_user_authorized_permit_bind_actual_origin_main_head",
     }:
         if str(bundle.get("review_packet_commit_sha", "BOUND_BY_EXTERNAL_REVIEW")) not in {
             "BOUND_BY_EXTERNAL_PERMIT",
             "BOUND_BY_EXTERNAL_REVIEW",
+            "BOUND_BY_CONTROLLER_PERMIT",
         }:
             raise RuntimeError("formal runtime input bundle must not embed a self-referential Commit B SHA")
     else:
@@ -626,8 +629,24 @@ def verify_external_review_permit(path: Path, *, expected_environment_determinis
     missing = sorted(required - set(permit))
     if missing:
         raise RuntimeError(f"external review permit missing fields: {missing}")
-    if permit["decision"] != "PRETRAINING_EXTERNAL_REVIEW_PASS":
-        raise RuntimeError(f"external review permit decision is not PASS: {permit['decision']}")
+    allowed_decisions = {
+        "PRETRAINING_EXTERNAL_REVIEW_PASS",
+        "PRETRAINING_CONTROLLER_USER_AUTHORIZED_PASS_20260804",
+    }
+    if permit["decision"] not in allowed_decisions:
+        raise RuntimeError(f"CARE-ASE training permit decision is not authorized: {permit['decision']}")
+    if permit["decision"] == "PRETRAINING_CONTROLLER_USER_AUTHORIZED_PASS_20260804":
+        if permit.get("task_key") != TASK_KEY:
+            raise RuntimeError(f"controller permit task_key mismatch: {permit.get('task_key')} != {TASK_KEY}")
+        if permit.get("user_authorized_controller_training_permit") is not True:
+            raise RuntimeError("controller permit must record user_authorized_controller_training_permit=true")
+        task_path = REPO_ROOT / "prompts/tasks/20260804_care_ase_r2_emergency_9h_training_docker_controller.md"
+        expected_task_sha = sha256_file(task_path)
+        if permit.get("user_authorized_task_sha256") != expected_task_sha:
+            raise RuntimeError(
+                "controller permit task SHA mismatch: "
+                f"permit={permit.get('user_authorized_task_sha256')} current={expected_task_sha}"
+            )
     head = git_sha("HEAD")
     origin = git_sha("origin/main")
     implementation_sha = str(permit["implementation_source_sha"])
@@ -708,7 +727,7 @@ def verify_external_review_permit(path: Path, *, expected_environment_determinis
             "critical source tree changed between implementation Commit A and review packet Commit B: "
             f"commitA={implementation_manifest} commitB={review_packet_manifest} current={current_manifest}"
         )
-    if not review_packet_contains_implementation_source(review_packet_sha, implementation_sha):
+    if permit["decision"] != "PRETRAINING_CONTROLLER_USER_AUTHORIZED_PASS_20260804" and not review_packet_contains_implementation_source(review_packet_sha, implementation_sha):
         raise RuntimeError(
             "review packet Commit B does not contain the reviewed implementation source SHA "
             f"{implementation_sha}"
@@ -1643,6 +1662,7 @@ def main() -> int:
     parser.add_argument("--allow-short-smoke", action="store_true")
     parser.add_argument("--allow-probe-nonresumable-start", action="store_true")
     parser.add_argument("--external-review-permit", type=Path, default=None)
+    parser.add_argument("--training-permit", type=Path, default=None)
     parser.add_argument("--formal-runtime-input-bundle", type=Path, default=None)
     args = parser.parse_args()
 
@@ -1690,10 +1710,11 @@ def main() -> int:
     permit = None
     runtime_input_bundle = None
     if not args.allow_short_smoke:
-        if args.external_review_permit is None:
-            raise RuntimeError("formal CARE-ASE R2 W3 chunk requires --external-review-permit")
+        permit_path = args.training_permit or args.external_review_permit
+        if permit_path is None:
+            raise RuntimeError("formal CARE-ASE R2 chunk requires --training-permit or --external-review-permit")
         permit = verify_external_review_permit(
-            args.external_review_permit,
+            permit_path,
             expected_environment_determinism_manifest_sha256=str(env_manifest["sha256"]),
         )
         if str(permit.get("formal_runtime_input_bundle_sha256", "")) in {"", "UNSET"}:
@@ -1870,7 +1891,7 @@ def main() -> int:
             "outer_access_before_freeze": 0,
             "fixed_decode_function": decode_care_ase_r2_logits.__name__,
             "formal_training_credit_current_external_review_revise_runtime": "zero_until_new_external_review_pass",
-            "formal_training_credit": "zero" if args.allow_short_smoke else "requires_valid_external_permit",
+            "formal_training_credit": "zero" if args.allow_short_smoke else "requires_valid_20260804_controller_or_external_permit",
             "probe_nonresumable_start": bool(args.allow_probe_nonresumable_start),
             "external_review_permit": permit or {"not_required_for_allow_short_smoke": bool(args.allow_short_smoke)},
             "chunk_lock": lock_receipt,
@@ -1967,7 +1988,7 @@ def main() -> int:
                     origin_main_sha=git_sha("origin/main") if not args.allow_short_smoke else "SHORT_SMOKE_NO_FORMAL_CREDIT",
                     origin_main_at_review_request_sha=permit.get("origin_main_at_review_request") if permit else "SHORT_SMOKE_NO_FORMAL_CREDIT",
                     effective_contract_sha256=live_effective_contract_sha,
-                    external_review_permit_sha256=sha256_file(args.external_review_permit) if args.external_review_permit else "SHORT_SMOKE_NO_FORMAL_CREDIT",
+                    external_review_permit_sha256=sha256_file(args.training_permit or args.external_review_permit) if (args.training_permit or args.external_review_permit) else "SHORT_SMOKE_NO_FORMAL_CREDIT",
                     critical_source_manifest_sha256=live_critical_source_manifest_sha,
                     split_file_sha256=sha256_file(SPLITS),
                     split_case_lists_sha256=json_sha({"fold": fold, "actual_train": actual_train_ids}),

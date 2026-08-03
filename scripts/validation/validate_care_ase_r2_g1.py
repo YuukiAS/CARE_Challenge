@@ -23,7 +23,7 @@ from src.care_myocardium.training.care_ase_sampler import CAREASEDeterministicSa
 from src.care_myocardium.training.care_ase_trainer import CAREASEStageScheduler, REQUIRED_CHECKPOINT_FIELDS, REQUIRED_LOSS_WEIGHTS, care_ase_loss
 
 
-RESULT_ROOT = REPO_ROOT / "results/20260803_care_ase_r2_last_hotfix_v9"
+RESULT_ROOT = REPO_ROOT / "results/20260804_care_ase_r2_emergency_9h_training_docker"
 WRAPPER = REPO_ROOT / "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh"
 ENTRYPOINT = REPO_ROOT / "scripts/training/care_ase/run_care_ase_r2_chunk.py"
 RUNTIME = REPO_ROOT / "src/care_myocardium/training/care_ase_runtime.py"
@@ -38,6 +38,7 @@ MANIFEST_BUILDER = REPO_ROOT / "scripts/evaluation/care_ase/build_care_ase_r2_ha
 VALIDATOR = REPO_ROOT / "scripts/validation/validate_care_ase_r2_g1.py"
 EFFECTIVE_CONTRACT = REPO_ROOT / "prompts/blueprints/CARE_ASE_R2_effective_contract_v9_20260803.yaml"
 V9_TASK = REPO_ROOT / "prompts/tasks/20260803_care_ase_r2_last_hotfix_v9.md"
+CURRENT_TASK = REPO_ROOT / "prompts/tasks/20260804_care_ase_r2_emergency_9h_training_docker_controller.md"
 
 STRUCTURAL_KNOWN_BAD_FIXTURES = (
     "stage_2000_4000_8000",
@@ -134,7 +135,7 @@ def coverage_rows() -> list[dict[str, Any]]:
         ("Stage A/B 10/5/5 alternating cycle", SAMPLER, "CAREASEDeterministicSampler.stage_a_b_cycle", '"lge_only",', "sampler_400_step_receipt", "stage_A_B_complete_only", "PASS"),
         ("Stage C complete-only CenterB/CenterC", SAMPLER, "CAREASEDeterministicSampler.stage_c_cycle", '("complete_centerB", "complete_centerC")', "sampler_static_contract", "stage_C_not_complete_only", "PASS"),
         ("CenterB/CenterC pathology and hard-negative cycles", SAMPLER, "CAREASEDeterministicSampler", "hard_negative_manifest", "sampler_static_contract", "break_center_or_focus_cycle", "PASS"),
-        ("hard-negative manifest consumed by formal sampler from final pretraining closure v9 task path", SAMPLER, "_load_hard_negative_manifest", "20260803_care_ase_r2_last_hotfix_v9/hard_negative_manifest_fold{fold}.json", "sampler_static_contract", "hard_negative_manifest_not_read", "PASS"),
+        ("hard-negative manifest consumed by formal sampler from emergency 9h task path", SAMPLER, "_load_hard_negative_manifest", "20260804_care_ase_r2_emergency_9h_training_docker/hard_negative_manifest_fold{fold}.json", "sampler_static_contract", "hard_negative_manifest_not_read", "PASS"),
         ("hard-negative manifest provides canonical stock OOF component coordinates", MANIFEST_BUILDER, "build_case", "canonical_patient_held_out_stock_nnunet_oof_only", "canonical_stock_oof_provenance_receipt", "count_only_hard_negative_manifest", "PASS"),
         ("hard-negative OOF same-shape arrays require explicit preprocessed-grid geometry proof", MANIFEST_BUILDER, "bind_prediction_to_preprocessed_grid", "same_shape_without_grid_proof_rejected", "canonical_stock_oof_provenance_receipt", "same_shape_wrong_affine_or_orientation_oof", "PASS"),
         ("actual-train-only scar/edema area reference", SAMPLER, "compute_actual_train_area_references", "row.role == \"actual-train\"", "area_reference_receipt", "hardcoded_area_reference", "PASS"),
@@ -148,7 +149,7 @@ def coverage_rows() -> list[dict[str, Any]]:
         ("physical EDT/context/center target builders use full-case cache before patch slicing", TRAINER, "build_full_case_target_cache", "Formal CARE-ASE training must slice these cached full-case target fields", "physical_target_contract_receipt", "proxy_loss_targets", "PASS"),
         ("edema boundary prediction uses dedicated component head", TRAINER, "care_ase_loss", "components[\"edema_boundary\"]", "boundary_head_contract_receipt", "edema_class_logit_as_boundary", "PASS"),
         ("context CE valid voxel mean only", TRAINER, "context_cross_entropy_valid_mean", "deterministic_cross_entropy", "context_loss_normalization_receipt", "unormalized_context_ce", "PASS"),
-        ("formal W3 requires external review permit", RUNTIME, "verify_external_review_permit", "formal CARE-ASE R2 W3 chunk requires --external-review-permit", "external_review_permit_enforcement_oracle", "formal_launch_without_external_permit", "PASS"),
+        ("formal training requires task-scoped controller/external permit", RUNTIME, "verify_external_review_permit", "PRETRAINING_CONTROLLER_USER_AUTHORIZED_PASS_20260804", "controller_training_permit_enforcement_oracle", "formal_launch_without_training_permit", "PASS"),
         ("formal W3 stale chunk lock recovery is fail-closed for live owners", RUNTIME, "acquire_chunk_lock", "stale_lock_recovered", "stale_lock_recovery_oracle", "stale_lock_no_recovery", "PASS"),
         ("fixed step14000 argmax and outer zero-access", RUNTIME, "validate_logical_chunk_invocation", "end_step) > 14000", "outer_access_audit_receipt", "outer_access_before_freeze", "PASS"),
         ("fixed argmax decode excludes class4 for no-T2", DECODE, "decode_care_ase_r2_logits", "NO_T2_CLASSES = (0, 1, 2, 3, 5)", "decode_static_contract", "no_t2_class4_background", "PASS"),
@@ -254,7 +255,7 @@ def sampler_static_contract() -> dict[str, Any]:
         "scar_within_focus_cycle": list(CAREASEDeterministicSampler.scar_within_focus_cycle),
         "edema_within_focus_cycle": list(CAREASEDeterministicSampler.edema_within_focus_cycle),
         "hard_negative_manifest_symbol": "HARD_NEGATIVE_MANIFEST_TEMPLATE",
-        "hard_negative_manifest_template": "results/20260803_care_ase_r2_last_hotfix_v9/hard_negative_manifest_fold{fold}.json",
+        "hard_negative_manifest_template": "results/20260804_care_ase_r2_emergency_9h_training_docker/hard_negative_manifest_fold{fold}.json",
         "hard_negative_manifest_consumption": "_hard_negative_category",
         "deterministic_fallbacks": "_fallback_sequence",
         "micro_patch_rng_controls_coordinate": "self.micro_patch_rng.randrange" in sampler_text and "selected_target_coordinate" in sampler_text,
@@ -272,7 +273,7 @@ def sampler_static_contract() -> dict[str, Any]:
         and stage_c == ("complete_centerB", "complete_centerC")
         and len(CAREASEDeterministicSampler.scar_within_focus_cycle) == 20
         and len(CAREASEDeterministicSampler.edema_within_focus_cycle) == 20
-        and "20260803_care_ase_r2_last_hotfix_v9/hard_negative_manifest_fold{fold}.json" in sampler_text
+        and "20260804_care_ase_r2_emergency_9h_training_docker/hard_negative_manifest_fold{fold}.json" in sampler_text
         and "self.micro_patch_rng.randrange" in sampler_text
         and "provides no scar_oof_fn coordinates" in sampler_text
         and "provides no edema_safe_fp coordinates" in sampler_text

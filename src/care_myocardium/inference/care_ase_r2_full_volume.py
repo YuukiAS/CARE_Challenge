@@ -11,19 +11,15 @@ from typing import Any
 
 import torch
 import torch.nn.functional as F
+from acvl_utils.cropping_and_padding.padding import pad_nd_image
+from nnunetv2.inference.sliding_window_prediction import compute_gaussian, compute_steps_for_sliding_window
 
 from src.care_myocardium.inference.care_ase_r2_decode import decode_care_ase_r2_logits
 from src.care_myocardium.models.care_ase import compute_slice_extent_statistics
 
 
 def starts_for(dim: int, patch: int, overlap: float = 0.5) -> list[int]:
-    if dim <= patch:
-        return [0]
-    stride = max(1, int(patch * (1.0 - overlap)))
-    values = list(range(0, max(dim - patch, 0) + 1, stride))
-    if not values or values[-1] != dim - patch:
-        values.append(dim - patch)
-    return values
+    return list(compute_steps_for_sliding_window((int(dim),), (int(patch),), float(overlap))[0])
 
 
 def _pad_patch_to_size(patch: torch.Tensor, patch_size: tuple[int, int, int]) -> tuple[torch.Tensor, tuple[int, int, int]]:
@@ -48,13 +44,13 @@ def gaussian_importance_map(
     device: torch.device | None = None,
     dtype: torch.dtype = torch.float32,
 ) -> torch.Tensor:
-    axes = []
-    for size in patch_size:
-        coord = torch.arange(int(size), device=device, dtype=dtype)
-        center = (float(size) - 1.0) / 2.0
-        sigma = max(float(size) * float(sigma_scale), 1.0e-6)
-        axes.append(torch.exp(-0.5 * ((coord - center) / sigma) ** 2))
-    weight = axes[0][:, None, None] * axes[1][None, :, None] * axes[2][None, None, :]
+    weight = compute_gaussian(
+        tuple(int(v) for v in patch_size),
+        sigma_scale=float(sigma_scale),
+        value_scaling_factor=1.0,
+        dtype=dtype,
+        device=device or torch.device("cpu"),
+    )
     return weight.clamp_min(torch.finfo(dtype).eps)[None, None]
 
 
@@ -161,26 +157,42 @@ def predict_care_ase_r2_full_volume_logits(
 ) -> torch.Tensor:
     was_training = model.training
     model.eval()
-    spatial = tuple(int(v) for v in image.shape[-3:])
-    starts = [starts_for(dim, size, overlap) for dim, size in zip(spatial, patch_size)]
-    base = image.new_zeros((image.shape[0], 6, *spatial))
-    p_wall = image.new_zeros((image.shape[0], 1, *spatial))
-    component_accums = {
-        "scar_extent_presence": image.new_zeros((image.shape[0], 1, *spatial)),
-        "scar_extent_area": image.new_zeros((image.shape[0], 1, *spatial)),
-        "edema_extent_presence": image.new_zeros((image.shape[0], 1, *spatial)),
-        "edema_extent_area": image.new_zeros((image.shape[0], 1, *spatial)),
-    }
-    denominator = image.new_zeros((image.shape[0], 1, *spatial))
-    valid_support = image.new_zeros((image.shape[0], 1, *spatial))
+    original_spatial = tuple(int(v) for v in image.shape[-3:])
     with torch.no_grad():
         with torch.autocast(device_type=image.device.type, enabled=False):
             fp32_image = image.float()
+            padded_image, crop_slicer = pad_nd_image(
+                fp32_image,
+                new_shape=tuple(int(v) for v in patch_size),
+                mode="constant",
+                kwargs={"value": 0},
+                return_slicer=True,
+            )
+            valid_original = image.new_ones((image.shape[0], 1, *original_spatial), dtype=torch.float32)
+            valid_padded = pad_nd_image(
+                valid_original,
+                new_shape=tuple(int(v) for v in patch_size),
+                mode="constant",
+                kwargs={"value": 0},
+                return_slicer=False,
+            )
+            spatial = tuple(int(v) for v in padded_image.shape[-3:])
+            starts = compute_steps_for_sliding_window(spatial, tuple(int(v) for v in patch_size), float(overlap))
+            base = image.new_zeros((image.shape[0], 6, *spatial), dtype=torch.float32)
+            p_wall = image.new_zeros((image.shape[0], 1, *spatial), dtype=torch.float32)
+            component_accums = {
+                "scar_extent_presence": image.new_zeros((image.shape[0], 1, *spatial), dtype=torch.float32),
+                "scar_extent_area": image.new_zeros((image.shape[0], 1, *spatial), dtype=torch.float32),
+                "edema_extent_presence": image.new_zeros((image.shape[0], 1, *spatial), dtype=torch.float32),
+                "edema_extent_area": image.new_zeros((image.shape[0], 1, *spatial), dtype=torch.float32),
+            }
+            denominator = image.new_zeros((image.shape[0], 1, *spatial), dtype=torch.float32)
+            valid_support = image.new_zeros((image.shape[0], 1, *spatial), dtype=torch.float32)
             for z in starts[0]:
                 for y in starts[1]:
                     for x in starts[2]:
-                        patch = fp32_image[..., z : z + patch_size[0], y : y + patch_size[1], x : x + patch_size[2]]
-                        patch_padded, actual = _pad_patch_to_size(patch, patch_size)
+                        patch_padded = padded_image[..., z : z + patch_size[0], y : y + patch_size[1], x : x + patch_size[2]]
+                        actual = tuple(int(v) for v in patch_size)
                         mirror_axes = tuple(int(axis) for axis in allowed_mirror_axes) if use_mirroring else ()
                         outputs = _forward_with_mirror_average(
                             model,
@@ -201,7 +213,7 @@ def predict_care_ase_r2_full_volume_logits(
                         )
                         _aggregate_patch_tensor(base, outputs["final_logits"].float() * weight, z, y, x, actual)
                         _aggregate_patch_tensor(p_wall, outputs["p_wall_union"].float() * weight, z, y, x, actual)
-                        valid_patch = denominator.new_ones((image.shape[0], 1, *patch_size))
+                        valid_patch = valid_padded[..., z : z + patch_size[0], y : y + patch_size[1], x : x + patch_size[2]]
                         _aggregate_patch_tensor(valid_support, valid_patch, z, y, x, actual)
                         components = outputs["components"]
                         for key, target in component_accums.items():
@@ -229,6 +241,8 @@ def predict_care_ase_r2_full_volume_logits(
                     global_step=global_step,
                     valid_spatial_mask=valid_support,
                 )
+            spatial_crop = tuple(crop_slicer[-3:])
+            averaged_base = averaged_base[(slice(None), slice(None), *spatial_crop)]
     if was_training:
         model.train()
     return averaged_base

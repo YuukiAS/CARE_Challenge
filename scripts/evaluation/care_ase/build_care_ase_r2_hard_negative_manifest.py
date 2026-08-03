@@ -25,6 +25,7 @@ from src.care_myocardium.data.care_ase_splits import PREPROCESSED_REL, SPLITS_RE
 
 
 DEFAULT_STOCK_OOF_ANCHOR_MANIFEST = REPO_ROOT / "results/20260727_care_dg_dual_pathology_validation/nnunet_oof_anchor_manifest.json"
+TASK_KEY = "20260804_care_ase_r2_emergency_9h_training_docker"
 
 
 def sha256_file(path: Path) -> str:
@@ -464,7 +465,7 @@ def main() -> int:
     payload = {
         "status": "PASS",
         "fold": int(args.fold),
-        "task_key": "20260803_care_ase_r2_last_hotfix_v9",
+        "task_key": TASK_KEY,
         "v9_manifest": True,
         "v8_manifest_superseded": True,
         "v7_manifest": False,
@@ -484,7 +485,7 @@ def main() -> int:
         "cases": cases,
     }
     payload["payload_sha256"] = hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()
-    output = args.output or REPO_ROOT / f"results/20260803_care_ase_r2_last_hotfix_v9/hard_negative_manifest_fold{args.fold}.json"
+    output = args.output or REPO_ROOT / f"results/{TASK_KEY}/hard_negative_manifest_fold{args.fold}.json"
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(payload, sort_keys=True, separators=(",", ":")) + "\n", encoding="utf-8")
     print(json.dumps({"status": "PASS", "output": str(output), "case_count": len(cases)}, indent=2))

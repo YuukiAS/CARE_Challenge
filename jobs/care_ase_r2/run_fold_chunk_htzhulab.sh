@@ -20,8 +20,9 @@ if [[ -z "${EXPECTED_TRAINING_SOURCE_SHA:-}" && "${ALLOW_UNREVIEWED_LOCAL_SMOKE:
   echo "EXPECTED_TRAINING_SOURCE_SHA is required for formal CARE-ASE R2 execution" >&2
   exit 64
 fi
-if [[ "${ALLOW_UNREVIEWED_LOCAL_SMOKE:-0}" != "1" && -z "${EXTERNAL_REVIEW_PERMIT:-}" ]]; then
-  echo "EXTERNAL_REVIEW_PERMIT is required for formal CARE-ASE R2 W3 execution" >&2
+TRAINING_PERMIT_PATH="${TRAINING_PERMIT:-${EXTERNAL_REVIEW_PERMIT:-}}"
+if [[ "${ALLOW_UNREVIEWED_LOCAL_SMOKE:-0}" != "1" && -z "${TRAINING_PERMIT_PATH}" ]]; then
+  echo "TRAINING_PERMIT or EXTERNAL_REVIEW_PERMIT is required for formal CARE-ASE R2 execution" >&2
   exit 66
 fi
 if [[ -n "${EXPECTED_TRAINING_SOURCE_SHA:-}" && "${CURRENT_SOURCE_SHA}" != "${EXPECTED_TRAINING_SOURCE_SHA}" ]]; then
@@ -40,7 +41,7 @@ exec > >(tee -a "${LOG_FILE}") 2>&1
 FOLD="${FOLD:?FOLD is required and must be 1 or 4}"
 START_STEP="${START_STEP:?START_STEP is required}"
 END_STEP="${END_STEP:?END_STEP is required}"
-OUTPUT_DIR="${OUTPUT_DIR:-${CARE_ROOT}/results/20260803_care_ase_r2_formal_training_${CURRENT_SOURCE_SHA:0:12}/runtime/fold_${FOLD}}"
+OUTPUT_DIR="${OUTPUT_DIR:-${CARE_ROOT}/results/20260804_care_ase_r2_formal_training_${CURRENT_SOURCE_SHA:0:12}/runtime/fold_${FOLD}}"
 PATCH_SIZE="${PATCH_SIZE:-20,256,256}"
 SEED="${SEED:-20260803}"
 
@@ -61,7 +62,7 @@ fi
 if [[ "${ALLOW_UNREVIEWED_LOCAL_SMOKE:-0}" == "1" ]]; then
   cmd+=(--allow-short-smoke)
 else
-  cmd+=(--external-review-permit "${EXTERNAL_REVIEW_PERMIT}")
+  cmd+=(--external-review-permit "${TRAINING_PERMIT_PATH}")
   cmd+=(--formal-runtime-input-bundle "${FORMAL_RUNTIME_INPUT_BUNDLE:?FORMAL_RUNTIME_INPUT_BUNDLE is required for formal CARE-ASE R2 W3 execution}")
 fi
 
