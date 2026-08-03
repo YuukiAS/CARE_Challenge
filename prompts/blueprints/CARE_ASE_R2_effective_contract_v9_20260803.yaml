@@ -1,0 +1,147 @@
+contract_id: CARE_ASE_R2_EFFECTIVE_CONTRACT_V9_20260803
+contract_status: final_pretraining_hotfix_candidate
+created_date: 2026-08-03
+task_key: 20260803_care_ase_r2_last_hotfix_v9
+
+inherits:
+  base_contract: prompts/blueprints/CARE_ASE_R2_effective_contract_v8_20260803.yaml
+  inheritance_mode: full_inherit_except_explicit_v9_overrides
+  v8_status: superseded_by_v9_final_hotfix
+  v8_implementation_sha: 648bb4d79da255438469aa9acfa939616aebf251
+  v8_review_packet_sha: 8d01cd4c4a5caa3ab1eb44f365bd830a69a34664
+  v8_formal_training_credit: zero
+  v8_diagnostic_reservations: 20
+  v8_diagnostic_reservations_count_against_v9: false
+
+task_binding:
+  path: prompts/tasks/20260803_care_ase_r2_last_hotfix_v9.md
+  final_addendum_path: prompts/tasks/20260803_care_ase_r2_last_hotfix_v9_final_addendum.md
+  priority: overrides_conflicting_v8_fields_with_stricter_v9_rules
+  absorbed_before_commit_a: true
+
+authority:
+  formal_training_authorized: false
+  formal_training_started: false
+  outer_access_authorized: false
+  validation_upload_authorized: false
+  docker_upload_authorized: false
+  hosted_metric_claim_authorized: false
+  external_pretraining_review_required: true
+  final_internal_status_before_external_review: PRETRAINING_EXTERNAL_REVIEW_REQUEST_READY
+  forbidden_internal_tokens:
+    - PRETRAINING_EXTERNAL_REVIEW_PASS
+    - FORMAL_TRAINING_AUTHORIZED
+    - W3_STARTED
+    - OUTER_READY
+    - VALIDATION_READY
+    - DOCKER_READY
+
+probe_budget:
+  namespace: 20260803_care_ase_r2_last_hotfix_v9
+  max_reserved_optimizer_steps: 10
+  max_completed_optimizer_steps: 10
+  reservations_are_atomic: true
+  failed_or_cancelled_reservations_are_not_reusable: true
+  reserve_before_materialization_or_forward: true
+  formal_training_credit: zero
+  formal_resumable: false
+
+source_binding:
+  effective_contract_fixed_path: prompts/blueprints/CARE_ASE_R2_effective_contract_v9_20260803.yaml
+  critical_source_manifest_includes:
+    - prompts/blueprints/CARE_ASE_R2_effective_contract_v9_20260803.yaml
+    - prompts/tasks/20260803_care_ase_r2_last_hotfix_v9.md
+    - prompts/tasks/20260803_care_ase_r2_last_hotfix_v9_executor_plan.yaml
+    - prompts/tasks/20260803_care_ase_r2_last_hotfix_v9_final_addendum.md
+    - src/care_myocardium/models/care_ase.py
+    - src/care_myocardium/models/care_prism.py
+    - src/care_myocardium/training/care_ase_trainer.py
+    - src/care_myocardium/training/care_ase_runtime.py
+    - src/care_myocardium/training/care_ase_sampler.py
+    - src/care_myocardium/training/care_ase_augmentation.py
+    - src/care_myocardium/data/care_ase_splits.py
+    - src/care_myocardium/data/case_metadata.py
+    - src/care_myocardium/inference/care_ase_r2_decode.py
+    - src/care_myocardium/inference/care_ase_r2_full_volume.py
+    - scripts/training/care_ase/run_care_ase_r2_chunk.py
+    - scripts/evaluation/care_ase/build_stock_oof_preprocessed_grid_predictions.py
+    - scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py
+    - scripts/evaluation/care_ase/build_care_ase_r2_full_case_target_manifest.py
+    - scripts/evaluation/care_ase/monitor_care_ase_r2_inner_trend.py
+    - scripts/evaluation/care_ase/select_care_ase_r2_inner_checkpoint.py
+    - scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py
+    - scripts/validation/validate_care_ase_r2_g1.py
+    - scripts/validation/verify_care_ase_checkpoint_for_resume.py
+    - jobs/care_ase_r2/run_fold_chunk_htzhulab.sh
+  formal_runtime_must_recompute_effective_contract_sha256: true
+  formal_runtime_must_recompute_critical_source_manifest_sha256: true
+
+runtime_write_isolation:
+  static_review_input_dir: results/20260803_care_ase_r2_last_hotfix_v9
+  formal_runtime_dir_template: results/20260803_care_ase_r2_formal_training_<implementation-short>/runtime/fold_<fold>
+  probe_runtime_dir: /users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_last_hotfix_v9
+  formal_dynamic_outputs_must_not_write_tracked_review_packet: true
+  authorized_runtime_outputs_do_not_dirty_block_next_chunk: true
+  dirty_critical_source_still_rejected: true
+
+full_volume_inference:
+  canonical_module: src/care_myocardium.inference.care_ase_r2_full_volume
+  count_increment_per_tile: 1
+  disable_local_extent_for_all_tiles: true
+  aggregate_base_logits_p_wall_and_extent_evidence_before_global_extent_bias: true
+  single_tile_and_tiled_use_same_path: true
+  outer_evaluator_must_import_canonical_module: true
+
+resume_and_checkpoint:
+  schema_version: 4
+  training_resume_loader: load_care_ase_checkpoint_for_training_resume
+  expected_stock_checkpoint_source: CAREASEConfig.for_fold(requested_fold)
+  expected_stock_checkpoint_must_not_come_from_payload: true
+  reload_uses_explicit_hard_negative_manifest: true
+  checkpoint_verified_receipt_required_for_resume: true
+  formal_resumable_periodic_checkpoint_must_resume_logical_chunk_remainder: true
+  deployment_load_requires_stock_checkpoint: false
+
+targets:
+  full_case_target_manifest_required_in_formal_runtime: true
+  manifest_case_fields:
+    - case_id
+    - image_path
+    - image_sha256
+    - segmentation_path
+    - segmentation_sha256
+    - properties_path
+    - properties_sha256
+    - plans_path
+    - plans_sha256
+    - shape_zyx
+    - spacing_zyx
+    - cache_schema
+    - full_cache_payload_sha256
+  formal_runtime_verifies_each_case_before_forward: true
+  scar_center_authority: transformed_full_case_center_heatmap
+  patch_local_scar_center_recompute_allowed: false
+  extent_presence_and_area_validity_are_separate: true
+  partial_hw_area_and_wall_bias_zero: true
+
+sampler:
+  hard_negative_manifest_template: results/20260803_care_ase_r2_last_hotfix_v9/hard_negative_manifest_fold{fold}.json
+  hard_negative_manifest_task_key: 20260803_care_ase_r2_last_hotfix_v9
+  hard_negative_binding_method: exact_preprocessed_grid_with_manifest_geometry_proof
+  resolve_requested_category_before_case_draw: true
+  formal_descriptor_requires_selected_target_coordinate: true
+  deterministic_center_formal_fallback_allowed: false
+
+environment_binding:
+  software_determinism_manifest: required
+  runtime_hardware_receipt: required
+  accepted_gpu_family_or_min_compute_capability: required
+  device_index_must_not_change_permit: true
+
+review_packet_binding:
+  commit_a: implementation_source_commit_sha
+  commit_b: review_packet_commit_sha
+  commit_b_must_not_modify_critical_source: true
+  origin_main_after_push: commit_b
+  review_packet_sha_binding_mode: external_review_and_permit_bind_actual_origin_main_head
+  review_packet_commit_sha: BOUND_BY_EXTERNAL_REVIEW

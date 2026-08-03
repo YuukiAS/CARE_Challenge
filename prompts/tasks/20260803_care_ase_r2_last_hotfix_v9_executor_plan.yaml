@@ -1,0 +1,128 @@
+task_key: 20260803_care_ase_r2_last_hotfix_v9
+task_kind: controller_supervised_hotfix
+executor_count: 1
+executor_slots: 1
+parallel_execution_allowed: false
+max_parallel: 1
+controller_supervised: true
+required_completion_token: PRETRAINING_EXTERNAL_REVIEW_REQUEST_READY
+failure_token: NEEDS_REPAIR
+
+read_scope:
+  - AGENTS.md
+  - START_HERE_FOR_GPT.md
+  - GPT_PLANNER_CARE_PROTOCOL.md
+  - prompts/AGENT_FLOW_V2_PROTOCOL.md
+  - prompts/HANDOFF_GATE_POLICY.md
+  - prompts/GPT_HARD_GATE_PROMPT.md
+  - prompts/routes/handoffs/CURRENT.md
+  - wiki/README.md
+  - prompts/blueprints/CARE_ASE_R2_effective_contract_v8_20260803.yaml
+  - prompts/blueprints/CARE_ASE_R2_effective_contract_v9_20260803.yaml
+  - prompts/tasks/20260803_care_ase_r2_last_hotfix_v9.md
+  - prompts/tasks/20260803_care_ase_r2_last_hotfix_v9_final_addendum.md
+  - src/care_myocardium/**
+  - scripts/training/care_ase/**
+  - scripts/evaluation/care_ase/**
+  - scripts/validation/**
+  - tests/care_ase/**
+
+write_scope:
+  - prompts/blueprints/CARE_ASE_R2_effective_contract_v9_20260803.yaml
+  - prompts/tasks/20260803_care_ase_r2_last_hotfix_v9_executor_plan.yaml
+  - prompts/tasks/20260803_care_ase_r2_last_hotfix_v9_final_addendum.md
+  - src/care_myocardium/models/care_ase.py
+  - src/care_myocardium/training/care_ase_trainer.py
+  - src/care_myocardium/training/care_ase_runtime.py
+  - src/care_myocardium/training/care_ase_sampler.py
+  - src/care_myocardium/training/care_ase_augmentation.py
+  - src/care_myocardium/inference/care_ase_r2_full_volume.py
+  - scripts/training/care_ase/run_care_ase_r2_chunk.py
+  - scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py
+  - scripts/evaluation/care_ase/build_care_ase_r2_full_case_target_manifest.py
+  - scripts/evaluation/care_ase/monitor_care_ase_r2_inner_trend.py
+  - scripts/evaluation/care_ase/select_care_ase_r2_inner_checkpoint.py
+  - scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py
+  - scripts/validation/validate_care_ase_r2_g1.py
+  - scripts/validation/verify_care_ase_checkpoint_for_resume.py
+  - jobs/care_ase_r2/run_fold_chunk_htzhulab.sh
+  - tests/care_ase/**
+  - results/20260803_care_ase_r2_last_hotfix_v9/**
+  - prompts/routes/handoffs/CURRENT.md
+  - wiki/README.md
+
+cpu_gates:
+  - command: ./envs/env_CARE/bin/python -m pytest tests/care_ase -q
+    receipt: results/20260803_care_ase_r2_last_hotfix_v9/pytest_receipt.json
+  - command: ./envs/env_CARE/bin/python scripts/validation/validate_care_ase_r2_g1.py --output-dir results/20260803_care_ase_r2_last_hotfix_v9
+    receipt: results/20260803_care_ase_r2_last_hotfix_v9/g1_receipt.json
+  - command: ./envs/env_CARE/bin/python scripts/ops/validate_executor_plan.py --plan prompts/tasks/20260803_care_ase_r2_last_hotfix_v9_executor_plan.yaml
+    receipt: results/20260803_care_ase_r2_last_hotfix_v9/executor_plan_validation_receipt.json
+
+gpu_reservation:
+  namespace: 20260803_care_ase_r2_last_hotfix_v9
+  max_reserved_optimizer_steps: 10
+  reserve_before_materialization_or_forward: true
+  diagnostic_only: true
+  formal_training_credit: zero
+  required_receipts:
+    - gpu_probe_fold1_uninterrupted.json
+    - gpu_probe_fold1_exact_resume.json
+    - gpu_probe_fold4_uninterrupted.json
+    - gpu_probe_fold4_exact_resume.json
+    - gpu_probe_summary.json
+
+commit_sequence:
+  - id: Commit A
+    meaning: implementation_source_commit_sha
+    includes: contract, source, tests, wrappers, validators
+    excludes: tracked result packet
+  - id: Commit B
+    meaning: review_packet_commit_sha
+    includes: lightweight results, CURRENT handoff, wiki state
+    excludes: critical source changes
+    required_relation: Commit A is ancestor of Commit B and critical source diff is empty
+
+failure_repair_loop:
+  status: NEEDS_REPAIR
+  action: repair same-scope blocker, rerun affected tests and gates, recreate affected commit before requesting review
+
+forbidden:
+  - formal_training
+  - 2000_step_chunk
+  - 14000_step_training
+  - outer_access
+  - docker_build_or_upload
+  - validation_upload
+  - challenge_upload
+  - external_review_pass
+  - new_model_component_or_loss
+
+executors:
+  - id: care_ase_r2_v9_single_executor
+    lane: shared
+    wave: 1
+    prompt_path: prompts/tasks/20260803_care_ase_r2_last_hotfix_v9.md
+    result_dir: results/20260803_care_ase_r2_last_hotfix_v9
+    runtime_output_root: /users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_last_hotfix_v9
+    slurm_job_namespace: care_ase_r2_v9_diagnostic_probe_only
+    lock_path: results/20260803_care_ase_r2_last_hotfix_v9/controller.lock
+    log_path: results/20260803_care_ase_r2_last_hotfix_v9/controller.log
+    merge_order: 1
+    required_completion_file: results/20260803_care_ase_r2_last_hotfix_v9/pretraining_external_review_request.json
+    required_completion_token: PRETRAINING_EXTERNAL_REVIEW_REQUEST_READY
+    can_run_parallel: false
+    isolation_mode: main_worktree
+    write_scope:
+      - prompts/blueprints/CARE_ASE_R2_effective_contract_v9_20260803.yaml
+      - prompts/tasks/20260803_care_ase_r2_last_hotfix_v9_executor_plan.yaml
+      - prompts/tasks/20260803_care_ase_r2_last_hotfix_v9_final_addendum.md
+      - src/care_myocardium/**
+      - scripts/training/care_ase/**
+      - scripts/evaluation/care_ase/**
+      - scripts/validation/**
+      - jobs/care_ase_r2/run_fold_chunk_htzhulab.sh
+      - tests/care_ase/**
+      - results/20260803_care_ase_r2_last_hotfix_v9/**
+      - prompts/routes/handoffs/CURRENT.md
+      - wiki/README.md

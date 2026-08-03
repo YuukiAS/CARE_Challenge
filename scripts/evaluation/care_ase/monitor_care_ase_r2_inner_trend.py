@@ -27,13 +27,15 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.evaluation.care_ase.evaluate_care_ase_r2_outer import parse_patch_size, sliding_window_logits
 from src.care_myocardium.data.case_metadata import load_myops_case_metadata
 from src.care_myocardium.inference.care_ase_r2_decode import decode_care_ase_r2_logits
-from src.care_myocardium.training.care_ase_trainer import load_care_ase_checkpoint
+from src.care_myocardium.inference.care_ase_r2_full_volume import predict_care_ase_r2_full_volume_logits
+from src.care_myocardium.training.care_ase_trainer import load_care_ase_checkpoint_for_inference
 
 
-RESULT_ROOT = REPO_ROOT / "results/20260803_care_ase_r2_full_fidelity_execution"
+TASK_KEY = "20260803_care_ase_r2_last_hotfix_v9"
+RESULT_ROOT = REPO_ROOT / "results" / TASK_KEY
+OLD_RESULT_ROOT_MARKER = "20260803_care_ase_r2_" + "full_fidelity_execution"
 PREPROCESSED = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans_3d_fullres"
 SPLIT_CASE_LISTS = RESULT_ROOT / "split_case_lists.csv"
 BASELINE_CASEWISE = REPO_ROOT / "results/20260801_care_nnunet_mosaic_complementarity_closure/oof_complementarity_casewise.csv"
@@ -120,6 +122,29 @@ def bool_from_csv(value: str) -> bool:
     return str(value).strip().lower() in {"1", "true", "yes"}
 
 
+def parse_patch_size(text: str) -> tuple[int, int, int]:
+    values = tuple(int(part.strip()) for part in str(text).split(",") if part.strip())
+    if len(values) != 3:
+        raise ValueError("--patch-size must contain three comma-separated integers")
+    return values
+
+
+def require_verified_checkpoint(checkpoint: Path) -> dict[str, Any]:
+    sidecar = checkpoint.with_suffix(checkpoint.suffix + ".sha256")
+    verified = checkpoint.with_name(checkpoint.stem + ".verified.json")
+    if not sidecar.is_file():
+        raise FileNotFoundError(f"missing checkpoint sidecar: {sidecar}")
+    if not verified.is_file():
+        raise FileNotFoundError(f"missing checkpoint verified receipt: {verified}")
+    payload = json.loads(verified.read_text(encoding="utf-8"))
+    if payload.get("status") != "PASS":
+        raise RuntimeError(f"checkpoint verified receipt is not PASS: {verified}")
+    observed = sha256_file(checkpoint)
+    if str(payload.get("checkpoint_sha256", observed)) != observed:
+        raise RuntimeError("checkpoint verified receipt SHA does not match checkpoint")
+    return payload
+
+
 def subgroup_summary(rows: list[dict[str, Any]], predicate: Any) -> dict[str, Any]:
     selected = [row for row in rows if predicate(row)]
     scar = [float(row["care_scar_dice"]) for row in selected if row.get("care_scar_dice") is not None]
@@ -164,6 +189,8 @@ def main() -> int:
 
     if "outer" in str(args.output_dir or "").lower():
         raise RuntimeError("inner monitor output path must not contain 'outer'")
+    if OLD_RESULT_ROOT_MARKER in str(args.output_dir or ""):
+        raise RuntimeError("inner monitor rejects old CARE-ASE v5-v8 result roots")
     checkpoint = args.checkpoint.resolve()
     out_dir = (args.output_dir or RESULT_ROOT / "inner_checkpoint_monitor" / f"fold_{args.fold}" / f"step{args.checkpoint_step:05d}").resolve()
     packet_path = out_dir / "monitor_packet.json"
@@ -178,9 +205,10 @@ def main() -> int:
     metadata = load_myops_case_metadata(REPO_ROOT)
     baseline = load_baseline_rows(args.baseline_casewise)
     patch_size = parse_patch_size(args.patch_size)
+    verified_receipt = require_verified_checkpoint(checkpoint)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model, payload = load_care_ase_checkpoint(checkpoint, map_location=device, restore_rng=False)
+    model, payload = load_care_ase_checkpoint_for_inference(checkpoint, map_location=device)
     model.to(device).eval()
     if int(payload.get("global_optimizer_step", -1)) != int(args.checkpoint_step):
         raise RuntimeError(
@@ -195,7 +223,7 @@ def main() -> int:
             seg = read_b2nd(PREPROCESSED / f"{case_id}_seg.b2nd")[0].astype(np.int64, copy=False)
             image = torch.from_numpy(image_np[None]).to(device=device, dtype=torch.float32)
             availability = torch.tensor([metadata[case_id].availability], device=device, dtype=torch.float32)
-            logits = sliding_window_logits(model, image, availability, patch_size=patch_size)
+            logits = predict_care_ase_r2_full_volume_logits(model, image, availability, patch_size=patch_size)
             pred = decode_care_ase_r2_logits(logits, availability).cpu().numpy().astype(np.uint8)[0]
             scar_ref = baseline.get((case_id, "scar"))
             edema_ref = baseline.get((case_id, "pure_edema"))
@@ -257,6 +285,8 @@ def main() -> int:
         "checkpoint_step": int(args.checkpoint_step),
         "checkpoint_path": str(checkpoint.relative_to(REPO_ROOT)),
         "checkpoint_sha256": sha256_file(checkpoint),
+        "checkpoint_verified_receipt": str((checkpoint.with_name(checkpoint.stem + ".verified.json")).relative_to(REPO_ROOT)) if checkpoint.with_name(checkpoint.stem + ".verified.json").is_relative_to(REPO_ROOT) else str(checkpoint.with_name(checkpoint.stem + ".verified.json")),
+        "checkpoint_verified_receipt_status": verified_receipt.get("status"),
         "checkpoint_payload_global_optimizer_step": int(payload["global_optimizer_step"]),
         "decode": "fixed_argmax_t2_present_0_1_2_3_4_5_no_t2_0_1_2_3_5",
         "split_case_lists_path": str(SPLIT_CASE_LISTS.relative_to(REPO_ROOT)),

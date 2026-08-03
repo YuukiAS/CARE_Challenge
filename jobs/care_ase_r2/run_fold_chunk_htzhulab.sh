@@ -62,6 +62,7 @@ if [[ "${ALLOW_UNREVIEWED_LOCAL_SMOKE:-0}" == "1" ]]; then
   cmd+=(--allow-short-smoke)
 else
   cmd+=(--external-review-permit "${EXTERNAL_REVIEW_PERMIT}")
+  cmd+=(--formal-runtime-input-bundle "${FORMAL_RUNTIME_INPUT_BUNDLE:?FORMAL_RUNTIME_INPUT_BUNDLE is required for formal CARE-ASE R2 W3 execution}")
 fi
 
 printf 'CARE-ASE R2 formal command:'

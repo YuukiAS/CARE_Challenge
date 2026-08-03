@@ -13,12 +13,13 @@ from typing import Any
 
 import blosc2
 import numpy as np
+from scipy import ndimage
 
 from src.care_myocardium.data.care_ase_splits import PREPROCESSED_REL, build_care_ase_case_roles, sha256_file
 from src.care_myocardium.data.case_metadata import load_myops_case_metadata
 
 
-HARD_NEGATIVE_MANIFEST_TEMPLATE = "results/20260803_care_ase_r2_final_pretraining_closure_v8/hard_negative_manifest_fold{fold}.json"
+HARD_NEGATIVE_MANIFEST_TEMPLATE = "results/20260803_care_ase_r2_last_hotfix_v9/hard_negative_manifest_fold{fold}.json"
 
 
 @dataclass(frozen=True)
@@ -28,6 +29,7 @@ class CAREASEBatchDescriptor:
     stage_id: str
     case_id: str
     case_group: str
+    center_group: str
     center: str
     pathology_focus: str
     within_focus: str
@@ -94,16 +96,16 @@ def _load_hard_negative_manifest(repo_root: Path, fold: int, manifest_path: Path
         if not path.is_absolute():
             path = repo_root / path
     if not path.is_file():
-        raise FileNotFoundError(f"canonical CARE-ASE R2 v8 hard-negative JSON manifest is required: {path}")
+        raise FileNotFoundError(f"canonical CARE-ASE R2 v9 hard-negative JSON manifest is required: {path}")
     data = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(data, dict):
         raise ValueError(f"hard-negative manifest is not a JSON object: {path}")
     if data.get("source") != "canonical_patient_held_out_stock_nnunet_oof_only":
         raise ValueError(f"hard-negative manifest source is not canonical stock OOF only: {data.get('source')}")
-    if data.get("v8_manifest") is not True:
-        raise ValueError("hard-negative manifest must declare v8_manifest=true")
-    if data.get("task_key") != "20260803_care_ase_r2_final_pretraining_closure_v8":
-        raise ValueError(f"hard-negative manifest task_key is not v8 closure: {data.get('task_key')}")
+    if data.get("v9_manifest") is not True:
+        raise ValueError("hard-negative manifest must declare v9_manifest=true")
+    if data.get("task_key") != "20260803_care_ase_r2_last_hotfix_v9":
+        raise ValueError(f"hard-negative manifest task_key is not v9 last hotfix: {data.get('task_key')}")
     if data.get("forbidden_old_manifest_paths_rejected") is not True:
         raise ValueError("hard-negative manifest must prove old manifest paths are rejected")
     cases = data.setdefault("cases", {})
@@ -133,7 +135,7 @@ def _load_hard_negative_manifest(repo_root: Path, fold: int, manifest_path: Path
             raise ValueError(f"hard-negative manifest case {case_id} missing v6 fields: {missing}")
         if row.get("proof_case_not_in_source_fold_train") is not True:
             raise ValueError(f"hard-negative manifest case {case_id} lacks patient-held-out source proof")
-        if row.get("binding_method") != "direct_stock_inference_on_preprocessed_grid":
+        if row.get("binding_method") != "exact_preprocessed_grid_with_manifest_geometry_proof":
             raise ValueError(f"hard-negative manifest case {case_id} has illegal binding_method={row.get('binding_method')}")
         validation = row.get("coordinate_semantic_validation", {})
         if not isinstance(validation, dict) or validation.get("coordinate_bounds_valid") is not True:
@@ -336,6 +338,7 @@ class CAREASEDeterministicSampler:
         else:
             self.hard_negative_manifest = _load_hard_negative_manifest(self.repo_root, self.fold, hard_negative_manifest_path)
         self.hard_negative_manifest_path = self.hard_negative_manifest.get("manifest_path")
+        self._coordinate_cache: dict[tuple[str, str, str], tuple[tuple[int, int, int], ...]] = {}
         self.case_group_cursor = 0
         self.complete_center_selector_cursor = 0
         self.complete_centerB_case_cursor = 0
@@ -364,23 +367,76 @@ class CAREASEDeterministicSampler:
         self.micro_case_cursors_by_group[group] = self.micro_case_cursors_by_group.get(group, 0) + 1
         return case_id
 
-    def _eligible_cases(self, group: str, pathology: str, within_focus: str) -> tuple[list[str], str | None]:
+    def _case_seg(self, case_id: str) -> np.ndarray:
+        path = self.repo_root / PREPROCESSED_REL / f"{case_id}_seg.b2nd"
+        return np.asarray(blosc2.open(str(path), mode="r")[:])[0].astype(np.int16, copy=False)
+
+    def _candidate_coordinates(self, case_id: str, pathology: str, category: str) -> tuple[tuple[int, int, int], ...]:
+        cache_key = (str(case_id), str(pathology), str(category))
+        if cache_key in self._coordinate_cache:
+            return self._coordinate_cache[cache_key]
+        manifest_case = self.hard_negative_manifest.get("cases", {}).get(case_id, {})
+        manifest_key = {
+            "oof_fn": "scar_oof_fn" if pathology == "scar" else "edema_oof_fn_or_low_volume",
+            "oof_fp": "scar_oof_fp",
+            "oof_fn_or_low_volume": "edema_oof_fn_or_low_volume",
+            "safe_fp": "edema_safe_fp",
+            "small_component": "scar_small_component",
+        }.get(category)
+        if manifest_key:
+            coords = _coords(manifest_case, manifest_key) if isinstance(manifest_case, dict) else ()
+            if coords:
+                self._coordinate_cache[cache_key] = coords
+                return coords
+        seg = self._case_seg(case_id)
+        wall = (seg == 1) | (seg == 4) | (seg == 5)
+        scar = seg == 5
+        edema = seg == 4
+        lesion = scar if pathology == "scar" else edema
+        mask = np.zeros(seg.shape, dtype=bool)
+        if category in {"gt_component", "positive", "oof_fn", "oof_fn_or_low_volume"}:
+            mask = lesion
+        elif category == "small_component" and pathology == "scar":
+            labels, count = ndimage.label(scar)
+            small = np.zeros(seg.shape, dtype=bool)
+            for comp_id in range(1, int(count) + 1):
+                comp = labels == comp_id
+                if comp.sum() < 1000:
+                    small |= comp
+            mask = small if small.any() else scar
+        elif category in {"boundary"} and pathology == "edema":
+            if edema.any() and not edema.all():
+                mask = ndimage.binary_dilation(edema, iterations=2) ^ ndimage.binary_erosion(edema, iterations=1)
+            else:
+                mask = edema
+        elif category in {"random_wall", "random"}:
+            mask = wall
+        elif category in {"random_background", "background", "remote_background", "oof_fp", "safe_fp"}:
+            mask = seg == 0
+        elif category == "blood_pool_adjacent":
+            mask = (seg == 2) | (seg == 3)
+        coords_np = np.argwhere(mask)
+        if coords_np.shape[0] > 4096:
+            stride = max(1, coords_np.shape[0] // 4096)
+            coords_np = coords_np[::stride][:4096]
+        coords = tuple((int(z), int(y), int(x)) for z, y, x in coords_np)
+        self._coordinate_cache[cache_key] = coords
+        return coords
+
+    def _eligible_cases_for_category(self, group: str, pathology: str, category: str) -> list[str]:
+        values = list(self.by_group.get(group, []))
+        return sorted(case_id for case_id in values if self._candidate_coordinates(case_id, pathology, category))
+
+    def _resolve_category_and_pool(self, group: str, pathology: str, within_focus: str, hard_category: str) -> tuple[str, list[str], str | None]:
         values = list(self.by_group.get(group, []))
         if not values:
-            return [], "empty_group"
-        if within_focus in {"oof_fn", "oof_fp", "oof_fn_or_low_volume", "safe_fp", "small_component"}:
-            eligible = []
-            for case_id in values:
-                try:
-                    hard_category, _counts, coords = _hard_negative_category(self.hard_negative_manifest, case_id, pathology, within_focus)
-                except RuntimeError:
-                    raise
-                if coords and hard_category != "manifest_consumed_no_matching_oof":
-                    eligible.append(case_id)
+            return within_focus, [], "empty_group"
+        for category in _fallback_sequence(pathology, within_focus, hard_category):
+            eligible = self._eligible_cases_for_category(group, pathology, category)
             if eligible:
-                return sorted(eligible), None
-            return values, f"eligible_pool_empty_for_{pathology}_{within_focus}"
-        return values, None
+                reason = None if category == within_focus or category == hard_category else f"eligible_pool_empty_for_{pathology}_{within_focus}_resolved_to_{category}"
+                return category, eligible, reason
+        return within_focus, [], f"eligible_pool_empty_for_{pathology}_{within_focus}"
 
     def _case_for_micro_from_pool(self, group: str, pool: list[str]) -> str:
         if not pool:
@@ -407,8 +463,8 @@ class CAREASEDeterministicSampler:
                 center_group = group
                 self.partial_case_cursors[group] = self.partial_case_cursors[group] + 1
         elif stage == "C":
-            group = self.stage_c_cycle[self.complete_center_selector_cursor % len(self.stage_c_cycle)]
-            center_group = group
+            center_group = self.stage_c_cycle[self.complete_center_selector_cursor % len(self.stage_c_cycle)]
+            group = "complete"
             self.complete_center_selector_cursor += 1
             if center_group == "complete_centerB":
                 self.complete_centerB_case_cursor += 1
@@ -429,15 +485,27 @@ class CAREASEDeterministicSampler:
             within_focus = self.edema_within_focus_cycle[self.edema_focus_cursor % len(self.edema_within_focus_cycle)]
             self.edema_focus_cursor += 1
         self.batch_descriptor_cursor += 1
-        eligible_cases, fallback_reason = self._eligible_cases(center_group, pathology, within_focus)
+        requested_hard_category = _fallback_sequence(pathology, within_focus, within_focus)[0]
+        resolved_category, eligible_cases, fallback_reason = self._resolve_category_and_pool(center_group, pathology, within_focus, requested_hard_category)
         descriptors = []
         for _micro in range(int(microbatch_count)):
             case_id = self._case_for_micro_from_pool(center_group, eligible_cases)
             center, availability = self.case_meta[case_id]
             hard_category, hard_counts, hard_coords = _hard_negative_category(self.hard_negative_manifest, case_id, pathology, within_focus)
-            selected_coord = hard_coords[self.micro_patch_rng.randrange(len(hard_coords))] if hard_coords else None
+            if hard_coords:
+                candidate_coords = tuple(tuple(int(v) for v in coord) for coord in hard_coords)
+                descriptor_resolved_category = hard_category
+                coordinate_source = "micro_patch_rng_manifest_coordinate"
+                descriptor_fallback_reason = "manifest_coordinate_consumed"
+            else:
+                candidate_coords = self._candidate_coordinates(case_id, pathology, resolved_category)
+                descriptor_resolved_category = resolved_category
+                coordinate_source = "micro_patch_rng_resolved_category_coordinate"
+                descriptor_fallback_reason = fallback_reason
+            if not candidate_coords:
+                raise RuntimeError(f"resolved sampler category has no coordinates: case={case_id} category={resolved_category}")
+            selected_coord = candidate_coords[self.micro_patch_rng.randrange(len(candidate_coords))]
             augmentation_seed = self.micro_patch_rng.randrange(2**32)
-            resolved_category = hard_category if hard_category != "manifest_consumed_no_matching_oof" else within_focus
             descriptors.append(
                 CAREASEBatchDescriptor(
                     fold=self.fold,
@@ -445,21 +513,22 @@ class CAREASEDeterministicSampler:
                     stage_id=stage,
                     case_id=case_id,
                     case_group=group,
+                    center_group=center_group,
                     center=center,
                     pathology_focus=pathology,
                     within_focus=within_focus,
                     availability=availability,
                     hard_negative_category=hard_category,
                     hard_negative_counts=hard_counts,
-                    resolved_target_coordinates=hard_coords,
+                    resolved_target_coordinates=candidate_coords,
                     fallback_sequence=_fallback_sequence(pathology, within_focus, hard_category),
                     selected_target_coordinate=selected_coord,
-                    coordinate_selection_source="micro_patch_rng_manifest_coordinate" if selected_coord is not None else "micro_patch_rng_fallback_mask",
+                    coordinate_selection_source=coordinate_source,
                     requested_category=within_focus,
-                    resolved_category=resolved_category,
-                    fallback_reason=fallback_reason,
+                    resolved_category=descriptor_resolved_category,
+                    fallback_reason=descriptor_fallback_reason,
                     eligible_case_count=len(eligible_cases),
-                    candidate_coordinate_count=len(hard_coords),
+                    candidate_coordinate_count=len(candidate_coords),
                     manifest_sha256=str(self.hard_negative_manifest.get("manifest_sha256", "")),
                     augmentation_seed=int(augmentation_seed),
                 )

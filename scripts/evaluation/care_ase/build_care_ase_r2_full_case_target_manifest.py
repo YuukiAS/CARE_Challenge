@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Build lightweight full-case target-cache manifest for CARE-ASE R2 v8."""
+"""Build lightweight full-case target-cache manifest for CARE-ASE R2 v9."""
 
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ from src.care_myocardium.data.care_ase_splits import PREPROCESSED_REL, build_car
 from src.care_myocardium.training.care_ase_trainer import build_full_case_target_cache
 
 
-TASK_KEY = "20260803_care_ase_r2_final_pretraining_closure_v8"
+TASK_KEY = "20260803_care_ase_r2_last_hotfix_v9"
 
 
 def sha256_array(array: np.ndarray) -> str:
@@ -65,6 +65,7 @@ def main() -> int:
     for row in rows:
         seg_path = preprocessed / f"{row.case_id}_seg.b2nd"
         image_path = preprocessed / f"{row.case_id}.b2nd"
+        properties_path = preprocessed / f"{row.case_id}.pkl"
         seg = np.asarray(blosc2.open(str(seg_path), mode="r")[:])[0].astype(np.int16, copy=False)
         spacing = spacing_for_case(preprocessed, row.case_id)
         cache = build_full_case_target_cache(seg, spacing)
@@ -75,11 +76,14 @@ def main() -> int:
             "segmentation_sha256": sha256_file(seg_path),
             "image_path": str(image_path.relative_to(REPO_ROOT)),
             "image_sha256": sha256_file(image_path),
+            "properties_path": str(properties_path.relative_to(REPO_ROOT)),
+            "properties_sha256": sha256_file(properties_path) if properties_path.is_file() else "MISSING",
             "plans_path": str(plans_path.relative_to(REPO_ROOT)),
             "plans_sha256": sha256_file(plans_path),
             "shape_zyx": list(seg.shape),
             "spacing_zyx": list(spacing),
-            "cache_schema": "care_ase_r2_v8_full_case_physical_target_cache",
+            "cache_schema": "care_ase_r2_v9_full_case_physical_target_cache",
+            **{f"{key}_sha256": value for key, value in field_sha.items()},
             "valid_label_mask_sha256": field_sha["valid_label_mask"],
             "scar_component_id_sha256": field_sha["scar_component_id"],
             "scar_component_metadata_sha256": json_sha(

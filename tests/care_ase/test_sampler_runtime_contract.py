@@ -12,10 +12,10 @@ def _patch_manifest_loader(monkeypatch):
         "_load_hard_negative_manifest",
         lambda _repo_root, _fold: {
             "source": "canonical_patient_held_out_stock_nnunet_oof_only",
-            "task_key": "20260803_care_ase_r2_final_pretraining_closure_v8",
-            "v8_manifest": True,
+            "task_key": "20260803_care_ase_r2_last_hotfix_v9",
+            "v9_manifest": True,
             "forbidden_old_manifest_paths_rejected": True,
-            "manifest_path": "unit-test-v8-manifest.json",
+            "manifest_path": "unit-test-v9-manifest.json",
             "manifest_sha256": "unit-test",
             "cases": {},
         },
@@ -31,9 +31,11 @@ def test_sampler_stage_c_center_groups_are_runtime_selectable(monkeypatch):
     center_b = sampler.descriptor_bundle_for_step(10000).micro_descriptors[0]
     center_c = sampler.descriptor_bundle_for_step(10001).micro_descriptors[0]
 
-    assert center_b.case_group == "complete_centerB"
+    assert center_b.case_group == "complete"
+    assert center_b.center_group == "complete_centerB"
     assert center_b.center == "CenterB"
-    assert center_c.case_group == "complete_centerC"
+    assert center_c.case_group == "complete"
+    assert center_c.center_group == "complete_centerC"
     assert center_c.center == "CenterC"
 
 

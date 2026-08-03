@@ -606,10 +606,14 @@ def validate_single_executor_wave_plan(data: dict[str, Any], waves: list[Any]) -
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("plan", type=Path)
+    parser.add_argument("plan", nargs="?", type=Path)
+    parser.add_argument("--plan", dest="plan_option", type=Path)
     args = parser.parse_args(argv)
+    plan = args.plan_option or args.plan
+    if plan is None:
+        parser.error("plan path is required")
     try:
-        errors = validate_plan(load_yaml(args.plan))
+        errors = validate_plan(load_yaml(plan))
     except Exception as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1

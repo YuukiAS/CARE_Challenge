@@ -6,6 +6,7 @@ tiled inference share the same extent semantics.
 
 from __future__ import annotations
 
+from itertools import combinations
 from typing import Any
 
 import torch
@@ -35,10 +36,72 @@ def _pad_patch_to_size(patch: torch.Tensor, patch_size: tuple[int, int, int]) ->
     return patch, actual
 
 
-def _aggregate_patch_tensor(accum: torch.Tensor, count: torch.Tensor, value: torch.Tensor, z: int, y: int, x: int, actual: tuple[int, int, int]) -> None:
+def _aggregate_patch_tensor(accum: torch.Tensor, value: torch.Tensor, z: int, y: int, x: int, actual: tuple[int, int, int]) -> None:
     value = value[..., : actual[0], : actual[1], : actual[2]]
     accum[..., z : z + actual[0], y : y + actual[1], x : x + actual[2]] += value
-    count[..., z : z + actual[0], y : y + actual[1], x : x + actual[2]] += 1.0
+
+
+def gaussian_importance_map(
+    patch_size: tuple[int, int, int],
+    *,
+    sigma_scale: float = 1.0 / 8.0,
+    device: torch.device | None = None,
+    dtype: torch.dtype = torch.float32,
+) -> torch.Tensor:
+    axes = []
+    for size in patch_size:
+        coord = torch.arange(int(size), device=device, dtype=dtype)
+        center = (float(size) - 1.0) / 2.0
+        sigma = max(float(size) * float(sigma_scale), 1.0e-6)
+        axes.append(torch.exp(-0.5 * ((coord - center) / sigma) ** 2))
+    weight = axes[0][:, None, None] * axes[1][None, :, None] * axes[2][None, None, :]
+    return weight.clamp_min(torch.finfo(dtype).eps)[None, None]
+
+
+def mirror_axis_combinations(axes: tuple[int, ...]) -> list[tuple[int, ...]]:
+    clean = tuple(sorted(set(int(axis) for axis in axes)))
+    out: list[tuple[int, ...]] = [()]
+    for length in range(1, len(clean) + 1):
+        out.extend(tuple(item) for item in combinations(clean, length))
+    return out
+
+
+def _flip_spatial(tensor: torch.Tensor, axes: tuple[int, ...]) -> torch.Tensor:
+    if not axes:
+        return tensor
+    dims = tuple(int(axis) - 3 for axis in axes)
+    return torch.flip(tensor, dims=dims)
+
+
+def _forward_with_mirror_average(
+    model: torch.nn.Module,
+    patch: torch.Tensor,
+    availability: torch.Tensor,
+    *,
+    global_step: int,
+    mirror_axes: tuple[int, ...],
+) -> dict[str, Any]:
+    combos = mirror_axis_combinations(mirror_axes)
+    final_logits = None
+    p_wall = None
+    components: dict[str, torch.Tensor] = {}
+    for axes in combos:
+        mirrored_patch = _flip_spatial(patch, axes)
+        outputs = model(mirrored_patch, availability, global_step=global_step, disable_extent_wall=True)
+        logits = _flip_spatial(outputs["final_logits"].float(), axes)
+        wall = _flip_spatial(outputs["p_wall_union"].float(), axes)
+        final_logits = logits if final_logits is None else final_logits + logits
+        p_wall = wall if p_wall is None else p_wall + wall
+        for key in ("scar_extent_presence", "scar_extent_area", "edema_extent_presence", "edema_extent_area"):
+            value = _flip_spatial(outputs["components"][key].float(), axes)
+            components[key] = value if key not in components else components[key] + value
+    denom = float(len(combos))
+    return {
+        "final_logits": final_logits / denom,
+        "p_wall_union": p_wall / denom,
+        "components": {key: value / denom for key, value in components.items()},
+        "mirror_count": len(combos),
+    }
 
 
 def global_extent_bias(
@@ -91,6 +154,10 @@ def predict_care_ase_r2_full_volume_logits(
     patch_size: tuple[int, int, int] = (20, 256, 256),
     overlap: float = 0.5,
     global_step: int = 14000,
+    use_gaussian: bool = True,
+    gaussian_sigma_scale: float = 1.0 / 8.0,
+    use_mirroring: bool = False,
+    allowed_mirror_axes: tuple[int, ...] = (),
 ) -> torch.Tensor:
     was_training = model.training
     model.eval()
@@ -104,7 +171,7 @@ def predict_care_ase_r2_full_volume_logits(
         "edema_extent_presence": image.new_zeros((image.shape[0], 1, *spatial)),
         "edema_extent_area": image.new_zeros((image.shape[0], 1, *spatial)),
     }
-    count = image.new_zeros((image.shape[0], 1, *spatial))
+    denominator = image.new_zeros((image.shape[0], 1, *spatial))
     valid_support = image.new_zeros((image.shape[0], 1, *spatial))
     with torch.no_grad():
         with torch.autocast(device_type=image.device.type, enabled=False):
@@ -114,19 +181,36 @@ def predict_care_ase_r2_full_volume_logits(
                     for x in starts[2]:
                         patch = fp32_image[..., z : z + patch_size[0], y : y + patch_size[1], x : x + patch_size[2]]
                         patch_padded, actual = _pad_patch_to_size(patch, patch_size)
-                        outputs = model(patch_padded, availability, global_step=global_step, disable_extent_wall=True)
-                        _aggregate_patch_tensor(base, count, outputs["final_logits"].float(), z, y, x, actual)
-                        _aggregate_patch_tensor(p_wall, count.new_zeros(count.shape), outputs["p_wall_union"].float(), z, y, x, actual)
-                        valid_patch = count.new_ones((image.shape[0], 1, *patch_size))
-                        _aggregate_patch_tensor(valid_support, count.new_zeros(count.shape), valid_patch, z, y, x, actual)
+                        mirror_axes = tuple(int(axis) for axis in allowed_mirror_axes) if use_mirroring else ()
+                        outputs = _forward_with_mirror_average(
+                            model,
+                            patch_padded,
+                            availability,
+                            global_step=global_step,
+                            mirror_axes=mirror_axes,
+                        )
+                        weight = (
+                            gaussian_importance_map(
+                                patch_size,
+                                sigma_scale=gaussian_sigma_scale,
+                                device=image.device,
+                                dtype=torch.float32,
+                            )
+                            if use_gaussian
+                            else image.new_ones((1, 1, *patch_size), dtype=torch.float32)
+                        )
+                        _aggregate_patch_tensor(base, outputs["final_logits"].float() * weight, z, y, x, actual)
+                        _aggregate_patch_tensor(p_wall, outputs["p_wall_union"].float() * weight, z, y, x, actual)
+                        valid_patch = denominator.new_ones((image.shape[0], 1, *patch_size))
+                        _aggregate_patch_tensor(valid_support, valid_patch, z, y, x, actual)
                         components = outputs["components"]
                         for key, target in component_accums.items():
                             up = F.interpolate(components[key].float(), size=patch_size, mode="trilinear", align_corners=False)
-                            _aggregate_patch_tensor(target, count.new_zeros(count.shape), up, z, y, x, actual)
-                        count[..., z : z + actual[0], y : y + actual[1], x : x + actual[2]] += 1.0
-            averaged_base = base / count.clamp_min(1.0)
-            averaged_p_wall = p_wall / count.clamp_min(1.0)
-            averaged_components = {key: value / count.clamp_min(1.0) for key, value in component_accums.items()}
+                            _aggregate_patch_tensor(target, up * weight, z, y, x, actual)
+                        _aggregate_patch_tensor(denominator, weight, z, y, x, actual)
+            averaged_base = base / denominator.clamp_min(torch.finfo(base.dtype).eps)
+            averaged_p_wall = p_wall / denominator.clamp_min(torch.finfo(p_wall.dtype).eps)
+            averaged_components = {key: value / denominator.clamp_min(torch.finfo(value.dtype).eps) for key, value in component_accums.items()}
             valid_support = valid_support.clamp(0.0, 1.0)
             averaged_base[:, 5:6] = averaged_base[:, 5:6] + global_extent_bias(
                 model,
@@ -158,6 +242,10 @@ def predict_care_ase_r2_full_volume_labels(
     patch_size: tuple[int, int, int] = (20, 256, 256),
     overlap: float = 0.5,
     global_step: int = 14000,
+    use_gaussian: bool = True,
+    gaussian_sigma_scale: float = 1.0 / 8.0,
+    use_mirroring: bool = False,
+    allowed_mirror_axes: tuple[int, ...] = (),
 ) -> torch.Tensor:
     logits = predict_care_ase_r2_full_volume_logits(
         model,
@@ -166,5 +254,9 @@ def predict_care_ase_r2_full_volume_labels(
         patch_size=patch_size,
         overlap=overlap,
         global_step=global_step,
+        use_gaussian=use_gaussian,
+        gaussian_sigma_scale=gaussian_sigma_scale,
+        use_mirroring=use_mirroring,
+        allowed_mirror_axes=allowed_mirror_axes,
     )
     return decode_care_ase_r2_logits(logits, availability)

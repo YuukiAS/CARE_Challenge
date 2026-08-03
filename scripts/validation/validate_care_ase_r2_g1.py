@@ -23,7 +23,7 @@ from src.care_myocardium.training.care_ase_sampler import CAREASEDeterministicSa
 from src.care_myocardium.training.care_ase_trainer import CAREASEStageScheduler, REQUIRED_CHECKPOINT_FIELDS, REQUIRED_LOSS_WEIGHTS, care_ase_loss
 
 
-RESULT_ROOT = REPO_ROOT / "results/20260803_care_ase_r2_final_pretraining_closure_v8"
+RESULT_ROOT = REPO_ROOT / "results/20260803_care_ase_r2_last_hotfix_v9"
 WRAPPER = REPO_ROOT / "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh"
 ENTRYPOINT = REPO_ROOT / "scripts/training/care_ase/run_care_ase_r2_chunk.py"
 RUNTIME = REPO_ROOT / "src/care_myocardium/training/care_ase_runtime.py"
@@ -36,8 +36,8 @@ FULL_VOLUME = REPO_ROOT / "src/care_myocardium/inference/care_ase_r2_full_volume
 EVALUATOR = REPO_ROOT / "scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py"
 MANIFEST_BUILDER = REPO_ROOT / "scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py"
 VALIDATOR = REPO_ROOT / "scripts/validation/validate_care_ase_r2_g1.py"
-EFFECTIVE_CONTRACT = REPO_ROOT / "prompts/blueprints/CARE_ASE_R2_effective_contract_v8_20260803.yaml"
-V8_ADDENDUM = REPO_ROOT / "prompts/tasks/20260803_care_ase_r2_final_pretraining_closure_v8_addendum.md"
+EFFECTIVE_CONTRACT = REPO_ROOT / "prompts/blueprints/CARE_ASE_R2_effective_contract_v9_20260803.yaml"
+V9_TASK = REPO_ROOT / "prompts/tasks/20260803_care_ase_r2_last_hotfix_v9.md"
 
 STRUCTURAL_KNOWN_BAD_FIXTURES = (
     "stage_2000_4000_8000",
@@ -134,7 +134,7 @@ def coverage_rows() -> list[dict[str, Any]]:
         ("Stage A/B 10/5/5 alternating cycle", SAMPLER, "CAREASEDeterministicSampler.stage_a_b_cycle", '"lge_only",', "sampler_400_step_receipt", "stage_A_B_complete_only", "PASS"),
         ("Stage C complete-only CenterB/CenterC", SAMPLER, "CAREASEDeterministicSampler.stage_c_cycle", '("complete_centerB", "complete_centerC")', "sampler_static_contract", "stage_C_not_complete_only", "PASS"),
         ("CenterB/CenterC pathology and hard-negative cycles", SAMPLER, "CAREASEDeterministicSampler", "hard_negative_manifest", "sampler_static_contract", "break_center_or_focus_cycle", "PASS"),
-        ("hard-negative manifest consumed by formal sampler from final pretraining closure v8 task path", SAMPLER, "_load_hard_negative_manifest", "20260803_care_ase_r2_final_pretraining_closure_v8/hard_negative_manifest_fold{fold}.json", "sampler_static_contract", "hard_negative_manifest_not_read", "PASS"),
+        ("hard-negative manifest consumed by formal sampler from final pretraining closure v9 task path", SAMPLER, "_load_hard_negative_manifest", "20260803_care_ase_r2_last_hotfix_v9/hard_negative_manifest_fold{fold}.json", "sampler_static_contract", "hard_negative_manifest_not_read", "PASS"),
         ("hard-negative manifest provides canonical stock OOF component coordinates", MANIFEST_BUILDER, "build_case", "canonical_patient_held_out_stock_nnunet_oof_only", "canonical_stock_oof_provenance_receipt", "count_only_hard_negative_manifest", "PASS"),
         ("hard-negative OOF same-shape arrays require explicit preprocessed-grid geometry proof", MANIFEST_BUILDER, "bind_prediction_to_preprocessed_grid", "same_shape_without_grid_proof_rejected", "canonical_stock_oof_provenance_receipt", "same_shape_wrong_affine_or_orientation_oof", "PASS"),
         ("actual-train-only scar/edema area reference", SAMPLER, "compute_actual_train_area_references", "row.role == \"actual-train\"", "area_reference_receipt", "hardcoded_area_reference", "PASS"),
@@ -254,7 +254,7 @@ def sampler_static_contract() -> dict[str, Any]:
         "scar_within_focus_cycle": list(CAREASEDeterministicSampler.scar_within_focus_cycle),
         "edema_within_focus_cycle": list(CAREASEDeterministicSampler.edema_within_focus_cycle),
         "hard_negative_manifest_symbol": "HARD_NEGATIVE_MANIFEST_TEMPLATE",
-        "hard_negative_manifest_template": "results/20260803_care_ase_r2_final_pretraining_closure_v8/hard_negative_manifest_fold{fold}.json",
+        "hard_negative_manifest_template": "results/20260803_care_ase_r2_last_hotfix_v9/hard_negative_manifest_fold{fold}.json",
         "hard_negative_manifest_consumption": "_hard_negative_category",
         "deterministic_fallbacks": "_fallback_sequence",
         "micro_patch_rng_controls_coordinate": "self.micro_patch_rng.randrange" in sampler_text and "selected_target_coordinate" in sampler_text,
@@ -272,7 +272,7 @@ def sampler_static_contract() -> dict[str, Any]:
         and stage_c == ("complete_centerB", "complete_centerC")
         and len(CAREASEDeterministicSampler.scar_within_focus_cycle) == 20
         and len(CAREASEDeterministicSampler.edema_within_focus_cycle) == 20
-        and "20260803_care_ase_r2_final_pretraining_closure_v8/hard_negative_manifest_fold{fold}.json" in sampler_text
+        and "20260803_care_ase_r2_last_hotfix_v9/hard_negative_manifest_fold{fold}.json" in sampler_text
         and "self.micro_patch_rng.randrange" in sampler_text
         and "provides no scar_oof_fn coordinates" in sampler_text
         and "provides no edema_safe_fp coordinates" in sampler_text
@@ -358,14 +358,14 @@ def oof_binding_contract() -> dict[str, Any]:
         "rejects_shape_ratio_resampling": "shape-ratio resampling" in text or "shape_only_fallback_forbidden" in text,
         "no_generic_zoom_execution_path": "ndimage.zoom(" not in text,
         "no_resample_binding_label": "strict_raw_nifti_xyz_to_preprocessed_zyx_crop_then_nearest_resample" not in text,
-        "exact_only_binding": '"binding": "direct_stock_inference_on_preprocessed_grid"' in text
+        "exact_only_binding": '"binding_method": "exact_preprocessed_grid_with_manifest_geometry_proof"' in text
         and "checkpoint_final_explicit_stock_validation_artifact" in text
-        and "direct_stock_inference_on_preprocessed_grid" in text,
+        and "producer_binding_method" in text,
     }
     return {
         "status": "PASS" if all(checks.values()) else "FAIL",
         "checks": checks,
-        "legal_binding": "direct_stock_inference_on_preprocessed_grid",
+        "legal_binding": "exact_preprocessed_grid_with_manifest_geometry_proof",
         "forbidden_binding": ["shape_only", "transpose_only", "generic_zoom", "min_shape_crop", "fold_level_final_or_best_fallback"],
     }
 
@@ -660,7 +660,7 @@ def main() -> int:
         str(path.relative_to(REPO_ROOT)): sha256_file(path)
         for path in (
             EFFECTIVE_CONTRACT,
-            V8_ADDENDUM,
+            V9_TASK,
             WRAPPER,
             ENTRYPOINT,
             RUNTIME,

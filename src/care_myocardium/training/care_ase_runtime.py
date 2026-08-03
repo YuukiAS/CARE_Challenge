@@ -1,4 +1,4 @@
-"""Authoritative CARE-ASE R2 v8 formal/probe runtime.
+"""Authoritative CARE-ASE R2 v9 formal/probe runtime.
 
 The Slurm/Python wrapper is intentionally thin. This module owns descriptor
 bundles, case materialization, stock augmentation, target-cache binding,
@@ -39,7 +39,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from src.care_myocardium.models.care_ase import build_care_ase_for_fold_with_area_references
+from src.care_myocardium.models.care_ase import CAREASEConfig, build_care_ase_for_fold_with_area_references
 from src.care_myocardium.inference.care_ase_r2_decode import decode_care_ase_r2_logits
 from src.care_myocardium.data.care_ase_splits import build_care_ase_case_roles
 from src.care_myocardium.training.care_ase_augmentation import (
@@ -60,6 +60,7 @@ from src.care_myocardium.training.care_ase_trainer import (
     build_optimizer,
     checkpoint_receipt,
     load_care_ase_checkpoint,
+    load_care_ase_checkpoint_for_training_resume,
     parameter_group_coverage,
     _optimizer_step_from_materialized_microbatches,
     save_care_ase_checkpoint,
@@ -74,11 +75,18 @@ from src.care_myocardium.training.care_ase_trainer import (
 
 PREPROCESSED = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans_3d_fullres"
 SPLITS = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/splits_final.json"
-TASK_KEY = "20260803_care_ase_r2_final_pretraining_closure_v8"
+TASK_KEY = "20260803_care_ase_r2_last_hotfix_v9"
 RESULT_DIR = REPO_ROOT / "results" / TASK_KEY
-EFFECTIVE_CONTRACT = REPO_ROOT / "prompts/blueprints/CARE_ASE_R2_effective_contract_v8_20260803.yaml"
+STATIC_REVIEW_INPUT_DIR = RESULT_DIR
+V8_RESULT_DIR = REPO_ROOT / "results/20260803_care_ase_r2_final_pretraining_closure_v8"
+PROBE_RUNTIME_DIR = Path("/users/a/e/aereinh/.tmp/codex-CARE") / TASK_KEY
+FORMAL_RUNTIME_PREFIX = "20260803_care_ase_r2_formal_training_"
+EFFECTIVE_CONTRACT = REPO_ROOT / "prompts/blueprints/CARE_ASE_R2_effective_contract_v9_20260803.yaml"
 CRITICAL_SOURCE_SEED_PATHS = (
-    "prompts/blueprints/CARE_ASE_R2_effective_contract_v8_20260803.yaml",
+    "prompts/blueprints/CARE_ASE_R2_effective_contract_v9_20260803.yaml",
+    "prompts/tasks/20260803_care_ase_r2_last_hotfix_v9.md",
+    "prompts/tasks/20260803_care_ase_r2_last_hotfix_v9_executor_plan.yaml",
+    "prompts/tasks/20260803_care_ase_r2_last_hotfix_v9_final_addendum.md",
     "prompts/tasks/20260803_care_ase_r2_final_pretraining_closure_v8_addendum.md",
     "src/care_myocardium/models/care_ase.py",
     "src/care_myocardium/models/care_prism.py",
@@ -94,7 +102,10 @@ CRITICAL_SOURCE_SEED_PATHS = (
     "scripts/evaluation/care_ase/build_stock_oof_preprocessed_grid_predictions.py",
     "scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py",
     "scripts/evaluation/care_ase/build_care_ase_r2_full_case_target_manifest.py",
+    "scripts/evaluation/care_ase/monitor_care_ase_r2_inner_trend.py",
+    "scripts/evaluation/care_ase/select_care_ase_r2_inner_checkpoint.py",
     "scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py",
+    "scripts/validation/verify_care_ase_checkpoint_for_resume.py",
     "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh",
 )
 CRITICAL_SOURCE_PATHS = CRITICAL_SOURCE_SEED_PATHS
@@ -137,7 +148,7 @@ def utc_now() -> str:
 
 def effective_contract_sha256() -> str:
     if not EFFECTIVE_CONTRACT.is_file():
-        raise FileNotFoundError(f"CARE-ASE R2 v8 effective contract missing: {EFFECTIVE_CONTRACT}")
+        raise FileNotFoundError(f"CARE-ASE R2 v9 effective contract missing: {EFFECTIVE_CONTRACT}")
     return sha256_file(EFFECTIVE_CONTRACT)
 
 
@@ -224,11 +235,24 @@ def json_sha(payload: Any) -> str:
     return hashlib.sha256(json.dumps(payload, sort_keys=True, default=str).encode("utf-8")).hexdigest()
 
 
-def reserve_v8_probe_budget(*, fold: int, start_step: int, end_step: int, max_steps: int = 20, probe_name: str = "") -> dict[str, Any]:
+def sha256_array(array: np.ndarray) -> str:
+    arr = np.ascontiguousarray(array)
+    h = hashlib.sha256()
+    h.update(str(arr.dtype).encode("utf-8"))
+    h.update(json.dumps(list(arr.shape)).encode("utf-8"))
+    h.update(arr.tobytes())
+    return h.hexdigest()
+
+
+def _target_cache_field_sha(cache: dict[str, np.ndarray]) -> dict[str, str]:
+    return {key: sha256_array(value) for key, value in sorted(cache.items()) if isinstance(value, np.ndarray)}
+
+
+def reserve_v9_probe_budget(*, fold: int, start_step: int, end_step: int, max_steps: int = 10, probe_name: str = "") -> dict[str, Any]:
     requested = int(end_step) - int(start_step)
     if requested <= 0:
         raise ValueError("probe budget reservation requires positive step count")
-    root = Path("/users/a/e/aereinh/.tmp/codex-CARE") / TASK_KEY / "probe_budget"
+    root = PROBE_RUNTIME_DIR.parent / TASK_KEY / "probe_budget"
     root.mkdir(parents=True, exist_ok=True)
     counter = root / "counter.json"
     ledger = root / "reservations.jsonl"
@@ -244,11 +268,25 @@ def reserve_v8_probe_budget(*, fold: int, start_step: int, end_step: int, max_st
             "failed_after_reservation": 0,
             "reservations": [],
         }
+        if payload.get("task_key") not in (None, TASK_KEY):
+            foreign_id = hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()[:12]
+            foreign = root / f"foreign_probe_budget_{payload.get('task_key')}_{foreign_id}.json"
+            foreign.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+            payload = {
+                "task_key": TASK_KEY,
+                "max_optimizer_steps": int(max_steps),
+                "total_reserved_optimizer_steps": 0,
+                "reserved_step_slots": 0,
+                "completed_optimizer_steps": 0,
+                "failed_after_reservation": 0,
+                "foreign_ledger_quarantined": str(foreign),
+                "reservations": [],
+            }
         payload["max_optimizer_steps"] = int(max_steps)
         new_total = int(payload.get("total_reserved_optimizer_steps", 0)) + requested
         if new_total > int(max_steps):
             raise RuntimeError(
-                "CARE-ASE R2 v8 probe budget exceeded before forward: "
+                "CARE-ASE R2 v9 probe budget exceeded before forward/materialization: "
                 f"requested={requested} previous={payload.get('total_reserved_optimizer_steps', 0)} max={max_steps}"
             )
         reservation = {
@@ -281,7 +319,11 @@ def reserve_v8_probe_budget(*, fold: int, start_step: int, end_step: int, max_st
     return {**payload, "latest_reservation": reservation, "counter_path": str(counter), "append_only_ledger_path": str(ledger)}
 
 
-def record_v8_probe_budget_completion(reservation: dict[str, Any] | None, *, status: str) -> None:
+def reserve_v8_probe_budget(*, fold: int, start_step: int, end_step: int, max_steps: int = 10, probe_name: str = "") -> dict[str, Any]:
+    return reserve_v9_probe_budget(fold=fold, start_step=start_step, end_step=end_step, max_steps=max_steps, probe_name=probe_name)
+
+
+def record_v9_probe_budget_completion(reservation: dict[str, Any] | None, *, status: str) -> None:
     if not reservation:
         return
     if status not in {"COMPLETED", "FAILED_AFTER_RESERVATION"}:
@@ -333,6 +375,10 @@ def record_v8_probe_budget_completion(reservation: dict[str, Any] | None, *, sta
         tmp.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         os.replace(tmp, counter)
         fcntl.flock(lock_f.fileno(), fcntl.LOCK_UN)
+
+
+def record_v8_probe_budget_completion(reservation: dict[str, Any] | None, *, status: str) -> None:
+    record_v9_probe_budget_completion(reservation, status=status)
 
 
 def formal_runtime_input_bundle_default_path() -> Path:
@@ -406,8 +452,14 @@ def load_formal_runtime_input_bundle(
     if binding_mode == "embedded_exact_sha":
         if str(bundle.get("review_packet_commit_sha")) != str(review_packet_sha):
             raise RuntimeError("formal runtime input bundle review packet Commit B mismatch")
-    elif binding_mode == "external_review_request_and_external_permit":
-        if str(bundle.get("review_packet_commit_sha", "BOUND_BY_EXTERNAL_PERMIT")) != "BOUND_BY_EXTERNAL_PERMIT":
+    elif binding_mode in {
+        "external_review_request_and_external_permit",
+        "external_review_and_permit_bind_actual_origin_main_head",
+    }:
+        if str(bundle.get("review_packet_commit_sha", "BOUND_BY_EXTERNAL_REVIEW")) not in {
+            "BOUND_BY_EXTERNAL_PERMIT",
+            "BOUND_BY_EXTERNAL_REVIEW",
+        }:
             raise RuntimeError("formal runtime input bundle must not embed a self-referential Commit B SHA")
     else:
         raise RuntimeError(f"unsupported formal runtime input bundle Commit B binding mode: {binding_mode}")
@@ -500,7 +552,22 @@ def git_fetch_origin_main() -> None:
         raise RuntimeError(f"formal wrapper failed to refresh origin/main before permit validation: {proc.stderr.strip()}")
 
 
-def worktree_dirty_paths() -> list[str]:
+def _normalize_status_path(status_line: str) -> str:
+    text = status_line[3:] if len(status_line) > 3 else status_line
+    if " -> " in text:
+        text = text.split(" -> ", 1)[1]
+    return text.strip()
+
+
+def _path_is_under(path: Path, root: Path) -> bool:
+    try:
+        path.resolve().relative_to(root.resolve())
+        return True
+    except ValueError:
+        return False
+
+
+def critical_worktree_dirty_paths(authorized_runtime_root: Path | None = None) -> list[str]:
     proc = subprocess.run(
         ["git", "status", "--porcelain"],
         cwd=REPO_ROOT,
@@ -511,7 +578,23 @@ def worktree_dirty_paths() -> list[str]:
     )
     if proc.returncode != 0:
         raise RuntimeError(f"git status failed during formal permit validation: {proc.stderr.strip()}")
-    return [line for line in proc.stdout.splitlines() if line.strip()]
+    dirty: list[str] = []
+    runtime_root = authorized_runtime_root.resolve() if authorized_runtime_root is not None else None
+    for line in proc.stdout.splitlines():
+        if not line.strip():
+            continue
+        rel_text = _normalize_status_path(line)
+        full = (REPO_ROOT / rel_text).resolve()
+        if runtime_root is not None and _path_is_under(full, runtime_root):
+            continue
+        if rel_text.startswith(f"results/{FORMAL_RUNTIME_PREFIX}"):
+            continue
+        dirty.append(line)
+    return dirty
+
+
+def worktree_dirty_paths() -> list[str]:
+    return critical_worktree_dirty_paths()
 
 
 def review_packet_contains_implementation_source(review_packet_sha: str, implementation_sha: str) -> bool:
@@ -655,6 +738,28 @@ def _slurm_job_is_live(job_id: str) -> bool:
     return bool(state) and state.splitlines()[0].strip() in {"PENDING", "CONFIGURING", "RUNNING", "COMPLETING"}
 
 
+def _slurm_step_is_live(job_id: str, step_id: str) -> bool:
+    if not job_id or job_id == "local" or not step_id or step_id == "local":
+        return _slurm_job_is_live(job_id)
+    step_ref = f"{job_id}.{step_id}"
+    for cmd in (
+        ["squeue", "--steps", "-h", "-j", step_ref, "-o", "%T"],
+        ["sacct", "-n", "-j", step_ref, "--format=State", "--parsable2"],
+    ):
+        try:
+            state = subprocess.check_output(cmd, cwd=REPO_ROOT, text=True, stderr=subprocess.DEVNULL, timeout=15).strip()
+        except Exception:
+            continue
+        if not state:
+            continue
+        first = state.splitlines()[0].split("|")[0].strip().split()[0]
+        if first in {"PENDING", "CONFIGURING", "RUNNING", "COMPLETING"}:
+            return True
+        if first in {"FAILED", "CANCELLED", "COMPLETED", "TIMEOUT", "PREEMPTED", "OUT_OF_MEMORY"}:
+            return False
+    return _slurm_job_is_live(job_id)
+
+
 def _local_pid_is_live(pid: Any) -> bool:
     try:
         pid_int = int(pid)
@@ -698,7 +803,7 @@ def acquire_chunk_lock(lock_dir: Path, out_dir: Path, *, fold: int, start_step: 
         owner = json.loads(owner_path.read_text(encoding="utf-8")) if owner_path.is_file() else {}
         terminal = out_dir / f"chunk_terminal_{start_step:05d}_{end_step:05d}.json"
         terminal_status = json.loads(terminal.read_text(encoding="utf-8")).get("status") if terminal.is_file() else None
-        live_owner = _slurm_job_is_live(str(owner.get("slurm_job_id", ""))) or (
+        live_owner = _slurm_step_is_live(str(owner.get("slurm_job_id", "")), str(owner.get("slurm_step_id", ""))) or (
             str(owner.get("slurm_job_id", "local")) == "local" and _local_pid_is_live(owner.get("pid"))
         )
         if live_owner and terminal_status != "PASS":
@@ -750,18 +855,29 @@ class HeartbeatTicker:
         self.lock_dir = lock_dir
         self.interval_seconds = int(interval_seconds)
         self.stop_event = Event()
+        self.error: BaseException | None = None
         self.thread = Thread(target=self._run, name=f"care_ase_heartbeat_{os.getpid()}", daemon=True)
 
     def _run(self) -> None:
         while not self.stop_event.wait(self.interval_seconds):
-            refresh_chunk_lock(self.lock_dir)
+            try:
+                refresh_chunk_lock(self.lock_dir)
+            except BaseException as exc:  # propagate asynchronous heartbeat failures to the training thread.
+                self.error = exc
+                self.stop_event.set()
+                return
 
     def start(self) -> None:
         self.thread.start()
 
+    def check(self) -> None:
+        if self.error is not None:
+            raise RuntimeError(f"CARE-ASE heartbeat thread failed: {self.error}") from self.error
+
     def stop(self) -> None:
         self.stop_event.set()
         self.thread.join(timeout=10)
+        self.check()
 
 
 def parse_patch_size(text: str) -> tuple[int, int, int]:
@@ -810,8 +926,10 @@ def source_z_mapping(
     origin_z: int,
     output_z: int,
     full_z: int,
+    z_mirrored: bool = False,
 ) -> tuple[list[int], list[bool]]:
-    indices = [int(origin_z) + idx for idx in range(int(output_z))]
+    raw = [int(origin_z) + idx for idx in range(int(output_z))]
+    indices = list(reversed(raw)) if bool(z_mirrored) else raw
     valid = [0 <= idx < int(full_z) for idx in indices]
     return indices, valid
 
@@ -878,8 +996,12 @@ def _recompute_augmented_physical_targets(target_cache_patch: dict[str, np.ndarr
     target_cache_patch.update(geometry)
     target_cache_patch["scar_context_target"] = _context_target_numpy(seg_clean, edema=False, spacing=spacing)
     target_cache_patch["edema_context_target"] = _context_target_numpy(seg_clean, edema=True, spacing=spacing)
-    target_cache_patch["scar_center_fullres"] = _component_center_heatmap(seg_clean, 5, tuple(int(v) for v in seg_clean.shape), spacing)
     target_cache_patch.update(boundary)
+    existing_center = target_cache_patch.get("scar_center_fullres")
+    existing_center_arr = np.asarray(existing_center, dtype=np.float32) if existing_center is not None else np.asarray([], dtype=np.float32)
+    existing_center_max = float(existing_center_arr.max()) if existing_center_arr.size else 0.0
+    if existing_center is None or existing_center_max <= 0.0:
+        target_cache_patch["scar_center_fullres"] = _component_center_heatmap(seg_clean, 5, tuple(int(v) for v in seg_clean.shape), spacing)
     target_cache_patch["valid_label_mask"] = valid.astype(np.float32)
 
 
@@ -1175,12 +1297,13 @@ def validate_resume_payload(
     expected_environment_determinism_manifest_sha256: str | None = None,
     allow_short_smoke_resume: bool = False,
 ) -> dict[str, Any]:
-    checkpoint_path = payload.get("config", {}).get("checkpoint_path")
-    observed_stock_sha = sha256_file(Path(checkpoint_path)) if checkpoint_path and Path(checkpoint_path).is_file() else "MISSING"
+    canonical_stock_path = Path(CAREASEConfig.for_fold(int(requested_fold)).checkpoint_path)
+    observed_stock_sha = sha256_file(canonical_stock_path) if canonical_stock_path.is_file() else "MISSING"
     expected_stock_sha = expected_stock_checkpoint_sha256 or observed_stock_sha
     checks = {
         "payload_fold": int(payload.get("fold", -1)) == int(requested_fold),
         "model_config_fold": int(payload.get("config", {}).get("fold", -1)) == int(requested_fold),
+        "model_config_stock_path": str(payload.get("config", {}).get("checkpoint_path")) == str(canonical_stock_path),
         "effective_contract_sha256": str(payload.get("effective_contract_sha256")) == str(expected_effective_contract_sha256),
         "critical_source_manifest_sha256": str(payload.get("critical_source_manifest_sha256")) == str(expected_critical_source_manifest_sha256),
         "split_file_sha256": str(payload.get("split_file_sha256")) == str(expected_split_file_sha256),
@@ -1237,7 +1360,12 @@ def _load_previous(
     expected_environment_determinism_manifest_sha256: str | None = None,
     allow_short_smoke_resume: bool = False,
 ) -> tuple[torch.nn.Module, dict[str, Any]]:
-    model, payload = load_care_ase_checkpoint(path, map_location=device, restore_rng=True)
+    model, payload = load_care_ase_checkpoint_for_training_resume(
+        path,
+        requested_fold=int(requested_fold),
+        map_location=device,
+        restore_rng=True,
+    )
     source_sha = str(payload.get("training_source_commit_sha", payload.get("config", {}).get("training_source_commit_sha", "")))
     if source_sha in INVALIDATED_TRAINING_SOURCE_SHAS:
         raise RuntimeError(f"refusing resume from invalidated source checkpoint: {source_sha}")
@@ -1291,6 +1419,7 @@ def _write_full_reload_receipt(
     fold: int,
     seed: int,
     out_dir: Path,
+    hard_negative_manifest_path: Path | None = None,
 ) -> dict[str, Any]:
     was_training = live_model.training
     live_model.eval()
@@ -1303,13 +1432,18 @@ def _write_full_reload_receipt(
         )["final_logits"].detach().float().cpu()
     if was_training:
         live_model.train()
-    reloaded_model, payload = load_care_ase_checkpoint(ckpt, map_location=fixed_batch["image"].device, restore_rng=False)
+    reloaded_model, payload = load_care_ase_checkpoint_for_training_resume(
+        ckpt,
+        requested_fold=int(fold),
+        map_location=fixed_batch["image"].device,
+        restore_rng=False,
+    )
     reloaded_model = reloaded_model.to(fixed_batch["image"].device)
     reloaded_optimizer = build_optimizer(reloaded_model)
     reloaded_optimizer.load_state_dict(payload["optimizer"])
     reloaded_scheduler = CAREASEStageScheduler(reloaded_optimizer)
     reloaded_scheduler.load_state_dict(payload["scheduler"])
-    reloaded_sampler = CAREASEDeterministicSampler(REPO_ROOT, fold, seed=seed)
+    reloaded_sampler = CAREASEDeterministicSampler(REPO_ROOT, fold, seed=seed, hard_negative_manifest_path=hard_negative_manifest_path)
     reloaded_sampler.load_state_dict(_sampler_state_from_checkpoint_payload(payload))
     reloaded_model.eval()
     with torch.no_grad():
@@ -1345,11 +1479,11 @@ def _write_full_reload_receipt(
         "next_batch_hash_match": payload.get("next_batch_descriptor_sha256") == next_hash,
         "next_optimizer_step_micro_descriptor_hash_match": payload.get("next_optimizer_step_micro_descriptor_sha256") == next_hash,
         "live_scheduler_last_global_step": live_scheduler.last_global_step,
+        "hard_negative_manifest_path": str(hard_negative_manifest_path) if hard_negative_manifest_path else "default_v9_manifest_path",
     }
     receipt["payload_sha256"] = hashlib.sha256(json.dumps(receipt, sort_keys=True, default=str).encode("utf-8")).hexdigest()
     fold_receipt = out_dir / f"{ckpt.stem}_full_reload_receipt.json"
     write_json(fold_receipt, receipt)
-    write_json(RESULT_DIR / f"full_checkpoint_reload_receipt_fold{fold}.json", {**receipt, "fold_receipt": str(fold_receipt)})
     if receipt["status"] != "PASS" or not receipt["next_batch_hash_match"] or not receipt["next_optimizer_step_micro_descriptor_hash_match"]:
         raise RuntimeError(f"full checkpoint reload failed for {ckpt}: {receipt}")
     return receipt
@@ -1392,13 +1526,65 @@ class CAREASEFormalRuntime:
         self.formal_mode = bool(formal_mode)
         self.full_case_target_cache_manifest_path = Path(full_case_target_cache_manifest_path) if full_case_target_cache_manifest_path is not None else None
         self.target_builder_provenance = target_builder_provenance or "patch_local_fallback_for_tests_only"
+        self.full_case_target_manifest: dict[str, Any] | None = None
+        self._verified_target_cache_cases: set[str] = set()
         if self.formal_mode:
             if self.target_builder_provenance != "full_case_target_cache_manifest_verified":
                 raise RuntimeError("formal runtime requires full_case_target_cache_manifest_verified before forward")
             if self.full_case_target_cache_manifest_path is None or not self.full_case_target_cache_manifest_path.is_file():
                 raise RuntimeError("formal runtime requires full-case target cache manifest before forward")
+            self.full_case_target_manifest = json.loads(self.full_case_target_cache_manifest_path.read_text(encoding="utf-8"))
+            if self.full_case_target_manifest.get("task_key") != TASK_KEY:
+                raise RuntimeError("formal runtime refuses non-v9 full-case target cache manifest")
+            if int(self.full_case_target_manifest.get("fold", -1)) != int(self.sampler.fold):
+                raise RuntimeError("full-case target cache manifest fold mismatch")
+            payload_sha = str(self.full_case_target_manifest.get("payload_sha256", ""))
+            tmp = dict(self.full_case_target_manifest)
+            tmp.pop("payload_sha256", None)
+            if payload_sha != json_sha(tmp):
+                raise RuntimeError("full-case target cache manifest payload SHA mismatch")
+
+    def _verify_target_manifest_case(self, case_id: str) -> None:
+        if not self.formal_mode:
+            return
+        if case_id in self._verified_target_cache_cases:
+            return
+        if not self.full_case_target_manifest:
+            raise RuntimeError("formal runtime target manifest is not loaded")
+        cases = self.full_case_target_manifest.get("cases", {})
+        row = cases.get(case_id) if isinstance(cases, dict) else None
+        if not isinstance(row, dict):
+            raise RuntimeError(f"full-case target manifest missing actual-train case {case_id}")
+        image_path = REPO_ROOT / str(row["image_path"])
+        seg_path = REPO_ROOT / str(row["segmentation_path"])
+        properties_path = REPO_ROOT / str(row.get("properties_path", ""))
+        plans_path = REPO_ROOT / str(row["plans_path"])
+        checks = {
+            "image_sha256": sha256_file(image_path) == str(row["image_sha256"]),
+            "segmentation_sha256": sha256_file(seg_path) == str(row["segmentation_sha256"]),
+            "plans_sha256": sha256_file(plans_path) == str(row["plans_sha256"]),
+            "properties_sha256": (not row.get("properties_path")) or (properties_path.is_file() and sha256_file(properties_path) == str(row.get("properties_sha256"))),
+        }
+        seg = np.asarray(blosc2.open(str(seg_path), mode="r")[:])[0].astype(np.int16, copy=False)
+        if list(seg.shape) != list(row.get("shape_zyx", [])):
+            checks["shape_zyx"] = False
+        spacing = tuple(float(v) for v in row.get("spacing_zyx", (1.0, 1.0, 1.0)))
+        cache = build_full_case_target_cache(seg, spacing)
+        field_sha = _target_cache_field_sha(cache)
+        for key, observed in field_sha.items():
+            manifest_key = f"{key}_sha256"
+            if manifest_key in row:
+                checks[manifest_key] = str(row[manifest_key]) == observed
+        checks["full_cache_payload_sha256"] = str(row.get("full_cache_payload_sha256")) == json_sha(field_sha)
+        failed = sorted(key for key, ok in checks.items() if not ok)
+        if failed:
+            raise RuntimeError(f"full-case target manifest verification failed for {case_id} before forward: {failed}")
+        self._verified_target_cache_cases.add(case_id)
 
     def materialize_microbatch(self, descriptor: CAREASEBatchDescriptor, *, descriptor_sha: str, micro: int) -> dict[str, Any]:
+        if self.formal_mode and descriptor.selected_target_coordinate is None:
+            raise RuntimeError("formal runtime descriptor requires selected_target_coordinate before materialization")
+        self._verify_target_manifest_case(descriptor.case_id)
         batch = make_batch(
             descriptor,
             descriptor_sha=descriptor_sha,
@@ -1483,6 +1669,16 @@ def main() -> int:
     if not torch.cuda.is_available():
         raise RuntimeError("CARE-ASE R2 formal entrypoint and code smoke require CUDA; CPU fallback is forbidden")
     device = torch.device("cuda")
+    head_sha = git_sha("HEAD")
+    if args.output_dir is not None:
+        out_dir = args.output_dir.resolve()
+        if args.allow_short_smoke and REPO_ROOT / "results" in out_dir.parents:
+            raise RuntimeError("--allow-short-smoke output-dir must not point at a formal results runtime root")
+    elif args.allow_short_smoke:
+        out_dir = (PROBE_RUNTIME_DIR / "short_smoke" / head_sha[:12] / f"fold_{fold}").resolve()
+    else:
+        out_dir = (REPO_ROOT / "results" / f"{FORMAL_RUNTIME_PREFIX}{head_sha[:12]}" / "runtime" / f"fold_{fold}").resolve()
+    runtime_receipt_dir = out_dir
     gpu_info = {
         "cuda_device_name": torch.cuda.get_device_name(0),
         "cuda_compute_capability": list(torch.cuda.get_device_capability(0)),
@@ -1490,7 +1686,7 @@ def main() -> int:
         "cuda_runtime_version": torch.version.cuda,
     }
     env_manifest = environment_determinism_manifest(device)
-    write_json(RESULT_DIR / f"environment_determinism_manifest_fold{fold}.json", env_manifest)
+    write_json(runtime_receipt_dir / f"environment_determinism_manifest_fold{fold}.json", env_manifest)
     permit = None
     runtime_input_bundle = None
     if not args.allow_short_smoke:
@@ -1502,13 +1698,12 @@ def main() -> int:
         )
         if str(permit.get("formal_runtime_input_bundle_sha256", "")) in {"", "UNSET"}:
             raise RuntimeError("external review permit missing formal_runtime_input_bundle_sha256")
-    head_sha = git_sha("HEAD")
     live_effective_contract_sha = effective_contract_sha256()
     live_critical_source_manifest = critical_source_manifest()
     live_critical_source_manifest_sha = combined_source_hash()
     live_critical_dependency_closure = critical_source_dependency_closure()
     write_json(
-        RESULT_DIR / "critical_source_manifest_runtime_latest.json",
+        runtime_receipt_dir / "critical_source_manifest_runtime_latest.json",
         {
             "status": "PASS",
             "head_sha": head_sha,
@@ -1521,7 +1716,7 @@ def main() -> int:
         },
     )
     write_json(
-        RESULT_DIR / "critical_transitive_dependency_manifest.json",
+        runtime_receipt_dir / "critical_transitive_dependency_manifest.json",
         {
             "status": "PASS",
             "unhashed_transitive_critical_dependency_count": 0,
@@ -1549,27 +1744,13 @@ def main() -> int:
         raise RuntimeError("formal CARE-ASE R2 W3 chunk requires --formal-runtime-input-bundle")
     probe_budget = None
     if args.allow_short_smoke:
-        probe_budget = reserve_v8_probe_budget(
+        probe_budget = reserve_v9_probe_budget(
             fold=int(args.fold),
             start_step=int(args.start_step),
             end_step=int(args.end_step),
-            max_steps=20,
+            max_steps=10,
             probe_name=f"fold{int(args.fold)}_{int(args.start_step)}_{int(args.end_step)}",
         )
-    if args.output_dir is not None:
-        out_dir = args.output_dir.resolve()
-        if args.allow_short_smoke and REPO_ROOT / "results" in out_dir.parents:
-            raise RuntimeError("--allow-short-smoke output-dir must not point at a formal results runtime root")
-    elif args.allow_short_smoke:
-        out_dir = (
-            Path("/users/a/e/aereinh/.tmp/codex-CARE")
-            / TASK_KEY
-            / "short_smoke"
-            / head_sha[:12]
-            / f"fold_{fold}"
-        ).resolve()
-    else:
-        out_dir = (REPO_ROOT / "results" / f"20260803_care_ase_r2_formal_training_{head_sha[:12]}" / "runtime" / f"fold_{fold}").resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
     lock_dir = out_dir / f"lock_{args.start_step:05d}_{args.end_step:05d}"
     lock_receipt = acquire_chunk_lock(lock_dir, out_dir, fold=fold, start_step=args.start_step, end_step=args.end_step)
@@ -1591,10 +1772,10 @@ def main() -> int:
         "missing_modalities_zero_after_augmentation": True,
         "target_builder_after_augmented_seg": True,
     }
-    write_json(RESULT_DIR / f"stock_augmentation_runtime_binding_fold{fold}.json", augmentation_contract_payload)
-    write_json(RESULT_DIR / f"stock_initial_patch_binding_fold{fold}.json", augmentation_contract_payload)
+    write_json(runtime_receipt_dir / f"stock_augmentation_runtime_binding_fold{fold}.json", augmentation_contract_payload)
+    write_json(runtime_receipt_dir / f"stock_initial_patch_binding_fold{fold}.json", augmentation_contract_payload)
     write_json(
-        RESULT_DIR / f"augmentation_z_axis_semantics_fold{fold}.json",
+        runtime_receipt_dir / f"augmentation_z_axis_semantics_fold{fold}.json",
         {
             "status": "PASS",
             "fold": fold,
@@ -1606,8 +1787,8 @@ def main() -> int:
         },
     )
     if args.resume_checkpoint is not None:
-        prior_probe, prior_payload = load_care_ase_checkpoint(args.resume_checkpoint, map_location="cpu", restore_rng=False)
-        prior_stock_sha = sha256_file(Path(prior_payload["config"]["checkpoint_path"]))
+        canonical_stock_path = Path(CAREASEConfig.for_fold(fold).checkpoint_path)
+        canonical_stock_sha = sha256_file(canonical_stock_path)
         model, prior = _load_previous(
             args.resume_checkpoint,
             device,
@@ -1622,11 +1803,10 @@ def main() -> int:
                 else CAREASEDeterministicSampler(REPO_ROOT, fold, seed=args.seed).hard_negative_manifest.get("manifest_sha256", "UNSET")
             ),
             expected_area_reference_receipt_sha256=json_sha(area),
-            expected_stock_checkpoint_sha256=prior_stock_sha,
+            expected_stock_checkpoint_sha256=canonical_stock_sha,
             expected_environment_determinism_manifest_sha256=str(env_manifest["sha256"]),
             allow_short_smoke_resume=bool(args.allow_short_smoke),
         )
-        del prior_probe
         if int(prior["global_optimizer_step"]) != int(args.start_step):
             raise RuntimeError(f"resume checkpoint step {prior['global_optimizer_step']} != requested start {args.start_step}")
     elif args.start_step == 0:
@@ -1654,9 +1834,9 @@ def main() -> int:
         sampler.load_state_dict(_sampler_state_from_checkpoint_payload(prior))
 
     parameter_coverage = parameter_group_coverage(model)
-    write_json(RESULT_DIR / f"parameter_group_coverage_fold{fold}.json", parameter_coverage)
+    write_json(runtime_receipt_dir / f"parameter_group_coverage_fold{fold}.json", parameter_coverage)
     write_json(
-        RESULT_DIR / f"independent_parameter_owner_registry_fold{fold}.json",
+        runtime_receipt_dir / f"independent_parameter_owner_registry_fold{fold}.json",
         {
             **parameter_coverage,
             "oracle": "independent_expected_owner_registry_by_parameter_object_id",
@@ -1666,7 +1846,7 @@ def main() -> int:
     )
     if parameter_coverage.get("status") != "PASS":
         raise RuntimeError(f"CARE-ASE parameter group coverage failed before step0: {parameter_coverage}")
-    write_json(RESULT_DIR / f"sampler_400_step_full_composition_receipt_fold{fold}.json", sampler.composition_receipt(400, start_step=args.start_step))
+    write_json(runtime_receipt_dir / f"sampler_400_step_full_composition_receipt_fold{fold}.json", sampler.composition_receipt(400, start_step=args.start_step))
 
     write_json(
         out_dir / f"chunk_start_{args.start_step:05d}_{args.end_step:05d}.json",
@@ -1724,7 +1904,9 @@ def main() -> int:
     heartbeat.start()
     try:
         for step in range(int(args.start_step), int(args.end_step)):
+            heartbeat.check()
             step_result = runtime.run_formal_training_step(step, collect_metrics=True)
+            heartbeat.check()
             bundle = step_result["descriptor_bundle"]
             descriptor = bundle.micro_descriptors[0]
             desc_sha = bundle.sha256()
@@ -1754,6 +1936,7 @@ def main() -> int:
             append_csv(log_path, row)
             history.append(row)
             refresh_chunk_lock(lock_dir)
+            heartbeat.check()
 
             if (step + 1) % 1000 == 0 or (step + 1) == int(args.end_step):
                 next_descriptor = sampler.peek_descriptor_bundle_for_step(step + 1) if (step + 1) < 14000 else None
@@ -1842,6 +2025,7 @@ def main() -> int:
                     fold=fold,
                     seed=args.seed,
                     out_dir=out_dir,
+                    hard_negative_manifest_path=Path(str(sampler_manifest_path)) if sampler_manifest_path else None,
                 )
                 restore_training_rng_state(rng_state_before_reload_probe, sampler)
                 rng_after_reload_probe = rng_state_hashes(sampler)
@@ -1863,7 +2047,6 @@ def main() -> int:
                     "checkpoint_probe_rng_perturbation_count": 0 if rng_before_reload_probe == rng_after_reload_probe else 1,
                 }
                 write_json(out_dir / f"{ckpt.stem}_checkpoint_validation_rng_transparency.json", rng_transparency)
-                write_json(RESULT_DIR / "checkpoint_validation_rng_transparency.json", rng_transparency)
                 if rng_transparency["status"] != "PASS":
                     raise RuntimeError(f"checkpoint validation perturbed training RNG: {rng_transparency}")
                 verified = {
@@ -1892,7 +2075,7 @@ def main() -> int:
         out_dir / f"chunk_terminal_{args.start_step:05d}_{args.end_step:05d}.json",
         {"status": "PASS", "log_path": str(log_path), **checkpoint_receipt(terminal, payload)},
     )
-    record_v8_probe_budget_completion(probe_budget, status="COMPLETED")
+    record_v9_probe_budget_completion(probe_budget, status="COMPLETED")
     return 0
 
 

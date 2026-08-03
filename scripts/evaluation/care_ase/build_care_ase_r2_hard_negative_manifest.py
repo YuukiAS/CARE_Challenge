@@ -431,7 +431,8 @@ def main() -> int:
                 "preprocessed_shape": list(gt.shape),
                 "preprocessed_spacing": list(spacing),
                 "preprocessed_geometry_sha256": binding.get("preprocessed_geometry_sha256") or sha256_json(geometry),
-                "binding_method": binding.get("binding"),
+            "binding_method": "exact_preprocessed_grid_with_manifest_geometry_proof",
+            "producer_binding_method": binding.get("binding"),
                 "target_masks_counts": {
                     "scar_fn_voxels": int(case_payload["scar_fn_voxels"]),
                     "scar_fp_voxels": int(case_payload["scar_fp_voxels"]),
@@ -463,11 +464,13 @@ def main() -> int:
     payload = {
         "status": "PASS",
         "fold": int(args.fold),
-        "task_key": "20260803_care_ase_r2_final_pretraining_closure_v8",
-        "v8_manifest": True,
+        "task_key": "20260803_care_ase_r2_last_hotfix_v9",
+        "v9_manifest": True,
+        "v8_manifest_superseded": True,
         "v7_manifest": False,
         "source": "canonical_patient_held_out_stock_nnunet_oof_only",
-        "allowed_binding_method": "direct_stock_inference_on_preprocessed_grid",
+        "allowed_binding_method": "exact_preprocessed_grid_with_manifest_geometry_proof",
+        "producer_allowed_binding_method": "direct_stock_inference_on_preprocessed_grid",
         "anchor_manifest": str(args.anchor_manifest.resolve()),
         "prediction_root_count": 0,
         "prediction_roots": [],
@@ -481,7 +484,7 @@ def main() -> int:
         "cases": cases,
     }
     payload["payload_sha256"] = hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()
-    output = args.output or REPO_ROOT / f"results/20260803_care_ase_r2_final_pretraining_closure_v8/hard_negative_manifest_fold{args.fold}.json"
+    output = args.output or REPO_ROOT / f"results/20260803_care_ase_r2_last_hotfix_v9/hard_negative_manifest_fold{args.fold}.json"
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(payload, sort_keys=True, separators=(",", ":")) + "\n", encoding="utf-8")
     print(json.dumps({"status": "PASS", "output": str(output), "case_count": len(cases)}, indent=2))
