@@ -1,0 +1,49 @@
+{
+  "candidate_commit_sha": "3a3c078c8b4a1cba475f70bfd6835e45f75f42ad",
+  "contract_files": {
+    "prompts/blueprints/CARE_ASE_R2_continuous_independent_reviewer_amendment_20260803.yaml": "d51167acd31c46bb93944b2ec8ecb9e89c8acea52abc356adbef483f44be9f8d",
+    "prompts/blueprints/CARE_ASE_R2_full_fidelity_execution_contract_20260803.yaml": "57d569562a87fde838365b26e8cd101c260f19b9f1667f5a0c5109d1bb065650",
+    "prompts/blueprints/CARE_ASE_exact_implementation_contract_20260801.yaml": "3b9c681b3989ab580adb153a604496e8df01a6fa36190bb7c724f0176d91fe4f",
+    "prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_20260801.yaml": "c67c0594e2e70140d8f645562ba4f7eb559b1b01eef621c16e6c11b1c881f513",
+    "prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_amendment01_20260801.yaml": "e8c9dc7589026fc87d2917753422d51133c8a372a2e7a6a20d6da0cec7d36a96",
+    "prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_amendment02_controller_only_interactive_20260801.yaml": "aa2650b6c3b1ddfd9604faeeac02c9d52fbd925da77d2b66d10e85c04d36d5e1",
+    "prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_amendment03_final_audit_20260801.yaml": "8b7c7c04a191d938df52f70a8ef0ed6cea2ad32c893fe42fbb867e77b92fd62e",
+    "prompts/blueprints/CARE_ASE_final_model_blueprint_20260801.md": "e36b7fad734a5daad99e4c5a75750c08f256e0c76a6a45d1897e63f9e6a92fb1",
+    "prompts/blueprints/CARE_ASE_final_model_blueprint_v2_20260801.md": "f6886e5ae5f59f763a460a9b1ac5dbfbf43e470e2d07c8ca0db605f41a1ccddb",
+    "prompts/tasks/20260803_care_ase_r2_continuous_reviewer_addendum.md": "211d8d3d60da7bbb54b45fd8180480efd631edf9494c6f76be72da703835695e"
+  },
+  "created_utc": "2026-08-03T00:57:19.851973+00:00",
+  "detached_checkout": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/SEMANTIC_R2/3a3c078c8b4a1cba475f70bfd6835e45f75f42ad",
+  "oracle_files": {
+    "canonical_stock_oof_oracle.json": "e97a9afaff26417705ba8e2f51b42a280e041eaadaf4cdc73f6c9a468c3c0577",
+    "commands_and_exit_codes.json": "2b1d9fcb0300f3bbfc9b7e491c9a43cfecafbb1e6a31584aaab70befcfa7f20c",
+    "contract_formula_code_oracle_matrix.csv": "b3f76e4a602e52077fdf2d9472d15122cf0fd273d6601822a97bdfc62781dc4c",
+    "denominator_audit.csv": "f4f82ab0f66c7894e2a7e6ec3bd7b8018f7534d2bd8b18bab374e1d4cab7ddd8",
+    "exact_resume_oracle.json": "acf6703eb6b4031dd0695412fb2fe8ac06c9720ab1e10c0b7c371d34d6fe9245",
+    "gpu_case_coverage_oracle.json": "6d44a9505822762269e39d15b61e297e96c08b89d5ea16dfd1a8d5d528f043fd",
+    "gradient_scale_audit.csv": "aea8b1bf2fc75773d24cc537ea51fcb2550fe6f28cd94f4950908685c241e055",
+    "loss_formula_oracle.json": "6daff5f5bfa27ccb147a9d22b6b4f4575a043e9325629a674a7f4aafcb6b169e",
+    "loss_scale_audit.csv": "fc4a82898bf2a5b9483e92ef01b34cd2d44e8ce7587436154e5a35eac8a10779",
+    "mutation_detection_report.json": "0d8987380ac05f02f1b5aae25e7090226a4ba1086cd59f2d20d112402e14ebd0",
+    "parameter_group_oracle.json": "0e0f61c52a9071906be89fa5fb535634159edc11e0c673aa6261100bed1aa5ad",
+    "physical_target_oracle.json": "b7aeb5a2269b13dd3ab744ee96fae521f418fb3e7c993ee663e4d8fb9e297537",
+    "review.json": "d3c1eb689e62884f8cbbfe38ddb767f6a0a13371c15e841afbb4439e951a43cb",
+    "review.md": "3a98095ff7c775f7928359f9998da79ac98581d8c8cd037d1afd88e7031188ad",
+    "reviewer_semantic_contract.json": "3ca3c8448aa524b3f73b226ff64c3696cc22d0a9e4cfbdf7f88cee2df38e156a",
+    "sampler_composition_oracle.json": "119921f9d54237e131d231107c53f36f6c667503077ab026c960f4f4ce1aa2cd",
+    "tmp_g2_fold1_receipt": "2818ecc6e150c71a9e23c1f034f03b1252d375897efe45f997ded142adeb08cb",
+    "tmp_g2_fold4_receipt": "2e3c2bc0f082ff8354b361c6f41b02a1d585b98b365cec9ee53c88cdd41f6842"
+  },
+  "runtime_data_env_root_for_gpu": "/users/a/e/aereinh/CARE",
+  "source_files": {
+    "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh": "7fe9820cea87a6fbe7c4da70cf153cc06a9d5ae19439de66802d69469217787e",
+    "scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py": "ed915047903633dfaa9833f3e7626efcd09501c4f21f44bf33ad45354aeb49d7",
+    "scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py": "dd2ef525c83bbf20e940ac336f1b0725a6ee9b71c1f2f65a118b690ec6d802c6",
+    "scripts/training/care_ase/run_care_ase_r2_chunk.py": "334f4dc7ebd726f6a02998340ad9c86bc9207e0a6a8fc33b7f82a1c9aa431454",
+    "scripts/validation/run_care_ase_r2_g2_gpu_fidelity.py": "62e4e7d952dc603193e8aa85a2378151bda518e86f31b484f1e088d5a0bc3a57",
+    "src/care_myocardium/inference/care_ase_r2_decode.py": "7fea71edba56d259dbbb31c3832b74709bd83d5af1f8b680a85c2e0a41acb05b",
+    "src/care_myocardium/models/care_ase.py": "f00b3240af083d74aef3a7e4b4d4b2d1ab8e261b6f67eba5ef3f26077d33e95d",
+    "src/care_myocardium/training/care_ase_sampler.py": "99e58e3d0678308d1b4689c0cd0d8b0f789e7ac7f71f4339648c2b2c901c35af",
+    "src/care_myocardium/training/care_ase_trainer.py": "9f786ea89eef14593d5420e241635fdeb6f2d817da26ca50efaaadd5ad6c61c2"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "candidate_commit_sha": "3a3c078c8b4a1cba475f70bfd6835e45f75f42ad",
+  "critical_finding_count": 0,
+  "decision": "SEMANTIC_PASS_CONTINUE_INTERNAL",
+  "effective_contract_sha256": "f3b6559cfa796eaab8f7fd86ae33cdaddd230771e26bb2459e26dcaff2a80dad",
+  "findings": [],
+  "invalidated_wave_or_none": "none",
+  "next_review_trigger": "continue internal R2 execution",
+  "oracle_files": [
+    "reviewer_semantic_contract.json",
+    "contract_formula_code_oracle_matrix.csv",
+    "physical_target_oracle.json",
+    "loss_formula_oracle.json",
+    "loss_scale_audit.csv",
+    "gradient_scale_audit.csv",
+    "denominator_audit.csv",
+    "sampler_composition_oracle.json",
+    "canonical_stock_oof_oracle.json",
+    "parameter_group_oracle.json",
+    "exact_resume_oracle.json",
+    "gpu_case_coverage_oracle.json",
+    "mutation_detection_report.json",
+    "reviewed_sha_manifest.json",
+    "commands_and_exit_codes.json"
+  ],
+  "pass_token": "CARE_ASE_R2_SEMANTIC_ORACLE_REVIEW_PASS",
+  "required_repair_scope": "none",
+  "reviewer_session_id": "semantic_oracle_local_20260803T005719Z",
+  "round_id": "SEMANTIC_R2",
+  "runtime_note": "detached git worktree lacks ignored local env/data assets; main CARE HEAD equals candidate and critical source hashes match"
+}

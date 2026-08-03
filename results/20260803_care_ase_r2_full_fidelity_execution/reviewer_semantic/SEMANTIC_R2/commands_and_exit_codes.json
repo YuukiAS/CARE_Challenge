@@ -1,0 +1,53 @@
+{
+  "commands": [
+    {
+      "cmd": "git worktree add --detach /users/a/e/aereinh/CARE_reviewers/care_ase_r2/SEMANTIC_R2/3a3c078c8b4a1cba475f70bfd6835e45f75f42ad 3a3c078c8b4a1cba475f70bfd6835e45f75f42ad",
+      "cwd": "/users/a/e/aereinh/CARE",
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "detached checkout created"
+    },
+    {
+      "cmd": "squeue -u $USER -p htzhulab -o '%i|%j|%P|%T|%M|%L|%R|%b|%D'",
+      "cwd": "/users/a/e/aereinh/CARE",
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "jobs 61794608 and 61830309 RUNNING on htzhulab/g1807htzh01"
+    },
+    {
+      "cmd": "scontrol show job 61794608",
+      "cwd": "/users/a/e/aereinh/CARE",
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "RUNNING htzhulab g1807htzh01 gpu:nvidia_h100_nvl=1"
+    },
+    {
+      "cmd": "scontrol show job 61830309",
+      "cwd": "/users/a/e/aereinh/CARE",
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "RUNNING htzhulab g1807htzh01 gpu:nvidia_h100_nvl=1"
+    },
+    {
+      "cmd": "srun --jobid=61794608 --overlap ./envs/env_CARE/bin/python scripts/validation/run_care_ase_r2_g2_gpu_fidelity.py --fold 1 --patch-size 20,256,256 --sliding-window-patch-size 20,256,256 --output-dir /users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_full_fidelity_execution/reviewer_semantic_oracles/SEMANTIC_R2/3a3c078c8b4a1cba475f70bfd6835e45f75f42ad/g2_fold1",
+      "cwd": "/users/a/e/aereinh/CARE",
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "decision PASS, pass_condition_count 16/16"
+    },
+    {
+      "cmd": "srun --jobid=61830309 --overlap ./envs/env_CARE/bin/python scripts/validation/run_care_ase_r2_g2_gpu_fidelity.py --fold 4 --patch-size 20,256,256 --sliding-window-patch-size 20,256,256 --output-dir /users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_full_fidelity_execution/reviewer_semantic_oracles/SEMANTIC_R2/3a3c078c8b4a1cba475f70bfd6835e45f75f42ad/g2_fold4",
+      "cwd": "/users/a/e/aereinh/CARE",
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "decision PASS, pass_condition_count 16/16"
+    },
+    {
+      "cmd": "independent CPU/source semantic oracle generation",
+      "cwd": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/SEMANTIC_R2/3a3c078c8b4a1cba475f70bfd6835e45f75f42ad",
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "wrote SEMANTIC_R2 oracle files"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "edema_boundary_negative_outside_value": -0.6726812124252319,
+  "edema_boundary_positive_inside_value": 0.20000000298023224,
+  "edema_boundary_valid_far_corner": 1,
+  "edema_boundary_valid_inside": 1,
+  "edema_context_classes_present": [
+    -1,
+    0,
+    1,
+    2
+  ],
+  "edema_context_scar_voxels_ignore": true,
+  "edema_slice_presence_sum": 1.0,
+  "scar_context_classes_present": [
+    -1,
+    0,
+    1,
+    2
+  ],
+  "scar_slice_presence_sum": 3.0,
+  "spacing_used_zyx": [
+    2.0,
+    1.5,
+    1.0
+  ],
+  "status": "PASS"
+}

@@ -1,0 +1,97 @@
+{
+  "data_root": "/users/a/e/aereinh/CARE",
+  "source_root": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/SEMANTIC_R2/3a3c078c8b4a1cba475f70bfd6835e45f75f42ad",
+  "stage_A_B_400": {
+    "counts": {
+      "complete": 200,
+      "complete_centerB": 100,
+      "complete_centerC": 100,
+      "complete_edema": 100,
+      "complete_scar": 100,
+      "edema_focus": {
+        "boundary": 20,
+        "oof_fn_or_low_volume": 20,
+        "positive": 35,
+        "random": 10,
+        "safe_fp": 15
+      },
+      "lge_c0": 100,
+      "lge_only": 100,
+      "partial_edema": 0,
+      "partial_scar": 200,
+      "scar_focus": {
+        "gt_component": 105,
+        "oof_fn": 60,
+        "oof_fp": 45,
+        "random": 30,
+        "small_component": 60
+      }
+    },
+    "descriptor_sequence_sha256": "2556bdf2369696c18a68cf9e6bd2185cd6cb30e159702e97d2c61c19eece32c8",
+    "expected_400_stage_a_b": {
+      "complete": 200,
+      "complete_centerB": 100,
+      "complete_centerC": 100,
+      "complete_edema": 100,
+      "complete_scar": 100,
+      "lge_c0": 100,
+      "lge_only": 100,
+      "partial_edema": 0
+    },
+    "failures": [],
+    "fold": 1,
+    "partial_events_do_not_advance_complete_pathology_cursor": true,
+    "payload_sha256": "4b9ebdae8ae226170ab0bdca0c6140f21b4ee0987c08578887b8959d7a493a3e",
+    "sampler_rng_state_restored": true,
+    "start_step": 0,
+    "status": "PASS",
+    "steps": 400
+  },
+  "stage_C_400": {
+    "counts": {
+      "complete": 0,
+      "complete_centerB": 200,
+      "complete_centerC": 200,
+      "complete_edema": 0,
+      "complete_scar": 0,
+      "edema_focus": {
+        "boundary": 40,
+        "oof_fn_or_low_volume": 40,
+        "positive": 70,
+        "random": 20,
+        "safe_fp": 30
+      },
+      "lge_c0": 0,
+      "lge_only": 0,
+      "partial_edema": 200,
+      "partial_scar": 200,
+      "scar_focus": {
+        "gt_component": 70,
+        "oof_fn": 40,
+        "oof_fp": 30,
+        "random": 20,
+        "small_component": 40
+      }
+    },
+    "descriptor_sequence_sha256": "c34b5fa18e0a3702704e1af8a508e2f6f157443cd8394118c5ec37382c2ab807",
+    "expected_400_stage_a_b": {
+      "complete": 200,
+      "complete_centerB": 100,
+      "complete_centerC": 100,
+      "complete_edema": 100,
+      "complete_scar": 100,
+      "lge_c0": 100,
+      "lge_only": 100,
+      "partial_edema": 0
+    },
+    "failures": [],
+    "fold": 1,
+    "partial_events_do_not_advance_complete_pathology_cursor": true,
+    "payload_sha256": "1dacd9a33d79165a5abe81f440b11303baea747679a58dfde6c42204c6639d68",
+    "sampler_rng_state_restored": true,
+    "start_step": 10000,
+    "status": "PASS",
+    "steps": 400
+  },
+  "status": "PASS"
+}

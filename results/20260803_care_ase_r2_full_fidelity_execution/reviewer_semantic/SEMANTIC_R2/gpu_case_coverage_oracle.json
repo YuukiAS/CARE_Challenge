@@ -1,0 +1,53 @@
+{
+  "commands": {
+    "fold1": "srun --jobid=61794608 --overlap ./envs/env_CARE/bin/python scripts/validation/run_care_ase_r2_g2_gpu_fidelity.py --fold 1 --patch-size 20,256,256 --sliding-window-patch-size 20,256,256 --output-dir /users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_full_fidelity_execution/reviewer_semantic_oracles/SEMANTIC_R2/3a3c078c8b4a1cba475f70bfd6835e45f75f42ad/g2_fold1",
+    "fold4": "srun --jobid=61830309 --overlap ./envs/env_CARE/bin/python scripts/validation/run_care_ase_r2_g2_gpu_fidelity.py --fold 4 --patch-size 20,256,256 --sliding-window-patch-size 20,256,256 --output-dir /users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_full_fidelity_execution/reviewer_semantic_oracles/SEMANTIC_R2/3a3c078c8b4a1cba475f70bfd6835e45f75f42ad/g2_fold4"
+  },
+  "detached_checkout": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/SEMANTIC_R2/3a3c078c8b4a1cba475f70bfd6835e45f75f42ad",
+  "folds": {
+    "1": {
+      "checkpoint_reload_logits_max_abs_error": 0.0,
+      "checkpoint_required_fields_present": true,
+      "cuda_device": "NVIDIA H100 NVL",
+      "decision": "PASS",
+      "decode_no_t2_excludes_class4": true,
+      "module_off_status": "PASS",
+      "no_t2_zero_gradient": true,
+      "outer_access_count_before_freeze": 0,
+      "pass_condition_count": 16,
+      "receipt_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_full_fidelity_execution/reviewer_semantic_oracles/SEMANTIC_R2/3a3c078c8b4a1cba475f70bfd6835e45f75f42ad/g2_fold1/g2_real_gpu_fidelity_receipt_fold1.json",
+      "receipt_sha256": "2818ecc6e150c71a9e23c1f034f03b1252d375897efe45f997ded142adeb08cb",
+      "required_pass_condition_count": 16,
+      "sampler_400_status": "PASS",
+      "scheduler_status": "PASS",
+      "sliding_window_finite_logits": true,
+      "slurm_job_id": "61794608",
+      "source_hash": "f8f66d153ad31a51547b1ad1b5cbaa09536b090c73b6cc23bdf29e5318b72b8e",
+      "step0_status": "PASS"
+    },
+    "4": {
+      "checkpoint_reload_logits_max_abs_error": 0.0,
+      "checkpoint_required_fields_present": true,
+      "cuda_device": "NVIDIA H100 NVL",
+      "decision": "PASS",
+      "decode_no_t2_excludes_class4": true,
+      "module_off_status": "PASS",
+      "no_t2_zero_gradient": true,
+      "outer_access_count_before_freeze": 0,
+      "pass_condition_count": 16,
+      "receipt_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_full_fidelity_execution/reviewer_semantic_oracles/SEMANTIC_R2/3a3c078c8b4a1cba475f70bfd6835e45f75f42ad/g2_fold4/g2_real_gpu_fidelity_receipt_fold4.json",
+      "receipt_sha256": "2e3c2bc0f082ff8354b361c6f41b02a1d585b98b365cec9ee53c88cdd41f6842",
+      "required_pass_condition_count": 16,
+      "sampler_400_status": "PASS",
+      "scheduler_status": "PASS",
+      "sliding_window_finite_logits": true,
+      "slurm_job_id": "61830309",
+      "source_hash": "f8f66d153ad31a51547b1ad1b5cbaa09536b090c73b6cc23bdf29e5318b72b8e",
+      "step0_status": "PASS"
+    }
+  },
+  "independent_rerun": true,
+  "runtime_root": "/users/a/e/aereinh/CARE",
+  "source_hash_mismatch_between_checkout_and_runtime_root": {},
+  "status": "PASS"
+}

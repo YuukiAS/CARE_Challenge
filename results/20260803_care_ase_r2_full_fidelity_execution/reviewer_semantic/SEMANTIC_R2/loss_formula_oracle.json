@@ -1,0 +1,12 @@
+{
+  "five_class_loss_keys_present": {
+    "five_class_ce_without_class4": true,
+    "five_class_dice_without_class4": true
+  },
+  "pure_no_t2_edema_exclusive_total_loss": -0.0,
+  "pure_no_t2_total_loss": 6.248459815979004,
+  "pure_no_t2_z_pure_edema_grad_max": 0.0,
+  "status": "PASS",
+  "t2_present_total_loss": 8.053298950195312,
+  "t2_present_z_pure_edema_grad_max": 0.0039432174526154995
+}

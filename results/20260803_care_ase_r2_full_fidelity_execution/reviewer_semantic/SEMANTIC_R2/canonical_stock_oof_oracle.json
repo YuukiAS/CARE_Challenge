@@ -1,0 +1,18 @@
+{
+  "failures": [],
+  "folds": {
+    "1": {
+      "bad_cases": [],
+      "case_count": 141,
+      "geometry_policy": "fail_closed_no_min_shape_crop",
+      "source": "canonical_patient_held_out_stock_nnunet_oof_only"
+    },
+    "4": {
+      "bad_cases": [],
+      "case_count": 141,
+      "geometry_policy": "fail_closed_no_min_shape_crop",
+      "source": "canonical_patient_held_out_stock_nnunet_oof_only"
+    }
+  },
+  "status": "PASS"
+}
