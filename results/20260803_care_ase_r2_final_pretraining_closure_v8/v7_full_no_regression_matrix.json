@@ -1,0 +1,372 @@
+{
+  "critical_source_manifest_sha256": "2a16ca795e8cf6c232021689f01fc474bb7d09dca93609b3becf6db563a44a44",
+  "effective_contract_sha256": "83a4283a4ef0558c085e4dff25c566d95fc3fad7f396787f59e2811d7bc35781",
+  "entries": [
+    {
+      "contract_key": "single_stock_encoder_shared_low_mid",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "single stock encoder shared low mid",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "three_high_resolution_paths",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "three high resolution paths",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "top_two_stock_decoder_clone",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "top two stock decoder clone",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "dynamic_plan_introspection",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "dynamic plan introspection",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "single_row_pathology_classifiers",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "single row pathology classifiers",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "no_stock_class45_fallback",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "no stock class45 fallback",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "named_independent_zero_init_projections",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "named independent zero init projections",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "live_modality_adapters",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "live modality adapters",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "scar_lge_main_c0_weak",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "scar lge main c0 weak",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "edema_t2_main_c0_lge_weak",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "edema t2 main c0 lge weak",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "no_t2_rowwise_edema_exclusion",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "no t2 rowwise edema exclusion",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "no_t2_five_class_competition",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "no t2 five class competition",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "detached_anatomy_context",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "detached anatomy context",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "physical_distance_rho",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "physical distance rho",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "center_target_4mm_1slice",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "center target 4mm 1slice",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "physical_component_volume",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "physical component volume",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "component_tversky",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "component tversky",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "context_valid_voxel_mean",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "context valid voxel mean",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "dedicated_edema_boundary_head",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "dedicated edema boundary head",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "injury_relation_formula",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "injury relation formula",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "per_slice_extent_semantics",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "per slice extent semantics",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "transformed_hw_footprint",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "transformed hw footprint",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "stock_ds_weights",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "stock ds weights",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "fp32_sensitive_reductions",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "fp32 sensitive reductions",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "parameter_object_id_registry",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "parameter object id registry",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "one_optimizer_across_stages",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "one optimizer across stages",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "stage_schedule_2000_8000_4000",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "stage schedule 2000 8000 4000",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "sampler_10_5_5",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "sampler 10 5 5",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "center_pathology_alternation",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "center pathology alternation",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "four_microbatches_with_replacement",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "four microbatches with replacement",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "direct_stock_oof_provenance",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "direct stock oof provenance",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "exact_resume",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "exact resume",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "fixed_conditional_decode",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "fixed conditional decode",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "canonical_full_volume_inference",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "canonical full volume inference",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "self_contained_deployment_load",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "self contained deployment load",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    },
+    {
+      "contract_key": "train_inner_outer_isolation",
+      "known_bad_mutation": "see real_mutation_detection_report.json",
+      "positive_behavior_test": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+      "scientific_meaning": "train inner outer isolation",
+      "source_function_or_class": "covered by tests/care_ase and G1",
+      "source_path": "see critical_source_manifest.json",
+      "status": "PASS",
+      "test_exit": 0
+    }
+  ],
+  "formal_training_started": false,
+  "generated_utc": "2026-08-03T15:19:27.680605Z",
+  "implementation_source_commit_sha": "648bb4d79da255438469aa9acfa939616aebf251",
+  "outer_access_fold1": 0,
+  "outer_access_fold4": 0,
+  "status": "PASS"
+}

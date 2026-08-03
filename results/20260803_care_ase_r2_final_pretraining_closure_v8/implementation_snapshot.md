@@ -1,0 +1,6 @@
+# Implementation Snapshot
+
+Implementation source Commit A: `648bb4d79da255438469aa9acfa939616aebf251`
+
+Critical source manifest SHA256: `2a16ca795e8cf6c232021689f01fc474bb7d09dca93609b3becf6db563a44a44`
+Effective contract SHA256: `83a4283a4ef0558c085e4dff25c566d95fc3fad7f396787f59e2811d7bc35781`

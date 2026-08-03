@@ -1,0 +1,9 @@
+{
+  "decision": "REJECTED_AS_EXPECTED",
+  "expected_validator_exit": "nonzero",
+  "fixture": "no_t2_class4_background",
+  "known_bad_fixture_rejected": true,
+  "observed_failures": [
+    "coverage"
+  ]
+}

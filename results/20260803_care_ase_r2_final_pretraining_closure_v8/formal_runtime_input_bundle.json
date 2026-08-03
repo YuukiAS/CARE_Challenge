@@ -1,0 +1,23 @@
+{
+  "area_reference_receipt_path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/area_reference_receipt.json",
+  "area_reference_receipt_sha256": "b68d001cf72b7f690f26c07095ba3362ae3e8d9ccbe2783cc746a0b2b2cd266c",
+  "bundle_payload_sha256": "c69fc2c0e27ca89eec083cb973c0950a391e61e55b82412fdd728a9c7ab5ed06",
+  "direct_stock_oof_provenance_manifest_path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/direct_stock_oof_provenance_manifest.json",
+  "direct_stock_oof_provenance_manifest_sha256": "16b76b3aa84c8228ddb7d3a2751325fd5c32c184086cc2c61a824934b4c77a42",
+  "effective_contract_sha256": "83a4283a4ef0558c085e4dff25c566d95fc3fad7f396787f59e2811d7bc35781",
+  "formal_execution_checkout_commit_sha": "BOUND_BY_EXTERNAL_PERMIT",
+  "full_case_target_cache_manifest_fold1_path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/full_case_target_cache_manifest_fold1.json",
+  "full_case_target_cache_manifest_fold1_sha256": "cc961db544789bd5073b535e5271d2e867c8e281e39327dafffe3b061d6434b9",
+  "full_case_target_cache_manifest_fold4_path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/full_case_target_cache_manifest_fold4.json",
+  "full_case_target_cache_manifest_fold4_sha256": "909e52da9f375332a75e2872ee37165729ee885e24ff4e340a0bfa6ef5a2a288",
+  "generated_utc": "2026-08-03T15:19:27.621573Z",
+  "hard_negative_manifest_fold1_path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/hard_negative_manifest_fold1.json",
+  "hard_negative_manifest_fold1_sha256": "2f723fd450920eedae08fefe91bcc42899cb68f26e28daeb2294768c10c07156",
+  "hard_negative_manifest_fold4_path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/hard_negative_manifest_fold4.json",
+  "hard_negative_manifest_fold4_sha256": "e039ce32312e3927e07ee71c616e3a867be778db264d6beac87896c4fc6bb156",
+  "implementation_source_commit_sha": "648bb4d79da255438469aa9acfa939616aebf251",
+  "review_packet_commit_sha": "BOUND_BY_EXTERNAL_PERMIT",
+  "review_packet_sha_binding_mode": "external_review_request_and_external_permit",
+  "schema": "care_ase_r2_v8_formal_runtime_input_bundle_v2",
+  "target_builder_provenance": "full_case_target_cache_manifest_verified"
+}

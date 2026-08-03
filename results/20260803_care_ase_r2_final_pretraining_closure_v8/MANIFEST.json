@@ -1,0 +1,348 @@
+{
+  "files": [
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/architecture_delta_final.md",
+      "sha256": "ca701547ae76decd5bb8f797b513b8f050cf7f6428fc29f9069743129ab6ed6d"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/area_reference_receipt.json",
+      "sha256": "b68d001cf72b7f690f26c07095ba3362ae3e8d9ccbe2783cc746a0b2b2cd266c"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/augmentation_z_axis_semantics_fold1.json",
+      "sha256": "c5acf432e8edd791b4a4d9dba30b2a0eaf6b6cf497e27b1c1e74d17c341741df"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/augmentation_z_axis_semantics_fold4.json",
+      "sha256": "5e0cba48ce48206475e1dd5563756492abee43d0adb87e4c92a1003e234caf18"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/canned_pass_oracle_audit.json",
+      "sha256": "1a2c398145622a31d0ce5d70e313c60744aecc9ad08224ca71bf6ebe865ae12f"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/canonical_full_volume_inference_receipt.json",
+      "sha256": "d9237275d2ea0a8f58b1e55e97752716ea80b56c39bc2abcfe46b2c3f77cbb36"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/canonical_stock_oof_provenance_receipt.json",
+      "sha256": "16b76b3aa84c8228ddb7d3a2751325fd5c32c184086cc2c61a824934b4c77a42"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/checkpoint_formal_reload_receipt.json",
+      "sha256": "bb2e4852b8cdb9b70248984cab070897483486c72358ea56e430c48e09bc9564"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/checkpoint_schema_contract.json",
+      "sha256": "130916f5e5c688a902dfe5f45e75ec613236c85425f132a45eb234b980dcf001"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/checkpoint_validation_rng_transparency.json",
+      "sha256": "bb2e4852b8cdb9b70248984cab070897483486c72358ea56e430c48e09bc9564"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/completion_check.md",
+      "sha256": "5b8c28a174293fef4b3c00e154aa951bdcea59e5eb009fc4de8e11e1242cd519"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/component_center_edge_receipt.json",
+      "sha256": "f1e7f6874881d38dc0aa2a4b3e0dfe59de1d4ef2fccf66e62fe681d0021f8740"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/contract_to_code_coverage.json",
+      "sha256": "6f135f822c51524df5045d7849995e99ab33608ebf52007fc9d269bfc115a1c9"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/controller_bootstrap_snapshot.md",
+      "sha256": "a90f7d5f1b7b46dfebde30d221d4bd07cc0b13f038205b2f1aeba8dfc60b21c7"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/controller_context.json",
+      "sha256": "67913dba00469c637b08919e53dcda7f23efb6b29ef6b2975d452d8f8262a795"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/controller_ledger.csv",
+      "sha256": "304731dab224dfcddc95f95431d7f8d781ce3aabfbacde8571fabf15ad727362"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/controller_report.md",
+      "sha256": "04e3e01f4d3a00119543dc18179656f98899a912353ce52a77fa45ae85c18b04"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/critical_source_manifest.json",
+      "sha256": "90a76840c4afd2189ec8e923aec0b344e71677de5a752b81bd6691793f94fcb1"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/critical_source_manifest_runtime_latest.json",
+      "sha256": "90a76840c4afd2189ec8e923aec0b344e71677de5a752b81bd6691793f94fcb1"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/critical_transitive_dependency_manifest.json",
+      "sha256": "82bc81c08c7d8c952696325f1bdbe8bd060fef0e81ca929c250b0f0921230cc0"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/deployment_checkpoint_self_contained_receipt.json",
+      "sha256": "280197d1ed154fc3e51d4b5c2e7694f8938debe407cb3f4b3e360e3e1786844e"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/direct_stock_oof_preprocessed_grid_manifest_fold1.json",
+      "sha256": "530cb5c482fd78c626582126a9b1302d8a2a32d67b78be524ecdd965a05dffb4"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/direct_stock_oof_preprocessed_grid_manifest_fold4.json",
+      "sha256": "5c1048b68a446936fd3bd969053a439882da023875681b2b34087de77b90030a"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/direct_stock_oof_provenance_manifest.json",
+      "sha256": "16b76b3aa84c8228ddb7d3a2751325fd5c32c184086cc2c61a824934b4c77a42"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/effective_contract_receipt.json",
+      "sha256": "e0f1dfcc91a2aed5ee6b1a740db0053c5bc7fcbe054b0b3175c9ccc27c2caa3e"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/environment_determinism_manifest_fold1.json",
+      "sha256": "b0dc5079f671308b02685e83d90c4669f4d83791adce72aec8b9bbe9a5beab0a"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/environment_determinism_manifest_fold4.json",
+      "sha256": "b0dc5079f671308b02685e83d90c4669f4d83791adce72aec8b9bbe9a5beab0a"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/extent_final_bias_zero_receipt.json",
+      "sha256": "586b79edee9f2100546e7ffbdc51ab1ddd21b3944bc05b1fe35306161b130c17"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/extent_transformed_coverage_receipt.json",
+      "sha256": "51adb9fc6d9c1b61d36b6f318ecbbaf25e3ccb81456f2e83821f69aa0a47d5d8"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/formal_call_chain.json",
+      "sha256": "b56f694b3f6a4d18622012bba53b863bd047ab5290c8b372395637b817501b7b"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/formal_checkpoint_remainder_resume_receipt.json",
+      "sha256": "89af4585634bd54701888ffe1eb4afc18e57afb488df1e835ffca7bfc87ee5e6"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/formal_execution_checkout_binding_receipt.json",
+      "sha256": "8e1d730cfe151dd65cbfc4e10d119077e51a60aee6a873d2978f78e9821f294e"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/formal_runtime_call_chain_receipt.json",
+      "sha256": "b56f694b3f6a4d18622012bba53b863bd047ab5290c8b372395637b817501b7b"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/formal_runtime_input_bundle.json",
+      "sha256": "46ebdc6351444b2611dcd74d3f0f8dbb448de2a0dd168809f2e4d5e702d87349"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/formal_runtime_input_bundle_receipt.json",
+      "sha256": "5ddd0668f6439af8fab847f6be17b0c16f6415bdc81f5d544ace122a2b6f6465"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/formal_target_provenance_receipt.json",
+      "sha256": "ba5af45966cd084851b93fce0e18098955d3137cc70e4d9e07d684cc6a690827"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/full_case_target_cache_manifest_fold1.json",
+      "sha256": "cc961db544789bd5073b535e5271d2e867c8e281e39327dafffe3b061d6434b9"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/full_case_target_cache_manifest_fold4.json",
+      "sha256": "909e52da9f375332a75e2872ee37165729ee885e24ff4e340a0bfa6ef5a2a288"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/full_checkpoint_reload_receipt_fold1.json",
+      "sha256": "bffad267b202e07e316502a3305192bb15b07efff2c72ff241538d8686e36137"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/full_checkpoint_reload_receipt_fold4.json",
+      "sha256": "a9b3b10243d490a6bf002c4e93d6a9a15fe20279731d2587d7e67306e73e0865"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/full_edema_boundary_receipt.json",
+      "sha256": "14e795a696bf6fb24dae166b4c7756de07411189c638b4bc93456d27e4d66753"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/full_volume_extent_aggregation_oracle.json",
+      "sha256": "a7558459d31cd44ed8173c3b7ccfb953bf9f2506214d94f3ca2d7970b15be1d9"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/g1_receipt.json",
+      "sha256": "f332a8b4aaf76f725136904443189fc18b74da124a019b2ac5fc2b5d6dd10364"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/g1_source_sha_manifest.json",
+      "sha256": "33e5d6e2dac061ff0be251b2bd570be81151f35ca9375ccb32bd3c06fd482df1"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/g1_static_implementation_gate_receipt.json",
+      "sha256": "38874906ab92d53b4f0a17208c420a0a7c95ba75a69fc96c7537b8b281cf5ceb"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/gpu_probe_budget_receipt.json",
+      "sha256": "0cae7fbeb576fe6fcb9cf3cf84e86cf320ba333c82dd523353eadb76f92eaa5f"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/gpu_probe_fold1_exact_resume.json",
+      "sha256": "c828312ebf4afd19b4cf2dd8eed9d97b83e6f124f0a35b494cbaa419591c6eb6"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/gpu_probe_fold1_uninterrupted.json",
+      "sha256": "ba6f4603ffebbb4b20876f2ad072700e7d5cb2e98c4c0f30e1d0e2a59cbe02d1"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/gpu_probe_fold4.json",
+      "sha256": "8684271beec16de1591ff527aeccce0d6359d5becd193b3286f894148053d8fd"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/gpu_probe_summary.json",
+      "sha256": "67f7054a0213a295f805c661c22ed71a64d6e5bd5ff56618b7a21037a92f2fbb"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/hard_negative_manifest_fold1.json",
+      "sha256": "2f723fd450920eedae08fefe91bcc42899cb68f26e28daeb2294768c10c07156"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/hard_negative_manifest_fold4.json",
+      "sha256": "e039ce32312e3927e07ee71c616e3a867be778db264d6beac87896c4fc6bb156"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/implementation_snapshot.md",
+      "sha256": "fdc72a1f636f4481260f3606ec5933976e03692e84c86188a4d559789acdb764"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/independent_parameter_owner_registry_fold1.json",
+      "sha256": "e8047ebaa18312d3de494009878d4c9c6bc7061fe85a9dc651a56b8699d0f2b9"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/independent_parameter_owner_registry_fold4.json",
+      "sha256": "b96a2c0d57e2ab56529eb2d38ebb92c159eab9efefedd94db342ff21605ddf75"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/known_bad_validator_report.json",
+      "sha256": "d8b59a96c27912865d157cf28c8ba231710b2b1ae7aec6dfcdb71eec1340d81f"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/lock_step_heartbeat_receipt.json",
+      "sha256": "8495e20af0a7330d263958153b8453e00646baeb1acbbdd2d1043a31b5d68ae7"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/mapper_report_draft.md",
+      "sha256": "5abb4da2c5fb72e87214e4b230923f2a12dbfe8963d7429d18a7cb96777c5b20"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/mapper_report_final.md",
+      "sha256": "b800c4ff12a0e64a9a8778e0261519baed13570b8fa411f6c7c5320570699564"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/named_evidence_liveness.csv",
+      "sha256": "27864874800da3819e786692ac9b17e2b73036d42c63f636c8dc02c2513bb437"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/named_evidence_liveness_receipt.json",
+      "sha256": "bf9270aea31ba07d245e8aedc053c095458c773038276d5bf1abd5aa9ed11198"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/no_t2_five_class_parity_receipt.json",
+      "sha256": "6f12b361387c11801c1fda6f762279b8adeada9798123ffb160e9a85b1cfb061"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/no_t2_rowwise_graph_receipt.json",
+      "sha256": "0356b3c1da66f55f95fe9f7e8e1be394124d8f7c2a5045b75505c124d7fecbe0"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/notification_brief.json",
+      "sha256": "d0d6007f5950b6374ff0e67899c3530c62641e8d14e2c5f577ed4e48e058ba14"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/parameter_group_coverage_fold1.json",
+      "sha256": "61a22b4467f8173653f66058a1084b9169d81ac05fd195b4daf34e4289158ec7"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/parameter_group_coverage_fold4.json",
+      "sha256": "e6401de76d39fd37e23fe2cb5b771dbb6bc2bf60bbb56517b782bdff856f2939"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/pretraining_external_review_request.json",
+      "sha256": "52f1b75728952b3fa9086008ff7555fe88f299876a4765a93f57975bb5956698"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/probe_budget_atomic_reservation_receipt.json",
+      "sha256": "3052c1ccb859dbcc653087bfd7a766bdcec951ad0db9415c84c6931a277ffc94"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/pytest_receipt.json",
+      "sha256": "51a58067941815aa8f09c88ccb6c8f20f5a5f73ab97ddaee9daa246f573e9348"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/real_mutation_detection_report.json",
+      "sha256": "a0e3ae45293a3d10ec4b5f62e60c53fa958e73c3684ea1db56a66591f961f2eb"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/resume_stock_checkpoint_binding_receipt.json",
+      "sha256": "2db870a074992b3ff7c7c90ccb8e0c2f002797acf5b81d81174562e8b267384d"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/runtime_namespace_receipt.json",
+      "sha256": "9a420c657157810a32a8634a0676612fde9261ce2d94b931bcc51027f3ad084c"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/sampler_400_step_full_composition_receipt_fold1.json",
+      "sha256": "ae5f8f140153516ee7d7f8b31a41b5188c4a2ba32a642cb602f5a8109b26b8a7"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/sampler_400_step_full_composition_receipt_fold4.json",
+      "sha256": "e855228148f0c297f8fcd9e04a8a98438b6bf4c1d857e7f5e2048c9215599dd0"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/sampler_focus_resolution_receipt.json",
+      "sha256": "1edbc5f124aa753fb49a304f74e1b226d9d56c36e0c8e46cf97d5fd0685dc2d2"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/sampler_static_contract.json",
+      "sha256": "42eec9ae9c1ab2affce54ea428579b258ff9c83cb24daa261a683d06d3bbcdd6"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/scheduler_static_contract.json",
+      "sha256": "acddf026c94b7e6e5d23f15a129bbdd8783dde27c7d50148b865667a76d209e5"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/semantic_loss_coverage.json",
+      "sha256": "5c4d0416a3fb2ee4ac83b97f59bd79063964159535e708892ed79fc560d9fe8f"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/stage_bc_transactional_runtime_oracle.json",
+      "sha256": "f8724d9a56c0c72032eaa0fe191dfb9c300a40030e53491abf06ad4744f6e415"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/stock_augmentation_runtime_binding_fold1.json",
+      "sha256": "a22147b17df86255217b4e2ff9c7ada85022a85d78249aecee395bfdb777c0ff"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/stock_augmentation_runtime_binding_fold4.json",
+      "sha256": "a22147b17df86255217b4e2ff9c7ada85022a85d78249aecee395bfdb777c0ff"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/stock_initial_patch_binding_fold1.json",
+      "sha256": "a22147b17df86255217b4e2ff9c7ada85022a85d78249aecee395bfdb777c0ff"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/stock_initial_patch_binding_fold4.json",
+      "sha256": "a22147b17df86255217b4e2ff9c7ada85022a85d78249aecee395bfdb777c0ff"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/v7_full_no_regression_matrix.json",
+      "sha256": "cc6f2d88842fe336d25befaa85ab50719767a197e0d9c670c5e0496aff2c23f3"
+    },
+    {
+      "path": "results/20260803_care_ase_r2_final_pretraining_closure_v8/v7_supersession_receipt.json",
+      "sha256": "5ac5a2db7c72e962b7c3da9f8fc94ee9096fd68663f0018b242c391e68e2b736"
+    }
+  ],
+  "generated_utc": "2026-08-03T15:19:28.119727Z",
+  "implementation_source_commit_sha": "648bb4d79da255438469aa9acfa939616aebf251",
+  "review_packet_commit_sha": "reported_after_push",
+  "status": "PASS"
+}

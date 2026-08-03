@@ -1,0 +1,80 @@
+{
+  "all_four_same_case_fraction": 0.05,
+  "counts": {
+    "complete": 200,
+    "complete_centerB": 100,
+    "complete_centerC": 100,
+    "complete_edema": 100,
+    "complete_scar": 100,
+    "edema_focus": {
+      "boundary": 20,
+      "oof_fn_or_low_volume": 20,
+      "positive": 35,
+      "random": 10,
+      "safe_fp": 15
+    },
+    "lge_c0": 100,
+    "lge_only": 100,
+    "partial_edema": 0,
+    "partial_scar": 200,
+    "scar_focus": {
+      "gt_component": 105,
+      "oof_fn": 60,
+      "oof_fp": 45,
+      "random": 30,
+      "small_component": 60
+    }
+  },
+  "descriptor_sequence_sha256": "64deebfe1dea9b0aa8cb0e5711df9588b9b97aade5550b7a24f6645c547da0fe",
+  "distinct_case_count_distribution": {
+    "1": 20,
+    "2": 14,
+    "3": 98,
+    "4": 268
+  },
+  "expected_400_stage_a_b": {
+    "complete": 200,
+    "complete_centerB": 100,
+    "complete_centerC": 100,
+    "complete_edema": 100,
+    "complete_scar": 100,
+    "lge_c0": 100,
+    "lge_only": 100,
+    "partial_edema": 0
+  },
+  "expected_400_stage_a_b_micro": {
+    "complete": 800,
+    "complete_centerB": 400,
+    "complete_centerC": 400,
+    "complete_edema": 400,
+    "complete_scar": 400,
+    "lge_c0": 400,
+    "lge_only": 400,
+    "partial_edema": 0
+  },
+  "failures": [],
+  "fold": 4,
+  "micro_counts": {
+    "complete": 800,
+    "complete_centerB": 400,
+    "complete_centerC": 400,
+    "complete_edema": 400,
+    "complete_scar": 400,
+    "lge_c0": 400,
+    "lge_only": 400,
+    "partial_edema": 0,
+    "partial_scar": 800
+  },
+  "microbatch_case_draw": "independent_with_replacement_rng_per_group",
+  "microbatch_count": 1600,
+  "microbatch_rng_state_saved_fields": [
+    "micro_case_rng_state_by_group",
+    "micro_patch_rng_state"
+  ],
+  "partial_events_do_not_advance_complete_pathology_cursor": true,
+  "payload_sha256": "5f8badb1b36e6a201a70ccea4592a8e8931a5aebe8c97ee77a9df9100f272de2",
+  "sampler_rng_state_restored": true,
+  "start_step": 0,
+  "status": "PASS",
+  "steps": 400
+}

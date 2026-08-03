@@ -1,5 +1,32 @@
 # CARE 当前开发状态
 
+## 2026-08-03 最新机器真值：CARE-ASE R2 v8 等待外部最终训练前审阅
+
+CARE-ASE R2 v8 已完成最终训练前代码阻断闭合，当前只准备交给外部 GPT 做训练许可审阅，不表示正式训练获准。v7 implementation `0b20e32d077227fbeb6611a3ee0cdf4231aee19d` 和 v7 review packet `7f4bb4d48e92273e2aad0a5d75ae6e4f3a62f1e7` 的 ready claim 已被 v8 取代；v7 probes 均为 zero-credit diagnostics。formal training 未启动，fold1/fold4 outer access 均为 0。下一步只能是外部 GPT 返回 `PRETRAINING_EXTERNAL_REVIEW_PASS` 或 revise。
+
+```text
+state_id: care_ase_r2_v8_pending_external_pretraining_review
+active_development_branch: main
+active_worktree: /users/a/e/aereinh/CARE
+implementation_source_commit_sha: 648bb4d79da255438469aa9acfa939616aebf251
+review_packet_commit_sha: reported_after_push
+formal_training_authorized: false
+formal_training_started: false
+outer_access_fold1: 0
+outer_access_fold4: 0
+diagnostic_optimizer_step_reservations_total: 20
+next_action: EXTERNAL_GPT_PRETRAINING_REVIEW
+```
+
+关键证据：
+
+```text
+results/20260803_care_ase_r2_final_pretraining_closure_v8/pretraining_external_review_request.json
+results/20260803_care_ase_r2_final_pretraining_closure_v8/controller_report.md
+results/20260803_care_ase_r2_final_pretraining_closure_v8/completion_check.md
+results/20260803_care_ase_r2_final_pretraining_closure_v8/MANIFEST.md
+```
+
 ## 2026-08-03 最新机器真值：服务器最终确认通过，可由人工发送 Docker 提交邮件
 
 服务器端已经对最终 MyoPS 与 CineMyoPS Docker 提交资源做完只读确认：final dist 中两个 archive 的 size/SHA 与冻结值一致，最新 FULL 工位 packet 已解包审计，MyoPS 15 例与 CineMyoPS 15 例官方 `/input` 根目录黑盒彩排、标签体积审计、输入只读完整性、合作者 MyoPS reference 接口边界、Google Drive 公链和英文邮件草稿全部通过。当前状态只授权用户人工发送已审计邮件；服务器没有运行 Docker，没有上传 challenge 或 validation predictions，没有发送组织方邮件，也没有读取或提交 rclone secret。

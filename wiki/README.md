@@ -1,5 +1,22 @@
 # CARE 架构 Wiki
 
+architecture_version: `care-ase-r2-v8-pending-external-pretraining-review-20260803`
+latest_verified_runtime: `CARE-ASE R2 v8 source/tests/G1 and diagnostic GPU code probes are complete; final formal training remains unauthorized`
+latest_scientific_status: `PRETRAINING_EXTERNAL_REVIEW_REQUEST_READY_PENDING_PUSH: implementation source Commit A 648bb4d79da255438469aa9acfa939616aebf251; review packet Commit B reported after push; no formal training and no outer access`
+latest_controller_task: `20260803_care_ase_r2_final_pretraining_closure_v8`
+route_status: `MAIN_ONLY_CARE_ASE_R2_V8_PENDING_EXTERNAL_PRETRAINING_REVIEW`
+
+当前 CARE-ASE R2 v8 只到训练前实现闭合与外部审阅请求阶段，不表示训练许可。v7 implementation `0b20e32d077227fbeb6611a3ee0cdf4231aee19d` 和 v7 review packet `7f4bb4d48e92273e2aad0a5d75ae6e4f3a62f1e7` 已被 v8 取代；v7 probe credit 为 zero。v8 formal training 未启动，fold1/fold4 outer access 均为 0；下一步只能由外部 GPT 审阅 v8 Commit A/B 后返回通过或返修。
+
+关键证据：
+
+```text
+results/20260803_care_ase_r2_final_pretraining_closure_v8/pretraining_external_review_request.json
+results/20260803_care_ase_r2_final_pretraining_closure_v8/controller_report.md
+results/20260803_care_ase_r2_final_pretraining_closure_v8/completion_check.md
+results/20260803_care_ase_r2_final_pretraining_closure_v8/MANIFEST.md
+```
+
 architecture_version: `care-test-docker-server-final-submission-readiness-confirmed-20260803`
 latest_verified_runtime: `server final dist archive size/SHA, FULL 15+15 official rehearsal packet, Drive public links, and email draft independently audited on server`
 latest_scientific_status: `READY_FOR_HUMAN_EMAIL_SEND: no model changes, no server Docker run, no challenge/validation prediction upload, organizer email draft ready but not sent`

@@ -1,0 +1,12 @@
+{
+  "critical_source_manifest_sha256": "2a16ca795e8cf6c232021689f01fc474bb7d09dca93609b3becf6db563a44a44",
+  "effective_contract_sha256": "83a4283a4ef0558c085e4dff25c566d95fc3fad7f396787f59e2811d7bc35781",
+  "formal_root_template": "results/20260803_care_ase_r2_formal_training_<implementation-short>/runtime/fold_<fold>/",
+  "formal_training_started": false,
+  "generated_utc": "2026-08-03T15:19:27.400819Z",
+  "implementation_source_commit_sha": "648bb4d79da255438469aa9acfa939616aebf251",
+  "outer_access_fold1": 0,
+  "outer_access_fold4": 0,
+  "short_smoke_root": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_final_pretraining_closure_v8",
+  "status": "PASS"
+}

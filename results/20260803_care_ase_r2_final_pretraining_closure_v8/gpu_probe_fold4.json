@@ -1,0 +1,21 @@
+{
+  "critical_source_manifest_sha256": "2a16ca795e8cf6c232021689f01fc474bb7d09dca93609b3becf6db563a44a44",
+  "diagnostic_three_step_probe": {
+    "checkpoint_sha256": "5e269cf19af8da0d0f27176bd1b3435cda68da0b8039d817550cead09337fe90",
+    "global_optimizer_step": 3,
+    "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_final_pretraining_closure_v8/gpu_probe/final_c7fb0df/fold4_0_3",
+    "required_fields_present": true,
+    "rng_transparency": "PASS",
+    "schema_version": 4,
+    "terminal_status": "PASS",
+    "verified_source_sha": "c7fb0df841dcd2a00f08160fb8c16788a91b91c3",
+    "verified_status": "PASS"
+  },
+  "effective_contract_sha256": "83a4283a4ef0558c085e4dff25c566d95fc3fad7f396787f59e2811d7bc35781",
+  "formal_training_started": false,
+  "generated_utc": "2026-08-03T15:19:27.646703Z",
+  "implementation_source_commit_sha": "648bb4d79da255438469aa9acfa939616aebf251",
+  "outer_access_fold1": 0,
+  "outer_access_fold4": 0,
+  "status": "PASS"
+}

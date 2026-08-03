@@ -1,0 +1,36 @@
+{
+  "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+  "batchgeneratorsv2": {
+    "module": "batchgeneratorsv2",
+    "path": ".",
+    "sha256": "UNAVAILABLE"
+  },
+  "blosc2_version": "4.1.2",
+  "cuda_matmul_allow_tf32": false,
+  "cuda_runtime": "13.0",
+  "cudnn_allow_tf32": false,
+  "cudnn_benchmark": false,
+  "cudnn_deterministic": true,
+  "cudnn_version": 91900,
+  "deterministic_algorithms": true,
+  "gpu": {
+    "cuda_available": true,
+    "cuda_compute_capability": [
+      9,
+      0
+    ],
+    "cuda_device_count": 1,
+    "cuda_device_name": "NVIDIA H100 NVL"
+  },
+  "nnunetv2": {
+    "module": "nnunetv2",
+    "path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/__init__.py",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "numpy_version": "1.26.4",
+  "python_executable": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+  "python_version": "3.12.13 | packaged by conda-forge | (main, Mar  5 2026, 16:50:00) [GCC 14.3.0]",
+  "scipy_version": "1.15.2",
+  "sha256": "081c05a288c565b574a1bff551cdcf21c3c13676ca52c88ebb788060fbd907a6",
+  "torch_version": "2.11.0+cu130"
+}

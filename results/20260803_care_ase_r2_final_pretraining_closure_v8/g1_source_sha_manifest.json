@@ -1,0 +1,16 @@
+{
+  "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh": "2923106d0b5ebaa3579ec9e33309f2f15c6fdd35d1cc73fa9465c2cc29414f14",
+  "prompts/blueprints/CARE_ASE_R2_effective_contract_v8_20260803.yaml": "83a4283a4ef0558c085e4dff25c566d95fc3fad7f396787f59e2811d7bc35781",
+  "prompts/tasks/20260803_care_ase_r2_final_pretraining_closure_v8_addendum.md": "68f0f9ebeda111b704fb679a168522e0c56761f06127dc4952c96e2cbce1bf69",
+  "scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py": "2214bf36c6e61ef70553b4e95476b4593245489f5ab1aaac94183541a9fa9955",
+  "scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py": "e8f42de7616d7d1f369a6aac5ec8b71b388d1993247d7ac9df6d3fc716bf38af",
+  "scripts/training/care_ase/run_care_ase_r2_chunk.py": "078767a5c8c6b8c9fe6135efe2efa6ec49dc6daec7554e2f1a3b3625a338e812",
+  "scripts/validation/validate_care_ase_r2_g1.py": "16aeee57e774ced088d347a166b61549d92fc14bdaeb8faad2d9d4154124b216",
+  "src/care_myocardium/inference/care_ase_r2_decode.py": "7fea71edba56d259dbbb31c3832b74709bd83d5af1f8b680a85c2e0a41acb05b",
+  "src/care_myocardium/inference/care_ase_r2_full_volume.py": "5535c12a1e661b7c62d53b732a963bd14bf353bb2a23e73623418a1b7737b12a",
+  "src/care_myocardium/models/care_ase.py": "290c799618b29133903dfb7ccd78844bf27a4ce70b885ae64483444c922b9e42",
+  "src/care_myocardium/training/care_ase_augmentation.py": "85a208a3a886babe0ec2927a1babced2b24ff91188d577585e65d4e38c27b283",
+  "src/care_myocardium/training/care_ase_runtime.py": "db01fe8ef9a2a58c7b7eb4b406237f3c98bfe2501eec5f23e6dd5b7a94e02990",
+  "src/care_myocardium/training/care_ase_sampler.py": "4bd85fe56173efefe2ed5b17ade286c8887faa19accdee8f32bc769996dfb1e2",
+  "src/care_myocardium/training/care_ase_trainer.py": "48afa854113e48d94ca659b4de3f65e442fed984c9bb51358714b6b8d398e014"
+}

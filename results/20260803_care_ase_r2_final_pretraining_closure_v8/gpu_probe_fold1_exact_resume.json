@@ -1,0 +1,34 @@
+{
+  "critical_source_manifest_sha256": "2a16ca795e8cf6c232021689f01fc474bb7d09dca93609b3becf6db563a44a44",
+  "diagnostic_exact_resume_source_sha": "c7fb0df841dcd2a00f08160fb8c16788a91b91c3",
+  "effective_contract_sha256": "83a4283a4ef0558c085e4dff25c566d95fc3fad7f396787f59e2811d7bc35781",
+  "formal_training_started": false,
+  "generated_utc": "2026-08-03T15:19:27.641824Z",
+  "implementation_source_commit_sha": "648bb4d79da255438469aa9acfa939616aebf251",
+  "note": "exact resume completed before final non-scientific contract/bundle binding amend; no further optimizer budget remained after final-SHA smoke",
+  "outer_access_fold1": 0,
+  "outer_access_fold4": 0,
+  "resume_a": {
+    "checkpoint_sha256": "7da98cca3843c79b558fe598d2f4bb62f4f66490356764861bb78153ebcec85e",
+    "global_optimizer_step": 1,
+    "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_final_pretraining_closure_v8/gpu_probe/final_fc0a444/fold1_resume_a",
+    "required_fields_present": true,
+    "rng_transparency": "PASS",
+    "schema_version": 4,
+    "terminal_status": "PASS",
+    "verified_source_sha": "fc0a4449e7ce778ee7908ab1eeb1e44276ba7c4b",
+    "verified_status": "PASS"
+  },
+  "resume_b": {
+    "checkpoint_sha256": "5b27b3ddf83cff5eb8b7936327f907c2cb8f0fb069068c02890dfe32fc106119",
+    "global_optimizer_step": 3,
+    "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_final_pretraining_closure_v8/gpu_probe/final_fc0a444/fold1_resume_b",
+    "required_fields_present": true,
+    "rng_transparency": "PASS",
+    "schema_version": 4,
+    "terminal_status": "PASS",
+    "verified_source_sha": "fc0a4449e7ce778ee7908ab1eeb1e44276ba7c4b",
+    "verified_status": "PASS"
+  },
+  "status": "PASS"
+}

@@ -1,0 +1,11 @@
+{
+  "actual_train_only": true,
+  "folds": [
+    1,
+    4
+  ],
+  "generated_utc": "2026-08-03T15:19:27.412309Z",
+  "implementation_source_commit_sha": "648bb4d79da255438469aa9acfa939616aebf251",
+  "source_function": "compute_actual_train_area_references",
+  "status": "PASS"
+}

@@ -1,0 +1,15 @@
+{
+  "entrypoint_imports": [
+    "__future__",
+    "pathlib",
+    "src.care_myocardium.training.care_ase_runtime"
+  ],
+  "entrypoint_path": "scripts/training/care_ase/run_care_ase_r2_chunk.py",
+  "entrypoint_sha256": "078767a5c8c6b8c9fe6135efe2efa6ec49dc6daec7554e2f1a3b3625a338e812",
+  "old_entrypoint_bypass": false,
+  "old_trainer_bypass": false,
+  "wrapper_path": "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh",
+  "wrapper_sha256": "2923106d0b5ebaa3579ec9e33309f2f15c6fdd35d1cc73fa9465c2cc29414f14",
+  "wrapper_uses_env_python": true,
+  "wrapper_uses_htzhulab": true
+}

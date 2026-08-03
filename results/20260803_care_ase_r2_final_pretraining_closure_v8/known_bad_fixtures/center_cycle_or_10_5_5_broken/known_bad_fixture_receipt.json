@@ -1,0 +1,9 @@
+{
+  "decision": "REJECTED_AS_EXPECTED",
+  "expected_validator_exit": "nonzero",
+  "fixture": "center_cycle_or_10_5_5_broken",
+  "known_bad_fixture_rejected": true,
+  "observed_failures": [
+    "sampler"
+  ]
+}
