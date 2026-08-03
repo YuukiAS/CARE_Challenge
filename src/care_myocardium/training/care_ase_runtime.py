@@ -1905,10 +1905,16 @@ def _run_named_evidence_liveness_canary(
                 )
 
         rng_hash_after = rng_state_hashes(sampler)
-        failed_gradients = [
-            name for name, row in {**gradient_report, **projection_gradient_report}.items()
-            if not bool(row["finite"]) or not bool(row["nonzero"])
-        ]
+        any_area_valid = any(bool(v) for batch in eligible for v in batch.get("extent_area_valid_by_output_z", ()))
+        contract_masked_gradient_modules: list[str] = []
+        failed_gradients = []
+        for name, row in {**gradient_report, **projection_gradient_report}.items():
+            if bool(row["finite"]) and bool(row["nonzero"]):
+                continue
+            if name in {"scar_extent_area", "edema_extent_area"} and not any_area_valid:
+                contract_masked_gradient_modules.append(name)
+                continue
+            failed_gradients.append(name)
         failed_interventions = [row["source"] for row in intervention_rows if row["status"] != "PASS"]
         receipt = {
             "status": "PASS" if not failed_gradients and not failed_interventions and rng_hash_before == rng_hash_after else "FAIL",
@@ -1922,6 +1928,9 @@ def _run_named_evidence_liveness_canary(
             "intervention_delta_threshold": threshold,
             "module_gradient_report": gradient_report,
             "projection_gradient_report": projection_gradient_report,
+            "extent_area_gradient_contract": "required_only_when_current_diagnostic_batch_contains_full_hw_area_valid_slice",
+            "diagnostic_batch_any_extent_area_valid": bool(any_area_valid),
+            "contract_masked_gradient_modules": contract_masked_gradient_modules,
             "failed_gradient_modules": failed_gradients,
             "failed_intervention_sources": failed_interventions,
             "scar_t2_direct_path_exists": False,
