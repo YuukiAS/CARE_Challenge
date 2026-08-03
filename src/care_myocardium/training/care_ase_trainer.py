@@ -54,11 +54,13 @@ REQUIRED_CHECKPOINT_FIELDS = (
     "optimizer",
     "scheduler",
     "training_source_commit_sha",
+    "formal_execution_checkout_commit_sha",
     "review_packet_commit_sha",
     "origin_main_sha",
     "origin_main_at_review_request_sha",
     "effective_contract_sha256",
     "external_review_permit_sha256",
+    "formal_runtime_input_bundle_sha256",
     "critical_source_manifest_sha256",
     "split_file_sha256",
     "split_case_lists_sha256",
@@ -71,6 +73,17 @@ REQUIRED_CHECKPOINT_FIELDS = (
     "augmentation_contract_sha256",
     "full_case_target_profile_manifest_sha256",
     "full_case_target_cache_manifest_sha256",
+    "architecture_signature",
+    "embedded_or_relocatable_plans_sha256",
+    "embedded_or_relocatable_dataset_json_sha256",
+    "pathology_deep_supervision_weights",
+    "deployment_load_requires_stock_checkpoint",
+    "logical_chunk_start",
+    "logical_chunk_end",
+    "last_completed_optimizer_step",
+    "resume_invocation_start",
+    "completed_optimizer_steps_in_logical_chunk",
+    "checkpoint_reason",
     "environment_determinism_manifest_sha256",
     "formal_resumable",
     "augmentation_rng_state",
@@ -494,8 +507,8 @@ def _edema_boundary_numpy(seg: np.ndarray, spacing: tuple[float, float, float]) 
         zero = np.zeros(seg.shape, dtype=np.float32)
         return {"edema_boundary": zero, "edema_boundary_raw_mm": zero, "edema_boundary_valid": zero}
     if bool(edema.all()):
-        raw = np.zeros(seg.shape, dtype=np.float32)
-        return {"edema_boundary": np.ones(seg.shape, dtype=np.float32), "edema_boundary_raw_mm": raw, "edema_boundary_valid": np.ones(seg.shape, dtype=np.float32)}
+        zero = np.zeros(seg.shape, dtype=np.float32)
+        return {"edema_boundary": zero, "edema_boundary_raw_mm": zero, "edema_boundary_valid": zero}
     raw_mm = np.asarray(ndimage.distance_transform_edt(edema, sampling=spacing) - ndimage.distance_transform_edt(~edema, sampling=spacing), dtype=np.float32)
     clipped = np.clip(raw_mm, -10.0, 10.0).astype(np.float32) / 10.0
     valid = (((np.abs(raw_mm) <= 10.0) | edema) & valid_label).astype(np.float32)
@@ -1222,7 +1235,7 @@ def build_optimizer(model: CAREASE) -> torch.optim.Optimizer:
     return torch.optim.AdamW(optimizer_parameter_groups(model))
 
 
-def run_formal_optimizer_step(
+def _optimizer_step_from_materialized_microbatches(
     *,
     model: CAREASE,
     optimizer: torch.optim.Optimizer,
@@ -1235,7 +1248,7 @@ def run_formal_optimizer_step(
     autocast_enabled: bool = False,
     collect_metrics: bool = True,
 ) -> dict[str, Any]:
-    """Single authoritative CARE-ASE optimizer-step implementation."""
+    """Private tensor-level optimizer update used only by CAREASEFormalRuntime."""
 
     if len(microbatches) != int(gradient_accumulation) or int(gradient_accumulation) != 4:
         raise ValueError(
@@ -1294,10 +1307,20 @@ def run_formal_optimizer_step(
         "metrics": metrics,
         "metric_aggregation": "mean_over_four_microbatches" if collect_metrics else "disabled",
         "grad_norm": float(grad_norm.detach().cpu() if torch.is_tensor(grad_norm) else grad_norm),
-        "formal_step_api": "src.care_myocardium.training.care_ase_trainer.run_formal_optimizer_step",
+        "formal_step_api": "src.care_myocardium.training.care_ase_trainer._optimizer_step_from_materialized_microbatches",
         "microbatch_count": len(microbatches),
         "gradient_accumulation": int(gradient_accumulation),
     }
+
+
+def run_formal_optimizer_step(**kwargs: Any) -> dict[str, Any]:
+    """Compatibility shim for legacy unit tests.
+
+    Formal training and probe entrypoints must use
+    CAREASEFormalRuntime.run_formal_training_step instead.
+    """
+
+    return _optimizer_step_from_materialized_microbatches(**kwargs)
 
 
 class CAREASEStageScheduler:
@@ -1450,11 +1473,13 @@ def save_care_ase_checkpoint(
     plans_hash: str | None = None,
     stock_checkpoint_hash: str | None = None,
     training_source_commit_sha: str | None = None,
+    formal_execution_checkout_commit_sha: str | None = None,
     review_packet_commit_sha: str | None = None,
     origin_main_sha: str | None = None,
     origin_main_at_review_request_sha: str | None = None,
     effective_contract_sha256: str | None = None,
     external_review_permit_sha256: str | None = None,
+    formal_runtime_input_bundle_sha256: str | None = None,
     critical_source_manifest_sha256: str | None = None,
     split_file_sha256: str | None = None,
     split_case_lists_sha256: str | None = None,
@@ -1465,6 +1490,10 @@ def save_care_ase_checkpoint(
     augmentation_contract_sha256: str | None = None,
     full_case_target_profile_manifest_sha256: str | None = None,
     full_case_target_cache_manifest_sha256: str | None = None,
+    logical_chunk_start: int | None = None,
+    logical_chunk_end: int | None = None,
+    resume_invocation_start: int | None = None,
+    checkpoint_reason: str = "periodic_1000",
     environment_determinism_manifest_sha256: str | None = None,
     augmentation_rng_state: dict[str, Any] | None = None,
     precision_mode: str = "fp32_guarded_mixed_precision_allowed",
@@ -1483,11 +1512,13 @@ def save_care_ase_checkpoint(
         "optimizer": optimizer.state_dict(),
         "scheduler": scheduler.state_dict() if scheduler is not None else {"last_global_step": int(global_step), "type": "CAREASEStageScheduler"},
         "training_source_commit_sha": training_source_commit_sha or "UNSET",
+        "formal_execution_checkout_commit_sha": formal_execution_checkout_commit_sha or review_packet_commit_sha or "UNSET",
         "review_packet_commit_sha": review_packet_commit_sha or "UNSET",
         "origin_main_sha": origin_main_sha or "UNSET",
         "origin_main_at_review_request_sha": origin_main_at_review_request_sha or origin_main_sha or "UNSET",
         "effective_contract_sha256": effective_contract_sha256 or "UNSET",
         "external_review_permit_sha256": external_review_permit_sha256 or "UNSET",
+        "formal_runtime_input_bundle_sha256": formal_runtime_input_bundle_sha256 or "UNSET",
         "critical_source_manifest_sha256": critical_source_manifest_sha256 or code_hash or "UNSET",
         "split_file_sha256": split_file_sha256 or split_hash or "UNSET",
         "split_case_lists_sha256": split_case_lists_sha256 or "UNSET",
@@ -1500,6 +1531,17 @@ def save_care_ase_checkpoint(
         "augmentation_contract_sha256": augmentation_contract_sha256 or "UNSET",
         "full_case_target_profile_manifest_sha256": full_case_target_profile_manifest_sha256 or full_case_target_cache_manifest_sha256 or "UNSET",
         "full_case_target_cache_manifest_sha256": full_case_target_cache_manifest_sha256 or "UNSET",
+        "architecture_signature": "CAREASE_R2_stock_encoder_shared_low_mid_three_top_paths_named_evidence_v8",
+        "embedded_or_relocatable_plans_sha256": plans_hash or _sha256_file_or_missing(model.config.plans_path),
+        "embedded_or_relocatable_dataset_json_sha256": _sha256_file_or_missing(Path(model.config.plans_path).parent / "dataset.json"),
+        "pathology_deep_supervision_weights": dict(getattr(model, "pathology_deep_supervision_weights", {"full": 0.5, "half": 0.5})),
+        "deployment_load_requires_stock_checkpoint": False,
+        "logical_chunk_start": int(logical_chunk_start if logical_chunk_start is not None else (int(global_step) - int(global_step) % 2000)),
+        "logical_chunk_end": int(logical_chunk_end if logical_chunk_end is not None else ((int(global_step) - int(global_step) % 2000) + 2000)),
+        "last_completed_optimizer_step": int(global_step),
+        "resume_invocation_start": int(resume_invocation_start if resume_invocation_start is not None else (int(global_step) - int(global_step) % 2000)),
+        "completed_optimizer_steps_in_logical_chunk": int(global_step) - int(logical_chunk_start if logical_chunk_start is not None else (int(global_step) - int(global_step) % 2000)),
+        "checkpoint_reason": str(checkpoint_reason),
         "environment_determinism_manifest_sha256": environment_determinism_manifest_sha256 or "UNSET",
         "formal_resumable": bool(formal_resumable),
         "augmentation_rng_state": augmentation_rng_state
@@ -1556,11 +1598,13 @@ def save_care_ase_checkpoint(
     if bool(formal_resumable):
         formal_fields = (
             "training_source_commit_sha",
+            "formal_execution_checkout_commit_sha",
             "review_packet_commit_sha",
             "origin_main_sha",
             "origin_main_at_review_request_sha",
             "effective_contract_sha256",
             "external_review_permit_sha256",
+            "formal_runtime_input_bundle_sha256",
             "critical_source_manifest_sha256",
             "split_file_sha256",
             "split_case_lists_sha256",
@@ -1573,13 +1617,22 @@ def save_care_ase_checkpoint(
             "augmentation_contract_sha256",
             "full_case_target_profile_manifest_sha256",
             "full_case_target_cache_manifest_sha256",
+            "architecture_signature",
+            "embedded_or_relocatable_plans_sha256",
+            "embedded_or_relocatable_dataset_json_sha256",
+            "pathology_deep_supervision_weights",
+            "deployment_load_requires_stock_checkpoint",
             "environment_determinism_manifest_sha256",
         )
-        placeholders = [
-            field
-            for field in formal_fields
-            if payload.get(field) in {None, "", "UNSET", "SHORT_SMOKE", "SHORT_SMOKE_NO_FORMAL_CREDIT"}
-        ]
+        placeholder_tokens = {None, "", "UNSET", "SHORT_SMOKE", "SHORT_SMOKE_NO_FORMAL_CREDIT"}
+        placeholders = []
+        for field in formal_fields:
+            value = payload.get(field)
+            if isinstance(value, (dict, list, tuple)):
+                if not value:
+                    placeholders.append(field)
+            elif value in placeholder_tokens:
+                placeholders.append(field)
         if placeholders:
             raise ValueError(f"formal CARE-ASE checkpoint refuses placeholder provenance fields: {placeholders}")
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -1602,6 +1655,7 @@ def load_care_ase_checkpoint(
     *,
     map_location: str | torch.device = "cpu",
     restore_rng: bool = True,
+    stock_checkpoint_required: bool = True,
 ) -> tuple[CAREASE, dict[str, Any]]:
     sidecar = path.with_suffix(path.suffix + ".sha256")
     if not sidecar.is_file():
@@ -1622,7 +1676,7 @@ def load_care_ase_checkpoint(
         or payload.get("next_optimizer_step_micro_descriptor_sha256") == "TRAINING_COMPLETE"
     ):
         raise ValueError("early checkpoint contains forbidden TRAINING_COMPLETE token")
-    model = CAREASE(CAREASEConfig(**payload["config"]), map_location=map_location)
+    model = CAREASE(CAREASEConfig(**payload["config"]), map_location=map_location, stock_checkpoint_required=stock_checkpoint_required)
     model.load_state_dict(payload["model"])
     if restore_rng:
         restore_rng_state(
@@ -1633,6 +1687,50 @@ def load_care_ase_checkpoint(
                 "torch_cuda": payload["torch_cuda_rng_all_devices"],
             }
         )
+    return model, payload
+
+
+def load_care_ase_checkpoint_for_training_resume(
+    path: Path,
+    *,
+    requested_fold: int,
+    map_location: str | torch.device = "cpu",
+    restore_rng: bool = True,
+) -> tuple[CAREASE, dict[str, Any]]:
+    model, payload = load_care_ase_checkpoint(path, map_location=map_location, restore_rng=restore_rng, stock_checkpoint_required=True)
+    if int(payload.get("fold", -1)) != int(requested_fold) or int(model.config.fold) != int(requested_fold):
+        raise ValueError(f"training resume fold mismatch: requested={requested_fold} payload={payload.get('fold')} config={model.config.fold}")
+    canonical = CAREASEConfig.for_fold(int(requested_fold)).checkpoint_path
+    if str(payload.get("config", {}).get("checkpoint_path")) != str(canonical):
+        raise ValueError("training resume requires requested-fold canonical stock checkpoint path")
+    if _sha256_file_or_missing(Path(canonical)) != str(payload.get("stock_checkpoint_sha256")):
+        raise ValueError("training resume requires requested-fold canonical stock checkpoint SHA")
+    return model, payload
+
+
+def load_care_ase_checkpoint_for_inference(
+    path: Path,
+    *,
+    map_location: str | torch.device = "cpu",
+    plans_path: Path | str | None = None,
+) -> tuple[CAREASE, dict[str, Any]]:
+    sidecar = path.with_suffix(path.suffix + ".sha256")
+    if not sidecar.is_file():
+        raise ValueError(f"CARE-ASE checkpoint missing SHA sidecar: {sidecar}")
+    expected_line = sidecar.read_text(encoding="utf-8").strip().split()
+    expected_sha = expected_line[0] if expected_line else ""
+    observed_sha = _sha256_file_or_missing(path)
+    if expected_sha != observed_sha:
+        raise ValueError(f"CARE-ASE checkpoint sidecar SHA mismatch: expected {expected_sha} observed {observed_sha}")
+    payload = torch.load(path, map_location=map_location, weights_only=False)
+    if payload.get("deployment_load_requires_stock_checkpoint") is not False:
+        raise ValueError("CARE-ASE inference checkpoint must be self-contained and must not require stock checkpoint")
+    config_payload = dict(payload["config"])
+    if plans_path is not None:
+        config_payload["plans_path"] = str(Path(plans_path))
+    config_payload["checkpoint_path"] = "__CARE_ASE_INFERENCE_LOAD_STOCK_CHECKPOINT_FORBIDDEN__"
+    model = CAREASE(CAREASEConfig(**config_payload), map_location=map_location, stock_checkpoint_required=False)
+    model.load_state_dict(payload["model"])
     return model, payload
 
 

@@ -603,27 +603,32 @@ class CAREASE(nn.Module):
     input_channel_order = MODALITY_ORDER
     pathology_logits_used_from_stock_normal_forward = False
 
-    def __init__(self, config: CAREASEConfig, *, map_location: str | torch.device = "cpu") -> None:
+    def __init__(self, config: CAREASEConfig, *, map_location: str | torch.device = "cpu", stock_checkpoint_required: bool = True) -> None:
         super().__init__()
         self.config = config
         stock = build_source_nnunet(config.nnunet_config)
-        payload = torch.load(config.checkpoint_path, map_location=map_location, weights_only=False)
-        state = checkpoint_state_dict(payload)
-        load = stock.load_state_dict(state, strict=False)
-        self.stock_load_missing_keys = list(load.missing_keys)
-        self.stock_load_unexpected_keys = list(load.unexpected_keys)
-        self.stock_parameter_byte_coverage = _byte_coverage(state, stock.state_dict())
-        allowed_missing_keys: set[str] = set()
-        allowed_unexpected_keys: set[str] = set()
-        disallowed_missing = sorted(set(self.stock_load_missing_keys) - allowed_missing_keys)
-        disallowed_unexpected = sorted(set(self.stock_load_unexpected_keys) - allowed_unexpected_keys)
-        if disallowed_missing or disallowed_unexpected:
-            raise RuntimeError(
-                "stock nnU-Net checkpoint load is not fail-closed: "
-                f"missing={disallowed_missing} unexpected={disallowed_unexpected}"
-            )
-        if float(self.stock_parameter_byte_coverage) < 0.99:
-            raise RuntimeError(f"stock nnU-Net parameter byte coverage below contract: {self.stock_parameter_byte_coverage}")
+        if stock_checkpoint_required:
+            payload = torch.load(config.checkpoint_path, map_location=map_location, weights_only=False)
+            state = checkpoint_state_dict(payload)
+            load = stock.load_state_dict(state, strict=False)
+            self.stock_load_missing_keys = list(load.missing_keys)
+            self.stock_load_unexpected_keys = list(load.unexpected_keys)
+            self.stock_parameter_byte_coverage = _byte_coverage(state, stock.state_dict())
+            allowed_missing_keys: set[str] = set()
+            allowed_unexpected_keys: set[str] = set()
+            disallowed_missing = sorted(set(self.stock_load_missing_keys) - allowed_missing_keys)
+            disallowed_unexpected = sorted(set(self.stock_load_unexpected_keys) - allowed_unexpected_keys)
+            if disallowed_missing or disallowed_unexpected:
+                raise RuntimeError(
+                    "stock nnU-Net checkpoint load is not fail-closed: "
+                    f"missing={disallowed_missing} unexpected={disallowed_unexpected}"
+                )
+            if float(self.stock_parameter_byte_coverage) < 0.99:
+                raise RuntimeError(f"stock nnU-Net parameter byte coverage below contract: {self.stock_parameter_byte_coverage}")
+        else:
+            self.stock_load_missing_keys = []
+            self.stock_load_unexpected_keys = []
+            self.stock_parameter_byte_coverage = 1.0
         self.decoder_introspection = introspect_stock_decoder(stock.decoder)
         self.pathology_deep_supervision_weights = stock_pathology_deep_supervision_weights(stock.decoder, self.decoder_introspection)
 
@@ -845,28 +850,43 @@ class CAREASE(nn.Module):
         ramp = 0.0 if disable_extent_wall else self.extent_wall_ramp(global_step)
         if ramp == 0.0:
             return torch.zeros_like(p_wall)
+        if valid_spatial_mask is None:
+            valid_slice_for_bias = None
+        else:
+            valid_down = F.interpolate(
+                valid_spatial_mask.detach().float(),
+                size=components["scar_extent_presence"].shape[-3:] if pathology == "scar" else components["edema_extent_presence"].shape[-3:],
+                mode="nearest",
+            )
+            valid_slice_for_bias = (valid_down.sum(dim=(-2, -1), keepdim=True) > 0).to(dtype=p_wall.dtype)
         if pathology == "scar":
-            presence, area, _wall_slice, _fallback = compute_slice_extent_statistics(
+            presence, area, _wall_slice, fallback = compute_slice_extent_statistics(
                 components["scar_extent_presence"],
                 components["scar_extent_area"],
                 p_wall,
                 valid_spatial_mask,
             )
+            valid_slice = torch.ones_like(presence) if valid_slice_for_bias is None else valid_slice_for_bias.to(dtype=presence.dtype)
             presence_bias = 0.30 * self._sigmoid_logit_center(presence, 0.50)
             area_bias = 0.20 * self._sigmoid_logit_center(area, self.scar_area_reference)
             wall_bias = 0.15 * self._sigmoid_logit_center(p_wall.detach(), 0.50)
         else:
-            presence, area, _wall_slice, _fallback = compute_slice_extent_statistics(
+            presence, area, _wall_slice, fallback = compute_slice_extent_statistics(
                 components["edema_extent_presence"],
                 components["edema_extent_area"],
                 p_wall,
                 valid_spatial_mask,
             )
+            valid_slice = torch.ones_like(presence) if valid_slice_for_bias is None else valid_slice_for_bias.to(dtype=presence.dtype)
             presence_bias = 0.35 * self._sigmoid_logit_center(presence, 0.50)
             area_bias = 0.30 * self._sigmoid_logit_center(area, self.edema_area_reference)
             wall_bias = 0.10 * self._sigmoid_logit_center(p_wall.detach(), 0.50)
-        slice_bias = presence_bias + area_bias
-        return float(ramp) * (F.interpolate(slice_bias, size=p_wall.shape[-3:], mode="trilinear", align_corners=False) + wall_bias)
+        presence_bias = presence_bias * valid_slice
+        area_bias = area_bias * valid_slice
+        slice_valid = F.interpolate(valid_slice, size=p_wall.shape[-3:], mode="nearest")
+        slice_bias = F.interpolate(presence_bias + area_bias, size=p_wall.shape[-3:], mode="trilinear", align_corners=False) * slice_valid
+        wall_bias = wall_bias * slice_valid
+        return float(ramp) * (slice_bias + wall_bias)
 
     def forward(
         self,
@@ -1071,16 +1091,56 @@ class CAREASE(nn.Module):
         if load.missing_keys or load.unexpected_keys:
             raise RuntimeError(f"reference stock load has missing/unexpected keys: missing={load.missing_keys} unexpected={load.unexpected_keys}")
         stock.eval()
+        edema_owned = {
+            "edema_branch": self.edema_branch,
+            "edema_t2_half_adapter": self.edema_t2_half_adapter,
+            "edema_t2_full_adapter": self.edema_t2_full_adapter,
+            "edema_c0_half_adapter": self.edema_c0_half_adapter,
+            "edema_c0_full_adapter": self.edema_c0_full_adapter,
+            "edema_lge_half_adapter": self.edema_lge_half_adapter,
+            "edema_lge_full_adapter": self.edema_lge_full_adapter,
+            "edema_dilation_context": self.edema_dilation_context,
+            "component_heads.edema_context": self.component_heads.edema_context,
+            "component_heads.edema_injury": self.component_heads.edema_injury,
+            "component_heads.edema_boundary": self.component_heads.edema_boundary,
+            "component_heads.edema_extent_presence": self.component_heads.edema_extent_presence,
+            "component_heads.edema_extent_area": self.component_heads.edema_extent_area,
+            "edema_half_projections": self.edema_branch.half_projections,
+            "edema_full_projections": self.edema_branch.full_projections,
+        }
+        call_counts = {name: 0 for name in edema_owned}
+        hooks = []
+        for name, module in edema_owned.items():
+            def _hook(_module: nn.Module, _inputs: tuple[Any, ...], _outputs: Any, *, key: str = name) -> None:
+                call_counts[key] += 1
+
+            hooks.append(module.register_forward_hook(_hook))
         stock_logits = stock(sample.float() * availability.view(-1, 3, 1, 1, 1))
-        out = self(sample.float(), availability, global_step=0, disable_extent_wall=True, disable_all_evidence=False)
+        try:
+            out = self(sample.float(), availability, global_step=0, disable_extent_wall=True, disable_all_evidence=False)
+        finally:
+            for hook in hooks:
+                hook.remove()
         final = out["final_logits"]
-        scar_diff = (final[:, 5:6] - stock_logits[:, 5:6]).abs()
-        edema_diff = (final[:, 4:5] - stock_logits[:, 4:5] * availability[:, 1:2].view(-1, 1, 1, 1, 1)).abs()
+        t2_present = availability[:, 1] > 0.5
+        no_t2 = ~t2_present
         anatomy_diff = (final[:, :4] - stock_logits[:, :4]).abs()
-        conditional_stock = torch.cat([stock_logits[:, :4], stock_logits[:, 4:5] * availability[:, 1:2].view(-1, 1, 1, 1, 1), stock_logits[:, 5:6]], dim=1)
-        changed = int((final.argmax(1) != conditional_stock.argmax(1)).sum().item())
+        scar_diff = (final[:, 5:6] - stock_logits[:, 5:6]).abs()
+        edema_diff = torch.zeros((), device=sample.device)
+        if bool(t2_present.any()):
+            edema_diff = (final[t2_present, 4:5] - stock_logits[t2_present, 4:5]).abs().max()
+        no_t2_decode_changed = 0
+        if bool(no_t2.any()):
+            care_no_t2 = torch.cat([final[no_t2, :4], final[no_t2, 5:6]], dim=1).argmax(1)
+            stock_no_t2 = torch.cat([stock_logits[no_t2, :4], stock_logits[no_t2, 5:6]], dim=1).argmax(1)
+            no_t2_decode_changed = int((care_no_t2 != stock_no_t2).sum().item())
+        t2_decode_changed = 0
+        if bool(t2_present.any()):
+            t2_decode_changed = int((final[t2_present].argmax(1) != stock_logits[t2_present].argmax(1)).sum().item())
+        max_error = float(max(float(anatomy_diff.max().item()), float(scar_diff.max().item()), float(edema_diff.item() if edema_diff.ndim == 0 else edema_diff.max().item())))
+        no_t2_edema_call_count = sum(call_counts.values()) if bool(no_t2.all()) else 0
         return {
-            "status": "PASS" if float(max(scar_diff.max(), edema_diff.max(), anatomy_diff.max()).item()) <= 1.0e-6 else "FAIL",
+            "status": "PASS" if max_error <= 1.0e-6 and no_t2_decode_changed == 0 and no_t2_edema_call_count == 0 else "FAIL",
             "fold": int(self.config.fold),
             "checkpoint_path": str(self.config.checkpoint_path),
             "checkpoint_sha256": sha256_file(Path(self.config.checkpoint_path)),
@@ -1091,8 +1151,22 @@ class CAREASE(nn.Module):
             "reference_load_unexpected_keys": list(load.unexpected_keys),
             "anatomy_step0_parity_max_abs_error": float(anatomy_diff.max().item()),
             "step0_scar_logit_parity_vs_stock_class5_max_abs_error": float(scar_diff.max().item()),
-            "step0_edema_logit_parity_vs_stock_class4_max_abs_error": float(edema_diff.max().item()),
-            "compatibility_argmax_changed_voxels": changed,
+            "step0_edema_logit_parity_vs_stock_class4_max_abs_error": float(edema_diff.item() if edema_diff.ndim == 0 else edema_diff.max().item()),
+            "step0_edema_logit_parity_vs_stock_class4_t2_present_only_max_abs_error": float(edema_diff.item() if edema_diff.ndim == 0 else edema_diff.max().item()),
+            "no_t2_decode_class_set": [0, 1, 2, 3, 5],
+            "no_t2_class4_excluded_from_competition": True,
+            "no_t2_stock_class4_zeroed_into_six_class_argmax": False,
+            "no_t2_five_class_decode_changed_voxels": no_t2_decode_changed,
+            "t2_present_six_class_decode_changed_voxels": t2_decode_changed,
+            "compatibility_argmax_changed_voxels": no_t2_decode_changed + t2_decode_changed,
+            "edema_owned_forward_call_counts": call_counts,
+            "no_t2_edema_owned_row_call_count": no_t2_edema_call_count,
+            "mixed_batch_rowwise_edema_execution": {
+                "t2_present_rows": int(t2_present.sum().item()),
+                "no_t2_rows": int(no_t2.sum().item()),
+                "edema_graph_called_for_t2_present_subset": bool(t2_present.any()),
+                "no_t2_rows_excluded_by_indexing": bool(no_t2.any()),
+            },
             "normal_forward_reads_stock_pathology_logits": False,
             "single_shared_low_mid_decoder_forward": True,
             "auxiliary_half_feature_source": "removed_uncontracted_auxiliary_tower_pathology_branches_own_half_features",

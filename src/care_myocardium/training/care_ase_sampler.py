@@ -18,7 +18,7 @@ from src.care_myocardium.data.care_ase_splits import PREPROCESSED_REL, build_car
 from src.care_myocardium.data.case_metadata import load_myops_case_metadata
 
 
-HARD_NEGATIVE_MANIFEST_TEMPLATE = "results/20260803_care_ase_r2_external_review_repair_v7/hard_negative_manifest_fold{fold}.json"
+HARD_NEGATIVE_MANIFEST_TEMPLATE = "results/20260803_care_ase_r2_final_pretraining_closure_v8/hard_negative_manifest_fold{fold}.json"
 
 
 @dataclass(frozen=True)
@@ -86,17 +86,24 @@ def _case_group_from_availability(availability: tuple[float, float, float]) -> s
     return "other"
 
 
-def _load_hard_negative_manifest(repo_root: Path, fold: int) -> dict[str, Any]:
-    path = repo_root / HARD_NEGATIVE_MANIFEST_TEMPLATE.format(fold=int(fold))
+def _load_hard_negative_manifest(repo_root: Path, fold: int, manifest_path: Path | None = None) -> dict[str, Any]:
+    if manifest_path is None:
+        path = repo_root / HARD_NEGATIVE_MANIFEST_TEMPLATE.format(fold=int(fold))
+    else:
+        path = Path(manifest_path)
+        if not path.is_absolute():
+            path = repo_root / path
     if not path.is_file():
-        raise FileNotFoundError(f"canonical CARE-ASE R2 final code blocker hard-negative JSON manifest is required: {path}")
+        raise FileNotFoundError(f"canonical CARE-ASE R2 v8 hard-negative JSON manifest is required: {path}")
     data = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(data, dict):
         raise ValueError(f"hard-negative manifest is not a JSON object: {path}")
     if data.get("source") != "canonical_patient_held_out_stock_nnunet_oof_only":
         raise ValueError(f"hard-negative manifest source is not canonical stock OOF only: {data.get('source')}")
-    if data.get("v7_manifest") is not True:
-        raise ValueError("hard-negative manifest must declare v7_manifest=true")
+    if data.get("v8_manifest") is not True:
+        raise ValueError("hard-negative manifest must declare v8_manifest=true")
+    if data.get("task_key") != "20260803_care_ase_r2_final_pretraining_closure_v8":
+        raise ValueError(f"hard-negative manifest task_key is not v8 closure: {data.get('task_key')}")
     if data.get("forbidden_old_manifest_paths_rejected") is not True:
         raise ValueError("hard-negative manifest must prove old manifest paths are rejected")
     cases = data.setdefault("cases", {})
@@ -136,6 +143,8 @@ def _load_hard_negative_manifest(repo_root: Path, fold: int) -> dict[str, Any]:
             raise ValueError(f"hard-negative manifest case {case_id} has empty OOF coordinate claims")
     data["manifest_path"] = str(path)
     data["manifest_sha256"] = sha256_file(path)
+    if int(data.get("fold", fold)) != int(fold):
+        raise ValueError(f"hard-negative manifest fold mismatch: expected {fold}, got {data.get('fold')}")
     return data
 
 
@@ -294,10 +303,11 @@ class CAREASEDeterministicSampler:
         "random",
     )
 
-    def __init__(self, repo_root: Path, fold: int, *, seed: int = 20260803) -> None:
+    def __init__(self, repo_root: Path, fold: int, *, seed: int = 20260803, hard_negative_manifest_path: Path | None = None) -> None:
         self.repo_root = repo_root.resolve()
         self.fold = int(fold)
         self.seed = int(seed)
+        self._hard_negative_manifest_path_arg = hard_negative_manifest_path
         self.rng = random.Random(f"{seed}|fold={fold}")
         self.micro_case_rng_by_group = {
             group: random.Random(f"{seed}|fold={fold}|micro_case|{group}")
@@ -321,7 +331,11 @@ class CAREASEDeterministicSampler:
         for key, values in self.by_group.items():
             if values:
                 self.by_group[key] = sorted(values)
-        self.hard_negative_manifest = _load_hard_negative_manifest(self.repo_root, self.fold)
+        if hard_negative_manifest_path is None:
+            self.hard_negative_manifest = _load_hard_negative_manifest(self.repo_root, self.fold)
+        else:
+            self.hard_negative_manifest = _load_hard_negative_manifest(self.repo_root, self.fold, hard_negative_manifest_path)
+        self.hard_negative_manifest_path = self.hard_negative_manifest.get("manifest_path")
         self.case_group_cursor = 0
         self.complete_center_selector_cursor = 0
         self.complete_centerB_case_cursor = 0
@@ -471,7 +485,7 @@ class CAREASEDeterministicSampler:
         return self.peek_descriptor_bundle_for_step(global_step).micro_descriptors[0]
 
     def peek_descriptor_bundle_for_step(self, global_step: int) -> CAREASEMicrobatchBundle:
-        clone = CAREASEDeterministicSampler(self.repo_root, self.fold, seed=self.seed)
+        clone = CAREASEDeterministicSampler(self.repo_root, self.fold, seed=self.seed, hard_negative_manifest_path=self._hard_negative_manifest_path_arg)
         clone.load_state_dict(self.state_dict())
         return clone.descriptor_bundle_for_step(global_step)
 
@@ -537,7 +551,7 @@ class CAREASEDeterministicSampler:
             self.rng.setstate(_decode_rng_state(rng_state))
 
     def dry_run_counts(self, steps: int, *, start_step: int = 0) -> dict[str, int]:
-        clone = CAREASEDeterministicSampler(self.repo_root, self.fold, seed=self.seed)
+        clone = CAREASEDeterministicSampler(self.repo_root, self.fold, seed=self.seed, hard_negative_manifest_path=self._hard_negative_manifest_path_arg)
         clone.load_state_dict(self.state_dict())
         counts: dict[str, int] = {}
         for step in range(int(start_step), int(start_step) + int(steps)):
@@ -546,7 +560,7 @@ class CAREASEDeterministicSampler:
         return counts
 
     def composition_receipt(self, steps: int, *, start_step: int = 0) -> dict[str, Any]:
-        clone = CAREASEDeterministicSampler(self.repo_root, self.fold, seed=self.seed)
+        clone = CAREASEDeterministicSampler(self.repo_root, self.fold, seed=self.seed, hard_negative_manifest_path=self._hard_negative_manifest_path_arg)
         clone.load_state_dict(self.state_dict())
         counts = {
             "complete": 0,

@@ -12,11 +12,13 @@ from src.care_myocardium.training.care_ase_trainer import (
 def _formal_kwargs():
     return {
         "training_source_commit_sha": "a" * 40,
+        "formal_execution_checkout_commit_sha": "b" * 40,
         "review_packet_commit_sha": "b" * 40,
         "origin_main_sha": "b" * 40,
         "origin_main_at_review_request_sha": "b" * 40,
         "effective_contract_sha256": "contract",
         "external_review_permit_sha256": "permit",
+        "formal_runtime_input_bundle_sha256": "bundle",
         "critical_source_manifest_sha256": "critical",
         "split_file_sha256": "split-file",
         "split_case_lists_sha256": "split-cases",

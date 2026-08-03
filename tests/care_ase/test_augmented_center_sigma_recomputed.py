@@ -1,6 +1,6 @@
 import numpy as np
 
-from scripts.training.care_ase.run_care_ase_r2_chunk import _recompute_augmented_physical_targets
+from src.care_myocardium.training.care_ase_runtime import _recompute_augmented_physical_targets
 
 
 def test_augmented_scar_center_heatmap_is_recomputed_from_final_segmentation():

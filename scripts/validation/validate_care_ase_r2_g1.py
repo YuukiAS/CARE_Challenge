@@ -23,17 +23,21 @@ from src.care_myocardium.training.care_ase_sampler import CAREASEDeterministicSa
 from src.care_myocardium.training.care_ase_trainer import CAREASEStageScheduler, REQUIRED_CHECKPOINT_FIELDS, REQUIRED_LOSS_WEIGHTS, care_ase_loss
 
 
-RESULT_ROOT = REPO_ROOT / "results/20260803_care_ase_r2_external_review_repair_v7"
+RESULT_ROOT = REPO_ROOT / "results/20260803_care_ase_r2_final_pretraining_closure_v8"
 WRAPPER = REPO_ROOT / "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh"
 ENTRYPOINT = REPO_ROOT / "scripts/training/care_ase/run_care_ase_r2_chunk.py"
+RUNTIME = REPO_ROOT / "src/care_myocardium/training/care_ase_runtime.py"
 MODEL = REPO_ROOT / "src/care_myocardium/models/care_ase.py"
 TRAINER = REPO_ROOT / "src/care_myocardium/training/care_ase_trainer.py"
 SAMPLER = REPO_ROOT / "src/care_myocardium/training/care_ase_sampler.py"
 AUGMENTATION = REPO_ROOT / "src/care_myocardium/training/care_ase_augmentation.py"
 DECODE = REPO_ROOT / "src/care_myocardium/inference/care_ase_r2_decode.py"
+FULL_VOLUME = REPO_ROOT / "src/care_myocardium/inference/care_ase_r2_full_volume.py"
 EVALUATOR = REPO_ROOT / "scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py"
 MANIFEST_BUILDER = REPO_ROOT / "scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py"
 VALIDATOR = REPO_ROOT / "scripts/validation/validate_care_ase_r2_g1.py"
+EFFECTIVE_CONTRACT = REPO_ROOT / "prompts/blueprints/CARE_ASE_R2_effective_contract_v8_20260803.yaml"
+V8_ADDENDUM = REPO_ROOT / "prompts/tasks/20260803_care_ase_r2_final_pretraining_closure_v8_addendum.md"
 
 STRUCTURAL_KNOWN_BAD_FIXTURES = (
     "stage_2000_4000_8000",
@@ -121,16 +125,16 @@ def coverage_rows() -> list[dict[str, Any]]:
         ("wall_depth_rho physical formula target", TRAINER, "_geometry_targets_numpy", "d_endo / (d_endo + d_epi + 1.0e-6)", "physical_target_contract_receipt", "rho_from_lv_rv_probability", "PASS"),
         ("independent trainable geometry heads", MODEL, "AnatomyGeometryHeads", "self.signed_endo_distance = nn.Conv3d", "geometry_head_contract_receipt", "proxy_tanh_lv_minus_wall", "PASS"),
         ("slice extent per-z wall weighted average plus max shared by train/inference", MODEL, "compute_slice_extent_statistics", "valid_spatial_mask", "test_extent_train_inference_identity", "whole_volume_extent_pooling", "PASS"),
-        ("full-volume multiwindow extent computes global slice bias once after base-logit aggregation", EVALUATOR, "sliding_window_logits", "disable_extent_wall=True", "full_volume_extent_aggregation_oracle", "extent_patch_local_bias_averaged_across_multiwindow_inference", "PASS"),
+        ("canonical full-volume extent computes global slice bias once after base-logit aggregation", FULL_VOLUME, "predict_care_ase_r2_full_volume_logits", "disable_extent_wall=True", "canonical_full_volume_inference_receipt", "extent_patch_local_bias_averaged_across_multiwindow_inference", "PASS"),
         ("independent named evidence projections with no shared multi-source projection", MODEL, "NamedEvidenceProjectionSet", "named_evidence_projection_registry", "named_evidence_projection_registry", "concatenate_all_evidence_one_projection", "PASS"),
         ("no uncontracted auxiliary half tower; pathology branches own half features", MODEL, "CAREASEPathologyBranch", "forward_half", "no_uncontracted_auxiliary_decoder_oracle", "retain_AuxiliaryHalfFeatureTower", "PASS"),
-        ("segmentation padding is ignore not background", ENTRYPOINT, "crop_or_pad", "pad_value=-1", "padding_ignore_semantics_oracle", "segmentation_padding_changed_to_0", "PASS"),
+        ("segmentation padding is ignore not background", RUNTIME, "crop_or_pad", "pad_value=-1", "padding_ignore_semantics_oracle", "segmentation_padding_changed_to_0", "PASS"),
         ("stock nnU-Net augmentation runtime binding and initial patch semantics", AUGMENTATION, "build_stock_augmentation_contract", "configure_rotation_dummyDA_mirroring_and_inital_patch_size", "test_stock_augmentation_binding", "augmentation_uses_final_patch_instead_of_initial_patch", "PASS"),
         ("no-T2 class4 excluded from competition graph", TRAINER, "_five_class_logits_and_target", "torch.full_like(mapped, -1)", "no_t2_gradient_receipt", "no_t2_class4_background", "PASS"),
         ("Stage A/B 10/5/5 alternating cycle", SAMPLER, "CAREASEDeterministicSampler.stage_a_b_cycle", '"lge_only",', "sampler_400_step_receipt", "stage_A_B_complete_only", "PASS"),
         ("Stage C complete-only CenterB/CenterC", SAMPLER, "CAREASEDeterministicSampler.stage_c_cycle", '("complete_centerB", "complete_centerC")', "sampler_static_contract", "stage_C_not_complete_only", "PASS"),
         ("CenterB/CenterC pathology and hard-negative cycles", SAMPLER, "CAREASEDeterministicSampler", "hard_negative_manifest", "sampler_static_contract", "break_center_or_focus_cycle", "PASS"),
-        ("hard-negative manifest consumed by formal sampler from external review repair v7 task path", SAMPLER, "_load_hard_negative_manifest", "20260803_care_ase_r2_external_review_repair_v7/hard_negative_manifest_fold{fold}.json", "sampler_static_contract", "hard_negative_manifest_not_read", "PASS"),
+        ("hard-negative manifest consumed by formal sampler from final pretraining closure v8 task path", SAMPLER, "_load_hard_negative_manifest", "20260803_care_ase_r2_final_pretraining_closure_v8/hard_negative_manifest_fold{fold}.json", "sampler_static_contract", "hard_negative_manifest_not_read", "PASS"),
         ("hard-negative manifest provides canonical stock OOF component coordinates", MANIFEST_BUILDER, "build_case", "canonical_patient_held_out_stock_nnunet_oof_only", "canonical_stock_oof_provenance_receipt", "count_only_hard_negative_manifest", "PASS"),
         ("hard-negative OOF same-shape arrays require explicit preprocessed-grid geometry proof", MANIFEST_BUILDER, "bind_prediction_to_preprocessed_grid", "same_shape_without_grid_proof_rejected", "canonical_stock_oof_provenance_receipt", "same_shape_wrong_affine_or_orientation_oof", "PASS"),
         ("actual-train-only scar/edema area reference", SAMPLER, "compute_actual_train_area_references", "row.role == \"actual-train\"", "area_reference_receipt", "hardcoded_area_reference", "PASS"),
@@ -138,14 +142,15 @@ def coverage_rows() -> list[dict[str, Any]]:
         ("AdamW created once with object-id parameter registry and moments preserved", TRAINER, "build_optimizer", "parameter_group_coverage", "parameter_group_coverage", "optimizer_recreated_at_stage_transition", "PASS"),
         ("base LR/min LR/warmup/power poly scheduler", TRAINER, "CAREASEStageScheduler", "stage_warmup_steps", "scheduler_numeric_receipt", "scheduler_none_or_static_lr", "PASS"),
         ("checkpoint schema v4 full fields/fsync/atomic rename/SHA/reload", TRAINER, "save_care_ase_checkpoint", "CHECKPOINT_SCHEMA_VERSION = 4", "test_checkpoint_schema_v4", "missing_checkpoint_field", "PASS"),
-        ("single formal optimizer step API used by formal training and G2", TRAINER, "run_formal_optimizer_step", "def run_formal_optimizer_step", "formal_step_api_oracle", "duplicate_optimizer_step_logic", "PASS"),
-        ("exact resume state and next optimizer-step micro-bundle hash", ENTRYPOINT, "_write_full_reload_receipt", "next_optimizer_step_micro_descriptor_hash_match", "exact_resume_receipt", "resume_not_sampler_or_next_batch", "PASS"),
+        ("single public formal runtime API used by formal training and probes", RUNTIME, "CAREASEFormalRuntime.run_formal_training_step", "def run_formal_training_step", "formal_step_api_oracle", "duplicate_optimizer_step_logic", "PASS"),
+        ("thin wrapper delegates to CAREASEFormalRuntime authority", ENTRYPOINT, "main", "from src.care_myocardium.training.care_ase_runtime import main", "formal_call_chain_receipt", "wrapper_points_old_entry", "PASS"),
+        ("exact resume state and next optimizer-step micro-bundle hash", RUNTIME, "_write_full_reload_receipt", "next_optimizer_step_micro_descriptor_hash_match", "exact_resume_receipt", "resume_not_sampler_or_next_batch", "PASS"),
         ("physical EDT/context/center target builders use full-case cache before patch slicing", TRAINER, "build_full_case_target_cache", "Formal CARE-ASE training must slice these cached full-case target fields", "physical_target_contract_receipt", "proxy_loss_targets", "PASS"),
         ("edema boundary prediction uses dedicated component head", TRAINER, "care_ase_loss", "components[\"edema_boundary\"]", "boundary_head_contract_receipt", "edema_class_logit_as_boundary", "PASS"),
         ("context CE valid voxel mean only", TRAINER, "context_cross_entropy_valid_mean", "deterministic_cross_entropy", "context_loss_normalization_receipt", "unormalized_context_ce", "PASS"),
-        ("formal W3 requires external review permit", ENTRYPOINT, "verify_external_review_permit", "formal CARE-ASE R2 W3 chunk requires --external-review-permit", "external_review_permit_enforcement_oracle", "formal_launch_without_external_permit", "PASS"),
-        ("formal W3 stale chunk lock recovery is fail-closed for live owners", ENTRYPOINT, "acquire_chunk_lock", "stale_lock_recovered", "stale_lock_recovery_oracle", "stale_lock_no_recovery", "PASS"),
-        ("fixed step14000 argmax and outer zero-access", ENTRYPOINT, "main", "args.end_step > 14000", "outer_access_audit_receipt", "outer_access_before_freeze", "PASS"),
+        ("formal W3 requires external review permit", RUNTIME, "verify_external_review_permit", "formal CARE-ASE R2 W3 chunk requires --external-review-permit", "external_review_permit_enforcement_oracle", "formal_launch_without_external_permit", "PASS"),
+        ("formal W3 stale chunk lock recovery is fail-closed for live owners", RUNTIME, "acquire_chunk_lock", "stale_lock_recovered", "stale_lock_recovery_oracle", "stale_lock_no_recovery", "PASS"),
+        ("fixed step14000 argmax and outer zero-access", RUNTIME, "validate_logical_chunk_invocation", "end_step) > 14000", "outer_access_audit_receipt", "outer_access_before_freeze", "PASS"),
         ("fixed argmax decode excludes class4 for no-T2", DECODE, "decode_care_ase_r2_logits", "NO_T2_CLASSES = (0, 1, 2, 3, 5)", "decode_static_contract", "no_t2_class4_background", "PASS"),
         ("pure-edema T2-present only", TRAINER, "care_ase_loss", "edema_valid = valid_binary * t2_mask", "metric_truth_receipt", "edema_metric_mixes_no_t2", "PASS"),
         ("nnU-Net MoSAIC CARE-ASE same-case join deferred to W5", REPO_ROOT / "prompts/blueprints/CARE_ASE_R2_full_fidelity_execution_contract_20260803.yaml", "effective_contract", "same_case_set_and_case_id_join_required: true", "W5_metric_truth_validator", "three_way_join_mismatch", "PASS"),
@@ -166,7 +171,7 @@ def coverage_rows() -> list[dict[str, Any]]:
 
 def semantic_loss_coverage() -> dict[str, Any]:
     trainer_text = TRAINER.read_text(encoding="utf-8")
-    entrypoint_text = ENTRYPOINT.read_text(encoding="utf-8")
+    runtime_text = RUNTIME.read_text(encoding="utf-8")
     terms = {}
     for name, weight in REQUIRED_LOSS_WEIGHTS.items():
         terms[name] = {
@@ -205,10 +210,10 @@ def semantic_loss_coverage() -> dict[str, Any]:
             "context_distance_adjacency": "_context_target_numpy" in trainer_text and "dist_blood" in trainer_text and "dist_wall" in trainer_text,
             "signed_edema_boundary": "edema_boundary_target" in trainer_text and "_edema_boundary_numpy" in trainer_text,
             "relation_stopgrad": ".detach()" in trainer_text and '"relation"' in trainer_text,
-            "stock_spatial_transform_syncs_target_maps": "apply_stock_training_transform_with_targets" in entrypoint_text
-            and "regression_target_patch=regression_patch" in entrypoint_text
-            and "segmentation_extra_patch=segmentation_patch" in entrypoint_text
-            and "preprocessed_full_case_grid_sliced_to_initial_patch_then_stock_spatial_transform_synced" in entrypoint_text,
+            "stock_spatial_transform_syncs_target_maps": "apply_stock_training_transform_with_targets" in runtime_text
+            and "regression_target_patch=regression_patch" in runtime_text
+            and "segmentation_extra_patch=segmentation_patch" in runtime_text
+            and "preprocessed_full_case_grid_sliced_to_initial_patch_then_stock_spatial_transform_synced" in runtime_text,
         },
         "status": "PASS"
         if REQUIRED_LOSS_WEIGHTS == expected
@@ -224,9 +229,9 @@ def semantic_loss_coverage() -> dict[str, Any]:
                 "_context_target_numpy" in trainer_text and "dist_blood" in trainer_text and "dist_wall" in trainer_text,
                 "edema_boundary_target" in trainer_text and "_edema_boundary_numpy" in trainer_text,
                 ".detach()" in trainer_text and '"relation"' in trainer_text,
-                "apply_stock_training_transform_with_targets" in entrypoint_text
-                and "regression_target_patch=regression_patch" in entrypoint_text
-                and "segmentation_extra_patch=segmentation_patch" in entrypoint_text,
+                "apply_stock_training_transform_with_targets" in runtime_text
+                and "regression_target_patch=regression_patch" in runtime_text
+                and "segmentation_extra_patch=segmentation_patch" in runtime_text,
             ]
         )
         else "FAIL",
@@ -249,7 +254,7 @@ def sampler_static_contract() -> dict[str, Any]:
         "scar_within_focus_cycle": list(CAREASEDeterministicSampler.scar_within_focus_cycle),
         "edema_within_focus_cycle": list(CAREASEDeterministicSampler.edema_within_focus_cycle),
         "hard_negative_manifest_symbol": "HARD_NEGATIVE_MANIFEST_TEMPLATE",
-        "hard_negative_manifest_template": "results/20260803_care_ase_r2_external_review_repair_v7/hard_negative_manifest_fold{fold}.json",
+        "hard_negative_manifest_template": "results/20260803_care_ase_r2_final_pretraining_closure_v8/hard_negative_manifest_fold{fold}.json",
         "hard_negative_manifest_consumption": "_hard_negative_category",
         "deterministic_fallbacks": "_fallback_sequence",
         "micro_patch_rng_controls_coordinate": "self.micro_patch_rng.randrange" in sampler_text and "selected_target_coordinate" in sampler_text,
@@ -267,7 +272,7 @@ def sampler_static_contract() -> dict[str, Any]:
         and stage_c == ("complete_centerB", "complete_centerC")
         and len(CAREASEDeterministicSampler.scar_within_focus_cycle) == 20
         and len(CAREASEDeterministicSampler.edema_within_focus_cycle) == 20
-        and "20260803_care_ase_r2_external_review_repair_v7/hard_negative_manifest_fold{fold}.json" in sampler_text
+        and "20260803_care_ase_r2_final_pretraining_closure_v8/hard_negative_manifest_fold{fold}.json" in sampler_text
         and "self.micro_patch_rng.randrange" in sampler_text
         and "provides no scar_oof_fn coordinates" in sampler_text
         and "provides no edema_safe_fp coordinates" in sampler_text
@@ -326,14 +331,17 @@ def checkpoint_schema_contract() -> dict[str, Any]:
 
 
 def evaluator_extent_contract() -> dict[str, Any]:
-    text = EVALUATOR.read_text(encoding="utf-8")
+    evaluator_text = EVALUATOR.read_text(encoding="utf-8")
+    text = FULL_VOLUME.read_text(encoding="utf-8")
     checks = {
         "patch_forward_disables_extent": "disable_extent_wall=True" in text,
-        "global_extent_bias_function": "def _global_extent_bias" in text,
+        "global_extent_bias_function": "def global_extent_bias" in text,
         "global_statistics_after_aggregation": "compute_slice_extent_statistics" in text and "averaged_components" in text,
-        "adds_scar_bias_once": 'averaged_base[:, 5:6]' in text and "_global_extent_bias" in text,
+        "adds_scar_bias_once": 'averaged_base[:, 5:6]' in text and "global_extent_bias" in text,
         "adds_edema_bias_once_t2_present": 'averaged_base[:, 4:5]' in text and 'availability[:, 1] > 0.5' in text,
         "no_patch_local_final_logit_average": 'model(patch_padded, availability, global_step=14000)["final_logits"]' not in text,
+        "outer_imports_canonical": "care_ase_r2_full_volume import predict_care_ase_r2_full_volume_labels" in evaluator_text,
+        "outer_has_no_duplicate_sliding_window": "def sliding_window_logits" not in evaluator_text and "def starts_for" not in evaluator_text,
     }
     return {
         "status": "PASS" if all(checks.values()) else "FAIL",
@@ -650,7 +658,22 @@ def main() -> int:
     known_bad = payloads.get("known_bad", {"status": "SKIPPED_DEV_PROBE", "required_known_bad_count": 0, "known_bad_count_passed": 0})
     source_manifest = {
         str(path.relative_to(REPO_ROOT)): sha256_file(path)
-        for path in (WRAPPER, ENTRYPOINT, MODEL, TRAINER, SAMPLER, AUGMENTATION, DECODE, EVALUATOR, MANIFEST_BUILDER, VALIDATOR)
+        for path in (
+            EFFECTIVE_CONTRACT,
+            V8_ADDENDUM,
+            WRAPPER,
+            ENTRYPOINT,
+            RUNTIME,
+            MODEL,
+            TRAINER,
+            SAMPLER,
+            AUGMENTATION,
+            DECODE,
+            FULL_VOLUME,
+            EVALUATOR,
+            MANIFEST_BUILDER,
+            VALIDATOR,
+        )
     }
     failures = gate_failures(payloads)
     overall_status = "NEEDS_REPAIR_CONTINUE_CURRENT_GOAL" if failures else "PASS"

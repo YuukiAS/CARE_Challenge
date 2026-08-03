@@ -88,16 +88,31 @@ def read_prediction_from_anchor(case_id: str, entries: dict[str, dict[str, Any]]
     if case_id not in entries:
         raise FileNotFoundError(f"case {case_id} is missing from canonical stock nnU-Net OOF anchor manifest")
     entry = entries[case_id]
-    probability_path = REPO_ROOT / str(entry["probability_path"])
-    if not probability_path.is_file():
-        raise FileNotFoundError(f"case {case_id} is missing exact preprocessed-grid probability artifact: {probability_path}")
-    probability = np.load(probability_path)
-    key = "probabilities" if "probabilities" in probability else ("softmax" if "softmax" in probability else list(probability.keys())[0])
-    probs = np.asarray(probability[key])
-    if probs.ndim != 4:
-        raise RuntimeError(f"case {case_id} probability artifact is not CZYX: shape={probs.shape} key={key}")
+    is_direct = entry.get("producer_stage") == "direct_preprocessed_grid_inference"
+    if is_direct:
+        argmax_path = REPO_ROOT / str(entry["prediction_path"])
+        if not argmax_path.is_file():
+            raise FileNotFoundError(f"case {case_id} is missing direct preprocessed-grid argmax artifact: {argmax_path}")
+        pred = np.asarray(np.load(argmax_path)).astype(np.uint8, copy=False)
+        probability_path = REPO_ROOT / str(entry["probability_path"])
+        key = "probabilities"
+    else:
+        probability_path = REPO_ROOT / str(entry["probability_path"])
+        if not probability_path.is_file():
+            raise FileNotFoundError(f"case {case_id} is missing exact preprocessed-grid probability artifact: {probability_path}")
+        probability = np.load(probability_path)
+        key = "probabilities" if "probabilities" in probability else ("softmax" if "softmax" in probability else list(probability.keys())[0])
+        probs = np.asarray(probability[key])
+        if probs.ndim != 4:
+            raise RuntimeError(f"case {case_id} probability artifact is not CZYX: shape={probs.shape} key={key}")
+        pred = np.asarray(np.argmax(probs, axis=0), dtype=np.uint8)
     nii_path = REPO_ROOT / str(entry["prediction_path"])
-    image = nib.load(str(nii_path))
+    affine = None
+    zooms = None
+    if nii_path.suffix == ".gz" and nii_path.name.endswith(".nii.gz"):
+        image = nib.load(str(nii_path))
+        affine = np.asarray(image.affine).round(8).tolist()
+        zooms = [float(v) for v in image.header.get_zooms()[:3]]
     transform_binding = entry.get("transform_or_exact_array_binding") if isinstance(entry.get("transform_or_exact_array_binding"), dict) else {}
     validation_props: dict[str, Any] = {}
     validation_props_path = probability_path.with_suffix(".pkl")
@@ -106,22 +121,23 @@ def read_prediction_from_anchor(case_id: str, entries: dict[str, dict[str, Any]]
 
         with validation_props_path.open("rb") as f:
             validation_props = pickle.load(f)
-    return probs.astype(np.float32, copy=False), str(probability_path), str(entry.get("probability_sha256") or sha256_file(probability_path)), {
+    meta = {
         "case_id": case_id,
-        "source_kind": "canonical_stock_nnunet_oof_probability_npz",
+        "source_kind": "canonical_stock_nnunet_oof_probability_npz" if not is_direct else "direct_preprocessed_grid_argmax_npy",
         "source_stock_fold": int(entry["source_fold"]),
-        "affine": np.asarray(image.affine).round(8).tolist(),
-        "header_zooms": [float(v) for v in image.header.get_zooms()[:3]],
+        "affine": affine,
+        "header_zooms": zooms,
         "exported_prediction_path": str(nii_path),
         "exported_prediction_sha256": entry.get("prediction_sha256"),
         "anchor_probability_sha256": entry.get("probability_sha256"),
+        "probability_sha256": entry.get("probability_sha256"),
         "source_prediction_sha": str(entry.get("probability_sha256") or sha256_file(probability_path)),
         "preprocessed_grid_binding": True,
         "producer_binding_method": "direct_stock_inference_on_preprocessed_grid",
-        "source_probability_shape": list(probs.shape),
-        "source_prediction_shape": list(probs.shape[1:]),
+        "source_probability_shape": entry.get("probability_shape_CZYX"),
+        "source_prediction_shape": list(pred.shape),
         "preprocessed_geometry_sha256": entry.get("preprocessed_geometry_sha256") or transform_binding.get("preprocessed_geometry_sha256"),
-        "preprocessed_shape": list(probs.shape[1:]),
+        "preprocessed_shape": list(pred.shape),
         "preprocessed_geometry": entry.get("preprocessed_geometry") or transform_binding.get("preprocessed_geometry"),
         "validation_properties_path": str(validation_props_path),
         "validation_properties_sha256": sha256_file(validation_props_path) if validation_props_path.is_file() else None,
@@ -130,6 +146,25 @@ def read_prediction_from_anchor(case_id: str, entries: dict[str, dict[str, Any]]
         "probability_key": key,
         "anchor_manifest_keys": sorted(str(key) for key in entry.keys()),
     }
+    for key_name in (
+        "source_checkpoint_path",
+        "source_checkpoint_sha256",
+        "source_preprocessed_image_path",
+        "source_preprocessed_image_sha256",
+        "plans_path",
+        "plans_sha256",
+        "producer_source_commit_sha",
+        "producer_command",
+        "producer_stage",
+        "probability_shape_CZYX",
+        "argmax_shape_ZYX",
+        "argmax_sha256",
+        "proof_case_not_in_source_fold_train",
+    ):
+        if key_name in entry:
+            meta[key_name] = entry[key_name]
+    meta["preprocessed_shape"] = list(pred.shape)
+    return pred, str(nii_path), str(entry.get("prediction_sha256") or sha256_file(nii_path)), meta
 
 
 def bind_prediction_to_preprocessed_grid(gt: np.ndarray, pred: np.ndarray, *, source_meta: dict[str, Any], preprocessed_geometry: dict[str, Any]) -> tuple[np.ndarray, dict[str, Any]]:
@@ -147,51 +182,39 @@ def bind_prediction_to_preprocessed_grid(gt: np.ndarray, pred: np.ndarray, *, so
         and pred.shape == gt.shape
         and explicit_shape_matches
     )
-    source_shape_matches_validation_properties = None
-    expected_source_shape = None
-    if proof_ok or probability_npz_exact:
+    direct_stage = source_meta.get("producer_stage") == "direct_preprocessed_grid_inference" or source_meta.get("producer_binding_method") == "direct_stock_inference_on_preprocessed_grid"
+    required_direct_fields = {
+        "case_id",
+        "source_stock_fold",
+        "source_checkpoint_path",
+        "source_checkpoint_sha256",
+        "source_preprocessed_image_path",
+        "source_preprocessed_image_sha256",
+        "plans_path",
+        "plans_sha256",
+        "producer_source_commit_sha",
+        "producer_command",
+        "producer_stage",
+        "probability_shape_CZYX",
+        "probability_sha256",
+        "argmax_shape_ZYX",
+        "argmax_sha256",
+        "proof_case_not_in_source_fold_train",
+    }
+    missing_direct_fields = sorted(required_direct_fields - set(source_meta))
+    if (proof_ok or probability_npz_exact) and direct_stage and not missing_direct_fields:
         bound_pred = pred
         binding_mode = "direct_stock_inference_on_preprocessed_grid"
-    elif source_meta.get("source_kind") == "canonical_stock_nnunet_oof_probability_npz" and pred.ndim == 4:
-        source_spacing = source_meta.get("validation_properties_spacing_zyx")
-        if not source_spacing or len(source_spacing) != 3:
-            raise RuntimeError(f"missing nnU-Net validation properties spacing for {source_meta.get('case_id')}")
-        target_spacing = preprocessed_geometry.get("spacing_zyx")
-        if not target_spacing or len(target_spacing) != 3:
-            raise RuntimeError(f"missing target preprocessed spacing for {source_meta.get('case_id')}")
-        expected_source_shape = source_meta.get("validation_properties_shape_after_cropping_and_before_resampling")
-        source_shape_matches_validation_properties = (
-            bool(expected_source_shape)
-            and list(map(int, expected_source_shape)) == list(map(int, pred.shape[1:]))
-        )
-        probs_preprocessed = resample_data_or_seg_to_shape(
-            pred,
-            list(gt.shape),
-            current_spacing=tuple(float(v) for v in source_spacing),
-            new_spacing=tuple(float(v) for v in target_spacing),
-            is_seg=False,
-            order=1,
-            order_z=0,
-            force_separate_z=None,
-        )
-        if tuple(probs_preprocessed.shape[1:]) != tuple(gt.shape):
-            raise RuntimeError(
-                "nnU-Net probability resampling did not produce the formal preprocessed shape: "
-                f"observed={tuple(probs_preprocessed.shape)} target={tuple(gt.shape)}"
-            )
-        bound_pred = np.asarray(np.argmax(probs_preprocessed, axis=0), dtype=np.uint8)
-        binding_mode = "nnunet_plan_probability_resample_to_preprocessed_grid_with_manifest_geometry_proof"
     else:
         raise RuntimeError(
-            "stock OOF prediction is not bound to the preprocessed grid. "
-            "A legal source must provide preprocessed_grid_binding=true evidence or an explicit "
-            "nnU-Net probability-to-preprocessed-grid binding proof. "
+            "stock OOF prediction is not a direct preprocessed-grid artifact with its own producer receipt. "
+            "A legal source must provide complete producer fields and producer_stage=direct_preprocessed_grid_inference. "
             "CARE-ASE R2 final code blocker closure forbids min(shape) crops, transpose-only "
             "binding, shape-only xyz-to-zyx acceptance, same-shape wrong-affine/orientation "
             "acceptance, generic zoom, and final/best checkpoint guessing. "
             f"prediction_shape={tuple(pred.shape)} preprocessed_shape={tuple(gt.shape)} "
             f"preprocessed_geometry_sha256={geometry_sha} "
-            f"source_meta={source_meta} preprocessed_geometry={preprocessed_geometry}"
+            f"missing_direct_fields={missing_direct_fields} source_meta={source_meta} preprocessed_geometry={preprocessed_geometry}"
         )
     return bound_pred, {
             "binding": "direct_stock_inference_on_preprocessed_grid",
@@ -204,9 +227,7 @@ def bind_prediction_to_preprocessed_grid(gt: np.ndarray, pred: np.ndarray, *, so
             "declared_preprocessed_geometry_matches": explicit_geometry_matches,
             "probability_npz_exact_preprocessed_grid": probability_npz_exact,
             "direct_stock_inference_on_preprocessed_grid": binding_mode == "direct_stock_inference_on_preprocessed_grid",
-            "nnunet_plan_probability_resample": binding_mode.startswith("nnunet_plan_probability_resample"),
-            "source_shape_matches_validation_properties": source_shape_matches_validation_properties,
-            "validation_properties_shape_after_cropping_and_before_resampling": expected_source_shape,
+            "nnunet_plan_probability_resample": False,
             "transpose_only_forbidden": True,
             "shape_only_fallback_forbidden": True,
             "same_shape_without_grid_proof_rejected": True,
@@ -442,7 +463,9 @@ def main() -> int:
     payload = {
         "status": "PASS",
         "fold": int(args.fold),
-        "v7_manifest": True,
+        "task_key": "20260803_care_ase_r2_final_pretraining_closure_v8",
+        "v8_manifest": True,
+        "v7_manifest": False,
         "source": "canonical_patient_held_out_stock_nnunet_oof_only",
         "allowed_binding_method": "direct_stock_inference_on_preprocessed_grid",
         "anchor_manifest": str(args.anchor_manifest.resolve()),
@@ -458,7 +481,7 @@ def main() -> int:
         "cases": cases,
     }
     payload["payload_sha256"] = hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()
-    output = args.output or REPO_ROOT / f"results/20260803_care_ase_r2_external_review_repair_v7/hard_negative_manifest_fold{args.fold}.json"
+    output = args.output or REPO_ROOT / f"results/20260803_care_ase_r2_final_pretraining_closure_v8/hard_negative_manifest_fold{args.fold}.json"
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(payload, sort_keys=True, separators=(",", ":")) + "\n", encoding="utf-8")
     print(json.dumps({"status": "PASS", "output": str(output), "case_count": len(cases)}, indent=2))

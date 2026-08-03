@@ -12,9 +12,10 @@ def _patch_manifest_loader(monkeypatch):
         "_load_hard_negative_manifest",
         lambda _repo_root, _fold: {
             "source": "canonical_patient_held_out_stock_nnunet_oof_only",
-            "v7_manifest": True,
+            "task_key": "20260803_care_ase_r2_final_pretraining_closure_v8",
+            "v8_manifest": True,
             "forbidden_old_manifest_paths_rejected": True,
-            "manifest_path": "unit-test-v7-manifest.json",
+            "manifest_path": "unit-test-v8-manifest.json",
             "manifest_sha256": "unit-test",
             "cases": {},
         },

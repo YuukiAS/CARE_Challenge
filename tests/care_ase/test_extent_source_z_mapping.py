@@ -1,6 +1,6 @@
 import numpy as np
 
-from scripts.training.care_ase.run_care_ase_r2_chunk import _slice_profile_by_source_z, source_z_mapping
+from src.care_myocardium.training.care_ase_runtime import _slice_profile_by_source_z, source_z_mapping
 
 
 def test_extent_profile_uses_patch_source_z_not_generic_downsample():

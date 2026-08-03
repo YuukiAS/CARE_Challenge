@@ -16,5 +16,5 @@ def test_exported_nifti_oof_without_preprocessed_grid_proof_rejected():
     }
     geometry = {"shape_zyx": [4, 8, 8], "spacing_zyx": [2.0, 1.0, 1.0]}
 
-    with pytest.raises(RuntimeError, match="preprocessed_grid_binding=true"):
+    with pytest.raises(RuntimeError, match="direct preprocessed-grid artifact"):
         bind_prediction_to_preprocessed_grid(gt, pred, source_meta=source_meta, preprocessed_geometry=geometry)

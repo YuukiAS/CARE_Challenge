@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-import scripts.training.care_ase.run_care_ase_r2_chunk as chunk
+import src.care_myocardium.training.care_ase_runtime as chunk
 
 
 def _permit(tmp_path, **overrides):
@@ -11,10 +11,12 @@ def _permit(tmp_path, **overrides):
         "reviewed_candidate_commit_sha": "a" * 40,
         "implementation_source_sha": "a" * 40,
         "review_packet_commit_sha": "b" * 40,
+        "formal_execution_checkout_commit_sha": "b" * 40,
         "origin_main_at_review_request": "b" * 40,
         "effective_contract_sha256": "contract",
         "critical_source_manifest_sha256": "critical",
         "environment_determinism_manifest_sha256": "environment",
+        "formal_runtime_input_bundle_sha256": "bundle",
         "created_utc": "2026-08-03T00:00:00Z",
     }
     payload.update(overrides)
@@ -25,7 +27,7 @@ def _permit(tmp_path, **overrides):
 
 def _patch_git(monkeypatch):
     monkeypatch.setattr(chunk, "git_fetch_origin_main", lambda: None)
-    monkeypatch.setattr(chunk, "git_sha", lambda ref: "a" * 40 if ref == "HEAD" else "b" * 40)
+    monkeypatch.setattr(chunk, "git_sha", lambda ref: "b" * 40)
     monkeypatch.setattr(chunk, "worktree_dirty_paths", lambda: [])
     monkeypatch.setattr(chunk, "effective_contract_sha256", lambda: "contract")
     monkeypatch.setattr(chunk, "combined_source_hash", lambda: "critical")

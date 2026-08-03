@@ -2,7 +2,7 @@ from pathlib import Path
 
 
 def test_make_batch_transforms_target_cache_with_stock_spatial_call():
-    source = Path("scripts/training/care_ase/run_care_ase_r2_chunk.py").read_text(encoding="utf-8")
+    source = Path("src/care_myocardium/training/care_ase_runtime.py").read_text(encoding="utf-8")
     body = source[source.index("def make_batch") : source.index("def append_csv")]
 
     assert "apply_stock_training_transform_with_targets" in body

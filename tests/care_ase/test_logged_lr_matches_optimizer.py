@@ -1,6 +1,6 @@
 from src.care_myocardium.models.care_ase import build_care_ase_for_fold
 from src.care_myocardium.training.care_ase_trainer import CAREASEStageScheduler, build_optimizer
-from scripts.training.care_ase.run_care_ase_r2_chunk import optimizer_lr_by_group
+from src.care_myocardium.training.care_ase_runtime import optimizer_lr_by_group
 
 
 def test_logged_lr_reads_actual_optimizer_param_groups():

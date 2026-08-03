@@ -1,6 +1,6 @@
 import pytest
 
-from scripts.training.care_ase.run_care_ase_r2_chunk import validate_resume_payload
+from src.care_myocardium.training.care_ase_runtime import validate_resume_payload
 
 
 def _payload():

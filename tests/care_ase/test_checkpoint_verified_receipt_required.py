@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from scripts.training.care_ase.run_care_ase_r2_chunk import verify_checkpoint_verified_receipt
+from src.care_myocardium.training.care_ase_runtime import verify_checkpoint_verified_receipt
 
 
 def test_resume_requires_verified_checkpoint_receipt(tmp_path):

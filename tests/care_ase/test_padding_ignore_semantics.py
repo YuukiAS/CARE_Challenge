@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 
-from scripts.training.care_ase.run_care_ase_r2_chunk import crop_or_pad
+from src.care_myocardium.training.care_ase_runtime import crop_or_pad
 from src.care_myocardium.models.care_ase import build_care_ase_for_fold
 from src.care_myocardium.training.care_ase_trainer import build_care_ase_targets, care_ase_loss
 

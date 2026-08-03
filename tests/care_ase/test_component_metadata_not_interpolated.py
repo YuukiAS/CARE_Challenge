@@ -1,6 +1,6 @@
 import numpy as np
 
-from scripts.training.care_ase.run_care_ase_r2_chunk import _apply_component_metadata_lookup
+from src.care_myocardium.training.care_ase_runtime import _apply_component_metadata_lookup
 
 
 def test_component_volume_and_center_are_lookup_not_interpolated():
