@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "packet_path": ".local_runtime/20260803_care_test_docker_official_submission_rehearsal_and_staging/OFFICIAL_SUBMISSION_REHEARSAL_PACKET.tar.gz",
+  "size": 22160,
+  "sha256": "461a0c58e9836df91cc1d19db816f3f102b577e34a91a9898cceba08ba2bea8d",
+  "excludes": [
+    "Docker archives",
+    "NIfTI files",
+    "checkpoints",
+    "rclone config",
+    "secrets",
+    "challenge/validation predictions",
+    "large logs"
+  ]
+}

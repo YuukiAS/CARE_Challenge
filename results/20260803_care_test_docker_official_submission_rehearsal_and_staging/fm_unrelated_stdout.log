@@ -1,0 +1,10 @@
+Found 1 CineMyoPS cases
+Loading models...
+
+  Case1011...
+    Z=4.0mm shape=(3, 256, 256, 3)
+    Z=8.0mm shape=(3, 256, 256, 3)
+    Z=16.0mm shape=(3, 256, 256, 3)
+    -> Case1011_pred.nii.gz labels: [   0  200  500 2221]
+
+Done. 1 predictions saved to /output/cinemyops

@@ -1,5 +1,50 @@
 # CARE 当前开发状态
 
+## 2026-08-03 最新机器真值：最终 Docker archives 已完成官方输入格式黑盒彩排
+
+最终 MyoPS 与 CineMyoPS Docker archives 已从本地 clean archive 重新 load，并按 CARE 官方 `/input` 根目录结构完成黑盒彩排。当前工位只有 3 个 MyoPS sentinel 与 3 个 Cine sentinel 可用，因此本轮如实记录为 available-public-sentinel rehearsal，不声称 15/15 全量 public rehearsal。两个镜像均使用无额外 command、无交互、`--network none` 的官方接口运行；输出目录、命名、NIfTI 可读性、标签集合和 geometry 检查通过。合作者 MyoPS reference archive 已下载校验并隔离为 reference tag，接口对照通过，最终 MyoPS tag 已恢复。Google Drive 上传未执行，因为本机 rclone 尚无 Google Drive remote，需要人工 OAuth；英文邮件草稿已生成但未发送、未标记 ready-to-send。未上传 challenge、validation predictions 或网盘文件。
+
+```text
+state_id: care_test_docker_official_submission_rehearsal_and_staging_20260803
+active_development_branch: main
+active_worktree: /home/yuukias/code/CARE
+single_active_scientific_line: CARE_TEST_DOCKER_OFFICIAL_FORMAT_REHEARSED_MANUAL_DRIVE_AUTH
+result_root: results/20260803_care_test_docker_official_submission_rehearsal_and_staging
+local_final_dist: /home/yuukias/code/CARE/dist/20260803_care_test_docker_final
+server_rehearsal_packet: /users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_official_submission_rehearsal_and_staging/OFFICIAL_SUBMISSION_REHEARSAL_PACKET.tar.gz
+controller_verification_decision: VERIFIED_COMPLETE_WITH_MANUAL_DRIVE_AUTH_REQUIRED
+clean_archive_load: PASS
+official_input_root_rehearsal: PASS
+available_myops_cases: Case1001,Case1004,Case1012
+available_cinemyops_cases: Case1003,Case1006,Case1011
+myops_official_runtime_seconds: 373.44361090660095
+cinemyops_official_runtime_seconds: 253.10728001594543
+collaborator_myops_reference_interface: PASS
+collaborator_reference_image_id: sha256:e3f9b5759bfa870363a8144577031d39f32129a63fa2b0f8c2b98552378cfebc
+final_myops_tag_restored: true
+google_drive_upload_ready: false
+manual_rclone_oauth_required: true
+email_draft_ready: true
+email_ready_to_send: false
+organizer_email_sent: false
+challenge_upload_performed: false
+validation_upload_performed: false
+```
+
+关键证据：
+
+```text
+results/20260803_care_test_docker_official_submission_rehearsal_and_staging/official_submission_contract.json
+results/20260803_care_test_docker_official_submission_rehearsal_and_staging/clean_archive_load_receipt.json
+results/20260803_care_test_docker_official_submission_rehearsal_and_staging/official_command_rehearsal_summary.json
+results/20260803_care_test_docker_official_submission_rehearsal_and_staging/official_command_rehearsal_validation.json
+results/20260803_care_test_docker_official_submission_rehearsal_and_staging/collaborator_reference_interface_summary.json
+results/20260803_care_test_docker_official_submission_rehearsal_and_staging/google_drive_upload_receipt.json
+results/20260803_care_test_docker_official_submission_rehearsal_and_staging/submission_email_draft.md
+results/20260803_care_test_docker_official_submission_rehearsal_and_staging/submission_readiness.json
+results/20260803_care_test_docker_official_submission_rehearsal_and_staging/remote_rehearsal_packet_receipt.json
+```
+
 ## 2026-08-03 最新机器真值：CARE-ASE R2 v5 等待外部训练前审阅
 
 CARE-ASE R2 v5 的实现忠实性返修、G1/G2 证据包和持续 Reviewer RV5-D6/RV5-D7 内部审查已经完成；本状态只表示可以交给外部 GPT 做训练前实现审阅，不表示正式训练获准开始。fold1/fold4 的 14000-step 正式训练、outer access、validation/Docker/hosted upload 仍未授权。

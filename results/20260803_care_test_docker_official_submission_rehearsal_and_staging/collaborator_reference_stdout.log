@@ -1,0 +1,13 @@
+Found 3 MyoPS cases
+Loading models...
+
+  Case1001 (modalities: ['LGE', 'C0', 'T2'])...
+    -> Case1001_pred.nii.gz labels: [   0  200  500  600 1220 2221]
+
+  Case1004 (modalities: ['LGE', 'C0', 'T2'])...
+    -> Case1004_pred.nii.gz labels: [   0  200  500  600 1220 2221]
+
+  Case1012 (modalities: ['LGE', 'C0', 'T2'])...
+    -> Case1012_pred.nii.gz labels: [   0  200  500  600 1220 2221]
+
+Done. 3 predictions saved to /output/myops

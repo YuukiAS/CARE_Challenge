@@ -1,0 +1,19 @@
+{
+  "checks": {
+    "empty_cine_nonzero_or_no_fake_outputs": true,
+    "empty_myops_nonzero_exit": true,
+    "input_readonly_success_already_checked": true,
+    "missing_t2_nonzero_exit": true,
+    "output_subdir_absent_created": true,
+    "unrelated_file_preserved": true
+  },
+  "exit_codes": {
+    "empty_cine": 1,
+    "empty_myops": 1,
+    "missing_t2": 1,
+    "output_subdir_absent": 0,
+    "unrelated_file": 0
+  },
+  "notes": "Known-bad interface rehearsal only; final images were not modified.",
+  "status": "PASS"
+}

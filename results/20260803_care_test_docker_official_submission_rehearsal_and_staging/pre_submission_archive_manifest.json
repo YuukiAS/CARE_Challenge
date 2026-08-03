@@ -1,0 +1,29 @@
+{
+  "archives": [
+    {
+      "name": "MyoPS-OrganAgent.tar.gz",
+      "path": "/home/yuukias/code/CARE/dist/20260803_care_test_docker_final/MyoPS-OrganAgent.tar.gz",
+      "sha256": "638c1d54d1c75f3514f325695025c03bd8f43625c9f2877d72841db6ee2ac73b",
+      "size_bytes": 4741640359
+    },
+    {
+      "name": "CineMyoPS-OrganAgent.tar.gz",
+      "path": "/home/yuukias/code/CARE/dist/20260803_care_test_docker_final/CineMyoPS-OrganAgent.tar.gz",
+      "sha256": "c02db56bd52d14d3b5bbda9d204a20b7e4c061fd5e6012ffa1cebc67fb92c136",
+      "size_bytes": 672040570
+    },
+    {
+      "name": "SHA256SUMS",
+      "path": "/home/yuukias/code/CARE/dist/20260803_care_test_docker_final/SHA256SUMS",
+      "sha256": "aa61745c67ce7514f40f5533537f13b98440c9b58e41e632d76e2fb3a8e928f9",
+      "size_bytes": 184
+    }
+  ],
+  "cine_sha_fixed": true,
+  "contains_secret_input_gt_host_dependency_evidence": "checked by archive source provenance and clean black-box run; no challenge/validation predictions or GT included in archives",
+  "created_at_utc": "2026-08-03T05:29:54.240416+00:00",
+  "estimated_download_time_note": "Depends on network; local archive sizes recorded for recipient verification.",
+  "myops_local_remote_sha_match": true,
+  "server_final_dist": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_final_dist",
+  "status": "PASS"
+}

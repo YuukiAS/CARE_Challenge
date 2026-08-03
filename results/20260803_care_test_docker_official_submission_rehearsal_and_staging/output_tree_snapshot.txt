@@ -1,0 +1,9 @@
+d  4096
+d cinemyops 4096
+d myops 4096
+f cinemyops/Case1003_pred.nii.gz 10163
+f cinemyops/Case1006_pred.nii.gz 38311
+f cinemyops/Case1011_pred.nii.gz 3535
+f myops/Case1001_pred.nii.gz 3094
+f myops/Case1004_pred.nii.gz 3489
+f myops/Case1012_pred.nii.gz 1343

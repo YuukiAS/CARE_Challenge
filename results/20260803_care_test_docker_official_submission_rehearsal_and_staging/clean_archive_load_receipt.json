@@ -1,0 +1,56 @@
+{
+  "archives": [
+    {
+      "name": "MyoPS-OrganAgent.tar.gz",
+      "path": "dist/20260803_care_test_docker_final/MyoPS-OrganAgent.tar.gz",
+      "sha256": "638c1d54d1c75f3514f325695025c03bd8f43625c9f2877d72841db6ee2ac73b",
+      "size_bytes": 4741640359
+    },
+    {
+      "name": "CineMyoPS-OrganAgent.tar.gz",
+      "path": "dist/20260803_care_test_docker_final/CineMyoPS-OrganAgent.tar.gz",
+      "sha256": "c02db56bd52d14d3b5bbda9d204a20b7e4c061fd5e6012ffa1cebc67fb92c136",
+      "size_bytes": 672040570
+    }
+  ],
+  "clean_load_from_archives": true,
+  "created_at_utc": "2026-08-03T05:10:09.231085+00:00",
+  "extra_command_required": false,
+  "host_bind_dependency_declared": false,
+  "images": [
+    {
+      "architecture": "amd64",
+      "cmd": null,
+      "entrypoint": [
+        "/app/entrypoint.sh"
+      ],
+      "id": "sha256:52f8d872a51c482d488e3d2a14893958a6b1d6c8c91fffed9985ee330fcec911",
+      "os": "linux",
+      "repo_tags": [
+        "care-myocardium-myops:organagent"
+      ],
+      "size_bytes": 4755438923
+    },
+    {
+      "architecture": "amd64",
+      "cmd": null,
+      "entrypoint": [
+        "python",
+        "/app/predict.py"
+      ],
+      "id": "sha256:5b10e6272f555c5ac54a23cca5d3819518bdb7d8d74d9e6a5496fea4991318ae",
+      "os": "linux",
+      "repo_tags": [
+        "care-myocardium-cinemyops:organagent"
+      ],
+      "size_bytes": 1712467172
+    }
+  ],
+  "myops_internal_five_checkpoint_check": {
+    "exit_code": 0,
+    "stderr": "",
+    "stdout": ""
+  },
+  "privileged_required": false,
+  "status": "PASS"
+}

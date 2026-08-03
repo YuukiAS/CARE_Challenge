@@ -1,0 +1,15 @@
+{
+  "status": "PASS_WITH_MANUAL_DRIVE_AUTH_REQUIRED",
+  "local_docker_ready": true,
+  "official_format_ready": true,
+  "public_rehearsal_ready": true,
+  "collaborator_interface_checked": true,
+  "google_drive_upload_ready": false,
+  "email_draft_ready": true,
+  "email_ready_to_send": false,
+  "email_send_authorized": false,
+  "email_sent": false,
+  "challenge_upload_performed": false,
+  "validation_upload_performed": false,
+  "manual_drive_auth_required": true
+}

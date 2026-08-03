@@ -1,0 +1,10 @@
+{
+  "command": "docker run --rm --network none -v <input>:/input:ro -v <output>:/output care-myocardium-myops:organagent",
+  "elapsed_seconds": 373.44361090660095,
+  "end_epoch": 1785734203.6828775,
+  "exit_code": 0,
+  "start_epoch": 1785733830.2392666,
+  "stderr_log": "myops_official_stderr.log",
+  "stdout_log": "myops_official_stdout.log",
+  "task": "myops"
+}

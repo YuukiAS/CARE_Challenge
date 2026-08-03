@@ -1,0 +1,13 @@
+{
+  "checked_at_utc": "2026-08-03T08:24:50.494297+00:00",
+  "rclone_available": true,
+  "rclone_path": "/home/yuukias/.local/bin/rclone",
+  "rclone_version": "rclone v1.75.0\n- os/version: ubuntu 24.04 (64 bit)\n- os/kernel: 6.6.87.2-microsoft-standard-WSL2 (x86_64)\n- os/type: linux\n- os/arch: amd64\n- go/version: go1.26.5\n- go/linking: static\n- go/tags: none\n",
+  "rclone_binary_sha256": "f3f9aff817f9766029e50adf9a7963c169e475b8f10c7927823568a0d9443db7",
+  "rclone_listremotes_exit_code": 0,
+  "rclone_listremotes": [],
+  "rclone_listremotes_stderr": "2026/08/03 16:23:50 NOTICE: Config file \"/home/yuukias/.config/rclone/rclone.conf\" not found - using defaults\n",
+  "google_drive_remote_count": 0,
+  "upload_attempted": false,
+  "note": "No rclone remotes are configured. Google Drive upload requires manual OAuth configuration and is non-blocking after local Docker rehearsal PASS."
+}

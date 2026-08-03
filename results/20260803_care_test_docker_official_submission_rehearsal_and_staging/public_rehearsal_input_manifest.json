@@ -1,0 +1,568 @@
+{
+  "cine_case_count": 3,
+  "cine_cases": [
+    "Case1003",
+    "Case1006",
+    "Case1011"
+  ],
+  "created_at_utc": "2026-08-03T05:08:21.371298+00:00",
+  "expected_public_case_count_note": "task expected 15/15 if available; actual available official-format rehearsal set is recorded truthfully",
+  "myops_case_count": 3,
+  "myops_cases": [
+    "Case1001",
+    "Case1004",
+    "Case1012"
+  ],
+  "records": [
+    {
+      "case_id": "Case1003",
+      "dimension": 4,
+      "direction": [
+        -1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "frame_count": 50,
+      "modality": "Cine",
+      "nibabel_readable": true,
+      "origin": [
+        -0.0,
+        -0.0,
+        -32.0,
+        0.0
+      ],
+      "relative_path": "cinemyops/Case1003_Cine.nii.gz",
+      "sha256": "39fe24fa640d064daaca701de8a21f94a0dcddc7af76fb0c2a63d3fa5616a9f3",
+      "shape_nibabel": [
+        256,
+        256,
+        5,
+        50
+      ],
+      "shape_sitk": [
+        256,
+        256,
+        5,
+        50
+      ],
+      "simpleitk_readable": true,
+      "size_bytes": 17761258,
+      "spacing": [
+        1.5937999486923218,
+        1.5937999486923218,
+        8.0,
+        1.0
+      ],
+      "task": "cinemyops"
+    },
+    {
+      "case_id": "Case1006",
+      "dimension": 4,
+      "direction": [
+        -1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "frame_count": 30,
+      "modality": "Cine",
+      "nibabel_readable": true,
+      "origin": [
+        -0.0,
+        -0.0,
+        -16.0,
+        0.0
+      ],
+      "relative_path": "cinemyops/Case1006_Cine.nii.gz",
+      "sha256": "e94a675d73376fc5641f185560e651a1d1d7ecf9c36ec039a86c6e06312045b3",
+      "shape_nibabel": [
+        256,
+        256,
+        20,
+        30
+      ],
+      "shape_sitk": [
+        256,
+        256,
+        20,
+        30
+      ],
+      "simpleitk_readable": true,
+      "size_bytes": 35936151,
+      "spacing": [
+        1.3280999660491943,
+        1.3280999660491943,
+        4.0,
+        1.0
+      ],
+      "task": "cinemyops"
+    },
+    {
+      "case_id": "Case1011",
+      "dimension": 4,
+      "direction": [
+        0.7844475780077763,
+        0.24638084722216672,
+        -0.5691559112740581,
+        0.0,
+        0.5899200941801033,
+        -0.5796440450055963,
+        0.5621450780629916,
+        0.0,
+        0.19140606009286104,
+        0.7767298495691006,
+        0.6000453815098902,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "frame_count": 30,
+      "modality": "Cine",
+      "nibabel_readable": true,
+      "origin": [
+        -123.79002380371094,
+        -69.89326477050781,
+        -171.7962188720703,
+        0.0
+      ],
+      "relative_path": "cinemyops/Case1011_Cine.nii.gz",
+      "sha256": "2ec31fd53a26a7e5710a1d507770dfa475ba2ee1c6c6f7f1d7b1ba2889e41275",
+      "shape_nibabel": [
+        256,
+        256,
+        3,
+        30
+      ],
+      "shape_sitk": [
+        256,
+        256,
+        3,
+        30
+      ],
+      "simpleitk_readable": true,
+      "size_bytes": 4221139,
+      "spacing": [
+        1.25,
+        1.25,
+        23.0,
+        0.003163199871778488
+      ],
+      "task": "cinemyops"
+    },
+    {
+      "case_id": "Case1001",
+      "dimension": 3,
+      "direction": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "frame_count": null,
+      "modality": "C0",
+      "nibabel_readable": true,
+      "origin": [
+        0.0,
+        0.0,
+        10.0
+      ],
+      "relative_path": "myops/Case1001_C0.nii.gz",
+      "sha256": "06c735d2726dd213402482f55163b98ffcf7276f28e69c2ca989bcc15113eafb",
+      "shape_nibabel": [
+        212,
+        251,
+        6
+      ],
+      "shape_sitk": [
+        212,
+        251,
+        6
+      ],
+      "simpleitk_readable": true,
+      "size_bytes": 298713,
+      "spacing": [
+        1.328125,
+        1.328125,
+        10.0
+      ],
+      "task": "myops"
+    },
+    {
+      "case_id": "Case1001",
+      "dimension": 3,
+      "direction": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "frame_count": null,
+      "modality": "LGE",
+      "nibabel_readable": true,
+      "origin": [
+        0.0,
+        0.0,
+        10.0
+      ],
+      "relative_path": "myops/Case1001_LGE.nii.gz",
+      "sha256": "7caea6328ed9ee26371bbb9d38f0b2c90898a8a1bb99de313cde5ebae256353a",
+      "shape_nibabel": [
+        212,
+        251,
+        6
+      ],
+      "shape_sitk": [
+        212,
+        251,
+        6
+      ],
+      "simpleitk_readable": true,
+      "size_bytes": 441219,
+      "spacing": [
+        1.328125,
+        1.328125,
+        10.0
+      ],
+      "task": "myops"
+    },
+    {
+      "case_id": "Case1001",
+      "dimension": 3,
+      "direction": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "frame_count": null,
+      "modality": "T2",
+      "nibabel_readable": true,
+      "origin": [
+        0.0,
+        0.0,
+        10.0
+      ],
+      "relative_path": "myops/Case1001_T2.nii.gz",
+      "sha256": "33cee518f5ef5d9e8d047636e70e7094d67527a5f59ef9c66f2444a2ddd3cf97",
+      "shape_nibabel": [
+        212,
+        251,
+        6
+      ],
+      "shape_sitk": [
+        212,
+        251,
+        6
+      ],
+      "simpleitk_readable": true,
+      "size_bytes": 258022,
+      "spacing": [
+        1.328125,
+        1.328125,
+        10.0
+      ],
+      "task": "myops"
+    },
+    {
+      "case_id": "Case1004",
+      "dimension": 3,
+      "direction": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "frame_count": null,
+      "modality": "C0",
+      "nibabel_readable": true,
+      "origin": [
+        -0.0,
+        -0.0,
+        10.0
+      ],
+      "relative_path": "myops/Case1004_C0.nii.gz",
+      "sha256": "72175f323e26aa285afe8e08ffd67fd3218897cc17b0c93004eedc07b80ab8d7",
+      "shape_nibabel": [
+        220,
+        253,
+        7
+      ],
+      "shape_sitk": [
+        220,
+        253,
+        7
+      ],
+      "simpleitk_readable": true,
+      "size_bytes": 387498,
+      "spacing": [
+        1.7708333730697632,
+        1.7708333730697632,
+        10.0
+      ],
+      "task": "myops"
+    },
+    {
+      "case_id": "Case1004",
+      "dimension": 3,
+      "direction": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "frame_count": null,
+      "modality": "LGE",
+      "nibabel_readable": true,
+      "origin": [
+        -0.0,
+        -0.0,
+        10.0
+      ],
+      "relative_path": "myops/Case1004_LGE.nii.gz",
+      "sha256": "fd43077c562dad7c7214a76845f2348ba1afa949ec23c67b6cb112583590505d",
+      "shape_nibabel": [
+        220,
+        253,
+        7
+      ],
+      "shape_sitk": [
+        220,
+        253,
+        7
+      ],
+      "simpleitk_readable": true,
+      "size_bytes": 530332,
+      "spacing": [
+        1.7708333730697632,
+        1.7708333730697632,
+        10.0
+      ],
+      "task": "myops"
+    },
+    {
+      "case_id": "Case1004",
+      "dimension": 3,
+      "direction": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "frame_count": null,
+      "modality": "T2",
+      "nibabel_readable": true,
+      "origin": [
+        -0.0,
+        -0.0,
+        10.0
+      ],
+      "relative_path": "myops/Case1004_T2.nii.gz",
+      "sha256": "555d90a804e920501c9b8fe75ef307247986024445655cffadedfcc83dfee301",
+      "shape_nibabel": [
+        220,
+        253,
+        7
+      ],
+      "shape_sitk": [
+        220,
+        253,
+        7
+      ],
+      "simpleitk_readable": true,
+      "size_bytes": 331312,
+      "spacing": [
+        1.7708333730697632,
+        1.7708333730697632,
+        10.0
+      ],
+      "task": "myops"
+    },
+    {
+      "case_id": "Case1012",
+      "dimension": 3,
+      "direction": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "frame_count": null,
+      "modality": "C0",
+      "nibabel_readable": true,
+      "origin": [
+        0.0,
+        0.0,
+        10.0
+      ],
+      "relative_path": "myops/Case1012_C0.nii.gz",
+      "sha256": "15edf84abf55c8ab98c515f05973e127d49104e47c1ea001e583f07772d178a0",
+      "shape_nibabel": [
+        160,
+        158,
+        4
+      ],
+      "shape_sitk": [
+        160,
+        158,
+        4
+      ],
+      "simpleitk_readable": true,
+      "size_bytes": 104646,
+      "spacing": [
+        1.7708333730697632,
+        1.7708333730697632,
+        10.0
+      ],
+      "task": "myops"
+    },
+    {
+      "case_id": "Case1012",
+      "dimension": 3,
+      "direction": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "frame_count": null,
+      "modality": "LGE",
+      "nibabel_readable": true,
+      "origin": [
+        0.0,
+        0.0,
+        10.0
+      ],
+      "relative_path": "myops/Case1012_LGE.nii.gz",
+      "sha256": "afdf36aeddc59ceebde633548ce51494ca1ad33f75b604dc7c25682f934049a1",
+      "shape_nibabel": [
+        160,
+        158,
+        4
+      ],
+      "shape_sitk": [
+        160,
+        158,
+        4
+      ],
+      "simpleitk_readable": true,
+      "size_bytes": 142961,
+      "spacing": [
+        1.7708333730697632,
+        1.7708333730697632,
+        10.0
+      ],
+      "task": "myops"
+    },
+    {
+      "case_id": "Case1012",
+      "dimension": 3,
+      "direction": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "frame_count": null,
+      "modality": "T2",
+      "nibabel_readable": true,
+      "origin": [
+        0.0,
+        0.0,
+        10.0
+      ],
+      "relative_path": "myops/Case1012_T2.nii.gz",
+      "sha256": "a65925c80fc15adf2ca682946f650460bc8d204b4d6766727df3963351d6d4c9",
+      "shape_nibabel": [
+        160,
+        158,
+        4
+      ],
+      "shape_sitk": [
+        160,
+        158,
+        4
+      ],
+      "simpleitk_readable": true,
+      "size_bytes": 93154,
+      "spacing": [
+        1.7708333730697632,
+        1.7708333730697632,
+        10.0
+      ],
+      "task": "myops"
+    }
+  ],
+  "source": "workstation sentinel inputs from completed prior Docker task; no full 15-case public volume found in local or server transfer search"
+}

@@ -1,0 +1,11 @@
+{
+  "status": "MANUAL_AUTH_REQUIRED",
+  "google_drive_upload_ready": false,
+  "upload_attempted": false,
+  "uploaded_files": [],
+  "google_drive_directory": "CARE2026_Myocardium_Test_OrganAgent_20260803/",
+  "reason": "rclone is installed in the user directory, but no Google Drive remote is configured. Manual OAuth setup is required before upload/link verification.",
+  "challenge_upload_performed": false,
+  "validation_upload_performed": false,
+  "manual_phase_required": "CONFIGURE_RCLONE_GOOGLE_DRIVE"
+}

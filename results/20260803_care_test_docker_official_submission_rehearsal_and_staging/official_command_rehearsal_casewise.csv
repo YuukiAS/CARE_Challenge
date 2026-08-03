@@ -1,0 +1,7 @@
+task,case_id,output_relative_path,exists,simpleitk_readable,nibabel_readable,dimension,shape_zyx,dtype,integer_dtype,integer_valued_labels,labels,label_subset_ok,geometry_match,nan_or_inf
+myops,Case1001,myops/Case1001_pred.nii.gz,True,True,True,3,"[6, 251, 212]",int16,True,True,"[0, 200, 500, 600, 1220, 2221]",True,True,False
+myops,Case1004,myops/Case1004_pred.nii.gz,True,True,True,3,"[7, 253, 220]",int16,True,True,"[0, 200, 500, 600, 1220, 2221]",True,True,False
+myops,Case1012,myops/Case1012_pred.nii.gz,True,True,True,3,"[4, 158, 160]",int16,True,True,"[0, 200, 500, 600, 1220, 2221]",True,True,False
+cinemyops,Case1003,cinemyops/Case1003_pred.nii.gz,True,True,True,3,"[5, 256, 256]",float32,False,True,"[0, 200, 500, 2221]",True,True,False
+cinemyops,Case1006,cinemyops/Case1006_pred.nii.gz,True,True,True,3,"[20, 256, 256]",float32,False,True,"[0, 200, 500, 2221]",True,True,False
+cinemyops,Case1011,cinemyops/Case1011_pred.nii.gz,True,True,True,3,"[3, 256, 256]",int16,True,True,"[0, 200, 500, 2221]",True,True,False

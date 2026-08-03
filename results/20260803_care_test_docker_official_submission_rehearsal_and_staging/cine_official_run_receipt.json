@@ -1,0 +1,10 @@
+{
+  "command": "docker run --rm --network none -v <input>:/input:ro -v <output>:/output care-myocardium-cinemyops:organagent",
+  "elapsed_seconds": 253.10728001594543,
+  "end_epoch": 1785734470.9079356,
+  "exit_code": 0,
+  "start_epoch": 1785734217.8006556,
+  "stderr_log": "cine_official_stderr.log",
+  "stdout_log": "cine_official_stdout.log",
+  "task": "cinemyops"
+}

@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "remote_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_official_submission_rehearsal_and_staging/OFFICIAL_SUBMISSION_REHEARSAL_PACKET.tar.gz",
+  "remote_size": 22160,
+  "local_sha256": "461a0c58e9836df91cc1d19db816f3f102b577e34a91a9898cceba08ba2bea8d",
+  "remote_sha256": "461a0c58e9836df91cc1d19db816f3f102b577e34a91a9898cceba08ba2bea8d"
+}

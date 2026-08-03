@@ -1,0 +1,7 @@
+{
+  "command": "docker run --rm --network none -v <official_input>:/input:ro -v <reference_output>:/output care-myocardium-myops:collaborator-reference",
+  "exit_code": 0,
+  "elapsed_seconds": 17.200135946273804,
+  "extra_command_used": false,
+  "network": "none"
+}

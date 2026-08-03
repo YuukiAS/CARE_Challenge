@@ -1,0 +1,46 @@
+{
+  "status": "PASS",
+  "reference_archive_path": ".local_runtime/20260803_care_test_docker_official_submission_rehearsal_and_staging/downloads/MyoPS-OrganAgent-collaborator-reference.tar.gz",
+  "reference_archive_size": 985480161,
+  "reference_archive_sha256": "81d19bbefd8f7cca46aee32b31a774f16222b6146b9eab6bc7265a6c214de2ff",
+  "reference_image_id": "sha256:e3f9b5759bfa870363a8144577031d39f32129a63fa2b0f8c2b98552378cfebc",
+  "final_myops_tag_restored": true,
+  "official_input_root": ".local_runtime/20260803_care_test_docker_official_submission_rehearsal_and_staging/rehearsal/input",
+  "output_root": ".local_runtime/20260803_care_test_docker_official_submission_rehearsal_and_staging/collaborator_reference_output",
+  "expected_subdir": "myops",
+  "case_count": 3,
+  "cases": [
+    "Case1001",
+    "Case1004",
+    "Case1012"
+  ],
+  "run_exit_code": 0,
+  "run_elapsed_seconds": 17.200135946273804,
+  "network": "none",
+  "extra_command_used": false,
+  "label_allowed_set": [
+    0,
+    200,
+    500,
+    600,
+    1220,
+    2221
+  ],
+  "voxel_equality_required": false,
+  "voxel_equality_checked": false,
+  "warnings": [],
+  "input_hashes_after_reference_run": {
+    "cinemyops/Case1003_Cine.nii.gz": "39fe24fa640d064daaca701de8a21f94a0dcddc7af76fb0c2a63d3fa5616a9f3",
+    "cinemyops/Case1006_Cine.nii.gz": "e94a675d73376fc5641f185560e651a1d1d7ecf9c36ec039a86c6e06312045b3",
+    "cinemyops/Case1011_Cine.nii.gz": "2ec31fd53a26a7e5710a1d507770dfa475ba2ee1c6c6f7f1d7b1ba2889e41275",
+    "myops/Case1001_C0.nii.gz": "06c735d2726dd213402482f55163b98ffcf7276f28e69c2ca989bcc15113eafb",
+    "myops/Case1001_LGE.nii.gz": "7caea6328ed9ee26371bbb9d38f0b2c90898a8a1bb99de313cde5ebae256353a",
+    "myops/Case1001_T2.nii.gz": "33cee518f5ef5d9e8d047636e70e7094d67527a5f59ef9c66f2444a2ddd3cf97",
+    "myops/Case1004_C0.nii.gz": "72175f323e26aa285afe8e08ffd67fd3218897cc17b0c93004eedc07b80ab8d7",
+    "myops/Case1004_LGE.nii.gz": "fd43077c562dad7c7214a76845f2348ba1afa949ec23c67b6cb112583590505d",
+    "myops/Case1004_T2.nii.gz": "555d90a804e920501c9b8fe75ef307247986024445655cffadedfcc83dfee301",
+    "myops/Case1012_C0.nii.gz": "15edf84abf55c8ab98c515f05973e127d49104e47c1ea001e583f07772d178a0",
+    "myops/Case1012_LGE.nii.gz": "afdf36aeddc59ceebde633548ce51494ca1ad33f75b604dc7c25682f934049a1",
+    "myops/Case1012_T2.nii.gz": "a65925c80fc15adf2ca682946f650460bc8d204b4d6766727df3963351d6d4c9"
+  }
+}

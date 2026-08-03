@@ -1,5 +1,25 @@
 # CARE 架构 Wiki
 
+architecture_version: `care-test-docker-official-format-rehearsed-manual-drive-auth-20260803`
+latest_verified_runtime: `final MyoPS and Cine Docker archives clean-loaded and passed official /input root black-box rehearsal on available sentinel cases; collaborator MyoPS reference interface passed; Drive upload needs manual rclone OAuth`
+latest_scientific_status: `OFFICIAL_FORMAT_REHEARSAL_PASS_WITH_MANUAL_DRIVE_AUTH: outputs pass directory/name/NIfTI/label/geometry checks; no challenge/validation upload and no organizer email sent`
+latest_controller_task: `20260803_care_test_docker_official_submission_rehearsal_and_staging`
+route_status: `MAIN_ONLY_OFFICIAL_FORMAT_REHEARSED_MANUAL_DRIVE_AUTH`
+
+当前机器真值是 `prompts/routes/handoffs/CURRENT.md`。最终 MyoPS 与 CineMyoPS archives 已从 clean archive load 后按 CARE 官方 `/input` 根目录结构运行，当前可用 sentinel 为 MyoPS 3 例、Cine 3 例，因此只声明 available-sentinel 黑盒彩排通过，不声明 15/15 全量 public set。两个镜像的输出目录、文件名、NIfTI 可读性、标签集合和 geometry 检查通过；合作者 MyoPS reference 镜像只做接口对照，不做预测质量比较，最终 MyoPS tag 已恢复。Google Drive 上传尚未执行，因为 `rclone` 没有配置 Google Drive remote；英文邮件草稿已生成但未发送，也未标记 ready-to-send。未上传 challenge 或 validation predictions。
+
+关键证据：
+
+```text
+results/20260803_care_test_docker_official_submission_rehearsal_and_staging/official_submission_contract.json
+results/20260803_care_test_docker_official_submission_rehearsal_and_staging/official_command_rehearsal_summary.json
+results/20260803_care_test_docker_official_submission_rehearsal_and_staging/official_command_rehearsal_validation.json
+results/20260803_care_test_docker_official_submission_rehearsal_and_staging/collaborator_reference_interface_summary.json
+results/20260803_care_test_docker_official_submission_rehearsal_and_staging/submission_readiness.json
+results/20260803_care_test_docker_official_submission_rehearsal_and_staging/submission_email_draft.md
+results/20260803_care_test_docker_official_submission_rehearsal_and_staging/remote_rehearsal_packet_receipt.json
+```
+
 architecture_version: `care-ase-r2-v5-pending-external-pretraining-review-20260803`
 latest_verified_runtime: `CARE-ASE R2 v5 implementation repair, G1/G2 fidelity evidence, and continuous Reviewer RV5-D6/RV5-D7 internal review are complete; external pretraining review is still required`
 latest_scientific_status: `PRETRAINING_EXTERNAL_REVIEW_REQUEST_READY: implementation source Commit A f4ecd049bb09a47c38305b932ef116d45b37c160; review packet Commit B 51b9c7bf307bf5b25cc502207b7d7384db9d1815; formal training not authorized`

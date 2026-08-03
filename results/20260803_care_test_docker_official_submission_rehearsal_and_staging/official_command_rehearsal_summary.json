@@ -1,0 +1,19 @@
+{
+  "actual_public_case_count_note": "Only 3 MyoPS and 3 Cine official-format public sentinel cases were available locally/through the task transfer; no 15-case public volume was found.",
+  "cine_case_count": 3,
+  "cine_elapsed_seconds": 253.10728001594543,
+  "cine_exit_code": 0,
+  "extra_command_used": false,
+  "input_integrity_status": "PASS",
+  "interactive_used": false,
+  "myops_case_count": 3,
+  "myops_elapsed_seconds": 373.44361090660095,
+  "myops_exit_code": 0,
+  "network_mode": "none",
+  "output_validation_status": "PASS",
+  "status": "PASS",
+  "warnings": [
+    "cinemyops:Case1003:non_integer_storage_dtype:float32",
+    "cinemyops:Case1006:non_integer_storage_dtype:float32"
+  ]
+}

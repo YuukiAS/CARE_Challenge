@@ -1,0 +1,7 @@
+before_final=sha256:52f8d872a51c482d488e3d2a14893958a6b1d6c8c91fffed9985ee330fcec911
+Loaded image: care-myocardium-myops:organagent
+loaded_ref=sha256:e3f9b5759bfa870363a8144577031d39f32129a63fa2b0f8c2b98552378cfebc linux/amd64 ["python","/app/predict.py"] 2053551324
+Untagged: care-myocardium-myops:organagent
+Loaded image: care-myocardium-myops:organagent
+restored_final=sha256:52f8d872a51c482d488e3d2a14893958a6b1d6c8c91fffed9985ee330fcec911 linux/amd64 ["/app/entrypoint.sh"] 4755438923
+reference_tag=sha256:e3f9b5759bfa870363a8144577031d39f32129a63fa2b0f8c2b98552378cfebc linux/amd64 ["python","/app/predict.py"] 2053551324

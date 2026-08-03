@@ -1,0 +1,45 @@
+{
+  "archive_format": [
+    ".tar.gz",
+    ".tar"
+  ],
+  "cpu_preference": "CPU-only preferred where possible",
+  "deadline_text": "Docker submission deadline shown as 2026-08-03; timezone not specified on task contract",
+  "deadline_timezone": "unspecified",
+  "fetched_at_utc": "2026-08-03T05:08:44.452973+00:00",
+  "http_status": 200,
+  "input_structure": {
+    "cinemyops": [
+      "/input/cinemyops/*_Cine.nii.gz"
+    ],
+    "myops": [
+      "/input/myops/*_C0.nii.gz",
+      "/input/myops/*_LGE.nii.gz",
+      "/input/myops/*_T2.nii.gz"
+    ]
+  },
+  "live_page_fetch_status": "available",
+  "mail_addresses": [
+    "care26challenge@163.com",
+    "care2026challenge@outlook.com"
+  ],
+  "mount_contract": {
+    "input": "/input read-only",
+    "output": "/output writable"
+  },
+  "naming_convention": [
+    "MyoPS-<Team>.tar.gz",
+    "CineMyoPS-<Team>.tar.gz"
+  ],
+  "output_structure": {
+    "cinemyops": "/output/cinemyops/<CaseID>_pred.nii.gz",
+    "myops": "/output/myops/<CaseID>_pred.nii.gz"
+  },
+  "page_text_excerpt": " | CARE Toggle navigation Home Tracks CARE-Left Atrium CARE-Liver CARE-Myocardium CARE-Whole Heart Join the Challenge! Submission Validation submission Testing submission Paper submission Committee General Info FAQ CARE 2026 – Myocardium Track Test Phase Docker Submission Instructions Thank you for participating in the CARE 2026 Myocardium Track! During the test phase , each team must submit a Docker image containing their trained algorithm. The organizers will evaluate this image on a hidden test set to ensure fairness and reproducibility. Submission Overview Prepare a Docker image with your prediction pipeline and submit the following via email: Email address : care26challenge@163.com or care2026challenge@outlook.com Email subject format : [CARE-Myocardium Test] Team-Name – Docker Submission Include in the email body: A download link to your Docker image (in .tar.gz or .tar format), hosted on Google Drive, Mega, Baidu Netdisk, or a similar service. The command to run the Docker container (if not using an ENTRYPOINT), along with any additional instructions required to execute your pipeline. Note: we would like to run all code CPU-only for compatibility reasons. If you really want to use a GPU, please let us know. The specific task this Docker image is for (submit only for the tasks you are participating in): MyoPS CineMyoPS Each team is allowed up to 3 submissions per task . Failed submissions (e.g., due to runtime errors or invalid outputs) do not count toward this limit. After a successful first submission, we will provide a feedback report with evaluation metrics. You may then submit an improved Docker image for the second attempt. Running Your Docker Your Docker container must: Read input images from the mounted /input directory (read-only). Write predictions to the mounted /output directory. We will load and run your Docker image using commands similar to the following: docker load --input &lt;your_image_file&gt; docker run \\ −v &lt;our_test_directory&gt;:/inp",
+  "separate_image_requirement": true,
+  "snapshot_path": "results/20260803_care_test_docker_official_submission_rehearsal_and_staging/official_instruction_snapshot.html",
+  "snapshot_sha256": "38889272fdf24e9f9424427fd054a23aa4b19f09c957cc7fcb89aeec17c9d69a",
+  "source_url": "https://zmic.org.cn/care_2026/instruction_myocardium/",
+  "subject_pattern": "[CARE-Myocardium Test] Team-Name – Docker Submission",
+  "submission_attempt_rule": "Docker archive links are submitted by email; do not send automatically from this rehearsal task"
+}

@@ -1,0 +1,15 @@
+{
+  "task_name": "20260803_care_test_docker_official_submission_rehearsal_and_staging",
+  "final_status": "complete",
+  "commit_status": "complete",
+  "push_status": "complete",
+  "key_conclusion": "Official-format Docker rehearsal passed locally for available sentinel cases; Drive upload requires manual OAuth before public links can be verified; email draft was generated but not sent.",
+  "blocked_or_failure_reason": "",
+  "slurm_terminal_status": "not_applicable",
+  "evidence_paths": [
+    "results/20260803_care_test_docker_official_submission_rehearsal_and_staging/official_command_rehearsal_summary.json",
+    "results/20260803_care_test_docker_official_submission_rehearsal_and_staging/collaborator_reference_interface_summary.json",
+    "results/20260803_care_test_docker_official_submission_rehearsal_and_staging/submission_readiness.json"
+  ],
+  "next_step": "Configure rclone Google Drive remote, upload final archives, verify public links, then manually send the prepared email."
+}

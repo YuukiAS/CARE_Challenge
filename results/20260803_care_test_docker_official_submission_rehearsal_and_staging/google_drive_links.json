@@ -1,0 +1,9 @@
+{
+  "status": "MANUAL_AUTH_REQUIRED",
+  "google_drive_directory": "CARE2026_Myocardium_Test_OrganAgent_20260803/",
+  "myops_link": null,
+  "cinemyops_link": null,
+  "sha256sums_link": null,
+  "all_links_publicly_verified": false,
+  "reason": "No configured rclone Google Drive remote; links are intentionally absent and email is not ready to send."
+}

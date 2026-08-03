@@ -1,0 +1,116 @@
+[
+    {
+        "Id": "sha256:52f8d872a51c482d488e3d2a14893958a6b1d6c8c91fffed9985ee330fcec911",
+        "RepoTags": [
+            "care-myocardium-myops:organagent"
+        ],
+        "RepoDigests": [
+            "care-myocardium-myops@sha256:52f8d872a51c482d488e3d2a14893958a6b1d6c8c91fffed9985ee330fcec911"
+        ],
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2026-08-03T09:19:28.180774743+08:00",
+        "Config": {
+            "Env": [
+                "PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "LANG=C.UTF-8",
+                "GPG_KEY=7169605F62C751356D054A26A821E680E5FA6305",
+                "PYTHON_VERSION=3.12.13",
+                "PYTHON_SHA256=c08bc65a81971c1dd5783182826503369466c7e67374d1646519adf05207b684",
+                "PYTHONUNBUFFERED=1",
+                "CARE_DEVICE=cpu",
+                "CARE_INPUT_DIR=/input",
+                "CARE_OUTPUT_DIR=/output/myops",
+                "nnUNet_raw=/app/models/nnunet/nnUNet_raw",
+                "nnUNet_preprocessed=/app/models/nnunet/nnUNet_preprocessed",
+                "nnUNet_results=/app/models/nnunet/nnUNet_results"
+            ],
+            "Entrypoint": [
+                "/app/entrypoint.sh"
+            ],
+            "WorkingDir": "/app"
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 4755438923,
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:f2ec4de84f559f5c7be4233b589cdbdbb5507807e05621b77320edd55a1f2a0f",
+                "sha256:ccbaccfc0388284959cf106031557105fad2067d6c4435937b3414ce90760167",
+                "sha256:83fdf57f71f28b640f11d5072c284c81eadefc5ea538050fedcedba6149879bd",
+                "sha256:b80f3ed1ee6de85c788d9ae7203207c44724eab4baac8697390ca1412954ad2f",
+                "sha256:7f51b309eff9b3ba2ffd120df400b9bb125c60abff745575fbd462a65bf2b94a",
+                "sha256:f832726b2e19696277f061dc23a7c00ec2f98165e3609e25f703ed25b8a9c2ce",
+                "sha256:a7f11b3f6cc427dd258551e4ef9c6f547b61138313146d622bc16ff467685cb8",
+                "sha256:187b230f92715d967e699d6912b0f12722b38b476f94b1c85a72f653ab940227",
+                "sha256:7789ce0824645651b57584e9ff185e5331258b08b4a5de32a11b7382d1f067e2",
+                "sha256:56052aaa4df58c76e346cb3442f10d046216386716ab5d8ffd2dd8f3665c66da",
+                "sha256:2b3c02e20f88e560f97de312d13a9ce0bf46e7f58e4d1edbe4db8fa247563da8"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "2026-08-03T05:09:31.655509236Z"
+        },
+        "Descriptor": {
+            "mediaType": "application/vnd.oci.image.index.v1+json",
+            "digest": "sha256:52f8d872a51c482d488e3d2a14893958a6b1d6c8c91fffed9985ee330fcec911",
+            "size": 856,
+            "annotations": {
+                "io.containerd.image.name": "docker.io/library/care-myocardium-myops:organagent",
+                "org.opencontainers.image.ref.name": "organagent"
+            }
+        }
+    },
+    {
+        "Id": "sha256:5b10e6272f555c5ac54a23cca5d3819518bdb7d8d74d9e6a5496fea4991318ae",
+        "RepoTags": [
+            "care-myocardium-cinemyops:organagent"
+        ],
+        "RepoDigests": [
+            "care-myocardium-cinemyops@sha256:5b10e6272f555c5ac54a23cca5d3819518bdb7d8d74d9e6a5496fea4991318ae"
+        ],
+        "Created": "2026-07-30T00:00:00Z",
+        "Config": {
+            "Env": [
+                "PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "LANG=C.UTF-8",
+                "PYTHON_VERSION=3.10.20",
+                "PYTHONDONTWRITEBYTECODE=1",
+                "PYTHONUNBUFFERED=1",
+                "PIP_DISABLE_PIP_VERSION_CHECK=1",
+                "PIP_NO_CACHE_DIR=1"
+            ],
+            "Entrypoint": [
+                "python",
+                "/app/predict.py"
+            ],
+            "WorkingDir": "/app",
+            "Labels": {
+                "org.opencontainers.image.description": "CPU-only CineMyoPS inference for the CARE 2026 Myocardium track",
+                "org.opencontainers.image.title": "OrganAgent CARE 2026 CineMyoPS",
+                "org.opencontainers.image.vendor": "OrganAgent"
+            }
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 1712467172,
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:6b7593ce363882473052c4bb4f6a667ad5af9bd90ace3214cb915b8d73a8f538"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "2026-08-03T05:10:01.334243747Z"
+        },
+        "Descriptor": {
+            "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "digest": "sha256:5b10e6272f555c5ac54a23cca5d3819518bdb7d8d74d9e6a5496fea4991318ae",
+            "size": 425,
+            "annotations": {
+                "io.containerd.image.name": "docker.io/library/care-myocardium-cinemyops:organagent",
+                "org.opencontainers.image.ref.name": "organagent"
+            }
+        }
+    }
+]

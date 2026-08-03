@@ -1,0 +1,29 @@
+Found 3 complete MyoPS cases under /input
+
+#######################################################################
+Please cite the following paper when using nnU-Net:
+Isensee, F., Jaeger, P. F., Kohl, S. A., Petersen, J., & Maier-Hein, K. H. (2021). nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation. Nature methods, 18(2), 203-211.
+#######################################################################
+
+perform_everything_on_device=True is only supported for cuda devices! Setting this to False
+There are 3 cases in the source folder
+I am processing 0 out of 1 (max process ID is 0, we start counting with 0!)
+There are 3 cases that I would like to predict
+
+Predicting Case1001:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with Case1001
+
+Predicting Case1004:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with Case1004
+
+Predicting Case1012:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with Case1012
+Case1001: wrote /output/myops/Case1001_pred.nii.gz
+Case1004: wrote /output/myops/Case1004_pred.nii.gz
+Case1012: wrote /output/myops/Case1012_pred.nii.gz

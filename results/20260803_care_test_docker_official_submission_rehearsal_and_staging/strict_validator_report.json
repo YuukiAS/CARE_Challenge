@@ -1,0 +1,25 @@
+{
+  "failures": [],
+  "known_bad_coverage": [
+    "only 3-case smoke claimed as unavailable full public set without recording actual case count",
+    "used /input/myops single mount instead of official /input root tree",
+    "output written to /output root",
+    "filename not <CaseID>_pred.nii.gz",
+    "MyoPS/Cine wrote into the other task output directory",
+    "container modified read-only input",
+    "extra command or interactive input required",
+    "clean archive load not executed",
+    "archive SHA checked without running image",
+    "collaborator reference overwrote final MyoPS tag",
+    "voxel mismatch between different models treated as interface failure",
+    "Cine archive SHA changed",
+    "Google Drive auth missing marked Docker readiness failed",
+    "unverified public link marked email_ready_to_send=true",
+    "email draft still has placeholders but ready_to_send=true",
+    "organizer email was actually sent",
+    "Docker archive, NIfTI, rclone config, or secret staged to Git",
+    "challenge or validation predictions uploaded automatically"
+  ],
+  "status": "PASS",
+  "task": "20260803_care_test_docker_official_submission_rehearsal_and_staging"
+}
