@@ -1,0 +1,22 @@
+{
+  "blocked_or_failure_reason": "none",
+  "challenge_upload_performed": false,
+  "commit_status": "complete after local lightweight commit",
+  "email_sent": false,
+  "evidence_paths": [
+    "results/20260803_care_test_docker_official_submission_resume_after_rclone/official_full_rehearsal_summary.json",
+    "results/20260803_care_test_docker_official_submission_resume_after_rclone/official_label_volume_summary.json",
+    "results/20260803_care_test_docker_official_submission_resume_after_rclone/google_drive_upload_receipt.json",
+    "results/20260803_care_test_docker_official_submission_resume_after_rclone/google_drive_public_access_receipt.json",
+    "results/20260803_care_test_docker_official_submission_resume_after_rclone/strict_validator_report.json",
+    "results/20260803_care_test_docker_official_submission_rehearsal_and_staging/submission_email_draft.md"
+  ],
+  "final_status": "complete",
+  "key_conclusion": "Final CARE MyoPS and CineMyoPS Docker archives passed 15+15 official input-root rehearsal, label volume audit, Google Drive size/hash verification, public link checks, and email draft staging without sending email.",
+  "next_step": "human may review and manually send the prepared organizer email; no automated email was sent",
+  "push_status": "complete after origin main push",
+  "slurm_terminal_status": "not_applicable",
+  "task_name": "20260803_care_test_docker_official_submission_resume_after_rclone",
+  "updated_utc": "2026-08-03T10:51:27.984149Z",
+  "validation_predictions_uploaded": false
+}

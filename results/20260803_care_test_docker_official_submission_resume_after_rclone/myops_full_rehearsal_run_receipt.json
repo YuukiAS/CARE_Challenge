@@ -1,0 +1,24 @@
+{
+  "exit_code": 0,
+  "output_count": 15,
+  "outputs": [
+    "myops/Case1001_pred.nii.gz",
+    "myops/Case1002_pred.nii.gz",
+    "myops/Case1003_pred.nii.gz",
+    "myops/Case1004_pred.nii.gz",
+    "myops/Case1005_pred.nii.gz",
+    "myops/Case1006_pred.nii.gz",
+    "myops/Case1007_pred.nii.gz",
+    "myops/Case1008_pred.nii.gz",
+    "myops/Case1009_pred.nii.gz",
+    "myops/Case1010_pred.nii.gz",
+    "myops/Case1011_pred.nii.gz",
+    "myops/Case1012_pred.nii.gz",
+    "myops/Case1013_pred.nii.gz",
+    "myops/Case1014_pred.nii.gz",
+    "myops/Case1015_pred.nii.gz"
+  ],
+  "runtime_seconds": 1864.8245782852173,
+  "status": "PASS",
+  "task": "myops"
+}

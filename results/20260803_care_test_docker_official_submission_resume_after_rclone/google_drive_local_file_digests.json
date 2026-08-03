@@ -1,0 +1,25 @@
+{
+  "files": [
+    {
+      "md5": "0c3383405cfd460e464158d711919647",
+      "name": "MyoPS-OrganAgent.tar.gz",
+      "sha256": "638c1d54d1c75f3514f325695025c03bd8f43625c9f2877d72841db6ee2ac73b",
+      "size": 4741640359
+    },
+    {
+      "md5": "85b66d439b6b81690a1dc45924245265",
+      "name": "CineMyoPS-OrganAgent.tar.gz",
+      "sha256": "c02db56bd52d14d3b5bbda9d204a20b7e4c061fd5e6012ffa1cebc67fb92c136",
+      "size": 672040570
+    },
+    {
+      "md5": "b4a396bc7fff21ce2b1d52e902ff34c0",
+      "name": "SHA256SUMS",
+      "sha256": "aa61745c67ce7514f40f5533537f13b98440c9b58e41e632d76e2fb3a8e928f9",
+      "size": 184
+    }
+  ],
+  "remote": "gdrive:/CARE2026_Myocardium_Test_OrganAgent_20260803",
+  "status": "READY_FOR_UPLOAD",
+  "timestamp_utc": "2026-08-03T10:26:26.788183Z"
+}

@@ -1,0 +1,30 @@
+{
+  "cine_allowed_labels": [
+    0,
+    200,
+    500,
+    2221
+  ],
+  "cine_output_count": 15,
+  "cine_pathology_positive_total_voxels": {
+    "2221": 60766
+  },
+  "errors": [],
+  "expected_case_count_per_task": 15,
+  "input_readonly_integrity": true,
+  "myops_allowed_labels": [
+    0,
+    200,
+    500,
+    600,
+    1220,
+    2221
+  ],
+  "myops_output_count": 15,
+  "myops_pathology_positive_total_voxels": {
+    "1220": 21089,
+    "2221": 13618
+  },
+  "no_missing_duplicate_unknown_outputs": true,
+  "status": "PASS"
+}

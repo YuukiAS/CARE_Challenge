@@ -1,0 +1,10 @@
+{
+  "contains_strict_validator_report": true,
+  "forbidden_members": [],
+  "member_count": 53,
+  "packet_path": "/home/yuukias/code/CARE/.local_runtime/20260803_care_test_docker_official_submission_resume_after_rclone/OFFICIAL_SUBMISSION_REHEARSAL_PACKET_FULL.tar.gz",
+  "sha256": "68653962ca0a35b0e6902615cb9ce3533f5787d577e96aa2cc8d067090ecb6c6",
+  "size": 30084,
+  "status": "PASS",
+  "timestamp_utc": "2026-08-03T10:49:39.255230Z"
+}

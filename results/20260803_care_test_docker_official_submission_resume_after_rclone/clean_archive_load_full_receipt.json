@@ -1,0 +1,29 @@
+{
+  "images": [
+    {
+      "architecture": "amd64",
+      "entrypoint": [
+        "/app/entrypoint.sh"
+      ],
+      "id": "sha256:52f8d872a51c482d488e3d2a14893958a6b1d6c8c91fffed9985ee330fcec911",
+      "os": "linux",
+      "size": 4755438923,
+      "tag": "care-myocardium-myops:organagent"
+    },
+    {
+      "architecture": "amd64",
+      "entrypoint": [
+        "python",
+        "/app/predict.py"
+      ],
+      "id": "sha256:5b10e6272f555c5ac54a23cca5d3819518bdb7d8d74d9e6a5496fea4991318ae",
+      "os": "linux",
+      "size": 1712467172,
+      "tag": "care-myocardium-cinemyops:organagent"
+    }
+  ],
+  "myops_five_checkpoints_verified": true,
+  "source_archives": "dist/20260803_care_test_docker_final",
+  "status": "PASS",
+  "timestamp_utc": "2026-08-03T09:25:54.204276Z"
+}

@@ -1,0 +1,16 @@
+{
+  "final_myops_image_id": "sha256:52f8d872a51c482d488e3d2a14893958a6b1d6c8c91fffed9985ee330fcec911",
+  "interface_conclusion": "INTERFACE_MATCH",
+  "model_output_difference_interpretation": "MODEL_OUTPUT_DIFFERENCE_NOT_AN_INTERFACE_FAILURE",
+  "prior_receipts": {
+    "casewise": "results/20260803_care_test_docker_official_submission_rehearsal_and_staging/collaborator_reference_interface_casewise.csv",
+    "comparison": "results/20260803_care_test_docker_official_submission_rehearsal_and_staging/collaborator_reference_interface_comparison.md",
+    "summary": "results/20260803_care_test_docker_official_submission_rehearsal_and_staging/collaborator_reference_interface_summary.json"
+  },
+  "reference_archive_sha256": "81d19bbefd8f7cca46aee32b31a774f16222b6146b9eab6bc7265a6c214de2ff",
+  "reference_image_id": "sha256:e3f9b5759bfa870363a8144577031d39f32129a63fa2b0f8c2b98552378cfebc",
+  "rerun_reference_archive": false,
+  "reuse_allowed_by_resume_contract": true,
+  "status": "PASS",
+  "timestamp_utc": "2026-08-03T10:25:53.471209Z"
+}

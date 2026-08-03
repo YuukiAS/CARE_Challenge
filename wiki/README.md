@@ -1,5 +1,25 @@
 # CARE 架构 Wiki
 
+architecture_version: `care-test-docker-full-official-rehearsal-drive-staging-ready-20260803`
+latest_verified_runtime: `final MyoPS and Cine Docker archives clean-loaded and passed official /input root black-box rehearsal on 15+15 public validation cases; Drive upload size/hash and public links verified`
+latest_scientific_status: `FULL_OFFICIAL_REHEARSAL_AND_DRIVE_STAGING_PASS: no model changes, no challenge/validation prediction upload, organizer email draft ready but not sent`
+latest_controller_task: `20260803_care_test_docker_official_submission_resume_after_rclone`
+route_status: `MAIN_ONLY_FULL_OFFICIAL_REHEARSAL_DRIVE_STAGING_READY`
+
+当前机器真值是 `prompts/routes/handoffs/CURRENT.md`。最终 MyoPS 与 CineMyoPS archives 已从 clean archive load 后按 CARE 官方 `/input` 根目录结构完成 15+15 public validation 黑盒彩排。两项任务都恰好输出 15 个结果，逐病例路径、命名、NIfTI、标签集合、geometry、输入只读完整性和 anatomy/pathology label volume audit 全部通过。Google Drive 只上传最终 Docker archives 和 `SHA256SUMS`，远端 size/hash 与本地一致，公开链接未登录访问检查通过。英文邮件草稿已填入真实链接并可由人工发送；本任务没有发送邮件，也没有上传 challenge 或 validation predictions。
+
+关键证据：
+
+```text
+results/20260803_care_test_docker_official_submission_resume_after_rclone/official_full_rehearsal_summary.json
+results/20260803_care_test_docker_official_submission_resume_after_rclone/official_label_volume_summary.json
+results/20260803_care_test_docker_official_submission_resume_after_rclone/google_drive_upload_receipt.json
+results/20260803_care_test_docker_official_submission_resume_after_rclone/google_drive_public_access_receipt.json
+results/20260803_care_test_docker_official_submission_resume_after_rclone/strict_validator_report.json
+results/20260803_care_test_docker_official_submission_rehearsal_and_staging/submission_email_draft.md
+results/20260803_care_test_docker_official_submission_rehearsal_and_staging/submission_readiness.json
+```
+
 architecture_version: `care-test-docker-official-format-rehearsed-manual-drive-auth-20260803`
 latest_verified_runtime: `final MyoPS and Cine Docker archives clean-loaded and passed official /input root black-box rehearsal on available sentinel cases; collaborator MyoPS reference interface passed; Drive upload needs manual rclone OAuth`
 latest_scientific_status: `OFFICIAL_FORMAT_REHEARSAL_PASS_WITH_MANUAL_DRIVE_AUTH: outputs pass directory/name/NIfTI/label/geometry checks; no challenge/validation upload and no organizer email sent`

@@ -1,7 +1,8 @@
 # Manual Send Checklist
 
 - [ ] Choose exactly one official recipient address; do not accidentally send duplicate submissions.
-- [ ] Re-open both Google Drive links in an unauthenticated browser session.
+- [ ] Re-open both Google Drive archive links in an unauthenticated browser session.
+- [ ] Verify the SHA256SUMS public link is accessible.
 - [ ] Verify both archive names and SHA-256 values.
 - [ ] Verify task names MyoPS and CineMyoPS.
 - [ ] Do not attach predictions, ground truth, challenge data, or validation outputs.

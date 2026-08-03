@@ -1,16 +1,21 @@
 {
   "alternative_recipient": "care2026challenge@outlook.com",
   "cinemyops_archive": "CineMyoPS-OrganAgent.tar.gz",
+  "cinemyops_download_link": "https://drive.google.com/open?id=1JjME5rUAUvZsV1n_oH8UFNK8O7CAHJ_L",
   "cinemyops_sha256": "c02db56bd52d14d3b5bbda9d204a20b7e4c061fd5e6012ffa1cebc67fb92c136",
-  "download_links_verified": false,
+  "download_links_verified": true,
   "draft_path": "results/20260803_care_test_docker_official_submission_rehearsal_and_staging/submission_email_draft.md",
   "email_draft_ready": true,
-  "email_ready_to_send": false,
+  "email_ready_to_send": true,
   "email_sent": false,
+  "google_drive_upload_ready": true,
+  "manual_drive_auth_required": false,
   "myops_archive": "MyoPS-OrganAgent.tar.gz",
+  "myops_download_link": "https://drive.google.com/open?id=1qGb6RY5t1AkuRhpZPip2VM7Uue35roVR",
   "myops_sha256": "638c1d54d1c75f3514f325695025c03bd8f43625c9f2877d72841db6ee2ac73b",
+  "public_rehearsal_case_count_cinemyops": 15,
+  "public_rehearsal_case_count_myops": 15,
+  "sha256sums_link": "https://drive.google.com/open?id=1XCHvuv5gWyVQkKblNYYyQL4bLMLeJBvq",
   "subject": "[CARE-Myocardium Test] OrganAgent \u2013 Docker Submission",
-  "to": "care26challenge@163.com",
-  "google_drive_upload_ready": false,
-  "manual_drive_auth_required": true
+  "to": "care26challenge@163.com"
 }

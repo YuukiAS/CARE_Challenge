@@ -1,0 +1,24 @@
+{
+  "exit_code": 0,
+  "output_count": 15,
+  "outputs": [
+    "cinemyops/Case1001_pred.nii.gz",
+    "cinemyops/Case1002_pred.nii.gz",
+    "cinemyops/Case1003_pred.nii.gz",
+    "cinemyops/Case1004_pred.nii.gz",
+    "cinemyops/Case1005_pred.nii.gz",
+    "cinemyops/Case1006_pred.nii.gz",
+    "cinemyops/Case1007_pred.nii.gz",
+    "cinemyops/Case1008_pred.nii.gz",
+    "cinemyops/Case1009_pred.nii.gz",
+    "cinemyops/Case1010_pred.nii.gz",
+    "cinemyops/Case1011_pred.nii.gz",
+    "cinemyops/Case1012_pred.nii.gz",
+    "cinemyops/Case1013_pred.nii.gz",
+    "cinemyops/Case1014_pred.nii.gz",
+    "cinemyops/Case1015_pred.nii.gz"
+  ],
+  "runtime_seconds": 1576.9830911159515,
+  "status": "PASS",
+  "task": "cinemyops"
+}

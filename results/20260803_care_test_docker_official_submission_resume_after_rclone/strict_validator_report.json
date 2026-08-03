@@ -1,0 +1,29 @@
+{
+  "challenge_upload_performed": false,
+  "email_sent": false,
+  "failures": [],
+  "known_bad_coverage": [
+    "only 3+3 public rehearsal marked as full 15+15",
+    "15 inputs downloaded but fewer than 15 outputs written",
+    "missing, duplicate, or unknown public validation case ID",
+    "output path not /output/myops/<CaseID>_pred.nii.gz or /output/cinemyops/<CaseID>_pred.nii.gz",
+    "MyoPS anatomy labels 200/500/600 absent in any case",
+    "Cine anatomy labels 200/500 absent in any case",
+    "all-background output accepted",
+    "MyoPS pathology labels 1220/2221 absent across all 15 cases",
+    "Cine pathology label 2221 absent across all 15 cases",
+    "Cine float dtype with non-integer label values accepted",
+    "array labels checked but geometry mismatch ignored",
+    "input archive/output predictions uploaded to Google Drive",
+    "Google Drive size/hash not verified",
+    "public links created but not checked unauthenticated",
+    "email draft still contains [pending upload]",
+    "email ready while download links are unverified",
+    "organizer email sent by automation",
+    "challenge or validation predictions uploaded",
+    "rclone.conf, OAuth token, Docker archive, checkpoint, or NIfTI staged to Git"
+  ],
+  "status": "PASS",
+  "task": "20260803_care_test_docker_official_submission_resume_after_rclone",
+  "validation_predictions_uploaded": false
+}

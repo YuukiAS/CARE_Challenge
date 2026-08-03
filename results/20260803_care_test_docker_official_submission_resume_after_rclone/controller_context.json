@@ -1,0 +1,13 @@
+{
+  "challenge_upload_performed": false,
+  "checkpoint_fold_tta_label_map_changed": false,
+  "email_sent": false,
+  "final_dist": "/home/yuukias/code/CARE/dist/20260803_care_test_docker_final",
+  "model_rebuilt": false,
+  "rclone_config_read": false,
+  "server_final_dist": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_final_dist",
+  "server_packet_staging": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_official_submission_rehearsal_and_staging",
+  "task_name": "20260803_care_test_docker_official_submission_resume_after_rclone",
+  "validation_predictions_uploaded": false,
+  "worktree": "/home/yuukias/code/CARE"
+}

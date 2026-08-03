@@ -1,5 +1,56 @@
 # CARE 当前开发状态
 
+## 2026-08-03 最新机器真值：最终 Docker archives 已完成 15+15 官方 public validation 黑盒彩排与 Drive staging
+
+最终 MyoPS 与 CineMyoPS Docker archives 已从 clean archive 重新 load，并按 CARE 官方 `/input` 根目录结构完成 MyoPS 15 例与 CineMyoPS 15 例 public validation 黑盒彩排。两个镜像均使用无额外 command、无交互、`--network none` 的官方接口运行；两项任务都恰好写出 15 个 `<CaseID>_pred.nii.gz`，无缺例、重复或未知病例。逐病例 NIfTI、标签集合、geometry、输入只读完整性和 anatomy/pathology label volume audit 全部通过。Google Drive 已只上传两个最终 Docker archive 和 `SHA256SUMS`，远端 size/hash 与本地一致，公开链接已用未登录 HTTP 检查通过。英文邮件草稿已填入真实链接并处于人工可发送状态；未发送邮件，未上传 challenge 或 validation predictions，未读取/提交/回传 rclone secrets。
+
+```text
+state_id: care_test_docker_official_submission_resume_after_rclone_20260803
+active_development_branch: main
+active_worktree: /home/yuukias/code/CARE
+single_active_scientific_line: CARE_TEST_DOCKER_FULL_OFFICIAL_REHEARSAL_AND_DRIVE_STAGING_READY
+result_root: results/20260803_care_test_docker_official_submission_resume_after_rclone
+local_final_dist: /home/yuukias/code/CARE/dist/20260803_care_test_docker_final
+server_full_rehearsal_packet: /users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_official_submission_rehearsal_and_staging/OFFICIAL_SUBMISSION_REHEARSAL_PACKET_FULL.tar.gz
+controller_verification_decision: VERIFIED_COMPLETE
+clean_archive_load: PASS
+myops_public_validation_input_cases: 15
+cinemyops_public_validation_input_cases: 15
+myops_official_output_count: 15
+cinemyops_official_output_count: 15
+myops_official_runtime_seconds: 1864.8245782852173
+cinemyops_official_runtime_seconds: 1576.9830911159515
+output_completeness: PASS
+input_readonly_integrity: PASS
+label_volume_audit: PASS
+collaborator_myops_reference_interface: PASS_REUSED_RECEIPT
+google_drive_upload_ready: true
+google_drive_remote_size_hash_verified: true
+google_drive_public_links_verified: true
+email_draft_ready: true
+email_ready_to_send: true
+organizer_email_sent: false
+challenge_upload_performed: false
+validation_predictions_uploaded: false
+rclone_secret_read_or_returned: false
+strict_validator: PASS
+```
+
+关键证据：
+
+```text
+results/20260803_care_test_docker_official_submission_resume_after_rclone/public_full_rehearsal_input_manifest.json
+results/20260803_care_test_docker_official_submission_resume_after_rclone/official_full_rehearsal_summary.json
+results/20260803_care_test_docker_official_submission_resume_after_rclone/official_label_volume_summary.json
+results/20260803_care_test_docker_official_submission_resume_after_rclone/google_drive_upload_receipt.json
+results/20260803_care_test_docker_official_submission_resume_after_rclone/google_drive_public_access_receipt.json
+results/20260803_care_test_docker_official_submission_resume_after_rclone/full_rehearsal_packet_receipt.json
+results/20260803_care_test_docker_official_submission_resume_after_rclone/remote_full_rehearsal_packet_receipt.json
+results/20260803_care_test_docker_official_submission_resume_after_rclone/strict_validator_report.json
+results/20260803_care_test_docker_official_submission_rehearsal_and_staging/submission_email_draft.md
+results/20260803_care_test_docker_official_submission_rehearsal_and_staging/submission_readiness.json
+```
+
 ## 2026-08-03 最新机器真值：最终 Docker archives 已完成官方输入格式黑盒彩排
 
 最终 MyoPS 与 CineMyoPS Docker archives 已从本地 clean archive 重新 load，并按 CARE 官方 `/input` 根目录结构完成黑盒彩排。当前工位只有 3 个 MyoPS sentinel 与 3 个 Cine sentinel 可用，因此本轮如实记录为 available-public-sentinel rehearsal，不声称 15/15 全量 public rehearsal。两个镜像均使用无额外 command、无交互、`--network none` 的官方接口运行；输出目录、命名、NIfTI 可读性、标签集合和 geometry 检查通过。合作者 MyoPS reference archive 已下载校验并隔离为 reference tag，接口对照通过，最终 MyoPS tag 已恢复。Google Drive 上传未执行，因为本机 rclone 尚无 Google Drive remote，需要人工 OAuth；英文邮件草稿已生成但未发送、未标记 ready-to-send。未上传 challenge、validation predictions 或网盘文件。

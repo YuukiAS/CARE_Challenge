@@ -1,0 +1,21 @@
+{
+  "cine_anatomy_required_labels": [
+    200,
+    500
+  ],
+  "cine_pathology_positive_total_voxels": {
+    "2221": 60766
+  },
+  "errors": [],
+  "myops_anatomy_required_labels": [
+    200,
+    500,
+    600
+  ],
+  "myops_pathology_positive_total_voxels": {
+    "1220": 21089,
+    "2221": 13618
+  },
+  "status": "PASS",
+  "zero_pathology_cases": []
+}
