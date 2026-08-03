@@ -1,0 +1,17 @@
+{
+  "formal_training_started": false,
+  "implementation_source_commit_sha": "2069527d4d2f6357a0fddfa9df0c49223691a96f",
+  "monitor_imports_canonical_inference": true,
+  "outer_access_fold1": 0,
+  "outer_access_fold4": 0,
+  "selector_fixed_candidates": [
+    4000,
+    6000,
+    8000,
+    10000,
+    12000,
+    14000
+  ],
+  "status": "PASS",
+  "task_key": "20260803_care_ase_r2_last_hotfix_v9"
+}

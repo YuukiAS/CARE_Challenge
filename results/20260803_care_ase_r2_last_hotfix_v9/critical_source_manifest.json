@@ -1,0 +1,129 @@
+{
+  "critical_source_count": 24,
+  "files": [
+    {
+      "bytes": 6492,
+      "path": "prompts/blueprints/CARE_ASE_R2_effective_contract_v9_20260803.yaml",
+      "sha256": "1b02fb37fa30054b74f7b73b7bd15617d74ab931b4a12965ea1d700bb7fa3c1e"
+    },
+    {
+      "bytes": 33053,
+      "path": "prompts/tasks/20260803_care_ase_r2_last_hotfix_v9.md",
+      "sha256": "786abdb2f017a334d6d6a3ddc1acde9f5a7e263720e6e66478389cbbb3384b81"
+    },
+    {
+      "bytes": 5432,
+      "path": "prompts/tasks/20260803_care_ase_r2_last_hotfix_v9_executor_plan.yaml",
+      "sha256": "4131c9ac3b0cdb1f3f6c6a8ceb4904851fd48592a9a354d922ac4465d14608f5"
+    },
+    {
+      "bytes": 3137,
+      "path": "prompts/tasks/20260803_care_ase_r2_last_hotfix_v9_final_addendum.md",
+      "sha256": "ea30e744aaaa0f429d0092574fd24eff58100ff64b08818149d6771829cfea2f"
+    },
+    {
+      "bytes": 67654,
+      "path": "src/care_myocardium/models/care_ase.py",
+      "sha256": "290c799618b29133903dfb7ccd78844bf27a4ce70b885ae64483444c922b9e42"
+    },
+    {
+      "bytes": 26293,
+      "path": "src/care_myocardium/models/care_prism.py",
+      "sha256": "6af752a202faaae8f8766422724ede6b774db3650e4163c677ab2d2ffbfee0bf"
+    },
+    {
+      "bytes": 88150,
+      "path": "src/care_myocardium/training/care_ase_trainer.py",
+      "sha256": "48afa854113e48d94ca659b4de3f65e442fed984c9bb51358714b6b8d398e014"
+    },
+    {
+      "bytes": 106105,
+      "path": "src/care_myocardium/training/care_ase_runtime.py",
+      "sha256": "6939311d94db59238e4c10cda49856e914dbd4b3948f0b05668a38eb2d9098cb"
+    },
+    {
+      "bytes": 39434,
+      "path": "src/care_myocardium/training/care_ase_sampler.py",
+      "sha256": "0f718de63d0295bd84b326d354314064a4801abc487d5aab43af259c4cc1c124"
+    },
+    {
+      "bytes": 9632,
+      "path": "src/care_myocardium/training/care_ase_augmentation.py",
+      "sha256": "85a208a3a886babe0ec2927a1babced2b24ff91188d577585e65d4e38c27b283"
+    },
+    {
+      "bytes": 6329,
+      "path": "src/care_myocardium/data/care_ase_splits.py",
+      "sha256": "81303a9db1fa3171b907bd2a0e42185b86345c27871029457dccd6e2a2e9dbf5"
+    },
+    {
+      "bytes": 2521,
+      "path": "src/care_myocardium/data/case_metadata.py",
+      "sha256": "56863a81160127dc820e0643b4a6848d6ccf808be72c90c89bcefe7698246983"
+    },
+    {
+      "bytes": 1704,
+      "path": "src/care_myocardium/inference/care_ase_r2_decode.py",
+      "sha256": "7fea71edba56d259dbbb31c3832b74709bd83d5af1f8b680a85c2e0a41acb05b"
+    },
+    {
+      "bytes": 11395,
+      "path": "src/care_myocardium/inference/care_ase_r2_full_volume.py",
+      "sha256": "6925ed90617c3c95b55c90360f7bc253ebcc9abb7ffc9261b9823e6b1e073367"
+    },
+    {
+      "bytes": 560,
+      "path": "scripts/training/care_ase/run_care_ase_r2_chunk.py",
+      "sha256": "078767a5c8c6b8c9fe6135efe2efa6ec49dc6daec7554e2f1a3b3625a338e812"
+    },
+    {
+      "bytes": 11245,
+      "path": "scripts/evaluation/care_ase/build_stock_oof_preprocessed_grid_predictions.py",
+      "sha256": "971e8202433696142739b3d135c98b448ea124720b906a5ac066f4684a71c330"
+    },
+    {
+      "bytes": 26834,
+      "path": "scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py",
+      "sha256": "85f283c8e9fe05d384a2b2a7e354ea899234e6dbbc33adf9cabf9aa8679d7053"
+    },
+    {
+      "bytes": 6458,
+      "path": "scripts/evaluation/care_ase/build_care_ase_r2_full_case_target_manifest.py",
+      "sha256": "e0f450e14df81f19af88c4f3e61caf09aa19b8ae1a87c85f689d289dd24dee7f"
+    },
+    {
+      "bytes": 16999,
+      "path": "scripts/evaluation/care_ase/monitor_care_ase_r2_inner_trend.py",
+      "sha256": "7344e5df5722e66cbfc5f952d05cd8b121cf64d15d4d8afa3bbbc7d69363300d"
+    },
+    {
+      "bytes": 4057,
+      "path": "scripts/evaluation/care_ase/select_care_ase_r2_inner_checkpoint.py",
+      "sha256": "54ad474d4df8d3719e75fde636afba5da92d7bc975161c7275805fb38411c517"
+    },
+    {
+      "bytes": 7028,
+      "path": "scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py",
+      "sha256": "e8f42de7616d7d1f369a6aac5ec8b71b388d1993247d7ac9df6d3fc716bf38af"
+    },
+    {
+      "bytes": 41718,
+      "path": "scripts/validation/validate_care_ase_r2_g1.py",
+      "sha256": "a8b5d87226fd10b5868c5089a2bce5ba9754288a54454c346e281ca169972677"
+    },
+    {
+      "bytes": 2184,
+      "path": "scripts/validation/verify_care_ase_checkpoint_for_resume.py",
+      "sha256": "642bce64312bdefd0f7b725056a2f44da1cc5c7931b25213d504ffee7d49f16f"
+    },
+    {
+      "bytes": 2542,
+      "path": "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh",
+      "sha256": "dfd758cf5d853851654fff1dbace8e1253f135ad6d42ecc4bd65db39ae72f6a0"
+    }
+  ],
+  "generated_utc": "2026-08-03T16:47:41Z",
+  "implementation_source_commit_sha": "2069527d4d2f6357a0fddfa9df0c49223691a96f",
+  "status": "PASS",
+  "task_key": "20260803_care_ase_r2_last_hotfix_v9"
+}

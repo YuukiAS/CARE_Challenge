@@ -1,0 +1,9 @@
+{
+  "decision": "REJECTED_AS_EXPECTED",
+  "expected_validator_exit": "nonzero",
+  "fixture": "wrapper_points_old_entry",
+  "known_bad_fixture_rejected": true,
+  "observed_failures": [
+    "formal_call_chain"
+  ]
+}

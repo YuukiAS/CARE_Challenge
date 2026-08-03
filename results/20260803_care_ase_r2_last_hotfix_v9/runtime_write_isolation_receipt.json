@@ -1,0 +1,10 @@
+{
+  "formal_runtime_prefix": "results/20260803_care_ase_r2_formal_training_<implementation>/runtime/fold_<fold>",
+  "formal_training_started": false,
+  "implementation_source_commit_sha": "2069527d4d2f6357a0fddfa9df0c49223691a96f",
+  "outer_access_fold1": 0,
+  "outer_access_fold4": 0,
+  "status": "PASS",
+  "task_key": "20260803_care_ase_r2_last_hotfix_v9",
+  "tracked_packet_dynamic_writes_forbidden": true
+}

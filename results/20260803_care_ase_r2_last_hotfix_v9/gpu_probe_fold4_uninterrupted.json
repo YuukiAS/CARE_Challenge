@@ -1,0 +1,10 @@
+{
+  "checkpoint_sha256": "720a2bcf7e289461e396657eae923d93d638824cdefa595297167fafa91e0043",
+  "fold": 4,
+  "formal_training_credit": "zero",
+  "probe_kind": "uninterrupted_0_1",
+  "runtime_dir": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_last_hotfix_v9/gpu_smoke/fold_4_step0_1_finalA",
+  "status": "PASS",
+  "terminal_receipt": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_last_hotfix_v9/gpu_smoke/fold_4_step0_1_finalA/chunk_terminal_00000_00001.json",
+  "verified_receipt_exists": true
+}

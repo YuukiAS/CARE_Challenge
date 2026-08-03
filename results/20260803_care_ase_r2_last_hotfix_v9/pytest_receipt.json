@@ -1,0 +1,7 @@
+{
+  "command": "./envs/env_CARE/bin/python -m pytest tests/care_ase -q",
+  "exit_code": 0,
+  "status": "PASS",
+  "summary": "114 passed, 45 warnings",
+  "task_key": "20260803_care_ase_r2_last_hotfix_v9"
+}

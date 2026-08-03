@@ -1,0 +1,8 @@
+{
+  "command": "./envs/env_CARE/bin/python scripts/validation/validate_care_ase_r2_g1.py --output-dir results/20260803_care_ase_r2_last_hotfix_v9",
+  "decision": "PASS",
+  "exit_code": 0,
+  "failures": [],
+  "status": "PASS",
+  "task_key": "20260803_care_ase_r2_last_hotfix_v9"
+}

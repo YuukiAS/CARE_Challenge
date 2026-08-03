@@ -1,0 +1,5 @@
+task: 20260803_care_ase_r2_last_hotfix_v9
+implementation_source_commit_sha: 2069527d4d2f6357a0fddfa9df0c49223691a96f
+formal_training_started: false
+outer_access_fold1: 0
+outer_access_fold4: 0

@@ -1,0 +1,10 @@
+{
+  "decision": "REJECTED_AS_EXPECTED",
+  "expected_validator_exit": "nonzero",
+  "fixture": "extent_patch_local_bias_averaged_across_multiwindow_inference",
+  "known_bad_fixture_rejected": true,
+  "observed_failures": [
+    "coverage",
+    "evaluator_extent"
+  ]
+}

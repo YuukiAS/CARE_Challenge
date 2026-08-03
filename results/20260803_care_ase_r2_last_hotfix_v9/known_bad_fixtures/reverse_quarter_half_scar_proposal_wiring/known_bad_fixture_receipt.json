@@ -1,0 +1,9 @@
+{
+  "decision": "REJECTED_AS_EXPECTED",
+  "expected_validator_exit": "nonzero",
+  "fixture": "reverse_quarter_half_scar_proposal_wiring",
+  "known_bad_fixture_rejected": true,
+  "observed_failures": [
+    "coverage"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "fold1_runtime_manifest": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_last_hotfix_v9/gpu_smoke/fold_1_step0_1_finalA/environment_determinism_manifest_fold1.json",
+  "fold4_runtime_manifest": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_last_hotfix_v9/gpu_smoke/fold_4_step0_1_finalA/environment_determinism_manifest_fold4.json",
+  "formal_training_started": false,
+  "implementation_source_commit_sha": "2069527d4d2f6357a0fddfa9df0c49223691a96f",
+  "outer_access_fold1": 0,
+  "outer_access_fold4": 0,
+  "status": "PASS",
+  "task_key": "20260803_care_ase_r2_last_hotfix_v9"
+}

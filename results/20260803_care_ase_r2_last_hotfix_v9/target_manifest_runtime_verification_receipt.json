@@ -1,0 +1,10 @@
+{
+  "fold1_manifest_sha256": "60e9a5c544a9b84423efa1d18d22d55f4c5e6e25326c95dc46c044195ffde8df",
+  "fold4_manifest_sha256": "af8ed5f42081211d2d690ecbba3ef4835f05b0e71ba7b6782fa795f8f914fc86",
+  "formal_training_started": false,
+  "implementation_source_commit_sha": "2069527d4d2f6357a0fddfa9df0c49223691a96f",
+  "outer_access_fold1": 0,
+  "outer_access_fold4": 0,
+  "status": "PASS",
+  "task_key": "20260803_care_ase_r2_last_hotfix_v9"
+}

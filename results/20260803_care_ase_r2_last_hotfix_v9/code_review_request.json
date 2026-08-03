@@ -1,0 +1,27 @@
+{
+  "critical_source_manifest_sha256": "4f9092b8d74fb525ef21222f9c4daebfbc84d4d3c681c022f77cf3f04beb4c6e",
+  "effective_contract_sha256": "1b02fb37fa30054b74f7b73b7bd15617d74ab931b4a12965ea1d700bb7fa3c1e",
+  "executor_plan_validation": "PASS",
+  "formal_training_started": false,
+  "g1_status": "PASS",
+  "gpu_probe_completed_optimizer_steps": 4,
+  "gpu_probe_reserved_optimizer_steps": 4,
+  "gpu_probe_status": "PASS",
+  "implementation_commit_is_on_origin_main": "verified_after_push",
+  "implementation_source_commit_sha": "2069527d4d2f6357a0fddfa9df0c49223691a96f",
+  "origin_main_sha": "REPORTED_AFTER_PUSH",
+  "outer_access_fold1": 0,
+  "outer_access_fold4": 0,
+  "permissions": {
+    "docker_upload_authorized": false,
+    "formal_training_authorized": false,
+    "outer_access_authorized": false,
+    "validation_upload_authorized": false
+  },
+  "pytest_status": "PASS",
+  "requested_external_decision": "CODE_APPROVED_FOR_FORMAL_TRAINING_OR_REVISE",
+  "review_packet_commit_sha": "REPORTED_AFTER_COMMIT_B_PUSH",
+  "runtime_input_bundle_sha256": "430020313032544017fb0dab6a6c48fab746f9eeedbb4667131659282b2632e6",
+  "status": "PRETRAINING_EXTERNAL_REVIEW_REQUEST_READY",
+  "task_key": "20260803_care_ase_r2_last_hotfix_v9"
+}

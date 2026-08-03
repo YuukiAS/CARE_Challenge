@@ -1,0 +1,15 @@
+{
+  "area_reference_receipt_sha256": "fba138836b09fa08c132d5e636182ea5350b749e9fc28fd6732a9a82dde9cb55",
+  "bundle_payload_sha256": "7ec94a3db27a9be52413a5c18de2f3099ec9894fefb86d31cae1b136946dd842",
+  "critical_source_manifest_sha256": "4f9092b8d74fb525ef21222f9c4daebfbc84d4d3c681c022f77cf3f04beb4c6e",
+  "direct_stock_oof_provenance_manifest_sha256": "e9a650b39015ec5518f475fa0893ae8e6de7ace63ee5279be00c28b23dd6fcd1",
+  "effective_contract_sha256": "1b02fb37fa30054b74f7b73b7bd15617d74ab931b4a12965ea1d700bb7fa3c1e",
+  "full_case_target_cache_manifest_fold1_sha256": "60e9a5c544a9b84423efa1d18d22d55f4c5e6e25326c95dc46c044195ffde8df",
+  "full_case_target_cache_manifest_fold4_sha256": "af8ed5f42081211d2d690ecbba3ef4835f05b0e71ba7b6782fa795f8f914fc86",
+  "hard_negative_manifest_fold1_sha256": "6d793249e3c6fc42aa29ff97f84fa75431cece9c8a4e08d243ed1cf96ce4da21",
+  "hard_negative_manifest_fold4_sha256": "8a1829336468a3cd477dadb33ae9818dac6375855c5db3df441e73598cfa9ea5",
+  "implementation_source_commit_sha": "2069527d4d2f6357a0fddfa9df0c49223691a96f",
+  "review_packet_commit_sha": "BOUND_BY_THIS_COMMIT_AFTER_PUSH",
+  "status": "PASS",
+  "task_key": "20260803_care_ase_r2_last_hotfix_v9"
+}

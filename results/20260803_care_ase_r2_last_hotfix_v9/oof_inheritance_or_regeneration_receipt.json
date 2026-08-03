@@ -1,0 +1,16 @@
+{
+  "fold1_manifest_sha256": "6d793249e3c6fc42aa29ff97f84fa75431cece9c8a4e08d243ed1cf96ce4da21",
+  "fold4_manifest_sha256": "8a1829336468a3cd477dadb33ae9818dac6375855c5db3df441e73598cfa9ea5",
+  "forbidden_sources_rejected": [
+    "nifti_min_shape_crop",
+    "shape_only",
+    "transpose_only",
+    "generic_zoom",
+    "mosaic",
+    "srr",
+    "cascade"
+  ],
+  "mode": "strict_inherit_v8_direct_oof_arrays_after_array_sha_shape_and_heldout_recheck",
+  "status": "PASS",
+  "task_key": "20260803_care_ase_r2_last_hotfix_v9"
+}

@@ -1,0 +1,6 @@
+utc,event,status,details
+2026-08-03T16:47:41Z,commit_a,PASS,2069527d4d2f6357a0fddfa9df0c49223691a96f
+2026-08-03T16:47:41Z,pytest,PASS,114 passed
+2026-08-03T16:47:41Z,g1,PASS,decision PASS
+2026-08-03T16:47:41Z,gpu_probe,PASS,4 completed
+2026-08-03T16:47:41Z,outer_access,PASS,0

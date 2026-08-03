@@ -1,0 +1,10 @@
+{
+  "folds": [
+    1,
+    4
+  ],
+  "formal_training_started": false,
+  "source": "computed_by_runtime_or_existing_v8_references_bound_for_external_review",
+  "status": "PASS",
+  "task_key": "20260803_care_ase_r2_last_hotfix_v9"
+}

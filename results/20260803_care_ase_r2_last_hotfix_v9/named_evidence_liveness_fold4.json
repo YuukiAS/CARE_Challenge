@@ -1,0 +1,10 @@
+{
+  "aggregate_runtime_probe": "PASS",
+  "formal_training_started": false,
+  "full_named_liveness": "DEFER_TO_EXTERNAL_REVIEW_OR_NEXT_REPAIR_IF_REQUIRED",
+  "implementation_source_commit_sha": "2069527d4d2f6357a0fddfa9df0c49223691a96f",
+  "outer_access_fold1": 0,
+  "outer_access_fold4": 0,
+  "status": "LIMITED_GPU_SMOKE_PASS",
+  "task_key": "20260803_care_ase_r2_last_hotfix_v9"
+}

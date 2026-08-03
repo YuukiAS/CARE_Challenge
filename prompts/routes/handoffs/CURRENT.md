@@ -1,5 +1,32 @@
 # CARE 当前开发状态
 
+## 2026-08-03 最新机器真值：CARE-ASE R2 v9 等待外部训练前审阅
+
+CARE-ASE R2 v9 已完成 last-hotfix source closure、executor plan validation、pytest、G1，以及 fold1/fold4 short-smoke GPU diagnostic probes。当前只准备交给外部 GPT 做训练许可审阅，不表示正式训练获准。v8 implementation `648bb4d79da255438469aa9acfa939616aebf251` 和 v8 review packet `8d01cd4c4a5caa3ab1eb44f365bd830a69a34664` 已被 v9 取代；v8 及更早训练/probe credit 均不得作为正式训练。formal training 未启动，fold1/fold4 outer access 均为 0。下一步只能是外部 GPT 返回 `PRETRAINING_EXTERNAL_REVIEW_PASS` 或 revise。
+
+```text
+state_id: care_ase_r2_v9_pending_external_pretraining_review
+active_development_branch: main
+active_worktree: /users/a/e/aereinh/CARE
+implementation_source_commit_sha: 2069527d4d2f6357a0fddfa9df0c49223691a96f
+review_packet_commit_sha: reported_after_push
+formal_training_authorized: false
+formal_training_started: false
+outer_access_fold1: 0
+outer_access_fold4: 0
+diagnostic_optimizer_step_reservations_total: 4
+next_action: EXTERNAL_GPT_PRETRAINING_REVIEW
+```
+
+关键证据：
+
+```text
+results/20260803_care_ase_r2_last_hotfix_v9/pretraining_external_review_request.json
+results/20260803_care_ase_r2_last_hotfix_v9/controller_report.md
+results/20260803_care_ase_r2_last_hotfix_v9/completion_check.md
+results/20260803_care_ase_r2_last_hotfix_v9/MANIFEST.md
+```
+
 ## 2026-08-03 最新机器真值：CARE-ASE R2 v8 等待外部最终训练前审阅
 
 CARE-ASE R2 v8 已完成最终训练前代码阻断闭合，当前只准备交给外部 GPT 做训练许可审阅，不表示正式训练获准。v7 implementation `0b20e32d077227fbeb6611a3ee0cdf4231aee19d` 和 v7 review packet `7f4bb4d48e92273e2aad0a5d75ae6e4f3a62f1e7` 的 ready claim 已被 v8 取代；v7 probes 均为 zero-credit diagnostics。formal training 未启动，fold1/fold4 outer access 均为 0。下一步只能是外部 GPT 返回 `PRETRAINING_EXTERNAL_REVIEW_PASS` 或 revise。

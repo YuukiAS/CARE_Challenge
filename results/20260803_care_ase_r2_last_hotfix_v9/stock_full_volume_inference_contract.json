@@ -1,0 +1,19 @@
+{
+  "formal_training_started": false,
+  "gaussian_sigma_scale": 0.125,
+  "implementation_source_commit_sha": "2069527d4d2f6357a0fddfa9df0c49223691a96f",
+  "normalization_denominator": "gaussian_importance_sum",
+  "outer_access_fold1": 0,
+  "outer_access_fold4": 0,
+  "patch_size": [
+    20,
+    256,
+    256
+  ],
+  "precision": "fp32",
+  "status": "PASS",
+  "task_key": "20260803_care_ase_r2_last_hotfix_v9",
+  "tile_step_size": 0.5,
+  "use_gaussian": true,
+  "use_mirroring": "bound_by_stock_runtime_when_enabled"
+}

@@ -1,0 +1,108 @@
+{
+  "expected_exact_weights": {
+    "anatomy4": 0.5,
+    "distance": 0.1,
+    "edema_boundary": 0.1,
+    "edema_context": 0.1,
+    "edema_dense": 1.0,
+    "edema_extent": 0.2,
+    "final_competition": 1.0,
+    "injury": 0.4,
+    "relation": 0.05,
+    "scar_center": 0.1,
+    "scar_component": 0.25,
+    "scar_context": 0.1,
+    "scar_dense": 1.0,
+    "scar_extent": 0.15,
+    "wall": 0.25
+  },
+  "required_loss_count": 15,
+  "status": "PASS",
+  "target_builder_semantics": {
+    "context_distance_adjacency": true,
+    "full_case_cache_before_patch_slice": true,
+    "gaussian_center": true,
+    "per_gt_component": true,
+    "physical_edt": true,
+    "relation_stopgrad": true,
+    "signed_edema_boundary": true,
+    "stock_spatial_transform_syncs_target_maps": true
+  },
+  "terms": {
+    "anatomy4": {
+      "declared": true,
+      "enters_total_loss": true,
+      "weight": 0.5
+    },
+    "distance": {
+      "declared": true,
+      "enters_total_loss": true,
+      "weight": 0.1
+    },
+    "edema_boundary": {
+      "declared": true,
+      "enters_total_loss": true,
+      "weight": 0.1
+    },
+    "edema_context": {
+      "declared": true,
+      "enters_total_loss": true,
+      "weight": 0.1
+    },
+    "edema_dense": {
+      "declared": true,
+      "enters_total_loss": true,
+      "weight": 1.0
+    },
+    "edema_extent": {
+      "declared": true,
+      "enters_total_loss": true,
+      "weight": 0.2
+    },
+    "final_competition": {
+      "declared": true,
+      "enters_total_loss": true,
+      "weight": 1.0
+    },
+    "injury": {
+      "declared": true,
+      "enters_total_loss": true,
+      "weight": 0.4
+    },
+    "relation": {
+      "declared": true,
+      "enters_total_loss": true,
+      "weight": 0.05
+    },
+    "scar_center": {
+      "declared": true,
+      "enters_total_loss": true,
+      "weight": 0.1
+    },
+    "scar_component": {
+      "declared": true,
+      "enters_total_loss": true,
+      "weight": 0.25
+    },
+    "scar_context": {
+      "declared": true,
+      "enters_total_loss": true,
+      "weight": 0.1
+    },
+    "scar_dense": {
+      "declared": true,
+      "enters_total_loss": true,
+      "weight": 1.0
+    },
+    "scar_extent": {
+      "declared": true,
+      "enters_total_loss": true,
+      "weight": 0.15
+    },
+    "wall": {
+      "declared": true,
+      "enters_total_loss": true,
+      "weight": 0.25
+    }
+  }
+}

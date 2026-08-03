@@ -1,0 +1,19 @@
+{
+  "checks": {
+    "exact_only_binding": true,
+    "no_generic_zoom_execution_path": true,
+    "no_resample_binding_label": true,
+    "rejects_shape_ratio_resampling": true,
+    "requires_explicit_preprocessed_grid_binding": true,
+    "requires_matching_geometry_sha": true
+  },
+  "forbidden_binding": [
+    "shape_only",
+    "transpose_only",
+    "generic_zoom",
+    "min_shape_crop",
+    "fold_level_final_or_best_fallback"
+  ],
+  "legal_binding": "exact_preprocessed_grid_with_manifest_geometry_proof",
+  "status": "PASS"
+}

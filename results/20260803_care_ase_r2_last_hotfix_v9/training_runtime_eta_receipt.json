@@ -1,0 +1,10 @@
+{
+  "formal_training_started": false,
+  "implementation_source_commit_sha": "2069527d4d2f6357a0fddfa9df0c49223691a96f",
+  "note": "short-smoke walltime is not formal 2000-step ETA",
+  "outer_access_fold1": 0,
+  "outer_access_fold4": 0,
+  "reserved_optimizer_steps": 4,
+  "status": "LIMITED_SAMPLE",
+  "task_key": "20260803_care_ase_r2_last_hotfix_v9"
+}

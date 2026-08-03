@@ -1,5 +1,22 @@
 # CARE 架构 Wiki
 
+architecture_version: `care-ase-r2-v9-pending-external-pretraining-review-20260803`
+latest_verified_runtime: `CARE-ASE R2 v9 source/tests/G1 and fold1/fold4 diagnostic GPU short-smoke probes are complete; final formal training remains unauthorized`
+latest_scientific_status: `PRETRAINING_EXTERNAL_REVIEW_REQUEST_READY_PENDING_PUSH: implementation source Commit A 2069527d4d2f6357a0fddfa9df0c49223691a96f; review packet Commit B reported after push; no formal training and no outer access`
+latest_controller_task: `20260803_care_ase_r2_last_hotfix_v9`
+route_status: `MAIN_ONLY_CARE_ASE_R2_V9_PENDING_EXTERNAL_PRETRAINING_REVIEW`
+
+当前 CARE-ASE R2 v9 只到训练前实现闭合与外部审阅请求阶段，不表示训练许可。v8 implementation `648bb4d79da255438469aa9acfa939616aebf251` 和 v8 review packet `8d01cd4c4a5caa3ab1eb44f365bd830a69a34664` 已被 v9 取代；v8 及更早 runtime/probe credit 均不得作为正式训练。v9 formal training 未启动，fold1/fold4 outer access 均为 0；下一步只能由外部 GPT 审阅 v9 Commit A/B 后返回通过或返修。
+
+关键证据：
+
+```text
+results/20260803_care_ase_r2_last_hotfix_v9/pretraining_external_review_request.json
+results/20260803_care_ase_r2_last_hotfix_v9/controller_report.md
+results/20260803_care_ase_r2_last_hotfix_v9/completion_check.md
+results/20260803_care_ase_r2_last_hotfix_v9/MANIFEST.md
+```
+
 architecture_version: `care-ase-r2-v8-pending-external-pretraining-review-20260803`
 latest_verified_runtime: `CARE-ASE R2 v8 source/tests/G1 and diagnostic GPU code probes are complete; final formal training remains unauthorized`
 latest_scientific_status: `PRETRAINING_EXTERNAL_REVIEW_REQUEST_READY_PENDING_PUSH: implementation source Commit A 648bb4d79da255438469aa9acfa939616aebf251; review packet Commit B reported after push; no formal training and no outer access`

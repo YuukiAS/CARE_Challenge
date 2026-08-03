@@ -1,0 +1,12 @@
+{
+  "base_origin_main_sha": "81530239ac77eb69108d65602aca97fb8343670f",
+  "effective_contract_sha256": "1b02fb37fa30054b74f7b73b7bd15617d74ab931b4a12965ea1d700bb7fa3c1e",
+  "final_addendum_path": "prompts/tasks/20260803_care_ase_r2_last_hotfix_v9_final_addendum.md",
+  "final_addendum_sha256": "ea30e744aaaa0f429d0092574fd24eff58100ff64b08818149d6771829cfea2f",
+  "formal_training_started": false,
+  "implementation_source_commit_sha": "2069527d4d2f6357a0fddfa9df0c49223691a96f",
+  "outer_access_fold1": 0,
+  "outer_access_fold4": 0,
+  "status": "PASS",
+  "task_key": "20260803_care_ase_r2_last_hotfix_v9"
+}

@@ -1,0 +1,9 @@
+{
+  "formal_runtime_input_bundle_sha256": "430020313032544017fb0dab6a6c48fab746f9eeedbb4667131659282b2632e6",
+  "formal_training_started": false,
+  "implementation_source_commit_sha": "2069527d4d2f6357a0fddfa9df0c49223691a96f",
+  "outer_access_fold1": 0,
+  "outer_access_fold4": 0,
+  "status": "PASS",
+  "task_key": "20260803_care_ase_r2_last_hotfix_v9"
+}

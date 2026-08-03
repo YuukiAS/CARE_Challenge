@@ -1,0 +1,9 @@
+{
+  "decision": "REJECTED_AS_EXPECTED",
+  "expected_validator_exit": "nonzero",
+  "fixture": "resume_not_restore_sampler_or_next_hash",
+  "known_bad_fixture_rejected": true,
+  "observed_failures": [
+    "checkpoint"
+  ]
+}
