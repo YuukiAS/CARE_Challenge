@@ -1,0 +1,20 @@
+{
+  "all_background_cases": [],
+  "case_count_cinemyops": 15,
+  "case_count_myops": 15,
+  "checked_at_utc": "2026-08-03T11:11:05.198688Z",
+  "cine_pathology_positive_total_voxels": {
+    "2221": 60766
+  },
+  "cinemyops_scar_zero_cases": [],
+  "missing_required_anatomy_cases": [],
+  "myops_edema_zero_cases": [],
+  "myops_pathology_positive_total_voxels": {
+    "1220": 21089,
+    "2221": 13618
+  },
+  "myops_scar_zero_cases": [],
+  "source_casewise": "/users/a/e/aereinh/CARE/results/20260803_care_test_docker_official_submission_resume_after_rclone/official_label_volume_casewise.csv",
+  "source_summary": "/users/a/e/aereinh/CARE/results/20260803_care_test_docker_official_submission_resume_after_rclone/official_label_volume_summary.json",
+  "status": "PASS"
+}

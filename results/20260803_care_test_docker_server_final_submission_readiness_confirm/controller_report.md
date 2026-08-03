@@ -1,0 +1,19 @@
+最终服务器确认已经完成：两个 Docker archive 在服务器 final dist 中的 size/SHA 与冻结值一致，工位 FULL packet 记录了 MyoPS 15 例和 CineMyoPS 15 例官方输入根目录黑盒彩排通过，Drive 公链和邮件草稿也都可用于人工发送。服务器端没有运行 Docker、没有上传文件、没有发送组织方邮件；下一步只允许用户人工发送已经审计过的邮件。
+
+controller_verification_decision: VERIFIED_COMPLETE
+final_submission_status: READY_FOR_HUMAN_EMAIL_SEND
+server_final_dist: /users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_final_dist
+myops_archive_sha256: 638c1d54d1c75f3514f325695025c03bd8f43625c9f2877d72841db6ee2ac73b
+cinemyops_archive_sha256: c02db56bd52d14d3b5bbda9d204a20b7e4c061fd5e6012ffa1cebc67fb92c136
+myops_public_rehearsal_outputs: 15
+cinemyops_public_rehearsal_outputs: 15
+label_volume_audit_status: PASS
+drive_link_audit_status: PASS
+email_draft_status: PASS
+server_docker_run_performed: false
+server_upload_performed: false
+organizer_email_sent: false
+challenge_upload_performed: false
+validation_predictions_uploaded: false
+failures: []
+next_required_action: HUMAN_EMAIL_SEND

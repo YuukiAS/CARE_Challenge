@@ -1,0 +1,77 @@
+{
+  "checked_at_utc": "2026-08-03T11:11:06.307579Z",
+  "errors": [],
+  "files": {
+    "CineMyoPS-OrganAgent.tar.gz": {
+      "local_md5": "85b66d439b6b81690a1dc45924245265",
+      "local_sha256": "c02db56bd52d14d3b5bbda9d204a20b7e4c061fd5e6012ffa1cebc67fb92c136",
+      "local_size": 672040570,
+      "md5_match": true,
+      "name": "CineMyoPS-OrganAgent.tar.gz",
+      "remote_md5": "85b66d439b6b81690a1dc45924245265",
+      "remote_size": 672040570,
+      "size_match": true
+    },
+    "MyoPS-OrganAgent.tar.gz": {
+      "local_md5": "0c3383405cfd460e464158d711919647",
+      "local_sha256": "638c1d54d1c75f3514f325695025c03bd8f43625c9f2877d72841db6ee2ac73b",
+      "local_size": 4741640359,
+      "md5_match": true,
+      "name": "MyoPS-OrganAgent.tar.gz",
+      "remote_md5": "0c3383405cfd460e464158d711919647",
+      "remote_size": 4741640359,
+      "size_match": true
+    },
+    "SHA256SUMS": {
+      "local_md5": "b4a396bc7fff21ce2b1d52e902ff34c0",
+      "local_sha256": "aa61745c67ce7514f40f5533537f13b98440c9b58e41e632d76e2fb3a8e928f9",
+      "local_size": 184,
+      "md5_match": true,
+      "name": "SHA256SUMS",
+      "remote_md5": "b4a396bc7fff21ce2b1d52e902ff34c0",
+      "remote_size": 184,
+      "size_match": true
+    }
+  },
+  "links": {
+    "CineMyoPS-OrganAgent.tar.gz": {
+      "name": "CineMyoPS-OrganAgent.tar.gz",
+      "url": "https://drive.google.com/open?id=1JjME5rUAUvZsV1n_oH8UFNK8O7CAHJ_L"
+    },
+    "MyoPS-OrganAgent.tar.gz": {
+      "name": "MyoPS-OrganAgent.tar.gz",
+      "url": "https://drive.google.com/open?id=1qGb6RY5t1AkuRhpZPip2VM7Uue35roVR"
+    },
+    "SHA256SUMS": {
+      "name": "SHA256SUMS",
+      "url": "https://drive.google.com/open?id=1XCHvuv5gWyVQkKblNYYyQL4bLMLeJBvq"
+    }
+  },
+  "live_unauthenticated_http_checks": {
+    "CineMyoPS-OrganAgent.tar.gz": {
+      "curl_exit_code": 0,
+      "http_status": 200,
+      "public_access_ok": true,
+      "url": "https://drive.google.com/open?id=1JjME5rUAUvZsV1n_oH8UFNK8O7CAHJ_L"
+    },
+    "MyoPS-OrganAgent.tar.gz": {
+      "curl_exit_code": 0,
+      "http_status": 200,
+      "public_access_ok": true,
+      "url": "https://drive.google.com/open?id=1qGb6RY5t1AkuRhpZPip2VM7Uue35roVR"
+    },
+    "SHA256SUMS": {
+      "curl_exit_code": 0,
+      "http_status": 200,
+      "public_access_ok": true,
+      "url": "https://drive.google.com/open?id=1XCHvuv5gWyVQkKblNYYyQL4bLMLeJBvq"
+    }
+  },
+  "rclone_config_read": false,
+  "remote": "gdrive:/CARE2026_Myocardium_Test_OrganAgent_20260803",
+  "server_upload_performed": false,
+  "status": "PASS",
+  "stored_links_status": "PASS",
+  "stored_public_access_status": "PASS",
+  "stored_upload_receipt_status": "PASS"
+}

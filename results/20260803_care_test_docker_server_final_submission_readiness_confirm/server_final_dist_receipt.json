@@ -1,0 +1,50 @@
+{
+  "checked_at_utc": "2026-08-03T11:10:16.456854Z",
+  "errors": [],
+  "files": [
+    {
+      "expected_sha256": "638c1d54d1c75f3514f325695025c03bd8f43625c9f2877d72841db6ee2ac73b",
+      "expected_size": 4741640359,
+      "name": "MyoPS-OrganAgent.tar.gz",
+      "ok": true,
+      "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_final_dist/MyoPS-OrganAgent.tar.gz",
+      "sha256": "638c1d54d1c75f3514f325695025c03bd8f43625c9f2877d72841db6ee2ac73b",
+      "size": 4741640359
+    },
+    {
+      "expected_sha256": "c02db56bd52d14d3b5bbda9d204a20b7e4c061fd5e6012ffa1cebc67fb92c136",
+      "expected_size": 672040570,
+      "name": "CineMyoPS-OrganAgent.tar.gz",
+      "ok": true,
+      "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_final_dist/CineMyoPS-OrganAgent.tar.gz",
+      "sha256": "c02db56bd52d14d3b5bbda9d204a20b7e4c061fd5e6012ffa1cebc67fb92c136",
+      "size": 672040570
+    },
+    {
+      "name": "SHA256SUMS",
+      "ok": true,
+      "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_final_dist/SHA256SUMS",
+      "sha256": "aa61745c67ce7514f40f5533537f13b98440c9b58e41e632d76e2fb3a8e928f9",
+      "size": 184
+    },
+    {
+      "name": "receipts/WORKSTATION_VALIDATION_PACKET.tar.gz",
+      "ok": true,
+      "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_final_dist/receipts/WORKSTATION_VALIDATION_PACKET.tar.gz",
+      "sha256": "f4d042db7875be5bba453dcfc510270984b36a47bb0853b3ef209b4b602ed210",
+      "size": 10395
+    }
+  ],
+  "server_final_dist": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_final_dist",
+  "sha256sum_check": {
+    "args": [
+      "sha256sum",
+      "-c",
+      "SHA256SUMS"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "MyoPS-OrganAgent.tar.gz: OK\nCineMyoPS-OrganAgent.tar.gz: OK\n"
+  },
+  "status": "PASS"
+}

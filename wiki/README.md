@@ -1,5 +1,25 @@
 # CARE 架构 Wiki
 
+architecture_version: `care-test-docker-server-final-submission-readiness-confirmed-20260803`
+latest_verified_runtime: `server final dist archive size/SHA, FULL 15+15 official rehearsal packet, Drive public links, and email draft independently audited on server`
+latest_scientific_status: `READY_FOR_HUMAN_EMAIL_SEND: no model changes, no server Docker run, no challenge/validation prediction upload, organizer email draft ready but not sent`
+latest_controller_task: `20260803_care_test_docker_server_final_submission_readiness_confirm`
+route_status: `MAIN_ONLY_DOCKER_SUBMISSION_READY_FOR_HUMAN_EMAIL_SEND`
+
+当前机器真值是 `prompts/routes/handoffs/CURRENT.md`。服务器端已经只读确认最终提交资源：`/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_final_dist` 中的两个 Docker archive 与冻结 size/SHA 一致，最新 FULL 工位 packet 记录 MyoPS 15 例与 CineMyoPS 15 例官方 `/input` 根目录黑盒彩排通过，标签体积、输入只读完整性、合作者 MyoPS reference 接口边界、Google Drive 公链和英文邮件草稿全部通过。当前只授权用户人工发送已审计邮件；服务器没有运行 Docker，没有上传 challenge 或 validation predictions，也没有发送组织方邮件。
+
+关键证据：
+
+```text
+results/20260803_care_test_docker_server_final_submission_readiness_confirm/server_final_dist_receipt.json
+results/20260803_care_test_docker_server_final_submission_readiness_confirm/official_rehearsal_packet_audit.json
+results/20260803_care_test_docker_server_final_submission_readiness_confirm/label_volume_audit.json
+results/20260803_care_test_docker_server_final_submission_readiness_confirm/drive_link_audit.json
+results/20260803_care_test_docker_server_final_submission_readiness_confirm/final_submission_readiness.json
+results/20260803_care_test_docker_server_final_submission_readiness_confirm/strict_validator_report.json
+results/20260803_care_test_docker_official_submission_rehearsal_and_staging/submission_email_draft.md
+```
+
 architecture_version: `care-test-docker-full-official-rehearsal-drive-staging-ready-20260803`
 latest_verified_runtime: `final MyoPS and Cine Docker archives clean-loaded and passed official /input root black-box rehearsal on 15+15 public validation cases; Drive upload size/hash and public links verified`
 latest_scientific_status: `FULL_OFFICIAL_REHEARSAL_AND_DRIVE_STAGING_PASS: no model changes, no challenge/validation prediction upload, organizer email draft ready but not sent`

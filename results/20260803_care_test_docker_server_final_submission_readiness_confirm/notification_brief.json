@@ -1,0 +1,18 @@
+{
+  "blocked_or_failure_reason": "",
+  "commit_status": "complete_in_origin_main_commit",
+  "evidence_paths": [
+    "/users/a/e/aereinh/CARE/results/20260803_care_test_docker_server_final_submission_readiness_confirm/server_final_dist_receipt.json",
+    "/users/a/e/aereinh/CARE/results/20260803_care_test_docker_server_final_submission_readiness_confirm/official_rehearsal_packet_audit.json",
+    "/users/a/e/aereinh/CARE/results/20260803_care_test_docker_server_final_submission_readiness_confirm/label_volume_audit.json",
+    "/users/a/e/aereinh/CARE/results/20260803_care_test_docker_server_final_submission_readiness_confirm/drive_link_audit.json",
+    "/users/a/e/aereinh/CARE/results/20260803_care_test_docker_server_final_submission_readiness_confirm/final_submission_readiness.json",
+    "/users/a/e/aereinh/CARE/results/20260803_care_test_docker_server_final_submission_readiness_confirm/strict_validator_report.json"
+  ],
+  "final_status": "complete",
+  "key_conclusion": "Final server archives, full 15+15 official rehearsal, Drive links, and email draft are ready for human email send.",
+  "next_step": "Human may send the prepared organizer email manually.",
+  "push_status": "origin_main_push_verified_after_commit",
+  "slurm_terminal_status": "not_applicable_no_slurm",
+  "task_name": "20260803_care_test_docker_server_final_submission_readiness_confirm"
+}

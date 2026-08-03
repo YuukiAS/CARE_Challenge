@@ -1,5 +1,49 @@
 # CARE 当前开发状态
 
+## 2026-08-03 最新机器真值：服务器最终确认通过，可由人工发送 Docker 提交邮件
+
+服务器端已经对最终 MyoPS 与 CineMyoPS Docker 提交资源做完只读确认：final dist 中两个 archive 的 size/SHA 与冻结值一致，最新 FULL 工位 packet 已解包审计，MyoPS 15 例与 CineMyoPS 15 例官方 `/input` 根目录黑盒彩排、标签体积审计、输入只读完整性、合作者 MyoPS reference 接口边界、Google Drive 公链和英文邮件草稿全部通过。当前状态只授权用户人工发送已审计邮件；服务器没有运行 Docker，没有上传 challenge 或 validation predictions，没有发送组织方邮件，也没有读取或提交 rclone secret。
+
+```text
+state_id: care_test_docker_server_final_submission_readiness_confirm_20260803
+active_development_branch: main
+active_worktree: /users/a/e/aereinh/CARE
+single_active_scientific_line: CARE_TEST_DOCKER_READY_FOR_HUMAN_EMAIL_SEND
+result_root: results/20260803_care_test_docker_server_final_submission_readiness_confirm
+server_final_dist: /users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_final_dist
+server_full_rehearsal_packet: /users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_official_submission_rehearsal_and_staging/OFFICIAL_SUBMISSION_REHEARSAL_PACKET_FULL.tar.gz
+controller_verification_decision: VERIFIED_COMPLETE
+final_submission_status: READY_FOR_HUMAN_EMAIL_SEND
+myops_archive_size: 4741640359
+myops_archive_sha256: 638c1d54d1c75f3514f325695025c03bd8f43625c9f2877d72841db6ee2ac73b
+cinemyops_archive_size: 672040570
+cinemyops_archive_sha256: c02db56bd52d14d3b5bbda9d204a20b7e4c061fd5e6012ffa1cebc67fb92c136
+myops_official_output_count: 15
+cinemyops_official_output_count: 15
+label_volume_audit: PASS
+google_drive_public_links_verified: true
+email_draft_ready: true
+email_ready_to_send: true
+server_docker_run_performed: false
+server_upload_performed: false
+organizer_email_sent: false
+challenge_upload_performed: false
+validation_predictions_uploaded: false
+strict_validator: PASS
+```
+
+关键证据：
+
+```text
+results/20260803_care_test_docker_server_final_submission_readiness_confirm/server_final_dist_receipt.json
+results/20260803_care_test_docker_server_final_submission_readiness_confirm/official_rehearsal_packet_audit.json
+results/20260803_care_test_docker_server_final_submission_readiness_confirm/label_volume_audit.json
+results/20260803_care_test_docker_server_final_submission_readiness_confirm/drive_link_audit.json
+results/20260803_care_test_docker_server_final_submission_readiness_confirm/final_submission_readiness.json
+results/20260803_care_test_docker_server_final_submission_readiness_confirm/strict_validator_report.json
+results/20260803_care_test_docker_official_submission_rehearsal_and_staging/submission_email_draft.md
+```
+
 ## 2026-08-03 最新机器真值：最终 Docker archives 已完成 15+15 官方 public validation 黑盒彩排与 Drive staging
 
 最终 MyoPS 与 CineMyoPS Docker archives 已从 clean archive 重新 load，并按 CARE 官方 `/input` 根目录结构完成 MyoPS 15 例与 CineMyoPS 15 例 public validation 黑盒彩排。两个镜像均使用无额外 command、无交互、`--network none` 的官方接口运行；两项任务都恰好写出 15 个 `<CaseID>_pred.nii.gz`，无缺例、重复或未知病例。逐病例 NIfTI、标签集合、geometry、输入只读完整性和 anatomy/pathology label volume audit 全部通过。Google Drive 已只上传两个最终 Docker archive 和 `SHA256SUMS`，远端 size/hash 与本地一致，公开链接已用未登录 HTTP 检查通过。英文邮件草稿已填入真实链接并处于人工可发送状态；未发送邮件，未上传 challenge 或 validation predictions，未读取/提交/回传 rclone secrets。

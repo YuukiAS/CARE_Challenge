@@ -1,0 +1,7 @@
+step,status,evidence
+server_final_dist,PASS,server_final_dist_receipt.json
+official_rehearsal_packet,PASS,official_rehearsal_packet_audit.json
+label_volume_audit,PASS,label_volume_audit.json
+drive_link_audit,PASS,drive_link_audit.json
+email_draft_audit,PASS,email_draft_audit.md
+final_readiness,READY_FOR_HUMAN_EMAIL_SEND,final_submission_readiness.json

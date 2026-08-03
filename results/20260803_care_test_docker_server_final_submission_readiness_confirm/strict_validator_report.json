@@ -1,0 +1,24 @@
+{
+  "failures": [],
+  "final_submission_status": "READY_FOR_HUMAN_EMAIL_SEND",
+  "known_bad_coverage": [
+    "server final archive size or SHA mismatch",
+    "legacy 3+3 packet used instead of FULL 15+15 packet",
+    "FULL packet missing label-volume or Drive receipts",
+    "missing or duplicate official outputs",
+    "all-background outputs accepted",
+    "required anatomy labels absent",
+    "pathology labels all-zero across full public rehearsal",
+    "Cine float32 non-integer storage accepted",
+    "collaborator MyoPS reference treated as final model",
+    "Drive links unverified or linked to wrong files",
+    "email draft has pending links or claims hosted/challenge results",
+    "server Docker run/upload/organizer email send performed",
+    "heavy archive/checkpoint/NIfTI/secret staged to Git"
+  ],
+  "organizer_email_sent": false,
+  "server_docker_run_performed": false,
+  "server_upload_performed": false,
+  "status": "PASS",
+  "task": "20260803_care_test_docker_server_final_submission_readiness_confirm"
+}

@@ -1,0 +1,16 @@
+{
+  "challenge_upload_performed": false,
+  "checked_at_utc": "2026-08-03T11:11:06.334575Z",
+  "drive_links_ok": true,
+  "email_draft_ok": true,
+  "failures": [],
+  "label_volume_audit_ok": true,
+  "official_rehearsal_packet_ok": true,
+  "organizer_email_sent": false,
+  "ready_for_human_email_send": true,
+  "server_docker_run_performed": false,
+  "server_final_dist_ok": true,
+  "server_upload_performed": false,
+  "status": "READY_FOR_HUMAN_EMAIL_SEND",
+  "validation_predictions_uploaded": false
+}
