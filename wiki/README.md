@@ -1,5 +1,31 @@
 # CARE 架构 Wiki
 
+architecture_version: `care-test-docker-final-workstation-validated-returned-20260803`
+latest_verified_runtime: `WSL2 Docker Engine built MyoPS pure five-fold nnU-Net image, loaded byte-preserved collaborator Cine image, validated CPU smoke/determinism, saved/loaded clean archives, and returned final archives to server final dist`
+latest_scientific_status: `FINAL_DOCKER_WORKSTATION_VALIDATED_RETURNED: MyoPS host equivalence PASS with documented Case1012 2-voxel stale expected-output override; Cine black-box CPU determinism PASS; no challenge/validation/netdisk upload and no organizer email`
+latest_controller_task: `20260803_care_test_docker_workstation_build_validate_return`
+route_status: `MAIN_ONLY_FINAL_DOCKER_VALIDATED_RETURNED`
+
+当前机器真值是 `prompts/routes/handoffs/CURRENT.md`。MyoPS 最终镜像 `care-myocardium-myops:organagent` 已在工位 WSL2 以纯五折 nnU-Net context 构建，镜像内确认存在 folds `0-4` 的 `checkpoint_best.pth`；CineMyoPS 最终镜像 `care-myocardium-cinemyops:organagent` 由合作者原字节 archive 直接 load。两个镜像均完成 CPU smoke、两次确定性和 clean save/load/run，最终 archives 已位于本地 dist 和服务器 final dist。MyoPS host equivalence 对 Case1012 存在 2 个 voxel 的旧 expected output 微差异，已按用户确认的服务器端 expected 输出更新原因显式记录为 override；Cine 仅报告黑盒运行、schema、geometry 和 determinism，不声称 host-equivalence Dice。未上传 challenge、validation、网盘，未给组织方发送邮件。
+
+关键证据：
+
+```text
+results/20260803_care_test_docker_workstation_build_validate_return/bundle_verification.json
+results/20260803_care_test_docker_workstation_build_validate_return/docker_installation_receipt.json
+results/20260803_care_test_docker_workstation_build_validate_return/build_receipt.json
+results/20260803_care_test_docker_workstation_build_validate_return/image_asset_receipt.json
+results/20260803_care_test_docker_workstation_build_validate_return/myops_cpu_smoke_casewise.csv
+results/20260803_care_test_docker_workstation_build_validate_return/myops_cpu_determinism_casewise.csv
+results/20260803_care_test_docker_workstation_build_validate_return/myops_host_equivalence_casewise.csv
+results/20260803_care_test_docker_workstation_build_validate_return/cine_cpu_smoke_casewise.csv
+results/20260803_care_test_docker_workstation_build_validate_return/cine_cpu_determinism_casewise.csv
+results/20260803_care_test_docker_workstation_build_validate_return/clean_save_load_run_receipt.json
+results/20260803_care_test_docker_workstation_build_validate_return/remote_return_receipt.json
+results/20260803_care_test_docker_workstation_build_validate_return/strict_validator_report.json
+/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_final_dist
+```
+
 architecture_version: `care-ase-final-model-fold2-fold3-outer-20260802`
 latest_verified_runtime: `CARE-ASE fold2/fold3 fixed step14000 checkpoints reloaded with final-logit parity 0.0; W5 outer evaluation used tiled sliding-window average logits on 44 outer cases per fold`
 latest_scientific_status: `CARE_ASE_VERIFIED_COMPLETE_NO_HOSTED_CLAIM: pooled fold2+fold3 outer Dice scar 0.5235 and pure-edema 0.7953; full same-split stock Dice/HD was not recomputed in this packet`

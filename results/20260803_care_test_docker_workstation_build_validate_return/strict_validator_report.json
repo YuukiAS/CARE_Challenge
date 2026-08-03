@@ -1,0 +1,24 @@
+{
+  "failures": [],
+  "known_bad_coverage": [
+    "MyoPS image internal checkpoint check missing",
+    "MyoPS image has fewer than five checkpoint_best.pth files",
+    "Docker daemon unavailable or non-linux server",
+    "image is not linux/amd64",
+    "MyoPS only ran once",
+    "Cine only ran once",
+    "array equal but geometry differs",
+    "MyoPS host equivalence above threshold without approved stale-expected override",
+    "Cine archive SHA changed",
+    "Cine archive was docker-saved or recompressed",
+    "clean-load run was not rerun",
+    "archive SHA checked without actual output checks",
+    "final server dist missing an archive",
+    "local and remote MyoPS SHA differ",
+    "heavy artifacts staged to Git",
+    "challenge/validation/netdisk upload attempted",
+    "organizer email sent"
+  ],
+  "status": "PASS",
+  "task": "20260803_care_test_docker_workstation_build_validate_return"
+}

@@ -1,0 +1,169 @@
+{
+  "bundle_archive": "/home/yuukias/code/CARE/.local_runtime/20260803_care_test_docker_workstation_build_validate_return/downloads/MyoPS-nnUNet-workstation-bundle.tar.gz",
+  "bundle_root": "/home/yuukias/code/CARE/.local_runtime/20260803_care_test_docker_workstation_build_validate_return/extracted/myops_bundle",
+  "challenge_upload_performed": false,
+  "checks": [
+    {
+      "actual": 35,
+      "name": "bundle_file_count_is_35",
+      "status": "PASS"
+    },
+    {
+      "actual": 13,
+      "name": "context_file_count_is_13",
+      "status": "PASS"
+    },
+    {
+      "name": "no_symlinks",
+      "status": "PASS"
+    },
+    {
+      "name": "dockerfile_copies_models",
+      "status": "PASS"
+    },
+    {
+      "name": "requirements_lock_pins",
+      "pins": {
+        "nnunetv2": "2.7.0",
+        "torch": "2.11.0"
+      },
+      "status": "PASS"
+    },
+    {
+      "name": "predict_uses_folds_0_to_4",
+      "status": "PASS"
+    },
+    {
+      "name": "predict_uses_checkpoint_best",
+      "status": "PASS"
+    },
+    {
+      "name": "predict_uses_default_tta",
+      "status": "PASS"
+    },
+    {
+      "name": "label_map_correct",
+      "status": "PASS"
+    },
+    {
+      "name": "plans_json_exists",
+      "status": "PASS"
+    },
+    {
+      "name": "dataset_json_exists",
+      "status": "PASS"
+    },
+    {
+      "assets": [
+        {
+          "expected_sha256": "f139ca5525322d340a0284c6562a9bcb9cb9cae0a512e14ef40ce85a66f53278",
+          "fold": 0,
+          "path": "/home/yuukias/code/CARE/.local_runtime/20260803_care_test_docker_workstation_build_validate_return/extracted/myops_bundle/contexts/MyoPS/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_best.pth",
+          "sha256": "f139ca5525322d340a0284c6562a9bcb9cb9cae0a512e14ef40ce85a66f53278",
+          "size_bytes": 357374639,
+          "status": "PASS"
+        },
+        {
+          "expected_sha256": "b92d56b1e24ce826081671acc4e048e5d48b191f6dcb9836747ae82d93acd1e2",
+          "fold": 1,
+          "path": "/home/yuukias/code/CARE/.local_runtime/20260803_care_test_docker_workstation_build_validate_return/extracted/myops_bundle/contexts/MyoPS/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/checkpoint_best.pth",
+          "sha256": "b92d56b1e24ce826081671acc4e048e5d48b191f6dcb9836747ae82d93acd1e2",
+          "size_bytes": 357341103,
+          "status": "PASS"
+        },
+        {
+          "expected_sha256": "9e328bf4bd6ed9eeadac6f41c5de303c69dfc078dfeac3e64b26e18d3e09d38d",
+          "fold": 2,
+          "path": "/home/yuukias/code/CARE/.local_runtime/20260803_care_test_docker_workstation_build_validate_return/extracted/myops_bundle/contexts/MyoPS/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_2/checkpoint_best.pth",
+          "sha256": "9e328bf4bd6ed9eeadac6f41c5de303c69dfc078dfeac3e64b26e18d3e09d38d",
+          "size_bytes": 357327215,
+          "status": "PASS"
+        },
+        {
+          "expected_sha256": "9c2c2cf0dea4eb8a691c6680fabc66f6456233ba83867466a06ffd5abda3462b",
+          "fold": 3,
+          "path": "/home/yuukias/code/CARE/.local_runtime/20260803_care_test_docker_workstation_build_validate_return/extracted/myops_bundle/contexts/MyoPS/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_3/checkpoint_best.pth",
+          "sha256": "9c2c2cf0dea4eb8a691c6680fabc66f6456233ba83867466a06ffd5abda3462b",
+          "size_bytes": 357354799,
+          "status": "PASS"
+        },
+        {
+          "expected_sha256": "11c6ccfec5dc51be7c08f1713058412694e1b7def1c5d8cd5520f7f7568aeff2",
+          "fold": 4,
+          "path": "/home/yuukias/code/CARE/.local_runtime/20260803_care_test_docker_workstation_build_validate_return/extracted/myops_bundle/contexts/MyoPS/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_4/checkpoint_best.pth",
+          "sha256": "11c6ccfec5dc51be7c08f1713058412694e1b7def1c5d8cd5520f7f7568aeff2",
+          "size_bytes": 357367855,
+          "status": "PASS"
+        }
+      ],
+      "name": "five_checkpoint_best_match_manifest",
+      "status": "PASS"
+    },
+    {
+      "expected_sha256": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
+      "name": "plans.json_matches_manifest",
+      "sha256": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
+      "status": "PASS"
+    },
+    {
+      "expected_sha256": "8437262d92fb898c8d16a89150efd4629602dd71e0fa5bbcf1c6c80cc3b535ae",
+      "name": "dataset.json_matches_manifest",
+      "sha256": "8437262d92fb898c8d16a89150efd4629602dd71e0fa5bbcf1c6c80cc3b535ae",
+      "status": "PASS"
+    },
+    {
+      "hits": [],
+      "name": "no_mosaic_or_forbidden_myops_weights_source_or_config_in_context",
+      "status": "PASS"
+    },
+    {
+      "name": "nnunet_source_dependency_evidence_present",
+      "status": "PASS"
+    },
+    {
+      "case_ids": [
+        "Case1012",
+        "Case1001",
+        "Case1004"
+      ],
+      "name": "sentinel_inputs_complete",
+      "status": "PASS"
+    },
+    {
+      "case_ids": [
+        "Case1012",
+        "Case1001",
+        "Case1004"
+      ],
+      "name": "expected_outputs_complete",
+      "status": "PASS"
+    },
+    {
+      "name": "sentinel_manifest_complete",
+      "status": "PASS"
+    },
+    {
+      "hits": [],
+      "name": "no_server_absolute_runtime_dependencies",
+      "status": "PASS"
+    }
+  ],
+  "created_at_utc": "2026-08-03T01:12:50Z",
+  "failures": [],
+  "model_root": "/home/yuukias/code/CARE/.local_runtime/20260803_care_test_docker_workstation_build_validate_return/extracted/myops_bundle/contexts/MyoPS/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres",
+  "myops_context": "/home/yuukias/code/CARE/.local_runtime/20260803_care_test_docker_workstation_build_validate_return/extracted/myops_bundle/contexts/MyoPS",
+  "official_label_map": {
+    "0": 0,
+    "1": 200,
+    "2": 500,
+    "3": 600,
+    "4": 1220,
+    "5": 2221
+  },
+  "organizer_email_sent": false,
+  "selected_cinemyops": "collaborator_provided_prebuilt_mosaic_docker",
+  "selected_myops": "dataset501_nnunet_v2_5fold_best_default_tta_all_six_classes",
+  "status": "PASS",
+  "task": "20260803_care_test_docker_workstation_build_validate_return",
+  "validation_upload_performed": false
+}

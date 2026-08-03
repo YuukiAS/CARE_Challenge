@@ -1,0 +1,12 @@
+{
+  "build_platform": "linux/amd64",
+  "checkpoint_internal_check": "PASS",
+  "created_at_utc": "2026-08-03T01:22:31Z",
+  "image_id": "sha256:52f8d872a51c482d488e3d2a14893958a6b1d6c8c91fffed9985ee330fcec911",
+  "image_os_arch": "linux/amd64",
+  "image_size_bytes": 4755438923,
+  "image_tag": "care-myocardium-myops:organagent",
+  "nnunetv2_predict_help": "PASS",
+  "status": "PASS",
+  "task": "20260803_care_test_docker_workstation_build_validate_return"
+}

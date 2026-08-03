@@ -1,0 +1,25 @@
+{
+  "allowed_labels": [
+    0,
+    200,
+    500,
+    2221
+  ],
+  "case_ids": [
+    "Case1011",
+    "Case1006",
+    "Case1003"
+  ],
+  "challenge_upload_performed": false,
+  "determinism_pass": true,
+  "host_equivalence_claimed": false,
+  "image_id": "sha256:5b10e6272f555c5ac54a23cca5d3819518bdb7d8d74d9e6a5496fea4991318ae",
+  "organizer_email_sent": false,
+  "run1_elapsed_seconds": 253.61,
+  "run2_elapsed_seconds": 254.19,
+  "smoke_pass": true,
+  "status": "PASS",
+  "task": "20260803_care_test_docker_workstation_build_validate_return",
+  "total_elapsed_seconds": 507.8,
+  "validation_upload_performed": false
+}
