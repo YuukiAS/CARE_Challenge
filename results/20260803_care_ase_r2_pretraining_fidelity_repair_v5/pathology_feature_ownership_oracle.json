@@ -1,0 +1,8 @@
+{
+  "edema_full_feature_owner": "edema_branch.forward_full",
+  "edema_half_feature_owner": "edema_branch.forward_half",
+  "scar_full_feature_owner": "scar_branch.forward_full",
+  "scar_half_feature_owner": "scar_branch.forward_half",
+  "shared_pseudo_half_feature_count": 0,
+  "status": "PASS"
+}

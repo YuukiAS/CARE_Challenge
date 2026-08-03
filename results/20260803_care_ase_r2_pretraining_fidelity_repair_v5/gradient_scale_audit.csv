@@ -1,0 +1,6 @@
+prefix,gradient_norm_sum,gradient_tensor_count
+scar_branch.,3.165817696371729,68
+edema_branch.,3.551251932248668,74
+component_heads.,1.5467739375308156,22
+edema_dilation_context.,0.0,18
+anatomy_geometry_heads.,0.24274870355293388,6

@@ -1,0 +1,51 @@
+{
+  "care_padding_restore_policy": "stock transform uses padding_value_seg=-1 for spatial padding; CARE-ASE target builder preserves seg==-1 as ignore even though stock validation transform may remove labels",
+  "configuration": "3d_fullres",
+  "deep_supervision_target_transform_ordering": "stock DownsampleSegForDSTransform is last when deep_supervision_scales are provided",
+  "dummy_2d": true,
+  "final_patch_size": [
+    20,
+    256,
+    256
+  ],
+  "focused_coordinate_enters_initial_patch": true,
+  "foreground_oversampling_behavior": "CARE-ASE sampler supplies focused coordinate; stock spatial transform uses random_crop=False around initial patch",
+  "initial_patch_size": [
+    20,
+    301,
+    301
+  ],
+  "intensity_transform_ordering": [
+    "GaussianNoise",
+    "GaussianBlur",
+    "MultiplicativeBrightness",
+    "Contrast",
+    "SimulateLowResolution",
+    "GammaInvert",
+    "Gamma",
+    "Mirror"
+  ],
+  "mirror_axes": [
+    0,
+    1,
+    2
+  ],
+  "plans_path": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans.json",
+  "rotation_for_DA": [
+    -3.141592653589793,
+    3.141592653589793
+  ],
+  "scale_range": [
+    0.7,
+    1.4
+  ],
+  "sha256": "f83e441e9b8ec2570d4e90c9bb176db01e2c02be478262877d6db39dbcc86437",
+  "spatial_padding_value_seg": -1,
+  "spatial_transform_center_dist_from_border": 0,
+  "spatial_transform_random_crop": false,
+  "status": "PASS",
+  "trainer_class": "nnunetv2.training.nnUNetTrainer.nnUNetTrainer.nnUNetTrainer",
+  "trainer_source_path": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/training/nnUNetTrainer/nnUNetTrainer.py",
+  "trainer_source_sha256": "f9cad95db820fbb7e02b9ba33e1ca5b951e402026eee39b710886c05f7ef5e97",
+  "z_axis_semantics": "dummy_2d converts 3D to 2D for spatial transform; z index is not mixed by spatial rotation/scaling for Dataset501 final patch"
+}

@@ -1,0 +1,28 @@
+{
+  "commands": [
+    {
+      "command": "python -m py_compile scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py scripts/validation/validate_care_ase_r2_g1.py scripts/validation/build_care_ase_r2_v5_review_receipts.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/validation/validate_care_ase_r2_g1.py --output-dir results/20260803_care_ase_r2_pretraining_fidelity_repair_v5",
+      "exit_code": 0,
+      "observed": "decision PASS; known_bad_count_passed=44; required_known_bad_count=44"
+    },
+    {
+      "command": "python scripts/validation/build_care_ase_r2_v5_review_receipts.py --output-dir results/20260803_care_ase_r2_pretraining_fidelity_repair_v5",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m pytest tests/care_ase -q",
+      "exit_code": 0,
+      "observed": "20 passed"
+    },
+    {
+      "command": "git diff --check -- changed CARE-ASE scripts",
+      "exit_code": 0
+    }
+  ],
+  "known_nonblocking_full_diff_check_issue": "Full git diff --check reports unrelated pre-existing leaderboard CSV trailing whitespace outside this repair scope.",
+  "status": "PASS"
+}

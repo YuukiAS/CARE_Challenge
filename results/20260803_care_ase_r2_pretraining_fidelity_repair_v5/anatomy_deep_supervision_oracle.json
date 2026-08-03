@@ -1,0 +1,49 @@
+{
+  "anatomy4_loss_uses_full_and_half": true,
+  "anatomy_half_ds_missing_count": 0,
+  "deep_supervision_weight_source": {
+    "full": 0.6666666666666666,
+    "half": 0.3333333333333333,
+    "output_index_by_stage": {
+      "0": 5,
+      "1": 4,
+      "2": 3,
+      "3": 2,
+      "4": 1,
+      "5": 0
+    },
+    "raw_selected_weights": {
+      "full": 0.5161290322580645,
+      "half": 0.25806451612903225
+    },
+    "selected_output_order": [
+      "full",
+      "half"
+    ],
+    "selected_stage_indices": {
+      "full": 5,
+      "half": 4
+    },
+    "source": "stock_nnunet_deep_supervision_formula_1_over_2_power_output_order_normalized_over_highest_two_pathology_scales",
+    "source_runtime": "nnUNetTrainer._build_loss().weight_factors",
+    "stock_decoder_seg_layer_count": 6,
+    "stock_raw_weights_by_decoder_stage": {
+      "0": 0.0,
+      "1": 0.03225806451612903,
+      "2": 0.06451612903225806,
+      "3": 0.12903225806451613,
+      "4": 0.25806451612903225,
+      "5": 0.5161290322580645
+    },
+    "stock_runtime_weight_factors": [
+      0.5161290322580645,
+      0.25806451612903225,
+      0.12903225806451613,
+      0.06451612903225806,
+      0.03225806451612903,
+      0.0
+    ]
+  },
+  "status": "PASS",
+  "total_anatomy4_loss_weight": 0.5
+}

@@ -1,0 +1,18 @@
+{
+  "design_delta": {
+    "field": "edema_weak_lge_gate_initial_output",
+    "previous_value": 0.0,
+    "reason": "break_zero_gate_plus_zero_residual_projection_dead_path",
+    "step0_final_logit_parity_preserved_by": "zero_initialized_named_residual_projection",
+    "user_external_review_required": true,
+    "v5_value": 0.05
+  },
+  "first_backward_projection_gradient_min": 0.0010676203528419137,
+  "gate_output_step0": 0.04999999701976776,
+  "gate_output_tolerance": 1e-06,
+  "residual_projection_weight_max_abs_step0": 0.0,
+  "second_backward_adapter_gradient_min": 0.0026458767242729664,
+  "second_backward_gate_gradient_min": 0.0026458767242729664,
+  "status": "PASS",
+  "step0_final_logit_parity_max_abs": 0.0
+}

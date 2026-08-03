@@ -1,0 +1,11 @@
+{
+  "audited_patterns": [
+    "outer_eval/fold_*/evaluation_receipt.json",
+    "outer_eval/fold_*/consumed_permit_token*.json",
+    "outer_eval/fold_*/*outer*receipt*.json"
+  ],
+  "audited_result_root": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5",
+  "outer_access_count_before_freeze": 0,
+  "outer_access_evidence_before_freeze": [],
+  "status": "PASS"
+}

@@ -1,0 +1,16 @@
+{
+  "candidate_commit_sha": "f4ecd049bb09a47c38305b932ef116d45b37c160",
+  "reviewed_paths": [
+    "scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py",
+    "scripts/validation/validate_care_ase_r2_g1.py",
+    "scripts/validation/build_care_ase_r2_v5_review_receipts.py",
+    "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/canonical_stock_oof_provenance_receipt.json",
+    "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_validator_report.json",
+    "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/delta_mutation_detection_report.json"
+  ],
+  "source_sha256": {
+    "scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py": "6e58a87e32e1b96492d3b1cd3e36fd6349c3e242470292944225272c858e906c",
+    "scripts/validation/build_care_ase_r2_v5_review_receipts.py": "ac94697c35f37e1b08b11ecdd00fdcd8b29f851b0298f95a379aee39409a6873",
+    "scripts/validation/validate_care_ase_r2_g1.py": "85873253564801c936225b3e47549d1a63a791961fb93d1aa40a0cb79dff5a02"
+  }
+}

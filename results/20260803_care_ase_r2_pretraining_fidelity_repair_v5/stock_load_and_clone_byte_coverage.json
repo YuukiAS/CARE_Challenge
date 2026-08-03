@@ -1,0 +1,9 @@
+{
+  "allowlist_missing_keys": [],
+  "allowlist_unexpected_keys": [],
+  "status": "PASS",
+  "stock_encoder_load_byte_coverage": 1.0,
+  "stock_load_missing_keys": [],
+  "stock_load_unexpected_keys": [],
+  "stock_low_mid_decoder_load_byte_coverage": 1.0
+}

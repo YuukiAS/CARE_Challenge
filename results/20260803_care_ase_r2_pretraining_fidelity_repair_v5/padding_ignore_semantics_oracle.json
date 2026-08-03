@@ -1,0 +1,8 @@
+{
+  "image_padding_value": 0,
+  "padding_as_background_count": 0,
+  "padding_voxel_count": 864,
+  "segmentation_padding_value": -1,
+  "status": "PASS",
+  "target_builder_excludes_seg_minus_1": true
+}

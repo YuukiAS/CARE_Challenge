@@ -1,0 +1,903 @@
+{
+  "known_bad": [
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/stage_2000_4000_8000",
+        "--known-bad-fixture",
+        "stage_2000_4000_8000"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "stage_2000_4000_8000",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "scheduler"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"stage_2000_4000_8000\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"scheduler\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/scheduler_none_or_static_lr",
+        "--known-bad-fixture",
+        "scheduler_none_or_static_lr"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "scheduler_none_or_static_lr",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "scheduler"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"scheduler_none_or_static_lr\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"scheduler\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/stage_A_B_complete_only",
+        "--known-bad-fixture",
+        "stage_A_B_complete_only"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "stage_A_B_complete_only",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "sampler"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"stage_A_B_complete_only\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"sampler\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/delete_semantic_auxiliary_loss__final_competition",
+        "--known-bad-fixture",
+        "delete_semantic_auxiliary_loss__final_competition"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "delete_semantic_auxiliary_loss__final_competition",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage",
+        "loss"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"delete_semantic_auxiliary_loss__final_competition\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\",\n    \"loss\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/delete_semantic_auxiliary_loss__anatomy4",
+        "--known-bad-fixture",
+        "delete_semantic_auxiliary_loss__anatomy4"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "delete_semantic_auxiliary_loss__anatomy4",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage",
+        "loss"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"delete_semantic_auxiliary_loss__anatomy4\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\",\n    \"loss\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/delete_semantic_auxiliary_loss__wall",
+        "--known-bad-fixture",
+        "delete_semantic_auxiliary_loss__wall"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "delete_semantic_auxiliary_loss__wall",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage",
+        "loss"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"delete_semantic_auxiliary_loss__wall\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\",\n    \"loss\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/delete_semantic_auxiliary_loss__distance",
+        "--known-bad-fixture",
+        "delete_semantic_auxiliary_loss__distance"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "delete_semantic_auxiliary_loss__distance",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage",
+        "loss"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"delete_semantic_auxiliary_loss__distance\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\",\n    \"loss\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/delete_semantic_auxiliary_loss__scar_dense",
+        "--known-bad-fixture",
+        "delete_semantic_auxiliary_loss__scar_dense"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "delete_semantic_auxiliary_loss__scar_dense",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage",
+        "loss"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"delete_semantic_auxiliary_loss__scar_dense\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\",\n    \"loss\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/delete_semantic_auxiliary_loss__scar_component",
+        "--known-bad-fixture",
+        "delete_semantic_auxiliary_loss__scar_component"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "delete_semantic_auxiliary_loss__scar_component",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage",
+        "loss"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"delete_semantic_auxiliary_loss__scar_component\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\",\n    \"loss\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/delete_semantic_auxiliary_loss__scar_center",
+        "--known-bad-fixture",
+        "delete_semantic_auxiliary_loss__scar_center"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "delete_semantic_auxiliary_loss__scar_center",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage",
+        "loss"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"delete_semantic_auxiliary_loss__scar_center\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\",\n    \"loss\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/delete_semantic_auxiliary_loss__scar_extent",
+        "--known-bad-fixture",
+        "delete_semantic_auxiliary_loss__scar_extent"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "delete_semantic_auxiliary_loss__scar_extent",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage",
+        "loss"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"delete_semantic_auxiliary_loss__scar_extent\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\",\n    \"loss\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/delete_semantic_auxiliary_loss__scar_context",
+        "--known-bad-fixture",
+        "delete_semantic_auxiliary_loss__scar_context"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "delete_semantic_auxiliary_loss__scar_context",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage",
+        "loss"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"delete_semantic_auxiliary_loss__scar_context\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\",\n    \"loss\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/delete_semantic_auxiliary_loss__edema_dense",
+        "--known-bad-fixture",
+        "delete_semantic_auxiliary_loss__edema_dense"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "delete_semantic_auxiliary_loss__edema_dense",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage",
+        "loss"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"delete_semantic_auxiliary_loss__edema_dense\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\",\n    \"loss\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/delete_semantic_auxiliary_loss__injury",
+        "--known-bad-fixture",
+        "delete_semantic_auxiliary_loss__injury"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "delete_semantic_auxiliary_loss__injury",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage",
+        "loss"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"delete_semantic_auxiliary_loss__injury\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\",\n    \"loss\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/delete_semantic_auxiliary_loss__edema_boundary",
+        "--known-bad-fixture",
+        "delete_semantic_auxiliary_loss__edema_boundary"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "delete_semantic_auxiliary_loss__edema_boundary",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage",
+        "loss"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"delete_semantic_auxiliary_loss__edema_boundary\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\",\n    \"loss\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/delete_semantic_auxiliary_loss__edema_extent",
+        "--known-bad-fixture",
+        "delete_semantic_auxiliary_loss__edema_extent"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "delete_semantic_auxiliary_loss__edema_extent",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage",
+        "loss"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"delete_semantic_auxiliary_loss__edema_extent\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\",\n    \"loss\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/delete_semantic_auxiliary_loss__edema_context",
+        "--known-bad-fixture",
+        "delete_semantic_auxiliary_loss__edema_context"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "delete_semantic_auxiliary_loss__edema_context",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage",
+        "loss"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"delete_semantic_auxiliary_loss__edema_context\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\",\n    \"loss\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/delete_semantic_auxiliary_loss__relation",
+        "--known-bad-fixture",
+        "delete_semantic_auxiliary_loss__relation"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "delete_semantic_auxiliary_loss__relation",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage",
+        "loss"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"delete_semantic_auxiliary_loss__relation\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\",\n    \"loss\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/pathology_deep_supervision_missing",
+        "--known-bad-fixture",
+        "pathology_deep_supervision_missing"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "pathology_deep_supervision_missing",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"pathology_deep_supervision_missing\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/area_reference_hardcoded_0_20_0_30",
+        "--known-bad-fixture",
+        "area_reference_hardcoded_0_20_0_30"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "area_reference_hardcoded_0_20_0_30",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"area_reference_hardcoded_0_20_0_30\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/hard_negative_manifest_not_consumed",
+        "--known-bad-fixture",
+        "hard_negative_manifest_not_consumed"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "hard_negative_manifest_not_consumed",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "sampler"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"hard_negative_manifest_not_consumed\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"sampler\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/center_cycle_or_10_5_5_broken",
+        "--known-bad-fixture",
+        "center_cycle_or_10_5_5_broken"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "center_cycle_or_10_5_5_broken",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "sampler"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"center_cycle_or_10_5_5_broken\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"sampler\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/missing_checkpoint_field",
+        "--known-bad-fixture",
+        "missing_checkpoint_field"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "missing_checkpoint_field",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "checkpoint"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"missing_checkpoint_field\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"checkpoint\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/resume_not_restore_sampler_or_next_hash",
+        "--known-bad-fixture",
+        "resume_not_restore_sampler_or_next_hash"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "resume_not_restore_sampler_or_next_hash",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "checkpoint"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"resume_not_restore_sampler_or_next_hash\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"checkpoint\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/no_t2_class4_background",
+        "--known-bad-fixture",
+        "no_t2_class4_background"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "no_t2_class4_background",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"no_t2_class4_background\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/no_t2_edema_gradient_nonzero",
+        "--known-bad-fixture",
+        "no_t2_edema_gradient_nonzero"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "no_t2_edema_gradient_nonzero",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"no_t2_edema_gradient_nonzero\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/edema_metric_mixes_no_t2",
+        "--known-bad-fixture",
+        "edema_metric_mixes_no_t2"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "edema_metric_mixes_no_t2",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"edema_metric_mixes_no_t2\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/outer_before_w45",
+        "--known-bad-fixture",
+        "outer_before_w45"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "outer_before_w45",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"outer_before_w45\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/proxy_loss_targets",
+        "--known-bad-fixture",
+        "proxy_loss_targets"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "proxy_loss_targets",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "loss"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"proxy_loss_targets\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"loss\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/count_only_hard_negative_manifest",
+        "--known-bad-fixture",
+        "count_only_hard_negative_manifest"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "count_only_hard_negative_manifest",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "sampler"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"count_only_hard_negative_manifest\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"sampler\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/same_shape_wrong_affine_or_orientation_oof",
+        "--known-bad-fixture",
+        "same_shape_wrong_affine_or_orientation_oof"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "same_shape_wrong_affine_or_orientation_oof",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"same_shape_wrong_affine_or_orientation_oof\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/wrapper_points_old_entry",
+        "--known-bad-fixture",
+        "wrapper_points_old_entry"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "wrapper_points_old_entry",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "formal_call_chain"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"wrapper_points_old_entry\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"formal_call_chain\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/extent_patch_local_bias_averaged_across_multiwindow_inference",
+        "--known-bad-fixture",
+        "extent_patch_local_bias_averaged_across_multiwindow_inference"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "extent_patch_local_bias_averaged_across_multiwindow_inference",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage",
+        "evaluator_extent"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"extent_patch_local_bias_averaged_across_multiwindow_inference\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\",\n    \"evaluator_extent\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/require_CommitA_equals_CommitB",
+        "--known-bad-fixture",
+        "require_CommitA_equals_CommitB"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "require_CommitA_equals_CommitB",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"require_CommitA_equals_CommitB\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/concatenate_all_evidence_one_projection",
+        "--known-bad-fixture",
+        "concatenate_all_evidence_one_projection"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "concatenate_all_evidence_one_projection",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"concatenate_all_evidence_one_projection\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/reverse_quarter_half_scar_proposal_wiring",
+        "--known-bad-fixture",
+        "reverse_quarter_half_scar_proposal_wiring"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "reverse_quarter_half_scar_proposal_wiring",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"reverse_quarter_half_scar_proposal_wiring\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/send_injury_into_edema_half_stage",
+        "--known-bad-fixture",
+        "send_injury_into_edema_half_stage"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "send_injury_into_edema_half_stage",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"send_injury_into_edema_half_stage\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/send_boundary_into_edema_half_stage",
+        "--known-bad-fixture",
+        "send_boundary_into_edema_half_stage"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "send_boundary_into_edema_half_stage",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"send_boundary_into_edema_half_stage\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/retain_AuxiliaryHalfFeatureTower",
+        "--known-bad-fixture",
+        "retain_AuxiliaryHalfFeatureTower"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "retain_AuxiliaryHalfFeatureTower",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"retain_AuxiliaryHalfFeatureTower\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/remove_anatomy_half_ds",
+        "--known-bad-fixture",
+        "remove_anatomy_half_ds"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "remove_anatomy_half_ds",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"remove_anatomy_half_ds\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/segmentation_padding_changed_to_0",
+        "--known-bad-fixture",
+        "segmentation_padding_changed_to_0"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "segmentation_padding_changed_to_0",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"segmentation_padding_changed_to_0\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/weak_lge_gate_reset_to_0",
+        "--known-bad-fixture",
+        "weak_lge_gate_reset_to_0"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "weak_lge_gate_reset_to_0",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"weak_lge_gate_reset_to_0\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/augmentation_uses_final_patch_instead_of_initial_patch",
+        "--known-bad-fixture",
+        "augmentation_uses_final_patch_instead_of_initial_patch"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "augmentation_uses_final_patch_instead_of_initial_patch",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"augmentation_uses_final_patch_instead_of_initial_patch\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "/users/a/e/aereinh/CARE/scripts/validation/validate_care_ase_r2_g1.py",
+        "--output-dir",
+        "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/reviewer_only_checks_aggregate_branch_gradient",
+        "--known-bad-fixture",
+        "reviewer_only_checks_aggregate_branch_gradient"
+      ],
+      "expected_nonzero_exit": true,
+      "known_bad": "reviewer_only_checks_aggregate_branch_gradient",
+      "observed_decision": "REJECTED_AS_EXPECTED",
+      "observed_failures": [
+        "coverage"
+      ],
+      "status": "PASS",
+      "stderr_tail": "",
+      "stdout_tail": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\n{\n  \"decision\": \"REJECTED_AS_EXPECTED\",\n  \"expected_validator_exit\": \"nonzero\",\n  \"fixture\": \"reviewer_only_checks_aggregate_branch_gradient\",\n  \"known_bad_fixture_rejected\": true,\n  \"observed_failures\": [\n    \"coverage\"\n  ]\n}\n",
+      "validator_exit_if_mutated": 1
+    }
+  ],
+  "known_bad_count_passed": 44,
+  "required_known_bad_count": 44,
+  "status": "PASS"
+}

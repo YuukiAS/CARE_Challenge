@@ -1,0 +1,535 @@
+{
+  "excluded_large_checkpoint_count": 8,
+  "excluded_suffixes": [
+    ".pt",
+    ".pt.sha256",
+    ".nii",
+    ".nii.gz",
+    ".log"
+  ],
+  "file_count": 104,
+  "files": [
+    {
+      "bytes": 1261,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/anatomy_deep_supervision_oracle.json",
+      "sha256": "543e92f902d223dcc2560509e100727b82570fb7f7e0bfd2c80dbbca085a9322"
+    },
+    {
+      "bytes": 1887,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/augmentation_z_axis_semantics.json",
+      "sha256": "159a49245cb756255f7df78391bb7a53b900f7a0e6c66745306462c7eb80e6f3"
+    },
+    {
+      "bytes": 368,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/auxiliary_scale_wiring_oracle.json",
+      "sha256": "a5736c5d04789178ca7cd82dab61b414c83a77bf3c6284ca8325778c16d23620"
+    },
+    {
+      "bytes": 1150,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/boundary_head_contract_receipt.json",
+      "sha256": "c4ffa96708021975fc7b8a5b98bb4dc452ea9b2ac89d0a5e617d8ff25eb817f7"
+    },
+    {
+      "bytes": 76,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/canned_pass_oracle_audit.json",
+      "sha256": "1a2c398145622a31d0ce5d70e313c60744aecc9ad08224ca71bf6ebe865ae12f"
+    },
+    {
+      "bytes": 385,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/canonical_stock_oof_provenance_receipt.json",
+      "sha256": "dfbc5d1ecccac6ffb9cb74d0a3f8d35dacb059606af78e8ef4f66cd10567def6"
+    },
+    {
+      "bytes": 1879,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/checkpoint_schema_contract.json",
+      "sha256": "ecb345b3289dbe15abd6901d3549f63f196bfcfa1920d8fa6cdc25939dea69c4"
+    },
+    {
+      "bytes": 2681,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/commitA_critical_source_manifest.json",
+      "sha256": "8f0fe7b0097a4580ba26531c5761368369657b2d307ca2d91d814f4277486d9e"
+    },
+    {
+      "bytes": 237,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/context_loss_normalization_receipt.json",
+      "sha256": "c1139e42554315b3af66cbe1b3a0efec9d3895b336b2faaa1618143d5f883346"
+    },
+    {
+      "bytes": 18999,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/contract_to_code_coverage.json",
+      "sha256": "b0e94d7f97f7128cc4117c850c20eebd371e4030b2bdf419327f9da8af19b1e5"
+    },
+    {
+      "bytes": 23857,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/delta_mutation_detection_report.json",
+      "sha256": "8e05f80824f6643289f6508d29650d333c1d5fb6318417e79d144d59f4b13c01"
+    },
+    {
+      "bytes": 85,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/denominator_audit.csv",
+      "sha256": "d7e12d3f3688438160c51f3af10975f4385e70b3d158a0ece2c7c13ddf544d12"
+    },
+    {
+      "bytes": 275,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/detached_training_source_oracle.json",
+      "sha256": "bdd1162f00e81e4896b4cfb74673069fd7d132806767f30557641948c8b6b26a"
+    },
+    {
+      "bytes": 1801,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/exact_resume_behavioral_equivalence.json",
+      "sha256": "b5abb9cb3f8ec82921161dc1f1f3b0b95dc4b6f599f0b5942e9d48577af98d33"
+    },
+    {
+      "bytes": 847,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/exact_resume_behavioral_equivalence_fold1.json",
+      "sha256": "e241066ab0acc0ec7e3d23dff18e0020a123a39f157d3e3e1c283d3a383e42a2"
+    },
+    {
+      "bytes": 847,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/exact_resume_behavioral_equivalence_fold4.json",
+      "sha256": "e241066ab0acc0ec7e3d23dff18e0020a123a39f157d3e3e1c283d3a383e42a2"
+    },
+    {
+      "bytes": 404,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/extent_per_slice_contract_receipt.json",
+      "sha256": "6497a2be823061a002b80d26a0e63c1d5a40e083f4630d5ce9664aba631b4cc0"
+    },
+    {
+      "bytes": 829,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/formal_call_chain.json",
+      "sha256": "45a578d580ae4680f7bf9b5485b982398f6154906f2a6379647049b15333cf5f"
+    },
+    {
+      "bytes": 78828,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/full_checkpoint_reload_receipt.json",
+      "sha256": "38dbe23c86159e98e87e7a14acd8abdd8204925a4f81f3c94457beba50b41070"
+    },
+    {
+      "bytes": 371,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/full_volume_extent_aggregation_oracle.json",
+      "sha256": "bf18ecc0021465f9568a22e2cab4c2492cb1753de305e3c0bcaec412a529f3a9"
+    },
+    {
+      "bytes": 112226,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/full_volume_window_geometry_audit.json",
+      "sha256": "d058dd5b64338feb49111b14f08bbc979f7167ecb42ba7fdaccddac39cb3283b"
+    },
+    {
+      "bytes": 1247,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/g1_source_sha_manifest.json",
+      "sha256": "988b98070487baada82f897571bc1e8fbd611b5a78b7f4c4f1ab26eab8311d69"
+    },
+    {
+      "bytes": 1366,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/g1_static_implementation_gate_receipt.json",
+      "sha256": "b9dab0ad76f43a2b532269673d548938ef1c8a718c8e4d325fe5b87bb0f3ebdc"
+    },
+    {
+      "bytes": 214645,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/g2_real_gpu_fidelity_receipt.json",
+      "sha256": "17d6783efc2639c202326a012813ea6d315cd8a32f961a7f7b4c0eda2276dae9"
+    },
+    {
+      "bytes": 101163,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/g2_real_gpu_fidelity_receipt_fold1.json",
+      "sha256": "b821e3dfb7beee0216fc8512531483af931040b2a0dd90c2fc8729fc6f9b7006"
+    },
+    {
+      "bytes": 101083,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/g2_real_gpu_fidelity_receipt_fold4.json",
+      "sha256": "9702f9b6d1735fdc2313fdf742c60f571058156b61d033a5416588d231eb692b"
+    },
+    {
+      "bytes": 232,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/gradient_scale_audit.csv",
+      "sha256": "75f63764a3946457d36bc721b8f676e67465b57dd6b50b2579ce2253774cbd24"
+    },
+    {
+      "bytes": 1863,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/implementation_gap_closure.json",
+      "sha256": "0f1ec318a0d6cfedff282cb431597339b5c51ce51002149357967d22eb69f29b"
+    },
+    {
+      "bytes": 215,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/area_reference_hardcoded_0_20_0_30/known_bad_fixture_receipt.json",
+      "sha256": "c10ce1f99062e4919b8d24c3a528aac5c2e838d2ae89db8acf8f43f92ac208a6"
+    },
+    {
+      "bytes": 235,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/augmentation_uses_final_patch_instead_of_initial_patch/known_bad_fixture_receipt.json",
+      "sha256": "2800a83f349474e5bd2c3c3cadff636838988c8d1619674b814f7ddc7e36f549"
+    },
+    {
+      "bytes": 209,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/center_cycle_or_10_5_5_broken/known_bad_fixture_receipt.json",
+      "sha256": "0c5e1bcf0c64f76207c18359a5ca9db102a32678ce3b41901914cd21afce7ad5"
+    },
+    {
+      "bytes": 220,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/concatenate_all_evidence_one_projection/known_bad_fixture_receipt.json",
+      "sha256": "ffd51ca527c44f4cbad4cdec29dab512c5ba3ff3410a7576316c309bd0116061"
+    },
+    {
+      "bytes": 213,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/count_only_hard_negative_manifest/known_bad_fixture_receipt.json",
+      "sha256": "a6d94ad0066beae8e488f2185b061330ebb05a835f29bf2a0d9d747c0dc2bff2"
+    },
+    {
+      "bytes": 233,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/delete_semantic_auxiliary_loss__anatomy4/known_bad_fixture_receipt.json",
+      "sha256": "718feeeaf1deb30dcfe4c64e8cf5cc0c008bd07cd3e5464752d3c6cdc91f9d25"
+    },
+    {
+      "bytes": 233,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/delete_semantic_auxiliary_loss__distance/known_bad_fixture_receipt.json",
+      "sha256": "b83a0968ad658e12d4f5df58df361380c305365139e680d05107da05785c9b46"
+    },
+    {
+      "bytes": 239,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/delete_semantic_auxiliary_loss__edema_boundary/known_bad_fixture_receipt.json",
+      "sha256": "a94ad03ba409743175b611ffa06d232168c3eaa5971f19102b6ddcb498571c92"
+    },
+    {
+      "bytes": 238,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/delete_semantic_auxiliary_loss__edema_context/known_bad_fixture_receipt.json",
+      "sha256": "67808c57867d8fdbc48a5db1e0a118b393d7127683d7f566c0db51d29f77b5ae"
+    },
+    {
+      "bytes": 236,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/delete_semantic_auxiliary_loss__edema_dense/known_bad_fixture_receipt.json",
+      "sha256": "77ed29734d5d1cd1240eb788d03df559f24b5bbcd5e018d578a8cf971b90d71a"
+    },
+    {
+      "bytes": 237,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/delete_semantic_auxiliary_loss__edema_extent/known_bad_fixture_receipt.json",
+      "sha256": "6cac63aa30c8da939f21ecacc07f04d667fa76905a40f0fccdac93f607c0021b"
+    },
+    {
+      "bytes": 242,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/delete_semantic_auxiliary_loss__final_competition/known_bad_fixture_receipt.json",
+      "sha256": "8f8fb81badd6ef28da7fcbcac60b7de475f6c88d22062876532a85990904a542"
+    },
+    {
+      "bytes": 231,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/delete_semantic_auxiliary_loss__injury/known_bad_fixture_receipt.json",
+      "sha256": "1c4b4cbc72fc817450fab2574aa4544bc44c3184af630224c96cbec9d9e411e6"
+    },
+    {
+      "bytes": 233,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/delete_semantic_auxiliary_loss__relation/known_bad_fixture_receipt.json",
+      "sha256": "197d8567044729786e72f40be29745975cb59a51812232a0086496bf184cc8b2"
+    },
+    {
+      "bytes": 236,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/delete_semantic_auxiliary_loss__scar_center/known_bad_fixture_receipt.json",
+      "sha256": "cf8cd646aaeca3f539bb605345de991a3b82b637a9f40540334b727244367c8f"
+    },
+    {
+      "bytes": 239,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/delete_semantic_auxiliary_loss__scar_component/known_bad_fixture_receipt.json",
+      "sha256": "8274c746d7e3ad55441def08769c58a8a1624fddc1dc9469e6400ababb4297a4"
+    },
+    {
+      "bytes": 237,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/delete_semantic_auxiliary_loss__scar_context/known_bad_fixture_receipt.json",
+      "sha256": "6e53cb9bd9e15a9dcb05223affd019e2ee8f0bc3e9c786c6aff13c28c8e8baff"
+    },
+    {
+      "bytes": 235,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/delete_semantic_auxiliary_loss__scar_dense/known_bad_fixture_receipt.json",
+      "sha256": "8a70d4c50d648523f3ba19534d876e61bf17efe720a5b1099bdf3b7ddf25b182"
+    },
+    {
+      "bytes": 236,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/delete_semantic_auxiliary_loss__scar_extent/known_bad_fixture_receipt.json",
+      "sha256": "6f84b5ba6bbc04f02d970f4251a5bb52bac0ce575c7583ca26b5f2a52e241d8d"
+    },
+    {
+      "bytes": 229,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/delete_semantic_auxiliary_loss__wall/known_bad_fixture_receipt.json",
+      "sha256": "2fc02119db5f7b51835b7ba7e4dee2c4559b150b8ff39666520a8d05cc8807da"
+    },
+    {
+      "bytes": 205,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/edema_metric_mixes_no_t2/known_bad_fixture_receipt.json",
+      "sha256": "f6bd112805e6f45629e69a75dc7bb50da99f6c9726d61d7b0e15725ef3e2dbab"
+    },
+    {
+      "bytes": 266,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/extent_patch_local_bias_averaged_across_multiwindow_inference/known_bad_fixture_receipt.json",
+      "sha256": "b026cc257285edb3638dafdd67ae9bad7a065eea34bd9cdb81017361bfcc9662"
+    },
+    {
+      "bytes": 215,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/hard_negative_manifest_not_consumed/known_bad_fixture_receipt.json",
+      "sha256": "1c9f20319abbb34f890297afb37285754319e2194d3bf656335e8801809285c2"
+    },
+    {
+      "bytes": 207,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/missing_checkpoint_field/known_bad_fixture_receipt.json",
+      "sha256": "4facafd8dc15e917a139a1f97003c411bfd07040e45c2f8fbe8588e316485cfc"
+    },
+    {
+      "bytes": 204,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/no_t2_class4_background/known_bad_fixture_receipt.json",
+      "sha256": "b5d7f63712fe19a6ba9b19a2f6b47b02bcee2f7d98ff99a1bbcb10db6e171fa3"
+    },
+    {
+      "bytes": 209,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/no_t2_edema_gradient_nonzero/known_bad_fixture_receipt.json",
+      "sha256": "1c4056c27f6438fabb29f6e6c6e819290535fd8c4ca9cb051edc26aedb0960c6"
+    },
+    {
+      "bytes": 197,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/outer_before_w45/known_bad_fixture_receipt.json",
+      "sha256": "ecb1637a84c1f018bc21b87242767c51ee0825e3c4f62ac6c7ed77afe1246f27"
+    },
+    {
+      "bytes": 215,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/pathology_deep_supervision_missing/known_bad_fixture_receipt.json",
+      "sha256": "b2cdc14d688e29409614a17365e3e25d2d48a52191dd54f87f2ac3f3a7c23b74"
+    },
+    {
+      "bytes": 195,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/proxy_loss_targets/known_bad_fixture_receipt.json",
+      "sha256": "9051a820459eb63a289d62f7650cbc5894c1b1de5edeee7de7bcc80bee5a21da"
+    },
+    {
+      "bytes": 203,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/remove_anatomy_half_ds/known_bad_fixture_receipt.json",
+      "sha256": "7bf8460d38da43e8d1a887e01189999507bbaacb1b318d18c083bd98be7d83a7"
+    },
+    {
+      "bytes": 211,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/require_CommitA_equals_CommitB/known_bad_fixture_receipt.json",
+      "sha256": "c0b5f38da93c9c0347f98ffc01f8b411929009316b9869bf510a03e98fcde43a"
+    },
+    {
+      "bytes": 222,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/resume_not_restore_sampler_or_next_hash/known_bad_fixture_receipt.json",
+      "sha256": "29d8a35e454c0b3fc8cf9d7b6df9154b07a84ed55f75e7e14f37a324871aa5f4"
+    },
+    {
+      "bytes": 213,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/retain_AuxiliaryHalfFeatureTower/known_bad_fixture_receipt.json",
+      "sha256": "ca433aa75f31192ad064bcc54da7fc3e1fe5df6f792771a7854c0eaa01d2f834"
+    },
+    {
+      "bytes": 222,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/reverse_quarter_half_scar_proposal_wiring/known_bad_fixture_receipt.json",
+      "sha256": "70a078f2485762494fe4fae4d12f3305dfe0b6854fd3560f00b90a0f108206c5"
+    },
+    {
+      "bytes": 227,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/reviewer_only_checks_aggregate_branch_gradient/known_bad_fixture_receipt.json",
+      "sha256": "703d7a7c6982f88bc225277cce74958b5805b96725397c3933e134c85a353c52"
+    },
+    {
+      "bytes": 223,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/same_shape_wrong_affine_or_orientation_oof/known_bad_fixture_receipt.json",
+      "sha256": "be284225f72048bebe468c6d2f38b34d8895d12b34f8788b21e5b8dddc595055"
+    },
+    {
+      "bytes": 209,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/scheduler_none_or_static_lr/known_bad_fixture_receipt.json",
+      "sha256": "fcdda01bd7813f7bbc75119b07be32970481f1ba9ac76e35be03f7596d6b40c0"
+    },
+    {
+      "bytes": 214,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/segmentation_padding_changed_to_0/known_bad_fixture_receipt.json",
+      "sha256": "704d491e834b070cbaf1b8f01b5bc745c43a7c78f438b48f21b0ad8534ef1b03"
+    },
+    {
+      "bytes": 216,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/send_boundary_into_edema_half_stage/known_bad_fixture_receipt.json",
+      "sha256": "744f79d9ef432923ec9f42219ebbc615f4f953d16e83ee2238ae191987cd344b"
+    },
+    {
+      "bytes": 214,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/send_injury_into_edema_half_stage/known_bad_fixture_receipt.json",
+      "sha256": "4e6ee706576bdf2354891fc96b2240cbcec10737d7be6d833b77388678ae92d8"
+    },
+    {
+      "bytes": 202,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/stage_2000_4000_8000/known_bad_fixture_receipt.json",
+      "sha256": "414d4fa32a2ec64c5e586bc8ddaa3e9ced3bcad049932bced872fb33e210375c"
+    },
+    {
+      "bytes": 203,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/stage_A_B_complete_only/known_bad_fixture_receipt.json",
+      "sha256": "5160ba61437917326910a977d97bbce2f415679434fa0cbe9e9b4097914917ac"
+    },
+    {
+      "bytes": 205,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/weak_lge_gate_reset_to_0/known_bad_fixture_receipt.json",
+      "sha256": "07d0b0d6561cf1e96a73182e0872ffbcd00b3da94dfce0f149d70f20fccba9b9"
+    },
+    {
+      "bytes": 214,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_fixtures/wrapper_points_old_entry/known_bad_fixture_receipt.json",
+      "sha256": "664b99c1f05e6f495435bcb4bf8a9b709670e79e56be712b97ceb36dc8e0a299"
+    },
+    {
+      "bytes": 76544,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/known_bad_validator_report.json",
+      "sha256": "959b18db5c2873488564e0c5820268f190251cbc398a8c6a25ff6d31f95a954d"
+    },
+    {
+      "bytes": 1437,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/loss_scale_audit.csv",
+      "sha256": "47832244e8930ec98eb19cbedbb7c91bb1f716eca48b75452232e6b763a442a5"
+    },
+    {
+      "bytes": 25756,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/named_evidence_projection_gradient_fold1.json",
+      "sha256": "8f128994b4caa2f973b6777cdaf18640452ad2727ac688f861bd03ef36dd2f9f"
+    },
+    {
+      "bytes": 25781,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/named_evidence_projection_gradient_fold4.json",
+      "sha256": "c28e3c4e808fa602d88a2dec5e52527cb053836216e07e48e28e39794a32c806"
+    },
+    {
+      "bytes": 10552,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/named_evidence_projection_intervention_fold1.json",
+      "sha256": "4695a591483ec72b725baed2ab787efb65c76d2fe9b238609370c53f3f1cad6c"
+    },
+    {
+      "bytes": 10558,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/named_evidence_projection_intervention_fold4.json",
+      "sha256": "5416beccb23a44d73690cd760cc89452e8e658aa980d4756f8adf987b5acc8c2"
+    },
+    {
+      "bytes": 6797,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/named_evidence_projection_registry.json",
+      "sha256": "6f961e2f11567c89882a4786f23fde9182a817210b3f22972bf31b8ddaebb89e"
+    },
+    {
+      "bytes": 116,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/no_uncontracted_auxiliary_decoder_oracle.json",
+      "sha256": "64e9caa50754c791fbca3f059a075397ff2cbecd5316a754a01ee0f02253cbbb"
+    },
+    {
+      "bytes": 373,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/outer_access_audit_receipt_fold1.json",
+      "sha256": "206f071c29c765be56dfbf676aecc6d4708232fe0e80de1e79b4a7fe74bc965d"
+    },
+    {
+      "bytes": 373,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/outer_access_audit_receipt_fold4.json",
+      "sha256": "206f071c29c765be56dfbf676aecc6d4708232fe0e80de1e79b4a7fe74bc965d"
+    },
+    {
+      "bytes": 200,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/padding_ignore_semantics_oracle.json",
+      "sha256": "168158ef7be907c8672d421370556c9634b4e3b316f75e1e915f484e3be7042e"
+    },
+    {
+      "bytes": 253,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/padding_target_gradient_zero_oracle.json",
+      "sha256": "5bfb748634caef97663d418c47dfec41ced7e49670585a24c100a154ee56160c"
+    },
+    {
+      "bytes": 248417,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/parameter_group_coverage.json",
+      "sha256": "e8eeda01f2dfb0eeb8c73cb5ce8c516b9a70e509fe74318352fe7b7e0dfbe855"
+    },
+    {
+      "bytes": 296,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/pathology_feature_ownership_oracle.json",
+      "sha256": "3966e7da1dfb693601affe55c63a4606a3002792a162b68417c275d02807d3ed"
+    },
+    {
+      "bytes": 800,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/physical_target_contract_receipt.json",
+      "sha256": "88ec616cc4d17dbe5014e17726725a14b3bfc88a9e8d3ed524278c4218a83ec2"
+    },
+    {
+      "bytes": 1142,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/reviewer_semantic/RV5-D6/commands_and_exit_codes.json",
+      "sha256": "30d5734bcf50ab2ed71ecaa5625bab1f5cec6bb2ccda20ca2010a0d2164853c4"
+    },
+    {
+      "bytes": 732,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/reviewer_semantic/RV5-D6/review.json",
+      "sha256": "b4f539c3f1c0f3ea113f2b6bcf9b9a4214edb8552cab3088b04cc6b5fd1ccf9a"
+    },
+    {
+      "bytes": 493,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/reviewer_semantic/RV5-D6/review.md",
+      "sha256": "8378f9affdecad5b5ae86df8c949cfaf5855c9410352bd24b0877ab30da94852"
+    },
+    {
+      "bytes": 1038,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/reviewer_semantic/RV5-D6/reviewed_sha_manifest.json",
+      "sha256": "ddeb872eedc4819aa0f35f4f9031945574eb0449f95b2da81aae096eaa4a5c74"
+    },
+    {
+      "bytes": 4751,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/sampler_400_step_full_composition_receipt.json",
+      "sha256": "acf512808251ac01533b6781cc8416f6e191bae2d5b4808213b477c8d2d51a5f"
+    },
+    {
+      "bytes": 2204,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/sampler_400_step_full_composition_receipt_fold1.json",
+      "sha256": "8fdeeb6472eac3e7a66f6749a012b2bce72f601cc4296af383982857a4807500"
+    },
+    {
+      "bytes": 2204,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/sampler_400_step_full_composition_receipt_fold4.json",
+      "sha256": "738191ba0d3b191b8bf758a5347b513f33b924c0f586efc2f694f185fdaea837"
+    },
+    {
+      "bytes": 1531,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/sampler_static_contract.json",
+      "sha256": "ee859c7186e3dd7f36f29b2dbcd5f3114acdc9dd03fd1bb5806fa31a861432a6"
+    },
+    {
+      "bytes": 1260,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/scheduler_static_contract.json",
+      "sha256": "acddf026c94b7e6e5d23f15a129bbdd8783dde27c7d50148b865667a76d209e5"
+    },
+    {
+      "bytes": 2261,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/semantic_loss_coverage.json",
+      "sha256": "84a8bb9ed77e6c311000d3fa246821f931d155e8a0a88314221a38bdee29d6fc"
+    },
+    {
+      "bytes": 1839,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/stock_augmentation_runtime_binding.json",
+      "sha256": "7c8c79df24266b9f913af2b9f05fdd8fdd66450c96187816471edc704be28ae9"
+    },
+    {
+      "bytes": 1890,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/stock_initial_patch_binding.json",
+      "sha256": "55d266f1cfe56176af88a5012095cfbd4cfff06d4a97ed043e1a601a33d47d04"
+    },
+    {
+      "bytes": 253,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/stock_load_and_clone_byte_coverage.json",
+      "sha256": "a7fef9bbcc8ef6df85e0c96ae1123b8db7fdd0188d6a7c56d8c72a3295066f83"
+    },
+    {
+      "bytes": 506,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/stock_stagewise_parameter_parity.json",
+      "sha256": "2afb3cc4560a71c29420d876e8414970ea050c1d15bd25433393676f60edfa43"
+    },
+    {
+      "bytes": 199,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/three_high_resolution_path_registry.json",
+      "sha256": "4e5f170a6aff3f1b7d814bebd9bf648cd496ff144dcf7c410b54e2f2908a3c1b"
+    },
+    {
+      "bytes": 428,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/two_commit_review_binding_oracle.json",
+      "sha256": "bc865f142fc8130f3341e8ab30e1617ecba8a19bf2279eb104cf1620e284aa36"
+    },
+    {
+      "bytes": 720,
+      "path": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/weak_lge_gate_v5_delta_oracle.json",
+      "sha256": "c29ecb3c02ca9c7246e9a92cd92a9015e4ff3bd0abc73d801effe66501152a8c"
+    }
+  ],
+  "result_root": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5",
+  "status": "PASS"
+}

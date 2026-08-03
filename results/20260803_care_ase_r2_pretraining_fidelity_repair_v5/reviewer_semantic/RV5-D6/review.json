@@ -1,0 +1,16 @@
+{
+  "candidate_commit_sha": "f4ecd049bb09a47c38305b932ef116d45b37c160",
+  "closed_findings": [
+    "RV5-D6-HARD-NEGATIVE-OOF-BINDING-STILL-SHAPE-ONLY"
+  ],
+  "controller_transcription_note": "Recorded from Reviewer final message; Controller did not author or alter the decision.",
+  "critical_finding_count": 0,
+  "decision": "PASS_CONTINUE_CURRENT_GOAL",
+  "effective_contract_sha256": "25a551fd5c162fd13ac6104f864c9ed5d144e2f275392bf95e02d099a959f391",
+  "findings": [],
+  "invalidated_wave_or_none": null,
+  "next_review_trigger": "RV5-D7 Commit B review packet SHA/evidence/source-tree binding review",
+  "required_repair_scope": "none",
+  "reviewer_session_id": "019fc5b4-f644-7361-9eba-4d6d60cc7f7f",
+  "round_id": "RV5-D6"
+}

@@ -1,0 +1,10 @@
+{
+  "current_head_before_commitA": "86810719e260ee1130bef58fc0a25b83c357829c",
+  "forbid_requirement_commitA_equals_commitB": true,
+  "implementation_source_commit_sha": "TO_BE_FILLED_AFTER_COMMIT_A",
+  "phase": "pre_commit_design_oracle",
+  "requires_commitA_ancestor_of_commitB": true,
+  "requires_critical_source_tree_unchanged_A_to_B": true,
+  "review_packet_commit_sha": "TO_BE_FILLED_AFTER_COMMIT_B",
+  "status": "PASS"
+}

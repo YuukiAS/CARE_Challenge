@@ -1,0 +1,18 @@
+{
+  "max_abs_diff_by_stage": {
+    "anatomy_ds_classifier_stage4_rows0_3": 0.0,
+    "anatomy_ds_classifier_stage5_rows0_3": 0.0,
+    "anatomy_top_stage4": 0.0,
+    "anatomy_top_stage5": 0.0,
+    "edema_ds_classifier_stage4": 0.0,
+    "edema_ds_classifier_stage5": 0.0,
+    "edema_top_stage4": 0.0,
+    "edema_top_stage5": 0.0,
+    "scar_ds_classifier_stage4": 0.0,
+    "scar_ds_classifier_stage5": 0.0,
+    "scar_top_stage4": 0.0,
+    "scar_top_stage5": 0.0
+  },
+  "status": "PASS",
+  "tolerance": 1e-07
+}

@@ -1,0 +1,9 @@
+{
+  "decision": "REJECTED_AS_EXPECTED",
+  "expected_validator_exit": "nonzero",
+  "fixture": "augmentation_uses_final_patch_instead_of_initial_patch",
+  "known_bad_fixture_rejected": true,
+  "observed_failures": [
+    "coverage"
+  ]
+}

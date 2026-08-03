@@ -1,0 +1,48 @@
+{
+  "1": {
+    "checks": {
+      "logits_max_abs_diff": 0.0,
+      "loss_step2_abs_diff": 0.0,
+      "model_parameter_max_abs_diff": 0.0,
+      "optimizer_moment_max_abs_diff": 0.0,
+      "payload_micro_case_rng_state_present": true,
+      "payload_micro_patch_rng_state_present": true,
+      "sampler_post_step2_next_hash_equal": true,
+      "sampler_pre_step2_next_hash_equal": true,
+      "scheduler_equal": true
+    },
+    "path_a": "init->step0->step1->step2",
+    "path_b": "init->step0->step1->save->new_model_optimizer_scheduler_sampler->load->step2",
+    "status": "PASS",
+    "tolerance_basis": "predeclared_real_h100_step0_1_reload_step2_behavioral_equivalence_tolerance_with_raw_errors_retained",
+    "tolerances": {
+      "logits_max_abs_diff": 0.05,
+      "loss_step2_abs_diff": 5e-06,
+      "model_parameter_max_abs_diff": 5e-05,
+      "optimizer_moment_max_abs_diff": 1e-05
+    }
+  },
+  "4": {
+    "checks": {
+      "logits_max_abs_diff": 0.0,
+      "loss_step2_abs_diff": 0.0,
+      "model_parameter_max_abs_diff": 0.0,
+      "optimizer_moment_max_abs_diff": 0.0,
+      "payload_micro_case_rng_state_present": true,
+      "payload_micro_patch_rng_state_present": true,
+      "sampler_post_step2_next_hash_equal": true,
+      "sampler_pre_step2_next_hash_equal": true,
+      "scheduler_equal": true
+    },
+    "path_a": "init->step0->step1->step2",
+    "path_b": "init->step0->step1->save->new_model_optimizer_scheduler_sampler->load->step2",
+    "status": "PASS",
+    "tolerance_basis": "predeclared_real_h100_step0_1_reload_step2_behavioral_equivalence_tolerance_with_raw_errors_retained",
+    "tolerances": {
+      "logits_max_abs_diff": 0.05,
+      "loss_step2_abs_diff": 5e-06,
+      "model_parameter_max_abs_diff": 5e-05,
+      "optimizer_moment_max_abs_diff": 1e-05
+    }
+  }
+}

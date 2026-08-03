@@ -1,0 +1,10 @@
+{
+  "forbidden_reduction": [
+    "case_count_denominator",
+    "all_voxel_sum"
+  ],
+  "implemented_context_loss": 1.3921723365783691,
+  "independent_valid_voxel_mean": 1.3921723365783691,
+  "status": "PASS",
+  "valid_voxel_count": 784
+}

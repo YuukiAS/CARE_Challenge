@@ -1,0 +1,8 @@
+{
+  "execution_head_must_equal_commitA": true,
+  "forbid_w3_before_external_permit": true,
+  "formal_training_must_checkout": "implementation_source_commit_sha",
+  "origin_main_may_move_after_frozen_commitA": true,
+  "phase": "pre_commit_design_oracle",
+  "status": "PASS"
+}

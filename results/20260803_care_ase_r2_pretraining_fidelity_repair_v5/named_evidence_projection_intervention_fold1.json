@@ -1,0 +1,289 @@
+{
+  "global_step": 2004,
+  "intervention_rows": {
+    "edema_boundary_to_full": {
+      "edema_logit_max_abs_delta": 0.02895498275756836,
+      "final_logit_max_abs_delta": 0.02895498275756836,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.0
+    },
+    "edema_c0_to_full": {
+      "edema_logit_max_abs_delta": 0.05790090560913086,
+      "final_logit_max_abs_delta": 0.05790090560913086,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.0
+    },
+    "edema_c0_to_half": {
+      "edema_logit_max_abs_delta": 0.47040748596191406,
+      "final_logit_max_abs_delta": 0.47040748596191406,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.0
+    },
+    "edema_context_to_full": {
+      "edema_logit_max_abs_delta": 0.03238177299499512,
+      "final_logit_max_abs_delta": 0.03238177299499512,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.0
+    },
+    "edema_context_to_half": {
+      "edema_logit_max_abs_delta": 0.046672821044921875,
+      "final_logit_max_abs_delta": 0.046672821044921875,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.0
+    },
+    "edema_dilation1_to_full": {
+      "edema_logit_max_abs_delta": 0.039696335792541504,
+      "final_logit_max_abs_delta": 0.039696335792541504,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.0
+    },
+    "edema_dilation2_to_full": {
+      "edema_logit_max_abs_delta": 0.04207038879394531,
+      "final_logit_max_abs_delta": 0.04207038879394531,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.0
+    },
+    "edema_dilation4_to_full": {
+      "edema_logit_max_abs_delta": 0.04515218734741211,
+      "final_logit_max_abs_delta": 0.04515218734741211,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.0
+    },
+    "edema_injury_to_full": {
+      "edema_logit_max_abs_delta": 0.027982711791992188,
+      "final_logit_max_abs_delta": 0.027982711791992188,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.0
+    },
+    "edema_lge_to_full": {
+      "edema_logit_max_abs_delta": 0.047968387603759766,
+      "final_logit_max_abs_delta": 0.047968387603759766,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.0
+    },
+    "edema_lge_to_half": {
+      "edema_logit_max_abs_delta": 0.1593484878540039,
+      "final_logit_max_abs_delta": 0.1593484878540039,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.0
+    },
+    "edema_p_lv_to_full": {
+      "edema_logit_max_abs_delta": 0.028558731079101562,
+      "final_logit_max_abs_delta": 0.028558731079101562,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.0
+    },
+    "edema_p_lv_to_half": {
+      "edema_logit_max_abs_delta": 0.026526689529418945,
+      "final_logit_max_abs_delta": 0.026526689529418945,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.0
+    },
+    "edema_p_rv_to_full": {
+      "edema_logit_max_abs_delta": 0.026135683059692383,
+      "final_logit_max_abs_delta": 0.026135683059692383,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.0
+    },
+    "edema_p_rv_to_half": {
+      "edema_logit_max_abs_delta": 0.022246360778808594,
+      "final_logit_max_abs_delta": 0.022246360778808594,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.0
+    },
+    "edema_p_wall_to_full": {
+      "edema_logit_max_abs_delta": 0.022638559341430664,
+      "final_logit_max_abs_delta": 0.022638559341430664,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.0
+    },
+    "edema_p_wall_to_half": {
+      "edema_logit_max_abs_delta": 0.030109405517578125,
+      "final_logit_max_abs_delta": 0.030109405517578125,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.0
+    },
+    "edema_rho_to_full": {
+      "edema_logit_max_abs_delta": 0.025362372398376465,
+      "final_logit_max_abs_delta": 0.025362372398376465,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.0
+    },
+    "edema_rho_to_half": {
+      "edema_logit_max_abs_delta": 0.025054931640625,
+      "final_logit_max_abs_delta": 0.025054931640625,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.0
+    },
+    "edema_signed_endo_to_full": {
+      "edema_logit_max_abs_delta": 0.028567194938659668,
+      "final_logit_max_abs_delta": 0.028567194938659668,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.0
+    },
+    "edema_signed_endo_to_half": {
+      "edema_logit_max_abs_delta": 0.028750300407409668,
+      "final_logit_max_abs_delta": 0.028750300407409668,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.0
+    },
+    "edema_signed_epi_to_full": {
+      "edema_logit_max_abs_delta": 0.02800750732421875,
+      "final_logit_max_abs_delta": 0.02800750732421875,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.0
+    },
+    "edema_signed_epi_to_half": {
+      "edema_logit_max_abs_delta": 0.03383636474609375,
+      "final_logit_max_abs_delta": 0.03383636474609375,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.0
+    },
+    "edema_t2_to_full": {
+      "edema_logit_max_abs_delta": 0.7393591403961182,
+      "final_logit_max_abs_delta": 0.7393591403961182,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.0
+    },
+    "edema_t2_to_half": {
+      "edema_logit_max_abs_delta": 3.0174460411071777,
+      "final_logit_max_abs_delta": 3.0174460411071777,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.0
+    },
+    "scar_c0_to_full": {
+      "edema_logit_max_abs_delta": 0.0,
+      "final_logit_max_abs_delta": 0.14391875267028809,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.14391875267028809
+    },
+    "scar_c0_to_half": {
+      "edema_logit_max_abs_delta": 0.0,
+      "final_logit_max_abs_delta": 1.298255443572998,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 1.298255443572998
+    },
+    "scar_context_to_full": {
+      "edema_logit_max_abs_delta": 0.0,
+      "final_logit_max_abs_delta": 0.028833389282226562,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.028833389282226562
+    },
+    "scar_context_to_half": {
+      "edema_logit_max_abs_delta": 0.0,
+      "final_logit_max_abs_delta": 0.11969757080078125,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.11969757080078125
+    },
+    "scar_half_center_to_full": {
+      "edema_logit_max_abs_delta": 0.0,
+      "final_logit_max_abs_delta": 0.0351104736328125,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.0351104736328125
+    },
+    "scar_half_occupancy_to_full": {
+      "edema_logit_max_abs_delta": 0.0,
+      "final_logit_max_abs_delta": 0.02982330322265625,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.02982330322265625
+    },
+    "scar_lge_to_full": {
+      "edema_logit_max_abs_delta": 0.0,
+      "final_logit_max_abs_delta": 0.6588835716247559,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.6588835716247559
+    },
+    "scar_lge_to_half": {
+      "edema_logit_max_abs_delta": 0.0,
+      "final_logit_max_abs_delta": 3.332444429397583,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 3.332444429397583
+    },
+    "scar_p_lv_to_full": {
+      "edema_logit_max_abs_delta": 0.0,
+      "final_logit_max_abs_delta": 0.025392532348632812,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.025392532348632812
+    },
+    "scar_p_lv_to_half": {
+      "edema_logit_max_abs_delta": 0.0,
+      "final_logit_max_abs_delta": 0.029569625854492188,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.029569625854492188
+    },
+    "scar_p_rv_to_full": {
+      "edema_logit_max_abs_delta": 0.0,
+      "final_logit_max_abs_delta": 0.0212554931640625,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.0212554931640625
+    },
+    "scar_p_rv_to_half": {
+      "edema_logit_max_abs_delta": 0.0,
+      "final_logit_max_abs_delta": 0.029209136962890625,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.029209136962890625
+    },
+    "scar_p_wall_to_full": {
+      "edema_logit_max_abs_delta": 0.0,
+      "final_logit_max_abs_delta": 0.02968597412109375,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.02968597412109375
+    },
+    "scar_p_wall_to_half": {
+      "edema_logit_max_abs_delta": 0.0,
+      "final_logit_max_abs_delta": 0.029239654541015625,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.029239654541015625
+    },
+    "scar_quarter_center_to_half": {
+      "edema_logit_max_abs_delta": 0.0,
+      "final_logit_max_abs_delta": 0.03679180145263672,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.03679180145263672
+    },
+    "scar_quarter_occupancy_to_half": {
+      "edema_logit_max_abs_delta": 0.0,
+      "final_logit_max_abs_delta": 0.029256820678710938,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.029256820678710938
+    },
+    "scar_rho_to_full": {
+      "edema_logit_max_abs_delta": 0.0,
+      "final_logit_max_abs_delta": 0.022899627685546875,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.022899627685546875
+    },
+    "scar_rho_to_half": {
+      "edema_logit_max_abs_delta": 0.0,
+      "final_logit_max_abs_delta": 0.028776168823242188,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.028776168823242188
+    },
+    "scar_signed_endo_to_full": {
+      "edema_logit_max_abs_delta": 0.0,
+      "final_logit_max_abs_delta": 0.028860092163085938,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.028860092163085938
+    },
+    "scar_signed_endo_to_half": {
+      "edema_logit_max_abs_delta": 0.0,
+      "final_logit_max_abs_delta": 0.03660440444946289,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.03660440444946289
+    },
+    "scar_signed_epi_to_full": {
+      "edema_logit_max_abs_delta": 0.0,
+      "final_logit_max_abs_delta": 0.026397705078125,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.026397705078125
+    },
+    "scar_signed_epi_to_half": {
+      "edema_logit_max_abs_delta": 0.0,
+      "final_logit_max_abs_delta": 0.0722508430480957,
+      "passes_logit_effect": true,
+      "scar_logit_max_abs_delta": 0.0722508430480957
+    }
+  },
+  "named_projection_count": 47,
+  "status": "PASS"
+}

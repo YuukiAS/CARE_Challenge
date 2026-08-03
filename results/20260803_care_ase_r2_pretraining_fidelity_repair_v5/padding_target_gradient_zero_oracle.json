@@ -1,0 +1,7 @@
+{
+  "all_padding_locations_loss_gradient_zero": true,
+  "all_padding_locations_target_ignore": true,
+  "evidence": "tests/care_ase/test_padding_ignore_semantics.py and target valid_binary=(target>=0)",
+  "padding_voxel_count": 864,
+  "status": "PASS"
+}

@@ -1,0 +1,541 @@
+{
+  "gate_grad_second_backward": {
+    "edema_c0_gate.": 0.0010722867446020246,
+    "edema_lge_gate.": 0.012224402278661728,
+    "scar_c0_gate.": 0.002298041246831417
+  },
+  "gate_status": {
+    "edema_c0_gate_second_backward_positive": true,
+    "edema_lge_gate_second_backward_positive": true,
+    "scar_c0_gate_second_backward_positive": true
+  },
+  "loss_first": 3.833246946334839,
+  "loss_second": 3.694594383239746,
+  "metrics_first": {
+    "all_finite": 1.0,
+    "all_nonnegative": 1.0,
+    "anatomy4_deep_supervised": 0.13806548714637756,
+    "anatomy_ce": 0.0280170701444149,
+    "anatomy_dice": 0.09260594844818115,
+    "anatomy_half_ce": 0.057717613875865936,
+    "anatomy_half_dice": 0.11523278802633286,
+    "distance": 0.37582623958587646,
+    "edema_binary_t2_gated": 0.9669506549835205,
+    "edema_boundary": 0.170283243060112,
+    "edema_context": 1.7129230499267578,
+    "edema_dense": 0.9669506549835205,
+    "edema_extent": 3.358919620513916,
+    "edema_extent_area": 0.0713965892791748,
+    "edema_extent_presence": 6.646442413330078,
+    "injury": 1.106394648551941,
+    "loss": 3.833246946334839,
+    "no_t2_edema_exclusive_total_loss": 7.324004650115967,
+    "relation": 0.008533485233783722,
+    "scar_center": 0.19187051057815552,
+    "scar_component": 0.805235743522644,
+    "scar_context": 1.278586983680725,
+    "scar_dense": 0.8706330060958862,
+    "scar_extent": 0.45427969098091125,
+    "scar_extent_area": 0.12098964303731918,
+    "scar_extent_presence": 0.7875697612762451,
+    "six_class_ce": 0.016516579315066338,
+    "six_class_dice": 0.06573157757520676,
+    "wall": 0.19800227880477905
+  },
+  "metrics_second": {
+    "all_finite": 1.0,
+    "all_nonnegative": 1.0,
+    "anatomy4_deep_supervised": 0.14519746601581573,
+    "anatomy_ce": 0.044427502900362015,
+    "anatomy_dice": 0.10187288373708725,
+    "anatomy_half_ce": 0.044643014669418335,
+    "anatomy_half_dice": 0.09834858030080795,
+    "distance": 0.38965269923210144,
+    "edema_binary_t2_gated": 0.8933495283126831,
+    "edema_boundary": 0.15346412360668182,
+    "edema_context": 1.651231288909912,
+    "edema_dense": 0.8933495283126831,
+    "edema_extent": 3.285665512084961,
+    "edema_extent_area": 0.06233861669898033,
+    "edema_extent_presence": 6.5089921951293945,
+    "injury": 1.099507451057434,
+    "loss": 3.694594383239746,
+    "no_t2_edema_exclusive_total_loss": 7.084914684295654,
+    "relation": 0.0016963932430371642,
+    "scar_center": 0.180649995803833,
+    "scar_component": 0.6153208017349243,
+    "scar_context": 1.2476412057876587,
+    "scar_dense": 0.7675935626029968,
+    "scar_extent": 0.4447745680809021,
+    "scar_extent_area": 0.10534515231847763,
+    "scar_extent_presence": 0.7842040061950684,
+    "six_class_ce": 0.04780005291104317,
+    "six_class_dice": 0.11764649301767349,
+    "wall": 0.22239041328430176
+  },
+  "named_projection_count": 47,
+  "producer_grad_first_backward": {
+    "anatomy_context_detached": 0.171836718916893,
+    "edema_boundary": 0.113655224442482,
+    "edema_c0": 0.0,
+    "edema_context": 0.07628981024026871,
+    "edema_dilation1": 0.0,
+    "edema_dilation2": 0.0,
+    "edema_dilation4": 0.0,
+    "edema_injury": 0.13795986771583557,
+    "edema_lge": 0.0,
+    "edema_t2": 0.0,
+    "scar_c0": 0.0,
+    "scar_context": 0.06496255844831467,
+    "scar_half_center": 0.03915363550186157,
+    "scar_half_occupancy": 0.014434722252190113,
+    "scar_lge": 0.0,
+    "scar_quarter_center": 0.05535763129591942,
+    "scar_quarter_occupancy": 0.10342467576265335
+  },
+  "producer_grad_second_backward": {
+    "anatomy_context_detached": 0.2750025987625122,
+    "edema_boundary": 0.12853822112083435,
+    "edema_c0": 0.0010722867446020246,
+    "edema_context": 0.07498692721128464,
+    "edema_dilation1": 0.0002939121040981263,
+    "edema_dilation2": 0.00033109233481809497,
+    "edema_dilation4": 0.00031948371906764805,
+    "edema_injury": 0.1587991565465927,
+    "edema_lge": 0.012224402278661728,
+    "edema_t2": 0.004520627669990063,
+    "scar_c0": 0.004636147525161505,
+    "scar_context": 0.06397433578968048,
+    "scar_half_center": 0.0372844897210598,
+    "scar_half_occupancy": 0.013564309105277061,
+    "scar_lge": 0.0054135313257575035,
+    "scar_quarter_center": 0.05314972624182701,
+    "scar_quarter_occupancy": 0.11197454482316971
+  },
+  "projection_rows": {
+    "edema_boundary_to_full": {
+      "producer_grad_first_backward": 0.113655224442482,
+      "producer_grad_second_backward": 0.12853822112083435,
+      "producer_key": "edema_boundary",
+      "projection_grad_first_backward": 0.00251712161116302,
+      "projection_grad_second_backward": 0.010954185388982296,
+      "projection_gradient_positive": true,
+      "projection_prefix": "edema_branch.full_projections.projections.edema_boundary_to_full."
+    },
+    "edema_c0_to_full": {
+      "producer_grad_first_backward": 0.0,
+      "producer_grad_second_backward": 0.0010722867446020246,
+      "producer_key": "edema_c0",
+      "projection_grad_first_backward": 0.00671105831861496,
+      "projection_grad_second_backward": 0.00500991428270936,
+      "projection_gradient_positive": true,
+      "projection_prefix": "edema_branch.full_projections.projections.edema_c0_to_full."
+    },
+    "edema_c0_to_half": {
+      "producer_grad_first_backward": 0.0,
+      "producer_grad_second_backward": 0.0010722867446020246,
+      "producer_key": "edema_c0",
+      "projection_grad_first_backward": 0.01199199166148901,
+      "projection_grad_second_backward": 0.012113251723349094,
+      "projection_gradient_positive": true,
+      "projection_prefix": "edema_branch.half_projections.projections.edema_c0_to_half."
+    },
+    "edema_context_to_full": {
+      "producer_grad_first_backward": 0.07628981024026871,
+      "producer_grad_second_backward": 0.07498692721128464,
+      "producer_key": "edema_context",
+      "projection_grad_first_backward": 0.008167990483343601,
+      "projection_grad_second_backward": 0.008269809186458588,
+      "projection_gradient_positive": true,
+      "projection_prefix": "edema_branch.full_projections.projections.edema_context_to_full."
+    },
+    "edema_context_to_half": {
+      "producer_grad_first_backward": 0.07628981024026871,
+      "producer_grad_second_backward": 0.07498692721128464,
+      "producer_key": "edema_context",
+      "projection_grad_first_backward": 0.017623724415898323,
+      "projection_grad_second_backward": 0.012849180027842522,
+      "projection_gradient_positive": true,
+      "projection_prefix": "edema_branch.half_projections.projections.edema_context_to_half."
+    },
+    "edema_dilation1_to_full": {
+      "producer_grad_first_backward": 0.0,
+      "producer_grad_second_backward": 0.0002939121040981263,
+      "producer_key": "edema_dilation1",
+      "projection_grad_first_backward": 0.01634509675204754,
+      "projection_grad_second_backward": 0.019790368154644966,
+      "projection_gradient_positive": true,
+      "projection_prefix": "edema_branch.full_projections.projections.edema_dilation1_to_full."
+    },
+    "edema_dilation2_to_full": {
+      "producer_grad_first_backward": 0.0,
+      "producer_grad_second_backward": 0.00033109233481809497,
+      "producer_key": "edema_dilation2",
+      "projection_grad_first_backward": 0.011519764550030231,
+      "projection_grad_second_backward": 0.04684820771217346,
+      "projection_gradient_positive": true,
+      "projection_prefix": "edema_branch.full_projections.projections.edema_dilation2_to_full."
+    },
+    "edema_dilation4_to_full": {
+      "producer_grad_first_backward": 0.0,
+      "producer_grad_second_backward": 0.00031948371906764805,
+      "producer_key": "edema_dilation4",
+      "projection_grad_first_backward": 0.02029869146645069,
+      "projection_grad_second_backward": 0.03458086773753166,
+      "projection_gradient_positive": true,
+      "projection_prefix": "edema_branch.full_projections.projections.edema_dilation4_to_full."
+    },
+    "edema_injury_to_full": {
+      "producer_grad_first_backward": 0.13795986771583557,
+      "producer_grad_second_backward": 0.1587991565465927,
+      "producer_key": "edema_injury",
+      "projection_grad_first_backward": 0.008183004334568977,
+      "projection_grad_second_backward": 0.025748033076524734,
+      "projection_gradient_positive": true,
+      "projection_prefix": "edema_branch.full_projections.projections.edema_injury_to_full."
+    },
+    "edema_lge_to_full": {
+      "producer_grad_first_backward": 0.0,
+      "producer_grad_second_backward": 0.012224402278661728,
+      "producer_key": "edema_lge",
+      "projection_grad_first_backward": 0.002485615899786353,
+      "projection_grad_second_backward": 0.002385176718235016,
+      "projection_gradient_positive": true,
+      "projection_prefix": "edema_branch.full_projections.projections.edema_lge_to_full."
+    },
+    "edema_lge_to_half": {
+      "producer_grad_first_backward": 0.0,
+      "producer_grad_second_backward": 0.012224402278661728,
+      "producer_key": "edema_lge",
+      "projection_grad_first_backward": 0.005436869338154793,
+      "projection_grad_second_backward": 0.0045587122440338135,
+      "projection_gradient_positive": true,
+      "projection_prefix": "edema_branch.half_projections.projections.edema_lge_to_half."
+    },
+    "edema_p_lv_to_full": {
+      "producer_grad_first_backward": 0.171836718916893,
+      "producer_grad_second_backward": 0.2750025987625122,
+      "producer_key": "anatomy_context_detached",
+      "projection_grad_first_backward": 0.0012304197298362851,
+      "projection_grad_second_backward": 0.001428551273420453,
+      "projection_gradient_positive": true,
+      "projection_prefix": "edema_branch.full_projections.projections.edema_p_lv_to_full."
+    },
+    "edema_p_lv_to_half": {
+      "producer_grad_first_backward": 0.171836718916893,
+      "producer_grad_second_backward": 0.2750025987625122,
+      "producer_key": "anatomy_context_detached",
+      "projection_grad_first_backward": 0.0028521805070340633,
+      "projection_grad_second_backward": 0.0045587122440338135,
+      "projection_gradient_positive": true,
+      "projection_prefix": "edema_branch.half_projections.projections.edema_p_lv_to_half."
+    },
+    "edema_p_rv_to_full": {
+      "producer_grad_first_backward": 0.171836718916893,
+      "producer_grad_second_backward": 0.2750025987625122,
+      "producer_key": "anatomy_context_detached",
+      "projection_grad_first_backward": 0.0010197630617767572,
+      "projection_grad_second_backward": 0.0015816085506230593,
+      "projection_gradient_positive": true,
+      "projection_prefix": "edema_branch.full_projections.projections.edema_p_rv_to_full."
+    },
+    "edema_p_rv_to_half": {
+      "producer_grad_first_backward": 0.171836718916893,
+      "producer_grad_second_backward": 0.2750025987625122,
+      "producer_key": "anatomy_context_detached",
+      "projection_grad_first_backward": 0.0028521805070340633,
+      "projection_grad_second_backward": 0.0045587122440338135,
+      "projection_gradient_positive": true,
+      "projection_prefix": "edema_branch.half_projections.projections.edema_p_rv_to_half."
+    },
+    "edema_p_wall_to_full": {
+      "producer_grad_first_backward": 0.171836718916893,
+      "producer_grad_second_backward": 0.2750025987625122,
+      "producer_key": "anatomy_context_detached",
+      "projection_grad_first_backward": 0.0036349622532725334,
+      "projection_grad_second_backward": 0.00741730909794569,
+      "projection_gradient_positive": true,
+      "projection_prefix": "edema_branch.full_projections.projections.edema_p_wall_to_full."
+    },
+    "edema_p_wall_to_half": {
+      "producer_grad_first_backward": 0.171836718916893,
+      "producer_grad_second_backward": 0.2750025987625122,
+      "producer_key": "anatomy_context_detached",
+      "projection_grad_first_backward": 0.004652101546525955,
+      "projection_grad_second_backward": 0.007825586013495922,
+      "projection_gradient_positive": true,
+      "projection_prefix": "edema_branch.half_projections.projections.edema_p_wall_to_half."
+    },
+    "edema_rho_to_full": {
+      "producer_grad_first_backward": 0.171836718916893,
+      "producer_grad_second_backward": 0.2750025987625122,
+      "producer_key": "anatomy_context_detached",
+      "projection_grad_first_backward": 0.002325719688087702,
+      "projection_grad_second_backward": 0.00408337265253067,
+      "projection_gradient_positive": true,
+      "projection_prefix": "edema_branch.full_projections.projections.edema_rho_to_full."
+    },
+    "edema_rho_to_half": {
+      "producer_grad_first_backward": 0.171836718916893,
+      "producer_grad_second_backward": 0.2750025987625122,
+      "producer_key": "anatomy_context_detached",
+      "projection_grad_first_backward": 0.004243955481797457,
+      "projection_grad_second_backward": 0.0045587122440338135,
+      "projection_gradient_positive": true,
+      "projection_prefix": "edema_branch.half_projections.projections.edema_rho_to_half."
+    },
+    "edema_signed_endo_to_full": {
+      "producer_grad_first_backward": 0.171836718916893,
+      "producer_grad_second_backward": 0.2750025987625122,
+      "producer_key": "anatomy_context_detached",
+      "projection_grad_first_backward": 0.007493811659514904,
+      "projection_grad_second_backward": 0.008871091529726982,
+      "projection_gradient_positive": true,
+      "projection_prefix": "edema_branch.full_projections.projections.edema_signed_endo_to_full."
+    },
+    "edema_signed_endo_to_half": {
+      "producer_grad_first_backward": 0.171836718916893,
+      "producer_grad_second_backward": 0.2750025987625122,
+      "producer_key": "anatomy_context_detached",
+      "projection_grad_first_backward": 0.008845317177474499,
+      "projection_grad_second_backward": 0.0071880146861076355,
+      "projection_gradient_positive": true,
+      "projection_prefix": "edema_branch.half_projections.projections.edema_signed_endo_to_half."
+    },
+    "edema_signed_epi_to_full": {
+      "producer_grad_first_backward": 0.171836718916893,
+      "producer_grad_second_backward": 0.2750025987625122,
+      "producer_key": "anatomy_context_detached",
+      "projection_grad_first_backward": 0.014645394869148731,
+      "projection_grad_second_backward": 0.014176791533827782,
+      "projection_gradient_positive": true,
+      "projection_prefix": "edema_branch.full_projections.projections.edema_signed_epi_to_full."
+    },
+    "edema_signed_epi_to_half": {
+      "producer_grad_first_backward": 0.171836718916893,
+      "producer_grad_second_backward": 0.2750025987625122,
+      "producer_key": "anatomy_context_detached",
+      "projection_grad_first_backward": 0.013505185022950172,
+      "projection_grad_second_backward": 0.01625189185142517,
+      "projection_gradient_positive": true,
+      "projection_prefix": "edema_branch.half_projections.projections.edema_signed_epi_to_half."
+    },
+    "edema_t2_to_full": {
+      "producer_grad_first_backward": 0.0,
+      "producer_grad_second_backward": 0.004520627669990063,
+      "producer_key": "edema_t2",
+      "projection_grad_first_backward": 0.0367179699242115,
+      "projection_grad_second_backward": 0.042695850133895874,
+      "projection_gradient_positive": true,
+      "projection_prefix": "edema_branch.full_projections.projections.edema_t2_to_full."
+    },
+    "edema_t2_to_half": {
+      "producer_grad_first_backward": 0.0,
+      "producer_grad_second_backward": 0.004520627669990063,
+      "producer_key": "edema_t2",
+      "projection_grad_first_backward": 0.08167848736047745,
+      "projection_grad_second_backward": 0.04923008754849434,
+      "projection_gradient_positive": true,
+      "projection_prefix": "edema_branch.half_projections.projections.edema_t2_to_half."
+    },
+    "scar_c0_to_full": {
+      "producer_grad_first_backward": 0.0,
+      "producer_grad_second_backward": 0.004636147525161505,
+      "producer_key": "scar_c0",
+      "projection_grad_first_backward": 0.017154274508357048,
+      "projection_grad_second_backward": 0.016968656331300735,
+      "projection_gradient_positive": true,
+      "projection_prefix": "scar_branch.full_projections.projections.scar_c0_to_full."
+    },
+    "scar_c0_to_half": {
+      "producer_grad_first_backward": 0.0,
+      "producer_grad_second_backward": 0.004636147525161505,
+      "producer_key": "scar_c0",
+      "projection_grad_first_backward": 0.0186909306794405,
+      "projection_grad_second_backward": 0.03199227899312973,
+      "projection_gradient_positive": true,
+      "projection_prefix": "scar_branch.half_projections.projections.scar_c0_to_half."
+    },
+    "scar_context_to_full": {
+      "producer_grad_first_backward": 0.06496255844831467,
+      "producer_grad_second_backward": 0.06397433578968048,
+      "producer_key": "scar_context",
+      "projection_grad_first_backward": 0.007701801136136055,
+      "projection_grad_second_backward": 0.012691979296505451,
+      "projection_gradient_positive": true,
+      "projection_prefix": "scar_branch.full_projections.projections.scar_context_to_full."
+    },
+    "scar_context_to_half": {
+      "producer_grad_first_backward": 0.06496255844831467,
+      "producer_grad_second_backward": 0.06397433578968048,
+      "producer_key": "scar_context",
+      "projection_grad_first_backward": 0.019661638885736465,
+      "projection_grad_second_backward": 0.025773048400878906,
+      "projection_gradient_positive": true,
+      "projection_prefix": "scar_branch.half_projections.projections.scar_context_to_half."
+    },
+    "scar_half_center_to_full": {
+      "producer_grad_first_backward": 0.03915363550186157,
+      "producer_grad_second_backward": 0.0372844897210598,
+      "producer_key": "scar_half_center",
+      "projection_grad_first_backward": 0.007938172668218613,
+      "projection_grad_second_backward": 0.016597943380475044,
+      "projection_gradient_positive": true,
+      "projection_prefix": "scar_branch.full_projections.projections.scar_half_center_to_full."
+    },
+    "scar_half_occupancy_to_full": {
+      "producer_grad_first_backward": 0.014434722252190113,
+      "producer_grad_second_backward": 0.013564309105277061,
+      "producer_key": "scar_half_occupancy",
+      "projection_grad_first_backward": 0.023935114964842796,
+      "projection_grad_second_backward": 0.015772247686982155,
+      "projection_gradient_positive": true,
+      "projection_prefix": "scar_branch.full_projections.projections.scar_half_occupancy_to_full."
+    },
+    "scar_lge_to_full": {
+      "producer_grad_first_backward": 0.0,
+      "producer_grad_second_backward": 0.0054135313257575035,
+      "producer_key": "scar_lge",
+      "projection_grad_first_backward": 0.0486551895737648,
+      "projection_grad_second_backward": 0.05219132825732231,
+      "projection_gradient_positive": true,
+      "projection_prefix": "scar_branch.full_projections.projections.scar_lge_to_full."
+    },
+    "scar_lge_to_half": {
+      "producer_grad_first_backward": 0.0,
+      "producer_grad_second_backward": 0.0054135313257575035,
+      "producer_key": "scar_lge",
+      "projection_grad_first_backward": 0.07508349418640137,
+      "projection_grad_second_backward": 0.09915462136268616,
+      "projection_gradient_positive": true,
+      "projection_prefix": "scar_branch.half_projections.projections.scar_lge_to_half."
+    },
+    "scar_p_lv_to_full": {
+      "producer_grad_first_backward": 0.171836718916893,
+      "producer_grad_second_backward": 0.2750025987625122,
+      "producer_key": "anatomy_context_detached",
+      "projection_grad_first_backward": 0.0019770627841353416,
+      "projection_grad_second_backward": 0.003521478734910488,
+      "projection_gradient_positive": true,
+      "projection_prefix": "scar_branch.full_projections.projections.scar_p_lv_to_full."
+    },
+    "scar_p_lv_to_half": {
+      "producer_grad_first_backward": 0.171836718916893,
+      "producer_grad_second_backward": 0.2750025987625122,
+      "producer_key": "anatomy_context_detached",
+      "projection_grad_first_backward": 0.007294289767742157,
+      "projection_grad_second_backward": 0.009749449789524078,
+      "projection_gradient_positive": true,
+      "projection_prefix": "scar_branch.half_projections.projections.scar_p_lv_to_half."
+    },
+    "scar_p_rv_to_full": {
+      "producer_grad_first_backward": 0.171836718916893,
+      "producer_grad_second_backward": 0.2750025987625122,
+      "producer_key": "anatomy_context_detached",
+      "projection_grad_first_backward": 0.001477565965615213,
+      "projection_grad_second_backward": 0.002626016503199935,
+      "projection_gradient_positive": true,
+      "projection_prefix": "scar_branch.full_projections.projections.scar_p_rv_to_full."
+    },
+    "scar_p_rv_to_half": {
+      "producer_grad_first_backward": 0.171836718916893,
+      "producer_grad_second_backward": 0.2750025987625122,
+      "producer_key": "anatomy_context_detached",
+      "projection_grad_first_backward": 0.007294289767742157,
+      "projection_grad_second_backward": 0.008984547108411789,
+      "projection_gradient_positive": true,
+      "projection_prefix": "scar_branch.half_projections.projections.scar_p_rv_to_half."
+    },
+    "scar_p_wall_to_full": {
+      "producer_grad_first_backward": 0.171836718916893,
+      "producer_grad_second_backward": 0.2750025987625122,
+      "producer_key": "anatomy_context_detached",
+      "projection_grad_first_backward": 0.0034693360794335604,
+      "projection_grad_second_backward": 0.005223907995969057,
+      "projection_gradient_positive": true,
+      "projection_prefix": "scar_branch.full_projections.projections.scar_p_wall_to_full."
+    },
+    "scar_p_wall_to_half": {
+      "producer_grad_first_backward": 0.171836718916893,
+      "producer_grad_second_backward": 0.2750025987625122,
+      "producer_key": "anatomy_context_detached",
+      "projection_grad_first_backward": 0.007294289767742157,
+      "projection_grad_second_backward": 0.014972501434385777,
+      "projection_gradient_positive": true,
+      "projection_prefix": "scar_branch.half_projections.projections.scar_p_wall_to_half."
+    },
+    "scar_quarter_center_to_half": {
+      "producer_grad_first_backward": 0.05535763129591942,
+      "producer_grad_second_backward": 0.05314972624182701,
+      "producer_key": "scar_quarter_center",
+      "projection_grad_first_backward": 0.011070281267166138,
+      "projection_grad_second_backward": 0.041307233273983,
+      "projection_gradient_positive": true,
+      "projection_prefix": "scar_branch.half_projections.projections.scar_quarter_center_to_half."
+    },
+    "scar_quarter_occupancy_to_half": {
+      "producer_grad_first_backward": 0.10342467576265335,
+      "producer_grad_second_backward": 0.11197454482316971,
+      "producer_key": "scar_quarter_occupancy",
+      "projection_grad_first_backward": 0.007294289767742157,
+      "projection_grad_second_backward": 0.02193637751042843,
+      "projection_gradient_positive": true,
+      "projection_prefix": "scar_branch.half_projections.projections.scar_quarter_occupancy_to_half."
+    },
+    "scar_rho_to_full": {
+      "producer_grad_first_backward": 0.171836718916893,
+      "producer_grad_second_backward": 0.2750025987625122,
+      "producer_key": "anatomy_context_detached",
+      "projection_grad_first_backward": 0.0035767799708992243,
+      "projection_grad_second_backward": 0.00498687569051981,
+      "projection_gradient_positive": true,
+      "projection_prefix": "scar_branch.full_projections.projections.scar_rho_to_full."
+    },
+    "scar_rho_to_half": {
+      "producer_grad_first_backward": 0.171836718916893,
+      "producer_grad_second_backward": 0.2750025987625122,
+      "producer_key": "anatomy_context_detached",
+      "projection_grad_first_backward": 0.011239702813327312,
+      "projection_grad_second_backward": 0.01594133861362934,
+      "projection_gradient_positive": true,
+      "projection_prefix": "scar_branch.half_projections.projections.scar_rho_to_half."
+    },
+    "scar_signed_endo_to_full": {
+      "producer_grad_first_backward": 0.171836718916893,
+      "producer_grad_second_backward": 0.2750025987625122,
+      "producer_key": "anatomy_context_detached",
+      "projection_grad_first_backward": 0.021055683493614197,
+      "projection_grad_second_backward": 0.018913516774773598,
+      "projection_gradient_positive": true,
+      "projection_prefix": "scar_branch.full_projections.projections.scar_signed_endo_to_full."
+    },
+    "scar_signed_endo_to_half": {
+      "producer_grad_first_backward": 0.171836718916893,
+      "producer_grad_second_backward": 0.2750025987625122,
+      "producer_key": "anatomy_context_detached",
+      "projection_grad_first_backward": 0.01589949056506157,
+      "projection_grad_second_backward": 0.017371755093336105,
+      "projection_gradient_positive": true,
+      "projection_prefix": "scar_branch.half_projections.projections.scar_signed_endo_to_half."
+    },
+    "scar_signed_epi_to_full": {
+      "producer_grad_first_backward": 0.171836718916893,
+      "producer_grad_second_backward": 0.2750025987625122,
+      "producer_key": "anatomy_context_detached",
+      "projection_grad_first_backward": 0.008135972544550896,
+      "projection_grad_second_backward": 0.019173638895154,
+      "projection_gradient_positive": true,
+      "projection_prefix": "scar_branch.full_projections.projections.scar_signed_epi_to_full."
+    },
+    "scar_signed_epi_to_half": {
+      "producer_grad_first_backward": 0.171836718916893,
+      "producer_grad_second_backward": 0.2750025987625122,
+      "producer_key": "anatomy_context_detached",
+      "projection_grad_first_backward": 0.02139248512685299,
+      "projection_grad_second_backward": 0.05131347477436066,
+      "projection_gradient_positive": true,
+      "projection_prefix": "scar_branch.half_projections.projections.scar_signed_epi_to_half."
+    }
+  },
+  "status": "PASS"
+}

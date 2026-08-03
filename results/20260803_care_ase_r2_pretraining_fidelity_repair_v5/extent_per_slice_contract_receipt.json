@@ -1,0 +1,28 @@
+{
+  "edema_area_valid_count": 8,
+  "edema_presence": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    1.0,
+    1.0,
+    0.0
+  ],
+  "gt_wall_zero_area_ignore_presence_keep": true,
+  "pathology_over_gt_wall_union_area": true,
+  "per_slice_presence": true,
+  "scar_area_valid_count": 8,
+  "scar_presence": [
+    0.0,
+    0.0,
+    1.0,
+    1.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "status": "PASS"
+}

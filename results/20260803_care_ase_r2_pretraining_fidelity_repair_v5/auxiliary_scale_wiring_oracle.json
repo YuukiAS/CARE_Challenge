@@ -1,0 +1,13 @@
+{
+  "edema_injury_boundary_dilation_only_to_full": true,
+  "incorrect_auxiliary_scale_wiring_count": 0,
+  "scar_half_proposals_only_to_full": true,
+  "scar_quarter_proposals_only_to_half": true,
+  "source_markers": {
+    "edema_forward_full": true,
+    "edema_forward_half": true,
+    "scar_forward_full": true,
+    "scar_forward_half": true
+  },
+  "status": "PASS"
+}

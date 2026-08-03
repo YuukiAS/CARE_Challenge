@@ -1,0 +1,9 @@
+{
+  "decision": "REJECTED_AS_EXPECTED",
+  "expected_validator_exit": "nonzero",
+  "fixture": "require_CommitA_equals_CommitB",
+  "known_bad_fixture_rejected": true,
+  "observed_failures": [
+    "coverage"
+  ]
+}

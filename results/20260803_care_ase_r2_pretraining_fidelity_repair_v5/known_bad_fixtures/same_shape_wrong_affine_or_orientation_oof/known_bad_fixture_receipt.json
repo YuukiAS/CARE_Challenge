@@ -1,0 +1,9 @@
+{
+  "decision": "REJECTED_AS_EXPECTED",
+  "expected_validator_exit": "nonzero",
+  "fixture": "same_shape_wrong_affine_or_orientation_oof",
+  "known_bad_fixture_rejected": true,
+  "observed_failures": [
+    "coverage"
+  ]
+}
