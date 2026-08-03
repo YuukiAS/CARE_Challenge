@@ -1,17 +1,20 @@
 {
-  "created_utc": "2026-08-03T18:17:01.740408Z",
-  "critical_source_manifest_sha256": "f8efa9f4473cf8da8b353422cb7db64baadd3b305a20f557c446bece0440a37b",
+  "created_utc": "2026-08-03T18:24:58.850038Z",
+  "critical_source_manifest_sha256": "4a0708a1b9571d11127ae1f03c101eb9771a5e91359be62f88b3b043d2556698",
   "effective_contract_sha256": "1b02fb37fa30054b74f7b73b7bd15617d74ab931b4a12965ea1d700bb7fa3c1e",
   "formal_training_started_after_final_source_refresh": false,
-  "implementation_commit_sha": "199ab2d83657dfe0be19780cb95913d1261e1608",
-  "origin_main_sha_at_generation": "3843072e9e03a2d40b73c969b6878eb51c084bda",
+  "implementation_commit_sha": "a112faff10a402458413c17273be9b0f16574e24",
+  "origin_main_sha_at_generation": "4d7a05fdc80f79665ab3192de01c5451a39af4e4",
   "outer_access_fold1": 0,
   "outer_access_fold4": 0,
+  "previous_invalidated_review_packet_commit_sha": "4d7a05fdc80f79665ab3192de01c5451a39af4e4",
+  "previous_runtime_zero_credit_reason": "named_evidence_canary_area_head_false_positive_under_partial_hw_contract_mask",
   "source_repair_scope": [
     "current emergency monitor result root binding",
-    "stock-transform source-z authority label",
+    "named evidence canary honors extent_area_valid mask",
+    "non-log-step collect_metrics disabled for reduced synchronization",
     "step20_50_100 online runtime ETA receipt",
-    "non-log-step collect_metrics disabled for reduced synchronization"
+    "stock-transform source-z authority label"
   ],
   "status": "PASS"
 }
