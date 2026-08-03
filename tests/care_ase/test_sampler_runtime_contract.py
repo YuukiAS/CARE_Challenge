@@ -41,5 +41,5 @@ def test_sampler_rejects_old_manifest_path_when_v6_missing(tmp_path):
     old.parent.mkdir(parents=True)
     old.write_text("{}\n", encoding="utf-8")
 
-    with pytest.raises(RuntimeError, match="forbids the old hard-negative manifest path"):
+    with pytest.raises(FileNotFoundError, match="final code blocker hard-negative JSON manifest"):
         sampler_module._load_hard_negative_manifest(tmp_path, 1)

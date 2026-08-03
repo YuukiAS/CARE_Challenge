@@ -28,6 +28,11 @@ FULL_CASE_TARGET_KEYS = (
     "geometry_valid",
     "scar_context_target",
     "edema_context_target",
+    "scar_component_id",
+    "scar_component_volume_mm3",
+    "scar_component_center_z",
+    "scar_component_center_y",
+    "scar_component_center_x",
     "scar_center_fullres",
     "edema_boundary",
     "edema_boundary_raw_mm",
@@ -49,7 +54,9 @@ REQUIRED_CHECKPOINT_FIELDS = (
     "optimizer",
     "scheduler",
     "training_source_commit_sha",
+    "review_packet_commit_sha",
     "origin_main_sha",
+    "origin_main_at_review_request_sha",
     "effective_contract_sha256",
     "external_review_permit_sha256",
     "critical_source_manifest_sha256",
@@ -62,6 +69,7 @@ REQUIRED_CHECKPOINT_FIELDS = (
     "plans_sha256",
     "stock_checkpoint_sha256",
     "augmentation_contract_sha256",
+    "full_case_target_profile_manifest_sha256",
     "full_case_target_cache_manifest_sha256",
     "formal_resumable",
     "augmentation_rng_state",
@@ -303,11 +311,16 @@ def per_slice_extent_loss(
         case_mask = torch.ones_like(target_presence_z)
     else:
         case_mask = case_valid.float().view(-1, 1, 1).to(target_presence_z)
-    presence_raw = F.binary_cross_entropy(pred_presence.clamp(1.0e-6, 1.0 - 1.0e-6), target_presence_z, reduction="none")
-    presence = (presence_raw * case_mask).sum() / case_mask.sum().clamp_min(1.0)
-    area_mask = case_mask * target_area_valid_z
-    area_raw = F.smooth_l1_loss(pred_area, target_area_z, reduction="none")
-    area = (area_raw * area_mask).sum() / area_mask.sum().clamp_min(1.0)
+    device_type = pred_presence.device.type
+    with torch.amp.autocast(device_type=device_type, enabled=False):
+        pred_presence_fp32 = pred_presence.float().clamp(1.0e-6, 1.0 - 1.0e-6)
+        target_presence_fp32 = target_presence_z.float()
+        case_mask_fp32 = case_mask.float()
+        presence_raw = F.binary_cross_entropy(pred_presence_fp32, target_presence_fp32, reduction="none")
+        presence = (presence_raw * case_mask_fp32).sum() / case_mask_fp32.sum().clamp_min(1.0)
+        area_mask = case_mask_fp32 * target_area_valid_z.float()
+        area_raw = F.smooth_l1_loss(pred_area.float(), target_area_z.float(), reduction="none")
+        area = (area_raw * area_mask).sum() / area_mask.sum().clamp_min(1.0)
     return presence, area
 
 
@@ -415,6 +428,34 @@ def _component_center_heatmap(seg: np.ndarray, label_value: int, out_shape: tupl
     return F.interpolate(tensor, size=out_shape, mode="trilinear", align_corners=False)[0, 0].numpy().astype(np.float32)
 
 
+def _component_identity_maps(seg: np.ndarray, label_value: int, spacing: tuple[float, float, float]) -> dict[str, np.ndarray]:
+    mask = seg == int(label_value)
+    labels, count = ndimage.label(mask, structure=np.ones((3, 3, 3), dtype=np.uint8))
+    component_id = labels.astype(np.int32, copy=False)
+    volume = np.zeros(seg.shape, dtype=np.float32)
+    center_z = np.zeros(seg.shape, dtype=np.float32)
+    center_y = np.zeros(seg.shape, dtype=np.float32)
+    center_x = np.zeros(seg.shape, dtype=np.float32)
+    voxel_volume = float(np.prod(tuple(float(v) for v in spacing)))
+    for comp_id in range(1, int(count) + 1):
+        comp = labels == comp_id
+        coords = np.argwhere(comp)
+        if coords.size == 0:
+            continue
+        cz, cy, cx = coords.mean(axis=0)
+        volume[comp] = float(coords.shape[0]) * voxel_volume
+        center_z[comp] = float(cz)
+        center_y[comp] = float(cy)
+        center_x[comp] = float(cx)
+    return {
+        "scar_component_id": component_id,
+        "scar_component_volume_mm3": volume,
+        "scar_component_center_z": center_z,
+        "scar_component_center_y": center_y,
+        "scar_component_center_x": center_x,
+    }
+
+
 def _spacing_rows(batch: dict[str, torch.Tensor], count: int) -> list[tuple[float, float, float]]:
     raw = batch.get("spacing")
     if raw is None:
@@ -493,10 +534,12 @@ def build_full_case_target_cache(seg: np.ndarray, spacing: tuple[float, float, f
     geometry = _geometry_targets_numpy(seg, spacing)
     boundary = _edema_boundary_numpy(seg, spacing)
     extent = _slice_extent_targets_numpy(seg)
+    scar_components = _component_identity_maps(seg, 5, spacing)
     cache: dict[str, np.ndarray] = {
         **geometry,
         "scar_context_target": _context_target_numpy(seg, edema=False, spacing=spacing),
         "edema_context_target": _context_target_numpy(seg, edema=True, spacing=spacing),
+        **scar_components,
         "scar_center_fullres": _component_center_heatmap(seg, 5, tuple(int(v) for v in seg.shape), spacing),
         **boundary,
         **extent,
@@ -540,7 +583,7 @@ def _tensor_cache_from_batch(batch: dict[str, Any], device: torch.device) -> dic
     out: dict[str, torch.Tensor] = {}
     for key, value in raw.items():
         tensor = value if torch.is_tensor(value) else torch.as_tensor(value)
-        if key.endswith("_target"):
+        if key.endswith("_target") or key == "scar_component_id":
             out[key] = tensor.to(device=device, dtype=torch.long)
         else:
             out[key] = tensor.to(device=device, dtype=torch.float32)
@@ -576,6 +619,9 @@ def build_care_ase_targets(target: torch.Tensor, availability: torch.Tensor, out
         }
         stacked["scar_context_target"] = _ensure_batch_channel(cache["scar_context_target"], channel=False, dtype=torch.long)
         stacked["edema_context_target"] = _ensure_batch_channel(cache["edema_context_target"], channel=False, dtype=torch.long)
+        stacked["scar_component_id"] = _ensure_batch_channel(cache["scar_component_id"], channel=True, dtype=torch.long)
+        for key in ("scar_component_volume_mm3", "scar_component_center_z", "scar_component_center_y", "scar_component_center_x"):
+            stacked[key] = _ensure_batch_channel(cache[key], channel=True, dtype=torch.float32)
         scar_center_fullres = _ensure_batch_channel(cache["scar_center_fullres"], channel=True, dtype=torch.float32)
         stacked["scar_center_quarter"] = F.interpolate(
             scar_center_fullres,
@@ -663,6 +709,30 @@ def build_care_ase_targets(target: torch.Tensor, availability: torch.Tensor, out
 def per_gt_component_tversky(logit: torch.Tensor, target: torch.Tensor, valid_mask: torch.Tensor, batch: dict[str, torch.Tensor] | None = None) -> torch.Tensor:
     losses: list[torch.Tensor] = []
     weights: list[float] = []
+    cache = _tensor_cache_from_batch(batch or {}, logit.device)
+    if cache is not None and "scar_component_id" in cache and "scar_component_volume_mm3" in cache:
+        component_id = _ensure_batch_channel(cache["scar_component_id"], channel=True, dtype=torch.long)
+        component_volume = _ensure_batch_channel(cache["scar_component_volume_mm3"], channel=True, dtype=torch.float32)
+        target_bool = target.to(device=logit.device).bool()
+        for b in range(int(component_id.shape[0])):
+            ids = torch.unique(component_id[b][(component_id[b] > 0) & target_bool[b]])
+            for cid_tensor in ids.detach().cpu().tolist():
+                cid = int(cid_tensor)
+                comp_mask = ((component_id[b : b + 1] == cid) & target_bool[b : b + 1]).to(logit.dtype)
+                if float(comp_mask.sum().detach().cpu()) <= 0.0:
+                    continue
+                other_components = ((component_id[b : b + 1] > 0) & (component_id[b : b + 1] != cid) & target_bool[b : b + 1]).to(logit.dtype)
+                comp_valid = valid_mask[b : b + 1].to(logit) * (1.0 - other_components)
+                volume_values = component_volume[b : b + 1][comp_mask.bool()]
+                volume = float(volume_values.float().mean().detach().cpu()) if volume_values.numel() else 0.0
+                weight = min(max((1000.0 / max(volume, 1.0)) ** 0.5, 1.0), 4.0)
+                losses.append(component_tversky(logit[b : b + 1], comp_mask.to(device=logit.device), comp_valid))
+                weights.append(float(weight))
+        if losses:
+            weight_tensor = torch.tensor(weights, device=logit.device, dtype=torch.float32)
+            return (torch.stack(losses).float() * weight_tensor).sum() / weight_tensor.sum().clamp_min(1.0e-6)
+        return logit.sum() * 0.0
+
     labels_np = target.detach().cpu().numpy().astype(bool)
     spacings = _spacing_rows(batch or {}, labels_np.shape[0])
     for b, mask in enumerate(labels_np[:, 0]):
@@ -1088,6 +1158,7 @@ def run_formal_optimizer_step(
     autocast_device_type: str = "cuda",
     autocast_dtype: torch.dtype = torch.bfloat16,
     autocast_enabled: bool = False,
+    collect_metrics: bool = True,
 ) -> dict[str, Any]:
     """Single authoritative CARE-ASE optimizer-step implementation."""
 
@@ -1102,7 +1173,9 @@ def run_formal_optimizer_step(
     for batch in microbatches:
         with torch.autocast(device_type=autocast_device_type, dtype=autocast_dtype, enabled=bool(autocast_enabled)):
             outputs = model(batch["image"], batch["availability"], global_step=int(global_step))
-            loss, metrics = care_ase_loss(outputs, batch)
+            loss, batch_metrics = care_ase_loss(outputs, batch)
+            if collect_metrics:
+                metrics = batch_metrics
         (loss / divisor).backward()
         loss_total += float(loss.detach().cpu())
     grad_norm = torch.nn.utils.clip_grad_norm_([p for p in model.parameters() if p.requires_grad], max_norm=float(model.config.gradient_clip_global_norm))
@@ -1110,7 +1183,7 @@ def run_formal_optimizer_step(
     return {
         "stage": stage,
         "loss_mean": loss_total / max(float(len(microbatches)), 1.0),
-        "metrics": dict(metrics),
+        "metrics": dict(metrics) if collect_metrics else {},
         "grad_norm": float(grad_norm.detach().cpu() if torch.is_tensor(grad_norm) else grad_norm),
         "formal_step_api": "src.care_myocardium.training.care_ase_trainer.run_formal_optimizer_step",
         "microbatch_count": len(microbatches),
@@ -1268,7 +1341,9 @@ def save_care_ase_checkpoint(
     plans_hash: str | None = None,
     stock_checkpoint_hash: str | None = None,
     training_source_commit_sha: str | None = None,
+    review_packet_commit_sha: str | None = None,
     origin_main_sha: str | None = None,
+    origin_main_at_review_request_sha: str | None = None,
     effective_contract_sha256: str | None = None,
     external_review_permit_sha256: str | None = None,
     critical_source_manifest_sha256: str | None = None,
@@ -1279,6 +1354,7 @@ def save_care_ase_checkpoint(
     area_reference_receipt_sha256: str | None = None,
     case_metadata_sha256: str | None = None,
     augmentation_contract_sha256: str | None = None,
+    full_case_target_profile_manifest_sha256: str | None = None,
     full_case_target_cache_manifest_sha256: str | None = None,
     augmentation_rng_state: dict[str, Any] | None = None,
     precision_mode: str = "fp32_guarded_mixed_precision_allowed",
@@ -1297,7 +1373,9 @@ def save_care_ase_checkpoint(
         "optimizer": optimizer.state_dict(),
         "scheduler": scheduler.state_dict() if scheduler is not None else {"last_global_step": int(global_step), "type": "CAREASEStageScheduler"},
         "training_source_commit_sha": training_source_commit_sha or "UNSET",
+        "review_packet_commit_sha": review_packet_commit_sha or "UNSET",
         "origin_main_sha": origin_main_sha or "UNSET",
+        "origin_main_at_review_request_sha": origin_main_at_review_request_sha or origin_main_sha or "UNSET",
         "effective_contract_sha256": effective_contract_sha256 or "UNSET",
         "external_review_permit_sha256": external_review_permit_sha256 or "UNSET",
         "critical_source_manifest_sha256": critical_source_manifest_sha256 or code_hash or "UNSET",
@@ -1310,6 +1388,7 @@ def save_care_ase_checkpoint(
         "plans_sha256": plans_hash or _sha256_file_or_missing(model.config.plans_path),
         "stock_checkpoint_sha256": stock_checkpoint_hash or _sha256_file_or_missing(model.config.checkpoint_path),
         "augmentation_contract_sha256": augmentation_contract_sha256 or "UNSET",
+        "full_case_target_profile_manifest_sha256": full_case_target_profile_manifest_sha256 or full_case_target_cache_manifest_sha256 or "UNSET",
         "full_case_target_cache_manifest_sha256": full_case_target_cache_manifest_sha256 or "UNSET",
         "formal_resumable": bool(formal_resumable),
         "augmentation_rng_state": augmentation_rng_state
@@ -1366,7 +1445,9 @@ def save_care_ase_checkpoint(
     if bool(formal_resumable):
         formal_fields = (
             "training_source_commit_sha",
+            "review_packet_commit_sha",
             "origin_main_sha",
+            "origin_main_at_review_request_sha",
             "effective_contract_sha256",
             "external_review_permit_sha256",
             "critical_source_manifest_sha256",
@@ -1379,6 +1460,7 @@ def save_care_ase_checkpoint(
             "plans_sha256",
             "stock_checkpoint_sha256",
             "augmentation_contract_sha256",
+            "full_case_target_profile_manifest_sha256",
             "full_case_target_cache_manifest_sha256",
         )
         placeholders = [field for field in formal_fields if payload.get(field) in {None, "", "UNSET", "SHORT_SMOKE"}]

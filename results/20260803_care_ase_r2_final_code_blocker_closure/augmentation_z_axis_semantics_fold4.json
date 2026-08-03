@@ -1,0 +1,1 @@
+{"dummy_2d":true,"final_patch_size":[20,256,256],"fold":4,"initial_patch_size":[20,301,301],"sha256":"f83e441e9b8ec2570d4e90c9bb176db01e2c02be478262877d6db39dbcc86437","status":"PASS","z_axis_semantics":"dummy_2d converts 3D to 2D for spatial transform; z index is not mixed by spatial rotation/scaling for Dataset501 final patch"}

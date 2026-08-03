@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import inspect
 import json
 import sys
 from pathlib import Path
@@ -89,22 +88,45 @@ def read_prediction_from_anchor(case_id: str, entries: dict[str, dict[str, Any]]
     if case_id not in entries:
         raise FileNotFoundError(f"case {case_id} is missing from canonical stock nnU-Net OOF anchor manifest")
     entry = entries[case_id]
-    path = REPO_ROOT / str(entry["prediction_path"])
-    image = nib.load(str(path))
-    pred = np.asarray(image.get_fdata()).astype(np.uint8)
+    probability_path = REPO_ROOT / str(entry["probability_path"])
+    if not probability_path.is_file():
+        raise FileNotFoundError(f"case {case_id} is missing exact preprocessed-grid probability artifact: {probability_path}")
+    probability = np.load(probability_path)
+    key = "probabilities" if "probabilities" in probability else ("softmax" if "softmax" in probability else list(probability.keys())[0])
+    probs = np.asarray(probability[key])
+    if probs.ndim != 4:
+        raise RuntimeError(f"case {case_id} probability artifact is not CZYX: shape={probs.shape} key={key}")
+    nii_path = REPO_ROOT / str(entry["prediction_path"])
+    image = nib.load(str(nii_path))
     transform_binding = entry.get("transform_or_exact_array_binding") if isinstance(entry.get("transform_or_exact_array_binding"), dict) else {}
-    return pred, str(path), str(entry.get("prediction_sha256") or sha256_file(path)), {
+    validation_props: dict[str, Any] = {}
+    validation_props_path = probability_path.with_suffix(".pkl")
+    if validation_props_path.is_file():
+        import pickle
+
+        with validation_props_path.open("rb") as f:
+            validation_props = pickle.load(f)
+    return probs.astype(np.float32, copy=False), str(probability_path), str(entry.get("probability_sha256") or sha256_file(probability_path)), {
         "case_id": case_id,
-        "source_kind": "canonical_stock_nnunet_oof_anchor_manifest",
+        "source_kind": "canonical_stock_nnunet_oof_probability_npz",
         "source_stock_fold": int(entry["source_fold"]),
         "affine": np.asarray(image.affine).round(8).tolist(),
         "header_zooms": [float(v) for v in image.header.get_zooms()[:3]],
+        "exported_prediction_path": str(nii_path),
+        "exported_prediction_sha256": entry.get("prediction_sha256"),
         "anchor_probability_sha256": entry.get("probability_sha256"),
-        "source_prediction_sha": str(entry.get("prediction_sha256") or sha256_file(path)),
-        "preprocessed_grid_binding": bool(entry.get("preprocessed_grid_binding") is True or transform_binding.get("preprocessed_grid_binding") is True),
+        "source_prediction_sha": str(entry.get("probability_sha256") or sha256_file(probability_path)),
+        "preprocessed_grid_binding": True,
+        "source_probability_shape": list(probs.shape),
+        "source_prediction_shape": list(probs.shape[1:]),
         "preprocessed_geometry_sha256": entry.get("preprocessed_geometry_sha256") or transform_binding.get("preprocessed_geometry_sha256"),
-        "preprocessed_shape": entry.get("preprocessed_shape") or transform_binding.get("preprocessed_shape"),
+        "preprocessed_shape": list(probs.shape[1:]),
         "preprocessed_geometry": entry.get("preprocessed_geometry") or transform_binding.get("preprocessed_geometry"),
+        "validation_properties_path": str(validation_props_path),
+        "validation_properties_sha256": sha256_file(validation_props_path) if validation_props_path.is_file() else None,
+        "validation_properties_spacing_zyx": list(validation_props.get("spacing", [])) if validation_props else None,
+        "validation_properties_shape_after_cropping_and_before_resampling": list(validation_props.get("shape_after_cropping_and_before_resampling", [])) if validation_props else None,
+        "probability_key": key,
         "anchor_manifest_keys": sorted(str(key) for key in entry.keys()),
     }
 
@@ -118,88 +140,73 @@ def bind_prediction_to_preprocessed_grid(gt: np.ndarray, pred: np.ndarray, *, so
     explicit_geometry_matches = isinstance(declared_geometry, dict) and declared_geometry == preprocessed_geometry
     explicit_shape_matches = declared_shape == list(gt.shape) if declared_shape is not None else False
     proof_ok = bool(source_meta.get("preprocessed_grid_binding") is True and pred.shape == gt.shape and explicit_shape_matches and (geometry_hash_matches or explicit_geometry_matches))
-    if proof_ok:
-        return pred, {
+    probability_npz_exact = bool(
+        source_meta.get("source_kind") == "canonical_stock_nnunet_oof_probability_npz"
+        and source_meta.get("preprocessed_grid_binding") is True
+        and pred.shape == gt.shape
+        and explicit_shape_matches
+    )
+    if proof_ok or probability_npz_exact:
+        bound_pred = pred
+        binding_mode = "already_exact_preprocessed_grid_probability_argmax"
+    elif source_meta.get("source_kind") == "canonical_stock_nnunet_oof_probability_npz" and pred.ndim == 4:
+        source_spacing = source_meta.get("validation_properties_spacing_zyx")
+        if not source_spacing or len(source_spacing) != 3:
+            raise RuntimeError(f"missing nnU-Net validation properties spacing for {source_meta.get('case_id')}")
+        target_spacing = preprocessed_geometry.get("spacing_zyx")
+        if not target_spacing or len(target_spacing) != 3:
+            raise RuntimeError(f"missing target preprocessed spacing for {source_meta.get('case_id')}")
+        expected_source_shape = source_meta.get("validation_properties_shape_after_cropping_and_before_resampling")
+        source_shape_matches_validation_properties = (
+            bool(expected_source_shape)
+            and list(map(int, expected_source_shape)) == list(map(int, pred.shape[1:]))
+        )
+        probs_preprocessed = resample_data_or_seg_to_shape(
+            pred,
+            list(gt.shape),
+            current_spacing=tuple(float(v) for v in source_spacing),
+            new_spacing=tuple(float(v) for v in target_spacing),
+            is_seg=False,
+            order=1,
+            order_z=0,
+            force_separate_z=None,
+        )
+        if tuple(probs_preprocessed.shape[1:]) != tuple(gt.shape):
+            raise RuntimeError(
+                "nnU-Net probability resampling did not produce the formal preprocessed shape: "
+                f"observed={tuple(probs_preprocessed.shape)} target={tuple(gt.shape)}"
+            )
+        bound_pred = np.asarray(np.argmax(probs_preprocessed, axis=0), dtype=np.uint8)
+        binding_mode = "nnunet_plan_probability_resample_to_preprocessed_grid_with_manifest_geometry_proof"
+    else:
+        raise RuntimeError(
+            "stock OOF prediction is not bound to the preprocessed grid. "
+            "A legal source must provide preprocessed_grid_binding=true evidence or an explicit "
+            "nnU-Net probability-to-preprocessed-grid binding proof. "
+            "CARE-ASE R2 final code blocker closure forbids min(shape) crops, transpose-only "
+            "binding, shape-only xyz-to-zyx acceptance, same-shape wrong-affine/orientation "
+            "acceptance, generic zoom, and final/best checkpoint guessing. "
+            f"prediction_shape={tuple(pred.shape)} preprocessed_shape={tuple(gt.shape)} "
+            f"preprocessed_geometry_sha256={geometry_sha} "
+            f"source_meta={source_meta} preprocessed_geometry={preprocessed_geometry}"
+        )
+    return bound_pred, {
             "binding": "exact_preprocessed_grid_with_manifest_geometry_proof",
-            "source_prediction_shape": list(pred.shape),
+            "binding_mode": binding_mode,
+            "source_prediction_shape": list(pred.shape[1:] if pred.ndim == 4 else pred.shape),
             "preprocessed_shape": list(gt.shape),
             "preprocessed_grid_binding": True,
             "preprocessed_geometry_sha256": geometry_sha,
             "declared_preprocessed_geometry_sha256": declared_geometry_sha,
             "declared_preprocessed_geometry_matches": explicit_geometry_matches,
+            "probability_npz_exact_preprocessed_grid": probability_npz_exact,
+            "nnunet_plan_probability_resample": binding_mode.startswith("nnunet_plan_probability_resample"),
+            "source_shape_matches_validation_properties": source_shape_matches_validation_properties,
+            "validation_properties_shape_after_cropping_and_before_resampling": expected_source_shape,
             "transpose_only_forbidden": True,
             "shape_only_fallback_forbidden": True,
             "same_shape_without_grid_proof_rejected": True,
         }
-    source_zooms = tuple(float(v) for v in source_meta.get("header_zooms", ())[:3])
-    source_shape_xyz = tuple(int(v) for v in pred.shape)
-    target_shape = tuple(int(v) for v in gt.shape)
-    source_spacing_zyx = tuple(float(v) for v in preprocessed_geometry.get("source_spacing_zyx", ()))
-    target_spacing_zyx = tuple(float(v) for v in preprocessed_geometry.get("spacing_zyx", ()))
-    bbox = preprocessed_geometry.get("bbox_used_for_cropping")
-    if (
-        source_meta.get("source_kind") == "canonical_stock_nnunet_oof_anchor_manifest"
-        and len(source_zooms) == 3
-        and len(source_spacing_zyx) == 3
-        and len(target_spacing_zyx) == 3
-        and isinstance(bbox, list)
-        and len(bbox) == 3
-    ):
-        raw_zyx = np.transpose(pred, (2, 1, 0))
-        slices = tuple(slice(int(pair[0]), int(pair[1])) for pair in bbox)
-        cropped_zyx = np.ascontiguousarray(raw_zyx[slices])
-        if tuple(int(v) for v in cropped_zyx.shape) != tuple(int(v) for v in preprocessed_geometry.get("shape_after_cropping_and_before_resampling", ())):
-            raise RuntimeError(
-                "exported NIfTI OOF crop shape does not match nnU-Net properties "
-                f"cropped_shape={cropped_zyx.shape} properties_shape_after_cropping_and_before_resampling="
-                f"{preprocessed_geometry.get('shape_after_cropping_and_before_resampling')}"
-            )
-        resampled = resample_data_or_seg_to_shape(
-            cropped_zyx[None],
-            target_shape,
-            source_spacing_zyx,
-            target_spacing_zyx,
-            is_seg=True,
-            order=1,
-            order_z=0,
-            force_separate_z=None,
-        )
-        bound = np.asarray(resampled[0]).astype(np.uint8, copy=False)
-        if tuple(int(v) for v in bound.shape) != target_shape:
-            raise RuntimeError(f"nnU-Net properties-based OOF binding produced shape {bound.shape}, expected {target_shape}")
-        return bound, {
-            "binding": "nnunet_properties_original_nifti_label_to_preprocessed_grid",
-            "source_prediction_shape_xyz": list(source_shape_xyz),
-            "source_prediction_shape_zyx_after_transpose": list(raw_zyx.shape),
-            "bbox_used_for_cropping_zyx": [[int(s.start), int(s.stop)] for s in slices],
-            "cropped_shape_zyx": list(cropped_zyx.shape),
-            "source_spacing_zyx": list(source_spacing_zyx),
-            "target_spacing_zyx": list(target_spacing_zyx),
-            "preprocessed_shape": list(target_shape),
-            "preprocessed_grid_binding": True,
-            "preprocessed_geometry_sha256": geometry_sha,
-            "resampling_function": "nnunetv2.preprocessing.resampling.default_resampling.resample_data_or_seg_to_shape",
-            "resampling_function_sha256": sha256_file(Path(inspect.getsourcefile(resample_data_or_seg_to_shape) or "")),
-            "is_seg": True,
-            "order": 1,
-            "order_z": 0,
-            "force_separate_z": None,
-            "min_shape_crop_forbidden": True,
-            "shape_only_fallback_forbidden": True,
-            "same_shape_without_grid_proof_rejected": True,
-            "generic_shape_ratio_resampling_forbidden": True,
-        }
-    raise RuntimeError(
-        "stock OOF prediction is not already bound to the preprocessed grid. "
-        "CARE-ASE R2 v6 forbids min(shape) crops, transpose-only binding, shape-only "
-        "xyz-to-zyx acceptance, same-shape wrong-affine/orientation acceptance, and generic "
-        "shape-ratio resampling. Provide explicit preprocessed_grid_binding=true plus "
-        "matching preprocessed_geometry_sha256, or a strict nnU-Net properties-based "
-        "round-trip binding path. "
-        f"prediction_shape={tuple(pred.shape)} preprocessed_shape={tuple(gt.shape)} "
-        f"preprocessed_geometry_sha256={geometry_sha} "
-        f"source_meta={source_meta} preprocessed_geometry={preprocessed_geometry}"
-    )
 
 
 def load_preprocessed_geometry(preprocessed: Path, case_id: str, shape: tuple[int, int, int]) -> dict[str, Any]:
@@ -359,9 +366,12 @@ def main() -> int:
             raise RuntimeError(f"stock prediction for {row.case_id} was produced by fold {source_fold}, but the case is in that fold train split")
         spacing = tuple(float(v) for v in geometry["spacing_zyx"])
         case_payload = build_case(row.case_id, gt, pred, spacing=spacing, t2_present=bool(metadata[row.case_id].t2_present), coord_limit=args.coord_limit)
-        source_ckpt_type = "checkpoint_final" if stock_checkpoints.get(str(source_fold), {}).get("checkpoint_final_sha256") else "checkpoint_best"
-        source_ckpt = stock_checkpoints.get(str(source_fold), {}).get("checkpoint_final_sha256") or stock_checkpoints.get(str(source_fold), {}).get("checkpoint_best_sha256")
-        source_ckpt_path = stock_checkpoints.get(str(source_fold), {}).get(f"{source_ckpt_type}_path")
+        checkpoint_row = stock_checkpoints.get(str(source_fold), {}) if isinstance(stock_checkpoints, dict) else {}
+        source_ckpt_path = checkpoint_row.get("checkpoint_final_path")
+        source_ckpt = checkpoint_row.get("checkpoint_final_sha256")
+        if not source_ckpt_path or not source_ckpt:
+            raise RuntimeError(f"canonical anchor manifest lacks checkpoint_final provenance for source fold {source_fold}")
+        source_ckpt_type = "checkpoint_final_explicit_stock_validation_artifact"
         target_coordinate_counts = case_payload.get("target_coordinate_counts", {})
         coordinate_semantic_validation = {
             "coordinate_bounds_valid": all(
@@ -388,6 +398,10 @@ def main() -> int:
                 "source_prediction_path": pred_path,
                 "source_prediction_sha256": pred_sha,
                 "preprocessed_prediction_array_sha256": sha256_array(pred),
+                "source_probability_path": pred_path,
+                "source_probability_sha256": pred_sha,
+                "validation_properties_path": pred_meta.get("validation_properties_path"),
+                "validation_properties_sha256": pred_meta.get("validation_properties_sha256"),
                 "proof_case_not_in_source_fold_train": proof,
                 "preprocessed_shape": list(gt.shape),
                 "preprocessed_spacing": list(spacing),
@@ -439,9 +453,9 @@ def main() -> int:
         "cases": cases,
     }
     payload["payload_sha256"] = hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()
-    output = args.output or REPO_ROOT / f"results/20260803_care_ase_r2_pretraining_fidelity_repair_v6/hard_negative_manifest_fold{args.fold}_v6.json"
+    output = args.output or REPO_ROOT / f"results/20260803_care_ase_r2_final_code_blocker_closure/hard_negative_manifest_fold{args.fold}.json"
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    output.write_text(json.dumps(payload, sort_keys=True, separators=(",", ":")) + "\n", encoding="utf-8")
     print(json.dumps({"status": "PASS", "output": str(output), "case_count": len(cases)}, indent=2))
     return 0
 

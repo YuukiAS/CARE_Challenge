@@ -18,7 +18,7 @@ from src.care_myocardium.data.care_ase_splits import PREPROCESSED_REL, build_car
 from src.care_myocardium.data.case_metadata import load_myops_case_metadata
 
 
-HARD_NEGATIVE_MANIFEST_TEMPLATE = "results/20260803_care_ase_r2_pretraining_fidelity_repair_v6/hard_negative_manifest_fold{fold}_v6.json"
+HARD_NEGATIVE_MANIFEST_TEMPLATE = "results/20260803_care_ase_r2_final_code_blocker_closure/hard_negative_manifest_fold{fold}.json"
 
 
 @dataclass(frozen=True)
@@ -88,13 +88,7 @@ def _case_group_from_availability(availability: tuple[float, float, float]) -> s
 def _load_hard_negative_manifest(repo_root: Path, fold: int) -> dict[str, Any]:
     path = repo_root / HARD_NEGATIVE_MANIFEST_TEMPLATE.format(fold=int(fold))
     if not path.is_file():
-        old_path = repo_root / f"results/20260803_care_ase_r2_full_fidelity_execution/hard_negative_manifest_fold{int(fold)}.json"
-        if old_path.exists():
-            raise RuntimeError(
-                "CARE-ASE R2 v6 forbids the old hard-negative manifest path; "
-                f"build and use the v6 canonical manifest instead: {path}"
-            )
-        raise FileNotFoundError(f"canonical CARE-ASE R2 v6 hard-negative JSON manifest is required: {path}")
+        raise FileNotFoundError(f"canonical CARE-ASE R2 final code blocker hard-negative JSON manifest is required: {path}")
     data = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(data, dict):
         raise ValueError(f"hard-negative manifest is not a JSON object: {path}")
@@ -119,6 +113,8 @@ def _load_hard_negative_manifest(repo_root: Path, fold: int) -> dict[str, Any]:
         "preprocessed_spacing",
         "preprocessed_geometry_sha256",
         "binding_method",
+        "targets",
+        "target_coordinate_counts",
         "target_masks_counts",
         "sampled_coordinates",
         "coordinate_semantic_validation",
@@ -129,10 +125,7 @@ def _load_hard_negative_manifest(repo_root: Path, fold: int) -> dict[str, Any]:
             raise ValueError(f"hard-negative manifest case {case_id} missing v6 fields: {missing}")
         if row.get("proof_case_not_in_source_fold_train") is not True:
             raise ValueError(f"hard-negative manifest case {case_id} lacks patient-held-out source proof")
-        if row.get("binding_method") not in {
-            "exact_preprocessed_grid_with_manifest_geometry_proof",
-            "nnunet_properties_original_nifti_label_to_preprocessed_grid",
-        }:
+        if row.get("binding_method") != "exact_preprocessed_grid_with_manifest_geometry_proof":
             raise ValueError(f"hard-negative manifest case {case_id} has illegal binding_method={row.get('binding_method')}")
         validation = row.get("coordinate_semantic_validation", {})
         if not isinstance(validation, dict) or validation.get("coordinate_bounds_valid") is not True:

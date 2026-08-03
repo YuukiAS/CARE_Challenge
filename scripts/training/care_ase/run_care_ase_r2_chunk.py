@@ -30,6 +30,7 @@ if str(REPO_ROOT) not in sys.path:
 
 from src.care_myocardium.models.care_ase import build_care_ase_for_fold_with_area_references
 from src.care_myocardium.inference.care_ase_r2_decode import decode_care_ase_r2_logits
+from src.care_myocardium.data.care_ase_splits import build_care_ase_case_roles
 from src.care_myocardium.training.care_ase_augmentation import (
     apply_stock_training_transform_preserve_ignore,
     apply_stock_training_transform_with_targets,
@@ -53,7 +54,7 @@ from src.care_myocardium.training.care_ase_trainer import (
 
 PREPROCESSED = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans_3d_fullres"
 SPLITS = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/splits_final.json"
-RESULT_DIR = REPO_ROOT / "results/20260803_care_ase_r2_pretraining_fidelity_repair_v6"
+RESULT_DIR = REPO_ROOT / "results/20260803_care_ase_r2_final_code_blocker_closure"
 CRITICAL_SOURCE_PATHS = (
     "src/care_myocardium/models/care_ase.py",
     "src/care_myocardium/training/care_ase_trainer.py",
@@ -76,12 +77,17 @@ _TARGET_REGRESSION_KEYS = (
     "signed_endo_distance",
     "signed_epi_distance",
     "wall_depth_rho",
+    "scar_component_volume_mm3",
+    "scar_component_center_z",
+    "scar_component_center_y",
+    "scar_component_center_x",
     "scar_center_fullres",
     "edema_boundary",
     "edema_boundary_raw_mm",
 )
 _TARGET_SEGMENTATION_KEYS = (
     "geometry_valid",
+    "scar_component_id",
     "scar_context_target",
     "edema_context_target",
     "edema_boundary_valid",
@@ -340,7 +346,7 @@ def _unpack_transformed_target_cache(
     for key, value in zip(_TARGET_REGRESSION_KEYS, regression):
         out[key] = np.asarray(value, dtype=np.float32)
     for key, value in zip(_TARGET_SEGMENTATION_KEYS, segmentation):
-        if key.endswith("_target"):
+        if key.endswith("_target") or key == "scar_component_id":
             out[key] = np.rint(value).astype(np.int64, copy=False)
         else:
             out[key] = (np.asarray(value) > 0.5).astype(np.float32, copy=False)
@@ -597,8 +603,8 @@ def _write_full_reload_receipt(
         "next_batch_hash_payload": payload.get("next_batch_descriptor_sha256"),
         "next_optimizer_step_micro_descriptor_hash_payload": payload.get("next_optimizer_step_micro_descriptor_sha256"),
         "next_batch_hash_recomputed": next_hash,
-        "next_batch_hash_match": payload.get("next_batch_descriptor_sha256") in {next_hash, "TRAINING_COMPLETE"},
-        "next_optimizer_step_micro_descriptor_hash_match": payload.get("next_optimizer_step_micro_descriptor_sha256") in {next_hash, "TRAINING_COMPLETE"},
+        "next_batch_hash_match": payload.get("next_batch_descriptor_sha256") == next_hash,
+        "next_optimizer_step_micro_descriptor_hash_match": payload.get("next_optimizer_step_micro_descriptor_sha256") == next_hash,
         "live_scheduler_last_global_step": live_scheduler.last_global_step,
     }
     receipt["payload_sha256"] = hashlib.sha256(json.dumps(receipt, sort_keys=True, default=str).encode("utf-8")).hexdigest()
@@ -627,8 +633,8 @@ def main() -> int:
         raise ValueError("CARE-ASE R2 chunk must satisfy 0 <= start < end <= 14000")
     if not args.allow_short_smoke and (args.end_step - args.start_step) != 2000:
         raise ValueError("formal CARE-ASE R2 chunks must be exactly 2000 optimizer steps")
-    if args.allow_short_smoke and (args.end_step - args.start_step) > 50:
-        raise ValueError("--allow-short-smoke is capped at 50 optimizer steps and carries zero formal credit")
+    if args.allow_short_smoke and (args.end_step - args.start_step) > 5:
+        raise ValueError("--allow-short-smoke is capped at 5 optimizer steps and carries zero formal credit")
     if not args.allow_short_smoke and args.start_step % 2000 != 0:
         raise ValueError("formal CARE-ASE R2 chunk start must align to 2000 optimizer steps")
     permit = None
@@ -642,12 +648,22 @@ def main() -> int:
     random.seed(args.seed + fold)
     np.random.seed(args.seed + fold)
     torch.manual_seed(args.seed + fold)
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    if not torch.cuda.is_available():
+        raise RuntimeError("CARE-ASE R2 formal entrypoint and code smoke require CUDA; CPU fallback is forbidden")
+    device = torch.device("cuda")
+    gpu_info = {
+        "cuda_device_name": torch.cuda.get_device_name(0),
+        "cuda_compute_capability": list(torch.cuda.get_device_capability(0)),
+        "cuda_device_count": torch.cuda.device_count(),
+        "cuda_runtime_version": torch.version.cuda,
+    }
     head_sha = git_sha("HEAD")
     if not args.allow_short_smoke and head_sha in INVALIDATED_TRAINING_SOURCE_SHAS:
         raise RuntimeError(f"refusing formal training from invalidated source SHA: {head_sha}")
     if args.output_dir is not None:
         out_dir = args.output_dir.resolve()
+        if args.allow_short_smoke and REPO_ROOT / "results" in out_dir.parents:
+            raise RuntimeError("--allow-short-smoke output-dir must not point at a formal results runtime root")
     elif args.allow_short_smoke:
         out_dir = (Path(os.environ.get("TMPDIR", "/tmp")) / "care_ase_r2_short_smoke" / head_sha[:12] / f"fold_{fold}").resolve()
     else:
@@ -659,6 +675,9 @@ def main() -> int:
         return 0
 
     area = compute_actual_train_area_references(REPO_ROOT, fold)
+    actual_train_ids = sorted(row.case_id for row in build_care_ase_case_roles(REPO_ROOT, fold) if row.role == "actual-train")
+    if not actual_train_ids:
+        raise RuntimeError(f"no actual-train cases for fold {fold}")
     plans_path = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans.json"
     augmentation_contract = build_stock_augmentation_contract(plans_path)
     stock_transform = build_stock_training_transform_preserve_ignore(plans_path)
@@ -721,6 +740,7 @@ def main() -> int:
             "start_step": int(args.start_step),
             "end_step": int(args.end_step),
             "device": str(device),
+            "gpu_info": gpu_info,
             "patch_size": list(patch_size),
             "gradient_accumulation": 4,
             "area_reference": area,
@@ -813,7 +833,9 @@ def main() -> int:
                 code_hash=combined_source_hash(),
                 split_hash=sha256_file(SPLITS),
                 training_source_commit_sha=head_sha,
+                review_packet_commit_sha=permit.get("review_packet_commit_sha") if permit else "SHORT_SMOKE_NO_FORMAL_CREDIT",
                 origin_main_sha=git_sha("origin/main") if not args.allow_short_smoke else "SHORT_SMOKE_NO_FORMAL_CREDIT",
+                origin_main_at_review_request_sha=permit.get("origin_main_at_review_request") if permit else "SHORT_SMOKE_NO_FORMAL_CREDIT",
                 external_review_permit_sha256=sha256_file(args.external_review_permit) if args.external_review_permit else "SHORT_SMOKE_NO_FORMAL_CREDIT",
                 critical_source_manifest_sha256=combined_source_hash(),
                 split_file_sha256=sha256_file(SPLITS),
@@ -826,6 +848,14 @@ def main() -> int:
                 stock_checkpoint_hash=sha256_file(Path(model.config.checkpoint_path)),
                 hard_negative_manifest_sha256=sampler.hard_negative_manifest.get("manifest_sha256", "UNSET"),
                 augmentation_contract_sha256=augmentation_contract.sha256(),
+                full_case_target_profile_manifest_sha256=json_sha(
+                    {
+                        "schema": "full_case_extent_and_component_profile_runtime_cache",
+                        "builder": "build_full_case_target_cache",
+                        "cases": actual_train_ids,
+                        "spacing_source": str(plans_path.relative_to(REPO_ROOT)),
+                    }
+                ),
                 full_case_target_cache_manifest_sha256=json_sha(
                     {
                         "schema": "runtime_lru_full_case_target_cache_v6",

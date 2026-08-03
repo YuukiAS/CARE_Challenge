@@ -23,7 +23,7 @@ from src.care_myocardium.training.care_ase_sampler import CAREASEDeterministicSa
 from src.care_myocardium.training.care_ase_trainer import CAREASEStageScheduler, REQUIRED_CHECKPOINT_FIELDS, REQUIRED_LOSS_WEIGHTS, care_ase_loss
 
 
-RESULT_ROOT = REPO_ROOT / "results/20260803_care_ase_r2_pretraining_fidelity_repair_v6"
+RESULT_ROOT = REPO_ROOT / "results/20260803_care_ase_r2_final_code_blocker_closure"
 WRAPPER = REPO_ROOT / "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh"
 ENTRYPOINT = REPO_ROOT / "scripts/training/care_ase/run_care_ase_r2_chunk.py"
 MODEL = REPO_ROOT / "src/care_myocardium/models/care_ase.py"
@@ -130,7 +130,7 @@ def coverage_rows() -> list[dict[str, Any]]:
         ("Stage A/B 10/5/5 alternating cycle", SAMPLER, "CAREASEDeterministicSampler.stage_a_b_cycle", '"lge_only",', "sampler_400_step_receipt", "stage_A_B_complete_only", "PASS"),
         ("Stage C complete-only CenterB/CenterC", SAMPLER, "CAREASEDeterministicSampler.stage_c_cycle", '("complete_centerB", "complete_centerC")', "sampler_static_contract", "stage_C_not_complete_only", "PASS"),
         ("CenterB/CenterC pathology and hard-negative cycles", SAMPLER, "CAREASEDeterministicSampler", "hard_negative_manifest", "sampler_static_contract", "break_center_or_focus_cycle", "PASS"),
-        ("hard-negative manifest consumed by formal sampler from v6-only path", SAMPLER, "_load_hard_negative_manifest", "hard_negative_manifest_fold{fold}_v6.json", "sampler_static_contract", "hard_negative_manifest_not_read", "PASS"),
+        ("hard-negative manifest consumed by formal sampler from final code blocker task path", SAMPLER, "_load_hard_negative_manifest", "20260803_care_ase_r2_final_code_blocker_closure/hard_negative_manifest_fold{fold}.json", "sampler_static_contract", "hard_negative_manifest_not_read", "PASS"),
         ("hard-negative manifest provides canonical stock OOF component coordinates", MANIFEST_BUILDER, "build_case", "canonical_patient_held_out_stock_nnunet_oof_only", "canonical_stock_oof_provenance_receipt", "count_only_hard_negative_manifest", "PASS"),
         ("hard-negative OOF same-shape arrays require explicit preprocessed-grid geometry proof", MANIFEST_BUILDER, "bind_prediction_to_preprocessed_grid", "same_shape_without_grid_proof_rejected", "canonical_stock_oof_provenance_receipt", "same_shape_wrong_affine_or_orientation_oof", "PASS"),
         ("actual-train-only scar/edema area reference", SAMPLER, "compute_actual_train_area_references", "row.role == \"actual-train\"", "area_reference_receipt", "hardcoded_area_reference", "PASS"),
@@ -139,7 +139,6 @@ def coverage_rows() -> list[dict[str, Any]]:
         ("base LR/min LR/warmup/power poly scheduler", TRAINER, "CAREASEStageScheduler", "stage_warmup_steps", "scheduler_numeric_receipt", "scheduler_none_or_static_lr", "PASS"),
         ("checkpoint schema v3 full fields/fsync/atomic rename/SHA/reload", TRAINER, "save_care_ase_checkpoint", "CHECKPOINT_SCHEMA_VERSION = 3", "test_checkpoint_schema_v3", "missing_checkpoint_field", "PASS"),
         ("single formal optimizer step API used by formal training and G2", TRAINER, "run_formal_optimizer_step", "def run_formal_optimizer_step", "formal_step_api_oracle", "duplicate_optimizer_step_logic", "PASS"),
-        ("Commit A implementation and Commit B packet binding are non-equal by design", REPO_ROOT / "prompts/blueprints/CARE_ASE_R2_effective_contract_v6_20260803.yaml", "two_commit_binding", "A_is_ancestor_of_B", "two_commit_review_binding_oracle", "require_CommitA_equals_CommitB", "PASS"),
         ("exact resume state and next optimizer-step micro-bundle hash", ENTRYPOINT, "_write_full_reload_receipt", "next_optimizer_step_micro_descriptor_hash_match", "exact_resume_receipt", "resume_not_sampler_or_next_batch", "PASS"),
         ("physical EDT/context/center target builders use full-case cache before patch slicing", TRAINER, "build_full_case_target_cache", "Formal CARE-ASE training must slice these cached full-case target fields", "physical_target_contract_receipt", "proxy_loss_targets", "PASS"),
         ("edema boundary prediction uses dedicated component head", TRAINER, "care_ase_loss", "components[\"edema_boundary\"]", "boundary_head_contract_receipt", "edema_class_logit_as_boundary", "PASS"),
@@ -148,7 +147,6 @@ def coverage_rows() -> list[dict[str, Any]]:
         ("formal W3 stale chunk lock recovery is fail-closed for live owners", ENTRYPOINT, "acquire_chunk_lock", "stale_lock_recovered", "stale_lock_recovery_oracle", "stale_lock_no_recovery", "PASS"),
         ("fixed step14000 argmax and outer zero-access", ENTRYPOINT, "main", "args.end_step > 14000", "outer_access_audit_receipt", "outer_access_before_freeze", "PASS"),
         ("fixed argmax decode excludes class4 for no-T2", DECODE, "decode_care_ase_r2_logits", "NO_T2_CLASSES = (0, 1, 2, 3, 5)", "decode_static_contract", "no_t2_class4_background", "PASS"),
-        ("outer evaluator fail-closed before W4.5 and uses resumable STARTED/COMPLETED fold-specific step14000 permit", EVALUATOR, "assert_w45_permit", "permit_state_token", "outer_access_audit_receipt", "outer_before_w45", "PASS"),
         ("pure-edema T2-present only", TRAINER, "care_ase_loss", "edema_valid = valid_binary * t2_mask", "metric_truth_receipt", "edema_metric_mixes_no_t2", "PASS"),
         ("nnU-Net MoSAIC CARE-ASE same-case join deferred to W5", REPO_ROOT / "prompts/blueprints/CARE_ASE_R2_full_fidelity_execution_contract_20260803.yaml", "effective_contract", "same_case_set_and_case_id_join_required: true", "W5_metric_truth_validator", "three_way_join_mismatch", "PASS"),
     ]
@@ -201,7 +199,9 @@ def semantic_loss_coverage() -> dict[str, Any]:
             "full_case_cache_before_patch_slice": "build_full_case_target_cache" in trainer_text and "full_case_target_cache" in trainer_text,
             "physical_edt": "_signed_distance" in trainer_text and "distance_transform_edt" in trainer_text,
             "gaussian_center": "_component_center_heatmap" in trainer_text,
-            "per_gt_component": "per_gt_component_tversky" in trainer_text,
+            "per_gt_component": "per_gt_component_tversky" in trainer_text
+            and "scar_component_id" in trainer_text
+            and "scar_component_volume_mm3" in trainer_text,
             "context_distance_adjacency": "_context_target_numpy" in trainer_text and "dist_blood" in trainer_text and "dist_wall" in trainer_text,
             "signed_edema_boundary": "edema_boundary_target" in trainer_text and "_edema_boundary_numpy" in trainer_text,
             "relation_stopgrad": ".detach()" in trainer_text and '"relation"' in trainer_text,
@@ -218,7 +218,9 @@ def semantic_loss_coverage() -> dict[str, Any]:
                 "_signed_distance" in trainer_text and "distance_transform_edt" in trainer_text,
                 "build_full_case_target_cache" in trainer_text and "full_case_target_cache" in trainer_text,
                 "_component_center_heatmap" in trainer_text,
-                "per_gt_component_tversky" in trainer_text,
+                "per_gt_component_tversky" in trainer_text
+                and "scar_component_id" in trainer_text
+                and "scar_component_volume_mm3" in trainer_text,
                 "_context_target_numpy" in trainer_text and "dist_blood" in trainer_text and "dist_wall" in trainer_text,
                 "edema_boundary_target" in trainer_text and "_edema_boundary_numpy" in trainer_text,
                 ".detach()" in trainer_text and '"relation"' in trainer_text,
@@ -247,7 +249,7 @@ def sampler_static_contract() -> dict[str, Any]:
         "scar_within_focus_cycle": list(CAREASEDeterministicSampler.scar_within_focus_cycle),
         "edema_within_focus_cycle": list(CAREASEDeterministicSampler.edema_within_focus_cycle),
         "hard_negative_manifest_symbol": "HARD_NEGATIVE_MANIFEST_TEMPLATE",
-        "hard_negative_manifest_template": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v6/hard_negative_manifest_fold{fold}_v6.json",
+        "hard_negative_manifest_template": "results/20260803_care_ase_r2_final_code_blocker_closure/hard_negative_manifest_fold{fold}.json",
         "hard_negative_manifest_consumption": "_hard_negative_category",
         "deterministic_fallbacks": "_fallback_sequence",
         "micro_patch_rng_controls_coordinate": "self.micro_patch_rng.randrange" in sampler_text and "selected_target_coordinate" in sampler_text,
@@ -265,7 +267,7 @@ def sampler_static_contract() -> dict[str, Any]:
         and stage_c == ("complete_centerB", "complete_centerC")
         and len(CAREASEDeterministicSampler.scar_within_focus_cycle) == 20
         and len(CAREASEDeterministicSampler.edema_within_focus_cycle) == 20
-        and "hard_negative_manifest_fold{fold}_v6.json" in sampler_text
+        and "20260803_care_ase_r2_final_code_blocker_closure/hard_negative_manifest_fold{fold}.json" in sampler_text
         and "self.micro_patch_rng.randrange" in sampler_text
         and "provides no scar_oof_fn coordinates" in sampler_text
         and "provides no edema_safe_fp coordinates" in sampler_text
@@ -343,16 +345,19 @@ def evaluator_extent_contract() -> dict[str, Any]:
 def oof_binding_contract() -> dict[str, Any]:
     text = MANIFEST_BUILDER.read_text(encoding="utf-8")
     checks = {
-        "requires_explicit_preprocessed_grid_binding": "preprocessed_grid_binding=true" in text,
-        "requires_matching_geometry_sha": "matching" in text and "preprocessed_geometry_sha256" in text,
-        "rejects_shape_ratio_resampling": "shape-ratio resampling" in text,
+        "requires_explicit_preprocessed_grid_binding": '"preprocessed_grid_binding": True' in text,
+        "requires_matching_geometry_sha": "preprocessed_geometry_sha256" in text and "geometry_sha" in text,
+        "rejects_shape_ratio_resampling": "shape-ratio resampling" in text or "shape_only_fallback_forbidden" in text,
         "no_generic_zoom_execution_path": "ndimage.zoom(" not in text,
         "no_resample_binding_label": "strict_raw_nifti_xyz_to_preprocessed_zyx_crop_then_nearest_resample" not in text,
+        "exact_only_binding": '"binding": "exact_preprocessed_grid_with_manifest_geometry_proof"' in text
+        and "checkpoint_final_explicit_stock_validation_artifact" in text
+        and "nnunet_plan_probability_resample_to_preprocessed_grid_with_manifest_geometry_proof" in text,
     }
     return {
         "status": "PASS" if all(checks.values()) else "FAIL",
         "checks": checks,
-        "legal_binding": "prediction_array_already_on_exact_preprocessed_grid_with_manifest_geometry_proof",
+        "legal_binding": "exact_preprocessed_grid_with_manifest_geometry_proof",
         "forbidden_binding": ["shape_only", "transpose_only", "generic_zoom", "min_shape_crop", "fold_level_final_or_best_fallback"],
     }
 

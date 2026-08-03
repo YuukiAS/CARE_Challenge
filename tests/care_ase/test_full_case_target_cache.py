@@ -4,6 +4,7 @@ import torch
 from src.care_myocardium.training.care_ase_trainer import (
     build_care_ase_targets,
     build_full_case_target_cache,
+    per_gt_component_tversky,
     slice_full_case_target_cache,
 )
 
@@ -61,3 +62,34 @@ def test_build_targets_prefers_full_case_cache_over_patch_recompute():
     assert targets["target_builder_provenance"] == "full_case_target_cache"
     assert targets["scar_slice_presence"].shape[-1] == 8
     assert float(targets["scar_slice_presence"][0, 0, 7]) == 1.0
+    assert "scar_component_id" in targets
+
+
+def test_full_case_component_volume_survives_patch_slice():
+    seg = np.zeros((6, 16, 16), dtype=np.int16)
+    seg[:, 4:12, 4:12] = 1
+    seg[2, 6:8, 6:8] = 5
+    seg[2, 12:14, 12:14] = 5
+    cache = build_full_case_target_cache(seg, (2.0, 1.0, 1.0))
+    sliced = slice_full_case_target_cache(cache, center=(2, 7, 7), patch_size=(3, 6, 6))
+
+    visible_ids = sorted(int(v) for v in np.unique(sliced["scar_component_id"]) if int(v) > 0)
+    assert visible_ids == [1]
+    assert float(sliced["scar_component_volume_mm3"][sliced["scar_component_id"] == 1].mean()) == 8.0
+
+
+def test_component_tversky_uses_full_case_component_volume_map():
+    seg = np.zeros((6, 16, 16), dtype=np.int16)
+    seg[:, 4:12, 4:12] = 1
+    seg[2, 6:8, 6:8] = 5
+    seg[2, 12:14, 12:14] = 5
+    cache = build_full_case_target_cache(seg, (2.0, 1.0, 1.0))
+    sliced = slice_full_case_target_cache(cache, center=(2, 7, 7), patch_size=(3, 6, 6))
+    target = torch.from_numpy((sliced["scar_component_id"] > 0).astype(np.float32))[None, None]
+    logit = torch.where(target > 0, torch.full_like(target, 10.0), torch.full_like(target, -10.0))
+    valid = torch.ones_like(target)
+
+    loss = per_gt_component_tversky(logit, target, valid, {"full_case_target_cache": sliced})
+
+    assert torch.isfinite(loss)
+    assert float(loss) < 0.05
