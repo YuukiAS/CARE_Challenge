@@ -37,7 +37,7 @@ from src.care_myocardium.inference.care_ase_r2_full_volume import (
 from src.care_myocardium.training.care_ase_trainer import load_care_ase_checkpoint_for_inference
 
 
-TASK_KEY = "20260803_care_ase_r2_last_hotfix_v9"
+TASK_KEY = "20260804_care_ase_r2_emergency_9h_training_docker"
 RESULT_ROOT = REPO_ROOT / "results" / TASK_KEY
 OLD_RESULT_ROOT_MARKER = "20260803_care_ase_r2_" + "full_fidelity_execution"
 PREPROCESSED = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans_3d_fullres"

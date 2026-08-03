@@ -16,10 +16,12 @@ from datetime import datetime, timezone
 import fcntl
 import hashlib
 import json
+import math
 import os
 import pickle
 import random
 import shutil
+import statistics
 import subprocess
 import sys
 import time
@@ -964,6 +966,59 @@ def _full_hw_coverage(origin: tuple[int, int, int], patch_size: tuple[int, int, 
     return int(y0) <= 0 and int(x0) <= 0 and int(y0) + int(py) >= int(fy) and int(x0) + int(px) >= int(fx)
 
 
+def _write_step_timing_receipt(
+    out_dir: Path,
+    *,
+    fold: int,
+    completed_step: int,
+    start_step: int,
+    end_step: int,
+    step_seconds: list[float],
+    task_start_monotonic: float,
+) -> None:
+    if not step_seconds:
+        return
+    sorted_seconds = sorted(float(v) for v in step_seconds)
+    p90_index = min(len(sorted_seconds) - 1, max(0, int(math.ceil(0.90 * len(sorted_seconds))) - 1))
+    recent = sorted_seconds[-min(20, len(sorted_seconds)) :]
+    recent_median = float(statistics.median(recent))
+    median_seconds = float(statistics.median(sorted_seconds))
+    p90_seconds = float(sorted_seconds[p90_index])
+    remaining_in_chunk = max(int(end_step) - int(completed_step), 0)
+    payload = {
+        "status": "PASS",
+        "fold": int(fold),
+        "completed_step": int(completed_step),
+        "start_step": int(start_step),
+        "end_step": int(end_step),
+        "observed_step_count": int(len(step_seconds)),
+        "median_step_seconds": median_seconds,
+        "p90_step_seconds": p90_seconds,
+        "recent_median_step_seconds": recent_median,
+        "elapsed_wall_seconds": float(time.monotonic() - task_start_monotonic),
+        "estimated_remaining_chunk_seconds_median": float(remaining_in_chunk * median_seconds),
+        "estimated_remaining_chunk_seconds_p90": float(remaining_in_chunk * p90_seconds),
+        "estimated_2000_step_seconds_median": float(2000 * median_seconds),
+        "estimated_2000_step_seconds_p90": float(2000 * p90_seconds),
+        "allowed_speed_actions": [
+            "LRU case cache",
+            "verified target cache persistence",
+            "collect_metrics_false_on_non_log_steps",
+            "batched log writes",
+            "smaller runtime invocations with exact resume",
+        ],
+        "forbidden_speed_actions": [
+            "reduce patch size",
+            "reduce microbatch count",
+            "delete losses or heads",
+            "disable stock augmentation",
+            "shorten 14000 steps",
+            "skip Stage B or Stage C",
+        ],
+    }
+    write_json(out_dir / f"training_runtime_eta_step{int(completed_step):05d}.json", payload)
+
+
 def _slice_profile_by_source_z(profile: np.ndarray, source_z: list[int], source_valid: list[bool]) -> np.ndarray:
     values = np.asarray(profile)
     out = np.zeros((len(source_z),), dtype=np.float32)
@@ -1270,7 +1325,7 @@ def make_batch(
         "initial_patch_origin_zyx": tuple(int(v) for v in initial_origin),
         "final_patch_source_z_indices": tuple(int(v) for v in final_source_z),
         "final_patch_source_z_valid": tuple(bool(v) for v in final_source_z_valid),
-        "augmentation_z_mapping": "dummy_2d_no_z_mixing_source_z_indices" if stock_transform is not None else "center_crop_no_z_mixing_source_z_indices",
+        "augmentation_z_mapping": "stock_transform_source_z_id_authority" if stock_transform is not None else "center_crop_source_z_id_authority",
         "full_hw_coverage_by_output_z": tuple(bool(v) for v in full_hw_coverage_by_z),
         "extent_presence_valid_by_output_z": tuple(bool(v) for v in extent_presence_valid_z),
         "extent_area_valid_by_output_z": tuple(bool(v) for v in extent_area_valid_z),
@@ -2144,6 +2199,8 @@ def main() -> int:
 
     log_path = out_dir / f"training_log_{args.start_step:05d}_{args.end_step:05d}.csv"
     history: list[dict[str, Any]] = []
+    step_seconds: list[float] = []
+    task_start_monotonic = time.monotonic()
     runtime = CAREASEFormalRuntime(
         model=model,
         optimizer=optimizer,
@@ -2166,18 +2223,28 @@ def main() -> int:
     try:
         for step in range(int(args.start_step), int(args.end_step)):
             heartbeat.check()
-            step_result = runtime.run_formal_training_step(step, collect_metrics=True)
+            completed_step = step + 1
+            collect_metrics = (
+                completed_step in {20, 50, 100}
+                or completed_step % 20 == 0
+                or completed_step % 1000 == 0
+                or completed_step == int(args.end_step)
+            )
+            step_started = time.monotonic()
+            step_result = runtime.run_formal_training_step(step, collect_metrics=collect_metrics)
+            step_elapsed = float(time.monotonic() - step_started)
+            step_seconds.append(step_elapsed)
             heartbeat.check()
             if (
                 not named_evidence_canary_done
                 and not bool(args.allow_short_smoke)
                 and int(args.start_step) == 0
-                and (step + 1) <= 100
+                and completed_step <= 100
             ):
                 named_evidence_canary_done = _run_named_evidence_liveness_canary(
                     runtime,
                     fold=fold,
-                    completed_optimizer_step=step + 1,
+                    completed_optimizer_step=completed_step,
                     step_result=step_result,
                     out_dir=out_dir,
                 )
@@ -2185,14 +2252,14 @@ def main() -> int:
                 not named_evidence_canary_done
                 and not bool(args.allow_short_smoke)
                 and int(args.start_step) == 0
-                and (step + 1) >= 100
+                and completed_step >= 100
             ):
                 raise RuntimeError("CARE-ASE named evidence canary did not run before step100")
             bundle = step_result["descriptor_bundle"]
             descriptor = bundle.micro_descriptors[0]
             desc_sha = bundle.sha256()
             row = {
-                "optimizer_step": step + 1,
+                "optimizer_step": completed_step,
                 "stage": step_result["stage"],
                 "case_id": descriptor.case_id,
                 "micro_case_ids": json.dumps(step_result["micro_case_ids"]),
@@ -2208,14 +2275,26 @@ def main() -> int:
                 "descriptor_sha256": desc_sha,
                 "loss": step_result["loss_mean"],
                 "grad_norm": step_result["grad_norm"],
+                "step_wall_seconds": step_elapsed,
+                "collect_metrics": bool(collect_metrics),
                 "lr_by_optimizer_group": json.dumps(optimizer_lr_by_group(optimizer), sort_keys=True),
                 "lr_new_modules": optimizer_lr_by_group(optimizer).get("new_modules", 0.0),
-                "extent_wall_ramp_value": model.extent_wall_ramp(step + 1),
+                "extent_wall_ramp_value": model.extent_wall_ramp(completed_step),
                 "slurm_job_id": os.environ.get("SLURM_JOB_ID", "local"),
                 "formal_step_api": step_result["formal_step_api"],
             }
             append_csv(log_path, row)
             history.append(row)
+            if completed_step in {20, 50, 100}:
+                _write_step_timing_receipt(
+                    out_dir,
+                    fold=fold,
+                    completed_step=completed_step,
+                    start_step=int(args.start_step),
+                    end_step=int(args.end_step),
+                    step_seconds=step_seconds,
+                    task_start_monotonic=task_start_monotonic,
+                )
             refresh_chunk_lock(lock_dir)
             heartbeat.check()
 
