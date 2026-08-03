@@ -1,6 +1,6 @@
 {
   "atomic_rename": true,
-  "field_count": 27,
+  "field_count": 30,
   "fsync_file": true,
   "full_reload_checks_required_fields": true,
   "required_fields": [
@@ -18,6 +18,9 @@
     "torch_cuda_rng_all_devices",
     "dataloader_worker_seed_state",
     "case_group_cursor",
+    "complete_center_cursor",
+    "complete_pathology_cursor",
+    "partial_case_cursors",
     "center_cursor",
     "pathology_focus_cursor",
     "scar_focus_cursor",

@@ -94,6 +94,14 @@ def _load_hard_negative_manifest(repo_root: Path, fold: int) -> dict[str, Any]:
     return data
 
 
+def _encode_rng_state(rng: random.Random) -> str:
+    return pickle.dumps(rng.getstate(), protocol=4).hex()
+
+
+def _decode_rng_state(encoded: str) -> object:
+    return pickle.loads(bytes.fromhex(str(encoded)))
+
+
 def _coords(value: dict[str, Any], key: str) -> tuple[tuple[int, int, int], ...]:
     raw = value.get("targets", {}).get(key, []) if isinstance(value.get("targets", {}), dict) else []
     out = []
@@ -249,8 +257,9 @@ class CAREASEDeterministicSampler:
                 self.by_group[key] = sorted(values)
         self.hard_negative_manifest = _load_hard_negative_manifest(self.repo_root, self.fold)
         self.case_group_cursor = 0
-        self.center_cursor = 0
-        self.pathology_focus_cursor = 0
+        self.complete_center_cursor = 0
+        self.complete_pathology_cursor = 0
+        self.partial_case_cursors = {"lge_only": 0, "lge_c0": 0}
         self.scar_focus_cursor = 0
         self.edema_focus_cursor = 0
         self.batch_descriptor_cursor = 0
@@ -265,19 +274,26 @@ class CAREASEDeterministicSampler:
         stage = stage_for_step(global_step)
         if stage in {"A", "B"}:
             group = self.stage_a_b_cycle[self.case_group_cursor % len(self.stage_a_b_cycle)]
-            case_id = self._choose_case(group, self.batch_descriptor_cursor)
             self.case_group_cursor += 1
+            if group == "complete":
+                center_group = self.stage_c_cycle[self.complete_center_cursor % len(self.stage_c_cycle)]
+                case_id = self._choose_case(center_group, self.complete_center_cursor)
+                self.complete_center_cursor += 1
+            else:
+                cursor = self.partial_case_cursors[group]
+                case_id = self._choose_case(group, cursor)
+                self.partial_case_cursors[group] = cursor + 1
         elif stage == "C":
-            group = self.stage_c_cycle[self.center_cursor % len(self.stage_c_cycle)]
-            case_id = self._choose_case(group, self.batch_descriptor_cursor)
-            self.center_cursor += 1
+            group = self.stage_c_cycle[self.complete_center_cursor % len(self.stage_c_cycle)]
+            case_id = self._choose_case(group, self.complete_center_cursor)
+            self.complete_center_cursor += 1
         else:
             raise ValueError(f"global_step outside formal training range: {global_step}")
         if group in {"lge_only", "lge_c0"}:
             pathology = "scar"
         else:
-            pathology = self.pathology_cycle[self.pathology_focus_cursor % len(self.pathology_cycle)]
-        self.pathology_focus_cursor += 1
+            pathology = self.pathology_cycle[self.complete_pathology_cursor % len(self.pathology_cycle)]
+            self.complete_pathology_cursor += 1
         if pathology == "scar":
             within_focus = self.scar_within_focus_cycle[self.scar_focus_cursor % len(self.scar_within_focus_cycle)]
             self.scar_focus_cursor += 1
@@ -311,11 +327,14 @@ class CAREASEDeterministicSampler:
     def state_dict(self, *, next_descriptor: CAREASEBatchDescriptor | None = None) -> dict[str, Any]:
         state = {
             "case_group_cursor": self.case_group_cursor,
-            "center_cursor": self.center_cursor,
-            "pathology_focus_cursor": self.pathology_focus_cursor,
+            "complete_center_cursor": self.complete_center_cursor,
+            "complete_pathology_cursor": self.complete_pathology_cursor,
+            "partial_case_cursors": dict(self.partial_case_cursors),
+            "center_cursor": self.complete_center_cursor,
+            "pathology_focus_cursor": self.complete_pathology_cursor,
             "scar_focus_cursor": self.scar_focus_cursor,
             "edema_focus_cursor": self.edema_focus_cursor,
-            "sampler_rng_state": repr(self.rng.getstate()),
+            "sampler_rng_state": _encode_rng_state(self.rng),
             "batch_descriptor_cursor": self.batch_descriptor_cursor,
             "hard_negative_manifest_path": self.hard_negative_manifest.get("manifest_path"),
             "hard_negative_manifest_sha256": self.hard_negative_manifest.get("manifest_sha256"),
@@ -327,11 +346,17 @@ class CAREASEDeterministicSampler:
 
     def load_state_dict(self, state: dict[str, Any]) -> None:
         self.case_group_cursor = int(state["case_group_cursor"])
-        self.center_cursor = int(state["center_cursor"])
-        self.pathology_focus_cursor = int(state["pathology_focus_cursor"])
+        self.complete_center_cursor = int(state.get("complete_center_cursor", state.get("center_cursor", 0)))
+        self.complete_pathology_cursor = int(state.get("complete_pathology_cursor", state.get("pathology_focus_cursor", 0)))
+        self.partial_case_cursors = {str(k): int(v) for k, v in state.get("partial_case_cursors", {"lge_only": 0, "lge_c0": 0}).items()}
+        self.partial_case_cursors.setdefault("lge_only", 0)
+        self.partial_case_cursors.setdefault("lge_c0", 0)
         self.scar_focus_cursor = int(state["scar_focus_cursor"])
         self.edema_focus_cursor = int(state["edema_focus_cursor"])
         self.batch_descriptor_cursor = int(state["batch_descriptor_cursor"])
+        rng_state = state.get("sampler_rng_state")
+        if isinstance(rng_state, str) and rng_state and rng_state != "UNSET":
+            self.rng.setstate(_decode_rng_state(rng_state))
 
     def dry_run_counts(self, steps: int, *, start_step: int = 0) -> dict[str, int]:
         clone = CAREASEDeterministicSampler(self.repo_root, self.fold, seed=self.seed)
@@ -341,6 +366,70 @@ class CAREASEDeterministicSampler:
             desc = clone.descriptor_for_step(step)
             counts[desc.case_group] = counts.get(desc.case_group, 0) + 1
         return counts
+
+    def composition_receipt(self, steps: int, *, start_step: int = 0) -> dict[str, Any]:
+        clone = CAREASEDeterministicSampler(self.repo_root, self.fold, seed=self.seed)
+        clone.load_state_dict(self.state_dict())
+        counts = {
+            "complete": 0,
+            "lge_only": 0,
+            "lge_c0": 0,
+            "complete_centerB": 0,
+            "complete_centerC": 0,
+            "complete_scar": 0,
+            "complete_edema": 0,
+            "partial_scar": 0,
+            "partial_edema": 0,
+            "scar_focus": {},
+            "edema_focus": {},
+        }
+        descriptor_hashes: list[str] = []
+        for step in range(int(start_step), int(start_step) + int(steps)):
+            desc = clone.descriptor_for_step(step)
+            descriptor_hashes.append(desc.sha256())
+            counts[desc.case_group] = int(counts.get(desc.case_group, 0)) + 1
+            if desc.case_group == "complete":
+                center_key = {"CenterB": "complete_centerB", "CenterC": "complete_centerC"}.get(desc.center, f"complete_{desc.center}")
+                counts[center_key] = int(counts.get(center_key, 0)) + 1
+                counts[f"complete_{desc.pathology_focus}"] = int(counts.get(f"complete_{desc.pathology_focus}", 0)) + 1
+            else:
+                counts[f"partial_{desc.pathology_focus}"] = int(counts.get(f"partial_{desc.pathology_focus}", 0)) + 1
+            focus_key = "scar_focus" if desc.pathology_focus == "scar" else "edema_focus"
+            focus_counts = counts[focus_key]
+            assert isinstance(focus_counts, dict)
+            focus_counts[desc.within_focus] = int(focus_counts.get(desc.within_focus, 0)) + 1
+        expected_400 = {
+            "complete": 200,
+            "lge_only": 100,
+            "lge_c0": 100,
+            "complete_centerB": 100,
+            "complete_centerC": 100,
+            "complete_scar": 100,
+            "complete_edema": 100,
+            "partial_edema": 0,
+        }
+        status = "PASS"
+        failures = []
+        if int(steps) == 400 and stage_for_step(start_step) in {"A", "B"}:
+            for key, expected in expected_400.items():
+                observed = int(counts.get(key, 0))
+                if observed != expected:
+                    failures.append({"field": key, "expected": expected, "observed": observed})
+            status = "PASS" if not failures else "FAIL"
+        payload = {
+            "status": status,
+            "fold": self.fold,
+            "start_step": int(start_step),
+            "steps": int(steps),
+            "counts": counts,
+            "expected_400_stage_a_b": expected_400,
+            "failures": failures,
+            "descriptor_sequence_sha256": hashlib.sha256("|".join(descriptor_hashes).encode("utf-8")).hexdigest(),
+            "sampler_rng_state_restored": True,
+            "partial_events_do_not_advance_complete_pathology_cursor": True,
+        }
+        payload["payload_sha256"] = hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()
+        return payload
 
 
 def compute_actual_train_area_references(repo_root: Path, fold: int) -> dict[str, Any]:
@@ -352,16 +441,17 @@ def compute_actual_train_area_references(repo_root: Path, fold: int) -> dict[str
     for row in rows:
         seg_path = preprocessed / f"{row.case_id}_seg.b2nd"
         seg = np.asarray(blosc2.open(str(seg_path), mode="r")[:])[0]
-        wall = seg == 1
-        wall_voxels = int(wall.sum())
-        if wall_voxels <= 0:
-            continue
+        wall = (seg == 1) | (seg == 4) | (seg == 5)
         scar = seg == 5
         edema = seg == 4
-        if int(scar.sum()) > 0:
-            scar_fracs.append(float(scar.sum() / wall_voxels))
-        if row.t2_present and int(edema.sum()) > 0:
-            edema_fracs.append(float(edema.sum() / wall_voxels))
+        wall_by_slice = wall.sum(axis=(1, 2)).astype(np.float64)
+        scar_by_slice = scar.sum(axis=(1, 2)).astype(np.float64)
+        edema_by_slice = edema.sum(axis=(1, 2)).astype(np.float64)
+        scar_valid = (scar_by_slice > 0) & (wall_by_slice > 0)
+        edema_valid = (edema_by_slice > 0) & (wall_by_slice > 0)
+        scar_fracs.extend((scar_by_slice[scar_valid] / wall_by_slice[scar_valid]).astype(float).tolist())
+        if row.t2_present:
+            edema_fracs.extend((edema_by_slice[edema_valid] / wall_by_slice[edema_valid]).astype(float).tolist())
     if not scar_fracs:
         raise RuntimeError(f"no actual-train scar-positive slices/cases for fold {fold}")
     if not edema_fracs:
@@ -372,8 +462,9 @@ def compute_actual_train_area_references(repo_root: Path, fold: int) -> dict[str
         "inner_or_outer_access": "forbidden_not_used",
         "scar_reference": float(np.median(np.asarray(scar_fracs, dtype=np.float64))),
         "edema_reference": float(np.median(np.asarray(edema_fracs, dtype=np.float64))),
-        "scar_positive_count": len(scar_fracs),
-        "edema_positive_t2_present_count": len(edema_fracs),
+        "scar_positive_slice_count": len(scar_fracs),
+        "edema_positive_t2_present_slice_count": len(edema_fracs),
+        "denominator_wall_union_labels": [1, 4, 5],
     }
     payload["payload_sha256"] = hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()
     return payload

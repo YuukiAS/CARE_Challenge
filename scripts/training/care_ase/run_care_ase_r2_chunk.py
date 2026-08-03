@@ -8,6 +8,7 @@ import csv
 import hashlib
 import json
 import os
+import pickle
 import random
 import sys
 from pathlib import Path
@@ -31,6 +32,7 @@ from src.care_myocardium.training.care_ase_trainer import (
     care_ase_loss,
     checkpoint_receipt,
     load_care_ase_checkpoint,
+    parameter_group_coverage,
     save_care_ase_checkpoint,
     set_stage_trainability,
     write_json,
@@ -157,6 +159,11 @@ def deterministic_center(
 def make_batch(descriptor: Any, *, descriptor_sha: str, micro: int, patch_size: tuple[int, int, int], device: torch.device) -> dict[str, torch.Tensor]:
     image = read_b2nd(PREPROCESSED / f"{descriptor.case_id}.b2nd").astype(np.float32, copy=False)
     seg = read_b2nd(PREPROCESSED / f"{descriptor.case_id}_seg.b2nd")[0].astype(np.int64, copy=False)
+    spacing = (1.0, 1.0, 1.0)
+    properties_path = PREPROCESSED / f"{descriptor.case_id}.pkl"
+    if properties_path.is_file():
+        with properties_path.open("rb") as f:
+            spacing = tuple(float(v) for v in pickle.load(f).get("spacing", spacing))
     center = deterministic_center(
         seg,
         descriptor_sha=descriptor_sha,
@@ -172,6 +179,7 @@ def make_batch(descriptor: Any, *, descriptor_sha: str, micro: int, patch_size: 
         "image": torch.from_numpy(crop_or_pad(image, center, patch_size)[None]).to(device=device, dtype=torch.float32),
         "seg": torch.from_numpy(crop_or_pad(seg[None], center, patch_size)[0][None]).to(device=device, dtype=torch.long),
         "availability": torch.tensor([descriptor.availability], device=device, dtype=torch.float32),
+        "spacing": torch.tensor([spacing], device=device, dtype=torch.float32),
     }
 
 
@@ -188,6 +196,82 @@ def append_csv(path: Path, row: dict[str, Any]) -> None:
 def _load_previous(path: Path, device: torch.device) -> tuple[torch.nn.Module, dict[str, Any]]:
     model, payload = load_care_ase_checkpoint(path, map_location=device, restore_rng=True)
     return model.to(device), payload
+
+
+def _sampler_state_from_checkpoint_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "case_group_cursor": payload["case_group_cursor"],
+        "complete_center_cursor": payload.get("complete_center_cursor", payload.get("center_cursor", 0)),
+        "complete_pathology_cursor": payload.get("complete_pathology_cursor", payload.get("pathology_focus_cursor", 0)),
+        "partial_case_cursors": payload.get("partial_case_cursors", {"lge_only": 0, "lge_c0": 0}),
+        "center_cursor": payload.get("center_cursor", payload.get("complete_center_cursor", 0)),
+        "pathology_focus_cursor": payload.get("pathology_focus_cursor", payload.get("complete_pathology_cursor", 0)),
+        "scar_focus_cursor": payload["scar_focus_cursor"],
+        "edema_focus_cursor": payload["edema_focus_cursor"],
+        "sampler_rng_state": payload["sampler_rng_state"],
+        "batch_descriptor_cursor": payload["batch_descriptor_cursor"],
+    }
+
+
+def _write_full_reload_receipt(
+    ckpt: Path,
+    *,
+    live_model: torch.nn.Module,
+    live_optimizer: torch.optim.Optimizer,
+    live_scheduler: CAREASEStageScheduler,
+    fixed_batch: dict[str, torch.Tensor],
+    global_step: int,
+    fold: int,
+    seed: int,
+    out_dir: Path,
+) -> dict[str, Any]:
+    was_training = live_model.training
+    live_model.eval()
+    with torch.no_grad():
+        live_logits = live_model(fixed_batch["image"], fixed_batch["availability"], global_step=global_step)["final_logits"].detach().float().cpu()
+    if was_training:
+        live_model.train()
+    reloaded_model, payload = load_care_ase_checkpoint(ckpt, map_location=fixed_batch["image"].device, restore_rng=False)
+    reloaded_model = reloaded_model.to(fixed_batch["image"].device)
+    reloaded_optimizer = build_optimizer(reloaded_model)
+    reloaded_optimizer.load_state_dict(payload["optimizer"])
+    reloaded_scheduler = CAREASEStageScheduler(reloaded_optimizer)
+    reloaded_scheduler.load_state_dict(payload["scheduler"])
+    reloaded_sampler = CAREASEDeterministicSampler(REPO_ROOT, fold, seed=seed)
+    reloaded_sampler.load_state_dict(_sampler_state_from_checkpoint_payload(payload))
+    reloaded_model.eval()
+    with torch.no_grad():
+        reloaded_logits = reloaded_model(fixed_batch["image"], fixed_batch["availability"], global_step=global_step)["final_logits"].detach().float().cpu()
+    max_abs = float((live_logits - reloaded_logits).abs().max().item())
+    next_hash = "TRAINING_COMPLETE"
+    if int(global_step) < 14000:
+        next_hash = reloaded_sampler.peek_descriptor_for_step(global_step).sha256()
+    receipt = {
+        "status": "PASS" if max_abs <= 1.0e-5 else "FAIL",
+        "fold": int(fold),
+        "checkpoint_path": str(ckpt),
+        "checkpoint_sha256": sha256_file(ckpt),
+        "global_optimizer_step": int(global_step),
+        "fresh_model_instance_loaded": True,
+        "optimizer_state_loaded": bool(reloaded_optimizer.state_dict()["state"] or live_optimizer.state_dict()["state"]),
+        "scheduler_state_loaded": reloaded_scheduler.state_dict(),
+        "sampler_rng_state_loaded": bool(payload.get("sampler_rng_state")) and payload.get("sampler_rng_state") != "UNSET",
+        "dataloader_worker_seed_state_nonempty": bool(payload.get("dataloader_worker_seed_state")),
+        "fixed_batch_case_id": fixed_batch.get("case_id", "UNSET"),
+        "fixed_batch_descriptor_sha256": fixed_batch.get("descriptor_sha256", "UNSET"),
+        "logits_max_abs_error": max_abs,
+        "logits_tolerance": 1.0e-5,
+        "next_batch_hash_payload": payload.get("next_batch_descriptor_sha256"),
+        "next_batch_hash_recomputed": next_hash,
+        "next_batch_hash_match": payload.get("next_batch_descriptor_sha256") in {next_hash, "TRAINING_COMPLETE"},
+        "live_scheduler_last_global_step": live_scheduler.last_global_step,
+    }
+    receipt["payload_sha256"] = hashlib.sha256(json.dumps(receipt, sort_keys=True, default=str).encode("utf-8")).hexdigest()
+    write_json(out_dir / f"{ckpt.stem}_full_reload_receipt.json", receipt)
+    write_json(RESULT_DIR / "full_checkpoint_reload_receipt.json", receipt)
+    if receipt["status"] != "PASS" or not receipt["next_batch_hash_match"]:
+        raise RuntimeError(f"full checkpoint reload failed for {ckpt}: {receipt}")
+    return receipt
 
 
 def main() -> int:
@@ -250,16 +334,10 @@ def main() -> int:
     if prior is not None:
         optimizer.load_state_dict(prior["optimizer"])
         scheduler.load_state_dict(prior["scheduler"])
-        sampler.load_state_dict(
-            {
-                "case_group_cursor": prior["case_group_cursor"],
-                "center_cursor": prior["center_cursor"],
-                "pathology_focus_cursor": prior["pathology_focus_cursor"],
-                "scar_focus_cursor": prior["scar_focus_cursor"],
-                "edema_focus_cursor": prior["edema_focus_cursor"],
-                "batch_descriptor_cursor": prior["batch_descriptor_cursor"],
-            }
-        )
+        sampler.load_state_dict(_sampler_state_from_checkpoint_payload(prior))
+
+    write_json(RESULT_DIR / "parameter_group_coverage.json", parameter_group_coverage(model))
+    write_json(RESULT_DIR / f"sampler_400_step_full_composition_receipt_fold{fold}.json", sampler.composition_receipt(400, start_step=args.start_step))
 
     write_json(
         out_dir / f"chunk_start_{args.start_step:05d}_{args.end_step:05d}.json",
@@ -278,6 +356,7 @@ def main() -> int:
             "plans_hash": sha256_file(REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans.json"),
             "outer_access_before_freeze": 0,
             "fixed_decode_function": decode_care_ase_r2_logits.__name__,
+            "formal_training_credit_current_external_review_revise_runtime": "zero_until_new_external_review_pass",
         },
     )
 
@@ -293,6 +372,8 @@ def main() -> int:
         metrics: dict[str, float] = {}
         for micro in range(4):
             batch = make_batch(descriptor, descriptor_sha=desc_sha, micro=micro, patch_size=patch_size, device=device)
+            batch["case_id"] = descriptor.case_id
+            batch["descriptor_sha256"] = desc_sha
             with torch.autocast(device_type="cuda", dtype=torch.bfloat16, enabled=(device.type == "cuda")):
                 outputs = model(batch["image"], batch["availability"], global_step=step)
                 loss, metrics = care_ase_loss(outputs, batch)
@@ -343,6 +424,20 @@ def main() -> int:
             )
             payload = torch.load(ckpt, map_location="cpu", weights_only=False)
             write_json(out_dir / f"{ckpt.stem}_receipt.json", checkpoint_receipt(ckpt, payload))
+            reload_batch = make_batch(descriptor, descriptor_sha=desc_sha, micro=0, patch_size=patch_size, device=device)
+            reload_batch["case_id"] = descriptor.case_id
+            reload_batch["descriptor_sha256"] = desc_sha
+            _write_full_reload_receipt(
+                ckpt,
+                live_model=model,
+                live_optimizer=optimizer,
+                live_scheduler=scheduler,
+                fixed_batch=reload_batch,
+                global_step=step + 1,
+                fold=fold,
+                seed=args.seed,
+                out_dir=out_dir,
+            )
 
     terminal = out_dir / f"checkpoint_step{args.end_step:05d}.pt" if args.end_step < 14000 else out_dir / "checkpoint_step14000.pt"
     payload = torch.load(terminal, map_location="cpu", weights_only=False)

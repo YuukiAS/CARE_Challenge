@@ -103,8 +103,8 @@ def scheduler_checks() -> dict[str, Any]:
         "lr_A0_new_modules": CAREASEStageScheduler.lr_for(group_name="new_modules", global_step=0),
         "lr_A199_new_modules": CAREASEStageScheduler.lr_for(group_name="new_modules", global_step=199),
         "lr_B2000_new_modules": CAREASEStageScheduler.lr_for(group_name="new_modules", global_step=2000),
-        "lr_B9999_upper": CAREASEStageScheduler.lr_for(group_name="upper_two_encoder_stages", global_step=9999),
-        "lr_C10000_lower": CAREASEStageScheduler.lr_for(group_name="lower_encoder_and_bottleneck", global_step=10000),
+        "lr_B9999_upper": CAREASEStageScheduler.lr_for(group_name="upper_two_encoder", global_step=9999),
+        "lr_C10000_lower": CAREASEStageScheduler.lr_for(group_name="lower_encoder_bottleneck", global_step=10000),
         "lr_C13999_new_modules": CAREASEStageScheduler.lr_for(group_name="new_modules", global_step=13999),
     }
     checks["status"] = "PASS" if checks["stage_0"] == "A" and checks["stage_2000"] == "B" and checks["stage_10000"] == "C" else "FAIL"
@@ -201,6 +201,7 @@ def main() -> int:
         "lge_only": find_descriptor(sampler, lambda d: d.case_group == "lge_only"),
         "lge_c0": find_descriptor(sampler, lambda d: d.case_group == "lge_c0"),
         "small_scar": find_descriptor(sampler, lambda d: d.pathology_focus == "scar" and d.within_focus == "small_component"),
+        "edema_focus_complete": find_descriptor(sampler, lambda d: d.case_group == "complete" and d.pathology_focus == "edema"),
     }
 
     model = build_care_ase_for_fold_with_area_references(
@@ -235,7 +236,17 @@ def main() -> int:
     outputs_no_t2 = model(no_t2_batch["image"], no_t2_batch["availability"], global_step=2000)
     no_t2_loss, no_t2_metrics = care_ase_loss(outputs_no_t2, no_t2_batch)
     no_t2_loss.backward()
-    no_t2_edema_grad = grad_max(model, "edema_branch.")
+    edema_exclusive_prefixes = (
+        "edema_branch.",
+        "edema_t2_adapter.",
+        "edema_c0_adapter.",
+        "edema_lge_adapter.",
+        "edema_c0_gate.",
+        "edema_lge_gate.",
+        "edema_dilation_context.",
+    )
+    no_t2_edema_grad_by_prefix = {prefix: grad_max(model, prefix) for prefix in edema_exclusive_prefixes}
+    no_t2_edema_grad = max(no_t2_edema_grad_by_prefix.values(), default=0.0)
 
     overfit_model = copy.deepcopy(model).to(device)
     overfit_optimizer = build_optimizer(overfit_model)
@@ -306,7 +317,8 @@ def main() -> int:
             "complete_grad_max": complete_grad,
             "no_t2_loss_finite": bool(torch.isfinite(no_t2_loss).item()),
             "no_t2_metrics": no_t2_metrics,
-            "no_t2_edema_branch_grad_max": no_t2_edema_grad,
+            "no_t2_edema_exclusive_grad_by_prefix": no_t2_edema_grad_by_prefix,
+            "no_t2_edema_exclusive_grad_max": no_t2_edema_grad,
             "no_t2_edema_exclusive_gradient_zero": no_t2_edema_grad == 0.0,
         },
         "overfit_direction": {
@@ -365,7 +377,15 @@ def main() -> int:
     checks["decision"] = "PASS" if all(pass_conditions) else "NEEDS_REPAIR_CONTINUE_CURRENT_GOAL"
     checks["pass_condition_count"] = sum(bool(item) for item in pass_conditions)
     checks["required_pass_condition_count"] = len(pass_conditions)
-    write_json(out / "g2_real_gpu_fidelity_receipt.json", checks)
+    write_json(out / f"g2_real_gpu_fidelity_receipt_fold{fold}.json", checks)
+    aggregate = {"folds": {}, "decision": checks["decision"], "required_folds": [1, 4]}
+    for candidate_fold in (1, 4):
+        candidate = out / f"g2_real_gpu_fidelity_receipt_fold{candidate_fold}.json"
+        if candidate.is_file():
+            aggregate["folds"][str(candidate_fold)] = json.loads(candidate.read_text(encoding="utf-8"))
+    aggregate["completed_folds"] = sorted(int(k) for k in aggregate["folds"])
+    aggregate["decision"] = "PASS" if aggregate["completed_folds"] == [1, 4] and all(row.get("decision") == "PASS" for row in aggregate["folds"].values()) else "NEEDS_REPAIR_CONTINUE_CURRENT_GOAL"
+    write_json(out / "g2_real_gpu_fidelity_receipt.json", aggregate)
     print(json.dumps({"decision": checks["decision"], "pass_condition_count": checks["pass_condition_count"], "required": checks["required_pass_condition_count"]}, indent=2))
     return 0 if checks["decision"] == "PASS" else 1
 

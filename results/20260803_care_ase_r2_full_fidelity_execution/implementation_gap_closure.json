@@ -1,0 +1,21 @@
+{
+  "fold1_restart_step": 0,
+  "fold4_restart_step": 0,
+  "formal_training_started_after_external_review": false,
+  "outer_access_count_fold1": 0,
+  "outer_access_count_fold4": 0,
+  "payload_sha256": "194c427a1a84968eff25d517da2e73e94764a10e2cb2a6ffd0e756ffe50bcf03",
+  "receipts": [
+    "dynamic_plan_introspection_receipt.json",
+    "parameter_group_coverage.json",
+    "physical_target_contract_receipt.json",
+    "boundary_head_contract_receipt.json",
+    "extent_per_slice_contract_receipt.json",
+    "context_loss_normalization_receipt.json",
+    "sampler_400_step_full_composition_receipt.json",
+    "exact_resume_behavioral_equivalence.json"
+  ],
+  "source_hash": "4c192baa13053c7afe959fe0b499aaffca105b0c262975a70d2c6bfc39c80b74",
+  "status": "PASS",
+  "training_credit_from_207f360": "zero"
+}

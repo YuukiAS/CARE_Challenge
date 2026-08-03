@@ -1,0 +1,52 @@
+{
+  "adopted_at_utc": "2026-08-03T00:14:53Z",
+  "decision_tokens": [
+    "SEMANTIC_PASS_CONTINUE_INTERNAL",
+    "REVISE_CONTINUE_CURRENT_GOAL"
+  ],
+  "forbidden_decisions": [
+    "OPERATIONALLY_BLOCKED"
+  ],
+  "formal_training_authorization": false,
+  "internal_pass_token": "CARE_ASE_R2_SEMANTIC_ORACLE_REVIEW_PASS",
+  "reviewer_name": "CARE_ASE_R2_SEMANTIC_ORACLE_REVIEWER",
+  "reviewer_oracle_output_root": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_full_fidelity_execution/reviewer_semantic_oracles",
+  "tracked_receipt_root": "results/20260803_care_ase_r2_full_fidelity_execution/reviewer_semantic",
+  "old_reviewer_pass_status": "SUPERSEDED_BY_SEMANTIC_ORACLE_REVIEW",
+  "superseded_rounds": [
+    "R0_W1_EARLY_DIFF",
+    "R1_G1_STATIC_FIDELITY",
+    "R2_G2_GPU_FIDELITY",
+    "R3_G2_5_FROZEN_SOURCE"
+  ],
+  "required_outputs": [
+    "contract_formula_code_oracle_matrix.csv",
+    "physical_target_oracle.json",
+    "loss_formula_oracle.json",
+    "loss_scale_audit.csv",
+    "gradient_scale_audit.csv",
+    "denominator_audit.csv",
+    "sampler_composition_oracle.json",
+    "canonical_stock_oof_oracle.json",
+    "parameter_group_oracle.json",
+    "exact_resume_oracle.json",
+    "gpu_case_coverage_oracle.json",
+    "mutation_detection_report.json",
+    "review.json",
+    "review.md",
+    "reviewed_sha_manifest.json",
+    "commands_and_exit_codes.json"
+  ],
+  "must_not_use_as_sole_evidence": [
+    "project validator PASS",
+    "controller receipts",
+    "string presence",
+    "function names",
+    "file existence",
+    "tensor shape",
+    "PASS tokens"
+  ],
+  "training_credit_from_207f360": "zero",
+  "requires_external_pretraining_review_after_internal_pass": true,
+  "outer_access_before_external_pass": 0
+}

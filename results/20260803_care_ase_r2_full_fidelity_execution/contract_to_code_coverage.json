@@ -4,7 +4,7 @@
     "contract_clause": "stock encoder/bottleneck/low-mid decoder/anatomy top stages",
     "known_bad_test": "remove_stock_encoder",
     "runtime_test": "care_ase_contract_summary",
-    "source_line_hash": "223:4ed9df556abddc5aac90d266abc0272004c9d655c9d41ec9f6dcb78b9de9a1c2",
+    "source_line_hash": "365:4ed9df556abddc5aac90d266abc0272004c9d655c9d41ec9f6dcb78b9de9a1c2",
     "source_path": "src/care_myocardium/models/care_ase.py",
     "status": "PASS"
   },
@@ -13,7 +13,7 @@
     "contract_clause": "scar and edema highest two decoder clones plus deep supervision classifiers",
     "known_bad_test": "delete_pathology_deep_supervision",
     "runtime_test": "inspect CAREASEPathologyBranch",
-    "source_line_hash": "171:c67ede01c3b5b6a45933fd4f8fd277c1f0fb63ce520852288e5ac654a9e23402",
+    "source_line_hash": "312:c67ede01c3b5b6a45933fd4f8fd277c1f0fb63ce520852288e5ac654a9e23402",
     "source_path": "src/care_myocardium/models/care_ase.py",
     "status": "PASS"
   },
@@ -22,7 +22,7 @@
     "contract_clause": "all anatomy/wall/distance/scar/edema/extent/context/relation losses",
     "known_bad_test": "delete_each_semantic_auxiliary_loss",
     "runtime_test": "semantic_loss_coverage",
-    "source_line_hash": "67:e9a0396bc23a731a284f620afb2556fb3c5c6b84b20d519b58c1aa2095523bb2",
+    "source_line_hash": "70:e9a0396bc23a731a284f620afb2556fb3c5c6b84b20d519b58c1aa2095523bb2",
     "source_path": "src/care_myocardium/training/care_ase_trainer.py",
     "status": "PASS"
   },
@@ -31,8 +31,80 @@
     "contract_clause": "fixed loss weights, populations, denominator, gradients",
     "known_bad_test": "change_loss_weight_or_population",
     "runtime_test": "loss_gradient_receipt",
-    "source_line_hash": "63:ef9128a6bf8b92c2c50c66bed09daafe195acacd65c01b900ca590456b31b930",
+    "source_line_hash": "66:ef9128a6bf8b92c2c50c66bed09daafe195acacd65c01b900ca590456b31b930",
     "source_path": "src/care_myocardium/training/care_ase_trainer.py",
+    "status": "PASS"
+  },
+  {
+    "class_or_function": "introspect_stock_decoder",
+    "contract_clause": "dynamic stock decoder channel/stride/kernel introspection",
+    "known_bad_test": "hardcoded_decoder_channels",
+    "runtime_test": "dynamic_plan_introspection_receipt",
+    "source_line_hash": "95:dd3a9f479c773f162bff03705be9d84ba1e9d00039b10158f57af1eec4533aca",
+    "source_path": "src/care_myocardium/models/care_ase.py",
+    "status": "PASS"
+  },
+  {
+    "class_or_function": "ModalityAdapter",
+    "contract_clause": "ModalityAdapter final Conv3d zero-init",
+    "known_bad_test": "nonzero_modality_adapter_init",
+    "runtime_test": "modality_adapter_zero_init_test",
+    "source_line_hash": "211:f4f7186abbd339608a3ada4a4857c761243bcba2de8babae79fbf31d9b460fa9",
+    "source_path": "src/care_myocardium/models/care_ase.py",
+    "status": "PASS"
+  },
+  {
+    "class_or_function": "ScalarGate",
+    "contract_clause": "learnable scar/edema C0 and edema LGE gates",
+    "known_bad_test": "hardcoded_modality_gate",
+    "runtime_test": "gate_initialization_test",
+    "source_line_hash": "397:8370cdbcd4943b6ddee2b4c91f9147c8316741cdbb96a6467065eece6448b6c6",
+    "source_path": "src/care_myocardium/models/care_ase.py",
+    "status": "PASS"
+  },
+  {
+    "class_or_function": "EdemaDilationContextBlock",
+    "contract_clause": "edema dilation 1/2/4 context block enters edema evidence",
+    "known_bad_test": "one_by_one_context_classifier",
+    "runtime_test": "module_off_context_test",
+    "source_line_hash": "244:95d694341970270ead69cef1e268c429dfd730b38fc710fa2c7291efe381e485",
+    "source_path": "src/care_myocardium/models/care_ase.py",
+    "status": "PASS"
+  },
+  {
+    "class_or_function": "CAREASE.forward",
+    "contract_clause": "detached anatomy context enters pathology evidence",
+    "known_bad_test": "pathology_loss_backprop_anatomy_context",
+    "runtime_test": "context_detach_gradient_test",
+    "source_line_hash": "542:815aafd0681c65be795c0fc302b8befb7879c77b116eccbcb2b6e1187d61e4f4",
+    "source_path": "src/care_myocardium/models/care_ase.py",
+    "status": "PASS"
+  },
+  {
+    "class_or_function": "_geometry_targets_numpy",
+    "contract_clause": "wall_depth_rho physical formula target",
+    "known_bad_test": "rho_from_lv_rv_probability",
+    "runtime_test": "physical_target_contract_receipt",
+    "source_line_hash": "231:da4fb214a1f29a8603924704830d58dd3cae7735d1681dfa91d112bd83a60821",
+    "source_path": "src/care_myocardium/training/care_ase_trainer.py",
+    "status": "PASS"
+  },
+  {
+    "class_or_function": "AnatomyGeometryHeads",
+    "contract_clause": "independent trainable geometry heads",
+    "known_bad_test": "proxy_tanh_lv_minus_wall",
+    "runtime_test": "geometry_head_contract_receipt",
+    "source_line_hash": "226:cf19d767bbb144659fde07dd3a52caf3a14f72ca2688bb2a96c4bb647e19b796",
+    "source_path": "src/care_myocardium/models/care_ase.py",
+    "status": "PASS"
+  },
+  {
+    "class_or_function": "_slice_extent_summary",
+    "contract_clause": "slice extent per-z wall weighted average plus max",
+    "known_bad_test": "whole_volume_extent_pooling",
+    "runtime_test": "extent_per_slice_contract_receipt",
+    "source_line_hash": "684:99a6395e38ac4f337bea3d1c8b07f3ea8a433f28589891ea130725c7d1ab3809",
+    "source_path": "src/care_myocardium/models/care_ase.py",
     "status": "PASS"
   },
   {
@@ -40,7 +112,7 @@
     "contract_clause": "no-T2 class4 excluded from competition graph",
     "known_bad_test": "no_t2_class4_background",
     "runtime_test": "no_t2_gradient_receipt",
-    "source_line_hash": "104:8117c725edc905ec7ef12c1eae0784878982c982ca3f26493d798a736f567cd8",
+    "source_line_hash": "108:8117c725edc905ec7ef12c1eae0784878982c982ca3f26493d798a736f567cd8",
     "source_path": "src/care_myocardium/training/care_ase_trainer.py",
     "status": "PASS"
   },
@@ -49,7 +121,7 @@
     "contract_clause": "Stage A/B 10/5/5 alternating cycle",
     "known_bad_test": "stage_A_B_complete_only",
     "runtime_test": "sampler_400_step_receipt",
-    "source_line_hash": "161:1b8dd514025efa908044b599fce27166613b4fc0af87b135e90983e5a4245c2f",
+    "source_line_hash": "169:1b8dd514025efa908044b599fce27166613b4fc0af87b135e90983e5a4245c2f",
     "source_path": "src/care_myocardium/training/care_ase_sampler.py",
     "status": "PASS"
   },
@@ -58,7 +130,7 @@
     "contract_clause": "Stage C complete-only CenterB/CenterC",
     "known_bad_test": "stage_C_not_complete_only",
     "runtime_test": "sampler_static_contract",
-    "source_line_hash": "181:9d33b367f86962a4a0a739261863cc90d1a3522728e62c14f05b742b46853fea",
+    "source_line_hash": "189:9d33b367f86962a4a0a739261863cc90d1a3522728e62c14f05b742b46853fea",
     "source_path": "src/care_myocardium/training/care_ase_sampler.py",
     "status": "PASS"
   },
@@ -82,10 +154,10 @@
   },
   {
     "class_or_function": "build_case",
-    "contract_clause": "hard-negative manifest provides spatial OOF coordinates",
+    "contract_clause": "hard-negative manifest provides canonical stock OOF component coordinates",
     "known_bad_test": "count_only_hard_negative_manifest",
-    "runtime_test": "sampler_static_contract",
-    "source_line_hash": "66:257f33d59f08266fb46ec3dfb634e2e2734a4ed5e7ccd4a063473470f49a815e",
+    "runtime_test": "canonical_stock_oof_provenance_receipt",
+    "source_line_hash": "292:fc36239d6ba1faa8b45aee5a8d0423e24c90327c3eef21f0f20bcfb51e5b708c",
     "source_path": "scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py",
     "status": "PASS"
   },
@@ -94,7 +166,7 @@
     "contract_clause": "actual-train-only scar/edema area reference",
     "known_bad_test": "hardcoded_area_reference",
     "runtime_test": "area_reference_receipt",
-    "source_line_hash": "234:c9fb88b4bb78f32be78b4bcdea74d503e372e24e374652e69004ac817655df8e",
+    "source_line_hash": "242:c9fb88b4bb78f32be78b4bcdea74d503e372e24e374652e69004ac817655df8e",
     "source_path": "src/care_myocardium/training/care_ase_sampler.py",
     "status": "PASS"
   },
@@ -103,16 +175,16 @@
     "contract_clause": "Stage A/B/C = 2000/8000/4000",
     "known_bad_test": "stage_2000_4000_8000",
     "runtime_test": "scheduler_static_contract",
-    "source_line_hash": "71:92141d3e9492f63242009776351bfa04f37e9ed8581262e2cd9f0350b4f226f8",
+    "source_line_hash": "139:92141d3e9492f63242009776351bfa04f37e9ed8581262e2cd9f0350b4f226f8",
     "source_path": "src/care_myocardium/models/care_ase.py",
     "status": "PASS"
   },
   {
     "class_or_function": "build_optimizer",
-    "contract_clause": "AdamW created once and moments preserved",
+    "contract_clause": "AdamW created once with object-id parameter registry and moments preserved",
     "known_bad_test": "optimizer_recreated_at_stage_transition",
-    "runtime_test": "exact_resume_receipt",
-    "source_line_hash": "444:fbfa1c3ed05809aec5cae7f962a87ac71749e020160cf353a889cf8f6d35b2ca",
+    "runtime_test": "parameter_group_coverage",
+    "source_line_hash": "633:22805365e3cecc5a1c6c47a2d02ee7a3d5caf109f0dbec9e4de8ee611e6e8156",
     "source_path": "src/care_myocardium/training/care_ase_trainer.py",
     "status": "PASS"
   },
@@ -121,7 +193,7 @@
     "contract_clause": "base LR/min LR/warmup/power poly scheduler",
     "known_bad_test": "scheduler_none_or_static_lr",
     "runtime_test": "scheduler_numeric_receipt",
-    "source_line_hash": "452:b23e213cf620441ad297ca63badca238c509d2f2e526dfe0fa35095c8457d82b",
+    "source_line_hash": "694:b23e213cf620441ad297ca63badca238c509d2f2e526dfe0fa35095c8457d82b",
     "source_path": "src/care_myocardium/training/care_ase_trainer.py",
     "status": "PASS"
   },
@@ -139,7 +211,7 @@
     "contract_clause": "exact resume state and next-batch hash",
     "known_bad_test": "resume_not_sampler_or_next_batch",
     "runtime_test": "exact_resume_receipt",
-    "source_line_hash": "44:197a665f9a4408dfee865a2d12d3e886722524d46f865f3f6a1363be45caf30d",
+    "source_line_hash": "47:197a665f9a4408dfee865a2d12d3e886722524d46f865f3f6a1363be45caf30d",
     "source_path": "src/care_myocardium/training/care_ase_trainer.py",
     "status": "PASS"
   },
@@ -147,8 +219,26 @@
     "class_or_function": "build_care_ase_targets",
     "contract_clause": "physical EDT/context/center target builders",
     "known_bad_test": "proxy_loss_targets",
-    "runtime_test": "target_builder_static_contract",
-    "source_line_hash": "164:9c5ccff385b5393b17e5c5e1b0a82af6101a32721a64f7ae72825f6bae8bd0be",
+    "runtime_test": "physical_target_contract_receipt",
+    "source_line_hash": "224:20edf2539c4456551972e885b6ad2055caf0867551db313965862c5b828b1c23",
+    "source_path": "src/care_myocardium/training/care_ase_trainer.py",
+    "status": "PASS"
+  },
+  {
+    "class_or_function": "care_ase_loss",
+    "contract_clause": "edema boundary prediction uses dedicated component head",
+    "known_bad_test": "edema_class_logit_as_boundary",
+    "runtime_test": "boundary_head_contract_receipt",
+    "source_line_hash": "455:40b2212f8c49c73f364fc61d2acabf9601a7c28b1ac0b96878fa0ad2c679b8fd",
+    "source_path": "src/care_myocardium/training/care_ase_trainer.py",
+    "status": "PASS"
+  },
+  {
+    "class_or_function": "care_ase_loss",
+    "contract_clause": "context CE valid voxel mean only",
+    "known_bad_test": "unormalized_context_ce",
+    "runtime_test": "context_loss_normalization_receipt",
+    "source_line_hash": "480:0b206e75867dcc54ca53019f3154f24f2cbd23d485b2fd3f0064c15e5562d59b",
     "source_path": "src/care_myocardium/training/care_ase_trainer.py",
     "status": "PASS"
   },
@@ -157,7 +247,7 @@
     "contract_clause": "fixed step14000 argmax and outer zero-access",
     "known_bad_test": "outer_access_before_freeze",
     "runtime_test": "outer_access_audit_receipt",
-    "source_line_hash": "205:d430c116baef458a8bfc1a944cbb30cb227cde2688f173ed40400a35c6bc829c",
+    "source_line_hash": "289:d430c116baef458a8bfc1a944cbb30cb227cde2688f173ed40400a35c6bc829c",
     "source_path": "scripts/training/care_ase/run_care_ase_r2_chunk.py",
     "status": "PASS"
   },
@@ -175,7 +265,7 @@
     "contract_clause": "outer evaluator fail-closed before W4.5 and loads frozen checkpoint",
     "known_bad_test": "outer_access_before_freeze",
     "runtime_test": "outer_access_audit_receipt",
-    "source_line_hash": "27:984b2b638999304b3f6778284ff01d3d32538dcfbe186c948ec28e3237a62ed2",
+    "source_line_hash": "28:984b2b638999304b3f6778284ff01d3d32538dcfbe186c948ec28e3237a62ed2",
     "source_path": "scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py",
     "status": "PASS"
   },
@@ -184,7 +274,7 @@
     "contract_clause": "pure-edema T2-present only",
     "known_bad_test": "edema_metric_mixes_no_t2",
     "runtime_test": "metric_truth_receipt",
-    "source_line_hash": "287:3a5413187636b0bb09170f61859bb24c3d057caec44975bcda0ed28a7c9fde82",
+    "source_line_hash": "423:3a5413187636b0bb09170f61859bb24c3d057caec44975bcda0ed28a7c9fde82",
     "source_path": "src/care_myocardium/training/care_ase_trainer.py",
     "status": "PASS"
   },

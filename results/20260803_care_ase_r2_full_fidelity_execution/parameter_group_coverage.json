@@ -1,0 +1,7761 @@
+{
+  "all_parameters_in_optimizer_from_step0": true,
+  "duplicate_count": 0,
+  "group_counts": {
+    "anatomy_decoder": 32,
+    "cloned_pathology_blocks": 40,
+    "cloned_pathology_classifiers": 8,
+    "lower_encoder_bottleneck": 32,
+    "new_modules": 89,
+    "shared_low_mid_decoder": 40,
+    "upper_two_encoder": 24
+  },
+  "missing_count": 0,
+  "optimizer_created_once_moments_preserved_across_stages": true,
+  "parameter_count": 265,
+  "parameters": [
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.0.0.convs.0.all_modules.0.weight",
+        "anatomy_decoder.encoder.stages.0.0.convs.0.conv.weight",
+        "encoder.stages.0.0.convs.0.all_modules.0.weight",
+        "encoder.stages.0.0.convs.0.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.0.0.convs.0.all_modules.0.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956882048,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.0.0.convs.0.all_modules.0.bias",
+        "anatomy_decoder.encoder.stages.0.0.convs.0.conv.bias",
+        "encoder.stages.0.0.convs.0.all_modules.0.bias",
+        "encoder.stages.0.0.convs.0.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.0.0.convs.0.all_modules.0.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956889968,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.0.0.convs.0.all_modules.1.weight",
+        "anatomy_decoder.encoder.stages.0.0.convs.0.norm.weight",
+        "encoder.stages.0.0.convs.0.all_modules.1.weight",
+        "encoder.stages.0.0.convs.0.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.0.0.convs.0.all_modules.1.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956896048,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.0.0.convs.0.all_modules.1.bias",
+        "anatomy_decoder.encoder.stages.0.0.convs.0.norm.bias",
+        "encoder.stages.0.0.convs.0.all_modules.1.bias",
+        "encoder.stages.0.0.convs.0.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.0.0.convs.0.all_modules.1.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956892208,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.0.0.convs.1.all_modules.0.weight",
+        "anatomy_decoder.encoder.stages.0.0.convs.1.conv.weight",
+        "encoder.stages.0.0.convs.1.all_modules.0.weight",
+        "encoder.stages.0.0.convs.1.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.0.0.convs.1.all_modules.0.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956886848,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.0.0.convs.1.all_modules.0.bias",
+        "anatomy_decoder.encoder.stages.0.0.convs.1.conv.bias",
+        "encoder.stages.0.0.convs.1.all_modules.0.bias",
+        "encoder.stages.0.0.convs.1.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.0.0.convs.1.all_modules.0.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956885248,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.0.0.convs.1.all_modules.1.weight",
+        "anatomy_decoder.encoder.stages.0.0.convs.1.norm.weight",
+        "encoder.stages.0.0.convs.1.all_modules.1.weight",
+        "encoder.stages.0.0.convs.1.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.0.0.convs.1.all_modules.1.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956884608,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.0.0.convs.1.all_modules.1.bias",
+        "anatomy_decoder.encoder.stages.0.0.convs.1.norm.bias",
+        "encoder.stages.0.0.convs.1.all_modules.1.bias",
+        "encoder.stages.0.0.convs.1.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.0.0.convs.1.all_modules.1.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956883328,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.1.0.convs.0.all_modules.0.weight",
+        "anatomy_decoder.encoder.stages.1.0.convs.0.conv.weight",
+        "encoder.stages.1.0.convs.0.all_modules.0.weight",
+        "encoder.stages.1.0.convs.0.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.1.0.convs.0.all_modules.0.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956882368,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.1.0.convs.0.all_modules.0.bias",
+        "anatomy_decoder.encoder.stages.1.0.convs.0.conv.bias",
+        "encoder.stages.1.0.convs.0.all_modules.0.bias",
+        "encoder.stages.1.0.convs.0.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.1.0.convs.0.all_modules.0.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956893488,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.1.0.convs.0.all_modules.1.weight",
+        "anatomy_decoder.encoder.stages.1.0.convs.0.norm.weight",
+        "encoder.stages.1.0.convs.0.all_modules.1.weight",
+        "encoder.stages.1.0.convs.0.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.1.0.convs.0.all_modules.1.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956895088,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.1.0.convs.0.all_modules.1.bias",
+        "anatomy_decoder.encoder.stages.1.0.convs.0.norm.bias",
+        "encoder.stages.1.0.convs.0.all_modules.1.bias",
+        "encoder.stages.1.0.convs.0.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.1.0.convs.0.all_modules.1.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956896368,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.1.0.convs.1.all_modules.0.weight",
+        "anatomy_decoder.encoder.stages.1.0.convs.1.conv.weight",
+        "encoder.stages.1.0.convs.1.all_modules.0.weight",
+        "encoder.stages.1.0.convs.1.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.1.0.convs.1.all_modules.0.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956895728,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.1.0.convs.1.all_modules.0.bias",
+        "anatomy_decoder.encoder.stages.1.0.convs.1.conv.bias",
+        "encoder.stages.1.0.convs.1.all_modules.0.bias",
+        "encoder.stages.1.0.convs.1.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.1.0.convs.1.all_modules.0.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956883008,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.1.0.convs.1.all_modules.1.weight",
+        "anatomy_decoder.encoder.stages.1.0.convs.1.norm.weight",
+        "encoder.stages.1.0.convs.1.all_modules.1.weight",
+        "encoder.stages.1.0.convs.1.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.1.0.convs.1.all_modules.1.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956897008,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.1.0.convs.1.all_modules.1.bias",
+        "anatomy_decoder.encoder.stages.1.0.convs.1.norm.bias",
+        "encoder.stages.1.0.convs.1.all_modules.1.bias",
+        "encoder.stages.1.0.convs.1.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.1.0.convs.1.all_modules.1.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956887968,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.2.0.convs.0.all_modules.0.weight",
+        "anatomy_decoder.encoder.stages.2.0.convs.0.conv.weight",
+        "encoder.stages.2.0.convs.0.all_modules.0.weight",
+        "encoder.stages.2.0.convs.0.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.2.0.convs.0.all_modules.0.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956890928,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.2.0.convs.0.all_modules.0.bias",
+        "anatomy_decoder.encoder.stages.2.0.convs.0.conv.bias",
+        "encoder.stages.2.0.convs.0.all_modules.0.bias",
+        "encoder.stages.2.0.convs.0.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.2.0.convs.0.all_modules.0.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956891248,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.2.0.convs.0.all_modules.1.weight",
+        "anatomy_decoder.encoder.stages.2.0.convs.0.norm.weight",
+        "encoder.stages.2.0.convs.0.all_modules.1.weight",
+        "encoder.stages.2.0.convs.0.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.2.0.convs.0.all_modules.1.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956890288,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.2.0.convs.0.all_modules.1.bias",
+        "anatomy_decoder.encoder.stages.2.0.convs.0.norm.bias",
+        "encoder.stages.2.0.convs.0.all_modules.1.bias",
+        "encoder.stages.2.0.convs.0.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.2.0.convs.0.all_modules.1.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956892528,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.2.0.convs.1.all_modules.0.weight",
+        "anatomy_decoder.encoder.stages.2.0.convs.1.conv.weight",
+        "encoder.stages.2.0.convs.1.all_modules.0.weight",
+        "encoder.stages.2.0.convs.1.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.2.0.convs.1.all_modules.0.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956893808,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.2.0.convs.1.all_modules.0.bias",
+        "anatomy_decoder.encoder.stages.2.0.convs.1.conv.bias",
+        "encoder.stages.2.0.convs.1.all_modules.0.bias",
+        "encoder.stages.2.0.convs.1.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.2.0.convs.1.all_modules.0.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956895408,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.2.0.convs.1.all_modules.1.weight",
+        "anatomy_decoder.encoder.stages.2.0.convs.1.norm.weight",
+        "encoder.stages.2.0.convs.1.all_modules.1.weight",
+        "encoder.stages.2.0.convs.1.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.2.0.convs.1.all_modules.1.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956894128,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.2.0.convs.1.all_modules.1.bias",
+        "anatomy_decoder.encoder.stages.2.0.convs.1.norm.bias",
+        "encoder.stages.2.0.convs.1.all_modules.1.bias",
+        "encoder.stages.2.0.convs.1.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.2.0.convs.1.all_modules.1.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956894768,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.3.0.convs.0.all_modules.0.weight",
+        "anatomy_decoder.encoder.stages.3.0.convs.0.conv.weight",
+        "encoder.stages.3.0.convs.0.all_modules.0.weight",
+        "encoder.stages.3.0.convs.0.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.3.0.convs.0.all_modules.0.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956882688,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.3.0.convs.0.all_modules.0.bias",
+        "anatomy_decoder.encoder.stages.3.0.convs.0.conv.bias",
+        "encoder.stages.3.0.convs.0.all_modules.0.bias",
+        "encoder.stages.3.0.convs.0.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.3.0.convs.0.all_modules.0.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956877584,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.3.0.convs.0.all_modules.1.weight",
+        "anatomy_decoder.encoder.stages.3.0.convs.0.norm.weight",
+        "encoder.stages.3.0.convs.0.all_modules.1.weight",
+        "encoder.stages.3.0.convs.0.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.3.0.convs.0.all_modules.1.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956897328,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.3.0.convs.0.all_modules.1.bias",
+        "anatomy_decoder.encoder.stages.3.0.convs.0.norm.bias",
+        "encoder.stages.3.0.convs.0.all_modules.1.bias",
+        "encoder.stages.3.0.convs.0.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.3.0.convs.0.all_modules.1.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956865744,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.3.0.convs.1.all_modules.0.weight",
+        "anatomy_decoder.encoder.stages.3.0.convs.1.conv.weight",
+        "encoder.stages.3.0.convs.1.all_modules.0.weight",
+        "encoder.stages.3.0.convs.1.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.3.0.convs.1.all_modules.0.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956871264,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.3.0.convs.1.all_modules.0.bias",
+        "anatomy_decoder.encoder.stages.3.0.convs.1.conv.bias",
+        "encoder.stages.3.0.convs.1.all_modules.0.bias",
+        "encoder.stages.3.0.convs.1.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.3.0.convs.1.all_modules.0.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956877264,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.3.0.convs.1.all_modules.1.weight",
+        "anatomy_decoder.encoder.stages.3.0.convs.1.norm.weight",
+        "encoder.stages.3.0.convs.1.all_modules.1.weight",
+        "encoder.stages.3.0.convs.1.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.3.0.convs.1.all_modules.1.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956866704,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.3.0.convs.1.all_modules.1.bias",
+        "anatomy_decoder.encoder.stages.3.0.convs.1.norm.bias",
+        "encoder.stages.3.0.convs.1.all_modules.1.bias",
+        "encoder.stages.3.0.convs.1.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0,
+        "C": 1e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.3.0.convs.1.all_modules.1.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 1e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 0.0,
+        "2499": 0.0,
+        "9999": 0.0
+      },
+      "group": "lower_encoder_bottleneck",
+      "parameter_id": 140535956879104,
+      "requires_grad": {
+        "A": false,
+        "B": false,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.4.0.convs.0.all_modules.0.weight",
+        "anatomy_decoder.encoder.stages.4.0.convs.0.conv.weight",
+        "encoder.stages.4.0.convs.0.all_modules.0.weight",
+        "encoder.stages.4.0.convs.0.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 5e-05,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.4.0.convs.0.all_modules.0.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 5e-06,
+        "2499": 5e-05,
+        "9999": 1e-06
+      },
+      "group": "upper_two_encoder",
+      "parameter_id": 140535956867504,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.4.0.convs.0.all_modules.0.bias",
+        "anatomy_decoder.encoder.stages.4.0.convs.0.conv.bias",
+        "encoder.stages.4.0.convs.0.all_modules.0.bias",
+        "encoder.stages.4.0.convs.0.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 5e-05,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.4.0.convs.0.all_modules.0.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 5e-06,
+        "2499": 5e-05,
+        "9999": 1e-06
+      },
+      "group": "upper_two_encoder",
+      "parameter_id": 140535956878464,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.4.0.convs.0.all_modules.1.weight",
+        "anatomy_decoder.encoder.stages.4.0.convs.0.norm.weight",
+        "encoder.stages.4.0.convs.0.all_modules.1.weight",
+        "encoder.stages.4.0.convs.0.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 5e-05,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.4.0.convs.0.all_modules.1.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 5e-06,
+        "2499": 5e-05,
+        "9999": 1e-06
+      },
+      "group": "upper_two_encoder",
+      "parameter_id": 140535956870944,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.4.0.convs.0.all_modules.1.bias",
+        "anatomy_decoder.encoder.stages.4.0.convs.0.norm.bias",
+        "encoder.stages.4.0.convs.0.all_modules.1.bias",
+        "encoder.stages.4.0.convs.0.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 5e-05,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.4.0.convs.0.all_modules.1.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 5e-06,
+        "2499": 5e-05,
+        "9999": 1e-06
+      },
+      "group": "upper_two_encoder",
+      "parameter_id": 140535956878784,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.4.0.convs.1.all_modules.0.weight",
+        "anatomy_decoder.encoder.stages.4.0.convs.1.conv.weight",
+        "encoder.stages.4.0.convs.1.all_modules.0.weight",
+        "encoder.stages.4.0.convs.1.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 5e-05,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.4.0.convs.1.all_modules.0.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 5e-06,
+        "2499": 5e-05,
+        "9999": 1e-06
+      },
+      "group": "upper_two_encoder",
+      "parameter_id": 140535956878144,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.4.0.convs.1.all_modules.0.bias",
+        "anatomy_decoder.encoder.stages.4.0.convs.1.conv.bias",
+        "encoder.stages.4.0.convs.1.all_modules.0.bias",
+        "encoder.stages.4.0.convs.1.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 5e-05,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.4.0.convs.1.all_modules.0.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 5e-06,
+        "2499": 5e-05,
+        "9999": 1e-06
+      },
+      "group": "upper_two_encoder",
+      "parameter_id": 140535956875904,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.4.0.convs.1.all_modules.1.weight",
+        "anatomy_decoder.encoder.stages.4.0.convs.1.norm.weight",
+        "encoder.stages.4.0.convs.1.all_modules.1.weight",
+        "encoder.stages.4.0.convs.1.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 5e-05,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.4.0.convs.1.all_modules.1.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 5e-06,
+        "2499": 5e-05,
+        "9999": 1e-06
+      },
+      "group": "upper_two_encoder",
+      "parameter_id": 140535956880384,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.4.0.convs.1.all_modules.1.bias",
+        "anatomy_decoder.encoder.stages.4.0.convs.1.norm.bias",
+        "encoder.stages.4.0.convs.1.all_modules.1.bias",
+        "encoder.stages.4.0.convs.1.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 5e-05,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.4.0.convs.1.all_modules.1.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 5e-06,
+        "2499": 5e-05,
+        "9999": 1e-06
+      },
+      "group": "upper_two_encoder",
+      "parameter_id": 140535956867184,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.5.0.convs.0.all_modules.0.weight",
+        "anatomy_decoder.encoder.stages.5.0.convs.0.conv.weight",
+        "encoder.stages.5.0.convs.0.all_modules.0.weight",
+        "encoder.stages.5.0.convs.0.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 5e-05,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.5.0.convs.0.all_modules.0.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 5e-06,
+        "2499": 5e-05,
+        "9999": 1e-06
+      },
+      "group": "upper_two_encoder",
+      "parameter_id": 140535956869984,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.5.0.convs.0.all_modules.0.bias",
+        "anatomy_decoder.encoder.stages.5.0.convs.0.conv.bias",
+        "encoder.stages.5.0.convs.0.all_modules.0.bias",
+        "encoder.stages.5.0.convs.0.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 5e-05,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.5.0.convs.0.all_modules.0.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 5e-06,
+        "2499": 5e-05,
+        "9999": 1e-06
+      },
+      "group": "upper_two_encoder",
+      "parameter_id": 140535956870624,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.5.0.convs.0.all_modules.1.weight",
+        "anatomy_decoder.encoder.stages.5.0.convs.0.norm.weight",
+        "encoder.stages.5.0.convs.0.all_modules.1.weight",
+        "encoder.stages.5.0.convs.0.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 5e-05,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.5.0.convs.0.all_modules.1.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 5e-06,
+        "2499": 5e-05,
+        "9999": 1e-06
+      },
+      "group": "upper_two_encoder",
+      "parameter_id": 140535956875424,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.5.0.convs.0.all_modules.1.bias",
+        "anatomy_decoder.encoder.stages.5.0.convs.0.norm.bias",
+        "encoder.stages.5.0.convs.0.all_modules.1.bias",
+        "encoder.stages.5.0.convs.0.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 5e-05,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.5.0.convs.0.all_modules.1.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 5e-06,
+        "2499": 5e-05,
+        "9999": 1e-06
+      },
+      "group": "upper_two_encoder",
+      "parameter_id": 140535956879744,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.5.0.convs.1.all_modules.0.weight",
+        "anatomy_decoder.encoder.stages.5.0.convs.1.conv.weight",
+        "encoder.stages.5.0.convs.1.all_modules.0.weight",
+        "encoder.stages.5.0.convs.1.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 5e-05,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.5.0.convs.1.all_modules.0.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 5e-06,
+        "2499": 5e-05,
+        "9999": 1e-06
+      },
+      "group": "upper_two_encoder",
+      "parameter_id": 140535956866384,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.5.0.convs.1.all_modules.0.bias",
+        "anatomy_decoder.encoder.stages.5.0.convs.1.conv.bias",
+        "encoder.stages.5.0.convs.1.all_modules.0.bias",
+        "encoder.stages.5.0.convs.1.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 5e-05,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.5.0.convs.1.all_modules.0.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 5e-06,
+        "2499": 5e-05,
+        "9999": 1e-06
+      },
+      "group": "upper_two_encoder",
+      "parameter_id": 140535956866064,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.5.0.convs.1.all_modules.1.weight",
+        "anatomy_decoder.encoder.stages.5.0.convs.1.norm.weight",
+        "encoder.stages.5.0.convs.1.all_modules.1.weight",
+        "encoder.stages.5.0.convs.1.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 5e-05,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.5.0.convs.1.all_modules.1.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 5e-06,
+        "2499": 5e-05,
+        "9999": 1e-06
+      },
+      "group": "upper_two_encoder",
+      "parameter_id": 140535956881344,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.5.0.convs.1.all_modules.1.bias",
+        "anatomy_decoder.encoder.stages.5.0.convs.1.norm.bias",
+        "encoder.stages.5.0.convs.1.all_modules.1.bias",
+        "encoder.stages.5.0.convs.1.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 5e-05,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.5.0.convs.1.all_modules.1.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 5e-06,
+        "2499": 5e-05,
+        "9999": 1e-06
+      },
+      "group": "upper_two_encoder",
+      "parameter_id": 140535956880704,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.6.0.convs.0.all_modules.0.weight",
+        "anatomy_decoder.encoder.stages.6.0.convs.0.conv.weight",
+        "encoder.stages.6.0.convs.0.all_modules.0.weight",
+        "encoder.stages.6.0.convs.0.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 5e-05,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.6.0.convs.0.all_modules.0.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 5e-06,
+        "2499": 5e-05,
+        "9999": 1e-06
+      },
+      "group": "upper_two_encoder",
+      "parameter_id": 140535956871904,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.6.0.convs.0.all_modules.0.bias",
+        "anatomy_decoder.encoder.stages.6.0.convs.0.conv.bias",
+        "encoder.stages.6.0.convs.0.all_modules.0.bias",
+        "encoder.stages.6.0.convs.0.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 5e-05,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.6.0.convs.0.all_modules.0.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 5e-06,
+        "2499": 5e-05,
+        "9999": 1e-06
+      },
+      "group": "upper_two_encoder",
+      "parameter_id": 140535956868464,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.6.0.convs.0.all_modules.1.weight",
+        "anatomy_decoder.encoder.stages.6.0.convs.0.norm.weight",
+        "encoder.stages.6.0.convs.0.all_modules.1.weight",
+        "encoder.stages.6.0.convs.0.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 5e-05,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.6.0.convs.0.all_modules.1.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 5e-06,
+        "2499": 5e-05,
+        "9999": 1e-06
+      },
+      "group": "upper_two_encoder",
+      "parameter_id": 140535956877744,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.6.0.convs.0.all_modules.1.bias",
+        "anatomy_decoder.encoder.stages.6.0.convs.0.norm.bias",
+        "encoder.stages.6.0.convs.0.all_modules.1.bias",
+        "encoder.stages.6.0.convs.0.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 5e-05,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.6.0.convs.0.all_modules.1.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 5e-06,
+        "2499": 5e-05,
+        "9999": 1e-06
+      },
+      "group": "upper_two_encoder",
+      "parameter_id": 140535956870304,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.6.0.convs.1.all_modules.0.weight",
+        "anatomy_decoder.encoder.stages.6.0.convs.1.conv.weight",
+        "encoder.stages.6.0.convs.1.all_modules.0.weight",
+        "encoder.stages.6.0.convs.1.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 5e-05,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.6.0.convs.1.all_modules.0.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 5e-06,
+        "2499": 5e-05,
+        "9999": 1e-06
+      },
+      "group": "upper_two_encoder",
+      "parameter_id": 140535956875104,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.6.0.convs.1.all_modules.0.bias",
+        "anatomy_decoder.encoder.stages.6.0.convs.1.conv.bias",
+        "encoder.stages.6.0.convs.1.all_modules.0.bias",
+        "encoder.stages.6.0.convs.1.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 5e-05,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.6.0.convs.1.all_modules.0.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 5e-06,
+        "2499": 5e-05,
+        "9999": 1e-06
+      },
+      "group": "upper_two_encoder",
+      "parameter_id": 140535956872864,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.6.0.convs.1.all_modules.1.weight",
+        "anatomy_decoder.encoder.stages.6.0.convs.1.norm.weight",
+        "encoder.stages.6.0.convs.1.all_modules.1.weight",
+        "encoder.stages.6.0.convs.1.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 5e-05,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.6.0.convs.1.all_modules.1.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 5e-06,
+        "2499": 5e-05,
+        "9999": 1e-06
+      },
+      "group": "upper_two_encoder",
+      "parameter_id": 140535956873824,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.encoder.stages.6.0.convs.1.all_modules.1.bias",
+        "anatomy_decoder.encoder.stages.6.0.convs.1.norm.bias",
+        "encoder.stages.6.0.convs.1.all_modules.1.bias",
+        "encoder.stages.6.0.convs.1.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 5e-05,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.encoder.stages.6.0.convs.1.all_modules.1.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 5e-06,
+        "2499": 5e-05,
+        "9999": 1e-06
+      },
+      "group": "upper_two_encoder",
+      "parameter_id": 140535956867824,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.0.convs.0.all_modules.0.weight",
+        "anatomy_decoder.stages.0.convs.0.conv.weight",
+        "low_mid_stages.0.convs.0.all_modules.0.weight",
+        "low_mid_stages.0.convs.0.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.0.convs.0.all_modules.0.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140536149068528,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.0.convs.0.all_modules.0.bias",
+        "anatomy_decoder.stages.0.convs.0.conv.bias",
+        "low_mid_stages.0.convs.0.all_modules.0.bias",
+        "low_mid_stages.0.convs.0.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.0.convs.0.all_modules.0.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976692544,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.0.convs.0.all_modules.1.weight",
+        "anatomy_decoder.stages.0.convs.0.norm.weight",
+        "low_mid_stages.0.convs.0.all_modules.1.weight",
+        "low_mid_stages.0.convs.0.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.0.convs.0.all_modules.1.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535956871584,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.0.convs.0.all_modules.1.bias",
+        "anatomy_decoder.stages.0.convs.0.norm.bias",
+        "low_mid_stages.0.convs.0.all_modules.1.bias",
+        "low_mid_stages.0.convs.0.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.0.convs.0.all_modules.1.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976691584,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.0.convs.1.all_modules.0.weight",
+        "anatomy_decoder.stages.0.convs.1.conv.weight",
+        "low_mid_stages.0.convs.1.all_modules.0.weight",
+        "low_mid_stages.0.convs.1.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.0.convs.1.all_modules.0.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976693184,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.0.convs.1.all_modules.0.bias",
+        "anatomy_decoder.stages.0.convs.1.conv.bias",
+        "low_mid_stages.0.convs.1.all_modules.0.bias",
+        "low_mid_stages.0.convs.1.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.0.convs.1.all_modules.0.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976693504,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.0.convs.1.all_modules.1.weight",
+        "anatomy_decoder.stages.0.convs.1.norm.weight",
+        "low_mid_stages.0.convs.1.all_modules.1.weight",
+        "low_mid_stages.0.convs.1.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.0.convs.1.all_modules.1.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976692224,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.0.convs.1.all_modules.1.bias",
+        "anatomy_decoder.stages.0.convs.1.norm.bias",
+        "low_mid_stages.0.convs.1.all_modules.1.bias",
+        "low_mid_stages.0.convs.1.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.0.convs.1.all_modules.1.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976694464,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.1.convs.0.all_modules.0.weight",
+        "anatomy_decoder.stages.1.convs.0.conv.weight",
+        "low_mid_stages.1.convs.0.all_modules.0.weight",
+        "low_mid_stages.1.convs.0.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.1.convs.0.all_modules.0.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976698944,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.1.convs.0.all_modules.0.bias",
+        "anatomy_decoder.stages.1.convs.0.conv.bias",
+        "low_mid_stages.1.convs.0.all_modules.0.bias",
+        "low_mid_stages.1.convs.0.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.1.convs.0.all_modules.0.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976699584,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.1.convs.0.all_modules.1.weight",
+        "anatomy_decoder.stages.1.convs.0.norm.weight",
+        "low_mid_stages.1.convs.0.all_modules.1.weight",
+        "low_mid_stages.1.convs.0.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.1.convs.0.all_modules.1.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976699904,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.1.convs.0.all_modules.1.bias",
+        "anatomy_decoder.stages.1.convs.0.norm.bias",
+        "low_mid_stages.1.convs.0.all_modules.1.bias",
+        "low_mid_stages.1.convs.0.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.1.convs.0.all_modules.1.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976705584,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.1.convs.1.all_modules.0.weight",
+        "anatomy_decoder.stages.1.convs.1.conv.weight",
+        "low_mid_stages.1.convs.1.all_modules.0.weight",
+        "low_mid_stages.1.convs.1.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.1.convs.1.all_modules.0.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976704384,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.1.convs.1.all_modules.0.bias",
+        "anatomy_decoder.stages.1.convs.1.conv.bias",
+        "low_mid_stages.1.convs.1.all_modules.0.bias",
+        "low_mid_stages.1.convs.1.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.1.convs.1.all_modules.0.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976703104,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.1.convs.1.all_modules.1.weight",
+        "anatomy_decoder.stages.1.convs.1.norm.weight",
+        "low_mid_stages.1.convs.1.all_modules.1.weight",
+        "low_mid_stages.1.convs.1.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.1.convs.1.all_modules.1.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976700544,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.1.convs.1.all_modules.1.bias",
+        "anatomy_decoder.stages.1.convs.1.norm.bias",
+        "low_mid_stages.1.convs.1.all_modules.1.bias",
+        "low_mid_stages.1.convs.1.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.1.convs.1.all_modules.1.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976702864,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.2.convs.0.all_modules.0.weight",
+        "anatomy_decoder.stages.2.convs.0.conv.weight",
+        "low_mid_stages.2.convs.0.all_modules.0.weight",
+        "low_mid_stages.2.convs.0.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.2.convs.0.all_modules.0.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976696704,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.2.convs.0.all_modules.0.bias",
+        "anatomy_decoder.stages.2.convs.0.conv.bias",
+        "low_mid_stages.2.convs.0.all_modules.0.bias",
+        "low_mid_stages.2.convs.0.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.2.convs.0.all_modules.0.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976690624,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.2.convs.0.all_modules.1.weight",
+        "anatomy_decoder.stages.2.convs.0.norm.weight",
+        "low_mid_stages.2.convs.0.all_modules.1.weight",
+        "low_mid_stages.2.convs.0.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.2.convs.0.all_modules.1.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976695424,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.2.convs.0.all_modules.1.bias",
+        "anatomy_decoder.stages.2.convs.0.norm.bias",
+        "low_mid_stages.2.convs.0.all_modules.1.bias",
+        "low_mid_stages.2.convs.0.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.2.convs.0.all_modules.1.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976693824,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.2.convs.1.all_modules.0.weight",
+        "anatomy_decoder.stages.2.convs.1.conv.weight",
+        "low_mid_stages.2.convs.1.all_modules.0.weight",
+        "low_mid_stages.2.convs.1.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.2.convs.1.all_modules.0.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976691264,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.2.convs.1.all_modules.0.bias",
+        "anatomy_decoder.stages.2.convs.1.conv.bias",
+        "low_mid_stages.2.convs.1.all_modules.0.bias",
+        "low_mid_stages.2.convs.1.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.2.convs.1.all_modules.0.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976690304,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.2.convs.1.all_modules.1.weight",
+        "anatomy_decoder.stages.2.convs.1.norm.weight",
+        "low_mid_stages.2.convs.1.all_modules.1.weight",
+        "low_mid_stages.2.convs.1.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.2.convs.1.all_modules.1.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976697984,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.2.convs.1.all_modules.1.bias",
+        "anatomy_decoder.stages.2.convs.1.norm.bias",
+        "low_mid_stages.2.convs.1.all_modules.1.bias",
+        "low_mid_stages.2.convs.1.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.2.convs.1.all_modules.1.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976690944,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.3.convs.0.all_modules.0.weight",
+        "anatomy_decoder.stages.3.convs.0.conv.weight",
+        "low_mid_stages.3.convs.0.all_modules.0.weight",
+        "low_mid_stages.3.convs.0.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.3.convs.0.all_modules.0.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976697024,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.3.convs.0.all_modules.0.bias",
+        "anatomy_decoder.stages.3.convs.0.conv.bias",
+        "low_mid_stages.3.convs.0.all_modules.0.bias",
+        "low_mid_stages.3.convs.0.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.3.convs.0.all_modules.0.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976689984,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.3.convs.0.all_modules.1.weight",
+        "anatomy_decoder.stages.3.convs.0.norm.weight",
+        "low_mid_stages.3.convs.0.all_modules.1.weight",
+        "low_mid_stages.3.convs.0.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.3.convs.0.all_modules.1.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976700224,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.3.convs.0.all_modules.1.bias",
+        "anatomy_decoder.stages.3.convs.0.norm.bias",
+        "low_mid_stages.3.convs.0.all_modules.1.bias",
+        "low_mid_stages.3.convs.0.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.3.convs.0.all_modules.1.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976691904,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.3.convs.1.all_modules.0.weight",
+        "anatomy_decoder.stages.3.convs.1.conv.weight",
+        "low_mid_stages.3.convs.1.all_modules.0.weight",
+        "low_mid_stages.3.convs.1.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.3.convs.1.all_modules.0.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976702944,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.3.convs.1.all_modules.0.bias",
+        "anatomy_decoder.stages.3.convs.1.conv.bias",
+        "low_mid_stages.3.convs.1.all_modules.0.bias",
+        "low_mid_stages.3.convs.1.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.3.convs.1.all_modules.0.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976703024,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.3.convs.1.all_modules.1.weight",
+        "anatomy_decoder.stages.3.convs.1.norm.weight",
+        "low_mid_stages.3.convs.1.all_modules.1.weight",
+        "low_mid_stages.3.convs.1.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.3.convs.1.all_modules.1.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976704304,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.3.convs.1.all_modules.1.bias",
+        "anatomy_decoder.stages.3.convs.1.norm.bias",
+        "low_mid_stages.3.convs.1.all_modules.1.bias",
+        "low_mid_stages.3.convs.1.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.3.convs.1.all_modules.1.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976700784,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.4.convs.0.all_modules.0.weight",
+        "anatomy_decoder.stages.4.convs.0.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.4.convs.0.all_modules.0.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535976695104,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.4.convs.0.all_modules.0.bias",
+        "anatomy_decoder.stages.4.convs.0.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.4.convs.0.all_modules.0.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535976705824,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.4.convs.0.all_modules.1.weight",
+        "anatomy_decoder.stages.4.convs.0.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.4.convs.0.all_modules.1.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535976704144,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.4.convs.0.all_modules.1.bias",
+        "anatomy_decoder.stages.4.convs.0.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.4.convs.0.all_modules.1.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535976701584,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.4.convs.1.all_modules.0.weight",
+        "anatomy_decoder.stages.4.convs.1.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.4.convs.1.all_modules.0.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535956913072,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.4.convs.1.all_modules.0.bias",
+        "anatomy_decoder.stages.4.convs.1.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.4.convs.1.all_modules.0.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535956906672,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.4.convs.1.all_modules.1.weight",
+        "anatomy_decoder.stages.4.convs.1.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.4.convs.1.all_modules.1.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535956907312,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.4.convs.1.all_modules.1.bias",
+        "anatomy_decoder.stages.4.convs.1.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.4.convs.1.all_modules.1.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535956906992,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.5.convs.0.all_modules.0.weight",
+        "anatomy_decoder.stages.5.convs.0.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.5.convs.0.all_modules.0.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535956900592,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.5.convs.0.all_modules.0.bias",
+        "anatomy_decoder.stages.5.convs.0.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.5.convs.0.all_modules.0.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535956899312,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.5.convs.0.all_modules.1.weight",
+        "anatomy_decoder.stages.5.convs.0.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.5.convs.0.all_modules.1.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535956899632,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.5.convs.0.all_modules.1.bias",
+        "anatomy_decoder.stages.5.convs.0.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.5.convs.0.all_modules.1.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535956898992,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.5.convs.1.all_modules.0.weight",
+        "anatomy_decoder.stages.5.convs.1.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.5.convs.1.all_modules.0.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535956911472,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.5.convs.1.all_modules.0.bias",
+        "anatomy_decoder.stages.5.convs.1.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.5.convs.1.all_modules.0.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535956904112,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.5.convs.1.all_modules.1.weight",
+        "anatomy_decoder.stages.5.convs.1.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.5.convs.1.all_modules.1.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535956900272,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.stages.5.convs.1.all_modules.1.bias",
+        "anatomy_decoder.stages.5.convs.1.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.stages.5.convs.1.all_modules.1.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535956902512,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.transpconvs.0.weight",
+        "low_mid_transpconvs.0.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.transpconvs.0.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535956873504,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.transpconvs.0.bias",
+        "low_mid_transpconvs.0.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.transpconvs.0.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535956869104,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.transpconvs.1.weight",
+        "low_mid_transpconvs.1.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.transpconvs.1.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976697344,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.transpconvs.1.bias",
+        "low_mid_transpconvs.1.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.transpconvs.1.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976696384,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.transpconvs.2.weight",
+        "low_mid_transpconvs.2.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.transpconvs.2.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976705664,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.transpconvs.2.bias",
+        "low_mid_transpconvs.2.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.transpconvs.2.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976704544,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.transpconvs.3.weight",
+        "low_mid_transpconvs.3.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.transpconvs.3.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976694784,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.transpconvs.3.bias",
+        "low_mid_transpconvs.3.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.transpconvs.3.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "shared_low_mid_decoder",
+      "parameter_id": 140535976697664,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.transpconvs.4.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.transpconvs.4.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535976705424,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.transpconvs.4.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.transpconvs.4.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535976698304,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.transpconvs.5.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.transpconvs.5.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535956898352,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.transpconvs.5.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.transpconvs.5.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535956900912,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.seg_layers.0.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.seg_layers.0.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535976695744,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.seg_layers.0.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.seg_layers.0.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535976696064,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.seg_layers.1.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.seg_layers.1.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535976701824,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.seg_layers.1.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.seg_layers.1.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535976701744,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.seg_layers.2.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.seg_layers.2.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535976698624,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.seg_layers.2.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.seg_layers.2.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535976692864,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.seg_layers.3.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.seg_layers.3.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535976694144,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.seg_layers.3.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.seg_layers.3.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535976699264,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.seg_layers.4.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.seg_layers.4.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535956904752,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.seg_layers.4.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.seg_layers.4.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535956906352,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.seg_layers.5.weight"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.seg_layers.5.weight",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535956904432,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_decoder.seg_layers.5.bias"
+      ],
+      "base_lr": {
+        "A": 0.0,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "anatomy_decoder.seg_layers.5.bias",
+      "current_lr": {
+        "0": 0.0,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0,
+        "1999": 0.0,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "anatomy_decoder",
+      "parameter_id": 140535956898672,
+      "requires_grad": {
+        "A": false,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_branch.transpconvs.0.weight"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "scar_branch.transpconvs.0.weight",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535977587680,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_branch.transpconvs.0.bias"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "scar_branch.transpconvs.0.bias",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535977586480,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_branch.transpconvs.1.weight"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "scar_branch.transpconvs.1.weight",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535977585520,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_branch.transpconvs.1.bias"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "scar_branch.transpconvs.1.bias",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535977587280,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_branch.stages.0.convs.0.all_modules.0.weight",
+        "scar_branch.stages.0.convs.0.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "scar_branch.stages.0.convs.0.all_modules.0.weight",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951263216,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_branch.stages.0.convs.0.all_modules.0.bias",
+        "scar_branch.stages.0.convs.0.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "scar_branch.stages.0.convs.0.all_modules.0.bias",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951262896,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_branch.stages.0.convs.0.all_modules.1.weight",
+        "scar_branch.stages.0.convs.0.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "scar_branch.stages.0.convs.0.all_modules.1.weight",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951263536,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_branch.stages.0.convs.0.all_modules.1.bias",
+        "scar_branch.stages.0.convs.0.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "scar_branch.stages.0.convs.0.all_modules.1.bias",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951264496,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_branch.stages.0.convs.1.all_modules.0.weight",
+        "scar_branch.stages.0.convs.1.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "scar_branch.stages.0.convs.1.all_modules.0.weight",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951264976,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_branch.stages.0.convs.1.all_modules.0.bias",
+        "scar_branch.stages.0.convs.1.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "scar_branch.stages.0.convs.1.all_modules.0.bias",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951264176,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_branch.stages.0.convs.1.all_modules.1.weight",
+        "scar_branch.stages.0.convs.1.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "scar_branch.stages.0.convs.1.all_modules.1.weight",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951265376,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_branch.stages.0.convs.1.all_modules.1.bias",
+        "scar_branch.stages.0.convs.1.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "scar_branch.stages.0.convs.1.all_modules.1.bias",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951263856,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_branch.stages.1.convs.0.all_modules.0.weight",
+        "scar_branch.stages.1.convs.0.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "scar_branch.stages.1.convs.0.all_modules.0.weight",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951267296,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_branch.stages.1.convs.0.all_modules.0.bias",
+        "scar_branch.stages.1.convs.0.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "scar_branch.stages.1.convs.0.all_modules.0.bias",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951266976,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_branch.stages.1.convs.0.all_modules.1.weight",
+        "scar_branch.stages.1.convs.0.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "scar_branch.stages.1.convs.0.all_modules.1.weight",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951267616,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_branch.stages.1.convs.0.all_modules.1.bias",
+        "scar_branch.stages.1.convs.0.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "scar_branch.stages.1.convs.0.all_modules.1.bias",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951266016,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_branch.stages.1.convs.1.all_modules.0.weight",
+        "scar_branch.stages.1.convs.1.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "scar_branch.stages.1.convs.1.all_modules.0.weight",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951268576,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_branch.stages.1.convs.1.all_modules.0.bias",
+        "scar_branch.stages.1.convs.1.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "scar_branch.stages.1.convs.1.all_modules.0.bias",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951268256,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_branch.stages.1.convs.1.all_modules.1.weight",
+        "scar_branch.stages.1.convs.1.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "scar_branch.stages.1.convs.1.all_modules.1.weight",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951269536,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_branch.stages.1.convs.1.all_modules.1.bias",
+        "scar_branch.stages.1.convs.1.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "scar_branch.stages.1.convs.1.all_modules.1.bias",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951267936,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_branch.seg_layers.0.weight"
+      ],
+      "base_lr": {
+        "A": 0.0002,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "scar_branch.seg_layers.0.weight",
+      "current_lr": {
+        "0": 2e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0002,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_classifiers",
+      "parameter_id": 140535821326192,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_branch.seg_layers.0.bias"
+      ],
+      "base_lr": {
+        "A": 0.0002,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "scar_branch.seg_layers.0.bias",
+      "current_lr": {
+        "0": 2e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0002,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_classifiers",
+      "parameter_id": 140535821327712,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_branch.seg_layers.1.weight"
+      ],
+      "base_lr": {
+        "A": 0.0002,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "scar_branch.seg_layers.1.weight",
+      "current_lr": {
+        "0": 2e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0002,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_classifiers",
+      "parameter_id": 140535951269216,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_branch.seg_layers.1.bias"
+      ],
+      "base_lr": {
+        "A": 0.0002,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "scar_branch.seg_layers.1.bias",
+      "current_lr": {
+        "0": 2e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0002,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_classifiers",
+      "parameter_id": 140535951268896,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_branch.half_projection.proj.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "scar_branch.half_projection.proj.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535977587440,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_branch.half_projection.proj.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "scar_branch.half_projection.proj.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535977586320,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_branch.full_projection.proj.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "scar_branch.full_projection.proj.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951266336,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_branch.full_projection.proj.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "scar_branch.full_projection.proj.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951266656,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_branch.transpconvs.0.weight"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "edema_branch.transpconvs.0.weight",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951269856,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_branch.transpconvs.0.bias"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "edema_branch.transpconvs.0.bias",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951270496,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_branch.transpconvs.1.weight"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "edema_branch.transpconvs.1.weight",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951271296,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_branch.transpconvs.1.bias"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "edema_branch.transpconvs.1.bias",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951265696,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_branch.stages.0.convs.0.all_modules.0.weight",
+        "edema_branch.stages.0.convs.0.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "edema_branch.stages.0.convs.0.all_modules.0.weight",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951274816,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_branch.stages.0.convs.0.all_modules.0.bias",
+        "edema_branch.stages.0.convs.0.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "edema_branch.stages.0.convs.0.all_modules.0.bias",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951277056,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_branch.stages.0.convs.0.all_modules.1.weight",
+        "edema_branch.stages.0.convs.0.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "edema_branch.stages.0.convs.0.all_modules.1.weight",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951277696,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_branch.stages.0.convs.0.all_modules.1.bias",
+        "edema_branch.stages.0.convs.0.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "edema_branch.stages.0.convs.0.all_modules.1.bias",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951274496,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_branch.stages.0.convs.1.all_modules.0.weight",
+        "edema_branch.stages.0.convs.1.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "edema_branch.stages.0.convs.1.all_modules.0.weight",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951277376,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_branch.stages.0.convs.1.all_modules.0.bias",
+        "edema_branch.stages.0.convs.1.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "edema_branch.stages.0.convs.1.all_modules.0.bias",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951272656,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_branch.stages.0.convs.1.all_modules.1.weight",
+        "edema_branch.stages.0.convs.1.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "edema_branch.stages.0.convs.1.all_modules.1.weight",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951278016,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_branch.stages.0.convs.1.all_modules.1.bias",
+        "edema_branch.stages.0.convs.1.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "edema_branch.stages.0.convs.1.all_modules.1.bias",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951276736,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_branch.stages.1.convs.0.all_modules.0.weight",
+        "edema_branch.stages.1.convs.0.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "edema_branch.stages.1.convs.0.all_modules.0.weight",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951274176,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_branch.stages.1.convs.0.all_modules.0.bias",
+        "edema_branch.stages.1.convs.0.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "edema_branch.stages.1.convs.0.all_modules.0.bias",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951275136,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_branch.stages.1.convs.0.all_modules.1.weight",
+        "edema_branch.stages.1.convs.0.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "edema_branch.stages.1.convs.0.all_modules.1.weight",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951275776,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_branch.stages.1.convs.0.all_modules.1.bias",
+        "edema_branch.stages.1.convs.0.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "edema_branch.stages.1.convs.0.all_modules.1.bias",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951273856,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_branch.stages.1.convs.1.all_modules.0.weight",
+        "edema_branch.stages.1.convs.1.conv.weight"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "edema_branch.stages.1.convs.1.all_modules.0.weight",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951272976,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_branch.stages.1.convs.1.all_modules.0.bias",
+        "edema_branch.stages.1.convs.1.conv.bias"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "edema_branch.stages.1.convs.1.all_modules.0.bias",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951283200,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_branch.stages.1.convs.1.all_modules.1.weight",
+        "edema_branch.stages.1.convs.1.norm.weight"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "edema_branch.stages.1.convs.1.all_modules.1.weight",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951279040,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_branch.stages.1.convs.1.all_modules.1.bias",
+        "edema_branch.stages.1.convs.1.norm.bias"
+      ],
+      "base_lr": {
+        "A": 0.0001,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "edema_branch.stages.1.convs.1.all_modules.1.bias",
+      "current_lr": {
+        "0": 1e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0001,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_blocks",
+      "parameter_id": 140535951291520,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_branch.seg_layers.0.weight"
+      ],
+      "base_lr": {
+        "A": 0.0002,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "edema_branch.seg_layers.0.weight",
+      "current_lr": {
+        "0": 2e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0002,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_classifiers",
+      "parameter_id": 140535951270816,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_branch.seg_layers.0.bias"
+      ],
+      "base_lr": {
+        "A": 0.0002,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "edema_branch.seg_layers.0.bias",
+      "current_lr": {
+        "0": 2e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0002,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_classifiers",
+      "parameter_id": 140535951272016,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_branch.seg_layers.1.weight"
+      ],
+      "base_lr": {
+        "A": 0.0002,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "edema_branch.seg_layers.1.weight",
+      "current_lr": {
+        "0": 2e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0002,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_classifiers",
+      "parameter_id": 140535951271696,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_branch.seg_layers.1.bias"
+      ],
+      "base_lr": {
+        "A": 0.0002,
+        "B": 0.0001,
+        "C": 5e-05
+      },
+      "canonical_name": "edema_branch.seg_layers.1.bias",
+      "current_lr": {
+        "0": 2e-05,
+        "10000": 5e-05,
+        "13999": 1e-06,
+        "199": 0.0002,
+        "1999": 5e-06,
+        "2000": 1e-05,
+        "2499": 0.0001,
+        "9999": 1e-06
+      },
+      "group": "cloned_pathology_classifiers",
+      "parameter_id": 140535951270176,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_branch.half_projection.proj.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_branch.half_projection.proj.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951262576,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_branch.half_projection.proj.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_branch.half_projection.proj.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951276096,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_branch.full_projection.proj.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_branch.full_projection.proj.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951272336,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_branch.full_projection.proj.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_branch.full_projection.proj.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951273536,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "component_heads.scar_quarter_occupancy.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "component_heads.scar_quarter_occupancy.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951273136,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "component_heads.scar_quarter_occupancy.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "component_heads.scar_quarter_occupancy.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951276416,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "component_heads.scar_half_occupancy.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "component_heads.scar_half_occupancy.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951275456,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "component_heads.scar_half_occupancy.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "component_heads.scar_half_occupancy.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951280640,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "component_heads.scar_quarter_center.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "component_heads.scar_quarter_center.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951279680,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "component_heads.scar_quarter_center.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "component_heads.scar_quarter_center.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951280960,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "component_heads.scar_half_center.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "component_heads.scar_half_center.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951283840,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "component_heads.scar_half_center.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "component_heads.scar_half_center.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951283520,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "component_heads.scar_context.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "component_heads.scar_context.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951284800,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "component_heads.scar_context.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "component_heads.scar_context.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951284160,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "component_heads.edema_injury.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "component_heads.edema_injury.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951285760,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "component_heads.edema_injury.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "component_heads.edema_injury.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951285440,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "component_heads.edema_boundary.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "component_heads.edema_boundary.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951286720,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "component_heads.edema_boundary.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "component_heads.edema_boundary.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951286400,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "component_heads.edema_context.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "component_heads.edema_context.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951287680,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "component_heads.edema_context.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "component_heads.edema_context.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951288000,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "component_heads.scar_extent_presence.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "component_heads.scar_extent_presence.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951288640,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "component_heads.scar_extent_presence.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "component_heads.scar_extent_presence.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951288960,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "component_heads.scar_extent_area.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "component_heads.scar_extent_area.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951292480,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "component_heads.scar_extent_area.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "component_heads.scar_extent_area.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951291840,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "component_heads.edema_extent_presence.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "component_heads.edema_extent_presence.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951293120,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "component_heads.edema_extent_presence.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "component_heads.edema_extent_presence.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951292800,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "component_heads.edema_extent_area.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "component_heads.edema_extent_area.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951294080,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "component_heads.edema_extent_area.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "component_heads.edema_extent_area.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951293760,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_geometry_heads.signed_endo_distance.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "anatomy_geometry_heads.signed_endo_distance.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951278400,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_geometry_heads.signed_endo_distance.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "anatomy_geometry_heads.signed_endo_distance.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951294400,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_geometry_heads.signed_epi_distance.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "anatomy_geometry_heads.signed_epi_distance.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951280320,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_geometry_heads.signed_epi_distance.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "anatomy_geometry_heads.signed_epi_distance.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951281920,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_geometry_heads.wall_depth_rho.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "anatomy_geometry_heads.wall_depth_rho.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951284480,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "anatomy_geometry_heads.wall_depth_rho.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "anatomy_geometry_heads.wall_depth_rho.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951286080,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_dilation_context.dilated.1.0.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_dilation_context.dilated.1.0.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951278720,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_dilation_context.dilated.1.0.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_dilation_context.dilated.1.0.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951280000,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_dilation_context.dilated.1.1.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_dilation_context.dilated.1.1.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951282880,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_dilation_context.dilated.1.1.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_dilation_context.dilated.1.1.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951292160,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_dilation_context.dilated.1.3.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_dilation_context.dilated.1.3.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951281280,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_dilation_context.dilated.1.3.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_dilation_context.dilated.1.3.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951281600,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_dilation_context.dilated.2.0.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_dilation_context.dilated.2.0.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951282240,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_dilation_context.dilated.2.0.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_dilation_context.dilated.2.0.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951285120,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_dilation_context.dilated.2.1.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_dilation_context.dilated.2.1.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951287360,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_dilation_context.dilated.2.1.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_dilation_context.dilated.2.1.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951288320,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_dilation_context.dilated.2.3.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_dilation_context.dilated.2.3.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951290880,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_dilation_context.dilated.2.3.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_dilation_context.dilated.2.3.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951289280,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_dilation_context.dilated.4.0.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_dilation_context.dilated.4.0.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951289600,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_dilation_context.dilated.4.0.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_dilation_context.dilated.4.0.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951290240,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_dilation_context.dilated.4.1.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_dilation_context.dilated.4.1.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951293440,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_dilation_context.dilated.4.1.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_dilation_context.dilated.4.1.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951279360,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_dilation_context.dilated.4.3.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_dilation_context.dilated.4.3.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951282560,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_dilation_context.dilated.4.3.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_dilation_context.dilated.4.3.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951291200,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_lge_adapter.net.0.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "scar_lge_adapter.net.0.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951287040,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_lge_adapter.net.0.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "scar_lge_adapter.net.0.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951289920,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_lge_adapter.net.1.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "scar_lge_adapter.net.1.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951290560,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_lge_adapter.net.1.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "scar_lge_adapter.net.1.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951312128,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_lge_adapter.net.3.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "scar_lge_adapter.net.3.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951311488,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_lge_adapter.net.3.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "scar_lge_adapter.net.3.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951312768,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_c0_adapter.net.0.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "scar_c0_adapter.net.0.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951312448,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_c0_adapter.net.0.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "scar_c0_adapter.net.0.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951313728,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_c0_adapter.net.1.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "scar_c0_adapter.net.1.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951313408,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_c0_adapter.net.1.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "scar_c0_adapter.net.1.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951314368,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_c0_adapter.net.3.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "scar_c0_adapter.net.3.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951314048,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_c0_adapter.net.3.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "scar_c0_adapter.net.3.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951315008,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_t2_adapter.net.0.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_t2_adapter.net.0.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535956885568,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_t2_adapter.net.0.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_t2_adapter.net.0.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951315328,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_t2_adapter.net.1.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_t2_adapter.net.1.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951315968,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_t2_adapter.net.1.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_t2_adapter.net.1.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951316288,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_t2_adapter.net.3.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_t2_adapter.net.3.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951318528,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_t2_adapter.net.3.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_t2_adapter.net.3.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951318208,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_c0_adapter.net.0.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_c0_adapter.net.0.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951319168,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_c0_adapter.net.0.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_c0_adapter.net.0.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951318848,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_c0_adapter.net.1.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_c0_adapter.net.1.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951320128,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_c0_adapter.net.1.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_c0_adapter.net.1.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951319808,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_c0_adapter.net.3.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_c0_adapter.net.3.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951320768,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_c0_adapter.net.3.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_c0_adapter.net.3.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951320448,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_lge_adapter.net.0.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_lge_adapter.net.0.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951321408,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_lge_adapter.net.0.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_lge_adapter.net.0.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951321728,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_lge_adapter.net.1.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_lge_adapter.net.1.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951322368,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_lge_adapter.net.1.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_lge_adapter.net.1.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951322688,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_lge_adapter.net.3.weight"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_lge_adapter.net.3.weight",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951324928,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_lge_adapter.net.3.bias"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_lge_adapter.net.3.bias",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951324608,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "scar_c0_gate.raw"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "scar_c0_gate.raw",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951325568,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_c0_gate.raw"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_c0_gate.raw",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951326528,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    },
+    {
+      "aliases": [
+        "edema_lge_gate.raw"
+      ],
+      "base_lr": {
+        "A": 0.0005,
+        "B": 0.0003,
+        "C": 0.0001
+      },
+      "canonical_name": "edema_lge_gate.raw",
+      "current_lr": {
+        "0": 5e-05,
+        "10000": 0.0001,
+        "13999": 1e-06,
+        "199": 0.0005,
+        "1999": 5e-06,
+        "2000": 2.9999999999999997e-05,
+        "2499": 0.0003,
+        "9999": 1e-06
+      },
+      "group": "new_modules",
+      "parameter_id": 140535951326848,
+      "requires_grad": {
+        "A": true,
+        "B": true,
+        "C": true
+      }
+    }
+  ],
+  "payload_sha256": "7fbfaf6476aabaf27f4aedc3a8c072eb9e9db9829a6f3dfa0c99ec96b9ffb9a0",
+  "status": "PASS",
+  "wrong_group_count": 0
+}

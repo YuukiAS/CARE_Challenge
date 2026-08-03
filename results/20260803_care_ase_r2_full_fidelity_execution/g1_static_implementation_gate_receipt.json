@@ -4,13 +4,13 @@
   "remaining_gap_count": 0,
   "source_sha_manifest": {
     "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh": "ebef044dcf0a020d1818a0a48907ce0701640b966089c96aaf2a9e8a677a5cd9",
-    "scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py": "10e3a275914f76f47ba709d5b28e765a72e2981043f0ea9f88c49d4c631f43e7",
-    "scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py": "c8692a48a5dbf95bf40dbe40a90eae31490e6d65f229b3bbaf24d55052a01861",
-    "scripts/training/care_ase/run_care_ase_r2_chunk.py": "af6ac65dd93f1e194950d21fa9aac594fbac901d0b85631357febe01276e1097",
-    "scripts/validation/validate_care_ase_r2_g1.py": "a68088920deac2c4cc6b2d791a88d3fcd47dd9ca0735f0631fbd643aa356716d",
+    "scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py": "ed915047903633dfaa9833f3e7626efcd09501c4f21f44bf33ad45354aeb49d7",
+    "scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py": "dd2ef525c83bbf20e940ac336f1b0725a6ee9b71c1f2f65a118b690ec6d802c6",
+    "scripts/training/care_ase/run_care_ase_r2_chunk.py": "334f4dc7ebd726f6a02998340ad9c86bc9207e0a6a8fc33b7f82a1c9aa431454",
+    "scripts/validation/validate_care_ase_r2_g1.py": "7754572301dfeaebf504aaa8c7bbca3646e7365ec7cda7ef7efe32f333387e28",
     "src/care_myocardium/inference/care_ase_r2_decode.py": "7fea71edba56d259dbbb31c3832b74709bd83d5af1f8b680a85c2e0a41acb05b",
-    "src/care_myocardium/models/care_ase.py": "62eea3d23392b95a604343b175e643bde02c62242add4fbb357dbae6a6bccd87",
-    "src/care_myocardium/training/care_ase_sampler.py": "c04af32585b45268640dc15845741b3888e4ecbcd947bd253597ec52d1320a2d",
-    "src/care_myocardium/training/care_ase_trainer.py": "4bf5e6f62ca4315fa6a1aba2a0686ad8b88664f67230ecb66a8415fe1cf61e4c"
+    "src/care_myocardium/models/care_ase.py": "f00b3240af083d74aef3a7e4b4d4b2d1ab8e261b6f67eba5ef3f26077d33e95d",
+    "src/care_myocardium/training/care_ase_sampler.py": "99e58e3d0678308d1b4689c0cd0d8b0f789e7ac7f71f4339648c2b2c901c35af",
+    "src/care_myocardium/training/care_ase_trainer.py": "9f786ea89eef14593d5420e241635fdeb6f2d817da26ca50efaaadd5ad6c61c2"
   }
 }

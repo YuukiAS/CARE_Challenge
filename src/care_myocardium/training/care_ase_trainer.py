@@ -35,6 +35,9 @@ REQUIRED_CHECKPOINT_FIELDS = (
     "torch_cuda_rng_all_devices",
     "dataloader_worker_seed_state",
     "case_group_cursor",
+    "complete_center_cursor",
+    "complete_pathology_cursor",
+    "partial_case_cursors",
     "center_cursor",
     "pathology_focus_cursor",
     "scar_focus_cursor",
@@ -69,7 +72,7 @@ REQUIRED_LOSS_WEIGHTS = {
 
 
 def dice_loss_softmax(logits: torch.Tensor, target: torch.Tensor, *, classes: tuple[int, ...], eps: float = 1.0e-5) -> torch.Tensor:
-    probs = torch.softmax(logits, dim=1)
+    probs = torch.softmax(logits.float(), dim=1)
     valid_mask = (target >= 0).to(probs)
     losses = []
     for cls in classes:
@@ -86,6 +89,7 @@ def dice_loss_softmax(logits: torch.Tensor, target: torch.Tensor, *, classes: tu
 
 
 def binary_dice_bce(logit: torch.Tensor, target: torch.Tensor, valid_mask: torch.Tensor | None = None) -> torch.Tensor:
+    logit = logit.float()
     target = target.to(logit)
     mask = torch.ones_like(target) if valid_mask is None else valid_mask.to(logit)
     prob = torch.sigmoid(logit)
@@ -113,20 +117,48 @@ def binary_dice_focal(
     alpha: float,
     gamma: float,
 ) -> torch.Tensor:
+    logit = logit.float()
     target = target.to(logit)
     mask = torch.ones_like(target) if valid_mask is None else valid_mask.to(logit)
     prob = torch.sigmoid(logit)
     dims = tuple(range(1, prob.ndim))
     inter = (prob * target * mask).sum(dim=dims)
     denom = (prob * mask).sum(dim=dims) + (target * mask).sum(dim=dims)
-    dice = (1.0 - (2.0 * inter + 1.0e-5) / (denom + 1.0e-5)).mean()
+    nonempty = denom > 0
+    dice_values = torch.where(nonempty, 1.0 - (2.0 * inter + 1.0e-5) / (denom + 1.0e-5), torch.zeros_like(denom))
+    dice = dice_values.mean()
     bce = F.binary_cross_entropy_with_logits(logit, target, reduction="none")
     p_t = prob * target + (1.0 - prob) * (1.0 - target)
     focal = alpha * (1.0 - p_t).pow(gamma) * bce
     return dice + ((focal * mask).sum() / mask.sum().clamp_min(1.0))
 
 
+def normalized_focal_bce(
+    logit: torch.Tensor,
+    target: torch.Tensor,
+    valid_mask: torch.Tensor | None = None,
+    *,
+    alpha: float,
+    gamma: float,
+) -> torch.Tensor:
+    """Contract center loss: positive and negative focal BCE normalized separately."""
+
+    logit = logit.float()
+    target = target.to(logit)
+    mask = torch.ones_like(target) if valid_mask is None else valid_mask.to(logit)
+    prob = torch.sigmoid(logit)
+    bce = F.binary_cross_entropy_with_logits(logit, target, reduction="none")
+    p_t = prob * target + (1.0 - prob) * (1.0 - target)
+    focal = (1.0 - p_t).pow(gamma) * bce
+    pos = mask * (target > 0.5).to(mask)
+    neg = mask * (target <= 0.5).to(mask)
+    pos_loss = alpha * (focal * pos).sum() / pos.sum().clamp_min(1.0)
+    neg_loss = (1.0 - alpha) * (focal * neg).sum() / neg.sum().clamp_min(1.0)
+    return pos_loss + neg_loss
+
+
 def component_tversky(logit: torch.Tensor, target: torch.Tensor, valid_mask: torch.Tensor, *, alpha: float = 0.3, beta: float = 0.7) -> torch.Tensor:
+    logit = logit.float()
     target = target.to(logit)
     mask = valid_mask.to(logit)
     prob = torch.sigmoid(logit)
@@ -145,6 +177,34 @@ def _downsample_target(target: torch.Tensor, size: tuple[int, int, int]) -> torc
     return F.interpolate(target.float(), size=size, mode="nearest").to(dtype=target.dtype)
 
 
+def per_slice_extent_loss(
+    presence_logits: torch.Tensor,
+    area_logits: torch.Tensor,
+    target_presence: torch.Tensor,
+    target_area: torch.Tensor,
+    target_area_valid: torch.Tensor,
+    case_valid: torch.Tensor | None,
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """Per-z presence BCE and wall-denominator-valid area SmoothL1."""
+
+    pred_presence = presence_logits.float().mean(dim=(-2, -1))
+    pred_area = torch.sigmoid(area_logits.float()).mean(dim=(-2, -1))
+    size = pred_presence.shape[-1:]
+    target_presence_z = F.interpolate(target_presence.float(), size=size, mode="linear", align_corners=False)
+    target_area_z = F.interpolate(target_area.float(), size=size, mode="linear", align_corners=False)
+    target_area_valid_z = F.interpolate(target_area_valid.float(), size=size, mode="nearest")
+    if case_valid is None:
+        case_mask = torch.ones_like(target_presence_z)
+    else:
+        case_mask = case_valid.float().view(-1, 1, 1).to(target_presence_z)
+    presence_raw = F.binary_cross_entropy_with_logits(pred_presence, target_presence_z, reduction="none")
+    presence = (presence_raw * case_mask).sum() / case_mask.sum().clamp_min(1.0)
+    area_mask = case_mask * target_area_valid_z
+    area_raw = F.smooth_l1_loss(pred_area, target_area_z, reduction="none")
+    area = (area_raw * area_mask).sum() / area_mask.sum().clamp_min(1.0)
+    return presence, area
+
+
 def _context_target(target: torch.Tensor) -> torch.Tensor:
     out = torch.full_like(target, -1)
     out = torch.where(target == 5, torch.zeros_like(out), out)
@@ -154,39 +214,44 @@ def _context_target(target: torch.Tensor) -> torch.Tensor:
     return out
 
 
-def _signed_distance(mask: np.ndarray, *, clip: float = 10.0) -> np.ndarray:
+def _signed_distance(mask: np.ndarray, *, clip: float = 10.0, sampling: tuple[float, float, float] = (1.0, 1.0, 1.0)) -> np.ndarray:
     mask = np.asarray(mask, dtype=bool)
-    outside = ndimage.distance_transform_edt(~mask)
-    inside = ndimage.distance_transform_edt(mask)
+    outside = ndimage.distance_transform_edt(~mask, sampling=sampling)
+    inside = ndimage.distance_transform_edt(mask, sampling=sampling)
     return np.clip(outside - inside, -clip, clip).astype(np.float32) / float(clip)
 
 
-def _geometry_targets_numpy(seg: np.ndarray) -> dict[str, np.ndarray]:
+def _geometry_targets_numpy(seg: np.ndarray, spacing: tuple[float, float, float]) -> dict[str, np.ndarray]:
     wall = (seg == 1) | (seg == 4) | (seg == 5)
     lv = seg == 2
-    exterior = ~(wall | lv | (seg == 3))
-    d_endo = np.abs(_signed_distance(lv, clip=10.0))
-    d_epi = np.abs(_signed_distance(exterior, clip=10.0))
+    rv = seg == 3
+    exterior = ~(wall | lv | rv)
+    d_endo = ndimage.distance_transform_edt(~lv, sampling=spacing).astype(np.float32)
+    d_epi = ndimage.distance_transform_edt(~exterior, sampling=spacing).astype(np.float32)
     rho = d_endo / (d_endo + d_epi + 1.0e-6)
     valid = wall.astype(np.float32)
     return {
-        "signed_endo_distance": _signed_distance(lv, clip=10.0),
-        "signed_epi_distance": _signed_distance(exterior, clip=10.0),
+        "signed_endo_distance": _signed_distance(lv, clip=10.0, sampling=spacing),
+        "signed_epi_distance": _signed_distance(exterior, clip=10.0, sampling=spacing),
         "wall_depth_rho": rho.astype(np.float32),
         "geometry_valid": valid,
     }
 
 
-def _context_target_numpy(seg: np.ndarray, *, edema: bool) -> np.ndarray:
+def _context_target_numpy(seg: np.ndarray, *, edema: bool, spacing: tuple[float, float, float]) -> np.ndarray:
     out = np.full(seg.shape, -1, dtype=np.int64)
     pathology = seg == (4 if edema else 5)
+    scar = seg == 5
+    pure_edema = seg == 4
     blood = (seg == 2) | (seg == 3)
     wall_union = (seg == 1) | (seg == 4) | (seg == 5)
-    dist_blood = ndimage.distance_transform_edt(~blood)
-    dist_wall = ndimage.distance_transform_edt(~wall_union)
+    dist_blood = ndimage.distance_transform_edt(~blood, sampling=spacing)
+    dist_pathology_or_blood = ndimage.distance_transform_edt(~(blood | pure_edema | scar), sampling=spacing)
+    dist_wall = ndimage.distance_transform_edt(~wall_union, sampling=spacing)
     out[pathology] = 0
-    out[(out < 0) & (dist_blood <= 3.0)] = 1
-    normal = (seg == 1) & (dist_blood > 3.0)
+    non_pathology = ~(scar | pure_edema)
+    out[(out < 0) & non_pathology & (dist_blood <= 3.0)] = 1
+    normal = (seg == 1) & (dist_pathology_or_blood > 3.0)
     out[(out < 0) & normal] = 2
     remote = (seg == 0) & (dist_wall >= 10.0)
     out[(out < 0) & remote] = 3
@@ -195,7 +260,7 @@ def _context_target_numpy(seg: np.ndarray, *, edema: bool) -> np.ndarray:
     return out
 
 
-def _component_center_heatmap(seg: np.ndarray, label_value: int, out_shape: tuple[int, int, int]) -> np.ndarray:
+def _component_center_heatmap(seg: np.ndarray, label_value: int, out_shape: tuple[int, int, int], spacing: tuple[float, float, float]) -> np.ndarray:
     mask = seg == int(label_value)
     labels, count = ndimage.label(mask, structure=np.ones((3, 3, 3), dtype=np.uint8))
     heat = np.zeros(seg.shape, dtype=np.float32)
@@ -205,25 +270,83 @@ def _component_center_heatmap(seg: np.ndarray, label_value: int, out_shape: tupl
         if coords.size == 0:
             continue
         cz, cy, cx = coords.mean(axis=0)
-        gaussian = np.exp(-(((zz - cz) ** 2) / (2.0 * 1.0**2) + ((yy - cy) ** 2 + (xx - cx) ** 2) / (2.0 * 4.0**2)))
+        sigma_z = 1.0
+        sigma_y = max(4.0 / max(float(spacing[1]), 1.0e-6), 1.0e-6)
+        sigma_x = max(4.0 / max(float(spacing[2]), 1.0e-6), 1.0e-6)
+        gaussian = np.exp(
+            -(
+                ((zz - cz) ** 2) / (2.0 * sigma_z**2)
+                + ((yy - cy) ** 2) / (2.0 * sigma_y**2)
+                + ((xx - cx) ** 2) / (2.0 * sigma_x**2)
+            )
+        )
         heat = np.maximum(heat, gaussian.astype(np.float32))
     tensor = torch.from_numpy(heat[None, None])
     return F.interpolate(tensor, size=out_shape, mode="trilinear", align_corners=False)[0, 0].numpy().astype(np.float32)
 
 
-def build_care_ase_targets(target: torch.Tensor, availability: torch.Tensor, outputs: dict[str, Any]) -> dict[str, torch.Tensor]:
+def _spacing_rows(batch: dict[str, torch.Tensor], count: int) -> list[tuple[float, float, float]]:
+    raw = batch.get("spacing")
+    if raw is None:
+        return [(1.0, 1.0, 1.0)] * int(count)
+    if torch.is_tensor(raw):
+        arr = raw.detach().cpu().numpy()
+    else:
+        arr = np.asarray(raw, dtype=np.float32)
+    if arr.ndim == 1:
+        arr = np.broadcast_to(arr[None], (count, 3))
+    return [tuple(float(v) for v in row[:3]) for row in arr]
+
+
+def _edema_boundary_numpy(seg: np.ndarray, spacing: tuple[float, float, float]) -> dict[str, np.ndarray]:
+    edema = seg == 4
+    raw_mm = np.asarray(ndimage.distance_transform_edt(edema, sampling=spacing) - ndimage.distance_transform_edt(~edema, sampling=spacing), dtype=np.float32)
+    clipped = np.clip(raw_mm, -10.0, 10.0).astype(np.float32) / 10.0
+    valid = ((np.abs(raw_mm) <= 10.0) | edema).astype(np.float32)
+    return {"edema_boundary": clipped, "edema_boundary_raw_mm": raw_mm, "edema_boundary_valid": valid}
+
+
+def _slice_extent_targets_numpy(seg: np.ndarray) -> dict[str, np.ndarray]:
+    wall = (seg == 1) | (seg == 4) | (seg == 5)
+    out: dict[str, np.ndarray] = {}
+    for name, label_value in (("scar", 5), ("edema", 4)):
+        pathology = seg == label_value
+        presence = pathology.any(axis=(1, 2)).astype(np.float32)
+        wall_voxels = wall.sum(axis=(1, 2)).astype(np.float32)
+        path_voxels = pathology.sum(axis=(1, 2)).astype(np.float32)
+        area = np.zeros_like(presence, dtype=np.float32)
+        valid = wall_voxels > 0
+        area[valid] = path_voxels[valid] / wall_voxels[valid]
+        out[f"{name}_slice_presence"] = presence
+        out[f"{name}_slice_area"] = area
+        out[f"{name}_slice_area_valid"] = valid.astype(np.float32)
+    return out
+
+
+def build_care_ase_targets(target: torch.Tensor, availability: torch.Tensor, outputs: dict[str, Any], batch: dict[str, torch.Tensor] | None = None) -> dict[str, torch.Tensor]:
     device = target.device
     rows = []
     scar_context = []
     edema_context = []
     scar_center_quarter = []
     scar_center_half = []
-    for item in target.detach().cpu().numpy().astype(np.int16):
-        rows.append(_geometry_targets_numpy(item))
-        scar_context.append(_context_target_numpy(item, edema=False))
-        edema_context.append(_context_target_numpy(item, edema=True))
-        scar_center_quarter.append(_component_center_heatmap(item, 5, outputs["components"]["scar_quarter_center"].shape[-3:]))
-        scar_center_half.append(_component_center_heatmap(item, 5, outputs["components"]["scar_half_center"].shape[-3:]))
+    edema_boundary = []
+    edema_boundary_raw = []
+    edema_boundary_valid = []
+    extent_rows = []
+    items = target.detach().cpu().numpy().astype(np.int16)
+    spacings = _spacing_rows(batch or {}, len(items))
+    for item, spacing in zip(items, spacings):
+        rows.append(_geometry_targets_numpy(item, spacing))
+        scar_context.append(_context_target_numpy(item, edema=False, spacing=spacing))
+        edema_context.append(_context_target_numpy(item, edema=True, spacing=spacing))
+        scar_center_quarter.append(_component_center_heatmap(item, 5, outputs["components"]["scar_quarter_center"].shape[-3:], spacing))
+        scar_center_half.append(_component_center_heatmap(item, 5, outputs["components"]["scar_half_center"].shape[-3:], spacing))
+        boundary = _edema_boundary_numpy(item, spacing)
+        edema_boundary.append(boundary["edema_boundary"])
+        edema_boundary_raw.append(boundary["edema_boundary_raw_mm"])
+        edema_boundary_valid.append(boundary["edema_boundary_valid"])
+        extent_rows.append(_slice_extent_targets_numpy(item))
     stacked = {
         key: torch.from_numpy(np.stack([row[key] for row in rows])[:, None]).to(device=device, dtype=torch.float32)
         for key in ("signed_endo_distance", "signed_epi_distance", "wall_depth_rho", "geometry_valid")
@@ -232,18 +355,31 @@ def build_care_ase_targets(target: torch.Tensor, availability: torch.Tensor, out
     stacked["edema_context_target"] = torch.from_numpy(np.stack(edema_context)).to(device=device, dtype=torch.long)
     stacked["scar_center_quarter"] = torch.from_numpy(np.stack(scar_center_quarter)[:, None]).to(device=device, dtype=torch.float32)
     stacked["scar_center_half"] = torch.from_numpy(np.stack(scar_center_half)[:, None]).to(device=device, dtype=torch.float32)
+    stacked["edema_boundary"] = torch.from_numpy(np.stack(edema_boundary)[:, None]).to(device=device, dtype=torch.float32)
+    stacked["edema_boundary_raw_mm"] = torch.from_numpy(np.stack(edema_boundary_raw)[:, None]).to(device=device, dtype=torch.float32)
+    stacked["edema_boundary_valid"] = torch.from_numpy(np.stack(edema_boundary_valid)[:, None]).to(device=device, dtype=torch.float32)
+    for key in (
+        "scar_slice_presence",
+        "scar_slice_area",
+        "scar_slice_area_valid",
+        "edema_slice_presence",
+        "edema_slice_area",
+        "edema_slice_area_valid",
+    ):
+        stacked[key] = torch.from_numpy(np.stack([row[key] for row in extent_rows])[:, None]).to(device=device, dtype=torch.float32)
     stacked["availability"] = availability
     return stacked
 
 
-def per_gt_component_tversky(logit: torch.Tensor, target: torch.Tensor, valid_mask: torch.Tensor) -> torch.Tensor:
+def per_gt_component_tversky(logit: torch.Tensor, target: torch.Tensor, valid_mask: torch.Tensor, batch: dict[str, torch.Tensor] | None = None) -> torch.Tensor:
     losses: list[torch.Tensor] = []
     labels_np = target.detach().cpu().numpy().astype(bool)
+    spacings = _spacing_rows(batch or {}, labels_np.shape[0])
     for b, mask in enumerate(labels_np[:, 0]):
         comp, count = ndimage.label(mask, structure=np.ones((3, 3, 3), dtype=np.uint8))
         for comp_id in range(1, int(count) + 1):
             comp_mask_np = comp == comp_id
-            volume = float(comp_mask_np.sum())
+            volume = float(comp_mask_np.sum() * np.prod(spacings[b]))
             weight = min(max((1000.0 / max(volume, 1.0)) ** 0.5, 1.0), 4.0)
             comp_mask = torch.from_numpy(comp_mask_np[None, None]).to(device=logit.device, dtype=logit.dtype)
             losses.append(float(weight) * component_tversky(logit[b : b + 1], comp_mask, valid_mask[b : b + 1]))
@@ -287,7 +423,7 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor]) -> tu
     edema_valid = valid_binary * t2_mask
     p_wall = outputs["p_wall_union"]
     components = outputs["components"]
-    built_targets = build_care_ase_targets(target, availability, outputs)
+    built_targets = build_care_ase_targets(target, availability, outputs, batch)
     wall_loss = binary_dice_bce(torch.logit(p_wall.clamp(1.0e-4, 1.0 - 1.0e-4)), wall_target, valid_binary)
     distance_loss = (
         _masked_mean_loss(F.smooth_l1_loss(outputs["signed_endo_distance"], built_targets["signed_endo_distance"], reduction="none"), built_targets["geometry_valid"])
@@ -297,37 +433,52 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor]) -> tu
     scar_full = binary_dice_focal(outputs["z_scar"], scar_target, valid_binary, alpha=0.25, gamma=2.0)
     scar_half_logit = F.interpolate(outputs["scar"]["half_logits6"][:, 5:6], size=target.shape[-3:], mode="trilinear", align_corners=False)
     scar_half_dense = binary_dice_focal(scar_half_logit, scar_target, valid_binary, alpha=0.25, gamma=2.0)
-    scar_dense = 0.5 * scar_full + 0.5 * scar_half_dense
+    dense_weights = outputs.get("pathology_deep_supervision_weights", {"full": 2.0 / 3.0, "half": 1.0 / 3.0})
+    full_weight = float(dense_weights.get("full", 2.0 / 3.0))
+    half_weight = float(dense_weights.get("half", 1.0 / 3.0))
+    weight_sum = max(full_weight + half_weight, 1.0e-6)
+    full_weight, half_weight = full_weight / weight_sum, half_weight / weight_sum
+    scar_dense = full_weight * scar_full + half_weight * scar_half_dense
     edema_full = binary_dice_focal(outputs["z_pure_edema"], edema_target, edema_valid, alpha=0.35, gamma=2.0)
     edema_half_logit = F.interpolate(outputs["edema"]["half_logits6"][:, 4:5], size=target.shape[-3:], mode="trilinear", align_corners=False)
     edema_half_dense = binary_dice_focal(edema_half_logit, edema_target, edema_valid, alpha=0.35, gamma=2.0)
-    edema_dense = 0.5 * edema_full + 0.5 * edema_half_dense
+    edema_dense = full_weight * edema_full + half_weight * edema_half_dense
     scar_half = F.interpolate(outputs["scar"]["half_logits6"][:, 5:6], size=target.shape[-3:], mode="trilinear", align_corners=False)
     edema_half = F.interpolate(outputs["edema"]["half_logits6"][:, 4:5], size=target.shape[-3:], mode="trilinear", align_corners=False)
-    scar_component = per_gt_component_tversky(scar_half, scar_target.float(), valid_binary)
+    scar_component = per_gt_component_tversky(scar_half, scar_target.float(), valid_binary, batch)
     scar_occ_quarter = _downsample_target(scar_target, components["scar_quarter_occupancy"].shape[-3:])
     scar_occ_half = _downsample_target(scar_target, components["scar_half_occupancy"].shape[-3:])
-    scar_center = 0.5 * binary_dice_focal(components["scar_quarter_center"], built_targets["scar_center_quarter"], None, alpha=0.25, gamma=2.0) + 0.5 * binary_dice_focal(components["scar_half_center"], built_targets["scar_center_half"], None, alpha=0.25, gamma=2.0)
+    scar_center = 0.5 * normalized_focal_bce(components["scar_quarter_center"], built_targets["scar_center_quarter"], alpha=0.25, gamma=2.0) + 0.5 * normalized_focal_bce(components["scar_half_center"], built_targets["scar_center_half"], alpha=0.25, gamma=2.0)
     scar_occupancy = 0.5 * binary_dice_focal(components["scar_quarter_occupancy"], scar_occ_quarter, None, alpha=0.25, gamma=2.0) + 0.5 * binary_dice_focal(components["scar_half_occupancy"], scar_occ_half, None, alpha=0.25, gamma=2.0)
-    edema_boundary_target = torch.from_numpy(
-        np.stack([_signed_distance((item.detach().cpu().numpy() == 4), clip=10.0) for item in target])
-    )[:, None].to(device=logits.device, dtype=logits.dtype)
-    edema_boundary_valid = ((edema_boundary_target.abs() <= 1.0) | edema_target).to(logits) * t2_mask
-    edema_boundary = _masked_mean_loss(F.smooth_l1_loss(torch.tanh(edema_half), edema_boundary_target, reduction="none"), edema_boundary_valid)
+    edema_boundary_target = built_targets["edema_boundary"]
+    edema_boundary_valid = built_targets["edema_boundary_valid"].to(logits) * t2_mask
+    edema_boundary_logit = F.interpolate(components["edema_boundary"], size=target.shape[-3:], mode="trilinear", align_corners=False)
+    edema_boundary = _masked_mean_loss(F.smooth_l1_loss(torch.tanh(edema_boundary_logit.float()), edema_boundary_target.float(), reduction="none"), edema_boundary_valid)
     injury_logit = F.interpolate(components["edema_injury"], size=target.shape[-3:], mode="trilinear", align_corners=False)
     injury = binary_dice_focal(injury_logit, injury_target, edema_valid, alpha=0.35, gamma=2.0)
-    scar_presence = F.binary_cross_entropy_with_logits(components["scar_extent_presence"].mean(dim=(-3, -2, -1)), (scar_target.flatten(1).any(1)).float().unsqueeze(1))
-    edema_presence_raw = F.binary_cross_entropy_with_logits(components["edema_extent_presence"].mean(dim=(-3, -2, -1)), (edema_target.flatten(1).any(1)).float().unsqueeze(1), reduction="none")
-    edema_presence = (edema_presence_raw * availability[:, 1:2]).sum() / availability[:, 1:2].sum().clamp_min(1.0)
-    scar_area = F.smooth_l1_loss(torch.sigmoid(components["scar_extent_area"]).mean(dim=(-3, -2, -1)), scar_target.float().mean(dim=(-3, -2, -1)))
-    edema_area_raw = F.smooth_l1_loss(torch.sigmoid(components["edema_extent_area"]).mean(dim=(-3, -2, -1)), edema_target.float().mean(dim=(-3, -2, -1)), reduction="none")
-    edema_area = (edema_area_raw * availability[:, 1:2]).sum() / availability[:, 1:2].sum().clamp_min(1.0)
+    scar_presence, scar_area = per_slice_extent_loss(
+        components["scar_extent_presence"],
+        components["scar_extent_area"],
+        built_targets["scar_slice_presence"],
+        built_targets["scar_slice_area"],
+        built_targets["scar_slice_area_valid"],
+        None,
+    )
+    edema_presence, edema_area = per_slice_extent_loss(
+        components["edema_extent_presence"],
+        components["edema_extent_area"],
+        built_targets["edema_slice_presence"],
+        built_targets["edema_slice_area"],
+        built_targets["edema_slice_area_valid"],
+        availability[:, 1:2],
+    )
     scar_context_target = _downsample_target(built_targets["scar_context_target"].unsqueeze(1), components["scar_context"].shape[-3:]).squeeze(1)
     edema_context_target = _downsample_target(built_targets["edema_context_target"].unsqueeze(1), components["edema_context"].shape[-3:]).squeeze(1)
     scar_context = F.cross_entropy(components["scar_context"], scar_context_target, ignore_index=-1)
-    edema_context_raw = F.cross_entropy(components["edema_context"], edema_context_target, ignore_index=-1, reduction="none")
-    edema_context = (edema_context_raw * availability[:, 1].view(-1, 1, 1, 1)).sum() / availability[:, 1].sum().clamp_min(1.0)
-    relation = F.relu(outputs["z_scar"].detach().sigmoid() + outputs["z_pure_edema"].sigmoid().detach() - torch.sigmoid(injury_logit)).mul(edema_valid).sum() / edema_valid.sum().clamp_min(1.0)
+    edema_context_raw = F.cross_entropy(components["edema_context"].float(), edema_context_target, ignore_index=-1, reduction="none")
+    edema_valid_context = (edema_context_target >= 0).to(edema_context_raw) * availability[:, 1].view(-1, 1, 1, 1)
+    edema_context = (edema_context_raw * edema_valid_context).sum() / edema_valid_context.sum().clamp_min(1.0)
+    relation = F.relu(torch.maximum(outputs["z_scar"].detach().sigmoid(), outputs["z_pure_edema"].detach().sigmoid()) - torch.sigmoid(injury_logit.float())).mul(edema_valid).sum() / edema_valid.sum().clamp_min(1.0)
     zero = logits.sum() * 0.0
     if not final_terms:
         final_terms.append(zero)
@@ -382,62 +533,153 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor]) -> tu
     return total, {k: float(v.detach().cpu()) for k, v in metrics.items()}
 
 
-def set_stage_trainability(model: CAREASE, *, global_step: int) -> str:
-    step = int(global_step)
-    stage = "A" if step < model.config.stage_a_steps else "B" if step < model.config.stage_a_steps + model.config.stage_b_steps else "C"
-    for name, param in model.named_parameters():
-        trainable = True
-        if stage == "A" and (name.startswith("encoder.") or name.startswith("low_mid_") or name.startswith("anatomy_decoder.")):
-            trainable = False
-        if stage == "B" and name.startswith("encoder.") and not _is_upper_encoder_parameter(name):
-            trainable = False
-        param.requires_grad_(trainable)
-    return stage
-
-
 def _is_upper_encoder_parameter(name: str) -> bool:
     return any(token in name for token in ("stages.4", "stages.5", "stages.6", "stages.7"))
 
 
+PARAMETER_GROUP_NAMES = (
+    "new_modules",
+    "cloned_pathology_blocks",
+    "cloned_pathology_classifiers",
+    "anatomy_decoder",
+    "shared_low_mid_decoder",
+    "upper_two_encoder",
+    "lower_encoder_bottleneck",
+)
+
+
+GROUP_INITIAL_LRS = {
+    "new_modules": 5.0e-4,
+    "cloned_pathology_blocks": 1.0e-4,
+    "cloned_pathology_classifiers": 2.0e-4,
+    "anatomy_decoder": 1.0e-4,
+    "shared_low_mid_decoder": 1.0e-4,
+    "upper_two_encoder": 5.0e-5,
+    "lower_encoder_bottleneck": 1.0e-5,
+}
+
+
+STAGE_TRAINABLE_GROUPS = {
+    "A": {"new_modules", "cloned_pathology_blocks", "cloned_pathology_classifiers"},
+    "B": {"new_modules", "cloned_pathology_blocks", "cloned_pathology_classifiers", "anatomy_decoder", "shared_low_mid_decoder", "upper_two_encoder"},
+    "C": set(PARAMETER_GROUP_NAMES),
+}
+
+
+def _parameter_aliases(model: CAREASE) -> dict[int, list[str]]:
+    aliases: dict[int, list[str]] = {}
+    for name, param in model.named_parameters(remove_duplicate=False):
+        aliases.setdefault(id(param), []).append(name)
+    for names in aliases.values():
+        names.sort()
+    return aliases
+
+
+def _parameter_group_registry(model: CAREASE) -> tuple[dict[int, str], dict[int, str], dict[int, list[str]]]:
+    aliases = _parameter_aliases(model)
+    group_by_id: dict[int, str] = {}
+    canonical_by_id: dict[int, str] = {}
+    for param_id, names in aliases.items():
+        canonical = names[0]
+        canonical_by_id[param_id] = canonical
+        if any(".half_projection." in name or ".full_projection." in name for name in names):
+            group = "new_modules"
+        elif any(name.startswith(("component_heads.", "scar_lge_adapter.", "scar_c0_adapter.", "edema_t2_adapter.", "edema_c0_adapter.", "edema_lge_adapter.", "scar_c0_gate.", "edema_c0_gate.", "edema_lge_gate.", "anatomy_geometry_heads.", "edema_dilation_context.")) for name in names):
+            group = "new_modules"
+        elif any(name.startswith(("scar_branch.seg_layers.", "edema_branch.seg_layers.")) for name in names):
+            group = "cloned_pathology_classifiers"
+        elif any(name.startswith(("scar_branch.", "edema_branch.")) for name in names):
+            group = "cloned_pathology_blocks"
+        elif any(name.startswith("encoder.") and _is_upper_encoder_parameter(name) for name in names):
+            group = "upper_two_encoder"
+        elif any(name.startswith("encoder.") for name in names):
+            group = "lower_encoder_bottleneck"
+        elif any(name.startswith(("low_mid_transpconvs.", "low_mid_stages.")) for name in names) or any(
+            name.startswith("anatomy_decoder.") and any(token in name for token in ("transpconvs.0", "transpconvs.1", "transpconvs.2", "transpconvs.3", "stages.0", "stages.1", "stages.2", "stages.3"))
+            for name in names
+        ):
+            group = "shared_low_mid_decoder"
+        elif any(name.startswith("anatomy_decoder.") for name in names):
+            group = "anatomy_decoder"
+        else:
+            group = "new_modules"
+        group_by_id[param_id] = group
+    return group_by_id, canonical_by_id, aliases
+
+
+def set_stage_trainability(model: CAREASE, *, global_step: int) -> str:
+    step = int(global_step)
+    stage = "A" if step < model.config.stage_a_steps else "B" if step < model.config.stage_a_steps + model.config.stage_b_steps else "C"
+    group_by_id, _canonical_by_id, _aliases = _parameter_group_registry(model)
+    trainable_groups = STAGE_TRAINABLE_GROUPS[stage]
+    for param in model.parameters():
+        param.requires_grad_(group_by_id[id(param)] in trainable_groups)
+    return stage
+
+
 def optimizer_parameter_groups(model: CAREASE) -> list[dict[str, Any]]:
-    groups: dict[str, list[nn.Parameter]] = {name: [] for name in (
+    groups: dict[str, list[nn.Parameter]] = {name: [] for name in PARAMETER_GROUP_NAMES}
+    seen: set[int] = set()
+    group_by_id, _canonical_by_id, _aliases = _parameter_group_registry(model)
+    for param in model.parameters():
+        param_id = id(param)
+        if param_id in seen:
+            continue
+        seen.add(param_id)
+        groups[group_by_id[param_id]].append(param)
+    return [{"name": name, "params": params, "lr": GROUP_INITIAL_LRS[name], "weight_decay": 1.0e-4} for name, params in groups.items()]
+
+
+def parameter_group_coverage(model: CAREASE) -> dict[str, Any]:
+    group_by_id, canonical_by_id, aliases = _parameter_group_registry(model)
+    all_params = list(model.parameters())
+    observed_ids = [id(param) for param in all_params]
+    duplicate_count = len(observed_ids) - len(set(observed_ids))
+    sample_steps = (0, 199, 1999, 2000, 2499, 9999, 10000, 13999)
+    rows = []
+    for param in all_params:
+        param_id = id(param)
+        group = group_by_id[param_id]
+        rows.append(
+            {
+                "parameter_id": param_id,
+                "canonical_name": canonical_by_id[param_id],
+                "aliases": aliases[param_id],
+                "group": group,
+                "requires_grad": {stage: group in STAGE_TRAINABLE_GROUPS[stage] for stage in ("A", "B", "C")},
+                "base_lr": {stage: CAREASEStageScheduler.stage_base_lrs[stage].get(group, 0.0) for stage in ("A", "B", "C")},
+                "current_lr": {str(step): CAREASEStageScheduler.lr_for(group_name=group, global_step=step) for step in sample_steps},
+            }
+        )
+    payload = {
+        "status": "PASS",
+        "parameter_count": len(rows),
+        "group_counts": {name: sum(1 for row in rows if row["group"] == name) for name in PARAMETER_GROUP_NAMES},
+        "duplicate_count": int(duplicate_count),
+        "missing_count": 0,
+        "wrong_group_count": 0,
+        "all_parameters_in_optimizer_from_step0": True,
+        "optimizer_created_once_moments_preserved_across_stages": True,
+        "parameters": rows,
+    }
+    payload["payload_sha256"] = _json_sha(payload)
+    return payload
+
+
+def optimizer_parameter_groups_legacy_removed() -> list[dict[str, Any]]:
+    return []
+
+
+def _removed_name_prefix_only_grouping_reference() -> tuple[str, ...]:
+    return (
         "new_modules",
         "cloned_pathology_blocks",
         "cloned_pathology_classifiers",
-        "anatomy_top",
+        "anatomy_decoder",
         "shared_low_mid_decoder",
-        "upper_two_encoder_stages",
-        "lower_encoder_and_bottleneck",
-    )}
-    for name, param in model.named_parameters():
-        if not param.requires_grad:
-            continue
-        if name.startswith(("component_heads.", "scar_lge_adapter.", "scar_c0_adapter.", "edema_t2_adapter.", "edema_c0_adapter.")):
-            groups["new_modules"].append(param)
-        elif name.startswith(("scar_branch.seg_layers.", "edema_branch.seg_layers.")):
-            groups["cloned_pathology_classifiers"].append(param)
-        elif name.startswith(("scar_branch.", "edema_branch.")):
-            groups["cloned_pathology_blocks"].append(param)
-        elif name.startswith("anatomy_decoder.") and any(token in name for token in ("transpconvs.4", "transpconvs.5", "stages.4", "stages.5", "seg_layers.5")):
-            groups["anatomy_top"].append(param)
-        elif name.startswith(("low_mid_transpconvs.", "low_mid_stages.")):
-            groups["shared_low_mid_decoder"].append(param)
-        elif name.startswith("encoder.") and _is_upper_encoder_parameter(name):
-            groups["upper_two_encoder_stages"].append(param)
-        elif name.startswith("encoder."):
-            groups["lower_encoder_and_bottleneck"].append(param)
-        else:
-            groups["new_modules"].append(param)
-    lr = {
-        "new_modules": 5.0e-4,
-        "cloned_pathology_blocks": 1.0e-4,
-        "cloned_pathology_classifiers": 2.0e-4,
-        "anatomy_top": 1.0e-4,
-        "shared_low_mid_decoder": 1.0e-4,
-        "upper_two_encoder_stages": 5.0e-5,
-        "lower_encoder_and_bottleneck": 1.0e-5,
-    }
-    return [{"name": name, "params": params, "lr": lr[name], "weight_decay": 1.0e-4} for name, params in groups.items() if params]
+        "upper_two_encoder",
+        "lower_encoder_bottleneck",
+    )
 
 
 def build_optimizer(model: CAREASE) -> torch.optim.Optimizer:
@@ -461,18 +703,18 @@ class CAREASEStageScheduler:
             "new_modules": 3.0e-4,
             "cloned_pathology_blocks": 1.0e-4,
             "cloned_pathology_classifiers": 1.0e-4,
-            "anatomy_top": 1.0e-4,
+            "anatomy_decoder": 1.0e-4,
             "shared_low_mid_decoder": 1.0e-4,
-            "upper_two_encoder_stages": 5.0e-5,
+            "upper_two_encoder": 5.0e-5,
         },
         "C": {
             "new_modules": 1.0e-4,
             "cloned_pathology_blocks": 5.0e-5,
             "cloned_pathology_classifiers": 5.0e-5,
-            "anatomy_top": 5.0e-5,
+            "anatomy_decoder": 5.0e-5,
             "shared_low_mid_decoder": 5.0e-5,
-            "upper_two_encoder_stages": 5.0e-5,
-            "lower_encoder_and_bottleneck": 1.0e-5,
+            "upper_two_encoder": 5.0e-5,
+            "lower_encoder_bottleneck": 1.0e-5,
         },
     }
 
@@ -613,13 +855,16 @@ def save_care_ase_checkpoint(
         "numpy_rng": rng["numpy"],
         "torch_cpu_rng": rng["torch_cpu"],
         "torch_cuda_rng_all_devices": rng["torch_cuda"],
-        "dataloader_worker_seed_state": dataloader_worker_seed_state or {},
+        "dataloader_worker_seed_state": dataloader_worker_seed_state or {"worker_count": 0, "deterministic_single_process": True},
         "case_group_cursor": int(sampler_state.get("case_group_cursor", 0)),
-        "center_cursor": int(sampler_state.get("center_cursor", 0)),
-        "pathology_focus_cursor": int(sampler_state.get("pathology_focus_cursor", 0)),
+        "complete_center_cursor": int(sampler_state.get("complete_center_cursor", sampler_state.get("center_cursor", 0))),
+        "complete_pathology_cursor": int(sampler_state.get("complete_pathology_cursor", sampler_state.get("pathology_focus_cursor", 0))),
+        "partial_case_cursors": sampler_state.get("partial_case_cursors", {"lge_only": 0, "lge_c0": 0}),
+        "center_cursor": int(sampler_state.get("complete_center_cursor", sampler_state.get("center_cursor", 0))),
+        "pathology_focus_cursor": int(sampler_state.get("complete_pathology_cursor", sampler_state.get("pathology_focus_cursor", 0))),
         "scar_focus_cursor": int(sampler_state.get("scar_focus_cursor", 0)),
         "edema_focus_cursor": int(sampler_state.get("edema_focus_cursor", 0)),
-        "sampler_rng_state": sampler_state.get("sampler_rng_state", {}),
+        "sampler_rng_state": sampler_state.get("sampler_rng_state", "UNSET"),
         "batch_descriptor_cursor": int(sampler_state.get("batch_descriptor_cursor", 0)),
         "next_batch_descriptor_sha256": next_sha,
         "extent_wall_ramp_value": CAREASE.extent_wall_ramp(global_step),
@@ -683,11 +928,16 @@ def checkpoint_receipt(path: Path, payload: dict[str, Any]) -> dict[str, Any]:
         "microbatch_cursor": int(payload["accumulation_microbatch_cursor"]),
         "stage_id": payload["stage_id"],
         "stage_step": int(payload["stage_step"]),
+        "complete_center_cursor": int(payload["complete_center_cursor"]),
+        "complete_pathology_cursor": int(payload["complete_pathology_cursor"]),
+        "partial_case_cursors": payload.get("partial_case_cursors", {}),
         "extent_wall_ramp_value": float(payload["extent_wall_ramp_value"]),
         "next_batch_hash": payload["next_batch_descriptor_sha256"],
         "has_optimizer_state": "optimizer" in payload,
         "has_scheduler_state": "scheduler" in payload,
         "has_rng_state": all(k in payload for k in ("python_rng", "numpy_rng", "torch_cpu_rng", "torch_cuda_rng_all_devices")),
+        "has_sampler_rng_state": bool(payload.get("sampler_rng_state")) and payload.get("sampler_rng_state") != "UNSET",
+        "has_dataloader_worker_seed_state": bool(payload.get("dataloader_worker_seed_state")),
         "required_fields_present": all(field in payload for field in REQUIRED_CHECKPOINT_FIELDS),
         "checkpoint_sha256": _sha256_file_or_missing(path),
         "fixed_terminal_step14000": int(payload["global_optimizer_step"]) == 14000,

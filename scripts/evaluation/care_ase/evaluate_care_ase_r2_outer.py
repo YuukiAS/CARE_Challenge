@@ -17,6 +17,7 @@ from typing import Any
 import blosc2
 import numpy as np
 import torch
+import torch.nn.functional as F
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(REPO_ROOT) not in sys.path:
@@ -58,10 +59,22 @@ def read_b2nd(path: Path) -> np.ndarray:
     return np.asarray(blosc2.open(str(path), mode="r")[:])
 
 
+def _pad_patch_to_size(patch: torch.Tensor, patch_size: tuple[int, int, int]) -> tuple[torch.Tensor, tuple[int, int, int]]:
+    actual = tuple(int(v) for v in patch.shape[-3:])
+    pads = []
+    for have, want in reversed(list(zip(actual, patch_size))):
+        pads.extend([0, max(int(want) - int(have), 0)])
+    if any(pads):
+        patch = F.pad(patch, pads)
+    return patch, actual
+
+
 def sliding_window_logits(model: torch.nn.Module, image: torch.Tensor, availability: torch.Tensor, *, patch_size: tuple[int, int, int], overlap: float = 0.5) -> torch.Tensor:
     spatial = tuple(int(v) for v in image.shape[-3:])
     if all(spatial[i] <= patch_size[i] for i in range(3)):
-        return model(image, availability, global_step=14000)["final_logits"]
+        patch, actual = _pad_patch_to_size(image, patch_size)
+        logits = model(patch, availability, global_step=14000)["final_logits"]
+        return logits[..., : actual[0], : actual[1], : actual[2]]
     stride = tuple(max(1, int(size * (1.0 - overlap))) for size in patch_size)
     out = image.new_zeros((1, 6, *spatial))
     count = image.new_zeros((1, 1, *spatial))
@@ -75,9 +88,11 @@ def sliding_window_logits(model: torch.nn.Module, image: torch.Tensor, availabil
         for y in starts[1]:
             for x in starts[2]:
                 patch = image[..., z : z + patch_size[0], y : y + patch_size[1], x : x + patch_size[2]]
-                logits = model(patch, availability, global_step=14000)["final_logits"]
-                out[..., z : z + patch_size[0], y : y + patch_size[1], x : x + patch_size[2]] += logits
-                count[..., z : z + patch_size[0], y : y + patch_size[1], x : x + patch_size[2]] += 1.0
+                patch_padded, actual = _pad_patch_to_size(patch, patch_size)
+                logits = model(patch_padded, availability, global_step=14000)["final_logits"]
+                logits = logits[..., : actual[0], : actual[1], : actual[2]]
+                out[..., z : z + actual[0], y : y + actual[1], x : x + actual[2]] += logits
+                count[..., z : z + actual[0], y : y + actual[1], x : x + actual[2]] += 1.0
     return out / count.clamp_min(1.0)
 
 

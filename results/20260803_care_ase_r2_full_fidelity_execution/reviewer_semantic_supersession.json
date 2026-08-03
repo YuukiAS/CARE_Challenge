@@ -1,0 +1,22 @@
+{
+  "status": "SUPERSEDED_BY_SEMANTIC_ORACLE_REVIEW",
+  "superseded_at_utc": "2026-08-03T00:14:53Z",
+  "superseded_reason": "Old continuous reviewer PASS rounds proved detached checkout, receipt consistency, validator execution, and wrapper/source binding only; they do not prove semantic CARE-ASE fidelity.",
+  "superseded_rounds": {
+    "R0_W1_EARLY_DIFF": "SUPERSEDED_BY_SEMANTIC_ORACLE_REVIEW",
+    "R1_G1_STATIC_FIDELITY": "SUPERSEDED_BY_SEMANTIC_ORACLE_REVIEW",
+    "R2_G2_GPU_FIDELITY": "SUPERSEDED_BY_SEMANTIC_ORACLE_REVIEW",
+    "R3_G2_5_FROZEN_SOURCE": "SUPERSEDED_BY_SEMANTIC_ORACLE_REVIEW"
+  },
+  "new_reviewer": "CARE_ASE_R2_SEMANTIC_ORACLE_REVIEWER",
+  "allowed_decisions": [
+    "SEMANTIC_PASS_CONTINUE_INTERNAL",
+    "REVISE_CONTINUE_CURRENT_GOAL"
+  ],
+  "formal_training_authorized_by_old_pass": false,
+  "formal_training_authorized_by_semantic_internal_pass": false,
+  "requires_external_pretraining_review_pass": true,
+  "current_training_credit_from_207f360": "zero",
+  "fold1_restart_step": 0,
+  "fold4_restart_step": 0
+}

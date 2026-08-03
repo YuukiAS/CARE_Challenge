@@ -1,0 +1,63 @@
+{
+  "allowed_current_runtime_use": [
+    "diagnostic_logs",
+    "diagnostic_checkpoints"
+  ],
+  "created_utc": "2026-08-03T00:00:16.638524+00:00",
+  "current_head_at_invalidation": "e2c7430e50b058c03d06fc3cac1ad6b5f80bb633",
+  "external_review_decision": "PRETRAINING_EXTERNAL_REVIEW_REVISE",
+  "fold1_restart_step": 0,
+  "fold4_restart_step": 0,
+  "fold_runtime_state": {
+    "fold1": {
+      "diagnostic_artifacts_may_be_retained": true,
+      "formal_training_credit": "zero",
+      "last_observed_optimizer_step": 1732,
+      "last_observed_stage": "A",
+      "log_rows": 1732,
+      "may_resume_after_repair": false,
+      "repair_restart_step": 0,
+      "runtime_dir": "results/20260803_care_ase_r2_full_fidelity_execution/runtime/fold_1"
+    },
+    "fold4": {
+      "diagnostic_artifacts_may_be_retained": true,
+      "formal_training_credit": "zero",
+      "last_observed_optimizer_step": 1689,
+      "last_observed_stage": "A",
+      "log_rows": 1689,
+      "may_resume_after_repair": false,
+      "repair_restart_step": 0,
+      "runtime_dir": "results/20260803_care_ase_r2_full_fidelity_execution/runtime/fold_4"
+    }
+  },
+  "forbidden_actions_until_repair_review_external_pass": [
+    "start_2000_4000_chunk",
+    "start_any_later_chunk",
+    "resume_current_runtime",
+    "read_fold1_outer",
+    "read_fold4_outer"
+  ],
+  "formal_training_credit_for_current_runtime": "zero",
+  "invalidated_training_source_sha": "207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+  "invalidated_wave": "W3_ALL_CURRENT_RUNTIME",
+  "invalidation_reason": "behavioral_contract_violation",
+  "latest_evidence_commit": "f99f17eb0e5e74356c147e9491cad15526ebf158",
+  "next_required_flow": [
+    "Executor repair",
+    "new G1",
+    "continuous Reviewer R1",
+    "new G2",
+    "continuous Reviewer R2",
+    "new immutable candidate commit",
+    "push origin/main",
+    "local HEAD == origin/main",
+    "new pretraining_external_review_request.json",
+    "await external review"
+  ],
+  "outer_access_count_fold1": 0,
+  "outer_access_count_fold4": 0,
+  "reviewed_training_source_commit": "207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+  "slurm_sacct_snapshot": "JobID|JobName|Partition|State|ExitCode|Elapsed|Timelimit\n61220581|CareDPR5d|htzhulab|CANCELLED by 397557|0:0|4-19:25:21|5-00:00:00\n61220581.extern|extern||COMPLETED|0:0|4-19:25:21|\n61220581.0|bash||COMPLETED|0:0|00:00:00|\n61220581.1|bash||CANCELLED by 397557|0:9|02:05:34|\n61220581.2|bash||COMPLETED|0:0|00:00:01|\n61220581.3|bash||FAILED|1:0|00:00:12|\n61220581.4|bash||COMPLETED|0:0|00:00:00|\n61220581.5|bash||FAILED|1:0|00:00:31|\n61220581.6|bash||FAILED|1:0|00:00:21|\n61220581.7|bash||COMPLETED|0:0|00:07:52|\n61220581.8|bash||COMPLETED|0:0|00:00:01|\n61220581.9|bash||COMPLETED|0:0|00:43:17|\n61220581.10|bash||FAILED|1:0|00:02:30|\n61220581.11|bash||FAILED|1:0|00:02:08|\n61220581.12|bash||COMPLETED|0:0|00:00:01|\n61220581.13|bash||COMPLETED|0:0|00:00:00|\n61220581.14|bash||COMPLETED|0:0|00:00:04|\n61220581.15|bash||COMPLETED|0:0|00:00:01|\n61220581.16|bash||FAILED|1:0|00:00:28|\n61220581.17|bash||COMPLETED|0:0|00:00:43|\n61220581.18|bash||COMPLETED|0:0|00:00:30|\n61220581.19|bash||COMPLETED|0:0|00:00:05|\n61220581.20|bash||COMPLETED|0:0|00:00:05|\n61220581.21|bash||COMPLETED|0:0|00:00:45|\n61220581.22|bash||COMPLETED|0:0|00:16:03|\n61220581.23|bash||CANCELLED by 397557|0:9|00:05:20|\n61220581.24|bash||FAILED|1:0|00:00:37|\n61220581.25|bash||COMPLETED|0:0|00:01:30|\n61220581.26|bash||COMPLETED|0:0|00:01:40|\n61220581.27|bash||FAILED|1:0|00:00:30|\n61220581.28|bash||CANCELLED by 397557|0:9|00:07:54|\n61220581.29|bash||COMPLETED|0:0|00:16:26|\n61220581.30|bash||COMPLETED|0:0|00:01:41|\n61220581.31|bash||COMPLETED|0:0|00:16:49|\n61220581.32|bash||COMPLETED|0:0|00:00:49|\n61220581.33|bash||CANCELLED by 397557|0:9|01:37:23|\n61220581.34|bash||COMPLETED|0:0|04:09:35|\n61220581.35|bash||FAILED|1:0|00:00:09|\n61220581.36|bash||COMPLETED|0:0|00:13:52|\n61220581.37|bash||COMPLETED|0:0|00:01:28|\n61220581.38|bash||COMPLETED|0:0|00:00:04|\n61220581.39|bash||COMPLETED|0:0|00:00:26|\n61220581.40|bash||CANCELLED by 397557|0:9|02:16:24|\n61220581.41|bash||FAILED|1:0|00:00:13|\n61220581.42|bash||COMPLETED|0:0|00:00:08|\n61220581.43|bash||COMPLETED|0:0|00:00:18|\n61220581.44|bash||COMPLETED|0:0|00:07:21|\n61220581.45|bash||COMPLETED|0:0|00:14:31|\n61220581.46|bash||COMPLETED|0:0|00:06:42|\n61220581.47|bash||COMPLETED|0:0|00:23:42|\n61220581.48|python||COMPLETED|0:0|00:00:33|\n61220581.49|python||COMPLETED|0:0|00:00:27|\n61220581.50|python||COMPLETED|0:0|00:00:27|\n61220581.51|bash||COMPLETED|0:0|00:02:21|\n61220581.52|bash||COMPLETED|0:0|00:02:10|\n61220581.53|bash||FAILED|1:0|00:02:33|\n61220581.54|bash||CANCELLED by 397557|0:9|00:04:51|\n61220581.55|bash||FAILED|1:0|00:00:27|\n61220581.56|bash||CANCELLED by 397557|0:9|00:02:59|\n61220581.57|bash||FAILED|2:0|00:02:54|\n61220581.58|bash||COMPLETED|0:0|00:03:19|\n61220581.59|bash||FAILED|1:0|00:00:20|\n61220581.60|bash||COMPLETED|0:0|00:04:52|\n61220581.61|bash||COMPLETED|0:0|00:00:00|\n61220581.62|bash||FAILED|1:0|00:00:10|\n61220581.63|bash||CANCELLED by 397557|0:9|00:09:18|\n61220581.64|bash||CANCELLED by 397557|0:9|00:05:02|\n61220581.65|bash||CANCELLED by 397557|0:9|00:04:46|\n61220581.66|bash||FAILED|3:0|00:15:29|\n61220581.67|bash||FAILED|3:0|00:16:30|\n61220581.68|bash||FAILED|3:0|00:02:55|\n61220581.69|bash||COMPLETED|0:0|00:03:07|\n61220581.70|bash||COMPLETED|0:0|00:00:10|\n61220581.71|bash||COMPLETED|0:0|00:00:10|\n61220581.72|bash||CANCELLED by 397557|0:9|00:13:41|\n61220581.73|bash||COMPLETED|0:0|00:00:00|\n61220581.74|bash||COMPLETED|0:0|00:39:10|\n61220581.75|bash||COMPLETED|0:0|00:00:00|\n61220581.76|bash||COMPLETED|0:0|00:00:01|\n61220581.77|bash||FAILED|1:0|00:00:05|\n61220581.78|bash||COMPLETED|0:0|00:00:34|\n61220581.79|bash||COMPLETED|0:0|00:00:03|\n61220581.80|bash||COMPLETED|0:0|00:00:12|\n61220581.81|bash||COMPLETED|0:0|00:00:14|\n61220581.82|bash||COMPLETED|0:0|00:00:06|\n61220581.83|bash||FAILED|1:0|00:00:03|\n61220581.84|bash||COMPLETED|0:0|00:00:07|\n61220581.85|bash||COMPLETED|0:0|00:05:23|\n61220581.86|bash||COMPLETED|0:0|00:00:00|\n61220581.87|bash||COMPLETED|0:0|00:05:21|\n61220581.88|bash||COMPLETED|0:0|00:25:55|\n61220581.89|bash||COMPLETED|0:0|00:00:01|\n61220581.90|bash||COMPLETED|0:0|00:51:58|\n61220581.91|nvidia-smi||COMPLETED|0:0|00:00:00|\n61220581.92|bash||COMPLETED|0:0|00:00:00|\n61220581.93|nvidia-smi||COMPLETED|0:0|00:00:00|\n61220581.94|nvidia-smi||COMPLETED|0:0|00:00:01|\n61220581.95|nvidia-smi||COMPLETED|0:0|00:00:00|\n61220581.96|bash||COMPLETED|0:0|00:00:00|\n61220581.97|nvidia-smi||COMPLETED|0:0|00:00:00|\n61220581.98|bash||COMPLETED|0:0|00:00:00|\n61220581.99|nvidia-smi||COMPLETED|0:0|00:00:00|\n61220581.100|bash||COMPLETED|0:0|00:00:01|\n61220581.101|nvidia-smi||COMPLETED|0:0|00:00:00|\n61220581.102|nvidia-smi||COMPLETED|0:0|00:00:00|\n61220581.103|bash||COMPLETED|0:0|00:00:00|\n61220581.104|nvidia-smi||COMPLETED|0:0|00:00:00|\n61220581.105|nvidia-smi||COMPLETED|0:0|00:00:00|\n61220581.106|nvidia-smi||COMPLETED|0:0|00:00:00|\n61220581.107|bash||COMPLETED|0:0|00:00:01|\n61220581.108|nvidia-smi||COMPLETED|0:0|00:00:00|\n61220581.109|nvidia-smi||COMPLETED|0:0|00:00:00|\n61220581.110|bash||COMPLETED|0:0|00:00:00|\n61220581.111|nvidia-smi||COMPLETED|0:0|00:00:00|\n61220581.112|bash||FAILED|1:0|00:00:04|\n61220581.113|bash||COMPLETED|0:0|00:00:04|\n61220581.114|bash||COMPLETED|0:0|00:00:08|\n61220581.115|bash||COMPLETED|0:0|00:00:07|\n61220581.116|bash||COMPLETED|0:0|00:00:12|\n61220581.117|bash||COMPLETED|0:0|00:00:10|\n61220581.118|bash||COMPLETED|0:0|00:00:14|\n61220581.119|bash||COMPLETED|0:0|00:09:21|\n61220581.120|bash||COMPLETED|0:0|00:07:43|\n61220581.121|bash||COMPLETED|0:0|00:09:44|\n61220581.122|bash||COMPLETED|0:0|00:04:25|\n61220581.123|bash||COMPLETED|0:0|00:00:22|\n61220581.124|bash||COMPLETED|0:0|00:03:05|\n61220581.125|bash||COMPLETED|0:0|00:00:39|\n61220581.126|bash||COMPLETED|0:0|00:00:37|\n61220581.127|python||COMPLETED|0:0|00:02:12|\n61220581.128|bash||COMPLETED|0:0|00:00:04|\n61220581.129|run_fresh_replays.sh||FAILED|1:0|00:00:45|\n61220581.130|run_fresh_mosaic_replay.sh||FAILED|1:0|00:00:07|\n61220581.131|run_fresh_mosaic_replay.sh||CANCELLED by 397557|0:9|00:27:06|\n61220581.132|nnUNetv2_predict||COMPLETED|0:0|00:00:34|\n61220581.133|nnUNetv2_predict||COMPLETED|0:0|00:00:20|\n61220581.134|nnUNetv2_predict||COMPLETED|0:0|00:00:21|\n61220581.135|nnUNetv2_predict||COMPLETED|0:0|00:00:31|\n61220581.136|python||CANCELLED by 397557|0:9|00:04:10|\n61220581.137|python||COMPLETED|0:0|00:00:03|\n61220581.138|env||FAILED|1:0|00:32:51|\n61220581.139|python||COMPLETED|0:0|00:00:03|\n61220581.140|bash||COMPLETED|0:0|00:02:21|\n61220581.141|bash||COMPLETED|0:0|00:02:59|\n61220581.142|bash||COMPLETED|0:0|00:01:49|\n61220581.143|bash||COMPLETED|0:0|00:01:52|\n61220581.144|bash||COMPLETED|0:0|00:01:53|\n61220581.145|bash||COMPLETED|0:0|00:01:55|\n61220581.146|bash||COMPLETED|0:0|00:01:52|\n61220581.147|python||FAILED|1:0|00:00:08|\n61220581.148|python||COMPLETED|0:0|00:00:09|\n61220581.149|python||COMPLETED|0:0|06:38:48|\n61220581.150|python||CANCELLED by 397557|0:9|03:12:49|\n61220581.151|python||COMPLETED|0:0|00:00:17|\n61220581.152|python||COMPLETED|0:0|06:39:45|\n61220581.153|python||COMPLETED|0:0|06:36:23|\n61220581.154|bash||FAILED|1:0|00:00:29|\n61220581.155|bash||COMPLETED|0:0|00:00:26|\n61220581.156|python||COMPLETED|0:0|00:00:16|\n61220581.157|python||COMPLETED|0:0|00:00:29|\n61220581.158|python||COMPLETED|0:0|00:00:29|\n61220581.159|python||FAILED|1:0|00:01:05|\n61220581.160|python||COMPLETED|0:0|00:01:05|\n61794608|CareInteractive2d|htzhulab|RUNNING|0:0|07:09:17|2-00:00:00\n61794608.batch|batch||RUNNING|0:0|07:09:17|\n61794608.extern|extern||RUNNING|0:0|07:09:17|\n61794608.0|python||COMPLETED|0:0|00:00:03|\n61794608.1|python||COMPLETED|0:0|00:00:33|\n61794608.2|python||COMPLETED|0:0|00:00:29|\n61794608.3|python||COMPLETED|0:0|00:00:30|\n61794608.4|python||COMPLETED|0:0|00:00:28|\n61794608.5|python||COMPLETED|0:0|00:00:29|\n61794608.6|bash||CANCELLED by 397557|0:9|03:55:20|\n61800932|CareASER2|htzhulab|CANCELLED by 397557|0:0|03:41:09|12:00:00\n61800932.batch|batch||CANCELLED|0:15|03:41:10|\n61800932.extern|extern||COMPLETED|0:0|03:41:11|\n61830309|CareASEFold4Interactive2d|htzhulab|RUNNING|0:0|00:07:22|2-00:00:00\n61830309.extern|extern||RUNNING|0:0|00:07:22|",
+  "slurm_squeue_snapshot": "JOBID|NAME|PARTITION|STATE|TIME|TIME_LEFT|NODELIST(REASON)|TRES_PER_NODE|NODES\n61830309|CareASEFold4Interactive2d|htzhulab|RUNNING|7:22|1-23:52:38|g1807htzh01|gres/gpu:1|1\n61794608|CareInteractive2d|htzhulab|RUNNING|7:09:17|1-16:50:43|g1807htzh01|gres/gpu:1|1",
+  "status": "PASS"
+}
