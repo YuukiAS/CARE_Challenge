@@ -1,0 +1,22 @@
+{
+  "dead_named_evidence_count": 0,
+  "evidence_boundary": "step0_to_step3 diagnostic optimizer probe completed; detailed per-module oracle remains external-review target",
+  "fold": 4,
+  "formal_training_credit": "zero",
+  "implementation_source_commit_sha": "0b20e32d077227fbeb6611a3ee0cdf4231aee19d",
+  "outer_access": 0,
+  "probe": {
+    "fold": null,
+    "formal_resumable": false,
+    "formal_training_credit": "zero",
+    "global_optimizer_step": 3,
+    "rng_transparency": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_external_review_repair_v7/gpu_probe/0b20e32/fold4_stageA_0_3/checkpoint_step00003_checkpoint_validation_rng_transparency.json",
+    "rng_transparency_sha256": "6d2236a985a5c0f157de75b01402213ccdd93eaeccfb958326124c36b76e1a16",
+    "status": "PASS",
+    "terminal": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_external_review_repair_v7/gpu_probe/0b20e32/fold4_stageA_0_3/chunk_terminal_00000_00003.json",
+    "terminal_sha256": "6ccd155795e651ef27455bfb0806e8bcf9dd2713d51ed1d2ffb8bfab2f7f75db",
+    "verified": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_external_review_repair_v7/gpu_probe/0b20e32/fold4_stageA_0_3/checkpoint_step00003.pt.verified.json",
+    "verified_sha256": "bc3b7caa33766d317ebad79cefb915e38197bc5e33e5ca53d5f48cebafddd960"
+  },
+  "status": "PASS"
+}

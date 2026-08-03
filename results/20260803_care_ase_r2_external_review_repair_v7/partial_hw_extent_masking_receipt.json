@@ -1,0 +1,11 @@
+{
+  "g1_status": "PASS",
+  "implementation_source_commit_sha": "0b20e32d077227fbeb6611a3ee0cdf4231aee19d",
+  "partial_hw_extent_supervision_count": 0,
+  "pytest_status": "PASS",
+  "status": "PASS",
+  "tests": [
+    "tests/care_ase/test_partial_hw_extent_is_fully_masked.py",
+    "tests/care_ase/test_extent_padding_identity.py"
+  ]
+}

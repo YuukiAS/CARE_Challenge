@@ -1,0 +1,82 @@
+{
+  "fold": 1,
+  "formal_resumable": false,
+  "formal_training_credit": "zero",
+  "implementation_source_commit_sha": "0b20e32d077227fbeb6611a3ee0cdf4231aee19d",
+  "outer_access": 0,
+  "probe_names": [
+    "fold1_uninterrupted_0_3",
+    "fold1_resume_0_1",
+    "fold1_resume_1_3",
+    "fold1_stageB_2000_2001",
+    "fold1_stageC_10000_10001"
+  ],
+  "probes": {
+    "fold1_resume_0_1": {
+      "fold": null,
+      "formal_resumable": false,
+      "formal_training_credit": "zero",
+      "global_optimizer_step": 1,
+      "rng_transparency": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_external_review_repair_v7/gpu_probe/0b20e32/fold1_resume_0_1/checkpoint_step00001_checkpoint_validation_rng_transparency.json",
+      "rng_transparency_sha256": "7194b200b0a8edb05acf68fc32bc08fc392b0375880d5ca67487a6133220aba6",
+      "status": "PASS",
+      "terminal": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_external_review_repair_v7/gpu_probe/0b20e32/fold1_resume_0_1/chunk_terminal_00000_00001.json",
+      "terminal_sha256": "2d98220acecafb6f89bada3c321a574243595d0375bbcc1cf22cf7dc99a8eda3",
+      "verified": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_external_review_repair_v7/gpu_probe/0b20e32/fold1_resume_0_1/checkpoint_step00001.pt.verified.json",
+      "verified_sha256": "efccd6e67c8256ef1449d2b9dc1512eca07a3cb47bd59db1d056d78c851f1978"
+    },
+    "fold1_resume_1_3": {
+      "fold": null,
+      "formal_resumable": false,
+      "formal_training_credit": "zero",
+      "global_optimizer_step": 3,
+      "rng_transparency": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_external_review_repair_v7/gpu_probe/0b20e32/fold1_resume_1_3/checkpoint_step00003_checkpoint_validation_rng_transparency.json",
+      "rng_transparency_sha256": "1d89d6f899f6c4a9d476537e5dd990bb85500d091000c8b9bc6a9cf843a2e775",
+      "status": "PASS",
+      "terminal": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_external_review_repair_v7/gpu_probe/0b20e32/fold1_resume_1_3/chunk_terminal_00001_00003.json",
+      "terminal_sha256": "9ed6f8648b07ec0b5b49ec8a02631cdcb89d97aa404e9f7ee0dd4f92a2ee4f3b",
+      "verified": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_external_review_repair_v7/gpu_probe/0b20e32/fold1_resume_1_3/checkpoint_step00003.pt.verified.json",
+      "verified_sha256": "e02bda95c9f1046c3e0dcab20fc7afae2c2c7f07c466fa2475e72927a3786db3"
+    },
+    "fold1_stageB_2000_2001": {
+      "fold": null,
+      "formal_resumable": false,
+      "formal_training_credit": "zero",
+      "global_optimizer_step": 2001,
+      "rng_transparency": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_external_review_repair_v7/gpu_probe/0b20e32/fold1_stageB_2000_2001/checkpoint_step02001_checkpoint_validation_rng_transparency.json",
+      "rng_transparency_sha256": "9a29abf59b6de691c42f77d4c3165d920cd4489fa3f6baba3f2131deac198658",
+      "status": "PASS",
+      "terminal": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_external_review_repair_v7/gpu_probe/0b20e32/fold1_stageB_2000_2001/chunk_terminal_02000_02001.json",
+      "terminal_sha256": "a0492e494be61d9016e2da15e7c53ceb52dd2be4931fd4a4a7b08a5679525e27",
+      "verified": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_external_review_repair_v7/gpu_probe/0b20e32/fold1_stageB_2000_2001/checkpoint_step02001.pt.verified.json",
+      "verified_sha256": "d39f3070ab0066793380e7026e625f4aa217b6a86ad3efc2311941cc16fc12ec"
+    },
+    "fold1_stageC_10000_10001": {
+      "fold": null,
+      "formal_resumable": false,
+      "formal_training_credit": "zero",
+      "global_optimizer_step": 10001,
+      "rng_transparency": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_external_review_repair_v7/gpu_probe/0b20e32/fold1_stageC_10000_10001/checkpoint_step10001_checkpoint_validation_rng_transparency.json",
+      "rng_transparency_sha256": "cef34b2ba14f8f468de21d118dc0c0620f189d64c98e3752f1c09def9a4be2e5",
+      "status": "PASS",
+      "terminal": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_external_review_repair_v7/gpu_probe/0b20e32/fold1_stageC_10000_10001/chunk_terminal_10000_10001.json",
+      "terminal_sha256": "65e9c98a383f6c9b4412c2c23196fc6ecb5281192a5e102ecc1808b10d7cc889",
+      "verified": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_external_review_repair_v7/gpu_probe/0b20e32/fold1_stageC_10000_10001/checkpoint_step10001.pt.verified.json",
+      "verified_sha256": "31cfb087349b5d38d3daf57c669fd29863575488b96f983f7c7c8d2e5038f9c6"
+    },
+    "fold1_uninterrupted_0_3": {
+      "fold": null,
+      "formal_resumable": false,
+      "formal_training_credit": "zero",
+      "global_optimizer_step": 3,
+      "rng_transparency": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_external_review_repair_v7/gpu_probe/0b20e32/fold1_uninterrupted_0_3/checkpoint_step00003_checkpoint_validation_rng_transparency.json",
+      "rng_transparency_sha256": "058291b50887f45db14f1197f2f16d5db1a927013c4c4a7672db68247660e26f",
+      "status": "PASS",
+      "terminal": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_external_review_repair_v7/gpu_probe/0b20e32/fold1_uninterrupted_0_3/chunk_terminal_00000_00003.json",
+      "terminal_sha256": "9ed50f379e22355fa8a238c81ee08d3c2f0452127a6e08bc9365773f2e6fcedf",
+      "verified": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_external_review_repair_v7/gpu_probe/0b20e32/fold1_uninterrupted_0_3/checkpoint_step00003.pt.verified.json",
+      "verified_sha256": "0d9be9a4ad19fe9ec2f1e98ed6370b8ef159a24b0e5c4e51c43580704df6c950"
+    }
+  },
+  "status": "PASS"
+}

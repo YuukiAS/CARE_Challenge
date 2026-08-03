@@ -1,0 +1,10 @@
+{
+  "g1_status": "PASS",
+  "implementation_source_commit_sha": "0b20e32d077227fbeb6611a3ee0cdf4231aee19d",
+  "multitarget_transform_misalignment_count": 0,
+  "pytest_status": "PASS",
+  "status": "PASS",
+  "tests": [
+    "tests/care_ase/test_stock_transform_multitarget_identity.py"
+  ]
+}

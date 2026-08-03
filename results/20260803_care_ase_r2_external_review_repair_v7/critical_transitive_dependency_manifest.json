@@ -1,0 +1,36 @@
+{
+  "dependency_closure": [
+    "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh",
+    "prompts/blueprints/CARE_ASE_R2_effective_contract_v7_20260803.yaml",
+    "scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py",
+    "scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py",
+    "scripts/training/care_ase/run_care_ase_r2_chunk.py",
+    "src/care_myocardium/data/care_ase_splits.py",
+    "src/care_myocardium/data/case_metadata.py",
+    "src/care_myocardium/inference/care_ase_r2_decode.py",
+    "src/care_myocardium/models/care_ase.py",
+    "src/care_myocardium/models/care_prism.py",
+    "src/care_myocardium/training/care_ase_augmentation.py",
+    "src/care_myocardium/training/care_ase_sampler.py",
+    "src/care_myocardium/training/care_ase_trainer.py"
+  ],
+  "dependency_count": 13,
+  "manifest_sha256": "f91dd71165f761cfb843dd27d713915517639eaadad6061afb05fc35f6ae579f",
+  "seed_paths": [
+    "prompts/blueprints/CARE_ASE_R2_effective_contract_v7_20260803.yaml",
+    "src/care_myocardium/models/care_ase.py",
+    "src/care_myocardium/models/care_prism.py",
+    "src/care_myocardium/training/care_ase_trainer.py",
+    "src/care_myocardium/training/care_ase_sampler.py",
+    "src/care_myocardium/training/care_ase_augmentation.py",
+    "src/care_myocardium/data/care_ase_splits.py",
+    "src/care_myocardium/data/case_metadata.py",
+    "src/care_myocardium/inference/care_ase_r2_decode.py",
+    "scripts/training/care_ase/run_care_ase_r2_chunk.py",
+    "scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py",
+    "scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py",
+    "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh"
+  ],
+  "status": "PASS",
+  "unhashed_transitive_critical_dependency_count": 0
+}

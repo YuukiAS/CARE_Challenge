@@ -1,0 +1,13 @@
+{
+  "fold": 1,
+  "formal_training_credit": "zero",
+  "global_optimizer_step_equal": true,
+  "loss_logits_parameters_scheduler_next_batch_equivalence": "parameters_optimizer_scheduler_next_batch_exact; logits reload parity covered by verified receipts",
+  "model_parameter_max_abs": 0.0,
+  "optimizer_moment_max_abs": 0.0,
+  "path_a": "fold1_uninterrupted_0_3",
+  "path_b": "fold1_resume_0_1_then_1_3",
+  "sampler_next_bundle_hash_equal": true,
+  "scheduler_equal": true,
+  "status": "PASS"
+}

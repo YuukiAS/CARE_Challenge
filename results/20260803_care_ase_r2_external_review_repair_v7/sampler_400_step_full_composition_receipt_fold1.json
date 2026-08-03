@@ -1,0 +1,80 @@
+{
+  "all_four_same_case_fraction": 0.0025,
+  "counts": {
+    "complete": 0,
+    "complete_centerB": 200,
+    "complete_centerC": 200,
+    "complete_edema": 0,
+    "complete_scar": 0,
+    "edema_focus": {
+      "boundary": 40,
+      "oof_fn_or_low_volume": 40,
+      "positive": 70,
+      "random": 20,
+      "safe_fp": 30
+    },
+    "lge_c0": 0,
+    "lge_only": 0,
+    "partial_edema": 200,
+    "partial_scar": 200,
+    "scar_focus": {
+      "gt_component": 70,
+      "oof_fn": 40,
+      "oof_fp": 30,
+      "random": 20,
+      "small_component": 40
+    }
+  },
+  "descriptor_sequence_sha256": "b0c8f6ec8f8a94ffc2975a47ad908d8d4739b6334dd8c9303426d2dd70272ea7",
+  "distinct_case_count_distribution": {
+    "1": 1,
+    "2": 14,
+    "3": 132,
+    "4": 253
+  },
+  "expected_400_stage_a_b": {
+    "complete": 200,
+    "complete_centerB": 100,
+    "complete_centerC": 100,
+    "complete_edema": 100,
+    "complete_scar": 100,
+    "lge_c0": 100,
+    "lge_only": 100,
+    "partial_edema": 0
+  },
+  "expected_400_stage_a_b_micro": {
+    "complete": 800,
+    "complete_centerB": 400,
+    "complete_centerC": 400,
+    "complete_edema": 400,
+    "complete_scar": 400,
+    "lge_c0": 400,
+    "lge_only": 400,
+    "partial_edema": 0
+  },
+  "failures": [],
+  "fold": 1,
+  "micro_counts": {
+    "complete": 0,
+    "complete_centerB": 800,
+    "complete_centerC": 800,
+    "complete_edema": 0,
+    "complete_scar": 0,
+    "lge_c0": 0,
+    "lge_only": 0,
+    "partial_edema": 800,
+    "partial_scar": 800
+  },
+  "microbatch_case_draw": "independent_with_replacement_rng_per_group",
+  "microbatch_count": 1600,
+  "microbatch_rng_state_saved_fields": [
+    "micro_case_rng_state_by_group",
+    "micro_patch_rng_state"
+  ],
+  "partial_events_do_not_advance_complete_pathology_cursor": true,
+  "payload_sha256": "ca0ae8886f693b07edddca28b6dc14afc5cdcc284f7abb15ae26f8db48c5dc45",
+  "sampler_rng_state_restored": true,
+  "start_step": 10000,
+  "status": "PASS",
+  "steps": 400
+}

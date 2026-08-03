@@ -1,0 +1,38 @@
+{
+  "checkpoint_probe_rng_perturbation_count": 0,
+  "probes": {
+    "fold1_resume_0_1": {
+      "rng_transparency": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_external_review_repair_v7/gpu_probe/0b20e32/fold1_resume_0_1/checkpoint_step00001_checkpoint_validation_rng_transparency.json",
+      "sha256": "7194b200b0a8edb05acf68fc32bc08fc392b0375880d5ca67487a6133220aba6"
+    },
+    "fold1_resume_1_3": {
+      "rng_transparency": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_external_review_repair_v7/gpu_probe/0b20e32/fold1_resume_1_3/checkpoint_step00003_checkpoint_validation_rng_transparency.json",
+      "sha256": "1d89d6f899f6c4a9d476537e5dd990bb85500d091000c8b9bc6a9cf843a2e775"
+    },
+    "fold1_stageB_2000_2001": {
+      "rng_transparency": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_external_review_repair_v7/gpu_probe/0b20e32/fold1_stageB_2000_2001/checkpoint_step02001_checkpoint_validation_rng_transparency.json",
+      "sha256": "9a29abf59b6de691c42f77d4c3165d920cd4489fa3f6baba3f2131deac198658"
+    },
+    "fold1_stageC_10000_10001": {
+      "rng_transparency": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_external_review_repair_v7/gpu_probe/0b20e32/fold1_stageC_10000_10001/checkpoint_step10001_checkpoint_validation_rng_transparency.json",
+      "sha256": "cef34b2ba14f8f468de21d118dc0c0620f189d64c98e3752f1c09def9a4be2e5"
+    },
+    "fold1_uninterrupted_0_3": {
+      "rng_transparency": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_external_review_repair_v7/gpu_probe/0b20e32/fold1_uninterrupted_0_3/checkpoint_step00003_checkpoint_validation_rng_transparency.json",
+      "sha256": "058291b50887f45db14f1197f2f16d5db1a927013c4c4a7672db68247660e26f"
+    },
+    "fold4_stageA_0_3": {
+      "rng_transparency": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_external_review_repair_v7/gpu_probe/0b20e32/fold4_stageA_0_3/checkpoint_step00003_checkpoint_validation_rng_transparency.json",
+      "sha256": "6d2236a985a5c0f157de75b01402213ccdd93eaeccfb958326124c36b76e1a16"
+    },
+    "fold4_stageB_2000_2001": {
+      "rng_transparency": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_external_review_repair_v7/gpu_probe/0b20e32/fold4_stageB_2000_2001/checkpoint_step02001_checkpoint_validation_rng_transparency.json",
+      "sha256": "15448f85e5db33de7030f082cbe52c255f7b13ea7db8a438f23a11876541d07f"
+    },
+    "fold4_stageC_10000_10001": {
+      "rng_transparency": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_external_review_repair_v7/gpu_probe/0b20e32/fold4_stageC_10000_10001/checkpoint_step10001_checkpoint_validation_rng_transparency.json",
+      "sha256": "9ac6219e6891c71f861d74d1163afe257deceed29d8510fc3c0c359bd9ad97bd"
+    }
+  },
+  "status": "PASS"
+}

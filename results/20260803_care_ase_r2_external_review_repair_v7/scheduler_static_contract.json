@@ -1,0 +1,60 @@
+{
+  "power": 0.9,
+  "sample_lrs": {
+    "A:new_modules:0": 5e-05,
+    "A:new_modules:1999": 5e-06,
+    "B:new_modules:2000": 2.9999999999999997e-05,
+    "B:upper_two_encoder:9999": 1e-06,
+    "C:lower_encoder_bottleneck:10000": 1e-05,
+    "C:new_modules:13999": 1e-06
+  },
+  "stage_base_lrs": {
+    "A": {
+      "cloned_pathology_blocks": 0.0001,
+      "cloned_pathology_classifiers": 0.0002,
+      "new_modules": 0.0005
+    },
+    "B": {
+      "anatomy_decoder": 0.0001,
+      "cloned_pathology_blocks": 0.0001,
+      "cloned_pathology_classifiers": 0.0001,
+      "new_modules": 0.0003,
+      "shared_low_mid_decoder": 0.0001,
+      "upper_two_encoder": 5e-05
+    },
+    "C": {
+      "anatomy_decoder": 5e-05,
+      "cloned_pathology_blocks": 5e-05,
+      "cloned_pathology_classifiers": 5e-05,
+      "lower_encoder_bottleneck": 1e-05,
+      "new_modules": 0.0001,
+      "shared_low_mid_decoder": 5e-05,
+      "upper_two_encoder": 5e-05
+    }
+  },
+  "stage_min_lrs": {
+    "A": 5e-06,
+    "B": 1e-06,
+    "C": 1e-06
+  },
+  "stage_ranges": {
+    "A": [
+      0,
+      2000
+    ],
+    "B": [
+      2000,
+      10000
+    ],
+    "C": [
+      10000,
+      14000
+    ]
+  },
+  "stage_warmup_steps": {
+    "A": 200,
+    "B": 500,
+    "C": 0
+  },
+  "status": "PASS"
+}

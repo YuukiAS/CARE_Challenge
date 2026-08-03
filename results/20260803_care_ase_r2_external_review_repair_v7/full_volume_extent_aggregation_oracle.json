@@ -1,0 +1,12 @@
+{
+  "checks": {
+    "adds_edema_bias_once_t2_present": true,
+    "adds_scar_bias_once": true,
+    "global_extent_bias_function": true,
+    "global_statistics_after_aggregation": true,
+    "no_patch_local_final_logit_average": true,
+    "patch_forward_disables_extent": true
+  },
+  "forbidden_pattern": "average_patch_logits_after_model_extent_bias",
+  "status": "PASS"
+}

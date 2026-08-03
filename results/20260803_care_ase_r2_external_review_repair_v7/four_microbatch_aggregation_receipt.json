@@ -1,0 +1,13 @@
+{
+  "formal_step_microbatch_count_violation": 0,
+  "g1_status": "PASS",
+  "implementation_source_commit_sha": "0b20e32d077227fbeb6611a3ee0cdf4231aee19d",
+  "pytest_status": "PASS",
+  "status": "PASS",
+  "tests": [
+    "tests/care_ase/test_four_microbatch_metric_aggregation.py",
+    "tests/care_ase/test_missing_microbatch_fail_closed.py",
+    "tests/care_ase/test_logged_lr_matches_optimizer.py"
+  ],
+  "unaggregated_micro_metric_count": 0
+}
