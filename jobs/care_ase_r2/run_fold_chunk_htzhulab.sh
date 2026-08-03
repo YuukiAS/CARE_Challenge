@@ -40,7 +40,7 @@ exec > >(tee -a "${LOG_FILE}") 2>&1
 FOLD="${FOLD:?FOLD is required and must be 1 or 4}"
 START_STEP="${START_STEP:?START_STEP is required}"
 END_STEP="${END_STEP:?END_STEP is required}"
-OUTPUT_DIR="${OUTPUT_DIR:-${CARE_ROOT}/results/20260803_care_ase_r2_full_fidelity_execution/runtime/fold_${FOLD}}"
+OUTPUT_DIR="${OUTPUT_DIR:-${CARE_ROOT}/results/20260803_care_ase_r2_formal_training_${CURRENT_SOURCE_SHA:0:12}/runtime/fold_${FOLD}}"
 PATCH_SIZE="${PATCH_SIZE:-20,256,256}"
 SEED="${SEED:-20260803}"
 

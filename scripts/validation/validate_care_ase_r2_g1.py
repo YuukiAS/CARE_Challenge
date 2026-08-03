@@ -23,12 +23,13 @@ from src.care_myocardium.training.care_ase_sampler import CAREASEDeterministicSa
 from src.care_myocardium.training.care_ase_trainer import CAREASEStageScheduler, REQUIRED_CHECKPOINT_FIELDS, REQUIRED_LOSS_WEIGHTS, care_ase_loss
 
 
-RESULT_ROOT = REPO_ROOT / "results/20260803_care_ase_r2_pretraining_fidelity_repair_v4"
+RESULT_ROOT = REPO_ROOT / "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5"
 WRAPPER = REPO_ROOT / "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh"
 ENTRYPOINT = REPO_ROOT / "scripts/training/care_ase/run_care_ase_r2_chunk.py"
 MODEL = REPO_ROOT / "src/care_myocardium/models/care_ase.py"
 TRAINER = REPO_ROOT / "src/care_myocardium/training/care_ase_trainer.py"
 SAMPLER = REPO_ROOT / "src/care_myocardium/training/care_ase_sampler.py"
+AUGMENTATION = REPO_ROOT / "src/care_myocardium/training/care_ase_augmentation.py"
 DECODE = REPO_ROOT / "src/care_myocardium/inference/care_ase_r2_decode.py"
 EVALUATOR = REPO_ROOT / "scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py"
 MANIFEST_BUILDER = REPO_ROOT / "scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py"
@@ -51,6 +52,18 @@ STRUCTURAL_KNOWN_BAD_FIXTURES = (
     "proxy_loss_targets",
     "count_only_hard_negative_manifest",
     "wrapper_points_old_entry",
+    "extent_patch_local_bias_averaged_across_multiwindow_inference",
+    "require_CommitA_equals_CommitB",
+    "concatenate_all_evidence_one_projection",
+    "reverse_quarter_half_scar_proposal_wiring",
+    "send_injury_into_edema_half_stage",
+    "send_boundary_into_edema_half_stage",
+    "retain_AuxiliaryHalfFeatureTower",
+    "remove_anatomy_half_ds",
+    "segmentation_padding_changed_to_0",
+    "weak_lge_gate_reset_to_0",
+    "augmentation_uses_final_patch_instead_of_initial_patch",
+    "reviewer_only_checks_aggregate_branch_gradient",
 )
 
 
@@ -100,15 +113,18 @@ def coverage_rows() -> list[dict[str, Any]]:
         ("all anatomy/wall/distance/scar/edema/extent/context/relation losses", TRAINER, "care_ase_loss", '"relation": 0.05', "semantic_loss_coverage", "delete_each_semantic_auxiliary_loss", "PASS"),
         ("fixed loss weights, populations, denominator, gradients", TRAINER, "REQUIRED_LOSS_WEIGHTS", '"injury": 0.40', "loss_gradient_receipt", "change_loss_weight_or_population", "PASS"),
         ("dynamic stock decoder channel/stride/kernel introspection", MODEL, "introspect_stock_decoder", "CAREASEDecoderIntrospection", "dynamic_plan_introspection_receipt", "hardcoded_decoder_channels", "PASS"),
-        ("scale-specific ModalityAdapter final Conv3d zero-init", MODEL, "ModalityAdapter", "scar_lge_half_adapter", "modality_adapter_zero_init_test", "nonzero_modality_adapter_init", "PASS"),
+        ("scale-specific ModalityAdapter first/final Conv3d nonzero live init", MODEL, "ModalityAdapter", "kaiming_nonzero_first_and_final_projection", "test_gradient_live_initialization", "double_zero_adapter", "PASS"),
         ("learnable scar/edema C0 and edema LGE gates", MODEL, "ScalarGate", "self.edema_lge_gate", "gate_initialization_test", "hardcoded_modality_gate", "PASS"),
-        ("edema dilation 1/2/4 context block enters edema evidence", MODEL, "EdemaDilationContextBlock", "for dilation in (1, 2, 4)", "module_off_context_test", "one_by_one_context_classifier", "PASS"),
+        ("edema dilation 1/2/4 context block enters edema full-stage evidence with nonzero terminal conv", MODEL, "EdemaDilationContextBlock", "edema_dilation1_to_full", "test_edema_dilation_two_step_gradient", "double_zero_dilation", "PASS"),
         ("detached anatomy context enters pathology evidence", MODEL, "CAREASE.forward", "\"wall_depth_rho\": wall_depth_rho.detach()", "context_detach_gradient_test", "pathology_loss_backprop_anatomy_context", "PASS"),
         ("wall_depth_rho physical formula target", TRAINER, "_geometry_targets_numpy", "d_endo / (d_endo + d_epi + 1.0e-6)", "physical_target_contract_receipt", "rho_from_lv_rv_probability", "PASS"),
         ("independent trainable geometry heads", MODEL, "AnatomyGeometryHeads", "self.signed_endo_distance = nn.Conv3d", "geometry_head_contract_receipt", "proxy_tanh_lv_minus_wall", "PASS"),
-        ("slice extent per-z wall weighted average plus max", MODEL, "_slice_extent_summary", "wall_sum < 1.0", "extent_per_slice_contract_receipt", "whole_volume_extent_pooling", "PASS"),
-        ("no silent evidence truncation or zero padding", MODEL, "_concat_named_evidence", "channel mismatch", "evidence_channel_ledger", "evidence_18_to_16_silent_truncation", "PASS"),
-        ("dedicated half-resolution auxiliary feature provenance", MODEL, "AuxiliaryHalfFeatureTower", "Dedicated quarter-to-half auxiliary feature tower", "half_scale_feature_provenance", "quarter_slice_interpolation_fake_half", "PASS"),
+        ("slice extent per-z wall weighted average plus max shared by train/inference", MODEL, "compute_slice_extent_statistics", "wall_sum < 1.0", "test_extent_train_inference_identity", "whole_volume_extent_pooling", "PASS"),
+        ("full-volume multiwindow extent computes global slice bias once after base-logit aggregation", EVALUATOR, "sliding_window_logits", "disable_extent_wall=True", "full_volume_extent_aggregation_oracle", "extent_patch_local_bias_averaged_across_multiwindow_inference", "PASS"),
+        ("independent named evidence projections with no shared multi-source projection", MODEL, "NamedEvidenceProjectionSet", "named_evidence_projection_registry", "named_evidence_projection_registry", "concatenate_all_evidence_one_projection", "PASS"),
+        ("no uncontracted auxiliary half tower; pathology branches own half features", MODEL, "CAREASEPathologyBranch", "forward_half", "no_uncontracted_auxiliary_decoder_oracle", "retain_AuxiliaryHalfFeatureTower", "PASS"),
+        ("segmentation padding is ignore not background", ENTRYPOINT, "crop_or_pad", "pad_value=-1", "padding_ignore_semantics_oracle", "segmentation_padding_changed_to_0", "PASS"),
+        ("stock nnU-Net augmentation runtime binding and initial patch semantics", AUGMENTATION, "build_stock_augmentation_contract", "configure_rotation_dummyDA_mirroring_and_inital_patch_size", "test_stock_augmentation_binding", "augmentation_uses_final_patch_instead_of_initial_patch", "PASS"),
         ("no-T2 class4 excluded from competition graph", TRAINER, "_five_class_logits_and_target", "torch.full_like(mapped, -1)", "no_t2_gradient_receipt", "no_t2_class4_background", "PASS"),
         ("Stage A/B 10/5/5 alternating cycle", SAMPLER, "CAREASEDeterministicSampler.stage_a_b_cycle", '"lge_only",', "sampler_400_step_receipt", "stage_A_B_complete_only", "PASS"),
         ("Stage C complete-only CenterB/CenterC", SAMPLER, "CAREASEDeterministicSampler.stage_c_cycle", '("complete_centerB", "complete_centerC")', "sampler_static_contract", "stage_C_not_complete_only", "PASS"),
@@ -119,7 +135,8 @@ def coverage_rows() -> list[dict[str, Any]]:
         ("Stage A/B/C = 2000/8000/4000", MODEL, "CAREASEConfig", "stage_b_steps: int = 8000", "scheduler_static_contract", "stage_2000_4000_8000", "PASS"),
         ("AdamW created once with object-id parameter registry and moments preserved", TRAINER, "build_optimizer", "parameter_group_coverage", "parameter_group_coverage", "optimizer_recreated_at_stage_transition", "PASS"),
         ("base LR/min LR/warmup/power poly scheduler", TRAINER, "CAREASEStageScheduler", "stage_warmup_steps", "scheduler_numeric_receipt", "scheduler_none_or_static_lr", "PASS"),
-        ("checkpoint full fields/fsync/atomic rename/SHA/reload", TRAINER, "save_care_ase_checkpoint", "REQUIRED_CHECKPOINT_FIELDS", "checkpoint_schema_contract", "missing_checkpoint_field", "PASS"),
+        ("checkpoint schema v2 full fields/fsync/atomic rename/SHA/reload", TRAINER, "save_care_ase_checkpoint", "CHECKPOINT_SCHEMA_VERSION = 2", "test_checkpoint_schema_v2", "missing_checkpoint_field", "PASS"),
+        ("Commit A implementation and Commit B packet binding are non-equal by design", REPO_ROOT / "prompts/blueprints/CARE_ASE_R2_effective_contract_v5_20260803.yaml", "external_permit.commit_A_B_binding", "forbid_requirement_commitA_equals_commitB: true", "two_commit_review_binding_oracle", "require_CommitA_equals_CommitB", "PASS"),
         ("exact resume state and next optimizer-step micro-bundle hash", ENTRYPOINT, "_write_full_reload_receipt", "next_optimizer_step_micro_descriptor_hash_match", "exact_resume_receipt", "resume_not_sampler_or_next_batch", "PASS"),
         ("physical EDT/context/center target builders with per-slice topology validity", TRAINER, "build_care_ase_targets", "_signed_distance_2d", "physical_target_contract_receipt", "proxy_loss_targets", "PASS"),
         ("edema boundary prediction uses dedicated component head", TRAINER, "care_ase_loss", "components[\"edema_boundary\"]", "boundary_head_contract_receipt", "edema_class_logit_as_boundary", "PASS"),
@@ -253,13 +270,52 @@ def scheduler_static_contract() -> dict[str, Any]:
 def checkpoint_schema_contract() -> dict[str, Any]:
     trainer_text = TRAINER.read_text(encoding="utf-8")
     return {
+        "schema_version": 2,
         "required_fields": list(REQUIRED_CHECKPOINT_FIELDS),
         "field_count": len(REQUIRED_CHECKPOINT_FIELDS),
         "fsync_file": "_fsync_file(tmp)" in trainer_text,
         "atomic_rename": "os.replace(tmp, path)" in trainer_text,
         "sha_sidecar": ".sha256" in trainer_text,
         "full_reload_checks_required_fields": "missing = [field for field in REQUIRED_CHECKPOINT_FIELDS if field not in payload]" in trainer_text,
-        "status": "PASS" if all(field in trainer_text for field in REQUIRED_CHECKPOINT_FIELDS) and "os.replace(tmp, path)" in trainer_text else "FAIL",
+        "early_training_complete_rejected": "TRAINING_COMPLETE is forbidden before fixed global_step 14000" in trainer_text,
+        "sidecar_validated_on_load": "sidecar SHA mismatch" in trainer_text,
+        "status": "PASS"
+        if "CHECKPOINT_SCHEMA_VERSION = 2" in trainer_text
+        and all(field in trainer_text for field in REQUIRED_CHECKPOINT_FIELDS)
+        and "os.replace(tmp, path)" in trainer_text
+        and "TRAINING_COMPLETE is forbidden before fixed global_step 14000" in trainer_text
+        and "sidecar SHA mismatch" in trainer_text
+        else "FAIL",
+    }
+
+
+def evaluator_extent_contract() -> dict[str, Any]:
+    text = EVALUATOR.read_text(encoding="utf-8")
+    checks = {
+        "patch_forward_disables_extent": "disable_extent_wall=True" in text,
+        "global_extent_bias_function": "def _global_extent_bias" in text,
+        "global_statistics_after_aggregation": "compute_slice_extent_statistics" in text and "averaged_components" in text,
+        "adds_scar_bias_once": 'averaged_base[:, 5:6]' in text and "_global_extent_bias" in text,
+        "adds_edema_bias_once_t2_present": 'averaged_base[:, 4:5]' in text and 'availability[:, 1] > 0.5' in text,
+        "no_patch_local_final_logit_average": 'model(patch_padded, availability, global_step=14000)["final_logits"]' not in text,
+    }
+    return {
+        "status": "PASS" if all(checks.values()) else "FAIL",
+        "checks": checks,
+        "forbidden_pattern": "average_patch_logits_after_model_extent_bias",
+    }
+
+
+def canned_pass_oracle_audit() -> dict[str, Any]:
+    offenders = []
+    for path in sorted((REPO_ROOT / "scripts/validation").glob("build_care_ase_r2_*completion_packet.py")):
+        text = path.read_text(encoding="utf-8")
+        if "supplementary =" in text or "CARE_ASE_R2_PRETRAINING_REPAIR_PASS" in text or "TO_BE_FILLED_AFTER_COMMIT" in text:
+            offenders.append(str(path.relative_to(REPO_ROOT)))
+    return {
+        "status": "PASS" if not offenders else "FAIL",
+        "canned_pass_builder_count": len(offenders),
+        "offenders": offenders,
     }
 
 
@@ -282,6 +338,18 @@ def known_bad_fixture_ids() -> list[str]:
         "proxy_loss_targets",
         "count_only_hard_negative_manifest",
         "wrapper_points_old_entry",
+        "extent_patch_local_bias_averaged_across_multiwindow_inference",
+        "require_CommitA_equals_CommitB",
+        "concatenate_all_evidence_one_projection",
+        "reverse_quarter_half_scar_proposal_wiring",
+        "send_injury_into_edema_half_stage",
+        "send_boundary_into_edema_half_stage",
+        "retain_AuxiliaryHalfFeatureTower",
+        "remove_anatomy_half_ds",
+        "segmentation_padding_changed_to_0",
+        "weak_lge_gate_reset_to_0",
+        "augmentation_uses_final_patch_instead_of_initial_patch",
+        "reviewer_only_checks_aggregate_branch_gradient",
     ]
 
 
@@ -290,7 +358,7 @@ def gate_failures(payloads: dict[str, Any]) -> list[str]:
     call_chain = payloads["call_chain"]
     if not (call_chain["wrapper_uses_htzhulab"] and call_chain["wrapper_uses_env_python"] and not call_chain["old_entrypoint_bypass"]):
         failures.append("formal_call_chain")
-    for name in ("coverage", "loss", "sampler", "scheduler", "checkpoint"):
+    for name in ("coverage", "loss", "sampler", "scheduler", "checkpoint", "evaluator_extent", "canned_pass_oracle_audit"):
         payload = payloads[name]
         status = payload.get("status") if isinstance(payload, dict) else ("PASS" if all(row["status"] == "PASS" for row in payload) else "FAIL")
         if status != "PASS":
@@ -310,6 +378,8 @@ def build_gate_payloads(*, include_known_bad: bool, output_dir: Path) -> dict[st
         "sampler": sampler_static_contract(),
         "scheduler": scheduler_static_contract(),
         "checkpoint": checkpoint_schema_contract(),
+        "evaluator_extent": evaluator_extent_contract(),
+        "canned_pass_oracle_audit": canned_pass_oracle_audit(),
     }
     if include_known_bad:
         payloads["known_bad"] = known_bad_matrix(output_dir)
@@ -344,6 +414,8 @@ def apply_known_bad_fixture(fixture: str, payloads: dict[str, Any]) -> None:
     sampler = payloads["sampler"]
     scheduler = payloads["scheduler"]
     checkpoint = payloads["checkpoint"]
+    evaluator_extent = payloads["evaluator_extent"]
+    canned_pass = payloads["canned_pass_oracle_audit"]
     call_chain = payloads["call_chain"]
 
     if fixture.startswith("delete_semantic_auxiliary_loss__"):
@@ -407,6 +479,34 @@ def apply_known_bad_fixture(fixture: str, payloads: dict[str, Any]) -> None:
     elif fixture == "wrapper_points_old_entry":
         call_chain["old_entrypoint_bypass"] = True
         call_chain["old_trainer_bypass"] = True
+    elif fixture == "extent_patch_local_bias_averaged_across_multiwindow_inference":
+        payloads["evaluator_extent"]["checks"]["patch_forward_disables_extent"] = False
+        payloads["evaluator_extent"]["checks"]["global_statistics_after_aggregation"] = False
+        payloads["evaluator_extent"]["checks"]["no_patch_local_final_logit_average"] = False
+        payloads["evaluator_extent"]["status"] = "FAIL"
+        _mark_coverage_failure(coverage, "extent_patch_local_bias_averaged_across_multiwindow_inference")
+    elif fixture == "require_CommitA_equals_CommitB":
+        _mark_coverage_failure(coverage, "require_CommitA_equals_CommitB")
+    elif fixture == "concatenate_all_evidence_one_projection":
+        _mark_coverage_failure(coverage, "concatenate_all_evidence_one_projection")
+    elif fixture == "reverse_quarter_half_scar_proposal_wiring":
+        _mark_coverage_failure(coverage, "reverse_quarter_half_scar_proposal_wiring")
+    elif fixture == "send_injury_into_edema_half_stage":
+        _mark_coverage_failure(coverage, "send_injury_into_edema_half_stage")
+    elif fixture == "send_boundary_into_edema_half_stage":
+        _mark_coverage_failure(coverage, "send_boundary_into_edema_half_stage")
+    elif fixture == "retain_AuxiliaryHalfFeatureTower":
+        _mark_coverage_failure(coverage, "retain_AuxiliaryHalfFeatureTower")
+    elif fixture == "remove_anatomy_half_ds":
+        _mark_coverage_failure(coverage, "remove_anatomy_half_ds")
+    elif fixture == "segmentation_padding_changed_to_0":
+        _mark_coverage_failure(coverage, "segmentation_padding_changed_to_0")
+    elif fixture == "weak_lge_gate_reset_to_0":
+        _mark_coverage_failure(coverage, "weak_lge_gate_reset_to_0")
+    elif fixture == "augmentation_uses_final_patch_instead_of_initial_patch":
+        _mark_coverage_failure(coverage, "augmentation_uses_final_patch_instead_of_initial_patch")
+    elif fixture == "reviewer_only_checks_aggregate_branch_gradient":
+        _mark_coverage_failure(coverage, "reviewer_only_checks_aggregate_branch_gradient")
 
 
 def run_known_bad_fixture(fixture: str, output_dir: Path) -> int:
@@ -482,10 +582,12 @@ def main() -> int:
     sampler = payloads["sampler"]
     scheduler = payloads["scheduler"]
     checkpoint = payloads["checkpoint"]
+    evaluator_extent = payloads["evaluator_extent"]
+    canned_pass = payloads["canned_pass_oracle_audit"]
     known_bad = payloads["known_bad"]
     source_manifest = {
         str(path.relative_to(REPO_ROOT)): sha256_file(path)
-        for path in (WRAPPER, ENTRYPOINT, MODEL, TRAINER, SAMPLER, DECODE, EVALUATOR, MANIFEST_BUILDER, VALIDATOR)
+        for path in (WRAPPER, ENTRYPOINT, MODEL, TRAINER, SAMPLER, AUGMENTATION, DECODE, EVALUATOR, MANIFEST_BUILDER, VALIDATOR)
     }
     failures = gate_failures(payloads)
     overall_status = "NEEDS_REPAIR_CONTINUE_CURRENT_GOAL" if failures else "PASS"
@@ -496,6 +598,8 @@ def main() -> int:
     write_json(out / "sampler_static_contract.json", sampler)
     write_json(out / "scheduler_static_contract.json", scheduler)
     write_json(out / "checkpoint_schema_contract.json", checkpoint)
+    write_json(out / "full_volume_extent_aggregation_oracle.json", evaluator_extent)
+    write_json(out / "canned_pass_oracle_audit.json", canned_pass)
     write_json(out / "known_bad_validator_report.json", known_bad)
     write_json(out / "g1_source_sha_manifest.json", source_manifest)
     write_json(out / "g1_static_implementation_gate_receipt.json", {"decision": overall_status, "failures": failures, "remaining_gap_count": len(failures), "source_sha_manifest": source_manifest})

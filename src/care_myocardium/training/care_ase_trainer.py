@@ -17,14 +17,31 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
-from src.care_myocardium.models.care_ase import CAREASE, CAREASEConfig
+from src.care_myocardium.models.care_ase import CAREASE, CAREASEConfig, compute_slice_extent_statistics
 
 
-CHECKPOINT_SCHEMA_VERSION = 1
+CHECKPOINT_SCHEMA_VERSION = 2
 REQUIRED_CHECKPOINT_FIELDS = (
+    "schema_version",
     "model",
     "optimizer",
     "scheduler",
+    "training_source_commit_sha",
+    "origin_main_sha",
+    "effective_contract_sha256",
+    "external_review_permit_sha256",
+    "critical_source_manifest_sha256",
+    "split_file_sha256",
+    "split_case_lists_sha256",
+    "actual_train_case_ids_sha256",
+    "hard_negative_manifest_sha256",
+    "area_reference_receipt_sha256",
+    "case_metadata_sha256",
+    "plans_sha256",
+    "stock_checkpoint_sha256",
+    "augmentation_contract_sha256",
+    "augmentation_rng_state",
+    "fold",
     "precision_mode",
     "global_optimizer_step",
     "stage_id",
@@ -43,7 +60,10 @@ REQUIRED_CHECKPOINT_FIELDS = (
     "complete_pathology_cursor",
     "partial_case_cursors",
     "micro_case_cursors_by_group",
+    "micro_case_rng_state_by_group",
     "micro_patch_cursor",
+    "micro_patch_rng_state",
+    "next_optimizer_step_micro_descriptor_bundle",
     "next_optimizer_step_micro_descriptor_sha256",
     "center_cursor",
     "pathology_focus_cursor",
@@ -203,22 +223,56 @@ def _downsample_slice_presence_any(target_presence: torch.Tensor, out_z: int) ->
     return torch.cat(bins, dim=-1)
 
 
+def _downsample_slice_area_by_physical_bin(
+    pathology_voxels: torch.Tensor,
+    wall_voxels: torch.Tensor,
+    out_z: int,
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """Recompute area fraction inside each target z-bin from pathology/wall counts."""
+
+    path = pathology_voxels.float()
+    wall = wall_voxels.float()
+    if path.shape[-1] != wall.shape[-1]:
+        raise ValueError("pathology_voxels and wall_voxels must share z length")
+    if path.shape[-1] == int(out_z):
+        valid = (wall > 0).float()
+        return path / wall.clamp_min(1.0), valid
+    areas = []
+    valids = []
+    in_z = int(path.shape[-1])
+    for out_idx in range(int(out_z)):
+        start = int(np.floor(out_idx * in_z / int(out_z)))
+        stop = int(np.ceil((out_idx + 1) * in_z / int(out_z)))
+        stop = max(stop, start + 1)
+        path_count = path[..., start:stop].sum(dim=-1, keepdim=True)
+        wall_count = wall[..., start:stop].sum(dim=-1, keepdim=True)
+        valid = (wall_count > 0).float()
+        areas.append(path_count / wall_count.clamp_min(1.0))
+        valids.append(valid)
+    return torch.cat(areas, dim=-1), torch.cat(valids, dim=-1)
+
+
 def per_slice_extent_loss(
     presence_logits: torch.Tensor,
     area_logits: torch.Tensor,
+    detached_p_wall: torch.Tensor,
     target_presence: torch.Tensor,
-    target_area: torch.Tensor,
-    target_area_valid: torch.Tensor,
+    target_pathology_voxels: torch.Tensor,
+    target_wall_voxels: torch.Tensor,
     case_valid: torch.Tensor | None,
 ) -> tuple[torch.Tensor, torch.Tensor]:
     """Per-z presence BCE and wall-denominator-valid area SmoothL1."""
 
-    pred_presence = presence_logits.float().mean(dim=(-2, -1))
-    pred_area = torch.sigmoid(area_logits.float()).mean(dim=(-2, -1))
+    pred_presence_5d, pred_area_5d, _wall_slice, _fallback = compute_slice_extent_statistics(
+        presence_logits.float(),
+        area_logits.float(),
+        detached_p_wall.detach(),
+    )
+    pred_presence = pred_presence_5d.squeeze(-1).squeeze(-1)
+    pred_area = pred_area_5d.squeeze(-1).squeeze(-1)
     size = pred_presence.shape[-1:]
     target_presence_z = _downsample_slice_presence_any(target_presence, int(size[0]))
-    target_area_z = F.interpolate(target_area.float(), size=size, mode="nearest")
-    target_area_valid_z = F.interpolate(target_area_valid.float(), size=size, mode="nearest")
+    target_area_z, target_area_valid_z = _downsample_slice_area_by_physical_bin(target_pathology_voxels, target_wall_voxels, int(size[0]))
     if case_valid is None:
         case_mask = torch.ones_like(target_presence_z)
     else:
@@ -255,10 +309,11 @@ def _signed_distance_2d(mask: np.ndarray, *, clip: float = 10.0, sampling: tuple
 
 
 def _geometry_targets_numpy(seg: np.ndarray, spacing: tuple[float, float, float]) -> dict[str, np.ndarray]:
+    valid_label = seg >= 0
     wall = (seg == 1) | (seg == 4) | (seg == 5)
     lv = seg == 2
     rv = seg == 3
-    exterior = ~(wall | lv | rv)
+    exterior = valid_label & ~(wall | lv | rv)
     d_endo = np.zeros(seg.shape, dtype=np.float32)
     d_epi = np.zeros(seg.shape, dtype=np.float32)
     signed_endo = np.zeros(seg.shape, dtype=np.float32)
@@ -276,7 +331,7 @@ def _geometry_targets_numpy(seg: np.ndarray, spacing: tuple[float, float, float]
         d_epi[z] = ndimage.distance_transform_edt(~exterior_z, sampling=inplane_spacing).astype(np.float32)
         signed_endo[z] = _signed_distance_2d(lv_z, clip=10.0, sampling=inplane_spacing)
         signed_epi[z] = _signed_distance_2d(exterior_z, clip=10.0, sampling=inplane_spacing)
-        valid[z] = wall_z.astype(np.float32)
+        valid[z] = (wall_z & valid_label[z]).astype(np.float32)
     rho = d_endo / (d_endo + d_epi + 1.0e-6)
     return {
         "signed_endo_distance": signed_endo,
@@ -288,6 +343,7 @@ def _geometry_targets_numpy(seg: np.ndarray, spacing: tuple[float, float, float]
 
 def _context_target_numpy(seg: np.ndarray, *, edema: bool, spacing: tuple[float, float, float]) -> np.ndarray:
     out = np.full(seg.shape, -1, dtype=np.int64)
+    valid_label = seg >= 0
     pathology = seg == (4 if edema else 5)
     scar = seg == 5
     pure_edema = seg == 4
@@ -297,11 +353,11 @@ def _context_target_numpy(seg: np.ndarray, *, edema: bool, spacing: tuple[float,
     dist_pathology_or_blood = ndimage.distance_transform_edt(~(blood | pure_edema | scar), sampling=spacing)
     dist_wall = ndimage.distance_transform_edt(~wall_union, sampling=spacing)
     out[pathology] = 0
-    non_pathology = ~(scar | pure_edema)
+    non_pathology = valid_label & ~(scar | pure_edema)
     out[(out < 0) & non_pathology & (dist_blood <= 3.0)] = 1
     normal = (seg == 1) & (dist_pathology_or_blood > 3.0)
     out[(out < 0) & normal] = 2
-    remote = (seg == 0) & (dist_wall >= 10.0)
+    remote = valid_label & (seg == 0) & (dist_wall >= 10.0)
     out[(out < 0) & remote] = 3
     if edema:
         out[seg == 5] = -1
@@ -347,6 +403,7 @@ def _spacing_rows(batch: dict[str, torch.Tensor], count: int) -> list[tuple[floa
 
 
 def _edema_boundary_numpy(seg: np.ndarray, spacing: tuple[float, float, float]) -> dict[str, np.ndarray]:
+    valid_label = seg >= 0
     edema = seg == 4
     if not bool(edema.any()):
         zero = np.zeros(seg.shape, dtype=np.float32)
@@ -356,15 +413,16 @@ def _edema_boundary_numpy(seg: np.ndarray, spacing: tuple[float, float, float]) 
         return {"edema_boundary": np.ones(seg.shape, dtype=np.float32), "edema_boundary_raw_mm": raw, "edema_boundary_valid": np.ones(seg.shape, dtype=np.float32)}
     raw_mm = np.asarray(ndimage.distance_transform_edt(edema, sampling=spacing) - ndimage.distance_transform_edt(~edema, sampling=spacing), dtype=np.float32)
     clipped = np.clip(raw_mm, -10.0, 10.0).astype(np.float32) / 10.0
-    valid = ((np.abs(raw_mm) <= 10.0) | edema).astype(np.float32)
+    valid = (((np.abs(raw_mm) <= 10.0) | edema) & valid_label).astype(np.float32)
     return {"edema_boundary": clipped, "edema_boundary_raw_mm": raw_mm, "edema_boundary_valid": valid}
 
 
 def _slice_extent_targets_numpy(seg: np.ndarray) -> dict[str, np.ndarray]:
+    valid_label = seg >= 0
     wall = (seg == 1) | (seg == 4) | (seg == 5)
     out: dict[str, np.ndarray] = {}
     for name, label_value in (("scar", 5), ("edema", 4)):
-        pathology = seg == label_value
+        pathology = (seg == label_value) & valid_label
         presence = pathology.any(axis=(1, 2)).astype(np.float32)
         wall_voxels = wall.sum(axis=(1, 2)).astype(np.float32)
         path_voxels = pathology.sum(axis=(1, 2)).astype(np.float32)
@@ -374,6 +432,8 @@ def _slice_extent_targets_numpy(seg: np.ndarray) -> dict[str, np.ndarray]:
         out[f"{name}_slice_presence"] = presence
         out[f"{name}_slice_area"] = area
         out[f"{name}_slice_area_valid"] = valid.astype(np.float32)
+        out[f"{name}_slice_pathology_voxels"] = path_voxels.astype(np.float32)
+        out[f"{name}_slice_wall_voxels"] = wall_voxels.astype(np.float32)
     return out
 
 
@@ -412,13 +472,18 @@ def build_care_ase_targets(target: torch.Tensor, availability: torch.Tensor, out
     stacked["edema_boundary"] = torch.from_numpy(np.stack(edema_boundary)[:, None]).to(device=device, dtype=torch.float32)
     stacked["edema_boundary_raw_mm"] = torch.from_numpy(np.stack(edema_boundary_raw)[:, None]).to(device=device, dtype=torch.float32)
     stacked["edema_boundary_valid"] = torch.from_numpy(np.stack(edema_boundary_valid)[:, None]).to(device=device, dtype=torch.float32)
+    stacked["valid_label_mask"] = (target >= 0).unsqueeze(1).to(device=device, dtype=torch.float32)
     for key in (
         "scar_slice_presence",
         "scar_slice_area",
         "scar_slice_area_valid",
+        "scar_slice_pathology_voxels",
+        "scar_slice_wall_voxels",
         "edema_slice_presence",
         "edema_slice_area",
         "edema_slice_area_valid",
+        "edema_slice_pathology_voxels",
+        "edema_slice_wall_voxels",
     ):
         stacked[key] = torch.from_numpy(np.stack([row[key] for row in extent_rows])[:, None]).to(device=device, dtype=torch.float32)
     stacked["availability"] = availability
@@ -481,10 +546,23 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor]) -> tu
         metrics["five_class_ce_without_class4"] = ce5
         metrics["five_class_dice_without_class4"] = dice5
         final_terms.append(ce5 + dice5)
+    if "pathology_deep_supervision_weights" not in outputs:
+        raise KeyError("CARE-ASE loss requires pathology_deep_supervision_weights from the model forward output")
+    dense_weights = outputs["pathology_deep_supervision_weights"]
+    if "full" not in dense_weights or "half" not in dense_weights:
+        raise KeyError("pathology_deep_supervision_weights must contain full and half weights")
+    full_weight = float(dense_weights["full"])
+    half_weight = float(dense_weights["half"])
+    weight_sum = max(full_weight + half_weight, 1.0e-6)
+    full_weight, half_weight = full_weight / weight_sum, half_weight / weight_sum
     anatomy_target = target.clone()
     anatomy_target = torch.where((anatomy_target == 4) | (anatomy_target == 5), torch.ones_like(anatomy_target), anatomy_target)
     anatomy_ce = F.cross_entropy(outputs["anatomy_logits_0_3"], anatomy_target.clamp(-1, 3), ignore_index=-1)
     anatomy_dice = dice_loss_softmax(outputs["anatomy_logits_0_3"], anatomy_target.clamp(-1, 3), classes=(1, 2, 3))
+    anatomy_half_target = _downsample_target(anatomy_target.unsqueeze(1), outputs["anatomy"]["half_logits4"].shape[-3:]).squeeze(1).clamp(-1, 3)
+    anatomy_half_ce = F.cross_entropy(outputs["anatomy"]["half_logits4"], anatomy_half_target, ignore_index=-1)
+    anatomy_half_dice = dice_loss_softmax(outputs["anatomy"]["half_logits4"], anatomy_half_target, classes=(1, 2, 3))
+    anatomy4_loss = full_weight * (anatomy_ce + anatomy_dice) + half_weight * (anatomy_half_ce + anatomy_half_dice)
     valid_binary = (target >= 0).unsqueeze(1).to(logits)
     wall_target = ((target == 1) | (target == 4) | (target == 5)).unsqueeze(1)
     scar_target = (target == 5).unsqueeze(1)
@@ -504,15 +582,6 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor]) -> tu
     scar_full = binary_dice_focal(outputs["z_scar"], scar_target, valid_binary, alpha=0.25, gamma=2.0)
     scar_half_logit = F.interpolate(outputs["scar"]["half_logits6"][:, 5:6], size=target.shape[-3:], mode="trilinear", align_corners=False)
     scar_half_dense = binary_dice_focal(scar_half_logit, scar_target, valid_binary, alpha=0.25, gamma=2.0)
-    if "pathology_deep_supervision_weights" not in outputs:
-        raise KeyError("CARE-ASE loss requires pathology_deep_supervision_weights from the model forward output")
-    dense_weights = outputs["pathology_deep_supervision_weights"]
-    if "full" not in dense_weights or "half" not in dense_weights:
-        raise KeyError("pathology_deep_supervision_weights must contain full and half weights")
-    full_weight = float(dense_weights["full"])
-    half_weight = float(dense_weights["half"])
-    weight_sum = max(full_weight + half_weight, 1.0e-6)
-    full_weight, half_weight = full_weight / weight_sum, half_weight / weight_sum
     scar_dense = full_weight * scar_full + half_weight * scar_half_dense
     edema_full = binary_dice_focal(outputs["z_pure_edema"], edema_target, edema_valid, alpha=0.35, gamma=2.0)
     edema_half_logit = F.interpolate(outputs["edema"]["half_logits6"][:, 4:5], size=target.shape[-3:], mode="trilinear", align_corners=False)
@@ -523,8 +592,10 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor]) -> tu
     scar_component = per_gt_component_tversky(scar_half, scar_target.float(), valid_binary, batch)
     scar_occ_quarter = _downsample_target(scar_target, components["scar_quarter_occupancy"].shape[-3:])
     scar_occ_half = _downsample_target(scar_target, components["scar_half_occupancy"].shape[-3:])
-    scar_center = 0.5 * normalized_focal_bce(components["scar_quarter_center"], built_targets["scar_center_quarter"], alpha=0.25, gamma=2.0) + 0.5 * normalized_focal_bce(components["scar_half_center"], built_targets["scar_center_half"], alpha=0.25, gamma=2.0)
-    scar_occupancy = 0.5 * binary_dice_focal(components["scar_quarter_occupancy"], scar_occ_quarter, None, alpha=0.25, gamma=2.0) + 0.5 * binary_dice_focal(components["scar_half_occupancy"], scar_occ_half, None, alpha=0.25, gamma=2.0)
+    valid_quarter = _downsample_target(valid_binary, components["scar_quarter_center"].shape[-3:]).float()
+    valid_half = _downsample_target(valid_binary, components["scar_half_center"].shape[-3:]).float()
+    scar_center = 0.5 * normalized_focal_bce(components["scar_quarter_center"], built_targets["scar_center_quarter"], valid_quarter, alpha=0.25, gamma=2.0) + 0.5 * normalized_focal_bce(components["scar_half_center"], built_targets["scar_center_half"], valid_half, alpha=0.25, gamma=2.0)
+    scar_occupancy = 0.5 * binary_dice_focal(components["scar_quarter_occupancy"], scar_occ_quarter, valid_quarter, alpha=0.25, gamma=2.0) + 0.5 * binary_dice_focal(components["scar_half_occupancy"], scar_occ_half, valid_half, alpha=0.25, gamma=2.0)
     edema_boundary_target = built_targets["edema_boundary"]
     edema_boundary_valid = built_targets["edema_boundary_valid"].to(logits) * t2_mask
     edema_boundary_logit = F.interpolate(components["edema_boundary"], size=target.shape[-3:], mode="trilinear", align_corners=False)
@@ -534,17 +605,19 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor]) -> tu
     scar_presence, scar_area = per_slice_extent_loss(
         components["scar_extent_presence"],
         components["scar_extent_area"],
+        outputs["p_wall_union"],
         built_targets["scar_slice_presence"],
-        built_targets["scar_slice_area"],
-        built_targets["scar_slice_area_valid"],
+        built_targets["scar_slice_pathology_voxels"],
+        built_targets["scar_slice_wall_voxels"],
         None,
     )
     edema_presence, edema_area = per_slice_extent_loss(
         components["edema_extent_presence"],
         components["edema_extent_area"],
+        outputs["p_wall_union"],
         built_targets["edema_slice_presence"],
-        built_targets["edema_slice_area"],
-        built_targets["edema_slice_area_valid"],
+        built_targets["edema_slice_pathology_voxels"],
+        built_targets["edema_slice_wall_voxels"],
         availability[:, 1:2],
     )
     scar_context_target = _downsample_target(built_targets["scar_context_target"].unsqueeze(1), components["scar_context"].shape[-3:]).squeeze(1)
@@ -560,7 +633,7 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor]) -> tu
     edema_extent = 0.5 * edema_presence + 0.5 * edema_area
     weighted_terms = {
         "final_competition": REQUIRED_LOSS_WEIGHTS["final_competition"] * torch.stack(final_terms).mean(),
-        "anatomy4": REQUIRED_LOSS_WEIGHTS["anatomy4"] * (anatomy_ce + anatomy_dice),
+        "anatomy4": REQUIRED_LOSS_WEIGHTS["anatomy4"] * anatomy4_loss,
         "wall": REQUIRED_LOSS_WEIGHTS["wall"] * wall_loss,
         "distance": REQUIRED_LOSS_WEIGHTS["distance"] * distance_loss,
         "scar_dense": REQUIRED_LOSS_WEIGHTS["scar_dense"] * scar_dense,
@@ -581,6 +654,9 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor]) -> tu
             "loss": total,
             "anatomy_ce": anatomy_ce,
             "anatomy_dice": anatomy_dice,
+            "anatomy_half_ce": anatomy_half_ce,
+            "anatomy_half_dice": anatomy_half_dice,
+            "anatomy4_deep_supervised": anatomy4_loss,
             "wall": wall_loss,
             "distance": distance_loss,
             "scar_dense": scar_dense,
@@ -668,9 +744,9 @@ def _parameter_group_registry(model: CAREASE) -> tuple[dict[int, str], dict[int,
     for param_id, names in aliases.items():
         canonical = names[0]
         canonical_by_id[param_id] = canonical
-        if any(".half_projection." in name or ".full_projection." in name for name in names):
+        if any(".half_projections." in name or ".full_projections." in name for name in names):
             group = "new_modules"
-        elif any(name.startswith(("component_heads.", "auxiliary_half_tower.", "scar_lge_half_adapter.", "scar_lge_full_adapter.", "scar_c0_half_adapter.", "scar_c0_full_adapter.", "edema_t2_half_adapter.", "edema_t2_full_adapter.", "edema_c0_half_adapter.", "edema_c0_full_adapter.", "edema_lge_half_adapter.", "edema_lge_full_adapter.", "scar_c0_gate.", "edema_c0_gate.", "edema_lge_gate.", "anatomy_geometry_heads.", "edema_dilation_context.")) for name in names):
+        elif any(name.startswith(("component_heads.", "scar_lge_half_adapter.", "scar_lge_full_adapter.", "scar_c0_half_adapter.", "scar_c0_full_adapter.", "edema_t2_half_adapter.", "edema_t2_full_adapter.", "edema_c0_half_adapter.", "edema_c0_full_adapter.", "edema_lge_half_adapter.", "edema_lge_full_adapter.", "scar_c0_gate.", "edema_c0_gate.", "edema_lge_gate.", "anatomy_geometry_heads.", "edema_dilation_context.")) for name in names):
             group = "new_modules"
         elif any(name.startswith(("scar_branch.seg_layers.", "edema_branch.seg_layers.")) for name in names):
             group = "cloned_pathology_classifiers"
@@ -921,17 +997,56 @@ def save_care_ase_checkpoint(
     split_hash: str | None = None,
     plans_hash: str | None = None,
     stock_checkpoint_hash: str | None = None,
+    training_source_commit_sha: str | None = None,
+    origin_main_sha: str | None = None,
+    effective_contract_sha256: str | None = None,
+    external_review_permit_sha256: str | None = None,
+    critical_source_manifest_sha256: str | None = None,
+    split_file_sha256: str | None = None,
+    split_case_lists_sha256: str | None = None,
+    actual_train_case_ids_sha256: str | None = None,
+    hard_negative_manifest_sha256: str | None = None,
+    area_reference_receipt_sha256: str | None = None,
+    case_metadata_sha256: str | None = None,
+    augmentation_contract_sha256: str | None = None,
+    augmentation_rng_state: dict[str, Any] | None = None,
     precision_mode: str = "fp32_guarded_mixed_precision_allowed",
 ) -> None:
     rng = capture_rng_state()
     sampler_state = dict(sampler_state or {})
     next_sha = str(next_batch_hash or sampler_state.get("next_batch_descriptor_sha256", "UNSET"))
+    next_bundle_sha = str(sampler_state.get("next_optimizer_step_micro_descriptor_sha256", next_sha))
+    if int(global_step) < int(model.config.max_optimizer_steps) and "TRAINING_COMPLETE" in {next_sha, next_bundle_sha}:
+        raise ValueError("TRAINING_COMPLETE is forbidden before fixed global_step 14000")
     config_payload = asdict(model.config)
     payload = {
         "schema_version": CHECKPOINT_SCHEMA_VERSION,
         "model": model.state_dict(),
         "optimizer": optimizer.state_dict(),
         "scheduler": scheduler.state_dict() if scheduler is not None else {"last_global_step": int(global_step), "type": "CAREASEStageScheduler"},
+        "training_source_commit_sha": training_source_commit_sha or "UNSET",
+        "origin_main_sha": origin_main_sha or "UNSET",
+        "effective_contract_sha256": effective_contract_sha256 or "UNSET",
+        "external_review_permit_sha256": external_review_permit_sha256 or "UNSET",
+        "critical_source_manifest_sha256": critical_source_manifest_sha256 or code_hash or "UNSET",
+        "split_file_sha256": split_file_sha256 or split_hash or "UNSET",
+        "split_case_lists_sha256": split_case_lists_sha256 or "UNSET",
+        "actual_train_case_ids_sha256": actual_train_case_ids_sha256 or "UNSET",
+        "hard_negative_manifest_sha256": hard_negative_manifest_sha256 or str(sampler_state.get("hard_negative_manifest_sha256", "UNSET")),
+        "area_reference_receipt_sha256": area_reference_receipt_sha256 or "UNSET",
+        "case_metadata_sha256": case_metadata_sha256 or "UNSET",
+        "plans_sha256": plans_hash or _sha256_file_or_missing(model.config.plans_path),
+        "stock_checkpoint_sha256": stock_checkpoint_hash or _sha256_file_or_missing(model.config.checkpoint_path),
+        "augmentation_contract_sha256": augmentation_contract_sha256 or "UNSET",
+        "augmentation_rng_state": augmentation_rng_state
+        or {
+            "source": "global_python_numpy_torch_rng",
+            "python": rng["python"],
+            "numpy": rng["numpy"],
+            "torch_cpu": rng["torch_cpu"],
+            "torch_cuda": rng["torch_cuda"],
+        },
+        "fold": int(model.config.fold),
         "precision_mode": precision_mode,
         "global_optimizer_step": int(global_step),
         "stage_id": str(stage_id),
@@ -950,7 +1065,9 @@ def save_care_ase_checkpoint(
         "complete_pathology_cursor": int(sampler_state.get("complete_pathology_cursor", sampler_state.get("pathology_focus_cursor", 0))),
         "partial_case_cursors": sampler_state.get("partial_case_cursors", {"lge_only": 0, "lge_c0": 0}),
         "micro_case_cursors_by_group": sampler_state.get("micro_case_cursors_by_group", {}),
+        "micro_case_rng_state_by_group": sampler_state.get("micro_case_rng_state_by_group", {}),
         "micro_patch_cursor": int(sampler_state.get("micro_patch_cursor", 0)),
+        "micro_patch_rng_state": sampler_state.get("micro_patch_rng_state", "UNSET"),
         "center_cursor": int(sampler_state.get("complete_center_cursor", sampler_state.get("center_cursor", 0))),
         "pathology_focus_cursor": int(sampler_state.get("complete_pathology_cursor", sampler_state.get("pathology_focus_cursor", 0))),
         "scar_focus_cursor": int(sampler_state.get("scar_focus_cursor", 0)),
@@ -959,7 +1076,7 @@ def save_care_ase_checkpoint(
         "batch_descriptor_cursor": int(sampler_state.get("batch_descriptor_cursor", 0)),
         "next_batch_descriptor_sha256": next_sha,
         "next_optimizer_step_micro_descriptor_bundle": sampler_state.get("next_optimizer_step_micro_descriptor_bundle", []),
-        "next_optimizer_step_micro_descriptor_sha256": str(sampler_state.get("next_optimizer_step_micro_descriptor_sha256", next_sha)),
+        "next_optimizer_step_micro_descriptor_sha256": next_bundle_sha,
         "extent_wall_ramp_value": CAREASE.extent_wall_ramp(global_step),
         "code_hash": code_hash or "UNSET",
         "config_hash": config_hash or _json_sha(config_payload),
@@ -993,12 +1110,25 @@ def load_care_ase_checkpoint(
     map_location: str | torch.device = "cpu",
     restore_rng: bool = True,
 ) -> tuple[CAREASE, dict[str, Any]]:
+    sidecar = path.with_suffix(path.suffix + ".sha256")
+    if not sidecar.is_file():
+        raise ValueError(f"CARE-ASE checkpoint missing SHA sidecar: {sidecar}")
+    expected_line = sidecar.read_text(encoding="utf-8").strip().split()
+    expected_sha = expected_line[0] if expected_line else ""
+    observed_sha = _sha256_file_or_missing(path)
+    if expected_sha != observed_sha:
+        raise ValueError(f"CARE-ASE checkpoint sidecar SHA mismatch: expected {expected_sha} observed {observed_sha}")
     payload = torch.load(path, map_location=map_location, weights_only=False)
     if int(payload.get("schema_version", 0)) != CHECKPOINT_SCHEMA_VERSION:
         raise ValueError(f"unsupported CARE-ASE checkpoint schema_version: {payload.get('schema_version')}")
     missing = [field for field in REQUIRED_CHECKPOINT_FIELDS if field not in payload]
     if missing:
         raise ValueError(f"CARE-ASE checkpoint missing required fields: {missing}")
+    if int(payload["global_optimizer_step"]) < 14000 and (
+        payload.get("next_batch_descriptor_sha256") == "TRAINING_COMPLETE"
+        or payload.get("next_optimizer_step_micro_descriptor_sha256") == "TRAINING_COMPLETE"
+    ):
+        raise ValueError("early checkpoint contains forbidden TRAINING_COMPLETE token")
     model = CAREASE(CAREASEConfig(**payload["config"]), map_location=map_location)
     model.load_state_dict(payload["model"])
     if restore_rng:
@@ -1028,7 +1158,9 @@ def checkpoint_receipt(path: Path, payload: dict[str, Any]) -> dict[str, Any]:
         "complete_pathology_cursor": int(payload["complete_pathology_cursor"]),
         "partial_case_cursors": payload.get("partial_case_cursors", {}),
         "micro_case_cursors_by_group": payload.get("micro_case_cursors_by_group", {}),
+        "micro_case_rng_state_by_group": payload.get("micro_case_rng_state_by_group", {}),
         "micro_patch_cursor": int(payload.get("micro_patch_cursor", 0)),
+        "micro_patch_rng_state": payload.get("micro_patch_rng_state", "UNSET"),
         "next_optimizer_step_micro_descriptor_sha256": payload.get("next_optimizer_step_micro_descriptor_sha256", payload["next_batch_descriptor_sha256"]),
         "extent_wall_ramp_value": float(payload["extent_wall_ramp_value"]),
         "next_batch_hash": payload["next_batch_descriptor_sha256"],

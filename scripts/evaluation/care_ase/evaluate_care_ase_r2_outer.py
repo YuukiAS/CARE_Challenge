@@ -28,6 +28,7 @@ if str(REPO_ROOT) not in sys.path:
 
 from src.care_myocardium.inference.care_ase_r2_decode import decode_care_ase_r2_logits, pure_edema_metric_population, scar_metric_population
 from src.care_myocardium.data.case_metadata import load_myops_case_metadata
+from src.care_myocardium.models.care_ase import compute_slice_extent_statistics
 from src.care_myocardium.training.care_ase_trainer import load_care_ase_checkpoint
 
 
@@ -153,31 +154,92 @@ def _pad_patch_to_size(patch: torch.Tensor, patch_size: tuple[int, int, int]) ->
     return patch, actual
 
 
+def starts_for(dim: int, patch: int, overlap: float = 0.5) -> list[int]:
+    if dim <= patch:
+        return [0]
+    stride = max(1, int(patch * (1.0 - overlap)))
+    values = list(range(0, max(dim - patch, 0) + 1, stride))
+    if not values or values[-1] != dim - patch:
+        values.append(dim - patch)
+    return values
+
+
+def _aggregate_patch_tensor(accum: torch.Tensor, count: torch.Tensor, value: torch.Tensor, z: int, y: int, x: int, actual: tuple[int, int, int]) -> None:
+    value = value[..., : actual[0], : actual[1], : actual[2]]
+    accum[..., z : z + actual[0], y : y + actual[1], x : x + actual[2]] += value
+    count[..., z : z + actual[0], y : y + actual[1], x : x + actual[2]] += 1.0
+
+
+def _global_extent_bias(model: torch.nn.Module, components: dict[str, torch.Tensor], p_wall: torch.Tensor, *, pathology: str) -> torch.Tensor:
+    if pathology == "scar":
+        presence, area, _wall_slice, _fallback = compute_slice_extent_statistics(
+            components["scar_extent_presence"],
+            components["scar_extent_area"],
+            p_wall,
+        )
+        area_reference = model.scar_area_reference
+        presence_coef, area_coef, wall_coef = 0.30, 0.20, 0.15
+    elif pathology == "edema":
+        presence, area, _wall_slice, _fallback = compute_slice_extent_statistics(
+            components["edema_extent_presence"],
+            components["edema_extent_area"],
+            p_wall,
+        )
+        area_reference = model.edema_area_reference
+        presence_coef, area_coef, wall_coef = 0.35, 0.30, 0.10
+    else:
+        raise ValueError(f"unknown pathology: {pathology}")
+    presence_bias = presence_coef * model._sigmoid_logit_center(presence, 0.50)
+    area_bias = area_coef * model._sigmoid_logit_center(area, area_reference)
+    wall_bias = wall_coef * model._sigmoid_logit_center(p_wall.detach(), 0.50)
+    slice_bias = F.interpolate(presence_bias + area_bias, size=p_wall.shape[-3:], mode="trilinear", align_corners=False)
+    return float(model.extent_wall_ramp(14000)) * (slice_bias + wall_bias)
+
+
 def sliding_window_logits(model: torch.nn.Module, image: torch.Tensor, availability: torch.Tensor, *, patch_size: tuple[int, int, int], overlap: float = 0.5) -> torch.Tensor:
     spatial = tuple(int(v) for v in image.shape[-3:])
     if all(spatial[i] <= patch_size[i] for i in range(3)):
         patch, actual = _pad_patch_to_size(image, patch_size)
         logits = model(patch, availability, global_step=14000)["final_logits"]
         return logits[..., : actual[0], : actual[1], : actual[2]]
-    stride = tuple(max(1, int(size * (1.0 - overlap))) for size in patch_size)
-    out = image.new_zeros((1, 6, *spatial))
+    starts = [starts_for(dim, size, overlap) for dim, size in zip(spatial, patch_size)]
+    base = image.new_zeros((1, 6, *spatial))
+    p_wall = image.new_zeros((1, 1, *spatial))
+    scar_presence = image.new_zeros((1, 1, *spatial))
+    scar_area = image.new_zeros((1, 1, *spatial))
+    edema_presence = image.new_zeros((1, 1, *spatial))
+    edema_area = image.new_zeros((1, 1, *spatial))
     count = image.new_zeros((1, 1, *spatial))
-    starts = []
-    for dim, size, step in zip(spatial, patch_size, stride):
-        values = list(range(0, max(dim - size, 0) + 1, step))
-        if not values or values[-1] != max(dim - size, 0):
-            values.append(max(dim - size, 0))
-        starts.append(values)
     for z in starts[0]:
         for y in starts[1]:
             for x in starts[2]:
                 patch = image[..., z : z + patch_size[0], y : y + patch_size[1], x : x + patch_size[2]]
                 patch_padded, actual = _pad_patch_to_size(patch, patch_size)
-                logits = model(patch_padded, availability, global_step=14000)["final_logits"]
-                logits = logits[..., : actual[0], : actual[1], : actual[2]]
-                out[..., z : z + actual[0], y : y + actual[1], x : x + actual[2]] += logits
-                count[..., z : z + actual[0], y : y + actual[1], x : x + actual[2]] += 1.0
-    return out / count.clamp_min(1.0)
+                outputs = model(patch_padded, availability, global_step=14000, disable_extent_wall=True)
+                _aggregate_patch_tensor(base, count, outputs["final_logits"], z, y, x, actual)
+                ones = image.new_zeros((1, 1, *spatial))
+                _aggregate_patch_tensor(p_wall, ones, outputs["p_wall_union"], z, y, x, actual)
+                components = outputs["components"]
+                for target, key in (
+                    (scar_presence, "scar_extent_presence"),
+                    (scar_area, "scar_extent_area"),
+                    (edema_presence, "edema_extent_presence"),
+                    (edema_area, "edema_extent_area"),
+                ):
+                    up = F.interpolate(components[key].float(), size=patch_size, mode="trilinear", align_corners=False)
+                    _aggregate_patch_tensor(target, ones, up, z, y, x, actual)
+    averaged_base = base / count.clamp_min(1.0)
+    averaged_components = {
+        "scar_extent_presence": scar_presence / count.clamp_min(1.0),
+        "scar_extent_area": scar_area / count.clamp_min(1.0),
+        "edema_extent_presence": edema_presence / count.clamp_min(1.0),
+        "edema_extent_area": edema_area / count.clamp_min(1.0),
+    }
+    averaged_p_wall = p_wall / count.clamp_min(1.0)
+    averaged_base[:, 5:6] = averaged_base[:, 5:6] + _global_extent_bias(model, averaged_components, averaged_p_wall, pathology="scar")
+    if bool((availability[:, 1] > 0.5).any()):
+        averaged_base[:, 4:5] = averaged_base[:, 4:5] + _global_extent_bias(model, averaged_components, averaged_p_wall, pathology="edema")
+    return averaged_base
 
 
 def main() -> int:

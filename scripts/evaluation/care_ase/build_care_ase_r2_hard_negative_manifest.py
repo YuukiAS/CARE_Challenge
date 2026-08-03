@@ -101,27 +101,12 @@ def bind_prediction_to_preprocessed_grid(gt: np.ndarray, pred: np.ndarray, *, so
             "axis_transform": [2, 1, 0],
             "no_min_shape_crop": True,
         }
-    if pred.ndim == 3:
-        zyx = np.transpose(pred, (2, 1, 0))
-        zoom = tuple(gt.shape[idx] / max(zyx.shape[idx], 1) for idx in range(3))
-        resampled = ndimage.zoom(zyx, zoom=zoom, order=0)
-        if resampled.shape == gt.shape:
-            changed_axes = [axis for axis, value in zip(("z", "y", "x"), zoom) if abs(float(value) - 1.0) > 1.0e-6]
-            return resampled.astype(np.uint8, copy=False), {
-                "binding": "strict_nearest_label_resample_nifti_xyz_to_preprocessed_zyx",
-                "source_prediction_shape": list(pred.shape),
-                "source_header_zooms": source_meta.get("header_zooms"),
-                "preprocessed_shape": list(gt.shape),
-                "preprocessed_spacing_zyx": preprocessed_geometry.get("spacing_zyx"),
-                "axis_transform": [2, 1, 0],
-                "zoom_zyx": [float(v) for v in zoom],
-                "changed_axes": changed_axes,
-                "resample_order": "nearest_label",
-                "no_min_shape_crop": True,
-            }
     raise RuntimeError(
-        "stock OOF prediction cannot be strictly bound to preprocessed grid without resampling: "
-        f"prediction_shape={tuple(pred.shape)} preprocessed_shape={tuple(gt.shape)}"
+        "stock OOF prediction is not already bound to the preprocessed grid. "
+        "CARE-ASE R2 forbids min(shape) crops and ad hoc ndimage.zoom; provide a canonical "
+        "patient-held-out stock nnU-Net OOF array in preprocessed-grid shape or an exact xyz->zyx "
+        f"shape match. prediction_shape={tuple(pred.shape)} preprocessed_shape={tuple(gt.shape)} "
+        f"source_meta={source_meta} preprocessed_geometry={preprocessed_geometry}"
     )
 
 
@@ -237,7 +222,9 @@ def main() -> int:
     args = parser.parse_args()
 
     roots = [p.resolve() for p in args.stock_pred_root]
-    anchor_entries = {} if roots else load_anchor_entries(args.anchor_manifest.resolve())
+    if roots:
+        raise RuntimeError("CARE-ASE R2 hard-negative source must be canonical stock nnU-Net OOF anchor manifest; --stock-pred-root is forbidden")
+    anchor_entries = load_anchor_entries(args.anchor_manifest.resolve())
     splits = json.loads((REPO_ROOT / SPLITS_REL).read_text(encoding="utf-8"))
     fold_train = {idx: {str(case_id) for case_id in split["train"]} for idx, split in enumerate(splits)}
     stock_manifest = json.loads(args.anchor_manifest.read_text(encoding="utf-8")) if args.anchor_manifest.is_file() else {}
@@ -250,10 +237,7 @@ def main() -> int:
     missing: list[str] = []
     for row in rows:
         try:
-            if roots:
-                pred_raw, pred_path, pred_sha, pred_meta = read_prediction_from_roots(row.case_id, roots)
-            else:
-                pred_raw, pred_path, pred_sha, pred_meta = read_prediction_from_anchor(row.case_id, anchor_entries)
+            pred_raw, pred_path, pred_sha, pred_meta = read_prediction_from_anchor(row.case_id, anchor_entries)
         except FileNotFoundError:
             missing.append(row.case_id)
             continue
@@ -290,9 +274,9 @@ def main() -> int:
         "status": "PASS",
         "fold": int(args.fold),
         "source": "canonical_patient_held_out_stock_nnunet_oof_only",
-        "anchor_manifest": str(args.anchor_manifest.resolve()) if not roots else None,
-        "prediction_root_count": len(roots),
-        "prediction_roots": [str(path) for path in roots],
+        "anchor_manifest": str(args.anchor_manifest.resolve()),
+        "prediction_root_count": 0,
+        "prediction_roots": [],
         "case_count": len(cases),
         "coord_limit_per_target": int(args.coord_limit),
         "forbidden_sources_removed": ["MoSAIC", "SRR", "cascade_prediction_roots"],

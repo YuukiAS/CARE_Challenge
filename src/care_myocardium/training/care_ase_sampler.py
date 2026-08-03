@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import csv
 from dataclasses import asdict, dataclass
 import hashlib
 import json
@@ -20,7 +19,6 @@ from src.care_myocardium.data.case_metadata import load_myops_case_metadata
 
 
 HARD_NEGATIVE_MANIFEST_TEMPLATE = "results/20260803_care_ase_r2_full_fidelity_execution/hard_negative_manifest_fold{fold}.json"
-LEGACY_HARD_NEGATIVE_MANIFEST_TEMPLATE = "results/20260801_care_ase_final_model/hard_negative_manifest_fold{fold}.csv"
 
 
 @dataclass(frozen=True)
@@ -80,24 +78,9 @@ def _case_group_from_availability(availability: tuple[float, float, float]) -> s
 
 
 def _load_hard_negative_manifest(repo_root: Path, fold: int) -> dict[str, Any]:
-    candidates = [
-        repo_root / HARD_NEGATIVE_MANIFEST_TEMPLATE.format(fold=int(fold)),
-        repo_root / LEGACY_HARD_NEGATIVE_MANIFEST_TEMPLATE.format(fold=int(fold)),
-    ]
-    path = next((item for item in candidates if item.is_file()), candidates[0])
+    path = repo_root / HARD_NEGATIVE_MANIFEST_TEMPLATE.format(fold=int(fold))
     if not path.is_file():
-        return {"manifest_path": str(path), "manifest_sha256": "MISSING", "cases": {}}
-    if path.suffix == ".csv":
-        cases: dict[str, dict[str, int]] = {}
-        with path.open(newline="", encoding="utf-8") as f:
-            for row in csv.DictReader(f):
-                cases[str(row["case_id"])] = {
-                    "scar_fp_voxels": int(float(row.get("scar_fp_voxels", 0) or 0)),
-                    "scar_fn_voxels": int(float(row.get("scar_fn_voxels", 0) or 0)),
-                    "edema_fp_voxels": int(float(row.get("edema_fp_voxels", 0) or 0)),
-                    "edema_fn_voxels": int(float(row.get("edema_fn_voxels", 0) or 0)),
-                }
-        return {"manifest_path": str(path), "manifest_sha256": sha256_file(path), "cases": cases}
+        raise FileNotFoundError(f"canonical CARE-ASE R2 hard-negative JSON manifest is required: {path}")
     data = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(data, dict):
         raise ValueError(f"hard-negative manifest is not a JSON object: {path}")
@@ -255,6 +238,11 @@ class CAREASEDeterministicSampler:
         self.fold = int(fold)
         self.seed = int(seed)
         self.rng = random.Random(f"{seed}|fold={fold}")
+        self.micro_case_rng_by_group = {
+            group: random.Random(f"{seed}|fold={fold}|micro_case|{group}")
+            for group in ("complete_centerB", "complete_centerC", "lge_only", "lge_c0")
+        }
+        self.micro_patch_rng = random.Random(f"{seed}|fold={fold}|micro_patch")
         metadata = load_myops_case_metadata(self.repo_root)
         rows = [row for row in build_care_ase_case_roles(self.repo_root, self.fold) if row.role == "actual-train"]
         self.by_group: dict[str, list[str]] = {"complete": [], "lge_only": [], "lge_c0": [], "complete_centerB": [], "complete_centerC": []}
@@ -293,9 +281,12 @@ class CAREASEDeterministicSampler:
         return values[cursor % len(values)]
 
     def _case_for_micro(self, group: str) -> str:
-        cursor = self.micro_case_cursors_by_group.get(group, 0)
-        case_id = self._choose_case(group, cursor)
-        self.micro_case_cursors_by_group[group] = cursor + 1
+        values = self.by_group.get(group, [])
+        if not values:
+            raise RuntimeError(f"CARE-ASE R2 sampler has no actual-train cases for group={group} fold={self.fold}")
+        rng = self.micro_case_rng_by_group.setdefault(group, random.Random(f"{self.seed}|fold={self.fold}|micro_case|{group}"))
+        case_id = values[rng.randrange(len(values))]
+        self.micro_case_cursors_by_group[group] = self.micro_case_cursors_by_group.get(group, 0) + 1
         return case_id
 
     def descriptor_bundle_for_step(self, global_step: int, *, microbatch_count: int = 4) -> CAREASEMicrobatchBundle:
@@ -374,7 +365,7 @@ class CAREASEDeterministicSampler:
         )
 
     def descriptor_for_step(self, global_step: int) -> CAREASEBatchDescriptor:
-        return self.descriptor_bundle_for_step(global_step).micro_descriptors[0]
+        raise RuntimeError("descriptor_for_step is not a formal CARE-ASE R2 API; use descriptor_bundle_for_step so four microbatches are explicit")
 
     def peek_descriptor_for_step(self, global_step: int) -> CAREASEBatchDescriptor:
         return self.peek_descriptor_bundle_for_step(global_step).micro_descriptors[0]
@@ -394,7 +385,9 @@ class CAREASEDeterministicSampler:
             "complete_pathology_cursor": self.complete_pathology_cursor,
             "partial_case_cursors": dict(self.partial_case_cursors),
             "micro_case_cursors_by_group": dict(self.micro_case_cursors_by_group),
+            "micro_case_rng_state_by_group": {group: _encode_rng_state(rng) for group, rng in sorted(self.micro_case_rng_by_group.items())},
             "micro_patch_cursor": int(self.micro_patch_cursor),
+            "micro_patch_rng_state": _encode_rng_state(self.micro_patch_rng),
             "center_cursor": self.complete_center_cursor,
             "pathology_focus_cursor": self.complete_pathology_cursor,
             "scar_focus_cursor": self.scar_focus_cursor,
@@ -426,7 +419,16 @@ class CAREASEDeterministicSampler:
         self.micro_case_cursors_by_group = {str(k): int(v) for k, v in state.get("micro_case_cursors_by_group", {}).items()}
         for key in ("complete_centerB", "complete_centerC", "lge_only", "lge_c0"):
             self.micro_case_cursors_by_group.setdefault(key, 0)
+        rng_states = state.get("micro_case_rng_state_by_group", {})
+        if isinstance(rng_states, dict):
+            for key, encoded in rng_states.items():
+                rng = self.micro_case_rng_by_group.setdefault(str(key), random.Random(f"{self.seed}|fold={self.fold}|micro_case|{key}"))
+                if isinstance(encoded, str) and encoded:
+                    rng.setstate(_decode_rng_state(encoded))
         self.micro_patch_cursor = int(state.get("micro_patch_cursor", 0))
+        micro_patch_rng_state = state.get("micro_patch_rng_state")
+        if isinstance(micro_patch_rng_state, str) and micro_patch_rng_state:
+            self.micro_patch_rng.setstate(_decode_rng_state(micro_patch_rng_state))
         self.scar_focus_cursor = int(state["scar_focus_cursor"])
         self.edema_focus_cursor = int(state["edema_focus_cursor"])
         self.batch_descriptor_cursor = int(state["batch_descriptor_cursor"])
@@ -439,7 +441,7 @@ class CAREASEDeterministicSampler:
         clone.load_state_dict(self.state_dict())
         counts: dict[str, int] = {}
         for step in range(int(start_step), int(start_step) + int(steps)):
-            desc = clone.descriptor_for_step(step)
+            desc = clone.descriptor_bundle_for_step(step).micro_descriptors[0]
             counts[desc.case_group] = counts.get(desc.case_group, 0) + 1
         return counts
 
@@ -460,9 +462,28 @@ class CAREASEDeterministicSampler:
             "edema_focus": {},
         }
         descriptor_hashes: list[str] = []
+        all_four_same = 0
+        distinct_distribution: dict[str, int] = {}
+        micro_counts = {
+            "complete": 0,
+            "lge_only": 0,
+            "lge_c0": 0,
+            "complete_centerB": 0,
+            "complete_centerC": 0,
+            "complete_scar": 0,
+            "complete_edema": 0,
+            "partial_scar": 0,
+            "partial_edema": 0,
+        }
         for step in range(int(start_step), int(start_step) + int(steps)):
-            desc = clone.descriptor_for_step(step)
-            descriptor_hashes.append(desc.sha256())
+            bundle = clone.descriptor_bundle_for_step(step)
+            desc = bundle.micro_descriptors[0]
+            descriptor_hashes.append(bundle.sha256())
+            micro_case_ids = [item.case_id for item in bundle.micro_descriptors]
+            if len(set(micro_case_ids)) == 1:
+                all_four_same += 1
+            distinct_count = len(set(micro_case_ids))
+            distinct_distribution[str(distinct_count)] = distinct_distribution.get(str(distinct_count), 0) + 1
             counts[desc.case_group] = int(counts.get(desc.case_group, 0)) + 1
             if desc.case_group == "complete":
                 center_key = {"CenterB": "complete_centerB", "CenterC": "complete_centerC"}.get(desc.center, f"complete_{desc.center}")
@@ -474,6 +495,14 @@ class CAREASEDeterministicSampler:
             focus_counts = counts[focus_key]
             assert isinstance(focus_counts, dict)
             focus_counts[desc.within_focus] = int(focus_counts.get(desc.within_focus, 0)) + 1
+            for micro_desc in bundle.micro_descriptors:
+                micro_counts[micro_desc.case_group] = int(micro_counts.get(micro_desc.case_group, 0)) + 1
+                if micro_desc.case_group == "complete":
+                    center_key = {"CenterB": "complete_centerB", "CenterC": "complete_centerC"}.get(micro_desc.center, f"complete_{micro_desc.center}")
+                    micro_counts[center_key] = int(micro_counts.get(center_key, 0)) + 1
+                    micro_counts[f"complete_{micro_desc.pathology_focus}"] = int(micro_counts.get(f"complete_{micro_desc.pathology_focus}", 0)) + 1
+                else:
+                    micro_counts[f"partial_{micro_desc.pathology_focus}"] = int(micro_counts.get(f"partial_{micro_desc.pathology_focus}", 0)) + 1
         expected_400 = {
             "complete": 200,
             "lge_only": 100,
@@ -484,6 +513,16 @@ class CAREASEDeterministicSampler:
             "complete_edema": 100,
             "partial_edema": 0,
         }
+        expected_400_micro = {
+            "complete": 800,
+            "lge_only": 400,
+            "lge_c0": 400,
+            "complete_centerB": 400,
+            "complete_centerC": 400,
+            "complete_scar": 400,
+            "complete_edema": 400,
+            "partial_edema": 0,
+        }
         status = "PASS"
         failures = []
         if int(steps) == 400 and stage_for_step(start_step) in {"A", "B"}:
@@ -491,6 +530,10 @@ class CAREASEDeterministicSampler:
                 observed = int(counts.get(key, 0))
                 if observed != expected:
                     failures.append({"field": key, "expected": expected, "observed": observed})
+            for key, expected in expected_400_micro.items():
+                observed = int(micro_counts.get(key, 0))
+                if observed != expected:
+                    failures.append({"field": f"micro_{key}", "expected": expected, "observed": observed})
             status = "PASS" if not failures else "FAIL"
         payload = {
             "status": status,
@@ -498,10 +541,17 @@ class CAREASEDeterministicSampler:
             "start_step": int(start_step),
             "steps": int(steps),
             "counts": counts,
+            "microbatch_count": int(steps) * 4,
+            "micro_counts": micro_counts,
+            "all_four_same_case_fraction": float(all_four_same / max(int(steps), 1)),
+            "distinct_case_count_distribution": distinct_distribution,
             "expected_400_stage_a_b": expected_400,
+            "expected_400_stage_a_b_micro": expected_400_micro,
             "failures": failures,
             "descriptor_sequence_sha256": hashlib.sha256("|".join(descriptor_hashes).encode("utf-8")).hexdigest(),
             "sampler_rng_state_restored": True,
+            "microbatch_case_draw": "independent_with_replacement_rng_per_group",
+            "microbatch_rng_state_saved_fields": ["micro_case_rng_state_by_group", "micro_patch_rng_state"],
             "partial_events_do_not_advance_complete_pathology_cursor": True,
         }
         payload["payload_sha256"] = hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()

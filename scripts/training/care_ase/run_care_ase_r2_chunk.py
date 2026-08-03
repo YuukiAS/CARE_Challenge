@@ -29,6 +29,11 @@ if str(REPO_ROOT) not in sys.path:
 
 from src.care_myocardium.models.care_ase import build_care_ase_for_fold_with_area_references
 from src.care_myocardium.inference.care_ase_r2_decode import decode_care_ase_r2_logits
+from src.care_myocardium.training.care_ase_augmentation import (
+    apply_stock_training_transform_preserve_ignore,
+    build_stock_augmentation_contract,
+    build_stock_training_transform_preserve_ignore,
+)
 from src.care_myocardium.training.care_ase_sampler import CAREASEDeterministicSampler, compute_actual_train_area_references
 from src.care_myocardium.training.care_ase_trainer import (
     CAREASEStageScheduler,
@@ -50,6 +55,7 @@ CRITICAL_SOURCE_PATHS = (
     "src/care_myocardium/models/care_ase.py",
     "src/care_myocardium/training/care_ase_trainer.py",
     "src/care_myocardium/training/care_ase_sampler.py",
+    "src/care_myocardium/training/care_ase_augmentation.py",
     "src/care_myocardium/inference/care_ase_r2_decode.py",
     "scripts/training/care_ase/run_care_ase_r2_chunk.py",
     "scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py",
@@ -58,6 +64,7 @@ CRITICAL_SOURCE_PATHS = (
 )
 INVALIDATED_TRAINING_SOURCE_SHAS = {
     "207f360f22dd4e28fcecd4a22b67ed1af074ab42",
+    "e9876ac8b7c8d6881fd5673f409c0c6e767530f1",
 }
 
 
@@ -74,6 +81,25 @@ def combined_source_hash() -> str:
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()
 
 
+def combined_source_hash_at_commit(ref: str) -> str:
+    payload: dict[str, str] = {}
+    for path in CRITICAL_SOURCE_PATHS:
+        proc = subprocess.run(
+            ["git", "show", f"{ref}:{path}"],
+            cwd=REPO_ROOT,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+        if proc.returncode == 0:
+            payload[path] = hashlib.sha256(proc.stdout).hexdigest()
+    return hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()
+
+
+def json_sha(payload: Any) -> str:
+    return hashlib.sha256(json.dumps(payload, sort_keys=True, default=str).encode("utf-8")).hexdigest()
+
+
 def git_sha(ref: str) -> str:
     return subprocess.check_output(["git", "rev-parse", ref], cwd=REPO_ROOT, text=True).strip()
 
@@ -85,8 +111,10 @@ def verify_external_review_permit(path: Path) -> dict[str, Any]:
         "reviewed_candidate_commit_sha",
         "origin_main_sha",
         "implementation_source_sha",
+        "review_packet_commit_sha",
         "semantic_reviewer_sha",
         "effective_contract_sha256",
+        "critical_source_manifest_sha256",
         "created_utc",
     }
     missing = sorted(required - set(permit))
@@ -96,20 +124,48 @@ def verify_external_review_permit(path: Path) -> dict[str, Any]:
         raise RuntimeError(f"external review permit decision is not PASS: {permit['decision']}")
     head = git_sha("HEAD")
     origin = git_sha("origin/main")
-    compared = {
+    implementation_sha = str(permit["implementation_source_sha"])
+    implementation_bound = {
         str(permit["reviewed_candidate_commit_sha"]),
-        str(permit["origin_main_sha"]),
-        str(permit["implementation_source_sha"]),
+        implementation_sha,
         str(permit["semantic_reviewer_sha"]),
         head,
-        origin,
     }
-    if len(compared) != 1:
-        raise RuntimeError(f"external review permit SHA mismatch: {sorted(compared)}")
+    if len(implementation_bound) != 1:
+        raise RuntimeError(f"external review permit Commit A mismatch: {sorted(implementation_bound)}")
+    review_packet_sha = str(permit["review_packet_commit_sha"])
+    if review_packet_sha != str(permit["origin_main_sha"]):
+        raise RuntimeError(
+            "external review permit Commit B mismatch: "
+            f"review_packet_commit_sha={permit['review_packet_commit_sha']} origin_main_sha={permit['origin_main_sha']}"
+        )
+    ancestor = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", implementation_sha, review_packet_sha],
+        cwd=REPO_ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+    if ancestor.returncode != 0:
+        raise RuntimeError(f"implementation Commit A is not an ancestor of review packet Commit B: {ancestor.stderr.strip()}")
     if head in INVALIDATED_TRAINING_SOURCE_SHAS:
         raise RuntimeError(f"invalidated training source is permanently refused: {head}")
+    current_manifest = combined_source_hash()
+    if str(permit["critical_source_manifest_sha256"]) != current_manifest:
+        raise RuntimeError(
+            "external review permit critical source manifest mismatch: "
+            f"permit={permit['critical_source_manifest_sha256']} current={current_manifest}"
+        )
+    review_packet_manifest = combined_source_hash_at_commit(review_packet_sha)
+    if review_packet_manifest != current_manifest:
+        raise RuntimeError(
+            "critical source tree changed between implementation Commit A and review packet Commit B: "
+            f"commitA/current={current_manifest} commitB={review_packet_manifest}"
+        )
     permit["current_head_sha"] = head
     permit["current_origin_main_sha"] = origin
+    permit["current_critical_source_manifest_sha256"] = current_manifest
     permit["permit_verified_for_formal_training"] = True
     return permit
 
@@ -149,11 +205,15 @@ def _local_pid_is_live(pid: Any) -> bool:
 def acquire_chunk_lock(lock_dir: Path, out_dir: Path, *, fold: int, start_step: int, end_step: int) -> dict[str, Any]:
     owner_payload = {
         "pid": os.getpid(),
+        "hostname": os.uname().nodename,
         "slurm_job_id": os.environ.get("SLURM_JOB_ID", "local"),
+        "source_sha": git_sha("HEAD"),
         "fold": int(fold),
+        "chunk": f"{int(start_step)}-{int(end_step)}",
         "start_step": int(start_step),
         "end_step": int(end_step),
         "created_unix": int(time.time()),
+        "heartbeat_unix": int(time.time()),
     }
     try:
         lock_dir.mkdir()
@@ -173,6 +233,12 @@ def acquire_chunk_lock(lock_dir: Path, out_dir: Path, *, fold: int, start_step: 
                 {"status": "LOCK_HELD", "owner": owner, "terminal_status": terminal_status, "live_owner": True},
             )
             raise RuntimeError(f"active chunk lock is held by live owner: {owner}")
+        if terminal_status == "PASS":
+            write_json(
+                out_dir / f"already_completed_{start_step:05d}_{end_step:05d}.json",
+                {"status": "ALREADY_COMPLETED", "owner": owner, "terminal_status": terminal_status, "live_owner": live_owner},
+            )
+            return {"status": "ALREADY_COMPLETED", "owner": owner, "terminal_status": terminal_status, "live_owner": live_owner}
         archive_root = out_dir / "stale_locks"
         archive_root.mkdir(parents=True, exist_ok=True)
         archive = archive_root / f"{lock_dir.name}_{int(time.time())}_{os.getpid()}"
@@ -197,7 +263,7 @@ def read_b2nd(path: Path) -> np.ndarray:
     return np.asarray(blosc2.open(str(path), mode="r")[:])
 
 
-def crop_or_pad(array: np.ndarray, center: tuple[int, int, int], patch_size: tuple[int, int, int]) -> np.ndarray:
+def crop_or_pad(array: np.ndarray, center: tuple[int, int, int], patch_size: tuple[int, int, int], *, pad_value: float | int = 0) -> np.ndarray:
     spatial = array.shape[-3:]
     src_slices: list[slice] = []
     dst_slices: list[slice] = []
@@ -210,7 +276,7 @@ def crop_or_pad(array: np.ndarray, center: tuple[int, int, int], patch_size: tup
         dst_stop = dst_start + (src_stop - src_start)
         src_slices.append(slice(src_start, src_stop))
         dst_slices.append(slice(dst_start, dst_stop))
-    out = np.zeros(array.shape[:-3] + patch_size, dtype=array.dtype)
+    out = np.full(array.shape[:-3] + patch_size, pad_value, dtype=array.dtype)
     out[(..., *dst_slices)] = array[(..., *src_slices)]
     return out
 
@@ -294,7 +360,16 @@ def deterministic_center(
     return tuple(int(v) for v in coords[idx])
 
 
-def make_batch(descriptor: Any, *, descriptor_sha: str, micro: int, patch_size: tuple[int, int, int], device: torch.device) -> dict[str, torch.Tensor]:
+def make_batch(
+    descriptor: Any,
+    *,
+    descriptor_sha: str,
+    micro: int,
+    initial_patch_size: tuple[int, int, int],
+    final_patch_size: tuple[int, int, int],
+    stock_transform: Any | None,
+    device: torch.device,
+) -> dict[str, torch.Tensor]:
     image = read_b2nd(PREPROCESSED / f"{descriptor.case_id}.b2nd").astype(np.float32, copy=False)
     seg = read_b2nd(PREPROCESSED / f"{descriptor.case_id}_seg.b2nd")[0].astype(np.int64, copy=False)
     spacing = (1.0, 1.0, 1.0)
@@ -311,14 +386,30 @@ def make_batch(descriptor: Any, *, descriptor_sha: str, micro: int, patch_size: 
         resolved_target_coordinates=descriptor.resolved_target_coordinates,
         fallback_sequence=descriptor.fallback_sequence,
         micro=micro,
-        patch_size=patch_size,
+        patch_size=initial_patch_size,
         spacing=spacing,
     )
+    initial_image = crop_or_pad(image, center, initial_patch_size, pad_value=0)
+    initial_seg = crop_or_pad(seg[None], center, initial_patch_size, pad_value=-1)[0]
+    if stock_transform is not None:
+        final_image, final_seg = apply_stock_training_transform_preserve_ignore(
+            initial_image,
+            initial_seg,
+            transform=stock_transform,
+            availability=descriptor.availability,
+        )
+    else:
+        final_image = crop_or_pad(initial_image, tuple(v // 2 for v in initial_patch_size), final_patch_size, pad_value=0)
+        final_seg = crop_or_pad(initial_seg[None], tuple(v // 2 for v in initial_patch_size), final_patch_size, pad_value=-1)[0]
     return {
-        "image": torch.from_numpy(crop_or_pad(image, center, patch_size)[None]).to(device=device, dtype=torch.float32),
-        "seg": torch.from_numpy(crop_or_pad(seg[None], center, patch_size)[0][None]).to(device=device, dtype=torch.long),
+        "image": torch.from_numpy(final_image[None]).to(device=device, dtype=torch.float32),
+        "seg": torch.from_numpy(final_seg[None]).to(device=device, dtype=torch.long),
         "availability": torch.tensor([descriptor.availability], device=device, dtype=torch.float32),
         "spacing": torch.tensor([spacing], device=device, dtype=torch.float32),
+        "initial_patch_size": tuple(int(v) for v in initial_patch_size),
+        "final_patch_size": tuple(int(v) for v in final_patch_size),
+        "focused_coordinate_zyx": tuple(int(v) for v in center),
+        "stock_transform_applied": stock_transform is not None,
     }
 
 
@@ -403,6 +494,7 @@ def _write_full_reload_receipt(
         "optimizer_state_loaded": bool(reloaded_optimizer.state_dict()["state"] or live_optimizer.state_dict()["state"]),
         "scheduler_state_loaded": reloaded_scheduler.state_dict(),
         "sampler_rng_state_loaded": bool(payload.get("sampler_rng_state")) and payload.get("sampler_rng_state") != "UNSET",
+        "augmentation_rng_state_loaded": bool(payload.get("augmentation_rng_state")) and payload.get("augmentation_rng_state") != "UNSET",
         "dataloader_worker_seed_state_nonempty": bool(payload.get("dataloader_worker_seed_state")),
         "fixed_batch_case_id": fixed_batch.get("case_id", "UNSET"),
         "fixed_batch_descriptor_sha256": fixed_batch.get("descriptor_sha256", "UNSET"),
@@ -441,6 +533,8 @@ def main() -> int:
         raise ValueError("CARE-ASE R2 chunk must satisfy 0 <= start < end <= 14000")
     if not args.allow_short_smoke and (args.end_step - args.start_step) != 2000:
         raise ValueError("formal CARE-ASE R2 chunks must be exactly 2000 optimizer steps")
+    if args.allow_short_smoke and (args.end_step - args.start_step) > 50:
+        raise ValueError("--allow-short-smoke is capped at 50 optimizer steps and carries zero formal credit")
     if not args.allow_short_smoke and args.start_step % 2000 != 0:
         raise ValueError("formal CARE-ASE R2 chunk start must align to 2000 optimizer steps")
     permit = None
@@ -455,12 +549,47 @@ def main() -> int:
     np.random.seed(args.seed + fold)
     torch.manual_seed(args.seed + fold)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    out_dir = (args.output_dir or RESULT_DIR / "runtime" / f"fold_{fold}").resolve()
+    head_sha = git_sha("HEAD")
+    if not args.allow_short_smoke and head_sha in INVALIDATED_TRAINING_SOURCE_SHAS:
+        raise RuntimeError(f"refusing formal training from invalidated source SHA: {head_sha}")
+    if args.output_dir is not None:
+        out_dir = args.output_dir.resolve()
+    elif args.allow_short_smoke:
+        out_dir = (Path(os.environ.get("TMPDIR", "/tmp")) / "care_ase_r2_short_smoke" / head_sha[:12] / f"fold_{fold}").resolve()
+    else:
+        out_dir = (REPO_ROOT / "results" / f"20260803_care_ase_r2_formal_training_{head_sha[:12]}" / "runtime" / f"fold_{fold}").resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
     lock_dir = out_dir / f"lock_{args.start_step:05d}_{args.end_step:05d}"
     lock_receipt = acquire_chunk_lock(lock_dir, out_dir, fold=fold, start_step=args.start_step, end_step=args.end_step)
+    if lock_receipt.get("status") == "ALREADY_COMPLETED":
+        return 0
 
     area = compute_actual_train_area_references(REPO_ROOT, fold)
+    plans_path = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans.json"
+    augmentation_contract = build_stock_augmentation_contract(plans_path)
+    stock_transform = build_stock_training_transform_preserve_ignore(plans_path)
+    initial_patch_size = tuple(int(v) for v in augmentation_contract.initial_patch_size)
+    augmentation_contract_payload = {
+        **augmentation_contract.__dict__,
+        "sha256": augmentation_contract.sha256(),
+        "formal_training_uses_stock_initial_patch_semantics": True,
+        "missing_modalities_zero_after_augmentation": True,
+        "target_builder_after_augmented_seg": True,
+    }
+    write_json(RESULT_DIR / f"stock_augmentation_runtime_binding_fold{fold}.json", augmentation_contract_payload)
+    write_json(RESULT_DIR / f"stock_initial_patch_binding_fold{fold}.json", augmentation_contract_payload)
+    write_json(
+        RESULT_DIR / f"augmentation_z_axis_semantics_fold{fold}.json",
+        {
+            "status": "PASS",
+            "fold": fold,
+            "dummy_2d": augmentation_contract.dummy_2d,
+            "z_axis_semantics": augmentation_contract.z_axis_semantics,
+            "initial_patch_size": augmentation_contract.initial_patch_size,
+            "final_patch_size": augmentation_contract.final_patch_size,
+            "sha256": augmentation_contract.sha256(),
+        },
+    )
     if args.resume_checkpoint is not None:
         model, prior = _load_previous(args.resume_checkpoint, device)
         if int(prior["global_optimizer_step"]) != int(args.start_step):
@@ -478,7 +607,7 @@ def main() -> int:
 
     sampler = CAREASEDeterministicSampler(REPO_ROOT, fold, seed=args.seed)
     for step in range(args.start_step):
-        sampler.descriptor_for_step(step)
+        sampler.descriptor_bundle_for_step(step)
     optimizer = build_optimizer(model)
     scheduler = CAREASEStageScheduler(optimizer)
     if prior is not None:
@@ -486,7 +615,7 @@ def main() -> int:
         scheduler.load_state_dict(prior["scheduler"])
         sampler.load_state_dict(_sampler_state_from_checkpoint_payload(prior))
 
-    write_json(RESULT_DIR / "parameter_group_coverage.json", parameter_group_coverage(model))
+    write_json(RESULT_DIR / f"parameter_group_coverage_fold{fold}.json", parameter_group_coverage(model))
     write_json(RESULT_DIR / f"sampler_400_step_full_composition_receipt_fold{fold}.json", sampler.composition_receipt(400, start_step=args.start_step))
 
     write_json(
@@ -501,12 +630,14 @@ def main() -> int:
             "patch_size": list(patch_size),
             "gradient_accumulation": 4,
             "area_reference": area,
+            "augmentation_contract": augmentation_contract_payload,
             "source_hash": combined_source_hash(),
             "split_hash": sha256_file(SPLITS),
-            "plans_hash": sha256_file(REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans.json"),
+            "plans_hash": sha256_file(plans_path),
             "outer_access_before_freeze": 0,
             "fixed_decode_function": decode_care_ase_r2_logits.__name__,
             "formal_training_credit_current_external_review_revise_runtime": "zero_until_new_external_review_pass",
+            "formal_training_credit": "zero" if args.allow_short_smoke else "requires_valid_external_permit",
             "external_review_permit": permit or {"not_required_for_allow_short_smoke": bool(args.allow_short_smoke)},
             "chunk_lock": lock_receipt,
         },
@@ -525,7 +656,15 @@ def main() -> int:
         metrics: dict[str, float] = {}
         for micro, micro_descriptor in enumerate(bundle.micro_descriptors):
             micro_sha = micro_descriptor.sha256()
-            batch = make_batch(micro_descriptor, descriptor_sha=micro_sha, micro=micro, patch_size=patch_size, device=device)
+            batch = make_batch(
+                micro_descriptor,
+                descriptor_sha=micro_sha,
+                micro=micro,
+                initial_patch_size=initial_patch_size,
+                final_patch_size=patch_size,
+                stock_transform=stock_transform,
+                device=device,
+            )
             batch["case_id"] = micro_descriptor.case_id
             batch["descriptor_sha256"] = micro_sha
             batch["optimizer_step_bundle_sha256"] = desc_sha
@@ -577,11 +716,30 @@ def main() -> int:
                 sampler_state=sampler_state,
                 code_hash=combined_source_hash(),
                 split_hash=sha256_file(SPLITS),
+                training_source_commit_sha=head_sha,
+                origin_main_sha=git_sha("origin/main") if not args.allow_short_smoke else "SHORT_SMOKE_NO_FORMAL_CREDIT",
+                external_review_permit_sha256=sha256_file(args.external_review_permit) if args.external_review_permit else "SHORT_SMOKE_NO_FORMAL_CREDIT",
+                critical_source_manifest_sha256=combined_source_hash(),
+                split_file_sha256=sha256_file(SPLITS),
+                plans_hash=sha256_file(plans_path),
+                stock_checkpoint_hash=sha256_file(Path(model.config.checkpoint_path)),
+                hard_negative_manifest_sha256=sampler.hard_negative_manifest.get("manifest_sha256", "UNSET"),
+                augmentation_contract_sha256=augmentation_contract.sha256(),
+                augmentation_rng_state={"source": "global_python_numpy_torch_rng_after_augmented_microbatches"},
+                area_reference_receipt_sha256=json_sha(area),
             )
             payload = torch.load(ckpt, map_location="cpu", weights_only=False)
             write_json(out_dir / f"{ckpt.stem}_receipt.json", checkpoint_receipt(ckpt, payload))
             reload_descriptor = bundle.micro_descriptors[0]
-            reload_batch = make_batch(reload_descriptor, descriptor_sha=reload_descriptor.sha256(), micro=0, patch_size=patch_size, device=device)
+            reload_batch = make_batch(
+                reload_descriptor,
+                descriptor_sha=reload_descriptor.sha256(),
+                micro=0,
+                initial_patch_size=initial_patch_size,
+                final_patch_size=patch_size,
+                stock_transform=stock_transform,
+                device=device,
+            )
             reload_batch["case_id"] = descriptor.case_id
             reload_batch["descriptor_sha256"] = desc_sha
             _write_full_reload_receipt(

@@ -1,0 +1,519 @@
+contract_id: CARE_ASE_R2_EFFECTIVE_CONTRACT_V5_20260803
+priority: highest_for_care_ase_r2_pretraining_fidelity_repair_v5
+source_commit_under_review: e9876ac8b7c8d6881fd5673f409c0c6e767530f1
+supersedes:
+  - CARE_ASE_R2_EFFECTIVE_CONTRACT_V4
+  - any fixed PASS receipt from results/20260803_care_ase_r2_pretraining_fidelity_repair_v4
+terminal_token_allowed_after_repair_only: PRETRAINING_EXTERNAL_REVIEW_REQUEST_READY
+design_delta:
+  - field: edema_weak_lge_gate_initial_output
+    previous_value: 0.0
+    v5_value: 0.05
+    reason: break_zero_gate_plus_zero_residual_projection_dead_path
+    step0_final_logit_parity_preserved_by: zero_initialized_named_residual_projection
+    user_external_review_required: true
+  - field: evidence_projection_topology
+    previous_value: concatenated_multi_source_evidence_to_one_projection
+    v5_value: independent_named_projection_per_pathology_scale_source
+    reason: prove named producer final-logit authority and allow per-source mutation/intervention
+    user_external_review_required: true
+  - field: auxiliary_half_feature_source
+    previous_value: AuxiliaryHalfFeatureTower_extra_top_stage_path
+    v5_value: pathology_branch_real_cloned_half_feature_ownership
+    reason: remove uncontracted fourth high-resolution decoder path
+    user_external_review_required: true
+forbidden_tokens:
+  - PRETRAINING_EXTERNAL_REVIEW_PASS
+  - CARE_ASE_R2_PRETRAINING_REPAIR_PASS
+  - TRAINING_COMPLETE before global_step 14000
+
+permissions:
+  branch: main
+  push_remote: origin/main
+  formal_training_authorized: false
+  formal_training_started_after_external_review: false
+  outer_access_fold1: 0
+  outer_access_fold4: 0
+  validation_upload_authorized: false
+  docker_upload_authorized: false
+  hosted_metric_claim_authorized: false
+
+inputs_and_labels:
+  modality_order: [LGE, T2, C0]
+  missing_modality_policy: hard_zero_after_load_crop_and_augmentation
+  labels:
+    0: background
+    1: myocardium_wall
+    2: lv_blood_pool
+    3: rv_blood_pool
+    4: pure_edema_t2_present_only
+    5: scar
+  no_t2_policy:
+    class4_target: ignore
+    class4_decode: excluded_from_argmax_competition
+    edema_owned_graph: not_constructed_for_all_no_t2_batch
+
+split:
+  folds_for_future_formal_training: [1, 4]
+  required_role: actual-train
+  forbidden: [outer, validation, challenge_test]
+  old_runtime_credit:
+    207f360f22dd4e28fcecd4a22b67ed1af074ab42: zero
+    e9876ac8b7c8d6881fd5673f409c0c6e767530f1: zero
+
+model_topology:
+  stock_encoder: complete_shared
+  stock_bottleneck: complete_shared
+  shared_low_mid_decoder: stages_0_1_2_3_single_forward_only
+  anatomy_top:
+    stages: [4, 5]
+    classifier_rows: stock_rows_0_to_3_only
+    normal_forward_reads_stock_class4_or_5_logits: false
+  pathology_branches:
+    scar:
+      cloned_stock_decoder_stages: [4, 5]
+      cloned_transition_skip_fusion_conv_blocks_and_ds_classifiers: required
+      mandatory_modality: LGE
+      forbidden_modality: T2
+      c0_gate: learnable_sigmoid_initial_output_0_2
+    edema:
+      cloned_stock_decoder_stages: [4, 5]
+      cloned_transition_skip_fusion_conv_blocks_and_ds_classifiers: required
+      mandatory_modality: T2
+      c0_gate: learnable_sigmoid_initial_output_0_2
+      lge_gate: learnable_tanh_initial_output_0_05
+      dilation_context: [1, 2, 4]
+  dynamic_introspection:
+    channels_stride_kernel: read_from_actual_stock_decoder_modules_and_plans
+    hardcoded_decoder_channels_forbidden: true
+  auxiliary_half_feature:
+    fake_interpolated_quarter_feature_forbidden: true
+    learned_quarter_to_half_tower_forbidden: true
+    fourth_top_stage_decoder_path_forbidden: true
+    required_pathology_methods:
+      - scar_branch.forward_half
+      - scar_branch.forward_full
+      - edema_branch.forward_half
+      - edema_branch.forward_full
+
+evidence_initialization:
+  modality_adapter:
+    first_conv: kaiming_or_nnunet_compatible_nonzero
+    final_c_scale_projection: kaiming_or_nnunet_compatible_nonzero
+    channel_reduction_mean_or_max_forbidden: true
+  edema_dilation_terminal_conv: kaiming_or_nnunet_compatible_nonzero
+  branch_residual_evidence_projection: zero_init
+  required_gradient_liveness:
+    first_backward_projection_weight_grad: greater_than_zero
+    second_backward_adapter_or_dilation_terminal_grad_after_one_optimizer_update: greater_than_zero
+    dead_evidence_path_count: 0
+  step0_parity:
+    anatomy_scar_edema_max_abs_error: less_equal_1e-6
+  named_projection_policy:
+    shared_multi_source_projection_count: 0
+    missing_named_projection_count: 0
+    duplicate_named_projection_count: 0
+    each_projection_can_be_closed_intervened_mutated_and_measured: true
+    scar_half:
+      - scar_quarter_occupancy_to_half
+      - scar_quarter_center_to_half
+      - scar_context_to_half
+      - scar_lge_to_half
+      - scar_c0_to_half
+      - scar_p_wall_to_half
+      - scar_p_lv_to_half
+      - scar_p_rv_to_half
+      - scar_signed_endo_to_half
+      - scar_signed_epi_to_half
+      - scar_rho_to_half
+    scar_full:
+      - scar_half_occupancy_to_full
+      - scar_half_center_to_full
+      - scar_context_to_full
+      - scar_lge_to_full
+      - scar_c0_to_full
+      - scar_p_wall_to_full
+      - scar_p_lv_to_full
+      - scar_p_rv_to_full
+      - scar_signed_endo_to_full
+      - scar_signed_epi_to_full
+      - scar_rho_to_full
+    edema_half:
+      - edema_context_to_half
+      - edema_t2_to_half
+      - edema_c0_to_half
+      - edema_lge_to_half
+      - edema_p_wall_to_half
+      - edema_p_lv_to_half
+      - edema_p_rv_to_half
+      - edema_signed_endo_to_half
+      - edema_signed_epi_to_half
+      - edema_rho_to_half
+    edema_full:
+      - edema_injury_to_full
+      - edema_boundary_to_full
+      - edema_context_to_full
+      - edema_dilation1_to_full
+      - edema_dilation2_to_full
+      - edema_dilation4_to_full
+      - edema_t2_to_full
+      - edema_c0_to_full
+      - edema_lge_to_full
+      - edema_p_wall_to_full
+      - edema_p_lv_to_full
+      - edema_p_rv_to_full
+      - edema_signed_endo_to_full
+      - edema_signed_epi_to_full
+      - edema_rho_to_full
+
+pathology_scale_wiring:
+  uncontracted_auxiliary_decoder_allowed: false
+  three_high_resolution_paths_only:
+    - anatomy_top
+    - scar_cloned_top
+    - edema_cloned_top
+  scar:
+    half_stage_inputs:
+      - shared_quarter_feature
+      - skip_half
+      - scar_quarter_occupancy_projection
+      - scar_quarter_center_projection
+      - scar_context_projection
+      - scar_modality_and_detached_context_projections
+    full_stage_inputs:
+      - scar_half_feature
+      - skip_full
+      - scar_half_occupancy_projection
+      - scar_half_center_projection
+      - scar_context_projection
+      - scar_modality_and_detached_context_projections
+    forbidden:
+      - half_proposal_into_half_stage
+      - quarter_proposal_directly_into_full_stage
+      - shared_pseudo_half_feature
+  edema:
+    half_stage_inputs:
+      - shared_quarter_feature
+      - skip_half
+      - edema_context_projection
+      - edema_modality_and_detached_context_projections
+    full_stage_inputs:
+      - edema_half_feature
+      - skip_full
+      - edema_injury_projection
+      - edema_boundary_projection
+      - edema_dilation_projection
+      - edema_modality_and_detached_context_projections
+    forbidden:
+      - injury_into_edema_half_stage
+      - boundary_into_edema_half_stage
+      - dilation_into_edema_half_stage
+
+anatomy_context:
+  tensors:
+    - p_wall_union
+    - p_lv
+    - p_rv
+    - signed_endo_distance
+    - signed_epi_distance
+    - wall_depth_rho
+  detach_before_pathology: true
+  wall_depth_rho_formula: d_endo / (d_endo + d_epi + 1e-6)
+  geometry_heads: independent_trainable_heads_required
+
+physical_targets:
+  edt_sampling: scipy.ndimage.distance_transform_edt_with_case_spacing
+  signed_distance:
+    per_slice_topology_validity: required
+    clip_mm: 10
+    scale_divisor_mm: 10
+  scar_center:
+    connectivity: 26
+    inplane_sigma_mm: 4
+    z_sigma_slices: 1
+  context:
+    scar:
+      positive: label5
+      blood_adjacent: non_pathology_and_distance_to_label2_or_3_less_equal_3mm
+      normal_myocardium: label1_and_distance_to_label2_3_4_5_greater_than_3mm
+      remote_background: label0_and_distance_to_wall_union_greater_equal_10mm
+    edema:
+      positive: label4
+      label5: ignore
+      t2_present_required: true
+  edema_boundary:
+    empty_mask: valid_all_zero_loss_zero_gradient_zero
+    full_mask: explicit_valid_policy_no_scipy_edge_implicit
+    target_sign: positive_inside_negative_outside
+    valid_mask: abs(raw_distance_to_boundary_mm) <= 10 OR gt_edema_positive
+    prediction_source: components.edema_boundary
+    edema_class_logit_forbidden: true
+  extent_targets:
+    presence_downscale: physical_z_bin_any_or_max
+    area_downscale: recompute_pathology_voxels_over_gt_wall_voxels_per_z_bin
+    nearest_or_linear_area_interpolation_forbidden: true
+    gt_wall_zero: area_ignore_presence_retained
+
+extent_runtime:
+  unified_function: compute_slice_extent_statistics
+  train_and_inference_must_call_same_function: true
+  statistic: 0.5 * detached_wall_weighted_mean + 0.5 * masked_max
+  fallback: wall_sum_less_than_1_uses_full_slice_mean_and_max_and_counts_case_slice
+  final_bias: voxelwise_p_wall_not_slice_constant
+
+losses:
+  required_terms_and_weights:
+    final_competition: 1.0
+    anatomy4: 0.5
+    wall: 0.25
+    distance: 0.10
+    scar_dense: 1.0
+    scar_component: 0.25
+    scar_center: 0.10
+    scar_extent: 0.15
+    scar_context: 0.10
+    edema_dense: 1.0
+    injury: 0.40
+    edema_boundary: 0.10
+    edema_extent: 0.20
+    edema_context: 0.10
+    relation: 0.05
+  distance_includes: [signed_endo_distance, signed_epi_distance, wall_depth_rho]
+  anatomy4:
+    includes_full_anatomy_dice_ce: true
+    includes_half_anatomy_dice_ce: true
+    full_half_weights: bound_to_stock_deep_supervision_and_renormalized
+    total_weight_still: 0.50
+  binary_dice_empty_gt: dice_term_zero_no_fake_full_score
+  focal_alpha: alpha_t_equals_alpha_y_plus_one_minus_alpha_times_one_minus_y
+  component_tversky:
+    connectivity: 26
+    volume_unit: mm3
+    weight: clip(sqrt(1000 / volume_mm3), 1, 4)
+    reduction: sum_weighted_loss_divided_by_sum_weights
+    other_gt_components: ignored_for_current_component
+  scar_context_all_ignore: loss_zero_gradient_zero
+  edema_context_reduction: sum_valid_voxel_ce_divided_by_valid_voxel_count
+  relation: relu(max(stopgrad(p_scar), stopgrad(p_edema)) - p_injury)
+  fp32_sensitive_reductions:
+    - softmax_dice
+    - focal
+    - component_tversky
+    - signed_distance
+    - context_ce
+    - relation
+    - metric_accumulation
+
+augmentation:
+  stock_nnunet_training_transform_binding_required: true
+  must_record_stock_initial_patch_semantics:
+    - final_patch_size
+    - initial_patch_size
+    - dummy_2d
+    - rotation_ranges
+    - scale_range
+    - mirror_axes
+    - spatial_transform_center_crop_behavior
+    - foreground_oversampling_behavior
+    - deep_supervision_target_transform_ordering
+    - intensity_transform_ordering
+  focused_coordinate_policy: stock_compatible_initial_patch_then_real_spatial_transform_to_final_patch
+  final_patch_first_augmentation_forbidden: true
+  z_axis_semantics_must_be_recorded: true
+  covered_transforms:
+    - spatial_rotation_scaling
+    - mirror
+    - gaussian_noise_blur
+    - brightness_contrast
+    - low_resolution_simulation
+    - gamma
+  image_seg_same_spatial_transform: true
+  intensity_only_available_image_channels: true
+  missing_modalities_zero_after_augmentation: true
+  target_built_from_augmented_seg_and_spacing: true
+  augmentation_rng_in_checkpoint_resume: true
+
+sampler:
+  stage_a_b_steps: 2000_plus_8000
+  stage_c_steps: 4000
+  stage_a_b_cycle_per_20_optimizer_steps:
+    complete: 10
+    lge_only: 5
+    lge_c0: 5
+  complete_center_cycle: strict_centerB_centerC_alternation
+  complete_pathology_cycle: strict_scar_edema_alternation
+  partial_pathology: scar_only
+  microbatch_policy:
+    gradient_accumulation: 4
+    same_optimizer_step_stratum: true
+    case_draw: independent_with_replacement_per_group_rng
+    patch_draw: independent_rng
+    forced_same_case_forbidden: true
+    round_robin_as_independent_forbidden: true
+  hard_negative_source:
+    legal: canonical_patient_held_out_stock_nnunet_oof
+    forbidden: [MoSAIC, SRR, cascade, current_CARE_ASE, in_sample_prediction, mixed_roots]
+  small_component_threshold: physical_volume_less_than_1000mm3
+  oof_geometry_binding:
+    shape_only_forbidden: true
+    transpose_only_forbidden: true
+    generic_zoom_forbidden: true
+    min_shape_origin_crop_forbidden: true
+
+optimizer_scheduler:
+  optimizer: AdamW_created_once_at_step0
+  grouping_key: parameter_object_id
+  groups:
+    - new_modules
+    - cloned_pathology_blocks
+    - cloned_pathology_classifiers
+    - anatomy_decoder
+    - shared_low_mid_decoder
+    - upper_two_encoder
+    - lower_encoder_bottleneck
+  duplicate_count: 0
+  missing_count: 0
+  wrong_group_count: 0
+  stage_switch_recreates_optimizer: false
+  scheduler:
+    stage_ranges:
+      A: [0, 2000]
+      B: [2000, 10000]
+      C: [10000, 14000]
+    warmup_steps:
+      A: 200
+      B: 500
+      C: 0
+    power: 0.9
+
+checkpoint_provenance:
+  schema_version: 2
+  atomic_save: tmp_fsync_rename_fsync_parent
+  sha_sidecar_required: true
+  full_reload_new_model_optimizer_scheduler_sampler_rng_required: true
+  exact_resume_compares:
+    - loss
+    - logits
+    - model_parameters
+    - optimizer_moments
+    - scheduler
+    - sampler_cursors
+    - sampler_rng
+    - augmentation_rng
+    - next_micro_descriptor_bundle_sha256
+    - ramp
+  old_schema1_formal_resume_allowed: false
+
+external_permit:
+  formal_training_requires_user_external_pass: true
+  required_commit_A_equal:
+    - detached_execution_HEAD
+    - permit_reviewed_candidate_commit_sha
+    - permit_implementation_source_sha
+    - semantic_reviewer_reviewed_sha
+  required_commit_B_equal:
+    - permit_review_packet_commit_sha
+    - permit_origin_main_at_review_request
+  origin_main_after_review_request_may_move: true
+  critical_source_manifest_must_match: true
+  allow_short_smoke:
+    max_optimizer_steps: 50
+    formal_training_credit: zero
+    formal_runtime_namespace_allowed: false
+  commit_A_B_binding:
+    implementation_source_commit_sha: Commit_A
+    review_packet_commit_sha: Commit_B
+    commit_A_must_be_ancestor_of_commit_B: true
+    commit_A_may_differ_from_commit_B: true
+    critical_source_tree_A_equals_B: true
+    origin_main_at_review_request: Commit_B
+    formal_training_detached_execution_head: Commit_A
+    forbid_requirement_commitA_equals_commitB: true
+
+padding:
+  image_padding_value: 0
+  segmentation_padding_value: -1
+  padding_voxels_excluded_from:
+    - anatomy_target
+    - wall
+    - scar
+    - edema
+    - injury
+    - context
+    - geometry
+    - boundary
+    - center
+    - extent
+    - component_tversky
+    - final_competition
+    - remote_background
+    - blood_pool_adjacent
+    - physical_edt
+    - wall_denominator
+    - false_positive_loss
+  padding_loss_gradient: exactly_zero
+
+slurm:
+  preferred_partition: htzhulab
+  formal_patch_size: [20, 256, 256]
+  fold1_and_fold4_future_training_steps_each: 14000
+  current_v5_goal_starts_w3: false
+
+outer_and_monitoring:
+  outer_before_w4_5: forbidden
+  final_science_checkpoint: fixed_step14000_only_after_external_permit_and_training
+  inner_trend_monitoring:
+    checkpoints: [4000, 6000, 8000, 10000, 12000, 14000]
+    descriptive_only: true
+    changes_training_or_thresholds: false
+  full_volume_extent:
+    full_volume_window_geometry_audit_required: true
+    patch_local_extent_bias_averaging_forbidden_when_multi_window: true
+    multi_window_policy: aggregate_base_logits_p_wall_extent_sufficient_maps_then_compute_global_slice_bias_once
+    traversal_order_invariance_required: true
+
+gates:
+  G1:
+    required:
+      - pytest_behavior_tests
+      - mutation_nonzero_rejection
+      - contract_to_code_coverage
+      - no_canned_pass_oracle
+  G2:
+    required:
+      - real_cuda_h100_or_verified_gpu
+      - fold1_actual_train_patch_20x256x256
+      - fold4_actual_train_patch_20x256x256
+      - no_outer_access
+      - throughput_probe_50_steps_each_fold
+  two_stage_commit:
+    commit_A: source_tests_validators_effective_contract_current_wiki
+    commit_B: lightweight_external_review_packet_only
+  reviewer_rounds:
+    - RV5-D0_effective_contract_delta
+    - RV5-D1_model_topology_named_projections_auxiliary_wiring
+    - RV5-D2_augmentation_sampler_padding_extent_oof
+    - RV5-D3_G1_candidate_mutation_source_audit
+    - RV5-D4_fold1_G2_gpu_behavior
+    - RV5-D5_fold4_G2_gpu_behavior
+    - RV5-D6_commit_A_detached_implementation_review
+    - RV5-D7_commit_B_packet_binding_review
+
+required_incremental_evidence:
+  - named_evidence_projection_registry.json
+  - auxiliary_scale_wiring_oracle.json
+  - pathology_feature_ownership_oracle.json
+  - three_high_resolution_path_registry.json
+  - no_uncontracted_auxiliary_decoder_oracle.json
+  - weak_lge_gate_v5_delta_oracle.json
+  - stock_load_and_clone_byte_coverage.json
+  - stock_stagewise_parameter_parity.json
+  - anatomy_deep_supervision_oracle.json
+  - padding_ignore_semantics_oracle.json
+  - stock_initial_patch_binding.json
+  - augmentation_z_axis_semantics.json
+  - full_volume_window_geometry_audit.json
+  - full_volume_extent_aggregation_oracle.json
+  - two_commit_review_binding_oracle.json
+  - detached_training_source_oracle.json
+  - delta_mutation_detection_report.json
