@@ -120,6 +120,8 @@ INVALIDATED_TRAINING_SOURCE_SHAS = {
 }
 _FULL_CASE_TARGET_CACHE_BY_CASE: "OrderedDict[tuple[str, tuple[float, float, float]], dict[str, np.ndarray]]" = OrderedDict()
 _FULL_CASE_TARGET_CACHE_MAX_CASES = 8
+_CASE_ARRAY_CACHE_BY_CASE: "OrderedDict[str, tuple[np.ndarray, np.ndarray, tuple[float, float, float]]]" = OrderedDict()
+_CASE_ARRAY_CACHE_MAX_CASES = 8
 _TARGET_REGRESSION_KEYS = (
     "signed_endo_distance",
     "signed_epi_distance",
@@ -916,6 +918,26 @@ def read_b2nd(path: Path) -> np.ndarray:
     return np.asarray(blosc2.open(str(path), mode="r")[:])
 
 
+def read_preprocessed_case_arrays(case_id: str) -> tuple[np.ndarray, np.ndarray, tuple[float, float, float]]:
+    key = str(case_id)
+    cached = _CASE_ARRAY_CACHE_BY_CASE.get(key)
+    if cached is not None:
+        _CASE_ARRAY_CACHE_BY_CASE.move_to_end(key)
+        return cached
+    image = read_b2nd(PREPROCESSED / f"{key}.b2nd").astype(np.float32, copy=False)
+    seg = read_b2nd(PREPROCESSED / f"{key}_seg.b2nd")[0].astype(np.int64, copy=False)
+    spacing = preprocessed_spacing_zyx()
+    properties_path = PREPROCESSED / f"{key}.pkl"
+    if spacing == (1.0, 1.0, 1.0) and properties_path.is_file():
+        with properties_path.open("rb") as f:
+            spacing = tuple(float(v) for v in pickle.load(f).get("spacing", spacing))
+    cached = (image, seg, spacing)
+    _CASE_ARRAY_CACHE_BY_CASE[key] = cached
+    while len(_CASE_ARRAY_CACHE_BY_CASE) > _CASE_ARRAY_CACHE_MAX_CASES:
+        _CASE_ARRAY_CACHE_BY_CASE.popitem(last=False)
+    return cached
+
+
 def preprocessed_spacing_zyx() -> tuple[float, float, float]:
     plans_path = PREPROCESSED.parent / "nnUNetPlans.json"
     if plans_path.is_file():
@@ -1200,13 +1222,7 @@ def make_batch(
     stock_transform: Any | None,
     device: torch.device,
 ) -> dict[str, torch.Tensor]:
-    image = read_b2nd(PREPROCESSED / f"{descriptor.case_id}.b2nd").astype(np.float32, copy=False)
-    seg = read_b2nd(PREPROCESSED / f"{descriptor.case_id}_seg.b2nd")[0].astype(np.int64, copy=False)
-    spacing = preprocessed_spacing_zyx()
-    properties_path = PREPROCESSED / f"{descriptor.case_id}.pkl"
-    if spacing == (1.0, 1.0, 1.0) and properties_path.is_file():
-        with properties_path.open("rb") as f:
-            spacing = tuple(float(v) for v in pickle.load(f).get("spacing", spacing))
+    image, seg, spacing = read_preprocessed_case_arrays(str(descriptor.case_id))
     center = deterministic_center(
         seg,
         descriptor_sha=descriptor_sha,
