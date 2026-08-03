@@ -1,0 +1,17 @@
+{
+  "blocked_or_failure_reason": "None. Goal closed through the authorized fallback path because no deployable CARE-ASE checkpoint was available.",
+  "commit_status": "tracked terminal packet committed by controller before notification",
+  "evidence_paths": [
+    "results/20260804_care_ase_r2_emergency_9h_training_docker/terminal_scientific_decision.json",
+    "results/20260804_care_ase_r2_emergency_9h_training_docker/controller_report.md",
+    "results/20260804_care_ase_r2_emergency_9h_training_docker/docker_fallback_integrity_receipt.json",
+    "results/20260804_care_ase_r2_formal_training_72426dfdb19f/runtime/fold_1/named_evidence_liveness_fold1.json",
+    "results/20260804_care_ase_r2_formal_training_72426dfdb19f/runtime/fold_4/named_evidence_liveness_fold4.json"
+  ],
+  "final_status": "complete",
+  "key_conclusion": "CARE-ASE latest source passed early code canaries but did not reach a deployable dual-fold checkpoint in the emergency window; use the verified OrganAgent fallback archives.",
+  "next_step": "Use existing fallback Docker archives; do not treat CARE-ASE as deployable from this emergency run.",
+  "push_status": "origin/main verified by controller before notification",
+  "slurm_terminal_status": "CARE-ASE training processes stopped; interactive allocations preserved for user control.",
+  "task_name": "20260804_care_ase_r2_emergency_9h_training_docker"
+}

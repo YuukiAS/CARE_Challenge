@@ -1,0 +1,10 @@
+# Terminal packet manifest
+
+- `terminal_scientific_decision.json` `92853ce92f08ac4ed8941b7e9d4a4187c47734522540bbb128bb9ba442275b4c`
+- `completion_check.json` `3f2a65522728670447301acd68994a3c3a9485f08d987c9183ed54899587f70b`
+- `controller_report.md` `2c837d5376f16810100f0068c51e7957a8bd13bda5cc6f52e119818e1ffc01a7`
+- `docker_fallback_integrity_receipt.json` `4a3c6a0e9ae39607d7021fd593b1d24abcb78a0bf160cc9b53aba0cb37ed0fb4`
+- `critical_source_manifest.json` `7ee5146fc68e41e30832a915adb2f79315f95a3b5f4bba514f68cae1ec336c2a`
+- `formal_runtime_input_bundle.json` `b891b4cdf687687acac1415d95c550472341b5339ce36d981de801fc6448f443`
+- `implementation_commit_receipt.json` `4866d520fdda805baaadd8b1bb55ab0e3343bda8d44c6aa05f82952d10daa242`
+- `emergency_final_source_closure_receipt.json` `cefd70aea7f85b3530c0a9a9ba0fef4317db5c77e9aa09b8561d9e382fab745f`

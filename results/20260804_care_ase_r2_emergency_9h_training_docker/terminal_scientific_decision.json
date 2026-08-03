@@ -1,0 +1,114 @@
+{
+  "care_ase_deployable_checkpoint_available": false,
+  "care_ase_inner_selection_performed": false,
+  "care_ase_outer_access_performed": false,
+  "controller_verification_decision": "VERIFIED_COMPLETE_WITH_FALLBACK",
+  "created_utc": "2026-08-03T18:53:25.805367Z",
+  "docker_upload_performed": false,
+  "fallback": {
+    "cinemyops_archive_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_final_dist/CineMyoPS-OrganAgent.tar.gz",
+    "cinemyops_archive_sha256": "c02db56bd52d14d3b5bbda9d204a20b7e4c061fd5e6012ffa1cebc67fb92c136",
+    "clean_archive_load_status": "PASS",
+    "myops_archive_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_final_dist/MyoPS-OrganAgent.tar.gz",
+    "myops_archive_sha256": "638c1d54d1c75f3514f325695025c03bd8f43625c9f2877d72841db6ee2ac73b",
+    "previous_submission_readiness_status": "PASS_READY_TO_SEND_MANUALLY",
+    "public_rehearsal_case_count_cinemyops": 15,
+    "public_rehearsal_case_count_myops": 15,
+    "sha256sums_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_final_dist/SHA256SUMS",
+    "sha256sums_sha256": "aa61745c67ce7514f40f5533537f13b98440c9b58e41e632d76e2fb3a8e928f9",
+    "status": "PASS"
+  },
+  "folds": {
+    "1": {
+      "named_evidence_canary": {
+        "completed_optimizer_step": 1,
+        "contract_masked_gradient_modules": [
+          "scar_extent_area",
+          "edema_extent_area"
+        ],
+        "diagnostic_optimizer_step_executed": false,
+        "failed_gradient_modules": [],
+        "failed_intervention_sources": [],
+        "no_t2_edema_owned_gradient_max_abs": 0.0,
+        "no_t2_edema_owned_row_call_count": 0,
+        "path": "results/20260804_care_ase_r2_formal_training_72426dfdb19f/runtime/fold_1/named_evidence_liveness_fold1.json",
+        "rng_restored_before_receipt": true,
+        "scar_t2_direct_path_exists": false,
+        "sha256": "3a1eb021b0fd31d27c53d876674d2cdbbb00d9f5ba31829b0e48881c6ca8c836",
+        "status": "PASS"
+      },
+      "training_log": {
+        "last_optimizer_step": 16,
+        "latest_step_seconds": 13.626793728210032,
+        "loss_finite_all_recorded": true,
+        "median_eta_14000_hours": 78.0375925420473,
+        "median_eta_2000_hours": 11.148227506006757,
+        "median_step_seconds": 20.066809510812163,
+        "p90_step_seconds": 25.021261265315115,
+        "path": "results/20260804_care_ase_r2_formal_training_72426dfdb19f/runtime/fold_1/training_log_00000_02000.csv",
+        "row_count": 16,
+        "sha256": "1b87fdcdc00102fc6b06e4fc388dfce5f1b26c6f9292734591dcf04908c5b7d6",
+        "step100_reached": false,
+        "step20_reached": false,
+        "step50_reached": false
+      }
+    },
+    "4": {
+      "named_evidence_canary": {
+        "completed_optimizer_step": 1,
+        "contract_masked_gradient_modules": [
+          "scar_extent_area",
+          "edema_extent_area"
+        ],
+        "diagnostic_optimizer_step_executed": false,
+        "failed_gradient_modules": [],
+        "failed_intervention_sources": [],
+        "no_t2_edema_owned_gradient_max_abs": 0.0,
+        "no_t2_edema_owned_row_call_count": 0,
+        "path": "results/20260804_care_ase_r2_formal_training_72426dfdb19f/runtime/fold_4/named_evidence_liveness_fold4.json",
+        "rng_restored_before_receipt": true,
+        "scar_t2_direct_path_exists": false,
+        "sha256": "9769c78753e98245ff8b3292a45533673b68f6f20d56aae8e91163b46db7b1d8",
+        "status": "PASS"
+      },
+      "training_log": {
+        "last_optimizer_step": 16,
+        "latest_step_seconds": 13.777572404127568,
+        "loss_finite_all_recorded": true,
+        "median_eta_14000_hours": 76.83051261352375,
+        "median_eta_2000_hours": 10.975787516217679,
+        "median_step_seconds": 19.756417529191822,
+        "p90_step_seconds": 25.580640845233575,
+        "path": "results/20260804_care_ase_r2_formal_training_72426dfdb19f/runtime/fold_4/training_log_00000_02000.csv",
+        "row_count": 16,
+        "sha256": "b51b85d14e5dc48c3e76e8ae005f56e89031b1ae5fa08b0a562849f3aeb49a68",
+        "step100_reached": false,
+        "step20_reached": false,
+        "step50_reached": false
+      }
+    }
+  },
+  "formal_training_credit": "zero_for_final_scientific_selection",
+  "formal_training_started": true,
+  "head_equals_origin_main_at_terminal_packet_start": true,
+  "implementation_source_commit_sha": "72426dfdb19ffaf87c38b2edf1bbe75e91e0a899",
+  "organizer_email_sent": false,
+  "origin_main_sha_at_terminal_packet_start": "851264b85c55bc71af7aed3d990b38d33e23042c",
+  "outer_access_fold1": 0,
+  "outer_access_fold4": 0,
+  "reason": "CARE-ASE final-source bootstrap and early named-evidence canaries passed, but final-source formal runtime throughput could not produce deploy-safe dual-fold step14000 checkpoints within the emergency window. Existing verified OrganAgent fallback archives remain the deployable path.",
+  "review_packet_commit_sha": "851264b85c55bc71af7aed3d990b38d33e23042c",
+  "task_key": "20260804_care_ase_r2_emergency_9h_training_docker",
+  "terminal_constraints": {
+    "no_docker_upload": true,
+    "no_formal_training_resume_after_no_go": true,
+    "no_organizer_email": true,
+    "no_outer": true,
+    "no_validation_upload": true
+  },
+  "terminal_scientific_result": "CARE_ASE_INNER_NO_GO_USE_FALLBACK",
+  "training_processes_active_after_stop": [
+    "    202     199 S          00:00 /bin/sh -c ps -u \"$USER\" -o pid,ppid,stat,etime,cmd | rg 'run_care_ase_r2_chunk.py|srun --jobid=61794608|srun --jobid=61830309|care_ase_fold[14]_train' || true"
+  ],
+  "validation_upload_performed": false
+}

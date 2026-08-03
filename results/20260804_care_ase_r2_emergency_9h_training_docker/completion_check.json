@@ -1,0 +1,19 @@
+{
+  "care_ase_fold1_latest_step": 16,
+  "care_ase_fold4_latest_step": 16,
+  "docker_upload_performed": false,
+  "fallback_archive_integrity": "PASS",
+  "git_commit_push_expected_before_notifier": true,
+  "implementation_source_commit_sha": "72426dfdb19ffaf87c38b2edf1bbe75e91e0a899",
+  "named_evidence_canary_fold1": "PASS",
+  "named_evidence_canary_fold4": "PASS",
+  "organizer_email_sent": false,
+  "outer_access_fold1": 0,
+  "outer_access_fold4": 0,
+  "ready_for_fallback_use": true,
+  "review_packet_commit_sha_before_terminal_commit": "851264b85c55bc71af7aed3d990b38d33e23042c",
+  "status": "complete",
+  "task_key": "20260804_care_ase_r2_emergency_9h_training_docker",
+  "terminal_scientific_result": "CARE_ASE_INNER_NO_GO_USE_FALLBACK",
+  "validation_upload_performed": false
+}
