@@ -1,0 +1,1089 @@
+{
+  "completed_folds": [
+    1,
+    4
+  ],
+  "decision": "PASS",
+  "folds": {
+    "1": {
+      "area_reference": {
+        "denominator_wall_union_labels": [
+          1,
+          4,
+          5
+        ],
+        "edema_positive_t2_present_slice_count": 513,
+        "edema_reference": 0.251953125,
+        "fold": 1,
+        "inner_or_outer_access": "forbidden_not_used",
+        "payload_sha256": "5d7c39d8d4e7fd7c528892513a1b9a7135fac8fb4026eb70198b94e80a69e4e2",
+        "scar_positive_slice_count": 1731,
+        "scar_reference": 0.2562862669245648,
+        "source": "actual_train_only"
+      },
+      "checkpoint": {
+        "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v4/g2_fold1/g2_atomic_checkpoint_probe.pt",
+        "checkpoint_sha256": "a0666c650f3ddd982daea8d89b27a15469534e2eb56e9856b105e53f356523c7",
+        "complete_centerB_case_cursor": 0,
+        "complete_centerC_case_cursor": 0,
+        "complete_center_cursor": 0,
+        "complete_center_selector_cursor": 0,
+        "complete_pathology_cursor": 0,
+        "extent_wall_ramp_value": 0.0,
+        "fixed_terminal_step14000": false,
+        "global_optimizer_step": 1,
+        "has_dataloader_worker_seed_state": true,
+        "has_optimizer_state": true,
+        "has_rng_state": true,
+        "has_sampler_rng_state": true,
+        "has_scheduler_state": true,
+        "micro_case_cursors_by_group": {
+          "complete_centerB": 0,
+          "complete_centerC": 0,
+          "lge_c0": 0,
+          "lge_only": 0
+        },
+        "micro_patch_cursor": 0,
+        "microbatch_cursor": 0,
+        "next_batch_hash": "c5295ccbf599e67f0daa5d9c3584e34ee47711298b87e8db931543d3a5a5f51d",
+        "next_optimizer_step_micro_descriptor_sha256": "c5295ccbf599e67f0daa5d9c3584e34ee47711298b87e8db931543d3a5a5f51d",
+        "partial_case_cursors": {
+          "lge_c0": 0,
+          "lge_only": 0
+        },
+        "reload_logits_max_abs_error": 0.0,
+        "required_fields_present": true,
+        "schema_version": 1,
+        "sidecar_exists": true,
+        "stage_id": "A",
+        "stage_step": 1
+      },
+      "cuda_device": "NVIDIA H100 NVL",
+      "decision": "PASS",
+      "decode": {
+        "no_t2_class4_excluded_argmax_class": 0,
+        "no_t2_excludes_class4": true,
+        "t2_present_argmax_class": 4
+      },
+      "fold": 1,
+      "gradient": {
+        "complete_grad_max": {
+          "component_heads": 0.14247339963912964,
+          "edema_branch": 0.08150328695774078,
+          "scar_branch": 0.07227404415607452
+        },
+        "complete_loss_finite": true,
+        "complete_metrics": {
+          "all_finite": 1.0,
+          "all_nonnegative": 1.0,
+          "anatomy_ce": 0.01678524538874626,
+          "anatomy_dice": 0.20100733637809753,
+          "distance": 0.12923680245876312,
+          "edema_binary_t2_gated": 0.9148514270782471,
+          "edema_boundary": 0.3130178451538086,
+          "edema_context": 1.4478076696395874,
+          "edema_dense": 0.9148514270782471,
+          "edema_extent": 3.459730386734009,
+          "edema_extent_area": 0.017510022968053818,
+          "edema_extent_presence": 6.901950836181641,
+          "injury": 1.1931911706924438,
+          "loss": 3.9916181564331055,
+          "no_t2_edema_exclusive_total_loss": 7.332003116607666,
+          "relation": 0.003404783783480525,
+          "scar_center": 0.12662829458713531,
+          "scar_component": 0.8780913949012756,
+          "scar_context": 1.557754397392273,
+          "scar_dense": 0.9248714447021484,
+          "scar_extent": 0.35329148173332214,
+          "scar_extent_area": 0.02704017236828804,
+          "scar_extent_presence": 0.6795427799224854,
+          "six_class_ce": 0.009761027991771698,
+          "six_class_dice": 0.09042838960886002,
+          "wall": 0.4183320701122284
+        },
+        "no_t2_edema_exclusive_grad_by_prefix": {
+          "edema_branch.": 0.0,
+          "edema_c0_full_adapter.": 0.0,
+          "edema_c0_gate.": 0.0,
+          "edema_c0_half_adapter.": 0.0,
+          "edema_dilation_context.": 0.0,
+          "edema_lge_full_adapter.": 0.0,
+          "edema_lge_gate.": 0.0,
+          "edema_lge_half_adapter.": 0.0,
+          "edema_t2_full_adapter.": 0.0,
+          "edema_t2_half_adapter.": 0.0
+        },
+        "no_t2_edema_exclusive_grad_max": 0.0,
+        "no_t2_edema_exclusive_gradient_zero": true,
+        "no_t2_loss_finite": true,
+        "no_t2_metrics": {
+          "all_finite": 1.0,
+          "all_nonnegative": 1.0,
+          "anatomy_ce": 0.020800255239009857,
+          "anatomy_dice": 0.48779329657554626,
+          "distance": 0.16513435542583466,
+          "edema_binary_t2_gated": 0.0,
+          "edema_boundary": 0.0,
+          "edema_context": -0.0,
+          "edema_dense": 0.0,
+          "edema_extent": 0.0,
+          "edema_extent_area": 0.0,
+          "edema_extent_presence": 0.0,
+          "five_class_ce_without_class4": 0.01712094619870186,
+          "five_class_dice_without_class4": 0.5851553678512573,
+          "injury": 0.0,
+          "loss": 2.356968879699707,
+          "no_t2_edema_exclusive_total_loss": 0.0,
+          "relation": 0.0,
+          "scar_center": 0.13552270829677582,
+          "scar_component": 0.8720711469650269,
+          "scar_context": 1.5254844427108765,
+          "scar_dense": 0.9106979370117188,
+          "scar_extent": 0.34297290444374084,
+          "scar_extent_area": 0.009564240463078022,
+          "scar_extent_presence": 0.6763815879821777,
+          "wall": 0.3909717798233032
+        }
+      },
+      "module_off_final_logit_final_label_evidence": {
+        "global_step": 2004,
+        "probe_case_shape": [
+          1,
+          3,
+          20,
+          256,
+          256
+        ],
+        "status": "PASS",
+        "toggles": {
+          "disable_all_evidence": {
+            "edema_logit_max_abs_delta": 0.3339402675628662,
+            "final_label_changed_voxels": 17,
+            "final_logit_max_abs_delta": 0.3339402675628662,
+            "passes_logit_or_label_effect": true,
+            "scar_logit_max_abs_delta": 0.25437211990356445
+          },
+          "disable_edema_boundary": {
+            "edema_logit_max_abs_delta": 0.10115194320678711,
+            "final_label_changed_voxels": 0,
+            "final_logit_max_abs_delta": 0.10115194320678711,
+            "passes_logit_or_label_effect": true,
+            "scar_logit_max_abs_delta": 0.0
+          },
+          "disable_edema_context": {
+            "edema_logit_max_abs_delta": 0.18975472450256348,
+            "final_label_changed_voxels": 6,
+            "final_logit_max_abs_delta": 0.18975472450256348,
+            "passes_logit_or_label_effect": true,
+            "scar_logit_max_abs_delta": 0.0
+          },
+          "disable_edema_injury": {
+            "edema_logit_max_abs_delta": 0.02765655517578125,
+            "final_label_changed_voxels": 0,
+            "final_logit_max_abs_delta": 0.02765655517578125,
+            "passes_logit_or_label_effect": true,
+            "scar_logit_max_abs_delta": 0.0
+          },
+          "disable_extent_wall": {
+            "edema_logit_max_abs_delta": 1.5549638271331787,
+            "final_label_changed_voxels": 99,
+            "final_logit_max_abs_delta": 1.5549638271331787,
+            "passes_logit_or_label_effect": true,
+            "scar_logit_max_abs_delta": 1.2405319213867188
+          },
+          "disable_scar_center": {
+            "edema_logit_max_abs_delta": 0.0,
+            "final_label_changed_voxels": 0,
+            "final_logit_max_abs_delta": 0.042752742767333984,
+            "passes_logit_or_label_effect": true,
+            "scar_logit_max_abs_delta": 0.042752742767333984
+          },
+          "disable_scar_context": {
+            "edema_logit_max_abs_delta": 0.0,
+            "final_label_changed_voxels": 2,
+            "final_logit_max_abs_delta": 0.1496744155883789,
+            "passes_logit_or_label_effect": true,
+            "scar_logit_max_abs_delta": 0.1496744155883789
+          },
+          "disable_scar_proposal": {
+            "edema_logit_max_abs_delta": 0.0,
+            "final_label_changed_voxels": 0,
+            "final_logit_max_abs_delta": 0.03746652603149414,
+            "passes_logit_or_label_effect": true,
+            "scar_logit_max_abs_delta": 0.03746652603149414
+          }
+        }
+      },
+      "outer_access_count_before_freeze": 0,
+      "overfit_direction": {
+        "final_loss": 3.8919339179992676,
+        "initial_loss": 3.9916181564331055,
+        "loss_decreased": true,
+        "steps": [
+          {
+            "loss": 3.9916181564331055,
+            "metrics": {
+              "all_finite": 1.0,
+              "all_nonnegative": 1.0,
+              "anatomy_ce": 0.01678524538874626,
+              "anatomy_dice": 0.20100733637809753,
+              "distance": 0.12923680245876312,
+              "edema_binary_t2_gated": 0.9148514270782471,
+              "edema_boundary": 0.3130178451538086,
+              "edema_context": 1.4478076696395874,
+              "edema_dense": 0.9148514270782471,
+              "edema_extent": 3.459730386734009,
+              "edema_extent_area": 0.017510022968053818,
+              "edema_extent_presence": 6.901950836181641,
+              "injury": 1.1931911706924438,
+              "loss": 3.9916181564331055,
+              "no_t2_edema_exclusive_total_loss": 7.332003116607666,
+              "relation": 0.003404783783480525,
+              "scar_center": 0.12662829458713531,
+              "scar_component": 0.8780913949012756,
+              "scar_context": 1.557754397392273,
+              "scar_dense": 0.9248714447021484,
+              "scar_extent": 0.35329148173332214,
+              "scar_extent_area": 0.02704017236828804,
+              "scar_extent_presence": 0.6795427799224854,
+              "six_class_ce": 0.009761027991771698,
+              "six_class_dice": 0.09042838960886002,
+              "wall": 0.4183320701122284
+            },
+            "stage": "B"
+          },
+          {
+            "loss": 3.9507014751434326,
+            "metrics": {
+              "all_finite": 1.0,
+              "all_nonnegative": 1.0,
+              "anatomy_ce": 0.014631223864853382,
+              "anatomy_dice": 0.1868780255317688,
+              "distance": 0.1227191910147667,
+              "edema_binary_t2_gated": 0.912853479385376,
+              "edema_boundary": 0.30402708053588867,
+              "edema_context": 1.4444122314453125,
+              "edema_dense": 0.912853479385376,
+              "edema_extent": 3.4368700981140137,
+              "edema_extent_area": 0.017529740929603577,
+              "edema_extent_presence": 6.856210231781006,
+              "injury": 1.1920647621154785,
+              "loss": 3.9507014751434326,
+              "no_t2_edema_exclusive_total_loss": 7.293592929840088,
+              "relation": 0.0033652051351964474,
+              "scar_center": 0.12598837912082672,
+              "scar_component": 0.8766264319419861,
+              "scar_context": 1.5555719137191772,
+              "scar_dense": 0.923564612865448,
+              "scar_extent": 0.35289907455444336,
+              "scar_extent_area": 0.026920605450868607,
+              "scar_extent_presence": 0.6788775324821472,
+              "six_class_ce": 0.007862359285354614,
+              "six_class_dice": 0.07801108807325363,
+              "wall": 0.38759949803352356
+            },
+            "stage": "B"
+          },
+          {
+            "loss": 3.9182844161987305,
+            "metrics": {
+              "all_finite": 1.0,
+              "all_nonnegative": 1.0,
+              "anatomy_ce": 0.013021553866565228,
+              "anatomy_dice": 0.17510920763015747,
+              "distance": 0.11843971908092499,
+              "edema_binary_t2_gated": 0.9112544655799866,
+              "edema_boundary": 0.2951582074165344,
+              "edema_context": 1.4409698247909546,
+              "edema_dense": 0.9112544655799866,
+              "edema_extent": 3.4124643802642822,
+              "edema_extent_area": 0.017552737146615982,
+              "edema_extent_presence": 6.807375907897949,
+              "injury": 1.1909847259521484,
+              "loss": 3.9182844161987305,
+              "no_t2_edema_exclusive_total_loss": 7.254150867462158,
+              "relation": 0.0033193263225257397,
+              "scar_center": 0.125418022274971,
+              "scar_component": 0.8755913972854614,
+              "scar_context": 1.5533130168914795,
+              "scar_dense": 0.9225262403488159,
+              "scar_extent": 0.35253646969795227,
+              "scar_extent_area": 0.026796331629157066,
+              "scar_extent_presence": 0.6782765984535217,
+              "six_class_ce": 0.006687996443361044,
+              "six_class_dice": 0.0704076811671257,
+              "wall": 0.3602408766746521
+            },
+            "stage": "B"
+          },
+          {
+            "loss": 3.8919339179992676,
+            "metrics": {
+              "all_finite": 1.0,
+              "all_nonnegative": 1.0,
+              "anatomy_ce": 0.01175018772482872,
+              "anatomy_dice": 0.16519126296043396,
+              "distance": 0.11543860286474228,
+              "edema_binary_t2_gated": 0.9098904132843018,
+              "edema_boundary": 0.28633949160575867,
+              "edema_context": 1.437431812286377,
+              "edema_dense": 0.9098904132843018,
+              "edema_extent": 3.3867251873016357,
+              "edema_extent_area": 0.017573688179254532,
+              "edema_extent_presence": 6.755876541137695,
+              "injury": 1.1899651288986206,
+              "loss": 3.8919339179992676,
+              "no_t2_edema_exclusive_total_loss": 7.213624000549316,
+              "relation": 0.0032722740434110165,
+              "scar_center": 0.12477938830852509,
+              "scar_component": 0.8746716976165771,
+              "scar_context": 1.5510573387145996,
+              "scar_dense": 0.9217427968978882,
+              "scar_extent": 0.3521658480167389,
+              "scar_extent_area": 0.026673344895243645,
+              "scar_extent_presence": 0.6776583790779114,
+              "six_class_ce": 0.005978797096759081,
+              "six_class_dice": 0.06632151454687119,
+              "wall": 0.33532848954200745
+            },
+            "stage": "B"
+          }
+        ]
+      },
+      "pass_condition_count": 16,
+      "required_case_descriptors": {
+        "complete_centerB": {
+          "availability": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "case_group": "complete",
+          "case_id": "Case2002",
+          "center": "CenterB",
+          "global_step": 0,
+          "hard_negative_category": "manifest_consumed_no_matching_oof",
+          "pathology_focus": "scar",
+          "resolved_target_coordinate_count": 0,
+          "within_focus": "gt_component"
+        },
+        "complete_centerC": {
+          "availability": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "case_group": "complete",
+          "case_id": "Case3001",
+          "center": "CenterC",
+          "global_step": 2,
+          "hard_negative_category": "manifest_consumed_no_matching_oof",
+          "pathology_focus": "edema",
+          "resolved_target_coordinate_count": 0,
+          "within_focus": "positive"
+        },
+        "edema_focus_complete": {
+          "availability": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "case_group": "complete",
+          "case_id": "Case3001",
+          "center": "CenterC",
+          "global_step": 2,
+          "hard_negative_category": "manifest_consumed_no_matching_oof",
+          "pathology_focus": "edema",
+          "resolved_target_coordinate_count": 0,
+          "within_focus": "positive"
+        },
+        "lge_c0": {
+          "availability": [
+            1.0,
+            0.0,
+            1.0
+          ],
+          "case_group": "lge_c0",
+          "case_id": "Case5001",
+          "center": "CenterE",
+          "global_step": 3,
+          "hard_negative_category": "manifest_consumed_no_matching_oof",
+          "pathology_focus": "scar",
+          "resolved_target_coordinate_count": 0,
+          "within_focus": "gt_component"
+        },
+        "lge_only": {
+          "availability": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "case_group": "lge_only",
+          "case_id": "Case1002",
+          "center": "CenterA",
+          "global_step": 1,
+          "hard_negative_category": "manifest_consumed_no_matching_oof",
+          "pathology_focus": "scar",
+          "resolved_target_coordinate_count": 0,
+          "within_focus": "gt_component"
+        },
+        "small_scar": {
+          "availability": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "case_group": "lge_only",
+          "case_id": "Case1017",
+          "center": "CenterA",
+          "global_step": 9,
+          "hard_negative_category": "scar_small_component",
+          "pathology_focus": "scar",
+          "resolved_target_coordinate_count": 2,
+          "within_focus": "small_component"
+        }
+      },
+      "required_pass_condition_count": 16,
+      "resume_equivalence": {
+        "batch_descriptor_cursor": 0,
+        "case_group_cursor": 0,
+        "next_batch_descriptor_sha256": "c5295ccbf599e67f0daa5d9c3584e34ee47711298b87e8db931543d3a5a5f51d",
+        "scheduler_last_global_step": -1
+      },
+      "sampler_400": {
+        "counts": {
+          "complete": 200,
+          "lge_c0": 100,
+          "lge_only": 100
+        },
+        "manifest_case_count": 141,
+        "manifest_path": "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_full_fidelity_execution/hard_negative_manifest_fold1.json",
+        "manifest_sha256": "cff12b0df4d7e59963385ea4665d042c031a28130393969ae25834e2d03a3878",
+        "status": "PASS",
+        "within_focus_counts": {
+          "edema:boundary": 20,
+          "edema:oof_fn_or_low_volume": 20,
+          "edema:positive": 35,
+          "edema:random": 10,
+          "edema:safe_fp": 15,
+          "scar:gt_component": 105,
+          "scar:oof_fn": 60,
+          "scar:oof_fp": 45,
+          "scar:random": 30,
+          "scar:small_component": 60
+        }
+      },
+      "scheduler": {
+        "lr_A0_new_modules": 5e-05,
+        "lr_A199_new_modules": 0.0005,
+        "lr_B2000_new_modules": 2.9999999999999997e-05,
+        "lr_B9999_upper": 1e-06,
+        "lr_C10000_lower": 1e-05,
+        "lr_C13999_new_modules": 1e-06,
+        "stage_0": "A",
+        "stage_10000": "C",
+        "stage_13999": "C",
+        "stage_1999": "A",
+        "stage_2000": "B",
+        "stage_9999": "B",
+        "status": "PASS"
+      },
+      "sliding_window": {
+        "case_id": "Case2002",
+        "decoded_shape": [
+          1,
+          12,
+          244,
+          255
+        ],
+        "finite_logits": true,
+        "input_shape": [
+          1,
+          3,
+          12,
+          244,
+          255
+        ],
+        "logits_shape": [
+          1,
+          6,
+          12,
+          244,
+          255
+        ],
+        "patch_size": [
+          20,
+          256,
+          256
+        ]
+      },
+      "slurm_job_id": "61794608",
+      "source_hash": "a57afbb77e198e4afe7c1609fef06dad39abf6b1a55aeadeda1a2576a27f270c",
+      "step0_parity": {
+        "anatomy_step0_parity_max_abs_error": 0.0,
+        "auxiliary_half_feature_source": "dedicated_quarter_to_half_auxiliary_tower",
+        "checkpoint_path": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/checkpoint_final.pth",
+        "checkpoint_sha256": "5310569ff62f2f9a6ff2bc7dd3754404140071427a2025caf5e25d2916cfe400",
+        "clone_decoder_stage_indices": [
+          4,
+          5
+        ],
+        "compatibility_argmax_changed_voxels": 0,
+        "fold": 1,
+        "normal_forward_reads_stock_pathology_logits": false,
+        "reference_load_missing_keys": [],
+        "reference_load_unexpected_keys": [],
+        "single_shared_low_mid_decoder_forward": true,
+        "split_before_highest_decoder_resolutions": 2,
+        "status": "PASS",
+        "step0_edema_logit_parity_vs_stock_class4_max_abs_error": 0.0,
+        "step0_scar_logit_parity_vs_stock_class5_max_abs_error": 0.0,
+        "stock_load_missing_keys": [],
+        "stock_load_unexpected_keys": [],
+        "stock_parameter_byte_coverage": 1.0
+      }
+    },
+    "4": {
+      "area_reference": {
+        "denominator_wall_union_labels": [
+          1,
+          4,
+          5
+        ],
+        "edema_positive_t2_present_slice_count": 508,
+        "edema_reference": 0.22920081356155286,
+        "fold": 4,
+        "inner_or_outer_access": "forbidden_not_used",
+        "payload_sha256": "bf1ed086b9a7170ad9e8b1cba37fb0b052df88b86b14fce9b3d7e126382ac52d",
+        "scar_positive_slice_count": 1761,
+        "scar_reference": 0.26353790613718414,
+        "source": "actual_train_only"
+      },
+      "checkpoint": {
+        "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v4/g2_fold4/g2_atomic_checkpoint_probe.pt",
+        "checkpoint_sha256": "cb3384a9099a82da1a814afeefa012ba54ef06ad805c3a506ec30b87bb9869b1",
+        "complete_centerB_case_cursor": 0,
+        "complete_centerC_case_cursor": 0,
+        "complete_center_cursor": 0,
+        "complete_center_selector_cursor": 0,
+        "complete_pathology_cursor": 0,
+        "extent_wall_ramp_value": 0.0,
+        "fixed_terminal_step14000": false,
+        "global_optimizer_step": 1,
+        "has_dataloader_worker_seed_state": true,
+        "has_optimizer_state": true,
+        "has_rng_state": true,
+        "has_sampler_rng_state": true,
+        "has_scheduler_state": true,
+        "micro_case_cursors_by_group": {
+          "complete_centerB": 0,
+          "complete_centerC": 0,
+          "lge_c0": 0,
+          "lge_only": 0
+        },
+        "micro_patch_cursor": 0,
+        "microbatch_cursor": 0,
+        "next_batch_hash": "de44355b08b6d20a1ccb1ce325432b19ce9912c6a514c28e26ae7ffd4063aa74",
+        "next_optimizer_step_micro_descriptor_sha256": "de44355b08b6d20a1ccb1ce325432b19ce9912c6a514c28e26ae7ffd4063aa74",
+        "partial_case_cursors": {
+          "lge_c0": 0,
+          "lge_only": 0
+        },
+        "reload_logits_max_abs_error": 0.0,
+        "required_fields_present": true,
+        "schema_version": 1,
+        "sidecar_exists": true,
+        "stage_id": "A",
+        "stage_step": 1
+      },
+      "cuda_device": "NVIDIA H100 NVL",
+      "decision": "PASS",
+      "decode": {
+        "no_t2_class4_excluded_argmax_class": 0,
+        "no_t2_excludes_class4": true,
+        "t2_present_argmax_class": 4
+      },
+      "fold": 4,
+      "gradient": {
+        "complete_grad_max": {
+          "component_heads": 0.16557548940181732,
+          "edema_branch": 0.10588116943836212,
+          "scar_branch": 0.10383974015712738
+        },
+        "complete_loss_finite": true,
+        "complete_metrics": {
+          "all_finite": 1.0,
+          "all_nonnegative": 1.0,
+          "anatomy_ce": 0.018105966970324516,
+          "anatomy_dice": 0.1308867186307907,
+          "distance": 0.1977841556072235,
+          "edema_binary_t2_gated": 0.9222946166992188,
+          "edema_boundary": 0.336172491312027,
+          "edema_context": 1.559017539024353,
+          "edema_dense": 0.9222946166992188,
+          "edema_extent": 3.3901596069335938,
+          "edema_extent_area": 0.010020365938544273,
+          "edema_extent_presence": 6.770298957824707,
+          "injury": 1.1303380727767944,
+          "loss": 3.8911237716674805,
+          "no_t2_edema_exclusive_total_loss": 7.341015338897705,
+          "relation": 0.0030325674451887608,
+          "scar_center": 0.18093609809875488,
+          "scar_component": 0.8572171330451965,
+          "scar_context": 1.4434943199157715,
+          "scar_dense": 0.9161759614944458,
+          "scar_extent": 0.3506682813167572,
+          "scar_extent_area": 0.02893325500190258,
+          "scar_extent_presence": 0.6724033355712891,
+          "six_class_ce": 0.013360865414142609,
+          "six_class_dice": 0.09013116359710693,
+          "wall": 0.26051056385040283
+        },
+        "no_t2_edema_exclusive_grad_by_prefix": {
+          "edema_branch.": 0.0,
+          "edema_c0_full_adapter.": 0.0,
+          "edema_c0_gate.": 0.0,
+          "edema_c0_half_adapter.": 0.0,
+          "edema_dilation_context.": 0.0,
+          "edema_lge_full_adapter.": 0.0,
+          "edema_lge_gate.": 0.0,
+          "edema_lge_half_adapter.": 0.0,
+          "edema_t2_full_adapter.": 0.0,
+          "edema_t2_half_adapter.": 0.0
+        },
+        "no_t2_edema_exclusive_grad_max": 0.0,
+        "no_t2_edema_exclusive_gradient_zero": true,
+        "no_t2_loss_finite": true,
+        "no_t2_metrics": {
+          "all_finite": 1.0,
+          "all_nonnegative": 1.0,
+          "anatomy_ce": 0.01486128568649292,
+          "anatomy_dice": 0.4178774058818817,
+          "distance": 0.18921642005443573,
+          "edema_binary_t2_gated": 0.0,
+          "edema_boundary": 0.0,
+          "edema_context": 0.0,
+          "edema_dense": 0.0,
+          "edema_extent": 0.0,
+          "edema_extent_area": 0.0,
+          "edema_extent_presence": 0.0,
+          "five_class_ce_without_class4": 0.011877098120748997,
+          "five_class_dice_without_class4": 0.5504152774810791,
+          "injury": 0.0,
+          "loss": 2.279322624206543,
+          "no_t2_edema_exclusive_total_loss": 0.0,
+          "relation": 0.0,
+          "scar_center": 0.1949186474084854,
+          "scar_component": 0.9001986384391785,
+          "scar_context": 1.4178848266601562,
+          "scar_dense": 0.9460251331329346,
+          "scar_extent": 0.3638635277748108,
+          "scar_extent_area": 0.046831149607896805,
+          "scar_extent_presence": 0.6808959245681763,
+          "wall": 0.23582348227500916
+        }
+      },
+      "module_off_final_logit_final_label_evidence": {
+        "global_step": 2004,
+        "probe_case_shape": [
+          1,
+          3,
+          20,
+          256,
+          256
+        ],
+        "status": "PASS",
+        "toggles": {
+          "disable_all_evidence": {
+            "edema_logit_max_abs_delta": 0.17329883575439453,
+            "final_label_changed_voxels": 8,
+            "final_logit_max_abs_delta": 0.17329883575439453,
+            "passes_logit_or_label_effect": true,
+            "scar_logit_max_abs_delta": 0.1053767204284668
+          },
+          "disable_edema_boundary": {
+            "edema_logit_max_abs_delta": 0.028883934020996094,
+            "final_label_changed_voxels": 1,
+            "final_logit_max_abs_delta": 0.028883934020996094,
+            "passes_logit_or_label_effect": true,
+            "scar_logit_max_abs_delta": 0.0
+          },
+          "disable_edema_context": {
+            "edema_logit_max_abs_delta": 0.08409309387207031,
+            "final_label_changed_voxels": 3,
+            "final_logit_max_abs_delta": 0.08409309387207031,
+            "passes_logit_or_label_effect": true,
+            "scar_logit_max_abs_delta": 0.0
+          },
+          "disable_edema_injury": {
+            "edema_logit_max_abs_delta": 0.02998065948486328,
+            "final_label_changed_voxels": 2,
+            "final_logit_max_abs_delta": 0.02998065948486328,
+            "passes_logit_or_label_effect": true,
+            "scar_logit_max_abs_delta": 0.0
+          },
+          "disable_extent_wall": {
+            "edema_logit_max_abs_delta": 1.5862609148025513,
+            "final_label_changed_voxels": 138,
+            "final_logit_max_abs_delta": 1.5862609148025513,
+            "passes_logit_or_label_effect": true,
+            "scar_logit_max_abs_delta": 0.9819495677947998
+          },
+          "disable_scar_center": {
+            "edema_logit_max_abs_delta": 0.0,
+            "final_label_changed_voxels": 0,
+            "final_logit_max_abs_delta": 0.040294647216796875,
+            "passes_logit_or_label_effect": true,
+            "scar_logit_max_abs_delta": 0.040294647216796875
+          },
+          "disable_scar_context": {
+            "edema_logit_max_abs_delta": 0.0,
+            "final_label_changed_voxels": 3,
+            "final_logit_max_abs_delta": 0.061438560485839844,
+            "passes_logit_or_label_effect": true,
+            "scar_logit_max_abs_delta": 0.061438560485839844
+          },
+          "disable_scar_proposal": {
+            "edema_logit_max_abs_delta": 0.0,
+            "final_label_changed_voxels": 0,
+            "final_logit_max_abs_delta": 0.036792755126953125,
+            "passes_logit_or_label_effect": true,
+            "scar_logit_max_abs_delta": 0.036792755126953125
+          }
+        }
+      },
+      "outer_access_count_before_freeze": 0,
+      "overfit_direction": {
+        "final_loss": 3.806973457336426,
+        "initial_loss": 3.8911237716674805,
+        "loss_decreased": true,
+        "steps": [
+          {
+            "loss": 3.8911237716674805,
+            "metrics": {
+              "all_finite": 1.0,
+              "all_nonnegative": 1.0,
+              "anatomy_ce": 0.018105966970324516,
+              "anatomy_dice": 0.1308867186307907,
+              "distance": 0.1977841556072235,
+              "edema_binary_t2_gated": 0.9222946166992188,
+              "edema_boundary": 0.336172491312027,
+              "edema_context": 1.559017539024353,
+              "edema_dense": 0.9222946166992188,
+              "edema_extent": 3.3901596069335938,
+              "edema_extent_area": 0.010020365938544273,
+              "edema_extent_presence": 6.770298957824707,
+              "injury": 1.1303380727767944,
+              "loss": 3.8911237716674805,
+              "no_t2_edema_exclusive_total_loss": 7.341015338897705,
+              "relation": 0.0030325674451887608,
+              "scar_center": 0.18093609809875488,
+              "scar_component": 0.8572171330451965,
+              "scar_context": 1.4434943199157715,
+              "scar_dense": 0.9161759614944458,
+              "scar_extent": 0.3506682813167572,
+              "scar_extent_area": 0.02893325500190258,
+              "scar_extent_presence": 0.6724033355712891,
+              "six_class_ce": 0.013360865414142609,
+              "six_class_dice": 0.09013116359710693,
+              "wall": 0.26051056385040283
+            },
+            "stage": "B"
+          },
+          {
+            "loss": 3.8582077026367188,
+            "metrics": {
+              "all_finite": 1.0,
+              "all_nonnegative": 1.0,
+              "anatomy_ce": 0.016480369493365288,
+              "anatomy_dice": 0.12235309928655624,
+              "distance": 0.19559215009212494,
+              "edema_binary_t2_gated": 0.920433759689331,
+              "edema_boundary": 0.3214764893054962,
+              "edema_context": 1.5565367937088013,
+              "edema_dense": 0.920433759689331,
+              "edema_extent": 3.3695175647735596,
+              "edema_extent_area": 0.00999196246266365,
+              "edema_extent_presence": 6.729043006896973,
+              "injury": 1.1294946670532227,
+              "loss": 3.8582077026367188,
+              "no_t2_edema_exclusive_total_loss": 7.300319671630859,
+              "relation": 0.0028604839462786913,
+              "scar_center": 0.1796768754720688,
+              "scar_component": 0.8533379435539246,
+              "scar_context": 1.4392578601837158,
+              "scar_dense": 0.9128013253211975,
+              "scar_extent": 0.35047224164009094,
+              "scar_extent_area": 0.028768489137291908,
+              "scar_extent_presence": 0.6721760034561157,
+              "six_class_ce": 0.011428406462073326,
+              "six_class_dice": 0.08071146160364151,
+              "wall": 0.2455967515707016
+            },
+            "stage": "B"
+          },
+          {
+            "loss": 3.830519676208496,
+            "metrics": {
+              "all_finite": 1.0,
+              "all_nonnegative": 1.0,
+              "anatomy_ce": 0.015191727317869663,
+              "anatomy_dice": 0.11501280963420868,
+              "distance": 0.19233545660972595,
+              "edema_binary_t2_gated": 0.9188860654830933,
+              "edema_boundary": 0.30724531412124634,
+              "edema_context": 1.5536906719207764,
+              "edema_dense": 0.9188860654830933,
+              "edema_extent": 3.348165273666382,
+              "edema_extent_area": 0.009951349347829819,
+              "edema_extent_presence": 6.686379432678223,
+              "injury": 1.1286786794662476,
+              "loss": 3.830519676208496,
+              "no_t2_edema_exclusive_total_loss": 7.259384632110596,
+              "relation": 0.0027185387443751097,
+              "scar_center": 0.1788206696510315,
+              "scar_component": 0.8505069017410278,
+              "scar_context": 1.4353723526000977,
+              "scar_dense": 0.9100633263587952,
+              "scar_extent": 0.3502892255783081,
+              "scar_extent_area": 0.028613537549972534,
+              "scar_extent_presence": 0.6719649434089661,
+              "six_class_ce": 0.010092569515109062,
+              "six_class_dice": 0.07376416027545929,
+              "wall": 0.23253948986530304
+            },
+            "stage": "B"
+          },
+          {
+            "loss": 3.806973457336426,
+            "metrics": {
+              "all_finite": 1.0,
+              "all_nonnegative": 1.0,
+              "anatomy_ce": 0.014120785519480705,
+              "anatomy_dice": 0.10864172875881195,
+              "distance": 0.18867656588554382,
+              "edema_binary_t2_gated": 0.9175886511802673,
+              "edema_boundary": 0.2933349013328552,
+              "edema_context": 1.550889015197754,
+              "edema_dense": 0.9175886511802673,
+              "edema_extent": 3.326207399368286,
+              "edema_extent_area": 0.009899615310132504,
+              "edema_extent_presence": 6.642515182495117,
+              "injury": 1.127903938293457,
+              "loss": 3.806973457336426,
+              "no_t2_edema_exclusive_total_loss": 7.218525409698486,
+              "relation": 0.0026010419242084026,
+              "scar_center": 0.17827309668064117,
+              "scar_component": 0.8481812477111816,
+              "scar_context": 1.4313708543777466,
+              "scar_dense": 0.9076300859451294,
+              "scar_extent": 0.3501061797142029,
+              "scar_extent_area": 0.02846621908247471,
+              "scar_extent_presence": 0.6717461347579956,
+              "six_class_ce": 0.009130874648690224,
+              "six_class_dice": 0.06905034929513931,
+              "wall": 0.22113759815692902
+            },
+            "stage": "B"
+          }
+        ]
+      },
+      "pass_condition_count": 16,
+      "required_case_descriptors": {
+        "complete_centerB": {
+          "availability": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "case_group": "complete",
+          "case_id": "Case2001",
+          "center": "CenterB",
+          "global_step": 0,
+          "hard_negative_category": "manifest_consumed_no_matching_oof",
+          "pathology_focus": "scar",
+          "resolved_target_coordinate_count": 0,
+          "within_focus": "gt_component"
+        },
+        "complete_centerC": {
+          "availability": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "case_group": "complete",
+          "case_id": "Case3002",
+          "center": "CenterC",
+          "global_step": 2,
+          "hard_negative_category": "manifest_consumed_no_matching_oof",
+          "pathology_focus": "edema",
+          "resolved_target_coordinate_count": 0,
+          "within_focus": "positive"
+        },
+        "edema_focus_complete": {
+          "availability": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "case_group": "complete",
+          "case_id": "Case3002",
+          "center": "CenterC",
+          "global_step": 2,
+          "hard_negative_category": "manifest_consumed_no_matching_oof",
+          "pathology_focus": "edema",
+          "resolved_target_coordinate_count": 0,
+          "within_focus": "positive"
+        },
+        "lge_c0": {
+          "availability": [
+            1.0,
+            0.0,
+            1.0
+          ],
+          "case_group": "lge_c0",
+          "case_id": "Case5001",
+          "center": "CenterE",
+          "global_step": 3,
+          "hard_negative_category": "manifest_consumed_no_matching_oof",
+          "pathology_focus": "scar",
+          "resolved_target_coordinate_count": 0,
+          "within_focus": "gt_component"
+        },
+        "lge_only": {
+          "availability": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "case_group": "lge_only",
+          "case_id": "Case1001",
+          "center": "CenterA",
+          "global_step": 1,
+          "hard_negative_category": "manifest_consumed_no_matching_oof",
+          "pathology_focus": "scar",
+          "resolved_target_coordinate_count": 0,
+          "within_focus": "gt_component"
+        },
+        "small_scar": {
+          "availability": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "case_group": "lge_only",
+          "case_id": "Case1011",
+          "center": "CenterA",
+          "global_step": 9,
+          "hard_negative_category": "manifest_consumed_no_matching_oof",
+          "pathology_focus": "scar",
+          "resolved_target_coordinate_count": 0,
+          "within_focus": "small_component"
+        }
+      },
+      "required_pass_condition_count": 16,
+      "resume_equivalence": {
+        "batch_descriptor_cursor": 0,
+        "case_group_cursor": 0,
+        "next_batch_descriptor_sha256": "de44355b08b6d20a1ccb1ce325432b19ce9912c6a514c28e26ae7ffd4063aa74",
+        "scheduler_last_global_step": -1
+      },
+      "sampler_400": {
+        "counts": {
+          "complete": 200,
+          "lge_c0": 100,
+          "lge_only": 100
+        },
+        "manifest_case_count": 141,
+        "manifest_path": "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_full_fidelity_execution/hard_negative_manifest_fold4.json",
+        "manifest_sha256": "adebab58a3cde9e0f8e024a017b80a9e41a12150d3ecc0fb1f12bcb977952c38",
+        "status": "PASS",
+        "within_focus_counts": {
+          "edema:boundary": 20,
+          "edema:oof_fn_or_low_volume": 20,
+          "edema:positive": 35,
+          "edema:random": 10,
+          "edema:safe_fp": 15,
+          "scar:gt_component": 105,
+          "scar:oof_fn": 60,
+          "scar:oof_fp": 45,
+          "scar:random": 30,
+          "scar:small_component": 60
+        }
+      },
+      "scheduler": {
+        "lr_A0_new_modules": 5e-05,
+        "lr_A199_new_modules": 0.0005,
+        "lr_B2000_new_modules": 2.9999999999999997e-05,
+        "lr_B9999_upper": 1e-06,
+        "lr_C10000_lower": 1e-05,
+        "lr_C13999_new_modules": 1e-06,
+        "stage_0": "A",
+        "stage_10000": "C",
+        "stage_13999": "C",
+        "stage_1999": "A",
+        "stage_2000": "B",
+        "stage_9999": "B",
+        "status": "PASS"
+      },
+      "sliding_window": {
+        "case_id": "Case2001",
+        "decoded_shape": [
+          1,
+          12,
+          249,
+          250
+        ],
+        "finite_logits": true,
+        "input_shape": [
+          1,
+          3,
+          12,
+          249,
+          250
+        ],
+        "logits_shape": [
+          1,
+          6,
+          12,
+          249,
+          250
+        ],
+        "patch_size": [
+          20,
+          256,
+          256
+        ]
+      },
+      "slurm_job_id": "61830309",
+      "source_hash": "a57afbb77e198e4afe7c1609fef06dad39abf6b1a55aeadeda1a2576a27f270c",
+      "step0_parity": {
+        "anatomy_step0_parity_max_abs_error": 0.0,
+        "auxiliary_half_feature_source": "dedicated_quarter_to_half_auxiliary_tower",
+        "checkpoint_path": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_4/checkpoint_final.pth",
+        "checkpoint_sha256": "9971020827eb50fabe53ef339f5ea2ac8c5a7929584c5c9c0541e83119df0847",
+        "clone_decoder_stage_indices": [
+          4,
+          5
+        ],
+        "compatibility_argmax_changed_voxels": 0,
+        "fold": 4,
+        "normal_forward_reads_stock_pathology_logits": false,
+        "reference_load_missing_keys": [],
+        "reference_load_unexpected_keys": [],
+        "single_shared_low_mid_decoder_forward": true,
+        "split_before_highest_decoder_resolutions": 2,
+        "status": "PASS",
+        "step0_edema_logit_parity_vs_stock_class4_max_abs_error": 0.0,
+        "step0_scar_logit_parity_vs_stock_class5_max_abs_error": 0.0,
+        "stock_load_missing_keys": [],
+        "stock_load_unexpected_keys": [],
+        "stock_parameter_byte_coverage": 1.0
+      }
+    }
+  },
+  "required_folds": [
+    1,
+    4
+  ]
+}

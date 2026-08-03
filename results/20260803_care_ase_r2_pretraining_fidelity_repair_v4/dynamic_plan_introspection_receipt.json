@@ -1,0 +1,309 @@
+{
+  "branch_full_feature_channels": 32,
+  "branch_half_feature_channels": 64,
+  "cloned_stage_indices": [
+    4,
+    5
+  ],
+  "full_projection_channels": 64,
+  "gate_initial_outputs": {
+    "edema_c0_sigmoid": 0.20000000298023224,
+    "edema_lge_tanh": 0.0,
+    "scar_c0_sigmoid": 0.20000000298023224
+  },
+  "half_projection_channels": 128,
+  "half_seed_channels": 64,
+  "modality_adapter_final_conv_zero_init": true,
+  "no_hardcoded_quarter_half_or_projection_channels": true,
+  "scale_specific_modality_adapter_out_channels": {
+    "full": 64,
+    "half": 128
+  },
+  "shared_low_mid_stage_indices": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "shared_quarter_channels": 128,
+  "source": "actual_stock_decoder_modules",
+  "stage_kernel_stride": {
+    "stage_0": {
+      "conv_kernel_sizes": [
+        [
+          3,
+          3,
+          3
+        ],
+        [
+          3,
+          3,
+          3
+        ]
+      ],
+      "conv_strides": [
+        [
+          1,
+          1,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "transpconv": {
+        "conv_kernel_sizes": [],
+        "conv_strides": [],
+        "transposed_kernel_sizes": [
+          [
+            1,
+            2,
+            2
+          ]
+        ],
+        "transposed_strides": [
+          [
+            1,
+            2,
+            2
+          ]
+        ]
+      },
+      "transposed_kernel_sizes": [],
+      "transposed_strides": []
+    },
+    "stage_1": {
+      "conv_kernel_sizes": [
+        [
+          3,
+          3,
+          3
+        ],
+        [
+          3,
+          3,
+          3
+        ]
+      ],
+      "conv_strides": [
+        [
+          1,
+          1,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "transpconv": {
+        "conv_kernel_sizes": [],
+        "conv_strides": [],
+        "transposed_kernel_sizes": [
+          [
+            1,
+            2,
+            2
+          ]
+        ],
+        "transposed_strides": [
+          [
+            1,
+            2,
+            2
+          ]
+        ]
+      },
+      "transposed_kernel_sizes": [],
+      "transposed_strides": []
+    },
+    "stage_2": {
+      "conv_kernel_sizes": [
+        [
+          3,
+          3,
+          3
+        ],
+        [
+          3,
+          3,
+          3
+        ]
+      ],
+      "conv_strides": [
+        [
+          1,
+          1,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "transpconv": {
+        "conv_kernel_sizes": [],
+        "conv_strides": [],
+        "transposed_kernel_sizes": [
+          [
+            1,
+            2,
+            2
+          ]
+        ],
+        "transposed_strides": [
+          [
+            1,
+            2,
+            2
+          ]
+        ]
+      },
+      "transposed_kernel_sizes": [],
+      "transposed_strides": []
+    },
+    "stage_3": {
+      "conv_kernel_sizes": [
+        [
+          3,
+          3,
+          3
+        ],
+        [
+          3,
+          3,
+          3
+        ]
+      ],
+      "conv_strides": [
+        [
+          1,
+          1,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "transpconv": {
+        "conv_kernel_sizes": [],
+        "conv_strides": [],
+        "transposed_kernel_sizes": [
+          [
+            2,
+            2,
+            2
+          ]
+        ],
+        "transposed_strides": [
+          [
+            2,
+            2,
+            2
+          ]
+        ]
+      },
+      "transposed_kernel_sizes": [],
+      "transposed_strides": []
+    },
+    "stage_4": {
+      "conv_kernel_sizes": [
+        [
+          3,
+          3,
+          3
+        ],
+        [
+          3,
+          3,
+          3
+        ]
+      ],
+      "conv_strides": [
+        [
+          1,
+          1,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "transpconv": {
+        "conv_kernel_sizes": [],
+        "conv_strides": [],
+        "transposed_kernel_sizes": [
+          [
+            2,
+            2,
+            2
+          ]
+        ],
+        "transposed_strides": [
+          [
+            2,
+            2,
+            2
+          ]
+        ]
+      },
+      "transposed_kernel_sizes": [],
+      "transposed_strides": []
+    },
+    "stage_5": {
+      "conv_kernel_sizes": [
+        [
+          1,
+          3,
+          3
+        ],
+        [
+          1,
+          3,
+          3
+        ]
+      ],
+      "conv_strides": [
+        [
+          1,
+          1,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      "transpconv": {
+        "conv_kernel_sizes": [],
+        "conv_strides": [],
+        "transposed_kernel_sizes": [
+          [
+            1,
+            2,
+            2
+          ]
+        ],
+        "transposed_strides": [
+          [
+            1,
+            2,
+            2
+          ]
+        ]
+      },
+      "transposed_kernel_sizes": [],
+      "transposed_strides": []
+    }
+  },
+  "status": "PASS"
+}

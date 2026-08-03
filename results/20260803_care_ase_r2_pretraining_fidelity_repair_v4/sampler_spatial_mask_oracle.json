@@ -1,0 +1,6 @@
+{
+  "blood_pool_adjacent_physical": true,
+  "edema_boundary_band": true,
+  "remote_background_physical": true,
+  "status": "PASS"
+}

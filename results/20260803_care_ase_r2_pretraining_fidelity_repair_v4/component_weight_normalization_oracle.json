@@ -1,0 +1,4 @@
+{
+  "reduction": "sum_i w_i L_i / sum_i w_i",
+  "status": "PASS"
+}

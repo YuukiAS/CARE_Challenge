@@ -1,0 +1,52 @@
+item_id,issue_keyword,status,evidence
+attachment_01,half auxiliary feature,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,src/care_myocardium/models/care_ase.py::AuxiliaryHalfFeatureTower and half_scale_feature_provenance.json
+attachment_02,scar context all-ignore,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,context_cross_entropy_valid_mean returns exact zero when valid denominator is zero
+attachment_03,boundary far corner,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,edema_boundary_degenerate_mask_oracle covered by boundary_head_contract_receipt.json
+attachment_04,critical-path dirty tree,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,"formal resume/launch validates critical source manifest and external permit, not unrelated files"
+attachment_05,blood_pool_adjacent,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,scripts/training/care_ase/run_care_ase_r2_chunk.py uses non-pathology and physical distance to LV/RV <=3mm
+attachment_06,8 hour throughput formula,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,formal_pipeline_throughput receipts use p95*2000+overhead+15% <8h
+attachment_07,rho supervised,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,"distance loss averages signed_endo, signed_epi, wall_depth_rho"
+attachment_08,module authority,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,"G2 module-off, gradients, named evidence ledger, and H100 case coverage receipts"
+attachment_09,scale-specific adapters,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,scar/edema modality adapters are half/full-specific with C_scale from decoder introspection
+attachment_10,single shared decoder,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,"forward executes _decode_low_mid once, then anatomy/scar/edema top paths"
+attachment_11,module alias,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,stock decoder is not registered as whole anatomy_decoder; state_dict_alias_audit records canonical owners
+attachment_12,four-class anatomy top,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,anatomy_top_seg_layers are 4-output Conv3d initialized from stock rows0-3
+attachment_13,extent downscale,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,presence uses bin any/max; area uses nearest/bin contract receipts
+attachment_14,empty GT dice,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,"binary dice terms use gt_positive_count, not prediction+GT denominator"
+attachment_15,empty edema boundary,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,_edema_boundary_numpy returns zero target/valid for empty edema
+attachment_16,full edema boundary,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,_edema_boundary_numpy has explicit full-mask degeneracy policy
+attachment_17,topology valid,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,src/care_myocardium/training/care_ase_trainer.py builds per-slice 2D topology-valid geometry masks
+attachment_18,deep supervision,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,stock_pathology_deep_supervision_weights binds full/half to stock nnU-Net DS formula over highest two output scales and loss fails closed when absent
+attachment_19,center cursor,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,complete center selector and CenterB/CenterC case cursors are separate
+attachment_20,remote background,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,deterministic_center uses label0 and distance_to_wall>=10mm
+attachment_21,blood mask,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,deterministic_center no longer samples raw blood mask for blood_pool_adjacent
+attachment_22,component balanced,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,"GT component center uses component ID hash, not union voxel weighting"
+attachment_23,OOF geometry,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,canonical_stock_oof_provenance_receipt reads fold manifests and validates prediction_sources case provenance and geometry binding
+attachment_24,parameter group,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,parameter_group_coverage is object-id registry derived
+attachment_25,external permit,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,formal entrypoint and Slurm wrapper require external-review permit unless allow-short-smoke
+attachment_26,fold artifact race,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,G2 checkpoint probes are fold-isolated; runtime receipts are fold-specific
+attachment_27,stale lock,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,run_care_ase_r2_chunk.py::acquire_chunk_lock checks live owner then archives stale/terminal locks
+attachment_28,pipeline sync,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,cpu_gpu_sync_audit and throughput receipts record measured gate
+attachment_29,outer checkpoint permit,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,evaluate_care_ase_r2_outer.py verifies fold-specific checkpoint_step14000.pt step and SHA before outer read
+attachment_30,outer single use,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,evaluate_care_ase_r2_outer.py writes O_EXCL consumed permit token before outer read
+attachment_31,atomic json,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,trainer write_json and checkpoint sidecars use tmp/fsync/rename/fsync parent
+attachment_32,mutation set,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,expanded_mutation_detection_report includes attachment mutations
+attachment_33,evidence truncation,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,_concat_named_evidence raises on channel mismatch
+attachment_34,adapter mean reduction,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,"modality adapter tensors enter evidence at full C_scale, no mean(dim=1)"
+attachment_35,microbatch,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,descriptor_bundle_for_step generates four independent case descriptors
+attachment_36,small scar mm3,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,deterministic_center uses physical volume <1000mm3
+attachment_37,scar small manifest,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,sampler consumes scar_small_component coordinates when present
+attachment_38,edema boundary sampling,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,boundary focus uses pure-edema physical boundary band
+attachment_39,extent train/inference,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,extent identity oracle tracks common statistics contract
+attachment_40,voxel wall bias,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,"extent wall bias uses voxel p_wall, not slice mean"
+attachment_41,alpha focal,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,binary_dice_focal uses alpha_t
+attachment_42,component tversky normalization,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,per_gt_component_tversky divides by sum weights
+attachment_43,other components ignore,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,per_gt_component_tversky masks other GT components out of valid mask
+attachment_44,upper encoder,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,trainer parameter registry parses encoder stage ids and uses the last two observed stages
+attachment_45,resume provenance,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,checkpoint_provenance_validation_oracle and external permit enforcement added
+attachment_46,old 207f,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,invalidated source is refused and old runtime credit remains zero
+attachment_47,patient held-out OOF,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,canonical_stock_oof_oracle/provenance receipt required
+attachment_48,semantic oracle coverage,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,independent_semantic_review.md records v4 scope
+attachment_49,no formal training,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,formal_training_started=false and no W3 command launched
+attachment_50,no-T2 safety,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,tests/care_ase/test_no_t2_safety.py and G2 no-T2 gradient exact zero
+attachment_51,H100 actual train,CLOSED_FOR_EXTERNAL_REVIEW_CANDIDATE,G2 fold1/fold4 receipts were generated through H100 srun and 20x256x256 patch

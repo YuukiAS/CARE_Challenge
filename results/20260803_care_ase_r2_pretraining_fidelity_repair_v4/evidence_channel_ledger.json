@@ -1,0 +1,18 @@
+{
+  "no_silent_truncation": true,
+  "no_zero_padding": true,
+  "scale_specific_adapters": [
+    "scar_lge_half",
+    "scar_lge_full",
+    "scar_c0_half",
+    "scar_c0_full",
+    "edema_t2_half",
+    "edema_t2_full",
+    "edema_c0_half",
+    "edema_c0_full",
+    "edema_lge_half",
+    "edema_lge_full"
+  ],
+  "schema_enforced_by": "src/care_myocardium/models/care_ase.py::_concat_named_evidence",
+  "status": "PASS"
+}

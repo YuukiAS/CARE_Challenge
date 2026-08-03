@@ -1,0 +1,6 @@
+{
+  "checkpoint_probe_race_repaired": true,
+  "fold_isolated_runtime_receipts": true,
+  "global_full_reload_receipt_removed": true,
+  "status": "PASS"
+}

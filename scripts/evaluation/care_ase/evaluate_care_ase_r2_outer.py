@@ -9,8 +9,11 @@ fold1/fold4 outer data unless the pre-outer snapshot push receipt is present.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import os
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
@@ -34,18 +37,99 @@ PREPROCESSED = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS
 SPLITS = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/splits_final.json"
 
 
+def sha256_file(path: Path) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def _fsync_file(path: Path) -> None:
+    with path.open("rb") as f:
+        os.fsync(f.fileno())
+
+
+def _fsync_dir(path: Path) -> None:
+    fd = os.open(path, os.O_RDONLY)
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+
+
 def write_json(path: Path, payload: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, indent=2, sort_keys=True, default=str) + "\n", encoding="utf-8")
+    tmp = path.with_name(f".{path.name}.tmp.{os.getpid()}")
+    tmp.write_text(json.dumps(payload, indent=2, sort_keys=True, default=str) + "\n", encoding="utf-8")
+    _fsync_file(tmp)
+    os.replace(tmp, path)
+    _fsync_dir(path.parent)
 
 
-def assert_w45_permit() -> dict[str, Any]:
+def _fold_checkpoint_entry(receipt: dict[str, Any], fold: int) -> dict[str, Any]:
+    fold_key = str(int(fold))
+    for key in ("fold_checkpoints", "folds", "checkpoints"):
+        table = receipt.get(key)
+        if isinstance(table, dict):
+            entry = table.get(fold_key) or table.get(f"fold{fold_key}") or table.get(f"fold_{fold_key}")
+            if isinstance(entry, dict):
+                return entry
+    rows = receipt.get("fold_checkpoint_rows", receipt.get("checkpoint_rows", []))
+    if isinstance(rows, list):
+        for row in rows:
+            if isinstance(row, dict) and int(row.get("fold", -1)) == int(fold):
+                return row
+    raise RuntimeError(f"W4.5 permit does not bind fold {fold} checkpoint")
+
+
+def assert_w45_permit(*, fold: int, checkpoint: Path, payload: dict[str, Any], output_dir: Path) -> dict[str, Any]:
     if not W45_PUSH_RECEIPT.is_file():
         raise RuntimeError("W5 outer evaluation forbidden before W4.5 snapshot push receipt")
     receipt = json.loads(W45_PUSH_RECEIPT.read_text(encoding="utf-8"))
     if receipt.get("status") != "PASS" or not receipt.get("push_verified", False):
         raise RuntimeError("W4.5 snapshot push receipt is not PASS/push_verified")
-    return receipt
+    if int(payload.get("global_optimizer_step", -1)) != 14000:
+        raise RuntimeError(f"outer evaluation requires checkpoint global_optimizer_step == 14000, got {payload.get('global_optimizer_step')}")
+    if checkpoint.name != "checkpoint_step14000.pt":
+        raise RuntimeError("outer evaluation requires fixed checkpoint_step14000.pt")
+    entry = _fold_checkpoint_entry(receipt, fold)
+    checkpoint_sha = sha256_file(checkpoint)
+    expected_sha = str(entry.get("checkpoint_sha256", entry.get("sha256", "")))
+    expected_step = int(entry.get("global_optimizer_step", entry.get("checkpoint_step", -1)))
+    expected_path = str(entry.get("checkpoint_path", entry.get("path", "")))
+    if expected_step != 14000:
+        raise RuntimeError(f"W4.5 permit fold {fold} checkpoint step is not 14000: {expected_step}")
+    if expected_sha != checkpoint_sha:
+        raise RuntimeError(f"W4.5 permit fold {fold} checkpoint SHA mismatch")
+    if expected_path and Path(expected_path).name != "checkpoint_step14000.pt":
+        raise RuntimeError(f"W4.5 permit fold {fold} checkpoint path is not checkpoint_step14000.pt: {expected_path}")
+    token_root = RESULT_ROOT / "outer_once" / "consumed_permits"
+    token_root.mkdir(parents=True, exist_ok=True)
+    token = token_root / f"fold{int(fold)}_{checkpoint_sha}.json"
+    try:
+        fd = os.open(token, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o644)
+    except FileExistsError as exc:
+        raise RuntimeError(f"outer permit already consumed for fold {fold} checkpoint {checkpoint_sha}") from exc
+    with os.fdopen(fd, "w", encoding="utf-8") as f:
+        json.dump(
+            {
+                "status": "CONSUMED",
+                "fold": int(fold),
+                "checkpoint_sha256": checkpoint_sha,
+                "checkpoint_path": str(checkpoint),
+                "output_dir": str(output_dir),
+                "created_unix": int(time.time()),
+            },
+            f,
+            indent=2,
+            sort_keys=True,
+        )
+        f.write("\n")
+        f.flush()
+        os.fsync(f.fileno())
+    _fsync_dir(token_root)
+    return {**receipt, "fold_checkpoint_entry": entry, "consumed_permit_token": str(token), "checkpoint_sha256_verified": checkpoint_sha}
 
 
 def parse_patch_size(text: str) -> tuple[int, int, int]:
@@ -107,11 +191,11 @@ def main() -> int:
 
     if not args.allow_after_w45:
         raise RuntimeError("outer evaluator requires explicit --allow-after-w45")
-    permit = assert_w45_permit()
     out = (args.output_dir or RESULT_ROOT / "outer_once" / f"fold_{args.fold}").resolve()
     out.mkdir(parents=True, exist_ok=True)
     patch_size = parse_patch_size(args.patch_size)
     model, payload = load_care_ase_checkpoint(args.checkpoint, map_location="cuda" if torch.cuda.is_available() else "cpu", restore_rng=False)
+    permit = assert_w45_permit(fold=args.fold, checkpoint=args.checkpoint, payload=payload, output_dir=out)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device).eval()
     splits = json.loads(SPLITS.read_text(encoding="utf-8"))

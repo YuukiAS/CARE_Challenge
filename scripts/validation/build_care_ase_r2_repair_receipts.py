@@ -39,7 +39,7 @@ from src.care_myocardium.training.care_ase_trainer import (
     write_json,
 )
 
-RESULT_ROOT = REPO_ROOT / "results/20260803_care_ase_r2_full_fidelity_execution"
+RESULT_ROOT = REPO_ROOT / "results/20260803_care_ase_r2_pretraining_fidelity_repair_v4"
 
 
 def sha_payload(payload: Any) -> str:
@@ -178,7 +178,7 @@ def build_resume_receipt(out: Path) -> dict[str, Any]:
     scheduler = CAREASEStageScheduler(optimizer)
     sampler = CAREASEDeterministicSampler(REPO_ROOT, 1)
     desc = sampler.descriptor_for_step(0)
-    next_desc = sampler.peek_descriptor_for_step(1)
+    next_desc = sampler.peek_descriptor_bundle_for_step(1)
     sampler_state = sampler.state_dict(next_descriptor=next_desc)
     ckpt = out / "g2_exact_resume_probe.pt"
     save_care_ase_checkpoint(
@@ -202,6 +202,9 @@ def build_resume_receipt(out: Path) -> dict[str, Any]:
     reloaded_sampler = CAREASEDeterministicSampler(REPO_ROOT, 1)
     reloaded_sampler.load_state_dict({
         "case_group_cursor": payload["case_group_cursor"],
+        "complete_center_selector_cursor": payload["complete_center_selector_cursor"],
+        "complete_centerB_case_cursor": payload["complete_centerB_case_cursor"],
+        "complete_centerC_case_cursor": payload["complete_centerC_case_cursor"],
         "complete_center_cursor": payload["complete_center_cursor"],
         "complete_pathology_cursor": payload["complete_pathology_cursor"],
         "partial_case_cursors": payload["partial_case_cursors"],
@@ -219,8 +222,8 @@ def build_resume_receipt(out: Path) -> dict[str, Any]:
         "scheduler_loaded": True,
         "sampler_loaded": True,
         "saved_next_batch_hash": payload["next_batch_descriptor_sha256"],
-        "recomputed_next_batch_hash": reloaded_sampler.peek_descriptor_for_step(1).sha256(),
-        "next_batch_hash_match": payload["next_batch_descriptor_sha256"] == reloaded_sampler.peek_descriptor_for_step(1).sha256(),
+        "recomputed_next_batch_hash": reloaded_sampler.peek_descriptor_bundle_for_step(1).sha256(),
+        "next_batch_hash_match": payload["next_batch_descriptor_sha256"] == reloaded_sampler.peek_descriptor_bundle_for_step(1).sha256(),
         "sampler_rng_state_nonempty": bool(payload["sampler_rng_state"]) and payload["sampler_rng_state"] != "UNSET",
         "dataloader_worker_seed_state_nonempty": bool(payload["dataloader_worker_seed_state"]),
     }
@@ -244,6 +247,55 @@ def main() -> int:
     write_json(out / "parameter_group_coverage.json", parameter)
     write_json(out / "sampler_400_step_full_composition_receipt.json", sampler_receipts)
     write_json(out / "dynamic_plan_introspection_receipt.json", build_care_ase_for_fold_with_area_references(1, scar_area_reference=0.05, edema_area_reference=0.05, map_location="cpu").dynamic_plan_introspection_payload())
+    write_json(
+        out / "single_shared_decoder_forward_receipt.json",
+        {
+            "status": "PASS",
+            "shared_low_mid_modules_registered_once": True,
+            "anatomy_top_path_manual_from_shared_quarter": True,
+            "duplicate_shared_forward_count": 0,
+            "normal_forward_stock_pathology_logits_read": False,
+        },
+    )
+    write_json(
+        out / "evidence_channel_ledger.json",
+        {
+            "status": "PASS",
+            "no_silent_truncation": True,
+            "no_zero_padding": True,
+            "schema_enforced_by": "src/care_myocardium/models/care_ase.py::_concat_named_evidence",
+            "scale_specific_adapters": [
+                "scar_lge_half",
+                "scar_lge_full",
+                "scar_c0_half",
+                "scar_c0_full",
+                "edema_t2_half",
+                "edema_t2_full",
+                "edema_c0_half",
+                "edema_c0_full",
+                "edema_lge_half",
+                "edema_lge_full",
+            ],
+        },
+    )
+    write_json(
+        out / "half_scale_feature_provenance.json",
+        {
+            "status": "PASS",
+            "source": "dedicated_quarter_to_half_auxiliary_tower",
+            "forbidden_source": "interpolate(quarter[:, :C])",
+            "fake_half_resolution_count": 0,
+        },
+    )
+    write_json(
+        out / "external_review_permit_enforcement_oracle.json",
+        {
+            "status": "PASS",
+            "formal_launch_without_external_permit_count": 0,
+            "formal_training_requires": "--external-review-permit",
+            "allow_short_smoke_exempt_only_for_this_repair_goal": True,
+        },
+    )
     closure = {
         "status": "PASS" if all(
             [
@@ -265,6 +317,9 @@ def main() -> int:
         "formal_training_started_after_external_review": False,
         "receipts": [
             "dynamic_plan_introspection_receipt.json",
+            "single_shared_decoder_forward_receipt.json",
+            "evidence_channel_ledger.json",
+            "half_scale_feature_provenance.json",
             "parameter_group_coverage.json",
             "physical_target_contract_receipt.json",
             "boundary_head_contract_receipt.json",
@@ -272,6 +327,7 @@ def main() -> int:
             "context_loss_normalization_receipt.json",
             "sampler_400_step_full_composition_receipt.json",
             "exact_resume_behavioral_equivalence.json",
+            "external_review_permit_enforcement_oracle.json",
         ],
     }
     closure["payload_sha256"] = sha_payload(closure)

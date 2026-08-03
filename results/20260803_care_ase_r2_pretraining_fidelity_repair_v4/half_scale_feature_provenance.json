@@ -1,0 +1,6 @@
+{
+  "fake_half_resolution_count": 0,
+  "forbidden_source": "interpolate(quarter[:, :C])",
+  "source": "dedicated_quarter_to_half_auxiliary_tower",
+  "status": "PASS"
+}

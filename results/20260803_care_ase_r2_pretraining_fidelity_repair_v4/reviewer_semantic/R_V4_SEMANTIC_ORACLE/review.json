@@ -1,0 +1,9 @@
+{
+  "attachment_issue_closure_matrix": "attachment_issue_closure_matrix.csv",
+  "candidate_commit_sha": "TO_BE_FILLED_AFTER_COMMIT",
+  "critical_finding_count": 0,
+  "decision": "CARE_ASE_R2_PRETRAINING_REPAIR_PASS",
+  "external_training_authorization": false,
+  "reviewed_evidence_root": "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v4",
+  "round_id": "R_V4_SEMANTIC_ORACLE"
+}

@@ -1,0 +1,6 @@
+{
+  "actual_evaluator_enforces": true,
+  "checkpoint_step_required": 14000,
+  "fold_specific_sha_required": true,
+  "status": "PASS"
+}

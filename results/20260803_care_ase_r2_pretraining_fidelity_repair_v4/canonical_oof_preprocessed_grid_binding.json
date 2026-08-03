@@ -1,0 +1,60 @@
+{
+  "allowed_source": "canonical patient-held-out stock nnU-Net OOF",
+  "folds": {
+    "1": {
+      "binding_counts": {
+        "nifti_xyz_to_preprocessed_zyx_shape_match": 2,
+        "strict_nearest_label_resample_nifti_xyz_to_preprocessed_zyx": 139
+      },
+      "case_count": 141,
+      "forbidden_min_shape_binding_count": 0,
+      "geometry_policy": "fail_closed_no_min_shape_crop",
+      "manifest_path": "results/20260803_care_ase_r2_full_fidelity_execution/hard_negative_manifest_fold1.json",
+      "manifest_sha256": "cff12b0df4d7e59963385ea4665d042c031a28130393969ae25834e2d03a3878",
+      "missing_checkpoint_sha_count": 0,
+      "missing_field_count": 0,
+      "prediction_source_count": 141,
+      "proof_case_not_in_source_fold_train_false_count": 0,
+      "required_source_fields": [
+        "case_id",
+        "path",
+        "preprocessed_geometry",
+        "proof_case_not_in_source_fold_train",
+        "source_checkpoint_sha",
+        "source_geometry",
+        "source_prediction_sha",
+        "source_stock_fold",
+        "transform_or_exact_array_binding"
+      ],
+      "source": "canonical_patient_held_out_stock_nnunet_oof_only"
+    },
+    "4": {
+      "binding_counts": {
+        "nifti_xyz_to_preprocessed_zyx_shape_match": 2,
+        "strict_nearest_label_resample_nifti_xyz_to_preprocessed_zyx": 139
+      },
+      "case_count": 141,
+      "forbidden_min_shape_binding_count": 0,
+      "geometry_policy": "fail_closed_no_min_shape_crop",
+      "manifest_path": "results/20260803_care_ase_r2_full_fidelity_execution/hard_negative_manifest_fold4.json",
+      "manifest_sha256": "adebab58a3cde9e0f8e024a017b80a9e41a12150d3ecc0fb1f12bcb977952c38",
+      "missing_checkpoint_sha_count": 0,
+      "missing_field_count": 0,
+      "prediction_source_count": 141,
+      "proof_case_not_in_source_fold_train_false_count": 0,
+      "required_source_fields": [
+        "case_id",
+        "path",
+        "preprocessed_geometry",
+        "proof_case_not_in_source_fold_train",
+        "source_checkpoint_sha",
+        "source_geometry",
+        "source_prediction_sha",
+        "source_stock_fold",
+        "transform_or_exact_array_binding"
+      ],
+      "source": "canonical_patient_held_out_stock_nnunet_oof_only"
+    }
+  },
+  "status": "PASS"
+}

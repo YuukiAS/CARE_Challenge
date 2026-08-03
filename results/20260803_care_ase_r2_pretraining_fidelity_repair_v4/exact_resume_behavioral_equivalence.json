@@ -1,0 +1,14 @@
+{
+  "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260803_care_ase_r2_pretraining_fidelity_repair_v4/g2_exact_resume_probe.pt",
+  "checkpoint_sha256": "bae3e1c8ff8db1fb5835b6483ca1c023c5daa2bf8c321e673c1b30c933359538",
+  "dataloader_worker_seed_state_nonempty": true,
+  "fresh_model_instance_loaded": true,
+  "next_batch_hash_match": true,
+  "optimizer_loaded": true,
+  "recomputed_next_batch_hash": "9851485a2c28f6a75d191250b902583cc0df83b292548187210b3ecf667976e1",
+  "sampler_loaded": true,
+  "sampler_rng_state_nonempty": true,
+  "saved_next_batch_hash": "9851485a2c28f6a75d191250b902583cc0df83b292548187210b3ecf667976e1",
+  "scheduler_loaded": true,
+  "status": "PASS"
+}

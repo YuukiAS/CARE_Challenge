@@ -7,6 +7,7 @@ import hashlib
 import os
 import json
 import random
+import re
 from pathlib import Path
 from typing import Any
 
@@ -35,9 +36,15 @@ REQUIRED_CHECKPOINT_FIELDS = (
     "torch_cuda_rng_all_devices",
     "dataloader_worker_seed_state",
     "case_group_cursor",
+    "complete_center_selector_cursor",
+    "complete_centerB_case_cursor",
+    "complete_centerC_case_cursor",
     "complete_center_cursor",
     "complete_pathology_cursor",
     "partial_case_cursors",
+    "micro_case_cursors_by_group",
+    "micro_patch_cursor",
+    "next_optimizer_step_micro_descriptor_sha256",
     "center_cursor",
     "pathology_focus_cursor",
     "scar_focus_cursor",
@@ -95,8 +102,10 @@ def binary_dice_bce(logit: torch.Tensor, target: torch.Tensor, valid_mask: torch
     prob = torch.sigmoid(logit)
     dims = tuple(range(1, prob.ndim))
     inter = (prob * target * mask).sum(dim=dims)
-    denom = (prob * mask).sum(dim=dims) + (target * mask).sum(dim=dims)
-    dice = (1.0 - (2.0 * inter + 1.0e-5) / (denom + 1.0e-5)).mean()
+    gt_positive = (target * mask).sum(dim=dims)
+    denom = (prob * mask).sum(dim=dims) + gt_positive
+    dice_values = torch.where(gt_positive > 0, 1.0 - (2.0 * inter + 1.0e-5) / (denom + 1.0e-5), torch.zeros_like(denom))
+    dice = dice_values.mean()
     bce = F.binary_cross_entropy_with_logits(logit, target, reduction="none")
     return dice + ((bce * mask).sum() / mask.sum().clamp_min(1.0))
 
@@ -123,13 +132,14 @@ def binary_dice_focal(
     prob = torch.sigmoid(logit)
     dims = tuple(range(1, prob.ndim))
     inter = (prob * target * mask).sum(dim=dims)
-    denom = (prob * mask).sum(dim=dims) + (target * mask).sum(dim=dims)
-    nonempty = denom > 0
-    dice_values = torch.where(nonempty, 1.0 - (2.0 * inter + 1.0e-5) / (denom + 1.0e-5), torch.zeros_like(denom))
+    gt_positive = (target * mask).sum(dim=dims)
+    denom = (prob * mask).sum(dim=dims) + gt_positive
+    dice_values = torch.where(gt_positive > 0, 1.0 - (2.0 * inter + 1.0e-5) / (denom + 1.0e-5), torch.zeros_like(denom))
     dice = dice_values.mean()
     bce = F.binary_cross_entropy_with_logits(logit, target, reduction="none")
     p_t = prob * target + (1.0 - prob) * (1.0 - target)
-    focal = alpha * (1.0 - p_t).pow(gamma) * bce
+    alpha_t = alpha * target + (1.0 - alpha) * (1.0 - target)
+    focal = alpha_t * (1.0 - p_t).pow(gamma) * bce
     return dice + ((focal * mask).sum() / mask.sum().clamp_min(1.0))
 
 
@@ -177,6 +187,22 @@ def _downsample_target(target: torch.Tensor, size: tuple[int, int, int]) -> torc
     return F.interpolate(target.float(), size=size, mode="nearest").to(dtype=target.dtype)
 
 
+def _downsample_slice_presence_any(target_presence: torch.Tensor, out_z: int) -> torch.Tensor:
+    """Downsample per-z presence by bin-wise any/max, never linear interpolation."""
+
+    source = target_presence.float()
+    if source.shape[-1] == int(out_z):
+        return source
+    bins = []
+    in_z = int(source.shape[-1])
+    for out_idx in range(int(out_z)):
+        start = int(np.floor(out_idx * in_z / int(out_z)))
+        stop = int(np.ceil((out_idx + 1) * in_z / int(out_z)))
+        stop = max(stop, start + 1)
+        bins.append(source[..., start:stop].amax(dim=-1, keepdim=True))
+    return torch.cat(bins, dim=-1)
+
+
 def per_slice_extent_loss(
     presence_logits: torch.Tensor,
     area_logits: torch.Tensor,
@@ -190,8 +216,8 @@ def per_slice_extent_loss(
     pred_presence = presence_logits.float().mean(dim=(-2, -1))
     pred_area = torch.sigmoid(area_logits.float()).mean(dim=(-2, -1))
     size = pred_presence.shape[-1:]
-    target_presence_z = F.interpolate(target_presence.float(), size=size, mode="linear", align_corners=False)
-    target_area_z = F.interpolate(target_area.float(), size=size, mode="linear", align_corners=False)
+    target_presence_z = _downsample_slice_presence_any(target_presence, int(size[0]))
+    target_area_z = F.interpolate(target_area.float(), size=size, mode="nearest")
     target_area_valid_z = F.interpolate(target_area_valid.float(), size=size, mode="nearest")
     if case_valid is None:
         case_mask = torch.ones_like(target_presence_z)
@@ -221,18 +247,40 @@ def _signed_distance(mask: np.ndarray, *, clip: float = 10.0, sampling: tuple[fl
     return np.clip(outside - inside, -clip, clip).astype(np.float32) / float(clip)
 
 
+def _signed_distance_2d(mask: np.ndarray, *, clip: float = 10.0, sampling: tuple[float, float] = (1.0, 1.0)) -> np.ndarray:
+    mask = np.asarray(mask, dtype=bool)
+    outside = ndimage.distance_transform_edt(~mask, sampling=sampling)
+    inside = ndimage.distance_transform_edt(mask, sampling=sampling)
+    return np.clip(outside - inside, -clip, clip).astype(np.float32) / float(clip)
+
+
 def _geometry_targets_numpy(seg: np.ndarray, spacing: tuple[float, float, float]) -> dict[str, np.ndarray]:
     wall = (seg == 1) | (seg == 4) | (seg == 5)
     lv = seg == 2
     rv = seg == 3
     exterior = ~(wall | lv | rv)
-    d_endo = ndimage.distance_transform_edt(~lv, sampling=spacing).astype(np.float32)
-    d_epi = ndimage.distance_transform_edt(~exterior, sampling=spacing).astype(np.float32)
+    d_endo = np.zeros(seg.shape, dtype=np.float32)
+    d_epi = np.zeros(seg.shape, dtype=np.float32)
+    signed_endo = np.zeros(seg.shape, dtype=np.float32)
+    signed_epi = np.zeros(seg.shape, dtype=np.float32)
+    valid = np.zeros(seg.shape, dtype=np.float32)
+    inplane_spacing = (float(spacing[1]), float(spacing[2]))
+    for z in range(int(seg.shape[0])):
+        wall_z = wall[z]
+        lv_z = lv[z]
+        exterior_z = exterior[z]
+        topology_valid_slice = bool(wall_z.any() and lv_z.any() and exterior_z.any())
+        if not topology_valid_slice:
+            continue
+        d_endo[z] = ndimage.distance_transform_edt(~lv_z, sampling=inplane_spacing).astype(np.float32)
+        d_epi[z] = ndimage.distance_transform_edt(~exterior_z, sampling=inplane_spacing).astype(np.float32)
+        signed_endo[z] = _signed_distance_2d(lv_z, clip=10.0, sampling=inplane_spacing)
+        signed_epi[z] = _signed_distance_2d(exterior_z, clip=10.0, sampling=inplane_spacing)
+        valid[z] = wall_z.astype(np.float32)
     rho = d_endo / (d_endo + d_epi + 1.0e-6)
-    valid = wall.astype(np.float32)
     return {
-        "signed_endo_distance": _signed_distance(lv, clip=10.0, sampling=spacing),
-        "signed_epi_distance": _signed_distance(exterior, clip=10.0, sampling=spacing),
+        "signed_endo_distance": signed_endo,
+        "signed_epi_distance": signed_epi,
         "wall_depth_rho": rho.astype(np.float32),
         "geometry_valid": valid,
     }
@@ -300,6 +348,12 @@ def _spacing_rows(batch: dict[str, torch.Tensor], count: int) -> list[tuple[floa
 
 def _edema_boundary_numpy(seg: np.ndarray, spacing: tuple[float, float, float]) -> dict[str, np.ndarray]:
     edema = seg == 4
+    if not bool(edema.any()):
+        zero = np.zeros(seg.shape, dtype=np.float32)
+        return {"edema_boundary": zero, "edema_boundary_raw_mm": zero, "edema_boundary_valid": zero}
+    if bool(edema.all()):
+        raw = np.zeros(seg.shape, dtype=np.float32)
+        return {"edema_boundary": np.ones(seg.shape, dtype=np.float32), "edema_boundary_raw_mm": raw, "edema_boundary_valid": np.ones(seg.shape, dtype=np.float32)}
     raw_mm = np.asarray(ndimage.distance_transform_edt(edema, sampling=spacing) - ndimage.distance_transform_edt(~edema, sampling=spacing), dtype=np.float32)
     clipped = np.clip(raw_mm, -10.0, 10.0).astype(np.float32) / 10.0
     valid = ((np.abs(raw_mm) <= 10.0) | edema).astype(np.float32)
@@ -373,19 +427,36 @@ def build_care_ase_targets(target: torch.Tensor, availability: torch.Tensor, out
 
 def per_gt_component_tversky(logit: torch.Tensor, target: torch.Tensor, valid_mask: torch.Tensor, batch: dict[str, torch.Tensor] | None = None) -> torch.Tensor:
     losses: list[torch.Tensor] = []
+    weights: list[float] = []
     labels_np = target.detach().cpu().numpy().astype(bool)
     spacings = _spacing_rows(batch or {}, labels_np.shape[0])
     for b, mask in enumerate(labels_np[:, 0]):
         comp, count = ndimage.label(mask, structure=np.ones((3, 3, 3), dtype=np.uint8))
         for comp_id in range(1, int(count) + 1):
             comp_mask_np = comp == comp_id
+            other_components_np = mask & ~comp_mask_np
             volume = float(comp_mask_np.sum() * np.prod(spacings[b]))
             weight = min(max((1000.0 / max(volume, 1.0)) ** 0.5, 1.0), 4.0)
             comp_mask = torch.from_numpy(comp_mask_np[None, None]).to(device=logit.device, dtype=logit.dtype)
-            losses.append(float(weight) * component_tversky(logit[b : b + 1], comp_mask, valid_mask[b : b + 1]))
+            other_components = torch.from_numpy(other_components_np[None, None]).to(device=logit.device, dtype=logit.dtype)
+            comp_valid = valid_mask[b : b + 1].to(logit) * (1.0 - other_components)
+            losses.append(component_tversky(logit[b : b + 1], comp_mask, comp_valid))
+            weights.append(float(weight))
     if not losses:
         return logit.sum() * 0.0
-    return torch.stack(losses).mean()
+    weight_tensor = torch.tensor(weights, device=logit.device, dtype=torch.float32)
+    return (torch.stack(losses).float() * weight_tensor).sum() / weight_tensor.sum().clamp_min(1.0e-6)
+
+
+def context_cross_entropy_valid_mean(logits: torch.Tensor, target: torch.Tensor, valid_mask: torch.Tensor | None = None) -> torch.Tensor:
+    raw = F.cross_entropy(logits.float(), target, ignore_index=-1, reduction="none")
+    valid = (target >= 0).to(raw)
+    if valid_mask is not None:
+        valid = valid * valid_mask.to(raw)
+    denom = valid.sum()
+    if float(denom.detach().cpu()) <= 0.0:
+        return logits.sum() * 0.0
+    return (raw * valid).sum() / denom
 
 
 def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor]) -> tuple[torch.Tensor, dict[str, float]]:
@@ -433,9 +504,13 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor]) -> tu
     scar_full = binary_dice_focal(outputs["z_scar"], scar_target, valid_binary, alpha=0.25, gamma=2.0)
     scar_half_logit = F.interpolate(outputs["scar"]["half_logits6"][:, 5:6], size=target.shape[-3:], mode="trilinear", align_corners=False)
     scar_half_dense = binary_dice_focal(scar_half_logit, scar_target, valid_binary, alpha=0.25, gamma=2.0)
-    dense_weights = outputs.get("pathology_deep_supervision_weights", {"full": 2.0 / 3.0, "half": 1.0 / 3.0})
-    full_weight = float(dense_weights.get("full", 2.0 / 3.0))
-    half_weight = float(dense_weights.get("half", 1.0 / 3.0))
+    if "pathology_deep_supervision_weights" not in outputs:
+        raise KeyError("CARE-ASE loss requires pathology_deep_supervision_weights from the model forward output")
+    dense_weights = outputs["pathology_deep_supervision_weights"]
+    if "full" not in dense_weights or "half" not in dense_weights:
+        raise KeyError("pathology_deep_supervision_weights must contain full and half weights")
+    full_weight = float(dense_weights["full"])
+    half_weight = float(dense_weights["half"])
     weight_sum = max(full_weight + half_weight, 1.0e-6)
     full_weight, half_weight = full_weight / weight_sum, half_weight / weight_sum
     scar_dense = full_weight * scar_full + half_weight * scar_half_dense
@@ -474,10 +549,9 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor]) -> tu
     )
     scar_context_target = _downsample_target(built_targets["scar_context_target"].unsqueeze(1), components["scar_context"].shape[-3:]).squeeze(1)
     edema_context_target = _downsample_target(built_targets["edema_context_target"].unsqueeze(1), components["edema_context"].shape[-3:]).squeeze(1)
-    scar_context = F.cross_entropy(components["scar_context"], scar_context_target, ignore_index=-1)
-    edema_context_raw = F.cross_entropy(components["edema_context"].float(), edema_context_target, ignore_index=-1, reduction="none")
-    edema_valid_context = (edema_context_target >= 0).to(edema_context_raw) * availability[:, 1].view(-1, 1, 1, 1)
-    edema_context = (edema_context_raw * edema_valid_context).sum() / edema_valid_context.sum().clamp_min(1.0)
+    scar_context = context_cross_entropy_valid_mean(components["scar_context"], scar_context_target)
+    edema_valid_context = availability[:, 1].view(-1, 1, 1, 1)
+    edema_context = context_cross_entropy_valid_mean(components["edema_context"], edema_context_target, edema_valid_context)
     relation = F.relu(torch.maximum(outputs["z_scar"].detach().sigmoid(), outputs["z_pure_edema"].detach().sigmoid()) - torch.sigmoid(injury_logit.float())).mul(edema_valid).sum() / edema_valid.sum().clamp_min(1.0)
     zero = logits.sum() * 0.0
     if not final_terms:
@@ -533,8 +607,19 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor]) -> tu
     return total, {k: float(v.detach().cpu()) for k, v in metrics.items()}
 
 
-def _is_upper_encoder_parameter(name: str) -> bool:
-    return any(token in name for token in ("stages.4", "stages.5", "stages.6", "stages.7"))
+def _encoder_stage_index(name: str) -> int | None:
+    match = re.search(r"(?:^|\.)stages\.(\d+)(?:\.|$)", name)
+    return int(match.group(1)) if match else None
+
+
+def _encoder_upper_stage_indices(all_names: list[str]) -> set[int]:
+    indices = sorted({idx for name in all_names if name.startswith("encoder.") for idx in [_encoder_stage_index(name)] if idx is not None})
+    return set(indices[-2:])
+
+
+def _is_upper_encoder_parameter(name: str, upper_stage_indices: set[int]) -> bool:
+    idx = _encoder_stage_index(name)
+    return idx is not None and idx in upper_stage_indices
 
 
 PARAMETER_GROUP_NAMES = (
@@ -577,6 +662,7 @@ def _parameter_aliases(model: CAREASE) -> dict[int, list[str]]:
 
 def _parameter_group_registry(model: CAREASE) -> tuple[dict[int, str], dict[int, str], dict[int, list[str]]]:
     aliases = _parameter_aliases(model)
+    upper_encoder_stage_indices = _encoder_upper_stage_indices([name for names in aliases.values() for name in names])
     group_by_id: dict[int, str] = {}
     canonical_by_id: dict[int, str] = {}
     for param_id, names in aliases.items():
@@ -584,13 +670,13 @@ def _parameter_group_registry(model: CAREASE) -> tuple[dict[int, str], dict[int,
         canonical_by_id[param_id] = canonical
         if any(".half_projection." in name or ".full_projection." in name for name in names):
             group = "new_modules"
-        elif any(name.startswith(("component_heads.", "scar_lge_adapter.", "scar_c0_adapter.", "edema_t2_adapter.", "edema_c0_adapter.", "edema_lge_adapter.", "scar_c0_gate.", "edema_c0_gate.", "edema_lge_gate.", "anatomy_geometry_heads.", "edema_dilation_context.")) for name in names):
+        elif any(name.startswith(("component_heads.", "auxiliary_half_tower.", "scar_lge_half_adapter.", "scar_lge_full_adapter.", "scar_c0_half_adapter.", "scar_c0_full_adapter.", "edema_t2_half_adapter.", "edema_t2_full_adapter.", "edema_c0_half_adapter.", "edema_c0_full_adapter.", "edema_lge_half_adapter.", "edema_lge_full_adapter.", "scar_c0_gate.", "edema_c0_gate.", "edema_lge_gate.", "anatomy_geometry_heads.", "edema_dilation_context.")) for name in names):
             group = "new_modules"
         elif any(name.startswith(("scar_branch.seg_layers.", "edema_branch.seg_layers.")) for name in names):
             group = "cloned_pathology_classifiers"
         elif any(name.startswith(("scar_branch.", "edema_branch.")) for name in names):
             group = "cloned_pathology_blocks"
-        elif any(name.startswith("encoder.") and _is_upper_encoder_parameter(name) for name in names):
+        elif any(name.startswith("encoder.") and _is_upper_encoder_parameter(name, upper_encoder_stage_indices) for name in names):
             group = "upper_two_encoder"
         elif any(name.startswith("encoder.") for name in names):
             group = "lower_encoder_bottleneck"
@@ -599,7 +685,7 @@ def _parameter_group_registry(model: CAREASE) -> tuple[dict[int, str], dict[int,
             for name in names
         ):
             group = "shared_low_mid_decoder"
-        elif any(name.startswith("anatomy_decoder.") for name in names):
+        elif any(name.startswith(("anatomy_decoder.", "anatomy_top_transpconvs.", "anatomy_top_stages.", "anatomy_top_seg_layers.")) for name in names):
             group = "anatomy_decoder"
         else:
             group = "new_modules"
@@ -857,9 +943,14 @@ def save_care_ase_checkpoint(
         "torch_cuda_rng_all_devices": rng["torch_cuda"],
         "dataloader_worker_seed_state": dataloader_worker_seed_state or {"worker_count": 0, "deterministic_single_process": True},
         "case_group_cursor": int(sampler_state.get("case_group_cursor", 0)),
+        "complete_center_selector_cursor": int(sampler_state.get("complete_center_selector_cursor", sampler_state.get("complete_center_cursor", sampler_state.get("center_cursor", 0)))),
+        "complete_centerB_case_cursor": int(sampler_state.get("complete_centerB_case_cursor", 0)),
+        "complete_centerC_case_cursor": int(sampler_state.get("complete_centerC_case_cursor", 0)),
         "complete_center_cursor": int(sampler_state.get("complete_center_cursor", sampler_state.get("center_cursor", 0))),
         "complete_pathology_cursor": int(sampler_state.get("complete_pathology_cursor", sampler_state.get("pathology_focus_cursor", 0))),
         "partial_case_cursors": sampler_state.get("partial_case_cursors", {"lge_only": 0, "lge_c0": 0}),
+        "micro_case_cursors_by_group": sampler_state.get("micro_case_cursors_by_group", {}),
+        "micro_patch_cursor": int(sampler_state.get("micro_patch_cursor", 0)),
         "center_cursor": int(sampler_state.get("complete_center_cursor", sampler_state.get("center_cursor", 0))),
         "pathology_focus_cursor": int(sampler_state.get("complete_pathology_cursor", sampler_state.get("pathology_focus_cursor", 0))),
         "scar_focus_cursor": int(sampler_state.get("scar_focus_cursor", 0)),
@@ -867,6 +958,8 @@ def save_care_ase_checkpoint(
         "sampler_rng_state": sampler_state.get("sampler_rng_state", "UNSET"),
         "batch_descriptor_cursor": int(sampler_state.get("batch_descriptor_cursor", 0)),
         "next_batch_descriptor_sha256": next_sha,
+        "next_optimizer_step_micro_descriptor_bundle": sampler_state.get("next_optimizer_step_micro_descriptor_bundle", []),
+        "next_optimizer_step_micro_descriptor_sha256": str(sampler_state.get("next_optimizer_step_micro_descriptor_sha256", next_sha)),
         "extent_wall_ramp_value": CAREASE.extent_wall_ramp(global_step),
         "code_hash": code_hash or "UNSET",
         "config_hash": config_hash or _json_sha(config_payload),
@@ -929,8 +1022,14 @@ def checkpoint_receipt(path: Path, payload: dict[str, Any]) -> dict[str, Any]:
         "stage_id": payload["stage_id"],
         "stage_step": int(payload["stage_step"]),
         "complete_center_cursor": int(payload["complete_center_cursor"]),
+        "complete_center_selector_cursor": int(payload.get("complete_center_selector_cursor", payload["complete_center_cursor"])),
+        "complete_centerB_case_cursor": int(payload.get("complete_centerB_case_cursor", 0)),
+        "complete_centerC_case_cursor": int(payload.get("complete_centerC_case_cursor", 0)),
         "complete_pathology_cursor": int(payload["complete_pathology_cursor"]),
         "partial_case_cursors": payload.get("partial_case_cursors", {}),
+        "micro_case_cursors_by_group": payload.get("micro_case_cursors_by_group", {}),
+        "micro_patch_cursor": int(payload.get("micro_patch_cursor", 0)),
+        "next_optimizer_step_micro_descriptor_sha256": payload.get("next_optimizer_step_micro_descriptor_sha256", payload["next_batch_descriptor_sha256"]),
         "extent_wall_ramp_value": float(payload["extent_wall_ramp_value"]),
         "next_batch_hash": payload["next_batch_descriptor_sha256"],
         "has_optimizer_state": "optimizer" in payload,
@@ -946,4 +1045,8 @@ def checkpoint_receipt(path: Path, payload: dict[str, Any]) -> dict[str, Any]:
 
 def write_json(path: Path, payload: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, indent=2, sort_keys=True, default=str) + "\n", encoding="utf-8")
+    tmp = path.with_name(f".{path.name}.tmp.{os.getpid()}")
+    tmp.write_text(json.dumps(payload, indent=2, sort_keys=True, default=str) + "\n", encoding="utf-8")
+    _fsync_file(tmp)
+    os.replace(tmp, path)
+    _fsync_dir(path.parent)

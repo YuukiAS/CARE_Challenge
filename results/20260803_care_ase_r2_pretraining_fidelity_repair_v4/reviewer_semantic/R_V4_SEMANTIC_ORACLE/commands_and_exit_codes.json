@@ -1,0 +1,8 @@
+{
+  "commands": [
+    "pytest tests/care_ase -q",
+    "validate_care_ase_r2_g1.py",
+    "run_care_ase_r2_g2_gpu_fidelity.py fold1/fold4"
+  ],
+  "status": "PASS"
+}

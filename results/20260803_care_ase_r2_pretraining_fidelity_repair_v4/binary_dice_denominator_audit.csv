@@ -1,0 +1,4 @@
+name,empty_gt_dice_term,bce_or_focal_controls_fp
+wall,0,true
+scar_dense,0,true
+edema_dense,0,true

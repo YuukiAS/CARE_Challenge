@@ -20,6 +20,10 @@ if [[ -z "${EXPECTED_TRAINING_SOURCE_SHA:-}" && "${ALLOW_UNREVIEWED_LOCAL_SMOKE:
   echo "EXPECTED_TRAINING_SOURCE_SHA is required for formal CARE-ASE R2 execution" >&2
   exit 64
 fi
+if [[ "${ALLOW_UNREVIEWED_LOCAL_SMOKE:-0}" != "1" && -z "${EXTERNAL_REVIEW_PERMIT:-}" ]]; then
+  echo "EXTERNAL_REVIEW_PERMIT is required for formal CARE-ASE R2 W3 execution" >&2
+  exit 66
+fi
 if [[ -n "${EXPECTED_TRAINING_SOURCE_SHA:-}" && "${CURRENT_SOURCE_SHA}" != "${EXPECTED_TRAINING_SOURCE_SHA}" ]]; then
   echo "source SHA mismatch: current=${CURRENT_SOURCE_SHA} expected=${EXPECTED_TRAINING_SOURCE_SHA}" >&2
   exit 65
@@ -53,6 +57,11 @@ cmd=(
 
 if [[ -n "${RESUME_CHECKPOINT:-}" ]]; then
   cmd+=(--resume-checkpoint "${RESUME_CHECKPOINT}")
+fi
+if [[ "${ALLOW_UNREVIEWED_LOCAL_SMOKE:-0}" == "1" ]]; then
+  cmd+=(--allow-short-smoke)
+else
+  cmd+=(--external-review-permit "${EXTERNAL_REVIEW_PERMIT}")
 fi
 
 printf 'CARE-ASE R2 formal command:'

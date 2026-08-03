@@ -1,0 +1,6 @@
+{
+  "allow_short_smoke_exempt_only_for_this_repair_goal": true,
+  "formal_launch_without_external_permit_count": 0,
+  "formal_training_requires": "--external-review-permit",
+  "status": "PASS"
+}

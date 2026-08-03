@@ -1,0 +1,10 @@
+{
+  "decision": "REJECTED_AS_EXPECTED",
+  "expected_validator_exit": "nonzero",
+  "fixture": "delete_semantic_auxiliary_loss__edema_context",
+  "known_bad_fixture_rejected": true,
+  "observed_failures": [
+    "coverage",
+    "loss"
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "presence_downscale": "bin_any",
+  "status": "PASS",
+  "wall_bias": "voxel_p_wall"
+}

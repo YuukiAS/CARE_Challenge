@@ -1,0 +1,27 @@
+{
+  "attachment_checklist_sha256": "1f8c29f94d8e86310eff3e716c07d6b1f237fb57e1b9243503acb96b0701baeb",
+  "contract_version": "v4",
+  "frozen_overrides": {
+    "L_distance_terms": [
+      "signed_endo",
+      "signed_epi",
+      "wall_depth_rho"
+    ],
+    "blood_pool_adjacent": "non-pathology and physical distance to LV-or-RV <= 3mm",
+    "formal_training_authorized": false,
+    "outer_access_authorized": false,
+    "scar_component": "0.50 per-component Tversky + 0.25 quarter occupancy + 0.25 half occupancy",
+    "throughput_gate": "p95_step*2000 + checkpoint_reload_log_overhead + 15% safety < 8h"
+  },
+  "goal_objective_sha256": "ce907b2096d3b01f8fd9d392032a84d28f82e2471c4b03b56856e2cbfb55a0ee",
+  "priority": "goal_prompt_over_base_contracts",
+  "sha256": "04436e1e31edac551c70d7dc66aed7fdd8684e35f1a05b068e294c240c9d7a29",
+  "source_files": {
+    "prompts/blueprints/CARE_ASE_R2_full_fidelity_execution_contract_20260803.yaml": "57d569562a87fde838365b26e8cd101c260f19b9f1667f5a0c5109d1bb065650",
+    "prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_20260801.yaml": "c67c0594e2e70140d8f645562ba4f7eb559b1b01eef621c16e6c11b1c881f513",
+    "prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_amendment01_20260801.yaml": "e8c9dc7589026fc87d2917753422d51133c8a372a2e7a6a20d6da0cec7d36a96",
+    "prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_amendment02_controller_only_interactive_20260801.yaml": "aa2650b6c3b1ddfd9604faeeac02c9d52fbd925da77d2b66d10e85c04d36d5e1",
+    "prompts/blueprints/CARE_ASE_exact_implementation_contract_v2_amendment03_final_audit_20260801.yaml": "8b7c7c04a191d938df52f70a8ef0ed6cea2ad32c893fe42fbb867e77b92fd62e",
+    "prompts/blueprints/CARE_ASE_final_model_blueprint_v2_20260801.md": "f6886e5ae5f59f763a460a9b1ac5dbfbf43e470e2d07c8ca0db605f41a1ccddb"
+  }
+}

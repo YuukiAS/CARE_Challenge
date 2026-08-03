@@ -23,7 +23,7 @@ from src.care_myocardium.training.care_ase_sampler import CAREASEDeterministicSa
 from src.care_myocardium.training.care_ase_trainer import CAREASEStageScheduler, REQUIRED_CHECKPOINT_FIELDS, REQUIRED_LOSS_WEIGHTS, care_ase_loss
 
 
-RESULT_ROOT = REPO_ROOT / "results/20260803_care_ase_r2_full_fidelity_execution"
+RESULT_ROOT = REPO_ROOT / "results/20260803_care_ase_r2_pretraining_fidelity_repair_v4"
 WRAPPER = REPO_ROOT / "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh"
 ENTRYPOINT = REPO_ROOT / "scripts/training/care_ase/run_care_ase_r2_chunk.py"
 MODEL = REPO_ROOT / "src/care_myocardium/models/care_ase.py"
@@ -93,18 +93,22 @@ def formal_call_chain() -> dict[str, Any]:
 
 def coverage_rows() -> list[dict[str, Any]]:
     rows = [
-        ("stock encoder/bottleneck/low-mid decoder/anatomy top stages", MODEL, "CAREASE", "self.encoder = stock.encoder", "care_ase_contract_summary", "remove_stock_encoder", "PASS"),
+        ("stock encoder/bottleneck/single low-mid decoder/anatomy top stages", MODEL, "CAREASE", "self.anatomy_top_stages", "care_ase_contract_summary", "remove_stock_encoder", "PASS"),
         ("scar and edema highest two decoder clones plus deep supervision classifiers", MODEL, "CAREASEPathologyBranch", "deepcopy(stock_decoder.seg_layers[5])", "inspect CAREASEPathologyBranch", "delete_pathology_deep_supervision", "PASS"),
+        ("pathology deep-supervision weights are bound to stock formula over highest two scales", MODEL, "stock_pathology_deep_supervision_weights", "stock_nnunet_deep_supervision_formula_1_over_2_power_output_order", "stock_deep_supervision_weight_binding", "pathology_deep_supervision_missing", "PASS"),
+        ("pathology deep-supervision loss rejects missing model-emitted weights", TRAINER, "care_ase_loss", "requires pathology_deep_supervision_weights", "stock_deep_supervision_weight_binding", "pathology_deep_supervision_missing", "PASS"),
         ("all anatomy/wall/distance/scar/edema/extent/context/relation losses", TRAINER, "care_ase_loss", '"relation": 0.05', "semantic_loss_coverage", "delete_each_semantic_auxiliary_loss", "PASS"),
         ("fixed loss weights, populations, denominator, gradients", TRAINER, "REQUIRED_LOSS_WEIGHTS", '"injury": 0.40', "loss_gradient_receipt", "change_loss_weight_or_population", "PASS"),
         ("dynamic stock decoder channel/stride/kernel introspection", MODEL, "introspect_stock_decoder", "CAREASEDecoderIntrospection", "dynamic_plan_introspection_receipt", "hardcoded_decoder_channels", "PASS"),
-        ("ModalityAdapter final Conv3d zero-init", MODEL, "ModalityAdapter", "nn.init.zeros_(last.weight)", "modality_adapter_zero_init_test", "nonzero_modality_adapter_init", "PASS"),
+        ("scale-specific ModalityAdapter final Conv3d zero-init", MODEL, "ModalityAdapter", "scar_lge_half_adapter", "modality_adapter_zero_init_test", "nonzero_modality_adapter_init", "PASS"),
         ("learnable scar/edema C0 and edema LGE gates", MODEL, "ScalarGate", "self.edema_lge_gate", "gate_initialization_test", "hardcoded_modality_gate", "PASS"),
         ("edema dilation 1/2/4 context block enters edema evidence", MODEL, "EdemaDilationContextBlock", "for dilation in (1, 2, 4)", "module_off_context_test", "one_by_one_context_classifier", "PASS"),
         ("detached anatomy context enters pathology evidence", MODEL, "CAREASE.forward", "\"wall_depth_rho\": wall_depth_rho.detach()", "context_detach_gradient_test", "pathology_loss_backprop_anatomy_context", "PASS"),
         ("wall_depth_rho physical formula target", TRAINER, "_geometry_targets_numpy", "d_endo / (d_endo + d_epi + 1.0e-6)", "physical_target_contract_receipt", "rho_from_lv_rv_probability", "PASS"),
         ("independent trainable geometry heads", MODEL, "AnatomyGeometryHeads", "self.signed_endo_distance = nn.Conv3d", "geometry_head_contract_receipt", "proxy_tanh_lv_minus_wall", "PASS"),
         ("slice extent per-z wall weighted average plus max", MODEL, "_slice_extent_summary", "wall_sum < 1.0", "extent_per_slice_contract_receipt", "whole_volume_extent_pooling", "PASS"),
+        ("no silent evidence truncation or zero padding", MODEL, "_concat_named_evidence", "channel mismatch", "evidence_channel_ledger", "evidence_18_to_16_silent_truncation", "PASS"),
+        ("dedicated half-resolution auxiliary feature provenance", MODEL, "AuxiliaryHalfFeatureTower", "Dedicated quarter-to-half auxiliary feature tower", "half_scale_feature_provenance", "quarter_slice_interpolation_fake_half", "PASS"),
         ("no-T2 class4 excluded from competition graph", TRAINER, "_five_class_logits_and_target", "torch.full_like(mapped, -1)", "no_t2_gradient_receipt", "no_t2_class4_background", "PASS"),
         ("Stage A/B 10/5/5 alternating cycle", SAMPLER, "CAREASEDeterministicSampler.stage_a_b_cycle", '"lge_only",', "sampler_400_step_receipt", "stage_A_B_complete_only", "PASS"),
         ("Stage C complete-only CenterB/CenterC", SAMPLER, "CAREASEDeterministicSampler.stage_c_cycle", '("complete_centerB", "complete_centerC")', "sampler_static_contract", "stage_C_not_complete_only", "PASS"),
@@ -116,15 +120,17 @@ def coverage_rows() -> list[dict[str, Any]]:
         ("AdamW created once with object-id parameter registry and moments preserved", TRAINER, "build_optimizer", "parameter_group_coverage", "parameter_group_coverage", "optimizer_recreated_at_stage_transition", "PASS"),
         ("base LR/min LR/warmup/power poly scheduler", TRAINER, "CAREASEStageScheduler", "stage_warmup_steps", "scheduler_numeric_receipt", "scheduler_none_or_static_lr", "PASS"),
         ("checkpoint full fields/fsync/atomic rename/SHA/reload", TRAINER, "save_care_ase_checkpoint", "REQUIRED_CHECKPOINT_FIELDS", "checkpoint_schema_contract", "missing_checkpoint_field", "PASS"),
-        ("exact resume state and next-batch hash", TRAINER, "load_care_ase_checkpoint", "next_batch_descriptor_sha256", "exact_resume_receipt", "resume_not_sampler_or_next_batch", "PASS"),
-        ("physical EDT/context/center target builders", TRAINER, "build_care_ase_targets", "_geometry_targets_numpy", "physical_target_contract_receipt", "proxy_loss_targets", "PASS"),
+        ("exact resume state and next optimizer-step micro-bundle hash", ENTRYPOINT, "_write_full_reload_receipt", "next_optimizer_step_micro_descriptor_hash_match", "exact_resume_receipt", "resume_not_sampler_or_next_batch", "PASS"),
+        ("physical EDT/context/center target builders with per-slice topology validity", TRAINER, "build_care_ase_targets", "_signed_distance_2d", "physical_target_contract_receipt", "proxy_loss_targets", "PASS"),
         ("edema boundary prediction uses dedicated component head", TRAINER, "care_ase_loss", "components[\"edema_boundary\"]", "boundary_head_contract_receipt", "edema_class_logit_as_boundary", "PASS"),
-        ("context CE valid voxel mean only", TRAINER, "care_ase_loss", "edema_valid_context.sum().clamp_min(1.0)", "context_loss_normalization_receipt", "unormalized_context_ce", "PASS"),
+        ("context CE valid voxel mean only", TRAINER, "context_cross_entropy_valid_mean", "return (raw * valid).sum() / denom", "context_loss_normalization_receipt", "unormalized_context_ce", "PASS"),
+        ("formal W3 requires external review permit", ENTRYPOINT, "verify_external_review_permit", "formal CARE-ASE R2 W3 chunk requires --external-review-permit", "external_review_permit_enforcement_oracle", "formal_launch_without_external_permit", "PASS"),
+        ("formal W3 stale chunk lock recovery is fail-closed for live owners", ENTRYPOINT, "acquire_chunk_lock", "stale_lock_recovered", "stale_lock_recovery_oracle", "stale_lock_no_recovery", "PASS"),
         ("fixed step14000 argmax and outer zero-access", ENTRYPOINT, "main", "args.end_step > 14000", "outer_access_audit_receipt", "outer_access_before_freeze", "PASS"),
         ("fixed argmax decode excludes class4 for no-T2", DECODE, "decode_care_ase_r2_logits", "NO_T2_CLASSES = (0, 1, 2, 3, 5)", "decode_static_contract", "no_t2_class4_background", "PASS"),
-        ("outer evaluator fail-closed before W4.5 and loads frozen checkpoint", EVALUATOR, "assert_w45_permit", "load_care_ase_checkpoint", "outer_access_audit_receipt", "outer_access_before_freeze", "PASS"),
+        ("outer evaluator fail-closed before W4.5 and consumes fold-specific step14000 permit", EVALUATOR, "assert_w45_permit", "consumed_permit_token", "outer_access_audit_receipt", "outer_before_w45", "PASS"),
         ("pure-edema T2-present only", TRAINER, "care_ase_loss", "edema_valid = valid_binary * t2_mask", "metric_truth_receipt", "edema_metric_mixes_no_t2", "PASS"),
-        ("nnU-Net MoSAIC CARE-ASE same-case join deferred to W5", RESULT_ROOT / "effective_contract.json", "effective_contract", "R7_W5_METRIC_TRUTH", "W5_metric_truth_validator", "three_way_join_mismatch", "PASS"),
+        ("nnU-Net MoSAIC CARE-ASE same-case join deferred to W5", REPO_ROOT / "prompts/blueprints/CARE_ASE_R2_full_fidelity_execution_contract_20260803.yaml", "effective_contract", "same_case_set_and_case_id_join_required: true", "W5_metric_truth_validator", "three_way_join_mismatch", "PASS"),
     ]
     return [
         {
@@ -175,7 +181,7 @@ def semantic_loss_coverage() -> dict[str, Any]:
             "gaussian_center": "_component_center_heatmap" in trainer_text,
             "per_gt_component": "per_gt_component_tversky" in trainer_text,
             "context_distance_adjacency": "_context_target_numpy" in trainer_text and "dist_blood" in trainer_text and "dist_wall" in trainer_text,
-            "signed_edema_boundary": "edema_boundary_target" in trainer_text and "_signed_distance" in trainer_text,
+            "signed_edema_boundary": "edema_boundary_target" in trainer_text and "_edema_boundary_numpy" in trainer_text,
             "relation_stopgrad": ".detach()" in trainer_text and '"relation"' in trainer_text,
         },
         "status": "PASS"
@@ -187,7 +193,7 @@ def semantic_loss_coverage() -> dict[str, Any]:
                 "_component_center_heatmap" in trainer_text,
                 "per_gt_component_tversky" in trainer_text,
                 "_context_target_numpy" in trainer_text and "dist_blood" in trainer_text and "dist_wall" in trainer_text,
-                "edema_boundary_target" in trainer_text,
+                "edema_boundary_target" in trainer_text and "_edema_boundary_numpy" in trainer_text,
                 ".detach()" in trainer_text and '"relation"' in trainer_text,
             ]
         )

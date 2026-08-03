@@ -1,0 +1,10 @@
+{
+  "binding": "stock_pathology_deep_supervision_weights uses stock nnU-Net 1/(2^i) output-order formula normalized over full/half pathology scales",
+  "expected_weights": {
+    "full": 0.6666666666666666,
+    "half": 0.3333333333333333
+  },
+  "loss_missing_field_behavior": "KeyError",
+  "missing_field_fallback_allowed": false,
+  "status": "PASS"
+}

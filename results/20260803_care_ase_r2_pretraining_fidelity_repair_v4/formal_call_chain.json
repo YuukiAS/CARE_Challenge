@@ -1,0 +1,21 @@
+{
+  "entrypoint_imports": [
+    "__future__",
+    "pathlib",
+    "scipy",
+    "scipy.ndimage",
+    "src.care_myocardium.inference.care_ase_r2_decode",
+    "src.care_myocardium.models.care_ase",
+    "src.care_myocardium.training.care_ase_sampler",
+    "src.care_myocardium.training.care_ase_trainer",
+    "typing"
+  ],
+  "entrypoint_path": "scripts/training/care_ase/run_care_ase_r2_chunk.py",
+  "entrypoint_sha256": "08fc5e04a108126d0fdc66ac7a3557534788bbfffcb4658fe3133f9a17955557",
+  "old_entrypoint_bypass": false,
+  "old_trainer_bypass": false,
+  "wrapper_path": "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh",
+  "wrapper_sha256": "40261955848aa55a580300e2eb708efc733e4df80c72760a3c0c1f3044a15c38",
+  "wrapper_uses_env_python": true,
+  "wrapper_uses_htzhulab": true
+}

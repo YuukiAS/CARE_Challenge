@@ -44,6 +44,19 @@ class CAREASEBatchDescriptor:
         return hashlib.sha256(payload).hexdigest()
 
 
+@dataclass(frozen=True)
+class CAREASEMicrobatchBundle:
+    fold: int
+    global_step: int
+    stage_id: str
+    optimizer_step_stratum: dict[str, str]
+    micro_descriptors: tuple[CAREASEBatchDescriptor, ...]
+
+    def sha256(self) -> str:
+        payload = json.dumps(asdict(self), sort_keys=True).encode("utf-8")
+        return hashlib.sha256(payload).hexdigest()
+
+
 def stage_for_step(global_step: int) -> str:
     step = int(global_step)
     if step < 2000:
@@ -121,6 +134,10 @@ def _hard_negative_category(manifest: dict[str, Any], case_id: str, pathology_fo
             "edema_fp_voxels": int(value.get("edema_fp_voxels", 0) or 0),
             "edema_fn_voxels": int(value.get("edema_fn_voxels", 0) or 0),
         }
+        if pathology_focus == "scar" and within_focus == "small_component":
+            coords = _coords(value, "scar_small_component")
+            if coords:
+                return "scar_small_component", counts, coords
         if pathology_focus == "scar" and within_focus == "oof_fn" and counts["scar_fn_voxels"] > 0:
             return "scar_oof_fn", counts, _coords(value, "scar_oof_fn")
         if pathology_focus == "scar" and within_focus == "oof_fp" and counts["scar_fp_voxels"] > 0:
@@ -257,9 +274,14 @@ class CAREASEDeterministicSampler:
                 self.by_group[key] = sorted(values)
         self.hard_negative_manifest = _load_hard_negative_manifest(self.repo_root, self.fold)
         self.case_group_cursor = 0
+        self.complete_center_selector_cursor = 0
+        self.complete_centerB_case_cursor = 0
+        self.complete_centerC_case_cursor = 0
         self.complete_center_cursor = 0
         self.complete_pathology_cursor = 0
         self.partial_case_cursors = {"lge_only": 0, "lge_c0": 0}
+        self.micro_case_cursors_by_group = {"complete_centerB": 0, "complete_centerC": 0, "lge_only": 0, "lge_c0": 0}
+        self.micro_patch_cursor = 0
         self.scar_focus_cursor = 0
         self.edema_focus_cursor = 0
         self.batch_descriptor_cursor = 0
@@ -270,23 +292,37 @@ class CAREASEDeterministicSampler:
             raise RuntimeError(f"CARE-ASE R2 sampler has no actual-train cases for group={group} fold={self.fold}")
         return values[cursor % len(values)]
 
-    def descriptor_for_step(self, global_step: int) -> CAREASEBatchDescriptor:
+    def _case_for_micro(self, group: str) -> str:
+        cursor = self.micro_case_cursors_by_group.get(group, 0)
+        case_id = self._choose_case(group, cursor)
+        self.micro_case_cursors_by_group[group] = cursor + 1
+        return case_id
+
+    def descriptor_bundle_for_step(self, global_step: int, *, microbatch_count: int = 4) -> CAREASEMicrobatchBundle:
         stage = stage_for_step(global_step)
         if stage in {"A", "B"}:
             group = self.stage_a_b_cycle[self.case_group_cursor % len(self.stage_a_b_cycle)]
             self.case_group_cursor += 1
             if group == "complete":
-                center_group = self.stage_c_cycle[self.complete_center_cursor % len(self.stage_c_cycle)]
-                case_id = self._choose_case(center_group, self.complete_center_cursor)
-                self.complete_center_cursor += 1
+                center_group = self.stage_c_cycle[self.complete_center_selector_cursor % len(self.stage_c_cycle)]
+                self.complete_center_selector_cursor += 1
+                if center_group == "complete_centerB":
+                    self.complete_centerB_case_cursor += 1
+                else:
+                    self.complete_centerC_case_cursor += 1
+                self.complete_center_cursor = self.complete_center_selector_cursor
             else:
-                cursor = self.partial_case_cursors[group]
-                case_id = self._choose_case(group, cursor)
-                self.partial_case_cursors[group] = cursor + 1
+                center_group = group
+                self.partial_case_cursors[group] = self.partial_case_cursors[group] + 1
         elif stage == "C":
-            group = self.stage_c_cycle[self.complete_center_cursor % len(self.stage_c_cycle)]
-            case_id = self._choose_case(group, self.complete_center_cursor)
-            self.complete_center_cursor += 1
+            group = self.stage_c_cycle[self.complete_center_selector_cursor % len(self.stage_c_cycle)]
+            center_group = group
+            self.complete_center_selector_cursor += 1
+            if center_group == "complete_centerB":
+                self.complete_centerB_case_cursor += 1
+            else:
+                self.complete_centerC_case_cursor += 1
+            self.complete_center_cursor = self.complete_center_selector_cursor
         else:
             raise ValueError(f"global_step outside formal training range: {global_step}")
         if group in {"lge_only", "lge_c0"}:
@@ -301,35 +337,64 @@ class CAREASEDeterministicSampler:
             within_focus = self.edema_within_focus_cycle[self.edema_focus_cursor % len(self.edema_within_focus_cycle)]
             self.edema_focus_cursor += 1
         self.batch_descriptor_cursor += 1
-        center, availability = self.case_meta[case_id]
-        hard_category, hard_counts, hard_coords = _hard_negative_category(self.hard_negative_manifest, case_id, pathology, within_focus)
-        return CAREASEBatchDescriptor(
+        descriptors = []
+        for _micro in range(int(microbatch_count)):
+            case_id = self._case_for_micro(center_group)
+            center, availability = self.case_meta[case_id]
+            hard_category, hard_counts, hard_coords = _hard_negative_category(self.hard_negative_manifest, case_id, pathology, within_focus)
+            descriptors.append(
+                CAREASEBatchDescriptor(
+                    fold=self.fold,
+                    global_step=int(global_step),
+                    stage_id=stage,
+                    case_id=case_id,
+                    case_group=group,
+                    center=center,
+                    pathology_focus=pathology,
+                    within_focus=within_focus,
+                    availability=availability,
+                    hard_negative_category=hard_category,
+                    hard_negative_counts=hard_counts,
+                    resolved_target_coordinates=hard_coords,
+                    fallback_sequence=_fallback_sequence(pathology, within_focus, hard_category),
+                )
+            )
+            self.micro_patch_cursor += 1
+        return CAREASEMicrobatchBundle(
             fold=self.fold,
             global_step=int(global_step),
             stage_id=stage,
-            case_id=case_id,
-            case_group=group,
-            center=center,
-            pathology_focus=pathology,
-            within_focus=within_focus,
-            availability=availability,
-            hard_negative_category=hard_category,
-            hard_negative_counts=hard_counts,
-            resolved_target_coordinates=hard_coords,
-            fallback_sequence=_fallback_sequence(pathology, within_focus, hard_category),
+            optimizer_step_stratum={
+                "case_group": group,
+                "center_group": center_group,
+                "pathology_focus": pathology,
+                "within_focus": within_focus,
+            },
+            micro_descriptors=tuple(descriptors),
         )
 
+    def descriptor_for_step(self, global_step: int) -> CAREASEBatchDescriptor:
+        return self.descriptor_bundle_for_step(global_step).micro_descriptors[0]
+
     def peek_descriptor_for_step(self, global_step: int) -> CAREASEBatchDescriptor:
+        return self.peek_descriptor_bundle_for_step(global_step).micro_descriptors[0]
+
+    def peek_descriptor_bundle_for_step(self, global_step: int) -> CAREASEMicrobatchBundle:
         clone = CAREASEDeterministicSampler(self.repo_root, self.fold, seed=self.seed)
         clone.load_state_dict(self.state_dict())
-        return clone.descriptor_for_step(global_step)
+        return clone.descriptor_bundle_for_step(global_step)
 
     def state_dict(self, *, next_descriptor: CAREASEBatchDescriptor | None = None) -> dict[str, Any]:
         state = {
             "case_group_cursor": self.case_group_cursor,
+            "complete_center_selector_cursor": self.complete_center_selector_cursor,
+            "complete_centerB_case_cursor": self.complete_centerB_case_cursor,
+            "complete_centerC_case_cursor": self.complete_centerC_case_cursor,
             "complete_center_cursor": self.complete_center_cursor,
             "complete_pathology_cursor": self.complete_pathology_cursor,
             "partial_case_cursors": dict(self.partial_case_cursors),
+            "micro_case_cursors_by_group": dict(self.micro_case_cursors_by_group),
+            "micro_patch_cursor": int(self.micro_patch_cursor),
             "center_cursor": self.complete_center_cursor,
             "pathology_focus_cursor": self.complete_pathology_cursor,
             "scar_focus_cursor": self.scar_focus_cursor,
@@ -342,15 +407,26 @@ class CAREASEDeterministicSampler:
         }
         if next_descriptor is not None:
             state["next_batch_descriptor_sha256"] = next_descriptor.sha256()
+            if isinstance(next_descriptor, CAREASEMicrobatchBundle):
+                state["next_optimizer_step_micro_descriptor_bundle"] = [asdict(item) for item in next_descriptor.micro_descriptors]
+                state["next_optimizer_step_micro_descriptor_sha256"] = next_descriptor.sha256()
         return state
 
     def load_state_dict(self, state: dict[str, Any]) -> None:
         self.case_group_cursor = int(state["case_group_cursor"])
-        self.complete_center_cursor = int(state.get("complete_center_cursor", state.get("center_cursor", 0)))
+        legacy_center = int(state.get("complete_center_cursor", state.get("center_cursor", 0)))
+        self.complete_center_selector_cursor = int(state.get("complete_center_selector_cursor", legacy_center))
+        self.complete_centerB_case_cursor = int(state.get("complete_centerB_case_cursor", (self.complete_center_selector_cursor + 1) // 2))
+        self.complete_centerC_case_cursor = int(state.get("complete_centerC_case_cursor", self.complete_center_selector_cursor // 2))
+        self.complete_center_cursor = self.complete_center_selector_cursor
         self.complete_pathology_cursor = int(state.get("complete_pathology_cursor", state.get("pathology_focus_cursor", 0)))
         self.partial_case_cursors = {str(k): int(v) for k, v in state.get("partial_case_cursors", {"lge_only": 0, "lge_c0": 0}).items()}
         self.partial_case_cursors.setdefault("lge_only", 0)
         self.partial_case_cursors.setdefault("lge_c0", 0)
+        self.micro_case_cursors_by_group = {str(k): int(v) for k, v in state.get("micro_case_cursors_by_group", {}).items()}
+        for key in ("complete_centerB", "complete_centerC", "lge_only", "lge_c0"):
+            self.micro_case_cursors_by_group.setdefault(key, 0)
+        self.micro_patch_cursor = int(state.get("micro_patch_cursor", 0))
         self.scar_focus_cursor = int(state["scar_focus_cursor"])
         self.edema_focus_cursor = int(state["edema_focus_cursor"])
         self.batch_descriptor_cursor = int(state["batch_descriptor_cursor"])

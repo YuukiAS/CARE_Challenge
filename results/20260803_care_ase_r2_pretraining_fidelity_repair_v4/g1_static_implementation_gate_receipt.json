@@ -1,0 +1,16 @@
+{
+  "decision": "PASS",
+  "failures": [],
+  "remaining_gap_count": 0,
+  "source_sha_manifest": {
+    "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh": "40261955848aa55a580300e2eb708efc733e4df80c72760a3c0c1f3044a15c38",
+    "scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py": "ed915047903633dfaa9833f3e7626efcd09501c4f21f44bf33ad45354aeb49d7",
+    "scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py": "2ec8e6259ea9b32cb045f3eaa0140bb9475a0b1b6b25288166718ee4c3bbb994",
+    "scripts/training/care_ase/run_care_ase_r2_chunk.py": "08fc5e04a108126d0fdc66ac7a3557534788bbfffcb4658fe3133f9a17955557",
+    "scripts/validation/validate_care_ase_r2_g1.py": "5d13049dc461f03ed1c9b77ab070b8bafad7725a2e40ea0d50de3f3266ca5462",
+    "src/care_myocardium/inference/care_ase_r2_decode.py": "7fea71edba56d259dbbb31c3832b74709bd83d5af1f8b680a85c2e0a41acb05b",
+    "src/care_myocardium/models/care_ase.py": "3862d9cb4a071911a91cfeab21b02379d17b65a67c4447e92ef376e085d97df8",
+    "src/care_myocardium/training/care_ase_sampler.py": "f338a0d116667b3808c52c31b03bf924ff3ddaf9d7fb6a59780ce9f2597f66e2",
+    "src/care_myocardium/training/care_ase_trainer.py": "2793d0dd69cf92bf50ca1dae755741668c7bfcfa2fda8c80db4fc236750830ca"
+  }
+}

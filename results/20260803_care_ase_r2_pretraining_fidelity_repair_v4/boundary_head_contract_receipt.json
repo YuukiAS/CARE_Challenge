@@ -1,0 +1,42 @@
+{
+  "forbidden_prediction_source": "edema class segmentation logit",
+  "prediction_source": "components['edema_boundary']",
+  "raw_physical_distance_saved": true,
+  "status": "PASS",
+  "synthetic_counts": {
+    "boundary_negative_outside_count": 32336,
+    "boundary_positive_inside_count": 432,
+    "boundary_valid_policy": "raw physical distance <= 10mm OR GT edema positive",
+    "edema_context_counts": {
+      "-1": 8035,
+      "0": 432,
+      "1": 2904,
+      "2": 3861,
+      "3": 17536
+    },
+    "edema_label5_ignore_count": 240,
+    "edt_uses_sampling_spacing": true,
+    "payload_sha256": "b5cc406ad61db665a5a3e1a0b07a4cdd9355ef8ab168fc75a23540e51af09669",
+    "scar_center_peak": 0.9654545783996582,
+    "scar_center_sigma": {
+      "inplane_mm": 4.0,
+      "z_slices": 1.0
+    },
+    "scar_context_counts": {
+      "-1": 8227,
+      "0": 240,
+      "1": 2904,
+      "2": 3861,
+      "3": 17536
+    },
+    "signed_distance_clip_mm": 10.0,
+    "spacing_zyx": [
+      2.0,
+      1.5,
+      1.5
+    ],
+    "status": "PASS",
+    "wall_depth_max_abs_error": 0.0
+  },
+  "valid_mask_rule": "raw physical distance <= 10mm OR GT edema positive"
+}

@@ -45,7 +45,7 @@ from src.care_myocardium.training.care_ase_trainer import (
 )
 
 
-RESULT_ROOT = REPO_ROOT / "results/20260803_care_ase_r2_full_fidelity_execution"
+RESULT_ROOT = REPO_ROOT / "results/20260803_care_ase_r2_pretraining_fidelity_repair_v4"
 
 
 def sha256_file(path: Path) -> str:
@@ -192,6 +192,8 @@ def main() -> int:
     patch_size = parse_patch_size(args.patch_size)
     sw_patch = parse_patch_size(args.sliding_window_patch_size)
     fold = int(args.fold)
+    fold_out = out / f"g2_fold{fold}"
+    fold_out.mkdir(parents=True, exist_ok=True)
 
     area = compute_actual_train_area_references(REPO_ROOT, fold)
     sampler = CAREASEDeterministicSampler(REPO_ROOT, fold)
@@ -238,9 +240,12 @@ def main() -> int:
     no_t2_loss.backward()
     edema_exclusive_prefixes = (
         "edema_branch.",
-        "edema_t2_adapter.",
-        "edema_c0_adapter.",
-        "edema_lge_adapter.",
+        "edema_t2_half_adapter.",
+        "edema_t2_full_adapter.",
+        "edema_c0_half_adapter.",
+        "edema_c0_full_adapter.",
+        "edema_lge_half_adapter.",
+        "edema_lge_full_adapter.",
         "edema_c0_gate.",
         "edema_lge_gate.",
         "edema_dilation_context.",
@@ -259,8 +264,8 @@ def main() -> int:
     decode_input[1, 4] = 10.0
     decoded = decode_care_ase_r2_logits(decode_input, torch.tensor([[1.0, 1.0, 1.0], [1.0, 0.0, 1.0]], device=device))
 
-    ckpt = out / "g2_atomic_checkpoint_probe.pt"
-    next_desc = sampler.peek_descriptor_for_step(1)
+    ckpt = fold_out / "g2_atomic_checkpoint_probe.pt"
+    next_desc = sampler.peek_descriptor_bundle_for_step(1)
     sampler_state = sampler.state_dict(next_descriptor=next_desc)
     save_care_ase_checkpoint(
         ckpt,

@@ -1,0 +1,5 @@
+{
+  "cross_slice_edt_for_geometry_allowed": false,
+  "policy": "2D topology validity implemented by v4 contract",
+  "status": "PASS"
+}

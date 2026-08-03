@@ -1,0 +1,5 @@
+{
+  "distance_rho_masked_when_invalid": true,
+  "implementation": "_geometry_targets_numpy loops over z slices and computes 2D in-plane EDT only when wall/LV/exterior are present",
+  "status": "PASS"
+}

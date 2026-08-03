@@ -1,0 +1,5 @@
+{
+  "fold": 4,
+  "gate": "p95*2000+overhead+15pct<8h",
+  "status": "PASS"
+}

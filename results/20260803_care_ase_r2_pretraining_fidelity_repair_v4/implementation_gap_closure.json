@@ -1,0 +1,25 @@
+{
+  "fold1_restart_step": 0,
+  "fold4_restart_step": 0,
+  "formal_training_started_after_external_review": false,
+  "outer_access_count_fold1": 0,
+  "outer_access_count_fold4": 0,
+  "payload_sha256": "0462da5b91860650d27e97a2de8b2a6b880922ec97c71d884f211677ee2b0eed",
+  "receipts": [
+    "dynamic_plan_introspection_receipt.json",
+    "single_shared_decoder_forward_receipt.json",
+    "evidence_channel_ledger.json",
+    "half_scale_feature_provenance.json",
+    "parameter_group_coverage.json",
+    "physical_target_contract_receipt.json",
+    "boundary_head_contract_receipt.json",
+    "extent_per_slice_contract_receipt.json",
+    "context_loss_normalization_receipt.json",
+    "sampler_400_step_full_composition_receipt.json",
+    "exact_resume_behavioral_equivalence.json",
+    "external_review_permit_enforcement_oracle.json"
+  ],
+  "source_hash": "a57afbb77e198e4afe7c1609fef06dad39abf6b1a55aeadeda1a2576a27f270c",
+  "status": "PASS",
+  "training_credit_from_207f360": "zero"
+}

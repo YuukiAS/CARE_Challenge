@@ -1,0 +1,4 @@
+{
+  "formula": "alpha_t=alpha*y+(1-alpha)*(1-y)",
+  "status": "PASS"
+}

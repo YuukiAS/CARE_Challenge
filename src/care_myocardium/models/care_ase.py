@@ -91,6 +91,27 @@ def _stage_kernel_stride(module: nn.Module) -> dict[str, Any]:
     }
 
 
+def _clone_seg_layer_rows(seg_layer: nn.Module, rows: int) -> nn.Module:
+    if not isinstance(seg_layer, nn.Conv3d):
+        raise TypeError(f"expected nnU-Net seg_layer to be Conv3d, got {type(seg_layer).__name__}")
+    cloned = nn.Conv3d(
+        seg_layer.in_channels,
+        int(rows),
+        kernel_size=seg_layer.kernel_size,
+        stride=seg_layer.stride,
+        padding=seg_layer.padding,
+        dilation=seg_layer.dilation,
+        groups=seg_layer.groups,
+        bias=seg_layer.bias is not None,
+        padding_mode=seg_layer.padding_mode,
+    )
+    with torch.no_grad():
+        cloned.weight.copy_(seg_layer.weight[:rows])
+        if seg_layer.bias is not None and cloned.bias is not None:
+            cloned.bias.copy_(seg_layer.bias[:rows])
+    return cloned
+
+
 @dataclass(frozen=True)
 class CAREASEDecoderIntrospection:
     shared_quarter_channels: int
@@ -124,6 +145,31 @@ def introspect_stock_decoder(stock_decoder: nn.Module) -> CAREASEDecoderIntrospe
             for idx in (*shared, *cloned)
         },
     )
+
+
+def stock_pathology_deep_supervision_weights(stock_decoder: nn.Module, introspection: CAREASEDecoderIntrospection) -> dict[str, Any]:
+    """Bind pathology full/half supervision weights to the stock nnU-Net DS formula."""
+
+    seg_layer_count = len(stock_decoder.seg_layers)
+    if seg_layer_count <= max(introspection.cloned_stage_indices):
+        raise ValueError("stock decoder has fewer seg_layers than the CARE-ASE cloned pathology stages")
+    half_stage, full_stage = introspection.cloned_stage_indices
+    raw_selected = {
+        "full": 1.0,
+        "half": 1.0 / 2.0,
+    }
+    total = float(raw_selected["half"] + raw_selected["full"])
+    if total <= 0.0:
+        raise ValueError("stock deep-supervision weights for pathology scales sum to zero")
+    return {
+        "full": float(raw_selected["full"] / total),
+        "half": float(raw_selected["half"] / total),
+        "source": "stock_nnunet_deep_supervision_formula_1_over_2_power_output_order_normalized_over_highest_two_pathology_scales",
+        "stock_decoder_seg_layer_count": int(seg_layer_count),
+        "selected_stage_indices": {"half": int(half_stage), "full": int(full_stage)},
+        "selected_output_order": ["full", "half"],
+        "raw_selected_weights": {key: float(value) for key, value in raw_selected.items()},
+    }
 
 
 @dataclass(frozen=True)
@@ -218,6 +264,24 @@ class ModalityAdapter(nn.Module):
         return adapted * present5
 
 
+class AuxiliaryHalfFeatureTower(nn.Module):
+    """Dedicated quarter-to-half auxiliary feature tower.
+
+    This is the declared source for half-resolution auxiliary heads; it avoids
+    treating a sliced/interpolated quarter tensor as a learned half feature.
+    """
+
+    def __init__(self, stock_decoder: nn.Module) -> None:
+        super().__init__()
+        self.transpconv = deepcopy(stock_decoder.transpconvs[4])
+        self.stage = deepcopy(stock_decoder.stages[4])
+
+    def forward(self, quarter_feature: torch.Tensor, skip_half: torch.Tensor) -> torch.Tensor:
+        x = self.transpconv(quarter_feature)
+        x = torch.cat((x, skip_half), 1)
+        return self.stage(x)
+
+
 class AnatomyGeometryHeads(nn.Module):
     """Independent trainable physical-geometry heads from anatomy logits."""
 
@@ -303,15 +367,16 @@ class CAREASEPathologyBranch(nn.Module):
         class_index: int,
         half_projection_channels: int,
         full_projection_channels: int,
-        evidence_channels: int,
+        half_evidence_channels: int,
+        full_evidence_channels: int,
     ) -> None:
         super().__init__()
         self.class_index = int(class_index)
         self.transpconvs = nn.ModuleList([deepcopy(stock_decoder.transpconvs[4]), deepcopy(stock_decoder.transpconvs[5])])
         self.stages = nn.ModuleList([deepcopy(stock_decoder.stages[4]), deepcopy(stock_decoder.stages[5])])
         self.seg_layers = nn.ModuleList([deepcopy(stock_decoder.seg_layers[4]), deepcopy(stock_decoder.seg_layers[5])])
-        self.half_projection = ZeroInitEvidenceProjection(evidence_channels, half_projection_channels)
-        self.full_projection = ZeroInitEvidenceProjection(evidence_channels, full_projection_channels)
+        self.half_projection = ZeroInitEvidenceProjection(half_evidence_channels, half_projection_channels)
+        self.full_projection = ZeroInitEvidenceProjection(full_evidence_channels, full_projection_channels)
 
     def forward(
         self,
@@ -361,25 +426,34 @@ class CAREASE(nn.Module):
         self.stock_load_unexpected_keys = list(load.unexpected_keys)
         self.stock_parameter_byte_coverage = _byte_coverage(state, stock.state_dict())
         self.decoder_introspection = introspect_stock_decoder(stock.decoder)
+        self.pathology_deep_supervision_weights = stock_pathology_deep_supervision_weights(stock.decoder, self.decoder_introspection)
 
         self.encoder = stock.encoder
-        self.anatomy_decoder = stock.decoder
         self.low_mid_transpconvs = nn.ModuleList([stock.decoder.transpconvs[i] for i in range(4)])
         self.low_mid_stages = nn.ModuleList([stock.decoder.stages[i] for i in range(4)])
-        evidence_channels = 16
+        self.anatomy_top_transpconvs = nn.ModuleList([stock.decoder.transpconvs[4], stock.decoder.transpconvs[5]])
+        self.anatomy_top_stages = nn.ModuleList([stock.decoder.stages[4], stock.decoder.stages[5]])
+        self.anatomy_top_seg_layers = nn.ModuleList([_clone_seg_layer_rows(stock.decoder.seg_layers[4], 4), _clone_seg_layer_rows(stock.decoder.seg_layers[5], 4)])
+        self.auxiliary_half_tower = AuxiliaryHalfFeatureTower(stock.decoder)
+        half_c = self.decoder_introspection.half_projection_channels
+        full_c = self.decoder_introspection.full_projection_channels
+        scar_base_channels = 1 + 1 + 4 + 6
+        edema_base_channels = 1 + 1 + 4 + 3 + 6
         self.scar_branch = CAREASEPathologyBranch(
             stock.decoder,
             class_index=5,
             half_projection_channels=self.decoder_introspection.half_projection_channels,
             full_projection_channels=self.decoder_introspection.full_projection_channels,
-            evidence_channels=evidence_channels,
+            half_evidence_channels=scar_base_channels + 2 * half_c,
+            full_evidence_channels=scar_base_channels + 2 * full_c,
         )
         self.edema_branch = CAREASEPathologyBranch(
             stock.decoder,
             class_index=4,
             half_projection_channels=self.decoder_introspection.half_projection_channels,
             full_projection_channels=self.decoder_introspection.full_projection_channels,
-            evidence_channels=evidence_channels,
+            half_evidence_channels=edema_base_channels + 3 * half_c,
+            full_evidence_channels=edema_base_channels + 3 * full_c,
         )
         self.component_heads = ComponentHeads(
             quarter_channels=self.decoder_introspection.shared_quarter_channels,
@@ -387,11 +461,16 @@ class CAREASE(nn.Module):
         )
         self.anatomy_geometry_heads = AnatomyGeometryHeads()
         self.edema_dilation_context = EdemaDilationContextBlock(self.decoder_introspection.half_seed_channels, out_channels=1)
-        self.scar_lge_adapter = ModalityAdapter(out_channels=8)
-        self.scar_c0_adapter = ModalityAdapter(out_channels=8)
-        self.edema_t2_adapter = ModalityAdapter(out_channels=8)
-        self.edema_c0_adapter = ModalityAdapter(out_channels=8)
-        self.edema_lge_adapter = ModalityAdapter(out_channels=8)
+        self.scar_lge_half_adapter = ModalityAdapter(out_channels=half_c)
+        self.scar_lge_full_adapter = ModalityAdapter(out_channels=full_c)
+        self.scar_c0_half_adapter = ModalityAdapter(out_channels=half_c)
+        self.scar_c0_full_adapter = ModalityAdapter(out_channels=full_c)
+        self.edema_t2_half_adapter = ModalityAdapter(out_channels=half_c)
+        self.edema_t2_full_adapter = ModalityAdapter(out_channels=full_c)
+        self.edema_c0_half_adapter = ModalityAdapter(out_channels=half_c)
+        self.edema_c0_full_adapter = ModalityAdapter(out_channels=full_c)
+        self.edema_lge_half_adapter = ModalityAdapter(out_channels=half_c)
+        self.edema_lge_full_adapter = ModalityAdapter(out_channels=full_c)
         self.scar_c0_gate = ScalarGate(activation="sigmoid", initial_output=0.2)
         self.edema_c0_gate = ScalarGate(activation="sigmoid", initial_output=0.2)
         self.edema_lge_gate = ScalarGate(activation="tanh", initial_output=0.0)
@@ -427,6 +506,22 @@ class CAREASE(nn.Module):
             low_mid.append(x)
         return x, low_mid
 
+    def _decode_anatomy_top(self, quarter_feature: torch.Tensor, skips: list[torch.Tensor]) -> dict[str, torch.Tensor]:
+        x = self.anatomy_top_transpconvs[0](quarter_feature)
+        x = torch.cat((x, skips[1]), 1)
+        half_feature = self.anatomy_top_stages[0](x)
+        half_logits4 = self.anatomy_top_seg_layers[0](half_feature)
+        x = self.anatomy_top_transpconvs[1](half_feature)
+        x = torch.cat((x, skips[0]), 1)
+        full_feature = self.anatomy_top_stages[1](x)
+        full_logits4 = self.anatomy_top_seg_layers[1](full_feature)
+        return {
+            "half_feature": half_feature,
+            "full_feature": full_feature,
+            "half_logits4": half_logits4,
+            "full_logits4": full_logits4,
+        }
+
     def dynamic_plan_introspection_payload(self) -> dict[str, Any]:
         return {
             "status": "PASS",
@@ -434,6 +529,10 @@ class CAREASE(nn.Module):
             "source": "actual_stock_decoder_modules",
             "no_hardcoded_quarter_half_or_projection_channels": True,
             "modality_adapter_final_conv_zero_init": True,
+            "scale_specific_modality_adapter_out_channels": {
+                "half": self.decoder_introspection.half_projection_channels,
+                "full": self.decoder_introspection.full_projection_channels,
+            },
             "gate_initial_outputs": {
                 "scar_c0_sigmoid": float(self.scar_c0_gate().detach().cpu()),
                 "edema_c0_sigmoid": float(self.edema_c0_gate().detach().cpu()),
@@ -476,25 +575,25 @@ class CAREASE(nn.Module):
         if ramp == 0.0:
             return torch.zeros_like(p_wall)
         if pathology == "scar":
-            presence, area, wall_slice = _slice_extent_summary(
+            presence, area, _wall_slice = _slice_extent_summary(
                 components["scar_extent_presence"],
                 components["scar_extent_area"],
                 p_wall,
             )
             presence_bias = 0.30 * self._sigmoid_logit_center(presence, 0.50)
             area_bias = 0.20 * self._sigmoid_logit_center(area, self.scar_area_reference)
-            wall_bias = 0.15 * self._sigmoid_logit_center(wall_slice, 0.50)
+            wall_bias = 0.15 * self._sigmoid_logit_center(p_wall.detach(), 0.50)
         else:
-            presence, area, wall_slice = _slice_extent_summary(
+            presence, area, _wall_slice = _slice_extent_summary(
                 components["edema_extent_presence"],
                 components["edema_extent_area"],
                 p_wall,
             )
             presence_bias = 0.35 * self._sigmoid_logit_center(presence, 0.50)
             area_bias = 0.30 * self._sigmoid_logit_center(area, self.edema_area_reference)
-            wall_bias = 0.10 * self._sigmoid_logit_center(wall_slice, 0.50)
-        slice_bias = presence_bias + area_bias + wall_bias
-        return float(ramp) * F.interpolate(slice_bias, size=p_wall.shape[-3:], mode="trilinear", align_corners=False)
+            wall_bias = 0.10 * self._sigmoid_logit_center(p_wall.detach(), 0.50)
+        slice_bias = presence_bias + area_bias
+        return float(ramp) * (F.interpolate(slice_bias, size=p_wall.shape[-3:], mode="trilinear", align_corners=False) + wall_bias)
 
     def forward(
         self,
@@ -513,9 +612,10 @@ class CAREASE(nn.Module):
     ) -> dict[str, Any]:
         availability = self._validate_inputs(images, availability)
         skips = self._encode(images, availability)
-        stock_anatomy_logits6 = self.anatomy_decoder(skips)
-        anatomy_logits = stock_anatomy_logits6[:, :4]
-        anatomy_prob = torch.softmax(stock_anatomy_logits6[:, :4], dim=1)
+        quarter, low_mid = self._decode_low_mid(skips)
+        anatomy = self._decode_anatomy_top(quarter, skips)
+        anatomy_logits = anatomy["full_logits4"]
+        anatomy_prob = torch.softmax(anatomy_logits, dim=1)
         p_wall = anatomy_prob[:, 1:2]
         p_lv = anatomy_prob[:, 2:3]
         p_rv = anatomy_prob[:, 3:4]
@@ -523,13 +623,7 @@ class CAREASE(nn.Module):
         signed_endo_distance = geometry["signed_endo_distance"]
         signed_epi_distance = geometry["signed_epi_distance"]
         wall_depth_rho = geometry["wall_depth_rho"]
-        quarter, low_mid = self._decode_low_mid(skips)
-        half_seed = F.interpolate(
-            quarter[:, : self.decoder_introspection.half_seed_channels],
-            size=skips[1].shape[-3:],
-            mode="trilinear",
-            align_corners=False,
-        )
+        half_seed = self.auxiliary_half_tower(quarter, skips[1])
         components = self.component_heads(quarter, half_seed)
         edema_dilation = self.edema_dilation_context(half_seed)
         components.update(edema_dilation)
@@ -542,72 +636,71 @@ class CAREASE(nn.Module):
             "wall_depth_rho": wall_depth_rho.detach(),
         }
 
-        scar_half_items: list[torch.Tensor] = [
-            torch.zeros_like(components["scar_half_occupancy"]) if disable_scar_proposal else components["scar_half_occupancy"],
-            torch.zeros_like(components["scar_half_center"]) if disable_scar_center else components["scar_half_center"],
-            torch.zeros_like(components["scar_context"]) if disable_scar_context else components["scar_context"],
-            anatomy_context["p_wall_union"],
-            anatomy_context["p_lv"],
-            anatomy_context["p_rv"],
-            anatomy_context["signed_endo_distance"],
-            anatomy_context["signed_epi_distance"],
-            anatomy_context["wall_depth_rho"],
-            self.scar_lge_adapter(images[:, 0:1], availability[:, 0], skips[1].shape[-3:]).mean(dim=1, keepdim=True),
-            self.scar_c0_gate() * self.scar_c0_adapter(images[:, 2:3], availability[:, 2], skips[1].shape[-3:]).mean(dim=1, keepdim=True),
+        scar_half_items: list[tuple[str, torch.Tensor]] = [
+            ("scar_half_occupancy", torch.zeros_like(components["scar_half_occupancy"]) if disable_scar_proposal else components["scar_half_occupancy"]),
+            ("scar_half_center", torch.zeros_like(components["scar_half_center"]) if disable_scar_center else components["scar_half_center"]),
+            ("scar_context", torch.zeros_like(components["scar_context"]) if disable_scar_context else components["scar_context"]),
+            ("p_wall_union", anatomy_context["p_wall_union"]),
+            ("p_lv", anatomy_context["p_lv"]),
+            ("p_rv", anatomy_context["p_rv"]),
+            ("signed_endo_distance", anatomy_context["signed_endo_distance"]),
+            ("signed_epi_distance", anatomy_context["signed_epi_distance"]),
+            ("wall_depth_rho", anatomy_context["wall_depth_rho"]),
+            ("scar_lge_half", self.scar_lge_half_adapter(images[:, 0:1], availability[:, 0], skips[1].shape[-3:])),
+            ("scar_c0_half", self.scar_c0_gate() * self.scar_c0_half_adapter(images[:, 2:3], availability[:, 2], skips[1].shape[-3:])),
         ]
-        scar_full_items: list[torch.Tensor] = [
-            torch.zeros_like(components["scar_quarter_occupancy"]) if disable_scar_proposal else components["scar_quarter_occupancy"],
-            torch.zeros_like(components["scar_quarter_center"]) if disable_scar_center else components["scar_quarter_center"],
-            torch.zeros_like(components["scar_context"]) if disable_scar_context else components["scar_context"],
-            anatomy_context["p_wall_union"],
-            anatomy_context["p_lv"],
-            anatomy_context["p_rv"],
-            anatomy_context["signed_endo_distance"],
-            anatomy_context["signed_epi_distance"],
-            anatomy_context["wall_depth_rho"],
-            self.scar_lge_adapter(images[:, 0:1], availability[:, 0], skips[0].shape[-3:]).mean(dim=1, keepdim=True),
-            self.scar_c0_gate() * self.scar_c0_adapter(images[:, 2:3], availability[:, 2], skips[0].shape[-3:]).mean(dim=1, keepdim=True),
+        scar_full_items: list[tuple[str, torch.Tensor]] = [
+            ("scar_quarter_occupancy", torch.zeros_like(components["scar_quarter_occupancy"]) if disable_scar_proposal else components["scar_quarter_occupancy"]),
+            ("scar_quarter_center", torch.zeros_like(components["scar_quarter_center"]) if disable_scar_center else components["scar_quarter_center"]),
+            ("scar_context", torch.zeros_like(components["scar_context"]) if disable_scar_context else components["scar_context"]),
+            ("p_wall_union", anatomy_context["p_wall_union"]),
+            ("p_lv", anatomy_context["p_lv"]),
+            ("p_rv", anatomy_context["p_rv"]),
+            ("signed_endo_distance", anatomy_context["signed_endo_distance"]),
+            ("signed_epi_distance", anatomy_context["signed_epi_distance"]),
+            ("wall_depth_rho", anatomy_context["wall_depth_rho"]),
+            ("scar_lge_full", self.scar_lge_full_adapter(images[:, 0:1], availability[:, 0], skips[0].shape[-3:])),
+            ("scar_c0_full", self.scar_c0_gate() * self.scar_c0_full_adapter(images[:, 2:3], availability[:, 2], skips[0].shape[-3:])),
         ]
-        edema_half_items: list[torch.Tensor] = [
-            torch.zeros_like(components["edema_injury"]) if disable_edema_injury else components["edema_injury"],
-            torch.zeros_like(components["edema_boundary"]) if disable_edema_boundary else components["edema_boundary"],
-            torch.zeros_like(components["edema_context"]) if disable_edema_context else components["edema_context"],
-            torch.zeros_like(components["edema_dilation_1"]) if disable_edema_context else components["edema_dilation_1"],
-            torch.zeros_like(components["edema_dilation_2"]) if disable_edema_context else components["edema_dilation_2"],
-            torch.zeros_like(components["edema_dilation_4"]) if disable_edema_context else components["edema_dilation_4"],
-            anatomy_context["p_wall_union"],
-            anatomy_context["p_lv"],
-            anatomy_context["p_rv"],
-            anatomy_context["signed_endo_distance"],
-            anatomy_context["signed_epi_distance"],
-            anatomy_context["wall_depth_rho"],
-            self.edema_t2_adapter(images[:, 1:2], availability[:, 1], skips[1].shape[-3:]).mean(dim=1, keepdim=True),
-            self.edema_c0_gate() * self.edema_c0_adapter(images[:, 2:3], availability[:, 2], skips[1].shape[-3:]).mean(dim=1, keepdim=True),
-            self.edema_lge_gate() * self.edema_lge_adapter(images[:, 0:1], availability[:, 0], skips[1].shape[-3:]).mean(dim=1, keepdim=True),
+        edema_half_items: list[tuple[str, torch.Tensor]] = [
+            ("edema_injury", torch.zeros_like(components["edema_injury"]) if disable_edema_injury else components["edema_injury"]),
+            ("edema_boundary", torch.zeros_like(components["edema_boundary"]) if disable_edema_boundary else components["edema_boundary"]),
+            ("edema_context", torch.zeros_like(components["edema_context"]) if disable_edema_context else components["edema_context"]),
+            ("edema_dilation_1", torch.zeros_like(components["edema_dilation_1"]) if disable_edema_context else components["edema_dilation_1"]),
+            ("edema_dilation_2", torch.zeros_like(components["edema_dilation_2"]) if disable_edema_context else components["edema_dilation_2"]),
+            ("edema_dilation_4", torch.zeros_like(components["edema_dilation_4"]) if disable_edema_context else components["edema_dilation_4"]),
+            ("p_wall_union", anatomy_context["p_wall_union"]),
+            ("p_lv", anatomy_context["p_lv"]),
+            ("p_rv", anatomy_context["p_rv"]),
+            ("signed_endo_distance", anatomy_context["signed_endo_distance"]),
+            ("signed_epi_distance", anatomy_context["signed_epi_distance"]),
+            ("wall_depth_rho", anatomy_context["wall_depth_rho"]),
+            ("edema_t2_half", self.edema_t2_half_adapter(images[:, 1:2], availability[:, 1], skips[1].shape[-3:])),
+            ("edema_c0_half", self.edema_c0_gate() * self.edema_c0_half_adapter(images[:, 2:3], availability[:, 2], skips[1].shape[-3:])),
+            ("edema_lge_half", self.edema_lge_gate() * self.edema_lge_half_adapter(images[:, 0:1], availability[:, 0], skips[1].shape[-3:])),
         ]
-        edema_full_items: list[torch.Tensor] = [
-            torch.zeros_like(components["edema_injury"]) if disable_edema_injury else components["edema_injury"],
-            torch.zeros_like(components["edema_boundary"]) if disable_edema_boundary else components["edema_boundary"],
-            torch.zeros_like(components["edema_context"]) if disable_edema_context else components["edema_context"],
-            torch.zeros_like(components["edema_dilation_1"]) if disable_edema_context else components["edema_dilation_1"],
-            torch.zeros_like(components["edema_dilation_2"]) if disable_edema_context else components["edema_dilation_2"],
-            torch.zeros_like(components["edema_dilation_4"]) if disable_edema_context else components["edema_dilation_4"],
-            anatomy_context["p_wall_union"],
-            anatomy_context["p_lv"],
-            anatomy_context["p_rv"],
-            anatomy_context["signed_endo_distance"],
-            anatomy_context["signed_epi_distance"],
-            anatomy_context["wall_depth_rho"],
-            self.edema_t2_adapter(images[:, 1:2], availability[:, 1], skips[0].shape[-3:]).mean(dim=1, keepdim=True),
-            self.edema_c0_gate() * self.edema_c0_adapter(images[:, 2:3], availability[:, 2], skips[0].shape[-3:]).mean(dim=1, keepdim=True),
-            self.edema_lge_gate() * self.edema_lge_adapter(images[:, 0:1], availability[:, 0], skips[0].shape[-3:]).mean(dim=1, keepdim=True),
+        edema_full_items: list[tuple[str, torch.Tensor]] = [
+            ("edema_injury", torch.zeros_like(components["edema_injury"]) if disable_edema_injury else components["edema_injury"]),
+            ("edema_boundary", torch.zeros_like(components["edema_boundary"]) if disable_edema_boundary else components["edema_boundary"]),
+            ("edema_context", torch.zeros_like(components["edema_context"]) if disable_edema_context else components["edema_context"]),
+            ("edema_dilation_1", torch.zeros_like(components["edema_dilation_1"]) if disable_edema_context else components["edema_dilation_1"]),
+            ("edema_dilation_2", torch.zeros_like(components["edema_dilation_2"]) if disable_edema_context else components["edema_dilation_2"]),
+            ("edema_dilation_4", torch.zeros_like(components["edema_dilation_4"]) if disable_edema_context else components["edema_dilation_4"]),
+            ("p_wall_union", anatomy_context["p_wall_union"]),
+            ("p_lv", anatomy_context["p_lv"]),
+            ("p_rv", anatomy_context["p_rv"]),
+            ("signed_endo_distance", anatomy_context["signed_endo_distance"]),
+            ("signed_epi_distance", anatomy_context["signed_epi_distance"]),
+            ("wall_depth_rho", anatomy_context["wall_depth_rho"]),
+            ("edema_t2_full", self.edema_t2_full_adapter(images[:, 1:2], availability[:, 1], skips[0].shape[-3:])),
+            ("edema_c0_full", self.edema_c0_gate() * self.edema_c0_full_adapter(images[:, 2:3], availability[:, 2], skips[0].shape[-3:])),
+            ("edema_lge_full", self.edema_lge_gate() * self.edema_lge_full_adapter(images[:, 0:1], availability[:, 0], skips[0].shape[-3:])),
         ]
 
-        evidence_channels = int(self.scar_branch.half_projection.proj.in_channels)
-        scar_half_evidence = _concat_to_channels(scar_half_items, skips[1].shape[-3:], evidence_channels)
-        scar_full_evidence = _concat_to_channels(scar_full_items, skips[0].shape[-3:], evidence_channels)
-        edema_half_evidence = _concat_to_channels(edema_half_items, skips[1].shape[-3:], evidence_channels)
-        edema_full_evidence = _concat_to_channels(edema_full_items, skips[0].shape[-3:], evidence_channels)
+        scar_half_evidence = _concat_named_evidence(scar_half_items, skips[1].shape[-3:], self.scar_branch.half_projection.proj.in_channels, "scar_half")
+        scar_full_evidence = _concat_named_evidence(scar_full_items, skips[0].shape[-3:], self.scar_branch.full_projection.proj.in_channels, "scar_full")
+        edema_half_evidence = _concat_named_evidence(edema_half_items, skips[1].shape[-3:], self.edema_branch.half_projection.proj.in_channels, "edema_half")
+        edema_full_evidence = _concat_named_evidence(edema_full_items, skips[0].shape[-3:], self.edema_branch.full_projection.proj.in_channels, "edema_full")
 
         scar = self.scar_branch(quarter, skips, scar_half_evidence, scar_full_evidence, disable_evidence=disable_all_evidence)
         edema = self.edema_branch(quarter, skips, edema_half_evidence, edema_full_evidence, disable_evidence=disable_all_evidence)
@@ -627,6 +720,8 @@ class CAREASE(nn.Module):
             "skips": skips,
             "low_mid_decoder_features": low_mid,
             "shared_quarter_feature": quarter,
+            "anatomy": anatomy,
+            "auxiliary_half_feature": half_seed,
             "components": components,
             "scar": scar,
             "edema": edema,
@@ -634,6 +729,7 @@ class CAREASE(nn.Module):
             "z_pure_edema": z_edema,
             "availability": availability,
             "extent_wall_ramp_value": torch.tensor(self.extent_wall_ramp(global_step), device=images.device),
+            "pathology_deep_supervision_weights": dict(self.pathology_deep_supervision_weights),
             "normal_forward_reads_stock_pathology_logits": False,
         }
 
@@ -651,7 +747,8 @@ class CAREASE(nn.Module):
         scar_diff = (final[:, 5:6] - stock_logits[:, 5:6]).abs()
         edema_diff = (final[:, 4:5] - stock_logits[:, 4:5] * availability[:, 1:2].view(-1, 1, 1, 1, 1)).abs()
         anatomy_diff = (final[:, :4] - stock_logits[:, :4]).abs()
-        changed = int((final.argmax(1) != stock_logits.argmax(1)).sum().item())
+        conditional_stock = torch.cat([stock_logits[:, :4], stock_logits[:, 4:5] * availability[:, 1:2].view(-1, 1, 1, 1, 1), stock_logits[:, 5:6]], dim=1)
+        changed = int((final.argmax(1) != conditional_stock.argmax(1)).sum().item())
         return {
             "status": "PASS" if float(max(scar_diff.max(), edema_diff.max(), anatomy_diff.max()).item()) <= 1.0e-6 else "FAIL",
             "fold": int(self.config.fold),
@@ -667,6 +764,8 @@ class CAREASE(nn.Module):
             "step0_edema_logit_parity_vs_stock_class4_max_abs_error": float(edema_diff.max().item()),
             "compatibility_argmax_changed_voxels": changed,
             "normal_forward_reads_stock_pathology_logits": False,
+            "single_shared_low_mid_decoder_forward": True,
+            "auxiliary_half_feature_source": "dedicated_quarter_to_half_auxiliary_tower",
             "clone_decoder_stage_indices": [4, 5],
             "split_before_highest_decoder_resolutions": 2,
         }
@@ -702,15 +801,16 @@ def _slice_extent_summary(
     return presence, area, wall_slice
 
 
-def _concat_to_channels(items: Iterable[torch.Tensor], spatial_shape: tuple[int, int, int], channels: int) -> torch.Tensor:
-    resized = [F.interpolate(item, size=spatial_shape, mode="trilinear", align_corners=False) for item in items]
+def _concat_named_evidence(items: Iterable[tuple[str, torch.Tensor]], spatial_shape: tuple[int, int, int], channels: int, schema_name: str) -> torch.Tensor:
+    resized = [F.interpolate(item, size=spatial_shape, mode="trilinear", align_corners=False) for _name, item in items]
     merged = torch.cat(resized, dim=1)
-    if merged.shape[1] == channels:
-        return merged
-    if merged.shape[1] > channels:
-        return merged[:, :channels]
-    pad = merged.new_zeros((merged.shape[0], channels - merged.shape[1], *merged.shape[-3:]))
-    return torch.cat([merged, pad], dim=1)
+    if merged.shape[1] != channels:
+        names = [name for name, _tensor in items]
+        raise RuntimeError(
+            f"CARE-ASE evidence schema {schema_name} channel mismatch: "
+            f"declared_names={names} observed_channels={merged.shape[1]} projection_in_channels={channels}"
+        )
+    return merged
 
 
 def build_care_ase_for_fold(fold: int, *, map_location: str | torch.device = "cpu") -> CAREASE:
