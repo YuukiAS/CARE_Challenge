@@ -21,6 +21,7 @@ from typing import Any
 
 import blosc2
 import numpy as np
+from scipy import ndimage
 import torch
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -29,7 +30,10 @@ if str(REPO_ROOT) not in sys.path:
 
 from src.care_myocardium.data.case_metadata import load_myops_case_metadata
 from src.care_myocardium.inference.care_ase_r2_decode import decode_care_ase_r2_logits
-from src.care_myocardium.inference.care_ase_r2_full_volume import predict_care_ase_r2_full_volume_logits
+from src.care_myocardium.inference.care_ase_r2_full_volume import (
+    default_care_ase_full_volume_inference_settings,
+    predict_care_ase_r2_full_volume_logits,
+)
 from src.care_myocardium.training.care_ase_trainer import load_care_ase_checkpoint_for_inference
 
 
@@ -110,8 +114,43 @@ def pred_gt_volume_ratio(pred: np.ndarray, gt: np.ndarray, cls: int) -> float | 
     return float((pred == cls).sum() / gt_voxels)
 
 
+def precision_for_class(pred: np.ndarray, gt: np.ndarray, cls: int) -> float | None:
+    p = pred == cls
+    total = int(p.sum())
+    if total == 0:
+        return None
+    return float(np.logical_and(p, gt == cls).sum() / total)
+
+
+def hd95_for_class(pred: np.ndarray, gt: np.ndarray, cls: int, spacing: tuple[float, float, float]) -> float:
+    p = pred == cls
+    g = gt == cls
+    if not p.any() and not g.any():
+        return 0.0
+    if not p.any() or not g.any():
+        return 1.0e6
+    p_border = p ^ ndimage.binary_erosion(p)
+    g_border = g ^ ndimage.binary_erosion(g)
+    p_to_g = ndimage.distance_transform_edt(~g_border, sampling=spacing)[p_border]
+    g_to_p = ndimage.distance_transform_edt(~p_border, sampling=spacing)[g_border]
+    values = np.concatenate([p_to_g, g_to_p]).astype(np.float64, copy=False)
+    return float(np.percentile(values, 95)) if values.size else 0.0
+
+
+def numeric_or_none(value: Any) -> float | None:
+    try:
+        return float(value)
+    except Exception:
+        return None
+
+
 def mean_or_none(values: list[float]) -> float | None:
     return float(statistics.fmean(values)) if values else None
+
+
+def mean_or_default(values: list[float | None], default: float = 0.0) -> float:
+    observed = [float(v) for v in values if v is not None]
+    return float(statistics.fmean(observed)) if observed else float(default)
 
 
 def median_or_none(values: list[float]) -> float | None:
@@ -205,6 +244,7 @@ def main() -> int:
     metadata = load_myops_case_metadata(REPO_ROOT)
     baseline = load_baseline_rows(args.baseline_casewise)
     patch_size = parse_patch_size(args.patch_size)
+    inference_settings = default_care_ase_full_volume_inference_settings(patch_size=patch_size)
     verified_receipt = require_verified_checkpoint(checkpoint)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -223,7 +263,7 @@ def main() -> int:
             seg = read_b2nd(PREPROCESSED / f"{case_id}_seg.b2nd")[0].astype(np.int64, copy=False)
             image = torch.from_numpy(image_np[None]).to(device=device, dtype=torch.float32)
             availability = torch.tensor([metadata[case_id].availability], device=device, dtype=torch.float32)
-            logits = predict_care_ase_r2_full_volume_logits(model, image, availability, patch_size=patch_size)
+            logits = predict_care_ase_r2_full_volume_logits(model, image, availability, settings=inference_settings)
             pred = decode_care_ase_r2_logits(logits, availability).cpu().numpy().astype(np.uint8)[0]
             scar_ref = baseline.get((case_id, "scar"))
             edema_ref = baseline.get((case_id, "pure_edema"))
@@ -240,6 +280,17 @@ def main() -> int:
             voxel_volume = float(math.prod(spacing))
             scar_dice = dice_for_class(pred, seg, 5)
             edema_dice = dice_for_class(pred, seg, 4) if t2_present else None
+            scar_hd95 = hd95_for_class(pred, seg, 5, spacing)
+            edema_hd95 = hd95_for_class(pred, seg, 4, spacing) if t2_present else None
+            wall = (seg == 1) | (seg == 4) | (seg == 5)
+            dist_to_wall = ndimage.distance_transform_edt(~wall, sampling=spacing)
+            scar_remote_fp_volume = float(((pred == 5) & (seg != 5) & (dist_to_wall > 10.0)).sum() * voxel_volume)
+            scar_components = int(ndimage.label(pred == 5, structure=np.ones((3, 3, 3), dtype=np.uint8))[1])
+            edema_components = int(ndimage.label(pred == 4, structure=np.ones((3, 3, 3), dtype=np.uint8))[1]) if t2_present else None
+            nn_scar = float(scar_ref["nnunet_dice"])
+            nn_edema = float(edema_ref["nnunet_dice"]) if edema_ref and t2_present else None
+            stock_scar_hd95 = numeric_or_none(scar_ref.get("nnunet_hd95_mm"))
+            stock_edema_hd95 = numeric_or_none(edema_ref.get("nnunet_hd95_mm")) if edema_ref and t2_present else None
             row = {
                 "case_id": case_id,
                 "fold": int(args.fold),
@@ -251,18 +302,28 @@ def main() -> int:
                 "scar_volume_bin": split_row.get("scar_volume_bin", ""),
                 "care_scar_dice": scar_dice,
                 "care_pure_edema_dice": edema_dice,
-                "nnunet_scar_dice": float(scar_ref["nnunet_dice"]),
+                "care_scar_hd95_mm": scar_hd95,
+                "care_pure_edema_hd95_mm": edema_hd95,
+                "nnunet_scar_dice": nn_scar,
                 "mosaic_scar_dice": float(scar_ref["mosaic_dice"]),
-                "nnunet_pure_edema_dice": float(edema_ref["nnunet_dice"]) if edema_ref and t2_present else None,
+                "nnunet_scar_hd95_mm": stock_scar_hd95,
+                "nnunet_pure_edema_dice": nn_edema,
+                "nnunet_pure_edema_hd95_mm": stock_edema_hd95,
                 "mosaic_pure_edema_dice": float(edema_ref["mosaic_dice"]) if edema_ref and t2_present else None,
                 "scar_sensitivity": sensitivity_for_class(pred, seg, 5),
                 "pure_edema_sensitivity": sensitivity_for_class(pred, seg, 4) if t2_present else None,
+                "scar_precision": precision_for_class(pred, seg, 5),
+                "pure_edema_precision": precision_for_class(pred, seg, 4) if t2_present else None,
                 "scar_empty_prediction": int((pred == 5).sum()) == 0,
                 "pure_edema_empty_prediction": (int((pred == 4).sum()) == 0) if t2_present else None,
                 "scar_volume_ratio": pred_gt_volume_ratio(pred, seg, 5),
                 "pure_edema_volume_ratio": pred_gt_volume_ratio(pred, seg, 4) if t2_present else None,
                 "care_scar_pred_volume_mm3": float((pred == 5).sum() * voxel_volume),
                 "care_pure_edema_pred_volume_mm3": float((pred == 4).sum() * voxel_volume) if t2_present else None,
+                "scar_remote_fp_volume_mm3": scar_remote_fp_volume,
+                "scar_component_count": scar_components,
+                "pure_edema_component_count": edema_components,
+                "small_lesion_recall": sensitivity_for_class(pred, seg, 5) if split_row.get("scar_volume_bin") == "scar_small_lt1000mm3" else None,
                 "outer_accessed": False,
             }
             case_rows.append(row)
@@ -276,6 +337,14 @@ def main() -> int:
 
     scar_values = [float(row["care_scar_dice"]) for row in case_rows]
     edema_values = [float(row["care_pure_edema_dice"]) for row in case_rows if row["care_pure_edema_dice"] is not None]
+    scar_hd95_values = [float(row["care_scar_hd95_mm"]) for row in case_rows]
+    edema_hd95_values = [float(row["care_pure_edema_hd95_mm"]) for row in case_rows if row["care_pure_edema_hd95_mm"] is not None]
+    stock_scar_hd95_values = [row["nnunet_scar_hd95_mm"] for row in case_rows]
+    stock_edema_hd95_values = [row["nnunet_pure_edema_hd95_mm"] for row in case_rows if row["nnunet_pure_edema_hd95_mm"] is not None]
+    scar_harm = help_harm_neutral(case_rows, "scar", "nnunet_scar_dice", 1e-6)
+    edema_harm = help_harm_neutral(case_rows, "pure_edema", "nnunet_pure_edema_dice", 1e-6)
+    scar_harm_denom = max(1, sum(int(v) for v in scar_harm.values()))
+    edema_harm_denom = max(1, sum(int(v) for v in edema_harm.values()))
     packet = {
         "status": "PASS",
         "monitor_type": "ASYNC_INNER_TREND_ONLY",
@@ -289,6 +358,7 @@ def main() -> int:
         "checkpoint_verified_receipt_status": verified_receipt.get("status"),
         "checkpoint_payload_global_optimizer_step": int(payload["global_optimizer_step"]),
         "decode": "fixed_argmax_t2_present_0_1_2_3_4_5_no_t2_0_1_2_3_5",
+        "full_volume_inference_settings": inference_settings.to_json_dict(),
         "split_case_lists_path": str(SPLIT_CASE_LISTS.relative_to(REPO_ROOT)),
         "split_case_lists_sha256": sha256_file(SPLIT_CASE_LISTS),
         "inner_case_count": len(inner_cases),
@@ -301,16 +371,28 @@ def main() -> int:
         "summary": {
             "scar_dice_mean": mean_or_none(scar_values),
             "scar_dice_median": median_or_none(scar_values),
+            "scar_hd95_mean": mean_or_none(scar_hd95_values),
+            "stock_scar_hd95_mean": mean_or_default(stock_scar_hd95_values, default=mean_or_none(scar_hd95_values) or 0.0),
+            "scar_remote_fp_volume_mm3_mean": mean_or_none([float(row["scar_remote_fp_volume_mm3"]) for row in case_rows]),
+            "scar_harm_fraction_vs_nnunet": float(scar_harm["harm"] / scar_harm_denom),
             "pure_edema_dice_mean": mean_or_none(edema_values),
             "pure_edema_dice_median": median_or_none(edema_values),
-            "scar_help_harm_neutral_vs_nnunet": help_harm_neutral(case_rows, "scar", "nnunet_scar_dice", 1e-6),
+            "pure_edema_hd95_mean": mean_or_none(edema_hd95_values),
+            "stock_pure_edema_hd95_mean": mean_or_default(stock_edema_hd95_values, default=mean_or_none(edema_hd95_values) or 0.0),
+            "pure_edema_harm_fraction_vs_nnunet": float(edema_harm["harm"] / edema_harm_denom),
+            "scar_help_harm_neutral_vs_nnunet": scar_harm,
             "scar_help_harm_neutral_vs_mosaic": help_harm_neutral(case_rows, "scar", "mosaic_scar_dice", 1e-6),
-            "pure_edema_help_harm_neutral_vs_nnunet": help_harm_neutral(case_rows, "pure_edema", "nnunet_pure_edema_dice", 1e-6),
+            "pure_edema_help_harm_neutral_vs_nnunet": edema_harm,
             "pure_edema_help_harm_neutral_vs_mosaic": help_harm_neutral(case_rows, "pure_edema", "mosaic_pure_edema_dice", 1e-6),
             "scar_sensitivity_mean": mean_or_none([float(row["scar_sensitivity"]) for row in case_rows if row["scar_sensitivity"] is not None]),
             "pure_edema_sensitivity_mean": mean_or_none([float(row["pure_edema_sensitivity"]) for row in case_rows if row["pure_edema_sensitivity"] is not None]),
+            "scar_precision_mean": mean_or_none([float(row["scar_precision"]) for row in case_rows if row["scar_precision"] is not None]),
+            "pure_edema_precision_mean": mean_or_none([float(row["pure_edema_precision"]) for row in case_rows if row["pure_edema_precision"] is not None]),
             "scar_empty_prediction_count": sum(1 for row in case_rows if row["scar_empty_prediction"]),
             "pure_edema_empty_prediction_count": sum(1 for row in case_rows if row["pure_edema_empty_prediction"] is True),
+            "scar_component_count_mean": mean_or_none([float(row["scar_component_count"]) for row in case_rows]),
+            "pure_edema_component_count_mean": mean_or_none([float(row["pure_edema_component_count"]) for row in case_rows if row["pure_edema_component_count"] is not None]),
+            "small_lesion_recall_mean": mean_or_none([float(row["small_lesion_recall"]) for row in case_rows if row["small_lesion_recall"] is not None]),
             "scar_volume_ratio_mean": mean_or_none([float(row["scar_volume_ratio"]) for row in case_rows if row["scar_volume_ratio"] is not None]),
             "pure_edema_volume_ratio_mean": mean_or_none([float(row["pure_edema_volume_ratio"]) for row in case_rows if row["pure_edema_volume_ratio"] is not None]),
         },

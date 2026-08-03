@@ -307,6 +307,7 @@ def per_slice_extent_loss(
     target_wall_voxels: torch.Tensor,
     case_valid: torch.Tensor | None,
     valid_spatial_mask: torch.Tensor | None = None,
+    area_case_valid: torch.Tensor | None = None,
 ) -> tuple[torch.Tensor, torch.Tensor]:
     """Per-z presence BCE and wall-denominator-valid area SmoothL1."""
 
@@ -342,6 +343,19 @@ def per_slice_extent_loss(
         if valid_z.shape[-1] != target_presence_z.shape[-1]:
             valid_z = _downsample_slice_presence_any(valid_z, int(target_presence_z.shape[-1]))
         case_mask = case_mask * (valid_z > 0).to(case_mask)
+    if area_case_valid is None:
+        area_case_mask = case_mask
+    else:
+        raw_area = area_case_valid.float().to(target_presence_z)
+        if raw_area.ndim <= 1:
+            area_case_mask = raw_area.view(-1, 1, 1)
+        else:
+            area_case_mask = raw_area.reshape(raw_area.shape[0], -1, raw_area.shape[-1])
+            if area_case_mask.shape[1] != 1:
+                area_case_mask = area_case_mask[:, :1]
+        if area_case_mask.shape[-1] != target_presence_z.shape[-1]:
+            area_case_mask = _downsample_slice_presence_any(area_case_mask, int(target_presence_z.shape[-1]))
+        area_case_mask = area_case_mask * case_mask
     device_type = pred_presence.device.type
     with torch.amp.autocast(device_type=device_type, enabled=False):
         pred_presence_fp32 = pred_presence.float().clamp(1.0e-6, 1.0 - 1.0e-6)
@@ -349,7 +363,7 @@ def per_slice_extent_loss(
         case_mask_fp32 = case_mask.float()
         presence_raw = F.binary_cross_entropy(pred_presence_fp32, target_presence_fp32, reduction="none")
         presence = (presence_raw * case_mask_fp32).sum() / case_mask_fp32.sum().clamp_min(1.0)
-        area_mask = case_mask_fp32 * target_area_valid_z.float()
+        area_mask = area_case_mask.float() * target_area_valid_z.float()
         area_raw = F.smooth_l1_loss(pred_area.float(), target_area_z.float(), reduction="none")
         area = (area_raw * area_mask).sum() / area_mask.sum().clamp_min(1.0)
     return presence, area
@@ -689,6 +703,22 @@ def build_care_ase_targets(target: torch.Tensor, availability: torch.Tensor, out
             )
         else:
             stacked["extent_supervision_valid_by_output_z"] = torch.ones_like(stacked["scar_slice_presence"])
+        if "extent_presence_valid_by_output_z" in cache:
+            stacked["extent_presence_valid_by_output_z"] = _ensure_batch_channel(
+                cache["extent_presence_valid_by_output_z"],
+                channel=True,
+                dtype=torch.float32,
+            )
+        else:
+            stacked["extent_presence_valid_by_output_z"] = stacked["extent_supervision_valid_by_output_z"]
+        if "extent_area_valid_by_output_z" in cache:
+            stacked["extent_area_valid_by_output_z"] = _ensure_batch_channel(
+                cache["extent_area_valid_by_output_z"],
+                channel=True,
+                dtype=torch.float32,
+            )
+        else:
+            stacked["extent_area_valid_by_output_z"] = stacked["extent_supervision_valid_by_output_z"]
         stacked["valid_label_mask"] = _ensure_batch_channel(cache.get("valid_label_mask", (target >= 0).float()), channel=True, dtype=torch.float32)
         stacked["availability"] = availability
         stacked["target_builder_provenance"] = "full_case_target_cache"
@@ -908,8 +938,9 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor], *, co
         built_targets["scar_slice_presence"],
         built_targets["scar_slice_pathology_voxels"],
         built_targets["scar_slice_wall_voxels"],
-        built_targets.get("extent_supervision_valid_by_output_z"),
+        built_targets.get("extent_presence_valid_by_output_z", built_targets.get("extent_supervision_valid_by_output_z")),
         built_targets["valid_label_mask"],
+        built_targets.get("extent_area_valid_by_output_z", built_targets.get("extent_supervision_valid_by_output_z")),
     )
     edema_presence, edema_area = per_slice_extent_loss(
         components["edema_extent_presence"],
@@ -918,8 +949,9 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor], *, co
         built_targets["edema_slice_presence"],
         built_targets["edema_slice_pathology_voxels"],
         built_targets["edema_slice_wall_voxels"],
-        built_targets.get("extent_supervision_valid_by_output_z", torch.ones_like(built_targets["edema_slice_presence"])) * availability[:, 1:2].view(-1, 1, 1),
+        built_targets.get("extent_presence_valid_by_output_z", built_targets.get("extent_supervision_valid_by_output_z", torch.ones_like(built_targets["edema_slice_presence"]))) * availability[:, 1:2].view(-1, 1, 1),
         built_targets["valid_label_mask"],
+        built_targets.get("extent_area_valid_by_output_z", built_targets.get("extent_supervision_valid_by_output_z", torch.ones_like(built_targets["edema_slice_presence"]))) * availability[:, 1:2].view(-1, 1, 1),
     )
     scar_context_target = _downsample_target(built_targets["scar_context_target"].unsqueeze(1), components["scar_context"].shape[-3:]).squeeze(1)
     edema_context_target = _downsample_target(built_targets["edema_context_target"].unsqueeze(1), components["edema_context"].shape[-3:]).squeeze(1)

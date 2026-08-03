@@ -133,6 +133,9 @@ _TARGET_SEGMENTATION_KEYS = (
     "edema_context_target",
     "edema_boundary_valid",
     "valid_label_mask",
+    "source_z_id",
+    "source_z_valid",
+    "source_inplane_footprint",
 )
 
 
@@ -1018,10 +1021,8 @@ def _recompute_augmented_physical_targets(target_cache_patch: dict[str, np.ndarr
     target_cache_patch["edema_context_target"] = _context_target_numpy(seg_clean, edema=True, spacing=spacing)
     target_cache_patch.update(boundary)
     existing_center = target_cache_patch.get("scar_center_fullres")
-    existing_center_arr = np.asarray(existing_center, dtype=np.float32) if existing_center is not None else np.asarray([], dtype=np.float32)
-    existing_center_max = float(existing_center_arr.max()) if existing_center_arr.size else 0.0
-    if existing_center is None or existing_center_max <= 0.0:
-        target_cache_patch["scar_center_fullres"] = _component_center_heatmap(seg_clean, 5, tuple(int(v) for v in seg_clean.shape), spacing)
+    if existing_center is None:
+        target_cache_patch["scar_center_fullres"] = np.zeros_like(seg_clean, dtype=np.float32)
     target_cache_patch["valid_label_mask"] = valid.astype(np.float32)
 
 
@@ -1045,7 +1046,7 @@ def _unpack_transformed_target_cache(
     for key, value in zip(_TARGET_REGRESSION_KEYS, regression):
         out[key] = np.asarray(value, dtype=np.float32)
     for key, value in zip(_TARGET_SEGMENTATION_KEYS, segmentation):
-        if key.endswith("_target") or key == "scar_component_id":
+        if key.endswith("_target") or key in {"scar_component_id", "source_z_id"}:
             out[key] = np.rint(value).astype(np.int64, copy=False)
         else:
             out[key] = (np.asarray(value) > 0.5).astype(np.float32, copy=False)
@@ -1180,6 +1181,26 @@ def make_batch(
         _FULL_CASE_TARGET_CACHE_BY_CASE.move_to_end(cache_key)
     component_metadata = _component_metadata_from_full_case(full_case_targets)
     initial_target_cache_patch = slice_full_case_target_cache(full_case_targets, center=center, patch_size=initial_patch_size)
+    initial_source_z = np.zeros(tuple(int(v) for v in initial_patch_size), dtype=np.int64)
+    initial_source_z_valid = np.zeros(tuple(int(v) for v in initial_patch_size), dtype=np.float32)
+    initial_source_inplane_footprint = np.zeros(tuple(int(v) for v in initial_patch_size), dtype=np.float32)
+    for local_z in range(int(initial_patch_size[0])):
+        source_z = int(initial_origin[0]) + int(local_z)
+        if 0 <= source_z < full_case_shape[0]:
+            initial_source_z[local_z, :, :] = source_z + 1
+            initial_source_z_valid[local_z, :, :] = 1.0
+    y0, x0 = int(initial_origin[1]), int(initial_origin[2])
+    for local_y in range(int(initial_patch_size[1])):
+        source_y = y0 + int(local_y)
+        if not (0 <= source_y < full_case_shape[1]):
+            continue
+        for local_x in range(int(initial_patch_size[2])):
+            source_x = x0 + int(local_x)
+            if 0 <= source_x < full_case_shape[2]:
+                initial_source_inplane_footprint[:, local_y, local_x] = 1.0
+    initial_target_cache_patch["source_z_id"] = initial_source_z
+    initial_target_cache_patch["source_z_valid"] = initial_source_z_valid
+    initial_target_cache_patch["source_inplane_footprint"] = initial_source_inplane_footprint
     if stock_transform is not None:
         regression_patch, segmentation_patch, untouched_cache = _pack_target_cache_for_transform(initial_target_cache_patch)
         final_image, final_seg, transformed_regression, transformed_segmentation = apply_stock_training_transform_with_targets(
@@ -1194,32 +1215,51 @@ def make_batch(
         if transformed_regression is None or transformed_segmentation is None:
             raise RuntimeError("stock augmentation did not return transformed CARE-ASE target maps")
         target_cache_patch = _unpack_transformed_target_cache(transformed_regression, transformed_segmentation, untouched_cache)
-        final_z = int(final_seg.shape[-3])
-        final_source_z, final_source_z_valid = source_z_mapping(origin_z=initial_origin[0], output_z=final_z, full_z=full_case_shape[0])
+        source_z_id = np.asarray(target_cache_patch["source_z_id"], dtype=np.int64)
+        source_z_valid_map = np.asarray(target_cache_patch["source_z_valid"], dtype=np.float32) > 0.5
+        footprint = np.asarray(target_cache_patch["source_inplane_footprint"], dtype=np.float32) > 0.5
+        final_source_z = []
+        final_source_z_valid = []
+        full_hw_coverage_by_z = []
+        full_hw_area = int(full_case_shape[1]) * int(full_case_shape[2])
+        for z_idx in range(int(source_z_id.shape[0])):
+            ids = source_z_id[z_idx][source_z_valid_map[z_idx] & (source_z_id[z_idx] > 0)]
+            if ids.size:
+                values, counts = np.unique(ids, return_counts=True)
+                source_z = int(values[int(np.argmax(counts))]) - 1
+                valid_z = 0 <= source_z < full_case_shape[0]
+            else:
+                source_z = -1
+                valid_z = False
+            final_source_z.append(source_z)
+            final_source_z_valid.append(bool(valid_z))
+            full_hw_coverage_by_z.append(bool(valid_z and full_hw_coverage and int(footprint[z_idx].sum()) >= full_hw_area))
     else:
         final_image = crop_or_pad(initial_image, tuple(v // 2 for v in initial_patch_size), final_patch_size, pad_value=0)
         final_seg = crop_or_pad(initial_seg[None], tuple(v // 2 for v in initial_patch_size), final_patch_size, pad_value=-1)[0]
         target_cache_patch = slice_full_case_target_cache(full_case_targets, center=center, patch_size=final_patch_size)
         final_source_z, final_source_z_valid = source_z_mapping(origin_z=patch_origin(center, final_patch_size)[0], output_z=int(final_seg.shape[-3]), full_z=full_case_shape[0])
+        full_hw_coverage_by_z = [bool(full_hw_coverage and valid) for valid in final_source_z_valid]
     _recompute_augmented_physical_targets(target_cache_patch, final_seg, spacing)
     _apply_component_metadata_lookup(target_cache_patch, component_metadata)
-    extent_valid_z = np.asarray([bool(v) and bool(full_hw_coverage) for v in final_source_z_valid], dtype=np.float32)
+    extent_presence_valid_z = np.asarray([bool(v) for v in final_source_z_valid], dtype=np.float32)
+    extent_area_valid_z = np.asarray([bool(v) for v in full_hw_coverage_by_z], dtype=np.float32)
     for key in (
         "scar_slice_presence",
-        "scar_slice_area",
-        "scar_slice_area_valid",
         "scar_slice_pathology_voxels",
         "scar_slice_wall_voxels",
         "edema_slice_presence",
-        "edema_slice_area",
-        "edema_slice_area_valid",
         "edema_slice_pathology_voxels",
         "edema_slice_wall_voxels",
     ):
         target_cache_patch[key] = _slice_profile_by_source_z(np.asarray(full_case_targets[key]), final_source_z, final_source_z_valid)
-    target_cache_patch["extent_supervision_valid_by_output_z"] = extent_valid_z
+    for key in ("scar_slice_area", "scar_slice_area_valid", "edema_slice_area", "edema_slice_area_valid"):
+        target_cache_patch[key] = _slice_profile_by_source_z(np.asarray(full_case_targets[key]), final_source_z, final_source_z_valid) * extent_area_valid_z
+    target_cache_patch["extent_presence_valid_by_output_z"] = extent_presence_valid_z
+    target_cache_patch["extent_area_valid_by_output_z"] = extent_area_valid_z
+    target_cache_patch["extent_supervision_valid_by_output_z"] = extent_area_valid_z
     extent_valid_mask = (np.asarray(final_seg) >= 0).astype(np.float32)
-    extent_valid_mask = extent_valid_mask * extent_valid_z.reshape(-1, 1, 1)
+    extent_valid_mask = extent_valid_mask * extent_area_valid_z.reshape(-1, 1, 1)
     return {
         "image": torch.from_numpy(final_image[None]).to(device=device, dtype=torch.float32),
         "seg": torch.from_numpy(final_seg[None]).to(device=device, dtype=torch.long),
@@ -1231,8 +1271,10 @@ def make_batch(
         "final_patch_source_z_indices": tuple(int(v) for v in final_source_z),
         "final_patch_source_z_valid": tuple(bool(v) for v in final_source_z_valid),
         "augmentation_z_mapping": "dummy_2d_no_z_mixing_source_z_indices" if stock_transform is not None else "center_crop_no_z_mixing_source_z_indices",
-        "full_hw_coverage_by_output_z": tuple(bool(full_hw_coverage and valid) for valid in final_source_z_valid),
-        "extent_supervision_valid_by_output_z": tuple(bool(v) for v in extent_valid_z),
+        "full_hw_coverage_by_output_z": tuple(bool(v) for v in full_hw_coverage_by_z),
+        "extent_presence_valid_by_output_z": tuple(bool(v) for v in extent_presence_valid_z),
+        "extent_area_valid_by_output_z": tuple(bool(v) for v in extent_area_valid_z),
+        "extent_supervision_valid_by_output_z": tuple(bool(v) for v in extent_area_valid_z),
         "focused_coordinate_zyx": tuple(int(v) for v in center),
         "stock_transform_applied": stock_transform is not None,
         "augmentation_seed": int(getattr(descriptor, "augmentation_seed", 0)),

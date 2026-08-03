@@ -17,9 +17,15 @@ from typing import Any
 ALLOWED_STEPS = (4000, 6000, 8000, 10000, 12000, 14000)
 REQUIRED_SUMMARY_FIELDS = (
     "scar_dice_mean",
+    "scar_hd95_mean",
+    "stock_scar_hd95_mean",
+    "scar_remote_fp_volume_mm3_mean",
+    "scar_harm_fraction_vs_nnunet",
     "pure_edema_dice_mean",
-    "help_harm_vs_nnunet",
-    "help_harm_vs_mosaic",
+    "pure_edema_sensitivity_mean",
+    "pure_edema_volume_ratio_mean",
+    "pure_edema_hd95_mean",
+    "stock_pure_edema_hd95_mean",
 )
 
 
@@ -46,11 +52,27 @@ def load_packet(path: Path) -> dict[str, Any]:
 def score_packet(payload: dict[str, Any]) -> dict[str, float]:
     summary = payload["summary"]
     scar = float(summary["scar_dice_mean"])
+    scar_hd95 = float(summary["scar_hd95_mean"])
+    stock_scar_hd95 = float(summary["stock_scar_hd95_mean"])
+    remote_fp = float(summary["scar_remote_fp_volume_mm3_mean"])
+    harm_fraction = float(summary["scar_harm_fraction_vs_nnunet"])
     edema = float(summary["pure_edema_dice_mean"])
-    nn = summary["help_harm_vs_nnunet"]
-    mosaic = summary["help_harm_vs_mosaic"]
-    scar_score = scar + 0.01 * float(nn.get("scar", {}).get("help", 0) - nn.get("scar", {}).get("harm", 0))
-    edema_score = edema + 0.01 * float(mosaic.get("pure_edema", {}).get("help", 0) - mosaic.get("pure_edema", {}).get("harm", 0))
+    edema_sens = float(summary["pure_edema_sensitivity_mean"])
+    edema_ratio = float(summary["pure_edema_volume_ratio_mean"])
+    edema_hd95 = float(summary["pure_edema_hd95_mean"])
+    stock_edema_hd95 = float(summary["stock_pure_edema_hd95_mean"])
+    scar_score = (
+        scar
+        - 0.002 * max(0.0, scar_hd95 - stock_scar_hd95)
+        - 0.00002 * remote_fp
+        - 0.05 * max(0.0, harm_fraction - 0.35)
+    )
+    edema_score = (
+        edema
+        + 0.20 * edema_sens
+        - 0.05 * abs(edema_ratio - 1.0)
+        - 0.002 * max(0.0, edema_hd95 - stock_edema_hd95)
+    )
     return {
         "scar_score": scar_score,
         "edema_score": edema_score,

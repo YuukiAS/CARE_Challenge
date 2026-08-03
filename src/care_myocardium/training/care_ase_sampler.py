@@ -171,6 +171,13 @@ def _coords(value: dict[str, Any], key: str) -> tuple[tuple[int, int, int], ...]
     return tuple(out)
 
 
+def _case_spacing_from_manifest(manifest_case: dict[str, Any]) -> tuple[float, float, float]:
+    raw = manifest_case.get("preprocessed_spacing", (1.0, 1.0, 1.0)) if isinstance(manifest_case, dict) else (1.0, 1.0, 1.0)
+    if isinstance(raw, (list, tuple)) and len(raw) == 3:
+        return tuple(float(v) for v in raw)
+    return (1.0, 1.0, 1.0)
+
+
 def _hard_negative_category(manifest: dict[str, Any], case_id: str, pathology_focus: str, within_focus: str) -> tuple[str, dict[str, int], tuple[tuple[int, int, int], ...]]:
     cases = manifest.get("cases", {})
     value = cases.get(case_id, {}) if isinstance(cases, dict) else {}
@@ -389,36 +396,45 @@ class CAREASEDeterministicSampler:
         }.get(category)
         if manifest_key:
             coords = _coords(manifest_case, manifest_key) if isinstance(manifest_case, dict) else ()
-            if coords:
-                self._coordinate_cache[cache_key] = coords
-                return coords
+            self._coordinate_cache[cache_key] = coords
+            return coords
         seg = self._case_seg(case_id)
+        spacing = _case_spacing_from_manifest(manifest_case if isinstance(manifest_case, dict) else {})
         wall = (seg == 1) | (seg == 4) | (seg == 5)
         scar = seg == 5
         edema = seg == 4
+        pathology_mask = scar | edema
+        blood = (seg == 2) | (seg == 3)
         lesion = scar if pathology == "scar" else edema
         mask = np.zeros(seg.shape, dtype=bool)
-        if category in {"gt_component", "positive", "oof_fn", "oof_fn_or_low_volume"}:
+        if category in {"gt_component", "positive"}:
             mask = lesion
         elif category == "small_component" and pathology == "scar":
-            labels, count = ndimage.label(scar)
+            labels, count = ndimage.label(scar, structure=np.ones((3, 3, 3), dtype=np.uint8))
             small = np.zeros(seg.shape, dtype=bool)
             for comp_id in range(1, int(count) + 1):
                 comp = labels == comp_id
-                if comp.sum() < 1000:
+                if float(comp.sum() * np.prod(spacing)) < 1000.0:
                     small |= comp
-            mask = small if small.any() else scar
+            mask = small
         elif category in {"boundary"} and pathology == "edema":
             if edema.any() and not edema.all():
-                mask = ndimage.binary_dilation(edema, iterations=2) ^ ndimage.binary_erosion(edema, iterations=1)
+                dist_inside = ndimage.distance_transform_edt(edema, sampling=spacing)
+                dist_outside = ndimage.distance_transform_edt(~edema, sampling=spacing)
+                raw = dist_inside - dist_outside
+                mask = (np.abs(raw) <= 10.0) | edema
             else:
-                mask = edema
+                mask = np.zeros(seg.shape, dtype=bool)
         elif category in {"random_wall", "random"}:
             mask = wall
-        elif category in {"random_background", "background", "remote_background", "oof_fp", "safe_fp"}:
+        elif category in {"random_background", "background"}:
             mask = seg == 0
+        elif category == "remote_background":
+            dist_to_wall = ndimage.distance_transform_edt(~wall, sampling=spacing)
+            mask = (~pathology_mask) & (seg == 0) & (dist_to_wall > 10.0)
         elif category == "blood_pool_adjacent":
-            mask = (seg == 2) | (seg == 3)
+            dist_to_blood = ndimage.distance_transform_edt(~blood, sampling=spacing)
+            mask = (~pathology_mask) & (~blood) & (dist_to_blood <= 3.0)
         coords_np = np.argwhere(mask)
         if coords_np.shape[0] > 4096:
             stride = max(1, coords_np.shape[0] // 4096)

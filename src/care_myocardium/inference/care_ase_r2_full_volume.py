@@ -6,6 +6,7 @@ tiled inference share the same extent semantics.
 
 from __future__ import annotations
 
+from dataclasses import asdict, dataclass
 from itertools import combinations
 from typing import Any
 
@@ -16,6 +17,29 @@ from nnunetv2.inference.sliding_window_prediction import compute_gaussian, compu
 
 from src.care_myocardium.inference.care_ase_r2_decode import decode_care_ase_r2_logits
 from src.care_myocardium.models.care_ase import compute_slice_extent_statistics
+
+
+@dataclass(frozen=True)
+class CAREASEFullVolumeInferenceSettings:
+    patch_size: tuple[int, int, int] = (20, 256, 256)
+    tile_step_size: float = 0.5
+    use_gaussian: bool = True
+    gaussian_sigma_scale: float = 1.0 / 8.0
+    use_mirroring: bool = False
+    allowed_mirror_axes: tuple[int, ...] = ()
+    precision: str = "fp32"
+    padding_mode: str = "constant_zero_symmetric_pad_nd_image"
+    decode: str = "fixed_argmax_t2_present_0_1_2_3_4_5_no_t2_0_1_2_3_5"
+
+    def to_json_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+def default_care_ase_full_volume_inference_settings(
+    *,
+    patch_size: tuple[int, int, int] = (20, 256, 256),
+) -> CAREASEFullVolumeInferenceSettings:
+    return CAREASEFullVolumeInferenceSettings(patch_size=tuple(int(v) for v in patch_size))
 
 
 def starts_for(dim: int, patch: int, overlap: float = 0.5) -> list[int]:
@@ -154,7 +178,15 @@ def predict_care_ase_r2_full_volume_logits(
     gaussian_sigma_scale: float = 1.0 / 8.0,
     use_mirroring: bool = False,
     allowed_mirror_axes: tuple[int, ...] = (),
+    settings: CAREASEFullVolumeInferenceSettings | None = None,
 ) -> torch.Tensor:
+    if settings is not None:
+        patch_size = settings.patch_size
+        overlap = settings.tile_step_size
+        use_gaussian = settings.use_gaussian
+        gaussian_sigma_scale = settings.gaussian_sigma_scale
+        use_mirroring = settings.use_mirroring
+        allowed_mirror_axes = settings.allowed_mirror_axes
     was_training = model.training
     model.eval()
     original_spatial = tuple(int(v) for v in image.shape[-3:])
@@ -260,6 +292,7 @@ def predict_care_ase_r2_full_volume_labels(
     gaussian_sigma_scale: float = 1.0 / 8.0,
     use_mirroring: bool = False,
     allowed_mirror_axes: tuple[int, ...] = (),
+    settings: CAREASEFullVolumeInferenceSettings | None = None,
 ) -> torch.Tensor:
     logits = predict_care_ase_r2_full_volume_logits(
         model,
@@ -272,5 +305,6 @@ def predict_care_ase_r2_full_volume_labels(
         gaussian_sigma_scale=gaussian_sigma_scale,
         use_mirroring=use_mirroring,
         allowed_mirror_axes=allowed_mirror_axes,
+        settings=settings,
     )
     return decode_care_ase_r2_logits(logits, availability)
