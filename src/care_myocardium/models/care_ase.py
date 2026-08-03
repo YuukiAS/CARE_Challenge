@@ -115,6 +115,78 @@ def _clone_seg_layer_rows(seg_layer: nn.Module, rows: int) -> nn.Module:
     return cloned
 
 
+class SingleRowStockSegLayer(nn.Module):
+    """Single trainable stock classifier row executed through the stock 6-row kernel path."""
+
+    def __init__(self, seg_layer: nn.Conv3d, row: int) -> None:
+        super().__init__()
+        self.class_index = int(row)
+        self.in_channels = int(seg_layer.in_channels)
+        self.out_channels = 1
+        self.kernel_size = seg_layer.kernel_size
+        self.stride = seg_layer.stride
+        self.padding = seg_layer.padding
+        self.dilation = seg_layer.dilation
+        self.groups = seg_layer.groups
+        self.padding_mode = seg_layer.padding_mode
+        self.stock_out_channels = int(seg_layer.out_channels)
+        self.weight = nn.Parameter(seg_layer.weight[self.class_index : self.class_index + 1].detach().clone())
+        if seg_layer.bias is None:
+            self.register_parameter("bias", None)
+        else:
+            self.bias = nn.Parameter(seg_layer.bias[self.class_index : self.class_index + 1].detach().clone())
+        before = self.class_index
+        after = self.stock_out_channels - self.class_index - 1
+        self.register_buffer("_weight_before", seg_layer.weight.detach().new_zeros((before, *seg_layer.weight.shape[1:])))
+        self.register_buffer("_weight_after", seg_layer.weight.detach().new_zeros((after, *seg_layer.weight.shape[1:])))
+        if seg_layer.bias is not None:
+            self.register_buffer("_bias_before", seg_layer.bias.detach().new_zeros((before,)))
+            self.register_buffer("_bias_after", seg_layer.bias.detach().new_zeros((after,)))
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        weight = torch.cat(
+            [
+                self._weight_before.to(device=x.device, dtype=self.weight.dtype),
+                self.weight,
+                self._weight_after.to(device=x.device, dtype=self.weight.dtype),
+            ],
+            dim=0,
+        )
+        bias = None
+        if self.bias is not None:
+            bias = torch.cat(
+                [
+                    self._bias_before.to(device=x.device, dtype=self.bias.dtype),
+                    self.bias,
+                    self._bias_after.to(device=x.device, dtype=self.bias.dtype),
+                ],
+                dim=0,
+            )
+        if self.padding_mode != "zeros":
+            pad_d, pad_h, pad_w = self.padding
+            x = F.pad(x, (pad_w, pad_w, pad_h, pad_h, pad_d, pad_d), mode=self.padding_mode)
+            padding = (0, 0, 0)
+        else:
+            padding = self.padding
+        logits = F.conv3d(x, weight, bias, self.stride, padding, self.dilation, self.groups)
+        return logits[:, self.class_index : self.class_index + 1]
+
+
+def _clone_seg_layer_single_row(seg_layer: nn.Module, row: int) -> nn.Module:
+    if not isinstance(seg_layer, nn.Conv3d):
+        raise TypeError(f"expected nnU-Net seg_layer to be Conv3d, got {type(seg_layer).__name__}")
+    row = int(row)
+    if row < 0 or row >= int(seg_layer.out_channels):
+        raise ValueError(f"seg_layer row {row} outside out_channels={seg_layer.out_channels}")
+    return SingleRowStockSegLayer(seg_layer, row)
+
+
+def _single_pathology_logit_to_six(logit: torch.Tensor, class_index: int) -> torch.Tensor:
+    compat = logit.detach().new_zeros((logit.shape[0], 6, *logit.shape[-3:]))
+    compat[:, int(class_index) : int(class_index) + 1] = logit
+    return compat
+
+
 @dataclass(frozen=True)
 class CAREASEDecoderIntrospection:
     shared_quarter_channels: int
@@ -340,7 +412,6 @@ class ComponentHeads(nn.Module):
         self.edema_context = nn.Conv3d(quarter_channels, 4, 1)
         self.edema_injury = nn.Conv3d(pathology_half_channels, 1, 1)
         self.edema_boundary = nn.Conv3d(pathology_half_channels, 1, 1)
-        self.scar_extent_presence = nn.Conv3d(quarter_channels, 1, 1)
         self.scar_extent_area = nn.Conv3d(quarter_channels, 1, 1)
         self.edema_extent_presence = nn.Conv3d(quarter_channels, 1, 1)
         self.edema_extent_area = nn.Conv3d(quarter_channels, 1, 1)
@@ -349,7 +420,6 @@ class ComponentHeads(nn.Module):
         scar_quarter_occupancy = self.scar_quarter_occupancy(quarter)
         scar_quarter_center = self.scar_quarter_center(quarter)
         scar_context = self.scar_context(quarter)
-        scar_extent_presence = self.scar_extent_presence(quarter)
         scar_extent_area = self.scar_extent_area(quarter)
         if run_edema:
             edema = self.forward_edema_quarter(quarter)
@@ -458,7 +528,12 @@ class CAREASEPathologyBranch(nn.Module):
         self.class_index = int(class_index)
         self.transpconvs = nn.ModuleList([deepcopy(stock_decoder.transpconvs[4]), deepcopy(stock_decoder.transpconvs[5])])
         self.stages = nn.ModuleList([deepcopy(stock_decoder.stages[4]), deepcopy(stock_decoder.stages[5])])
-        self.seg_layers = nn.ModuleList([deepcopy(stock_decoder.seg_layers[4]), deepcopy(stock_decoder.seg_layers[5])])
+        self.seg_layers = nn.ModuleList(
+            [
+                _clone_seg_layer_single_row(stock_decoder.seg_layers[4], self.class_index),
+                _clone_seg_layer_single_row(stock_decoder.seg_layers[5], self.class_index),
+            ]
+        )
         self.half_projections = NamedEvidenceProjectionSet(half_projection_specs, half_projection_channels)
         self.full_projections = NamedEvidenceProjectionSet(full_projection_specs, full_projection_channels)
 
@@ -476,8 +551,12 @@ class CAREASEPathologyBranch(nn.Module):
         if not disable_evidence:
             x = x + self.half_projections(half_evidence, x.shape[-3:], disabled=disabled_sources)
         half_feature = self.stages[0](x)
-        half_logits6 = self.seg_layers[0](half_feature)
-        return {"half_feature": half_feature, "half_logits6": half_logits6}
+        half_logit = self.seg_layers[0](half_feature)
+        return {
+            "half_feature": half_feature,
+            "half_logit": half_logit,
+            "half_logits6": _single_pathology_logit_to_six(half_logit, self.class_index),
+        }
 
     def forward_full(
         self,
@@ -494,12 +573,13 @@ class CAREASEPathologyBranch(nn.Module):
         if not disable_evidence:
             x = x + self.full_projections(full_evidence, x.shape[-3:], disabled=disabled_sources)
         full_feature = self.stages[1](x)
-        full_logits6 = self.seg_layers[1](full_feature)
+        full_logit = self.seg_layers[1](full_feature)
         return {
             "half_feature": half_feature,
-            "full_logits6": full_logits6,
+            "full_logit": full_logit,
+            "full_logits6": _single_pathology_logit_to_six(full_logit, self.class_index),
             "full_feature": full_feature,
-            "final_logit": full_logits6[:, self.class_index : self.class_index + 1],
+            "final_logit": full_logit,
         }
 
     def forward(
@@ -862,11 +942,15 @@ class CAREASE(nn.Module):
         }
         scar = {**scar_half, **self.scar_branch.forward_full(scar_half["half_feature"], skips, scar_full_evidence, disable_evidence=disable_all_evidence, disabled_sources=disabled_sources)}
         final_logit = anatomy_logits.detach().new_full((anatomy_logits.shape[0], 1, *anatomy_logits.shape[-3:]), -1.0e4)
+        half_logit = quarter.detach().new_zeros((quarter.shape[0], 1, *skips[1].shape[-3:]))
+        full_logit = anatomy_logits.detach().new_zeros((anatomy_logits.shape[0], 1, *anatomy_logits.shape[-3:]))
         half_logits6 = quarter.detach().new_zeros((quarter.shape[0], 6, *skips[1].shape[-3:]))
         full_logits6 = anatomy_logits.detach().new_zeros((anatomy_logits.shape[0], 6, *anatomy_logits.shape[-3:]))
         edema = {
             "half_feature": quarter.detach().new_zeros((quarter.shape[0], self.decoder_introspection.branch_half_feature_channels, *skips[1].shape[-3:])),
             "full_feature": anatomy["full_feature"].detach().clone(),
+            "half_logit": half_logit,
+            "full_logit": full_logit,
             "half_logits6": half_logits6,
             "full_logits6": full_logits6,
             "final_logit": final_logit,
@@ -1003,22 +1087,36 @@ def compute_slice_extent_statistics(
     presence_logits: torch.Tensor,
     area_logits: torch.Tensor,
     p_wall: torch.Tensor,
+    valid_spatial_mask: torch.Tensor | None = None,
 ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
     """Per-z detached wall-weighted avg plus masked max extent features."""
 
     wall = F.interpolate(p_wall.detach(), size=presence_logits.shape[-3:], mode="trilinear", align_corners=False).clamp_min(0.0)
+    valid = None
+    if valid_spatial_mask is not None:
+        valid = F.interpolate(valid_spatial_mask.detach().float(), size=presence_logits.shape[-3:], mode="nearest").clamp(0.0, 1.0)
+        wall = wall * valid
     wall_sum = wall.sum(dim=(-2, -1), keepdim=True)
     low_wall = wall_sum < 1.0
     presence_prob = torch.sigmoid(presence_logits)
     area_prob = torch.sigmoid(area_logits)
 
     def summarize(value: torch.Tensor) -> torch.Tensor:
+        if valid is None:
+            valid_value = value
+            valid_sum = torch.full_like(wall_sum, float(value.shape[-2] * value.shape[-1]))
+        else:
+            valid_value = value * valid
+            valid_sum = valid.sum(dim=(-2, -1), keepdim=True)
         weighted_avg = (value * wall).sum(dim=(-2, -1), keepdim=True) / wall_sum.clamp_min(1.0e-6)
         masked = value.masked_fill(wall <= 1.0e-6, -torch.inf)
         masked_max = masked.amax(dim=(-2, -1), keepdim=True)
-        masked_max = torch.where(torch.isfinite(masked_max), masked_max, value.amax(dim=(-2, -1), keepdim=True))
-        full_avg = value.mean(dim=(-2, -1), keepdim=True)
-        full_max = value.amax(dim=(-2, -1), keepdim=True)
+        fallback_masked = value.masked_fill((valid <= 0.0) if valid is not None else torch.zeros_like(value, dtype=torch.bool), -torch.inf)
+        fallback_max = fallback_masked.amax(dim=(-2, -1), keepdim=True)
+        fallback_max = torch.where(torch.isfinite(fallback_max), fallback_max, value.amax(dim=(-2, -1), keepdim=True))
+        masked_max = torch.where(torch.isfinite(masked_max), masked_max, fallback_max)
+        full_avg = valid_value.sum(dim=(-2, -1), keepdim=True) / valid_sum.clamp_min(1.0)
+        full_max = fallback_max
         avg = torch.where(low_wall, full_avg, weighted_avg)
         mx = torch.where(low_wall, full_max, masked_max)
         return 0.5 * (avg + mx)

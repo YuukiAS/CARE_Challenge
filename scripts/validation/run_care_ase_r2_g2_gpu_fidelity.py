@@ -41,13 +41,13 @@ from src.care_myocardium.training.care_ase_trainer import (
     care_ase_loss,
     checkpoint_receipt,
     load_care_ase_checkpoint,
+    run_formal_optimizer_step,
     save_care_ase_checkpoint,
-    set_stage_trainability,
     write_json,
 )
 
 
-RESULT_ROOT = REPO_ROOT / "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5"
+RESULT_ROOT = REPO_ROOT / "results/20260803_care_ase_r2_pretraining_fidelity_repair_v6"
 
 
 def sha256_file(path: Path) -> str:
@@ -230,14 +230,17 @@ def named_projection_intervention_audit(model: torch.nn.Module, batch: dict[str,
 
 def one_train_step(model: torch.nn.Module, optimizer: torch.optim.Optimizer, scheduler: CAREASEStageScheduler, batch: dict[str, torch.Tensor], step: int) -> dict[str, Any]:
     model.train()
-    stage = set_stage_trainability(model, global_step=step)
-    scheduler.step(step)
-    optimizer.zero_grad(set_to_none=True)
-    outputs = model(batch["image"], batch["availability"], global_step=step)
-    loss, metrics = care_ase_loss(outputs, batch)
-    loss.backward()
-    optimizer.step()
-    return {"stage": stage, "loss": float(loss.detach().cpu()), "metrics": metrics}
+    result = run_formal_optimizer_step(
+        model=model,
+        optimizer=optimizer,
+        scheduler=scheduler,
+        microbatches=[batch],
+        global_step=step,
+        gradient_accumulation=1,
+        autocast_device_type="cuda",
+        autocast_enabled=False,
+    )
+    return {"stage": result["stage"], "loss": float(result["loss_mean"]), "metrics": result["metrics"], "formal_step_api": result["formal_step_api"]}
 
 
 def scheduler_checks() -> dict[str, Any]:
@@ -277,7 +280,7 @@ def _state_dict_max_abs_diff(left: dict[str, torch.Tensor], right: dict[str, tor
     diffs = []
     for key, value in left.items():
         other = right[key]
-        if torch.is_tensor(value) and torch.is_tensor(other) and value.is_floating_point():
+        if torch.is_tensor(value) and torch.is_tensor(other) and value.is_floating_point() and value.numel() > 0:
             diffs.append(float((value.detach().cpu() - other.detach().cpu()).abs().max()))
     return max(diffs, default=0.0)
 
@@ -291,7 +294,7 @@ def _optimizer_state_max_abs_diff(left: torch.optim.Optimizer, right: torch.opti
     for key in left_state:
         for field, value in left_state[key].items():
             other = right_state[key].get(field)
-            if torch.is_tensor(value) and torch.is_tensor(other) and value.is_floating_point():
+            if torch.is_tensor(value) and torch.is_tensor(other) and value.is_floating_point() and value.numel() > 0:
                 diffs.append(float((value.detach().cpu() - other.detach().cpu()).abs().max()))
             elif not torch.is_tensor(value) and value != other:
                 return float("inf")

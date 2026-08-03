@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import inspect
 import json
 import sys
 from pathlib import Path
@@ -14,6 +15,7 @@ import blosc2
 import nibabel as nib
 import numpy as np
 from scipy import ndimage
+from nnunetv2.preprocessing.resampling.default_resampling import resample_data_or_seg_to_shape
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(REPO_ROOT) not in sys.path:
@@ -31,6 +33,15 @@ def sha256_file(path: Path) -> str:
     with path.open("rb") as f:
         for chunk in iter(lambda: f.read(1024 * 1024), b""):
             h.update(chunk)
+    return h.hexdigest()
+
+
+def sha256_array(array: np.ndarray) -> str:
+    contiguous = np.ascontiguousarray(array)
+    h = hashlib.sha256()
+    h.update(str(contiguous.dtype).encode("utf-8"))
+    h.update(json.dumps(list(contiguous.shape)).encode("utf-8"))
+    h.update(contiguous.tobytes())
     return h.hexdigest()
 
 
@@ -120,13 +131,71 @@ def bind_prediction_to_preprocessed_grid(gt: np.ndarray, pred: np.ndarray, *, so
             "shape_only_fallback_forbidden": True,
             "same_shape_without_grid_proof_rejected": True,
         }
+    source_zooms = tuple(float(v) for v in source_meta.get("header_zooms", ())[:3])
+    source_shape_xyz = tuple(int(v) for v in pred.shape)
+    target_shape = tuple(int(v) for v in gt.shape)
+    source_spacing_zyx = tuple(float(v) for v in preprocessed_geometry.get("source_spacing_zyx", ()))
+    target_spacing_zyx = tuple(float(v) for v in preprocessed_geometry.get("spacing_zyx", ()))
+    bbox = preprocessed_geometry.get("bbox_used_for_cropping")
+    if (
+        source_meta.get("source_kind") == "canonical_stock_nnunet_oof_anchor_manifest"
+        and len(source_zooms) == 3
+        and len(source_spacing_zyx) == 3
+        and len(target_spacing_zyx) == 3
+        and isinstance(bbox, list)
+        and len(bbox) == 3
+    ):
+        raw_zyx = np.transpose(pred, (2, 1, 0))
+        slices = tuple(slice(int(pair[0]), int(pair[1])) for pair in bbox)
+        cropped_zyx = np.ascontiguousarray(raw_zyx[slices])
+        if tuple(int(v) for v in cropped_zyx.shape) != tuple(int(v) for v in preprocessed_geometry.get("shape_after_cropping_and_before_resampling", ())):
+            raise RuntimeError(
+                "exported NIfTI OOF crop shape does not match nnU-Net properties "
+                f"cropped_shape={cropped_zyx.shape} properties_shape_after_cropping_and_before_resampling="
+                f"{preprocessed_geometry.get('shape_after_cropping_and_before_resampling')}"
+            )
+        resampled = resample_data_or_seg_to_shape(
+            cropped_zyx[None],
+            target_shape,
+            source_spacing_zyx,
+            target_spacing_zyx,
+            is_seg=True,
+            order=1,
+            order_z=0,
+            force_separate_z=None,
+        )
+        bound = np.asarray(resampled[0]).astype(np.uint8, copy=False)
+        if tuple(int(v) for v in bound.shape) != target_shape:
+            raise RuntimeError(f"nnU-Net properties-based OOF binding produced shape {bound.shape}, expected {target_shape}")
+        return bound, {
+            "binding": "nnunet_properties_original_nifti_label_to_preprocessed_grid",
+            "source_prediction_shape_xyz": list(source_shape_xyz),
+            "source_prediction_shape_zyx_after_transpose": list(raw_zyx.shape),
+            "bbox_used_for_cropping_zyx": [[int(s.start), int(s.stop)] for s in slices],
+            "cropped_shape_zyx": list(cropped_zyx.shape),
+            "source_spacing_zyx": list(source_spacing_zyx),
+            "target_spacing_zyx": list(target_spacing_zyx),
+            "preprocessed_shape": list(target_shape),
+            "preprocessed_grid_binding": True,
+            "preprocessed_geometry_sha256": geometry_sha,
+            "resampling_function": "nnunetv2.preprocessing.resampling.default_resampling.resample_data_or_seg_to_shape",
+            "resampling_function_sha256": sha256_file(Path(inspect.getsourcefile(resample_data_or_seg_to_shape) or "")),
+            "is_seg": True,
+            "order": 1,
+            "order_z": 0,
+            "force_separate_z": None,
+            "min_shape_crop_forbidden": True,
+            "shape_only_fallback_forbidden": True,
+            "same_shape_without_grid_proof_rejected": True,
+            "generic_shape_ratio_resampling_forbidden": True,
+        }
     raise RuntimeError(
         "stock OOF prediction is not already bound to the preprocessed grid. "
-        "CARE-ASE R2 forbids min(shape) crops, ad hoc ndimage.zoom, transpose-only binding, "
-        "shape-only xyz-to-zyx acceptance, and same-shape wrong-affine/orientation acceptance. "
-        "Provide a canonical patient-held-out stock nnU-Net OOF array with explicit "
-        "preprocessed_grid_binding=true and matching preprocessed_geometry_sha256, or implement "
-        "a strict affine/orientation/spacing-resampled binding with round-trip geometry validation. "
+        "CARE-ASE R2 v6 forbids min(shape) crops, transpose-only binding, shape-only "
+        "xyz-to-zyx acceptance, same-shape wrong-affine/orientation acceptance, and generic "
+        "shape-ratio resampling. Provide explicit preprocessed_grid_binding=true plus "
+        "matching preprocessed_geometry_sha256, or a strict nnU-Net properties-based "
+        "round-trip binding path. "
         f"prediction_shape={tuple(pred.shape)} preprocessed_shape={tuple(gt.shape)} "
         f"preprocessed_geometry_sha256={geometry_sha} "
         f"source_meta={source_meta} preprocessed_geometry={preprocessed_geometry}"
@@ -135,12 +204,27 @@ def bind_prediction_to_preprocessed_grid(gt: np.ndarray, pred: np.ndarray, *, so
 
 def load_preprocessed_geometry(preprocessed: Path, case_id: str, shape: tuple[int, int, int]) -> dict[str, Any]:
     props_path = preprocessed / f"{case_id}.pkl"
-    spacing = (1.0, 1.0, 1.0)
+    props: dict[str, Any] = {}
     if props_path.is_file():
         import pickle
 
         with props_path.open("rb") as f:
             props = pickle.load(f)
+    plans_path = preprocessed.parent / "nnUNetPlans.json"
+    if plans_path.is_file():
+        plans = json.loads(plans_path.read_text(encoding="utf-8"))
+        spacing = tuple(float(v) for v in plans["configurations"]["3d_fullres"]["spacing"])
+        return {
+            "shape_zyx": list(shape),
+            "spacing_zyx": list(spacing),
+            "spacing_source": str(plans_path.relative_to(REPO_ROOT)),
+            "source_spacing_zyx": list(tuple(float(v) for v in props.get("spacing", spacing))),
+            "bbox_used_for_cropping": props.get("bbox_used_for_cropping"),
+            "shape_before_cropping": props.get("shape_before_cropping"),
+            "shape_after_cropping_and_before_resampling": props.get("shape_after_cropping_and_before_resampling"),
+        }
+    spacing = (1.0, 1.0, 1.0)
+    if props:
         spacing = tuple(float(v) for v in props.get("spacing", spacing))
     return {"shape_zyx": list(shape), "spacing_zyx": list(spacing)}
 
@@ -274,8 +358,52 @@ def main() -> int:
         if not proof:
             raise RuntimeError(f"stock prediction for {row.case_id} was produced by fold {source_fold}, but the case is in that fold train split")
         spacing = tuple(float(v) for v in geometry["spacing_zyx"])
-        cases[row.case_id] = build_case(row.case_id, gt, pred, spacing=spacing, t2_present=bool(metadata[row.case_id].t2_present), coord_limit=args.coord_limit)
+        case_payload = build_case(row.case_id, gt, pred, spacing=spacing, t2_present=bool(metadata[row.case_id].t2_present), coord_limit=args.coord_limit)
+        source_ckpt_type = "checkpoint_final" if stock_checkpoints.get(str(source_fold), {}).get("checkpoint_final_sha256") else "checkpoint_best"
         source_ckpt = stock_checkpoints.get(str(source_fold), {}).get("checkpoint_final_sha256") or stock_checkpoints.get(str(source_fold), {}).get("checkpoint_best_sha256")
+        source_ckpt_path = stock_checkpoints.get(str(source_fold), {}).get(f"{source_ckpt_type}_path")
+        target_coordinate_counts = case_payload.get("target_coordinate_counts", {})
+        coordinate_semantic_validation = {
+            "coordinate_bounds_valid": all(
+                all(0 <= int(z) < gt.shape[0] and 0 <= int(y) < gt.shape[1] and 0 <= int(x) < gt.shape[2] for z, y, x in coords)
+                for coords in case_payload.get("targets", {}).values()
+            ),
+            "empty_coordinate_claim_allowed": False,
+            "nonempty_required_when_voxel_count_positive": {
+                "scar_oof_fn": not (int(case_payload["scar_fn_voxels"]) > 0 and int(target_coordinate_counts.get("scar_oof_fn", 0)) == 0),
+                "scar_oof_fp": not (int(case_payload["scar_fp_voxels"]) > 0 and int(target_coordinate_counts.get("scar_oof_fp", 0)) == 0),
+                "edema_oof_fn_or_low_volume": not (int(case_payload["edema_fn_voxels"]) > 0 and int(target_coordinate_counts.get("edema_oof_fn_or_low_volume", 0)) == 0),
+                "edema_safe_fp": not (int(case_payload["edema_fp_voxels"]) > 0 and int(target_coordinate_counts.get("edema_safe_fp", 0)) == 0),
+            },
+        }
+        if not coordinate_semantic_validation["coordinate_bounds_valid"] or not all(coordinate_semantic_validation["nonempty_required_when_voxel_count_positive"].values()):
+            raise RuntimeError(f"coordinate semantic validation failed for {row.case_id}: {coordinate_semantic_validation}")
+        case_payload.update(
+            {
+                "case_id": row.case_id,
+                "source_stock_fold": source_fold,
+                "source_checkpoint_type": source_ckpt_type,
+                "source_checkpoint_path": source_ckpt_path,
+                "source_checkpoint_sha256": source_ckpt,
+                "source_prediction_path": pred_path,
+                "source_prediction_sha256": pred_sha,
+                "preprocessed_prediction_array_sha256": sha256_array(pred),
+                "proof_case_not_in_source_fold_train": proof,
+                "preprocessed_shape": list(gt.shape),
+                "preprocessed_spacing": list(spacing),
+                "preprocessed_geometry_sha256": binding.get("preprocessed_geometry_sha256") or sha256_json(geometry),
+                "binding_method": binding.get("binding"),
+                "target_masks_counts": {
+                    "scar_fn_voxels": int(case_payload["scar_fn_voxels"]),
+                    "scar_fp_voxels": int(case_payload["scar_fp_voxels"]),
+                    "edema_fn_voxels": int(case_payload["edema_fn_voxels"]),
+                    "edema_fp_voxels": int(case_payload["edema_fp_voxels"]),
+                },
+                "sampled_coordinates": case_payload.get("targets", {}),
+                "coordinate_semantic_validation": coordinate_semantic_validation,
+            }
+        )
+        cases[row.case_id] = case_payload
         prediction_sources[row.case_id] = {
             "case_id": row.case_id,
             "path": pred_path,
@@ -296,6 +424,7 @@ def main() -> int:
     payload = {
         "status": "PASS",
         "fold": int(args.fold),
+        "v6_manifest": True,
         "source": "canonical_patient_held_out_stock_nnunet_oof_only",
         "anchor_manifest": str(args.anchor_manifest.resolve()),
         "prediction_root_count": 0,
@@ -304,11 +433,13 @@ def main() -> int:
         "coord_limit_per_target": int(args.coord_limit),
         "forbidden_sources_removed": ["MoSAIC", "SRR", "cascade_prediction_roots"],
         "geometry_policy": "fail_closed_no_min_shape_crop",
+        "forbidden_old_manifest_paths_rejected": True,
+        "empty_coordinates_under_old_category_forbidden": True,
         "prediction_sources": prediction_sources,
         "cases": cases,
     }
     payload["payload_sha256"] = hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()
-    output = args.output or REPO_ROOT / f"results/20260803_care_ase_r2_full_fidelity_execution/hard_negative_manifest_fold{args.fold}.json"
+    output = args.output or REPO_ROOT / f"results/20260803_care_ase_r2_pretraining_fidelity_repair_v6/hard_negative_manifest_fold{args.fold}_v6.json"
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(json.dumps({"status": "PASS", "output": str(output), "case_count": len(cases)}, indent=2))

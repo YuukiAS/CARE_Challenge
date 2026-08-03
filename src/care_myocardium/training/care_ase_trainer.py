@@ -20,7 +20,29 @@ import torch.nn.functional as F
 from src.care_myocardium.models.care_ase import CAREASE, CAREASEConfig, compute_slice_extent_statistics
 
 
-CHECKPOINT_SCHEMA_VERSION = 2
+CHECKPOINT_SCHEMA_VERSION = 3
+FULL_CASE_TARGET_KEYS = (
+    "signed_endo_distance",
+    "signed_epi_distance",
+    "wall_depth_rho",
+    "geometry_valid",
+    "scar_context_target",
+    "edema_context_target",
+    "scar_center_fullres",
+    "edema_boundary",
+    "edema_boundary_raw_mm",
+    "edema_boundary_valid",
+    "scar_slice_presence",
+    "scar_slice_area",
+    "scar_slice_area_valid",
+    "scar_slice_pathology_voxels",
+    "scar_slice_wall_voxels",
+    "edema_slice_presence",
+    "edema_slice_area",
+    "edema_slice_area_valid",
+    "edema_slice_pathology_voxels",
+    "edema_slice_wall_voxels",
+)
 REQUIRED_CHECKPOINT_FIELDS = (
     "schema_version",
     "model",
@@ -40,6 +62,8 @@ REQUIRED_CHECKPOINT_FIELDS = (
     "plans_sha256",
     "stock_checkpoint_sha256",
     "augmentation_contract_sha256",
+    "full_case_target_cache_manifest_sha256",
+    "formal_resumable",
     "augmentation_rng_state",
     "fold",
     "precision_mode",
@@ -260,6 +284,7 @@ def per_slice_extent_loss(
     target_pathology_voxels: torch.Tensor,
     target_wall_voxels: torch.Tensor,
     case_valid: torch.Tensor | None,
+    valid_spatial_mask: torch.Tensor | None = None,
 ) -> tuple[torch.Tensor, torch.Tensor]:
     """Per-z presence BCE and wall-denominator-valid area SmoothL1."""
 
@@ -267,6 +292,7 @@ def per_slice_extent_loss(
         presence_logits.float(),
         area_logits.float(),
         detached_p_wall.detach(),
+        valid_spatial_mask,
     )
     pred_presence = pred_presence_5d.squeeze(-1).squeeze(-1)
     pred_area = pred_area_5d.squeeze(-1).squeeze(-1)
@@ -277,7 +303,7 @@ def per_slice_extent_loss(
         case_mask = torch.ones_like(target_presence_z)
     else:
         case_mask = case_valid.float().view(-1, 1, 1).to(target_presence_z)
-    presence_raw = F.binary_cross_entropy_with_logits(pred_presence, target_presence_z, reduction="none")
+    presence_raw = F.binary_cross_entropy(pred_presence.clamp(1.0e-6, 1.0 - 1.0e-6), target_presence_z, reduction="none")
     presence = (presence_raw * case_mask).sum() / case_mask.sum().clamp_min(1.0)
     area_mask = case_mask * target_area_valid_z
     area_raw = F.smooth_l1_loss(pred_area, target_area_z, reduction="none")
@@ -437,8 +463,151 @@ def _slice_extent_targets_numpy(seg: np.ndarray) -> dict[str, np.ndarray]:
     return out
 
 
+def _crop_or_pad_numpy(array: np.ndarray, center: tuple[int, int, int], patch_size: tuple[int, int, int], *, pad_value: float | int) -> np.ndarray:
+    spatial = array.shape[-3:]
+    src_slices: list[slice] = []
+    dst_slices: list[slice] = []
+    for c, dim, size in zip(center, spatial, patch_size):
+        start = int(c) - int(size) // 2
+        stop = start + int(size)
+        src_start = max(0, start)
+        src_stop = min(int(dim), stop)
+        dst_start = src_start - start
+        dst_stop = dst_start + (src_stop - src_start)
+        src_slices.append(slice(src_start, src_stop))
+        dst_slices.append(slice(dst_start, dst_stop))
+    out = np.full(array.shape[:-3] + tuple(int(v) for v in patch_size), pad_value, dtype=array.dtype)
+    out[(..., *dst_slices)] = array[(..., *src_slices)]
+    return out
+
+
+def build_full_case_target_cache(seg: np.ndarray, spacing: tuple[float, float, float]) -> dict[str, np.ndarray]:
+    """Build physical targets once on the full preprocessed case grid.
+
+    Formal CARE-ASE training must slice these cached full-case target fields
+    into patches instead of recomputing EDT, context, boundary, component, or
+    extent targets from a crop.
+    """
+
+    seg = np.asarray(seg, dtype=np.int16)
+    geometry = _geometry_targets_numpy(seg, spacing)
+    boundary = _edema_boundary_numpy(seg, spacing)
+    extent = _slice_extent_targets_numpy(seg)
+    cache: dict[str, np.ndarray] = {
+        **geometry,
+        "scar_context_target": _context_target_numpy(seg, edema=False, spacing=spacing),
+        "edema_context_target": _context_target_numpy(seg, edema=True, spacing=spacing),
+        "scar_center_fullres": _component_center_heatmap(seg, 5, tuple(int(v) for v in seg.shape), spacing),
+        **boundary,
+        **extent,
+    }
+    cache["valid_label_mask"] = (seg >= 0).astype(np.float32)
+    return cache
+
+
+def slice_full_case_target_cache(
+    cache: dict[str, np.ndarray],
+    *,
+    center: tuple[int, int, int],
+    patch_size: tuple[int, int, int],
+) -> dict[str, np.ndarray]:
+    """Slice a full-case target cache with ignore-safe padding."""
+
+    out: dict[str, np.ndarray] = {}
+    for key in FULL_CASE_TARGET_KEYS:
+        if key not in cache:
+            raise KeyError(f"full-case target cache missing required key: {key}")
+        value = np.asarray(cache[key])
+        if value.ndim == 3:
+            if np.issubdtype(value.dtype, np.integer):
+                pad = -1 if key.endswith("_target") else 0
+            else:
+                pad = 0.0
+            out[key] = _crop_or_pad_numpy(value, center, patch_size, pad_value=pad)
+        elif value.ndim == 1:
+            out[key] = value.astype(np.float32, copy=False)
+        else:
+            raise ValueError(f"unsupported full-case target cache field rank for {key}: {value.shape}")
+    if "valid_label_mask" in cache:
+        out["valid_label_mask"] = _crop_or_pad_numpy(np.asarray(cache["valid_label_mask"]), center, patch_size, pad_value=0.0)
+    return out
+
+
+def _tensor_cache_from_batch(batch: dict[str, Any], device: torch.device) -> dict[str, torch.Tensor] | None:
+    raw = batch.get("full_case_target_cache") if batch is not None else None
+    if raw is None:
+        return None
+    out: dict[str, torch.Tensor] = {}
+    for key, value in raw.items():
+        tensor = value if torch.is_tensor(value) else torch.as_tensor(value)
+        if key.endswith("_target"):
+            out[key] = tensor.to(device=device, dtype=torch.long)
+        else:
+            out[key] = tensor.to(device=device, dtype=torch.float32)
+    return out
+
+
+def _ensure_batch_channel(tensor: torch.Tensor, *, channel: bool, dtype: torch.dtype) -> torch.Tensor:
+    value = tensor.to(dtype=dtype)
+    if channel:
+        if value.ndim == 1:
+            value = value.unsqueeze(0).unsqueeze(0)
+        elif value.ndim == 3:
+            value = value.unsqueeze(0).unsqueeze(0)
+        elif value.ndim == 4:
+            value = value.unsqueeze(1)
+    else:
+        if value.ndim == 1:
+            value = value.unsqueeze(0)
+        elif value.ndim == 3:
+            value = value.unsqueeze(0)
+        elif value.ndim == 5 and value.shape[1] == 1:
+            value = value[:, 0]
+    return value
+
+
 def build_care_ase_targets(target: torch.Tensor, availability: torch.Tensor, outputs: dict[str, Any], batch: dict[str, torch.Tensor] | None = None) -> dict[str, torch.Tensor]:
     device = target.device
+    cache = _tensor_cache_from_batch(batch or {}, device)
+    if cache is not None:
+        stacked = {
+            key: _ensure_batch_channel(cache[key], channel=True, dtype=torch.float32)
+            for key in ("signed_endo_distance", "signed_epi_distance", "wall_depth_rho", "geometry_valid")
+        }
+        stacked["scar_context_target"] = _ensure_batch_channel(cache["scar_context_target"], channel=False, dtype=torch.long)
+        stacked["edema_context_target"] = _ensure_batch_channel(cache["edema_context_target"], channel=False, dtype=torch.long)
+        scar_center_fullres = _ensure_batch_channel(cache["scar_center_fullres"], channel=True, dtype=torch.float32)
+        stacked["scar_center_quarter"] = F.interpolate(
+            scar_center_fullres,
+            size=outputs["components"]["scar_quarter_center"].shape[-3:],
+            mode="trilinear",
+            align_corners=False,
+        )
+        stacked["scar_center_half"] = F.interpolate(
+            scar_center_fullres,
+            size=outputs["components"]["scar_half_center"].shape[-3:],
+            mode="trilinear",
+            align_corners=False,
+        )
+        for key in ("edema_boundary", "edema_boundary_raw_mm", "edema_boundary_valid"):
+            stacked[key] = _ensure_batch_channel(cache[key], channel=True, dtype=torch.float32)
+        for key in (
+            "scar_slice_presence",
+            "scar_slice_area",
+            "scar_slice_area_valid",
+            "scar_slice_pathology_voxels",
+            "scar_slice_wall_voxels",
+            "edema_slice_presence",
+            "edema_slice_area",
+            "edema_slice_area_valid",
+            "edema_slice_pathology_voxels",
+            "edema_slice_wall_voxels",
+        ):
+            stacked[key] = _ensure_batch_channel(cache[key], channel=True, dtype=torch.float32)
+        stacked["valid_label_mask"] = _ensure_batch_channel(cache.get("valid_label_mask", (target >= 0).float()), channel=True, dtype=torch.float32)
+        stacked["availability"] = availability
+        stacked["target_builder_provenance"] = "full_case_target_cache"
+        return stacked
     rows = []
     scar_context = []
     edema_context = []
@@ -487,6 +656,7 @@ def build_care_ase_targets(target: torch.Tensor, availability: torch.Tensor, out
     ):
         stacked[key] = torch.from_numpy(np.stack([row[key] for row in extent_rows])[:, None]).to(device=device, dtype=torch.float32)
     stacked["availability"] = availability
+    stacked["target_builder_provenance"] = "patch_local_fallback_for_tests_only"
     return stacked
 
 
@@ -580,15 +750,15 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor]) -> tu
         + _masked_mean_loss(F.smooth_l1_loss(outputs["wall_depth_rho"], built_targets["wall_depth_rho"], reduction="none"), built_targets["geometry_valid"])
     ) / 3.0
     scar_full = binary_dice_focal(outputs["z_scar"], scar_target, valid_binary, alpha=0.25, gamma=2.0)
-    scar_half_logit = F.interpolate(outputs["scar"]["half_logits6"][:, 5:6], size=target.shape[-3:], mode="trilinear", align_corners=False)
+    scar_half_logit = F.interpolate(outputs["scar"].get("half_logit", outputs["scar"]["half_logits6"][:, 5:6]), size=target.shape[-3:], mode="trilinear", align_corners=False)
     scar_half_dense = binary_dice_focal(scar_half_logit, scar_target, valid_binary, alpha=0.25, gamma=2.0)
     scar_dense = full_weight * scar_full + half_weight * scar_half_dense
     edema_full = binary_dice_focal(outputs["z_pure_edema"], edema_target, edema_valid, alpha=0.35, gamma=2.0)
-    edema_half_logit = F.interpolate(outputs["edema"]["half_logits6"][:, 4:5], size=target.shape[-3:], mode="trilinear", align_corners=False)
+    edema_half_logit = F.interpolate(outputs["edema"].get("half_logit", outputs["edema"]["half_logits6"][:, 4:5]), size=target.shape[-3:], mode="trilinear", align_corners=False)
     edema_half_dense = binary_dice_focal(edema_half_logit, edema_target, edema_valid, alpha=0.35, gamma=2.0)
     edema_dense = full_weight * edema_full + half_weight * edema_half_dense
-    scar_half = F.interpolate(outputs["scar"]["half_logits6"][:, 5:6], size=target.shape[-3:], mode="trilinear", align_corners=False)
-    edema_half = F.interpolate(outputs["edema"]["half_logits6"][:, 4:5], size=target.shape[-3:], mode="trilinear", align_corners=False)
+    scar_half = F.interpolate(outputs["scar"].get("half_logit", outputs["scar"]["half_logits6"][:, 5:6]), size=target.shape[-3:], mode="trilinear", align_corners=False)
+    edema_half = F.interpolate(outputs["edema"].get("half_logit", outputs["edema"]["half_logits6"][:, 4:5]), size=target.shape[-3:], mode="trilinear", align_corners=False)
     scar_component = per_gt_component_tversky(scar_half, scar_target.float(), valid_binary, batch)
     scar_occ_quarter = _downsample_target(scar_target, components["scar_quarter_occupancy"].shape[-3:])
     scar_occ_half = _downsample_target(scar_target, components["scar_half_occupancy"].shape[-3:])
@@ -610,6 +780,7 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor]) -> tu
         built_targets["scar_slice_pathology_voxels"],
         built_targets["scar_slice_wall_voxels"],
         None,
+        built_targets["valid_label_mask"],
     )
     edema_presence, edema_area = per_slice_extent_loss(
         components["edema_extent_presence"],
@@ -619,6 +790,7 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor]) -> tu
         built_targets["edema_slice_pathology_voxels"],
         built_targets["edema_slice_wall_voxels"],
         availability[:, 1:2],
+        built_targets["valid_label_mask"],
     )
     scar_context_target = _downsample_target(built_targets["scar_context_target"].unsqueeze(1), components["scar_context"].shape[-3:]).squeeze(1)
     edema_context_target = _downsample_target(built_targets["edema_context_target"].unsqueeze(1), components["edema_context"].shape[-3:]).squeeze(1)
@@ -792,11 +964,64 @@ def optimizer_parameter_groups(model: CAREASE) -> list[dict[str, Any]]:
     return [{"name": name, "params": params, "lr": GROUP_INITIAL_LRS[name], "weight_decay": 1.0e-4} for name, params in groups.items()]
 
 
+def _expected_parameter_group_from_aliases(names: list[str], upper_stage_indices: set[int]) -> str | None:
+    if any(".half_projections." in name or ".full_projections." in name for name in names):
+        return "new_modules"
+    if any(
+        name.startswith(
+            (
+                "component_heads.",
+                "scar_lge_half_adapter.",
+                "scar_lge_full_adapter.",
+                "scar_c0_half_adapter.",
+                "scar_c0_full_adapter.",
+                "edema_t2_half_adapter.",
+                "edema_t2_full_adapter.",
+                "edema_c0_half_adapter.",
+                "edema_c0_full_adapter.",
+                "edema_lge_half_adapter.",
+                "edema_lge_full_adapter.",
+                "scar_c0_gate.",
+                "edema_c0_gate.",
+                "edema_lge_gate.",
+                "anatomy_geometry_heads.",
+                "edema_dilation_context.",
+            )
+        )
+        for name in names
+    ):
+        return "new_modules"
+    if any(name.startswith(("scar_branch.seg_layers.", "edema_branch.seg_layers.")) for name in names):
+        return "cloned_pathology_classifiers"
+    if any(name.startswith(("scar_branch.", "edema_branch.")) for name in names):
+        return "cloned_pathology_blocks"
+    if any(name.startswith("encoder.") and _is_upper_encoder_parameter(name, upper_stage_indices) for name in names):
+        return "upper_two_encoder"
+    if any(name.startswith("encoder.") for name in names):
+        return "lower_encoder_bottleneck"
+    if any(name.startswith(("low_mid_transpconvs.", "low_mid_stages.")) for name in names) or any(
+        name.startswith("anatomy_decoder.") and any(token in name for token in ("transpconvs.0", "transpconvs.1", "transpconvs.2", "transpconvs.3", "stages.0", "stages.1", "stages.2", "stages.3"))
+        for name in names
+    ):
+        return "shared_low_mid_decoder"
+    if any(name.startswith("anatomy_decoder.") for name in names):
+        return "anatomy_decoder"
+    return None
+
+
 def parameter_group_coverage(model: CAREASE) -> dict[str, Any]:
     group_by_id, canonical_by_id, aliases = _parameter_group_registry(model)
     all_params = list(model.parameters())
     observed_ids = [id(param) for param in all_params]
     duplicate_count = len(observed_ids) - len(set(observed_ids))
+    upper_stage_indices = _encoder_upper_stage_indices([name for names in aliases.values() for name in names])
+    expected_by_id = {param_id: _expected_parameter_group_from_aliases(names, upper_stage_indices) for param_id, names in aliases.items()}
+    missing_ids = sorted(param_id for param_id, expected in expected_by_id.items() if expected is None)
+    wrong_ids = sorted(
+        param_id
+        for param_id, expected in expected_by_id.items()
+        if expected is not None and group_by_id.get(param_id) != expected
+    )
     sample_steps = (0, 199, 1999, 2000, 2499, 9999, 10000, 13999)
     rows = []
     for param in all_params:
@@ -808,18 +1033,22 @@ def parameter_group_coverage(model: CAREASE) -> dict[str, Any]:
                 "canonical_name": canonical_by_id[param_id],
                 "aliases": aliases[param_id],
                 "group": group,
+                "expected_group": expected_by_id.get(param_id),
+                "group_matches_expected": group == expected_by_id.get(param_id),
                 "requires_grad": {stage: group in STAGE_TRAINABLE_GROUPS[stage] for stage in ("A", "B", "C")},
                 "base_lr": {stage: CAREASEStageScheduler.stage_base_lrs[stage].get(group, 0.0) for stage in ("A", "B", "C")},
                 "current_lr": {str(step): CAREASEStageScheduler.lr_for(group_name=group, global_step=step) for step in sample_steps},
             }
         )
     payload = {
-        "status": "PASS",
+        "status": "PASS" if duplicate_count == 0 and not missing_ids and not wrong_ids else "FAIL",
         "parameter_count": len(rows),
         "group_counts": {name: sum(1 for row in rows if row["group"] == name) for name in PARAMETER_GROUP_NAMES},
         "duplicate_count": int(duplicate_count),
-        "missing_count": 0,
-        "wrong_group_count": 0,
+        "missing_count": len(missing_ids),
+        "wrong_group_count": len(wrong_ids),
+        "missing_parameter_ids": missing_ids,
+        "wrong_group_parameter_ids": wrong_ids,
         "all_parameters_in_optimizer_from_step0": True,
         "optimizer_created_once_moments_preserved_across_stages": True,
         "parameters": rows,
@@ -846,6 +1075,47 @@ def _removed_name_prefix_only_grouping_reference() -> tuple[str, ...]:
 
 def build_optimizer(model: CAREASE) -> torch.optim.Optimizer:
     return torch.optim.AdamW(optimizer_parameter_groups(model))
+
+
+def run_formal_optimizer_step(
+    *,
+    model: CAREASE,
+    optimizer: torch.optim.Optimizer,
+    scheduler: "CAREASEStageScheduler",
+    microbatches: list[dict[str, Any]] | tuple[dict[str, Any], ...],
+    global_step: int,
+    gradient_accumulation: int = 4,
+    autocast_device_type: str = "cuda",
+    autocast_dtype: torch.dtype = torch.bfloat16,
+    autocast_enabled: bool = False,
+) -> dict[str, Any]:
+    """Single authoritative CARE-ASE optimizer-step implementation."""
+
+    if not microbatches:
+        raise ValueError("run_formal_optimizer_step requires at least one microbatch")
+    stage = set_stage_trainability(model, global_step=int(global_step))
+    scheduler.step(int(global_step))
+    optimizer.zero_grad(set_to_none=True)
+    loss_total = 0.0
+    metrics: dict[str, float] = {}
+    divisor = float(gradient_accumulation)
+    for batch in microbatches:
+        with torch.autocast(device_type=autocast_device_type, dtype=autocast_dtype, enabled=bool(autocast_enabled)):
+            outputs = model(batch["image"], batch["availability"], global_step=int(global_step))
+            loss, metrics = care_ase_loss(outputs, batch)
+        (loss / divisor).backward()
+        loss_total += float(loss.detach().cpu())
+    grad_norm = torch.nn.utils.clip_grad_norm_([p for p in model.parameters() if p.requires_grad], max_norm=float(model.config.gradient_clip_global_norm))
+    optimizer.step()
+    return {
+        "stage": stage,
+        "loss_mean": loss_total / max(float(len(microbatches)), 1.0),
+        "metrics": dict(metrics),
+        "grad_norm": float(grad_norm.detach().cpu() if torch.is_tensor(grad_norm) else grad_norm),
+        "formal_step_api": "src.care_myocardium.training.care_ase_trainer.run_formal_optimizer_step",
+        "microbatch_count": len(microbatches),
+        "gradient_accumulation": int(gradient_accumulation),
+    }
 
 
 class CAREASEStageScheduler:
@@ -1009,8 +1279,10 @@ def save_care_ase_checkpoint(
     area_reference_receipt_sha256: str | None = None,
     case_metadata_sha256: str | None = None,
     augmentation_contract_sha256: str | None = None,
+    full_case_target_cache_manifest_sha256: str | None = None,
     augmentation_rng_state: dict[str, Any] | None = None,
     precision_mode: str = "fp32_guarded_mixed_precision_allowed",
+    formal_resumable: bool = False,
 ) -> None:
     rng = capture_rng_state()
     sampler_state = dict(sampler_state or {})
@@ -1038,6 +1310,8 @@ def save_care_ase_checkpoint(
         "plans_sha256": plans_hash or _sha256_file_or_missing(model.config.plans_path),
         "stock_checkpoint_sha256": stock_checkpoint_hash or _sha256_file_or_missing(model.config.checkpoint_path),
         "augmentation_contract_sha256": augmentation_contract_sha256 or "UNSET",
+        "full_case_target_cache_manifest_sha256": full_case_target_cache_manifest_sha256 or "UNSET",
+        "formal_resumable": bool(formal_resumable),
         "augmentation_rng_state": augmentation_rng_state
         or {
             "source": "global_python_numpy_torch_rng",
@@ -1089,6 +1363,27 @@ def save_care_ase_checkpoint(
     missing = [field for field in REQUIRED_CHECKPOINT_FIELDS if field not in payload]
     if missing:
         raise ValueError(f"CARE-ASE checkpoint missing required fields: {missing}")
+    if bool(formal_resumable):
+        formal_fields = (
+            "training_source_commit_sha",
+            "origin_main_sha",
+            "effective_contract_sha256",
+            "external_review_permit_sha256",
+            "critical_source_manifest_sha256",
+            "split_file_sha256",
+            "split_case_lists_sha256",
+            "actual_train_case_ids_sha256",
+            "hard_negative_manifest_sha256",
+            "area_reference_receipt_sha256",
+            "case_metadata_sha256",
+            "plans_sha256",
+            "stock_checkpoint_sha256",
+            "augmentation_contract_sha256",
+            "full_case_target_cache_manifest_sha256",
+        )
+        placeholders = [field for field in formal_fields if payload.get(field) in {None, "", "UNSET", "SHORT_SMOKE"}]
+        if placeholders:
+            raise ValueError(f"formal CARE-ASE checkpoint refuses placeholder provenance fields: {placeholders}")
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_name(f".{path.name}.tmp")
     torch.save(payload, tmp)

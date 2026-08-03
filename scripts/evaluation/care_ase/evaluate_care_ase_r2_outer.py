@@ -32,7 +32,7 @@ from src.care_myocardium.models.care_ase import compute_slice_extent_statistics
 from src.care_myocardium.training.care_ase_trainer import load_care_ase_checkpoint
 
 
-RESULT_ROOT = REPO_ROOT / "results/20260803_care_ase_r2_full_fidelity_execution"
+RESULT_ROOT = REPO_ROOT / "results/20260803_care_ase_r2_pretraining_fidelity_repair_v6"
 W45_PUSH_RECEIPT = RESULT_ROOT / "preouter_snapshot_push_receipt.json"
 PREPROCESSED = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans_3d_fullres"
 SPLITS = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/splits_final.json"
@@ -105,32 +105,39 @@ def assert_w45_permit(*, fold: int, checkpoint: Path, payload: dict[str, Any], o
         raise RuntimeError(f"W4.5 permit fold {fold} checkpoint SHA mismatch")
     if expected_path and Path(expected_path).name != "checkpoint_step14000.pt":
         raise RuntimeError(f"W4.5 permit fold {fold} checkpoint path is not checkpoint_step14000.pt: {expected_path}")
-    token_root = RESULT_ROOT / "outer_once" / "consumed_permits"
+    token_root = RESULT_ROOT / "outer_once" / "permit_state"
     token_root.mkdir(parents=True, exist_ok=True)
     token = token_root / f"fold{int(fold)}_{checkpoint_sha}.json"
-    try:
-        fd = os.open(token, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o644)
-    except FileExistsError as exc:
-        raise RuntimeError(f"outer permit already consumed for fold {fold} checkpoint {checkpoint_sha}") from exc
-    with os.fdopen(fd, "w", encoding="utf-8") as f:
-        json.dump(
+    if token.is_file():
+        existing = json.loads(token.read_text(encoding="utf-8"))
+        if existing.get("status") == "COMPLETED":
+            raise RuntimeError(f"outer permit already completed for fold {fold} checkpoint {checkpoint_sha}")
+        if existing.get("checkpoint_sha256") != checkpoint_sha or existing.get("output_dir") != str(output_dir):
+            raise RuntimeError(f"outer permit STARTED token conflicts with this run: {token}")
+    else:
+        write_json(
+            token,
             {
-                "status": "CONSUMED",
+                "status": "STARTED",
                 "fold": int(fold),
                 "checkpoint_sha256": checkpoint_sha,
                 "checkpoint_path": str(checkpoint),
                 "output_dir": str(output_dir),
                 "created_unix": int(time.time()),
+                "resumable_missing_cases_only": True,
             },
-            f,
-            indent=2,
-            sort_keys=True,
         )
-        f.write("\n")
-        f.flush()
-        os.fsync(f.fileno())
     _fsync_dir(token_root)
-    return {**receipt, "fold_checkpoint_entry": entry, "consumed_permit_token": str(token), "checkpoint_sha256_verified": checkpoint_sha}
+    return {**receipt, "fold_checkpoint_entry": entry, "permit_state_token": str(token), "checkpoint_sha256_verified": checkpoint_sha}
+
+
+def complete_outer_permit(permit: dict[str, Any], *, completed_case_count: int) -> None:
+    token = Path(str(permit["permit_state_token"]))
+    payload = json.loads(token.read_text(encoding="utf-8"))
+    payload["status"] = "COMPLETED"
+    payload["completed_case_count"] = int(completed_case_count)
+    payload["completed_unix"] = int(time.time())
+    write_json(token, payload)
 
 
 def parse_patch_size(text: str) -> tuple[int, int, int]:
@@ -265,8 +272,19 @@ def main() -> int:
     metadata = load_myops_case_metadata(REPO_ROOT)
     availability_by_case = {case_id: tuple(float(v) for v in metadata[case_id].availability) for case_id in outer_cases}
     case_rows = []
+    completed_cases = {path.name.removesuffix("_prediction.npz") for path in out.glob("*_prediction.npz")}
     with torch.no_grad():
         for case_id in outer_cases:
+            if case_id in completed_cases:
+                case_rows.append(
+                    {
+                        "case_id": case_id,
+                        "t2_present": bool(availability_by_case[case_id][1] > 0.5),
+                        "prediction_path": str((out / f"{case_id}_prediction.npz").relative_to(REPO_ROOT)),
+                        "resumed_existing_case": True,
+                    }
+                )
+                continue
             image_np = read_b2nd(PREPROCESSED / f"{case_id}.b2nd").astype(np.float32, copy=False)
             image = torch.from_numpy(image_np[None]).to(device=device, dtype=torch.float32)
             availability = torch.tensor([availability_by_case[case_id]], device=device, dtype=torch.float32)
@@ -278,9 +296,11 @@ def main() -> int:
                     "case_id": case_id,
                     "t2_present": bool(availability_by_case[case_id][1] > 0.5),
                     "prediction_path": str((out / f"{case_id}_prediction.npz").relative_to(REPO_ROOT)),
+                    "resumed_existing_case": False,
                 }
             )
 
+    complete_outer_permit(permit, completed_case_count=len(case_rows))
     write_json(
         out / "outer_once_evaluator_receipt.json",
         {

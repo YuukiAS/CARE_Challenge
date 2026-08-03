@@ -33,7 +33,7 @@ from src.care_myocardium.inference.care_ase_r2_decode import decode_care_ase_r2_
 from src.care_myocardium.training.care_ase_trainer import load_care_ase_checkpoint
 
 
-RESULT_ROOT = REPO_ROOT / "results/20260803_care_ase_r2_full_fidelity_execution"
+RESULT_ROOT = REPO_ROOT / "results/20260803_care_ase_r2_pretraining_fidelity_repair_v6"
 PREPROCESSED = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans_3d_fullres"
 SPLIT_CASE_LISTS = RESULT_ROOT / "split_case_lists.csv"
 BASELINE_CASEWISE = REPO_ROOT / "results/20260801_care_nnunet_mosaic_complementarity_closure/oof_complementarity_casewise.csv"

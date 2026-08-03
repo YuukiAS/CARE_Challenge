@@ -23,7 +23,7 @@ from src.care_myocardium.training.care_ase_sampler import CAREASEDeterministicSa
 from src.care_myocardium.training.care_ase_trainer import CAREASEStageScheduler, REQUIRED_CHECKPOINT_FIELDS, REQUIRED_LOSS_WEIGHTS, care_ase_loss
 
 
-RESULT_ROOT = REPO_ROOT / "results/20260803_care_ase_r2_pretraining_fidelity_repair_v5"
+RESULT_ROOT = REPO_ROOT / "results/20260803_care_ase_r2_pretraining_fidelity_repair_v6"
 WRAPPER = REPO_ROOT / "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh"
 ENTRYPOINT = REPO_ROOT / "scripts/training/care_ase/run_care_ase_r2_chunk.py"
 MODEL = REPO_ROOT / "src/care_myocardium/models/care_ase.py"
@@ -108,7 +108,7 @@ def formal_call_chain() -> dict[str, Any]:
 def coverage_rows() -> list[dict[str, Any]]:
     rows = [
         ("stock encoder/bottleneck/single low-mid decoder/anatomy top stages", MODEL, "CAREASE", "self.anatomy_top_stages", "care_ase_contract_summary", "remove_stock_encoder", "PASS"),
-        ("scar and edema highest two decoder clones plus deep supervision classifiers", MODEL, "CAREASEPathologyBranch", "deepcopy(stock_decoder.seg_layers[5])", "inspect CAREASEPathologyBranch", "delete_pathology_deep_supervision", "PASS"),
+        ("scar and edema highest two decoder clones plus single-row deep supervision classifiers", MODEL, "CAREASEPathologyBranch", "_clone_seg_layer_single_row(stock_decoder.seg_layers[5]", "inspect CAREASEPathologyBranch", "delete_pathology_deep_supervision", "PASS"),
         ("pathology deep-supervision weights are bound to stock formula over highest two scales", MODEL, "stock_pathology_deep_supervision_weights", "stock_nnunet_deep_supervision_formula_1_over_2_power_output_order", "stock_deep_supervision_weight_binding", "pathology_deep_supervision_missing", "PASS"),
         ("pathology deep-supervision loss rejects missing model-emitted weights", TRAINER, "care_ase_loss", "requires pathology_deep_supervision_weights", "stock_deep_supervision_weight_binding", "pathology_deep_supervision_missing", "PASS"),
         ("all anatomy/wall/distance/scar/edema/extent/context/relation losses", TRAINER, "care_ase_loss", '"relation": 0.05', "semantic_loss_coverage", "delete_each_semantic_auxiliary_loss", "PASS"),
@@ -120,7 +120,7 @@ def coverage_rows() -> list[dict[str, Any]]:
         ("detached anatomy context enters pathology evidence", MODEL, "CAREASE.forward", "\"wall_depth_rho\": wall_depth_rho.detach()", "context_detach_gradient_test", "pathology_loss_backprop_anatomy_context", "PASS"),
         ("wall_depth_rho physical formula target", TRAINER, "_geometry_targets_numpy", "d_endo / (d_endo + d_epi + 1.0e-6)", "physical_target_contract_receipt", "rho_from_lv_rv_probability", "PASS"),
         ("independent trainable geometry heads", MODEL, "AnatomyGeometryHeads", "self.signed_endo_distance = nn.Conv3d", "geometry_head_contract_receipt", "proxy_tanh_lv_minus_wall", "PASS"),
-        ("slice extent per-z wall weighted average plus max shared by train/inference", MODEL, "compute_slice_extent_statistics", "wall_sum < 1.0", "test_extent_train_inference_identity", "whole_volume_extent_pooling", "PASS"),
+        ("slice extent per-z wall weighted average plus max shared by train/inference", MODEL, "compute_slice_extent_statistics", "valid_spatial_mask", "test_extent_train_inference_identity", "whole_volume_extent_pooling", "PASS"),
         ("full-volume multiwindow extent computes global slice bias once after base-logit aggregation", EVALUATOR, "sliding_window_logits", "disable_extent_wall=True", "full_volume_extent_aggregation_oracle", "extent_patch_local_bias_averaged_across_multiwindow_inference", "PASS"),
         ("independent named evidence projections with no shared multi-source projection", MODEL, "NamedEvidenceProjectionSet", "named_evidence_projection_registry", "named_evidence_projection_registry", "concatenate_all_evidence_one_projection", "PASS"),
         ("no uncontracted auxiliary half tower; pathology branches own half features", MODEL, "CAREASEPathologyBranch", "forward_half", "no_uncontracted_auxiliary_decoder_oracle", "retain_AuxiliaryHalfFeatureTower", "PASS"),
@@ -130,24 +130,25 @@ def coverage_rows() -> list[dict[str, Any]]:
         ("Stage A/B 10/5/5 alternating cycle", SAMPLER, "CAREASEDeterministicSampler.stage_a_b_cycle", '"lge_only",', "sampler_400_step_receipt", "stage_A_B_complete_only", "PASS"),
         ("Stage C complete-only CenterB/CenterC", SAMPLER, "CAREASEDeterministicSampler.stage_c_cycle", '("complete_centerB", "complete_centerC")', "sampler_static_contract", "stage_C_not_complete_only", "PASS"),
         ("CenterB/CenterC pathology and hard-negative cycles", SAMPLER, "CAREASEDeterministicSampler", "hard_negative_manifest", "sampler_static_contract", "break_center_or_focus_cycle", "PASS"),
-        ("hard-negative manifest consumed by formal sampler", SAMPLER, "_load_hard_negative_manifest", "HARD_NEGATIVE_MANIFEST_TEMPLATE", "sampler_static_contract", "hard_negative_manifest_not_read", "PASS"),
+        ("hard-negative manifest consumed by formal sampler from v6-only path", SAMPLER, "_load_hard_negative_manifest", "hard_negative_manifest_fold{fold}_v6.json", "sampler_static_contract", "hard_negative_manifest_not_read", "PASS"),
         ("hard-negative manifest provides canonical stock OOF component coordinates", MANIFEST_BUILDER, "build_case", "canonical_patient_held_out_stock_nnunet_oof_only", "canonical_stock_oof_provenance_receipt", "count_only_hard_negative_manifest", "PASS"),
         ("hard-negative OOF same-shape arrays require explicit preprocessed-grid geometry proof", MANIFEST_BUILDER, "bind_prediction_to_preprocessed_grid", "same_shape_without_grid_proof_rejected", "canonical_stock_oof_provenance_receipt", "same_shape_wrong_affine_or_orientation_oof", "PASS"),
         ("actual-train-only scar/edema area reference", SAMPLER, "compute_actual_train_area_references", "row.role == \"actual-train\"", "area_reference_receipt", "hardcoded_area_reference", "PASS"),
         ("Stage A/B/C = 2000/8000/4000", MODEL, "CAREASEConfig", "stage_b_steps: int = 8000", "scheduler_static_contract", "stage_2000_4000_8000", "PASS"),
         ("AdamW created once with object-id parameter registry and moments preserved", TRAINER, "build_optimizer", "parameter_group_coverage", "parameter_group_coverage", "optimizer_recreated_at_stage_transition", "PASS"),
         ("base LR/min LR/warmup/power poly scheduler", TRAINER, "CAREASEStageScheduler", "stage_warmup_steps", "scheduler_numeric_receipt", "scheduler_none_or_static_lr", "PASS"),
-        ("checkpoint schema v2 full fields/fsync/atomic rename/SHA/reload", TRAINER, "save_care_ase_checkpoint", "CHECKPOINT_SCHEMA_VERSION = 2", "test_checkpoint_schema_v2", "missing_checkpoint_field", "PASS"),
-        ("Commit A implementation and Commit B packet binding are non-equal by design", REPO_ROOT / "prompts/blueprints/CARE_ASE_R2_effective_contract_v5_20260803.yaml", "external_permit.commit_A_B_binding", "forbid_requirement_commitA_equals_commitB: true", "two_commit_review_binding_oracle", "require_CommitA_equals_CommitB", "PASS"),
+        ("checkpoint schema v3 full fields/fsync/atomic rename/SHA/reload", TRAINER, "save_care_ase_checkpoint", "CHECKPOINT_SCHEMA_VERSION = 3", "test_checkpoint_schema_v3", "missing_checkpoint_field", "PASS"),
+        ("single formal optimizer step API used by formal training and G2", TRAINER, "run_formal_optimizer_step", "def run_formal_optimizer_step", "formal_step_api_oracle", "duplicate_optimizer_step_logic", "PASS"),
+        ("Commit A implementation and Commit B packet binding are non-equal by design", REPO_ROOT / "prompts/blueprints/CARE_ASE_R2_effective_contract_v6_20260803.yaml", "two_commit_binding", "A_is_ancestor_of_B", "two_commit_review_binding_oracle", "require_CommitA_equals_CommitB", "PASS"),
         ("exact resume state and next optimizer-step micro-bundle hash", ENTRYPOINT, "_write_full_reload_receipt", "next_optimizer_step_micro_descriptor_hash_match", "exact_resume_receipt", "resume_not_sampler_or_next_batch", "PASS"),
-        ("physical EDT/context/center target builders with per-slice topology validity", TRAINER, "build_care_ase_targets", "_signed_distance_2d", "physical_target_contract_receipt", "proxy_loss_targets", "PASS"),
+        ("physical EDT/context/center target builders use full-case cache before patch slicing", TRAINER, "build_full_case_target_cache", "Formal CARE-ASE training must slice these cached full-case target fields", "physical_target_contract_receipt", "proxy_loss_targets", "PASS"),
         ("edema boundary prediction uses dedicated component head", TRAINER, "care_ase_loss", "components[\"edema_boundary\"]", "boundary_head_contract_receipt", "edema_class_logit_as_boundary", "PASS"),
         ("context CE valid voxel mean only", TRAINER, "context_cross_entropy_valid_mean", "return (raw * valid).sum() / denom", "context_loss_normalization_receipt", "unormalized_context_ce", "PASS"),
         ("formal W3 requires external review permit", ENTRYPOINT, "verify_external_review_permit", "formal CARE-ASE R2 W3 chunk requires --external-review-permit", "external_review_permit_enforcement_oracle", "formal_launch_without_external_permit", "PASS"),
         ("formal W3 stale chunk lock recovery is fail-closed for live owners", ENTRYPOINT, "acquire_chunk_lock", "stale_lock_recovered", "stale_lock_recovery_oracle", "stale_lock_no_recovery", "PASS"),
         ("fixed step14000 argmax and outer zero-access", ENTRYPOINT, "main", "args.end_step > 14000", "outer_access_audit_receipt", "outer_access_before_freeze", "PASS"),
         ("fixed argmax decode excludes class4 for no-T2", DECODE, "decode_care_ase_r2_logits", "NO_T2_CLASSES = (0, 1, 2, 3, 5)", "decode_static_contract", "no_t2_class4_background", "PASS"),
-        ("outer evaluator fail-closed before W4.5 and consumes fold-specific step14000 permit", EVALUATOR, "assert_w45_permit", "consumed_permit_token", "outer_access_audit_receipt", "outer_before_w45", "PASS"),
+        ("outer evaluator fail-closed before W4.5 and uses resumable STARTED/COMPLETED fold-specific step14000 permit", EVALUATOR, "assert_w45_permit", "permit_state_token", "outer_access_audit_receipt", "outer_before_w45", "PASS"),
         ("pure-edema T2-present only", TRAINER, "care_ase_loss", "edema_valid = valid_binary * t2_mask", "metric_truth_receipt", "edema_metric_mixes_no_t2", "PASS"),
         ("nnU-Net MoSAIC CARE-ASE same-case join deferred to W5", REPO_ROOT / "prompts/blueprints/CARE_ASE_R2_full_fidelity_execution_contract_20260803.yaml", "effective_contract", "same_case_set_and_case_id_join_required: true", "W5_metric_truth_validator", "three_way_join_mismatch", "PASS"),
     ]
@@ -167,6 +168,7 @@ def coverage_rows() -> list[dict[str, Any]]:
 
 def semantic_loss_coverage() -> dict[str, Any]:
     trainer_text = TRAINER.read_text(encoding="utf-8")
+    entrypoint_text = ENTRYPOINT.read_text(encoding="utf-8")
     terms = {}
     for name, weight in REQUIRED_LOSS_WEIGHTS.items():
         terms[name] = {
@@ -196,12 +198,17 @@ def semantic_loss_coverage() -> dict[str, Any]:
         "terms": terms,
         "expected_exact_weights": expected,
         "target_builder_semantics": {
+            "full_case_cache_before_patch_slice": "build_full_case_target_cache" in trainer_text and "full_case_target_cache" in trainer_text,
             "physical_edt": "_signed_distance" in trainer_text and "distance_transform_edt" in trainer_text,
             "gaussian_center": "_component_center_heatmap" in trainer_text,
             "per_gt_component": "per_gt_component_tversky" in trainer_text,
             "context_distance_adjacency": "_context_target_numpy" in trainer_text and "dist_blood" in trainer_text and "dist_wall" in trainer_text,
             "signed_edema_boundary": "edema_boundary_target" in trainer_text and "_edema_boundary_numpy" in trainer_text,
             "relation_stopgrad": ".detach()" in trainer_text and '"relation"' in trainer_text,
+            "stock_spatial_transform_syncs_target_maps": "apply_stock_training_transform_with_targets" in entrypoint_text
+            and "regression_target_patch=regression_patch" in entrypoint_text
+            and "segmentation_extra_patch=segmentation_patch" in entrypoint_text
+            and "preprocessed_full_case_grid_sliced_to_initial_patch_then_stock_spatial_transform_synced" in entrypoint_text,
         },
         "status": "PASS"
         if REQUIRED_LOSS_WEIGHTS == expected
@@ -209,11 +216,15 @@ def semantic_loss_coverage() -> dict[str, Any]:
         and all(
             [
                 "_signed_distance" in trainer_text and "distance_transform_edt" in trainer_text,
+                "build_full_case_target_cache" in trainer_text and "full_case_target_cache" in trainer_text,
                 "_component_center_heatmap" in trainer_text,
                 "per_gt_component_tversky" in trainer_text,
                 "_context_target_numpy" in trainer_text and "dist_blood" in trainer_text and "dist_wall" in trainer_text,
                 "edema_boundary_target" in trainer_text and "_edema_boundary_numpy" in trainer_text,
                 ".detach()" in trainer_text and '"relation"' in trainer_text,
+                "apply_stock_training_transform_with_targets" in entrypoint_text
+                and "regression_target_patch=regression_patch" in entrypoint_text
+                and "segmentation_extra_patch=segmentation_patch" in entrypoint_text,
             ]
         )
         else "FAIL",
@@ -222,6 +233,7 @@ def semantic_loss_coverage() -> dict[str, Any]:
 
 def sampler_static_contract() -> dict[str, Any]:
     cycle = CAREASEDeterministicSampler.stage_a_b_cycle
+    sampler_text = SAMPLER.read_text(encoding="utf-8")
     expected_cycle = (
         "complete", "lge_only", "complete", "lge_c0", "complete", "lge_only", "complete", "lge_c0", "complete", "lge_only",
         "complete", "lge_c0", "complete", "lge_only", "complete", "lge_c0", "complete", "lge_only", "complete", "lge_c0",
@@ -235,9 +247,29 @@ def sampler_static_contract() -> dict[str, Any]:
         "scar_within_focus_cycle": list(CAREASEDeterministicSampler.scar_within_focus_cycle),
         "edema_within_focus_cycle": list(CAREASEDeterministicSampler.edema_within_focus_cycle),
         "hard_negative_manifest_symbol": "HARD_NEGATIVE_MANIFEST_TEMPLATE",
+        "hard_negative_manifest_template": "results/20260803_care_ase_r2_pretraining_fidelity_repair_v6/hard_negative_manifest_fold{fold}_v6.json",
         "hard_negative_manifest_consumption": "_hard_negative_category",
         "deterministic_fallbacks": "_fallback_sequence",
-        "status": "PASS" if cycle == expected_cycle and stage_c == ("complete_centerB", "complete_centerC") and len(CAREASEDeterministicSampler.scar_within_focus_cycle) == 20 and len(CAREASEDeterministicSampler.edema_within_focus_cycle) == 20 else "FAIL",
+        "micro_patch_rng_controls_coordinate": "self.micro_patch_rng.randrange" in sampler_text and "selected_target_coordinate" in sampler_text,
+        "empty_oof_coordinate_claim_rejected": all(
+            token in sampler_text
+            for token in (
+                "provides no scar_oof_fn coordinates",
+                "provides no scar_oof_fp coordinates",
+                "provides no edema_oof_fn_or_low_volume coordinates",
+                "provides no edema_safe_fp coordinates",
+            )
+        ),
+        "status": "PASS"
+        if cycle == expected_cycle
+        and stage_c == ("complete_centerB", "complete_centerC")
+        and len(CAREASEDeterministicSampler.scar_within_focus_cycle) == 20
+        and len(CAREASEDeterministicSampler.edema_within_focus_cycle) == 20
+        and "hard_negative_manifest_fold{fold}_v6.json" in sampler_text
+        and "self.micro_patch_rng.randrange" in sampler_text
+        and "provides no scar_oof_fn coordinates" in sampler_text
+        and "provides no edema_safe_fp coordinates" in sampler_text
+        else "FAIL",
     }
 
 
@@ -272,7 +304,7 @@ def scheduler_static_contract() -> dict[str, Any]:
 def checkpoint_schema_contract() -> dict[str, Any]:
     trainer_text = TRAINER.read_text(encoding="utf-8")
     return {
-        "schema_version": 2,
+        "schema_version": 3,
         "required_fields": list(REQUIRED_CHECKPOINT_FIELDS),
         "field_count": len(REQUIRED_CHECKPOINT_FIELDS),
         "fsync_file": "_fsync_file(tmp)" in trainer_text,
@@ -282,7 +314,7 @@ def checkpoint_schema_contract() -> dict[str, Any]:
         "early_training_complete_rejected": "TRAINING_COMPLETE is forbidden before fixed global_step 14000" in trainer_text,
         "sidecar_validated_on_load": "sidecar SHA mismatch" in trainer_text,
         "status": "PASS"
-        if "CHECKPOINT_SCHEMA_VERSION = 2" in trainer_text
+        if "CHECKPOINT_SCHEMA_VERSION = 3" in trainer_text
         and all(field in trainer_text for field in REQUIRED_CHECKPOINT_FIELDS)
         and "os.replace(tmp, path)" in trainer_text
         and "TRAINING_COMPLETE is forbidden before fixed global_step 14000" in trainer_text
@@ -305,6 +337,23 @@ def evaluator_extent_contract() -> dict[str, Any]:
         "status": "PASS" if all(checks.values()) else "FAIL",
         "checks": checks,
         "forbidden_pattern": "average_patch_logits_after_model_extent_bias",
+    }
+
+
+def oof_binding_contract() -> dict[str, Any]:
+    text = MANIFEST_BUILDER.read_text(encoding="utf-8")
+    checks = {
+        "requires_explicit_preprocessed_grid_binding": "preprocessed_grid_binding=true" in text,
+        "requires_matching_geometry_sha": "matching" in text and "preprocessed_geometry_sha256" in text,
+        "rejects_shape_ratio_resampling": "shape-ratio resampling" in text,
+        "no_generic_zoom_execution_path": "ndimage.zoom(" not in text,
+        "no_resample_binding_label": "strict_raw_nifti_xyz_to_preprocessed_zyx_crop_then_nearest_resample" not in text,
+    }
+    return {
+        "status": "PASS" if all(checks.values()) else "FAIL",
+        "checks": checks,
+        "legal_binding": "prediction_array_already_on_exact_preprocessed_grid_with_manifest_geometry_proof",
+        "forbidden_binding": ["shape_only", "transpose_only", "generic_zoom", "min_shape_crop", "fold_level_final_or_best_fallback"],
     }
 
 
@@ -361,7 +410,7 @@ def gate_failures(payloads: dict[str, Any]) -> list[str]:
     call_chain = payloads["call_chain"]
     if not (call_chain["wrapper_uses_htzhulab"] and call_chain["wrapper_uses_env_python"] and not call_chain["old_entrypoint_bypass"]):
         failures.append("formal_call_chain")
-    for name in ("coverage", "loss", "sampler", "scheduler", "checkpoint", "evaluator_extent", "canned_pass_oracle_audit"):
+    for name in ("coverage", "loss", "sampler", "scheduler", "checkpoint", "evaluator_extent", "oof_binding", "canned_pass_oracle_audit"):
         payload = payloads[name]
         status = payload.get("status") if isinstance(payload, dict) else ("PASS" if all(row["status"] == "PASS" for row in payload) else "FAIL")
         if status != "PASS":
@@ -382,6 +431,7 @@ def build_gate_payloads(*, include_known_bad: bool, output_dir: Path) -> dict[st
         "scheduler": scheduler_static_contract(),
         "checkpoint": checkpoint_schema_contract(),
         "evaluator_extent": evaluator_extent_contract(),
+        "oof_binding": oof_binding_contract(),
         "canned_pass_oracle_audit": canned_pass_oracle_audit(),
     }
     if include_known_bad:
@@ -418,6 +468,7 @@ def apply_known_bad_fixture(fixture: str, payloads: dict[str, Any]) -> None:
     scheduler = payloads["scheduler"]
     checkpoint = payloads["checkpoint"]
     evaluator_extent = payloads["evaluator_extent"]
+    oof_binding = payloads["oof_binding"]
     canned_pass = payloads["canned_pass_oracle_audit"]
     call_chain = payloads["call_chain"]
 
@@ -575,12 +626,13 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output-dir", type=Path, default=RESULT_ROOT)
     parser.add_argument("--known-bad-fixture", choices=known_bad_fixture_ids())
+    parser.add_argument("--skip-known-bad", action="store_true", help="developer probe only; formal G1 must not use this")
     args = parser.parse_args()
     out = args.output_dir.resolve()
     if args.known_bad_fixture:
         return run_known_bad_fixture(args.known_bad_fixture, out)
 
-    payloads = build_gate_payloads(include_known_bad=True, output_dir=out)
+    payloads = build_gate_payloads(include_known_bad=not args.skip_known_bad, output_dir=out)
     call_chain = payloads["call_chain"]
     coverage = payloads["coverage"]
     loss = payloads["loss"]
@@ -588,8 +640,9 @@ def main() -> int:
     scheduler = payloads["scheduler"]
     checkpoint = payloads["checkpoint"]
     evaluator_extent = payloads["evaluator_extent"]
+    oof_binding = payloads["oof_binding"]
     canned_pass = payloads["canned_pass_oracle_audit"]
-    known_bad = payloads["known_bad"]
+    known_bad = payloads.get("known_bad", {"status": "SKIPPED_DEV_PROBE", "required_known_bad_count": 0, "known_bad_count_passed": 0})
     source_manifest = {
         str(path.relative_to(REPO_ROOT)): sha256_file(path)
         for path in (WRAPPER, ENTRYPOINT, MODEL, TRAINER, SAMPLER, AUGMENTATION, DECODE, EVALUATOR, MANIFEST_BUILDER, VALIDATOR)
@@ -604,10 +657,20 @@ def main() -> int:
     write_json(out / "scheduler_static_contract.json", scheduler)
     write_json(out / "checkpoint_schema_contract.json", checkpoint)
     write_json(out / "full_volume_extent_aggregation_oracle.json", evaluator_extent)
+    write_json(out / "canonical_stock_oof_provenance_receipt.json", oof_binding)
     write_json(out / "canned_pass_oracle_audit.json", canned_pass)
     write_json(out / "known_bad_validator_report.json", known_bad)
     write_json(out / "g1_source_sha_manifest.json", source_manifest)
-    write_json(out / "g1_static_implementation_gate_receipt.json", {"decision": overall_status, "failures": failures, "remaining_gap_count": len(failures), "source_sha_manifest": source_manifest})
+    write_json(
+        out / "g1_static_implementation_gate_receipt.json",
+        {
+            "decision": overall_status,
+            "failures": failures,
+            "remaining_gap_count": len(failures),
+            "source_sha_manifest": source_manifest,
+            "known_bad_skipped_dev_probe": bool(args.skip_known_bad),
+        },
+    )
     print(json.dumps({"decision": overall_status, "failures": failures}, indent=2, sort_keys=True))
     return 0 if overall_status == "PASS" else 1
 

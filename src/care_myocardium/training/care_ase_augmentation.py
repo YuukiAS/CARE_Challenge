@@ -147,19 +147,58 @@ def apply_stock_training_transform_preserve_ignore(
     transform: Any,
     availability: tuple[int, ...] | list[int] | np.ndarray,
 ) -> tuple[np.ndarray, np.ndarray]:
+    image, seg, _regression, _extra = apply_stock_training_transform_with_targets(
+        image_patch,
+        seg_patch,
+        transform=transform,
+        availability=availability,
+    )
+    return image, seg
+
+
+def apply_stock_training_transform_with_targets(
+    image_patch: np.ndarray,
+    seg_patch: np.ndarray,
+    *,
+    transform: Any,
+    availability: tuple[int, ...] | list[int] | np.ndarray,
+    regression_target_patch: np.ndarray | None = None,
+    segmentation_extra_patch: np.ndarray | None = None,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray | None, np.ndarray | None]:
     if image_patch.ndim != 4:
         raise ValueError(f"image_patch must be CxZxHxW, got shape {image_patch.shape}")
     if seg_patch.ndim != 3:
         raise ValueError(f"seg_patch must be ZxHxW, got shape {seg_patch.shape}")
+    seg_channels = [seg_patch[None]]
+    if segmentation_extra_patch is not None:
+        extra = np.asarray(segmentation_extra_patch)
+        if extra.ndim != 4:
+            raise ValueError(f"segmentation_extra_patch must be CxZxHxW, got shape {extra.shape}")
+        seg_channels.append(extra)
     data = {
         "image": torch.from_numpy(np.ascontiguousarray(image_patch)).float(),
-        "segmentation": torch.from_numpy(np.ascontiguousarray(seg_patch[None])).long(),
+        "segmentation": torch.from_numpy(np.ascontiguousarray(np.concatenate(seg_channels, axis=0))).long(),
     }
+    if regression_target_patch is not None:
+        regression = np.asarray(regression_target_patch, dtype=np.float32)
+        if regression.ndim != 4:
+            raise ValueError(f"regression_target_patch must be CxZxHxW, got shape {regression.shape}")
+        data["regression_target"] = torch.from_numpy(np.ascontiguousarray(regression)).float()
     out = transform(**data)
     image = out["image"].detach().cpu().numpy().astype(np.float32, copy=False)
-    seg = out["segmentation"][0].detach().cpu().numpy().astype(np.int64, copy=False)
+    segmentation = out["segmentation"].detach().cpu().numpy().astype(np.int64, copy=False)
+    seg = segmentation[0]
+    extra_out = segmentation[1:] if segmentation.shape[0] > 1 else None
+    regression_out = None
+    if out.get("regression_target") is not None:
+        regression_out = out["regression_target"].detach().cpu().numpy().astype(np.float32, copy=False)
     avail = np.asarray(availability, dtype=np.float32).reshape(-1)
     for channel, present in enumerate(avail[: image.shape[0]]):
         if present <= 0:
             image[channel] = 0.0
-    return np.ascontiguousarray(image), np.ascontiguousarray(seg)
+    return (
+        np.ascontiguousarray(image),
+        np.ascontiguousarray(seg),
+        None if regression_out is None else np.ascontiguousarray(regression_out),
+        None if extra_out is None else np.ascontiguousarray(extra_out),
+    )

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from collections import OrderedDict
 import csv
 import hashlib
 import json
@@ -31,26 +32,28 @@ from src.care_myocardium.models.care_ase import build_care_ase_for_fold_with_are
 from src.care_myocardium.inference.care_ase_r2_decode import decode_care_ase_r2_logits
 from src.care_myocardium.training.care_ase_augmentation import (
     apply_stock_training_transform_preserve_ignore,
+    apply_stock_training_transform_with_targets,
     build_stock_augmentation_contract,
     build_stock_training_transform_preserve_ignore,
 )
 from src.care_myocardium.training.care_ase_sampler import CAREASEDeterministicSampler, compute_actual_train_area_references
 from src.care_myocardium.training.care_ase_trainer import (
     CAREASEStageScheduler,
+    build_full_case_target_cache,
     build_optimizer,
-    care_ase_loss,
     checkpoint_receipt,
     load_care_ase_checkpoint,
     parameter_group_coverage,
+    run_formal_optimizer_step,
     save_care_ase_checkpoint,
-    set_stage_trainability,
+    slice_full_case_target_cache,
     write_json,
 )
 
 
 PREPROCESSED = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans_3d_fullres"
 SPLITS = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/splits_final.json"
-RESULT_DIR = REPO_ROOT / "results/20260803_care_ase_r2_full_fidelity_execution"
+RESULT_DIR = REPO_ROOT / "results/20260803_care_ase_r2_pretraining_fidelity_repair_v6"
 CRITICAL_SOURCE_PATHS = (
     "src/care_myocardium/models/care_ase.py",
     "src/care_myocardium/training/care_ase_trainer.py",
@@ -65,7 +68,25 @@ CRITICAL_SOURCE_PATHS = (
 INVALIDATED_TRAINING_SOURCE_SHAS = {
     "207f360f22dd4e28fcecd4a22b67ed1af074ab42",
     "e9876ac8b7c8d6881fd5673f409c0c6e767530f1",
+    "f4ecd049bb09a47c38305b932ef116d45b37c160",
 }
+_FULL_CASE_TARGET_CACHE_BY_CASE: "OrderedDict[tuple[str, tuple[float, float, float]], dict[str, np.ndarray]]" = OrderedDict()
+_FULL_CASE_TARGET_CACHE_MAX_CASES = 8
+_TARGET_REGRESSION_KEYS = (
+    "signed_endo_distance",
+    "signed_epi_distance",
+    "wall_depth_rho",
+    "scar_center_fullres",
+    "edema_boundary",
+    "edema_boundary_raw_mm",
+)
+_TARGET_SEGMENTATION_KEYS = (
+    "geometry_valid",
+    "scar_context_target",
+    "edema_context_target",
+    "edema_boundary_valid",
+    "valid_label_mask",
+)
 
 
 def sha256_file(path: Path) -> str:
@@ -109,10 +130,8 @@ def verify_external_review_permit(path: Path) -> dict[str, Any]:
     required = {
         "decision",
         "reviewed_candidate_commit_sha",
-        "origin_main_sha",
         "implementation_source_sha",
         "review_packet_commit_sha",
-        "semantic_reviewer_sha",
         "effective_contract_sha256",
         "critical_source_manifest_sha256",
         "created_utc",
@@ -128,16 +147,18 @@ def verify_external_review_permit(path: Path) -> dict[str, Any]:
     implementation_bound = {
         str(permit["reviewed_candidate_commit_sha"]),
         implementation_sha,
-        str(permit["semantic_reviewer_sha"]),
         head,
     }
+    if permit.get("semantic_reviewer_sha") is not None:
+        implementation_bound.add(str(permit["semantic_reviewer_sha"]))
     if len(implementation_bound) != 1:
         raise RuntimeError(f"external review permit Commit A mismatch: {sorted(implementation_bound)}")
     review_packet_sha = str(permit["review_packet_commit_sha"])
-    if review_packet_sha != str(permit["origin_main_sha"]):
+    origin_main_at_review = str(permit.get("origin_main_at_review_request", permit.get("origin_main_sha", "")))
+    if review_packet_sha != origin_main_at_review:
         raise RuntimeError(
             "external review permit Commit B mismatch: "
-            f"review_packet_commit_sha={permit['review_packet_commit_sha']} origin_main_sha={permit['origin_main_sha']}"
+            f"review_packet_commit_sha={permit['review_packet_commit_sha']} origin_main_at_review_request={origin_main_at_review}"
         )
     ancestor = subprocess.run(
         ["git", "merge-base", "--is-ancestor", implementation_sha, review_packet_sha],
@@ -149,6 +170,16 @@ def verify_external_review_permit(path: Path) -> dict[str, Any]:
     )
     if ancestor.returncode != 0:
         raise RuntimeError(f"implementation Commit A is not an ancestor of review packet Commit B: {ancestor.stderr.strip()}")
+    origin_contains_a = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", implementation_sha, "origin/main"],
+        cwd=REPO_ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+    if origin_contains_a.returncode != 0:
+        raise RuntimeError(f"implementation Commit A is not contained in current origin/main: {origin_contains_a.stderr.strip()}")
     if head in INVALIDATED_TRAINING_SOURCE_SHAS:
         raise RuntimeError(f"invalidated training source is permanently refused: {head}")
     current_manifest = combined_source_hash()
@@ -263,6 +294,14 @@ def read_b2nd(path: Path) -> np.ndarray:
     return np.asarray(blosc2.open(str(path), mode="r")[:])
 
 
+def preprocessed_spacing_zyx() -> tuple[float, float, float]:
+    plans_path = PREPROCESSED.parent / "nnUNetPlans.json"
+    if plans_path.is_file():
+        plans = json.loads(plans_path.read_text(encoding="utf-8"))
+        return tuple(float(v) for v in plans["configurations"]["3d_fullres"]["spacing"])
+    return (1.0, 1.0, 1.0)
+
+
 def crop_or_pad(array: np.ndarray, center: tuple[int, int, int], patch_size: tuple[int, int, int], *, pad_value: float | int = 0) -> np.ndarray:
     spatial = array.shape[-3:]
     src_slices: list[slice] = []
@@ -281,6 +320,33 @@ def crop_or_pad(array: np.ndarray, center: tuple[int, int, int], patch_size: tup
     return out
 
 
+def _pack_target_cache_for_transform(cache_patch: dict[str, np.ndarray]) -> tuple[np.ndarray, np.ndarray, dict[str, np.ndarray]]:
+    regression = np.stack([np.asarray(cache_patch[key], dtype=np.float32) for key in _TARGET_REGRESSION_KEYS])
+    segmentation = np.stack([np.asarray(cache_patch[key], dtype=np.int64) for key in _TARGET_SEGMENTATION_KEYS])
+    remaining = {
+        key: value
+        for key, value in cache_patch.items()
+        if key not in set(_TARGET_REGRESSION_KEYS) | set(_TARGET_SEGMENTATION_KEYS)
+    }
+    return regression, segmentation, remaining
+
+
+def _unpack_transformed_target_cache(
+    regression: np.ndarray,
+    segmentation: np.ndarray,
+    remaining: dict[str, np.ndarray],
+) -> dict[str, np.ndarray]:
+    out = dict(remaining)
+    for key, value in zip(_TARGET_REGRESSION_KEYS, regression):
+        out[key] = np.asarray(value, dtype=np.float32)
+    for key, value in zip(_TARGET_SEGMENTATION_KEYS, segmentation):
+        if key.endswith("_target"):
+            out[key] = np.rint(value).astype(np.int64, copy=False)
+        else:
+            out[key] = (np.asarray(value) > 0.5).astype(np.float32, copy=False)
+    return out
+
+
 def deterministic_center(
     seg: np.ndarray,
     *,
@@ -289,11 +355,14 @@ def deterministic_center(
     within_focus: str,
     hard_negative_category: str,
     resolved_target_coordinates: tuple[tuple[int, int, int], ...],
+    selected_target_coordinate: tuple[int, int, int] | None,
     fallback_sequence: tuple[str, ...],
     micro: int,
     patch_size: tuple[int, int, int],
     spacing: tuple[float, float, float],
 ) -> tuple[int, int, int]:
+    if selected_target_coordinate is not None:
+        return tuple(int(v) for v in selected_target_coordinate)
     if resolved_target_coordinates:
         idx = int(hashlib.sha256(f"{descriptor_sha}|coords|micro={micro}".encode("utf-8")).hexdigest()[:16], 16) % len(resolved_target_coordinates)
         return tuple(int(v) for v in resolved_target_coordinates[idx])
@@ -372,9 +441,9 @@ def make_batch(
 ) -> dict[str, torch.Tensor]:
     image = read_b2nd(PREPROCESSED / f"{descriptor.case_id}.b2nd").astype(np.float32, copy=False)
     seg = read_b2nd(PREPROCESSED / f"{descriptor.case_id}_seg.b2nd")[0].astype(np.int64, copy=False)
-    spacing = (1.0, 1.0, 1.0)
+    spacing = preprocessed_spacing_zyx()
     properties_path = PREPROCESSED / f"{descriptor.case_id}.pkl"
-    if properties_path.is_file():
+    if spacing == (1.0, 1.0, 1.0) and properties_path.is_file():
         with properties_path.open("rb") as f:
             spacing = tuple(float(v) for v in pickle.load(f).get("spacing", spacing))
     center = deterministic_center(
@@ -384,6 +453,7 @@ def make_batch(
         within_focus=descriptor.within_focus,
         hard_negative_category=descriptor.hard_negative_category,
         resolved_target_coordinates=descriptor.resolved_target_coordinates,
+        selected_target_coordinate=descriptor.selected_target_coordinate,
         fallback_sequence=descriptor.fallback_sequence,
         micro=micro,
         patch_size=initial_patch_size,
@@ -391,16 +461,33 @@ def make_batch(
     )
     initial_image = crop_or_pad(image, center, initial_patch_size, pad_value=0)
     initial_seg = crop_or_pad(seg[None], center, initial_patch_size, pad_value=-1)[0]
+    cache_key = (str(descriptor.case_id), tuple(float(v) for v in spacing))
+    full_case_targets = _FULL_CASE_TARGET_CACHE_BY_CASE.get(cache_key)
+    if full_case_targets is None:
+        full_case_targets = build_full_case_target_cache(seg, spacing)
+        _FULL_CASE_TARGET_CACHE_BY_CASE[cache_key] = full_case_targets
+        while len(_FULL_CASE_TARGET_CACHE_BY_CASE) > _FULL_CASE_TARGET_CACHE_MAX_CASES:
+            _FULL_CASE_TARGET_CACHE_BY_CASE.popitem(last=False)
+    else:
+        _FULL_CASE_TARGET_CACHE_BY_CASE.move_to_end(cache_key)
+    initial_target_cache_patch = slice_full_case_target_cache(full_case_targets, center=center, patch_size=initial_patch_size)
     if stock_transform is not None:
-        final_image, final_seg = apply_stock_training_transform_preserve_ignore(
+        regression_patch, segmentation_patch, untouched_cache = _pack_target_cache_for_transform(initial_target_cache_patch)
+        final_image, final_seg, transformed_regression, transformed_segmentation = apply_stock_training_transform_with_targets(
             initial_image,
             initial_seg,
             transform=stock_transform,
             availability=descriptor.availability,
+            regression_target_patch=regression_patch,
+            segmentation_extra_patch=segmentation_patch,
         )
+        if transformed_regression is None or transformed_segmentation is None:
+            raise RuntimeError("stock augmentation did not return transformed CARE-ASE target maps")
+        target_cache_patch = _unpack_transformed_target_cache(transformed_regression, transformed_segmentation, untouched_cache)
     else:
         final_image = crop_or_pad(initial_image, tuple(v // 2 for v in initial_patch_size), final_patch_size, pad_value=0)
         final_seg = crop_or_pad(initial_seg[None], tuple(v // 2 for v in initial_patch_size), final_patch_size, pad_value=-1)[0]
+        target_cache_patch = slice_full_case_target_cache(full_case_targets, center=center, patch_size=final_patch_size)
     return {
         "image": torch.from_numpy(final_image[None]).to(device=device, dtype=torch.float32),
         "seg": torch.from_numpy(final_seg[None]).to(device=device, dtype=torch.long),
@@ -410,6 +497,11 @@ def make_batch(
         "final_patch_size": tuple(int(v) for v in final_patch_size),
         "focused_coordinate_zyx": tuple(int(v) for v in center),
         "stock_transform_applied": stock_transform is not None,
+        "case_id": descriptor.case_id,
+        "full_case_seg_shape_zyx": tuple(int(v) for v in seg.shape),
+        "full_case_target_cache": target_cache_patch,
+        "full_case_target_cache_source": "preprocessed_full_case_grid_sliced_to_initial_patch_then_stock_spatial_transform_synced",
+        "full_case_target_cache_alignment_note": "CARE-ASE target maps are passed through the same batchgeneratorsv2 stock spatial transform call as image/seg; extent z profiles remain full-case fields.",
     }
 
 
@@ -648,14 +740,10 @@ def main() -> int:
     log_path = out_dir / f"training_log_{args.start_step:05d}_{args.end_step:05d}.csv"
     history: list[dict[str, Any]] = []
     for step in range(int(args.start_step), int(args.end_step)):
-        stage = set_stage_trainability(model, global_step=step)
-        scheduler.step(step)
-        optimizer.zero_grad(set_to_none=True)
         bundle = sampler.descriptor_bundle_for_step(step, microbatch_count=4)
         descriptor = bundle.micro_descriptors[0]
         desc_sha = bundle.sha256()
-        loss_total = 0.0
-        metrics: dict[str, float] = {}
+        microbatches: list[dict[str, Any]] = []
         for micro, micro_descriptor in enumerate(bundle.micro_descriptors):
             micro_sha = micro_descriptor.sha256()
             batch = make_batch(
@@ -670,16 +758,21 @@ def main() -> int:
             batch["case_id"] = micro_descriptor.case_id
             batch["descriptor_sha256"] = micro_sha
             batch["optimizer_step_bundle_sha256"] = desc_sha
-            with torch.autocast(device_type="cuda", dtype=torch.bfloat16, enabled=(device.type == "cuda")):
-                outputs = model(batch["image"], batch["availability"], global_step=step)
-                loss, metrics = care_ase_loss(outputs, batch)
-            (loss / 4.0).backward()
-            loss_total += float(loss.detach().cpu())
-        grad_norm = torch.nn.utils.clip_grad_norm_([p for p in model.parameters() if p.requires_grad], max_norm=12.0)
-        optimizer.step()
+            microbatches.append(batch)
+        step_result = run_formal_optimizer_step(
+            model=model,
+            optimizer=optimizer,
+            scheduler=scheduler,
+            microbatches=microbatches,
+            global_step=step,
+            gradient_accumulation=4,
+            autocast_device_type="cuda",
+            autocast_dtype=torch.bfloat16,
+            autocast_enabled=(device.type == "cuda"),
+        )
         row = {
             "optimizer_step": step + 1,
-            "stage": stage,
+            "stage": step_result["stage"],
             "case_id": descriptor.case_id,
             "micro_case_ids": json.dumps([item.case_id for item in bundle.micro_descriptors]),
             "case_group": descriptor.case_group,
@@ -691,11 +784,12 @@ def main() -> int:
             "resolved_target_coordinate_count": len(descriptor.resolved_target_coordinates),
             "fallback_sequence": "|".join(descriptor.fallback_sequence),
             "descriptor_sha256": desc_sha,
-            "loss": loss_total / 4.0,
-            "grad_norm": float(grad_norm.detach().cpu() if torch.is_tensor(grad_norm) else grad_norm),
+            "loss": step_result["loss_mean"],
+            "grad_norm": step_result["grad_norm"],
             "lr_new_modules": CAREASEStageScheduler.lr_for(group_name="new_modules", global_step=step),
             "extent_wall_ramp_value": model.extent_wall_ramp(step + 1),
             "slurm_job_id": os.environ.get("SLURM_JOB_ID", "local"),
+            "formal_step_api": step_result["formal_step_api"],
         }
         append_csv(log_path, row)
         history.append(row)
@@ -723,11 +817,25 @@ def main() -> int:
                 external_review_permit_sha256=sha256_file(args.external_review_permit) if args.external_review_permit else "SHORT_SMOKE_NO_FORMAL_CREDIT",
                 critical_source_manifest_sha256=combined_source_hash(),
                 split_file_sha256=sha256_file(SPLITS),
+                split_case_lists_sha256=json_sha({"fold": fold, "actual_train": actual_train_ids}),
+                actual_train_case_ids_sha256=json_sha({"actual_train": actual_train_ids}),
+                case_metadata_sha256=sha256_file(REPO_ROOT / "data/care_myops_case_metadata.json")
+                if (REPO_ROOT / "data/care_myops_case_metadata.json").is_file()
+                else json_sha({"metadata_source": "load_myops_case_metadata", "fold": fold}),
                 plans_hash=sha256_file(plans_path),
                 stock_checkpoint_hash=sha256_file(Path(model.config.checkpoint_path)),
                 hard_negative_manifest_sha256=sampler.hard_negative_manifest.get("manifest_sha256", "UNSET"),
                 augmentation_contract_sha256=augmentation_contract.sha256(),
+                full_case_target_cache_manifest_sha256=json_sha(
+                    {
+                        "schema": "runtime_lru_full_case_target_cache_v6",
+                        "builder": "build_full_case_target_cache",
+                        "cases": actual_train_ids,
+                        "spacing_source": str(plans_path.relative_to(REPO_ROOT)),
+                    }
+                ),
                 area_reference_receipt_sha256=json_sha(area),
+                formal_resumable=not bool(args.allow_short_smoke),
             )
             payload = torch.load(ckpt, map_location="cpu", weights_only=False)
             write_json(out_dir / f"{ckpt.stem}_receipt.json", checkpoint_receipt(ckpt, payload))
