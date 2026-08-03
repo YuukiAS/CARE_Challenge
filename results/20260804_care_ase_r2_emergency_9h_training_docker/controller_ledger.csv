@@ -1,0 +1,7 @@
+utc,event,status,details
+2026-08-03T17:29:30.303955Z,bootstrap,STARTED,Created controller_context/time_budget from synced 640ab3b main
+2026-08-03T17:36:27.884373Z,emergency_addendum_absorbed,ACTIVE,User addendum absorbed: fix-and-continue; no NEEDS_REPAIR/BLOCKED/MONITOR terminal; bootstrap failures must be repaired internally; fallback no-go remains terminal completion path.
+2026-08-03T17:38:38.829548Z,hard_negative_manifest_inherited,PASS,"{""1"": {""case_count"": 141, ""destination"": ""results/20260804_care_ase_r2_emergency_9h_training_docker/hard_negative_manifest_fold1.json"", ""invalid_case_count"": 0, ""invalid_examples"": [], ""sha256"": ""6d793249e3c6fc42aa29ff97f84fa75431cece9c8a4e08d243ed1cf96ce4da21"", ""source"": ""results/20260803_care_ase_r2_last_hotfix_v9/hard_negative_manifest_fold1.json""}, ""4"": {""case_count"": 141, ""destination"": ""results/20260804_care_ase_r2_emergency_9h_training_docker/hard_negative_manifest_fold4.json"", ""invalid_case_count"": 0, ""invalid_examples"": [], ""sha256"": ""8a1829336468a3cd477dadb33ae9818dac6375855c5db3df441e73598cfa9ea5"", ""source"": ""results/20260803_care_ase_r2_last_hotfix_v9/hard_negative_manifest_fold4.json""}}"
+2026-08-03T17:41:19.636662Z,area_reference_receipt,PASS,13435b9618daf09b49290a98faf5441dcbbd141f52ccfb6c1e94568772654b6e
+2026-08-03T17:45:27.538762Z,commit_a_inputs_prepared,PASS,ba66f54b3be4c00767eb222bc8c64a6dc61d457a
+2026-08-03T17:46:33.375105Z,direct_stock_oof_provenance_manifest,PASS,1398af07acfe2e82b394c1757be8e1555c525f7714b5f5ed433094b1a7598ef8

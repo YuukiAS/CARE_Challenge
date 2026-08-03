@@ -1,0 +1,13 @@
+{
+  "compute_capability": "9.0",
+  "created_utc": "2026-08-03T17:45:27.086530Z",
+  "cuda_visible_devices": "0",
+  "fold": 4,
+  "gpu_name": "NVIDIA H100 NVL",
+  "gpu_uuid": "GPU-9adde2a0-5df3-db15-c325-595a127bc660",
+  "hostname": "g1807htzh01.ll.unc.edu",
+  "memory_total_mib": 95830,
+  "sha256": "981156b420f1342102ba706000af8b0a1e969cf43b57328ac265f64148394b72",
+  "slurm_job_id": "61830309",
+  "status": "PASS"
+}

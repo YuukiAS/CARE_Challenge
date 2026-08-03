@@ -1,0 +1,23 @@
+{
+  "controller_status": "BOOTSTRAPPING",
+  "docker_upload_authorized": false,
+  "emergency_incremental_supervision_absorbed_utc": "2026-08-03T17:36:27.890416Z",
+  "fallback_no_go_completion_path": "CARE_ASE_INNER_NO_GO_USE_FALLBACK",
+  "fixed_interactive_jobs": {
+    "fold1": 61794608,
+    "fold4": 61830309
+  },
+  "formal_training_authorized": true,
+  "hard_docker_staging_deadline_utc": "2026-08-04T03:28:35Z",
+  "hard_training_deadline_utc": "2026-08-04T02:28:35Z",
+  "nonterminal_block_tokens_forbidden": true,
+  "organizer_email_send_authorized": false,
+  "outer_access_authorized": false,
+  "t0_local_Asia_Hong_Kong": "2026-08-04T01:28:35+08:00",
+  "t0_utc": "2026-08-03T17:28:35Z",
+  "task_key": "20260804_care_ase_r2_emergency_9h_training_docker",
+  "task_prompt": "prompts/tasks/20260804_care_ase_r2_emergency_9h_training_docker_controller.md",
+  "task_prompt_sha256": "38b406130d3ebffa355f6f19460cc6d1e876c0b3e92064f285b2ba0af6b36c74",
+  "user_authorized_controller_training_permit": true,
+  "validation_upload_authorized": false
+}

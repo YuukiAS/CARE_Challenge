@@ -1,0 +1,8 @@
+{
+  "formal_training_started": false,
+  "outer_access_count_fold1": 0,
+  "outer_access_count_fold4": 0,
+  "split_case_lists_path": "results/20260804_care_ase_r2_emergency_9h_training_docker/split_case_lists.csv",
+  "split_case_lists_sha256": "bbd675956fd2320bc6ec220215e51dbd5a82cf99d64055e13e97d12d39f7799b",
+  "status": "PASS"
+}

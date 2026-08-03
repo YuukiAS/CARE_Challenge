@@ -1,0 +1,8 @@
+{
+  "created_utc": "2026-08-03T17:45:27.384638Z",
+  "g1_smoke_receipt": "results/20260804_care_ase_r2_emergency_9h_training_docker/g1_static_implementation_gate_receipt.json",
+  "implementation_commit_sha": "ba66f54b3be4c00767eb222bc8c64a6dc61d457a",
+  "source_repairs": "results/20260804_care_ase_r2_emergency_9h_training_docker/source_audit_and_repairs.md",
+  "status": "PASS",
+  "task_key": "20260804_care_ase_r2_emergency_9h_training_docker"
+}

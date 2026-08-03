@@ -1,0 +1,59 @@
+{
+  "created_utc": "2026-08-03T17:41:19.636662Z",
+  "folds": {
+    "1": {
+      "actual_inner_overlap": [],
+      "actual_outer_overlap": [],
+      "actual_train_case_ids_sha256": "3359b8e9331a03f81d2d9198c87c69858729a25a4d5a116d3c51f1de47ef1f63",
+      "actual_train_count": 141,
+      "denominator_wall_union_labels": [
+        1,
+        4,
+        5
+      ],
+      "edema_positive_t2_present_slice_count": 513,
+      "edema_reference": 0.251953125,
+      "fold": 1,
+      "inner_case_ids_sha256": "4c67bfb6cf559f12a66ff952f45eda1dc4ffbdab1aaeae4b7ef64b79081e474e",
+      "inner_count": 35,
+      "inner_or_outer_access": "forbidden_not_used",
+      "inner_outer_overlap": [],
+      "outer_case_ids_sha256": "c88fe9f95a43b7467459b1eed8f186d44c4ec0c5cce92ef9dcce26a2500b7ab0",
+      "outer_count": 44,
+      "payload_sha256": "5d7c39d8d4e7fd7c528892513a1b9a7135fac8fb4026eb70198b94e80a69e4e2",
+      "scar_positive_slice_count": 1731,
+      "scar_reference": 0.2562862669245648,
+      "source": "actual_train_only"
+    },
+    "4": {
+      "actual_inner_overlap": [],
+      "actual_outer_overlap": [],
+      "actual_train_case_ids_sha256": "83dcc61d84f7b365a8ffe07fff4cd889c3ca15fd97b0c2d39aa1560a4c01945d",
+      "actual_train_count": 141,
+      "denominator_wall_union_labels": [
+        1,
+        4,
+        5
+      ],
+      "edema_positive_t2_present_slice_count": 508,
+      "edema_reference": 0.22920081356155286,
+      "fold": 4,
+      "inner_case_ids_sha256": "fe48bb9eee3451297baf54239b05385b083c165d66746dd4e6fa36307bfa7094",
+      "inner_count": 35,
+      "inner_or_outer_access": "forbidden_not_used",
+      "inner_outer_overlap": [],
+      "outer_case_ids_sha256": "f11419b49017fe180375c332b1dc20a4071663de2eddc81f8ce66cd6464da3ba",
+      "outer_count": 44,
+      "payload_sha256": "bf1ed086b9a7170ad9e8b1cba37fb0b052df88b86b14fce9b3d7e126382ac52d",
+      "scar_positive_slice_count": 1761,
+      "scar_reference": 0.26353790613718414,
+      "source": "actual_train_only"
+    }
+  },
+  "payload_sha256": "13435b9618daf09b49290a98faf5441dcbbd141f52ccfb6c1e94568772654b6e",
+  "source_function": "compute_actual_train_area_references",
+  "split_path": "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/splits_final.json",
+  "split_sha256": "9c3e9f3b7e4565a5c3c2589ddbb913c78c0ad423f4265370585841c93c6f880a",
+  "status": "PASS",
+  "task_key": "20260804_care_ase_r2_emergency_9h_training_docker"
+}
