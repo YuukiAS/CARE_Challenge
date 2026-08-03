@@ -1,5 +1,24 @@
 # CARE 架构 Wiki
 
+architecture_version: `care-ase-r2-v5-pending-external-pretraining-review-20260803`
+latest_verified_runtime: `CARE-ASE R2 v5 implementation repair, G1/G2 fidelity evidence, and continuous Reviewer RV5-D6/RV5-D7 internal review are complete; external pretraining review is still required`
+latest_scientific_status: `PRETRAINING_EXTERNAL_REVIEW_REQUEST_READY: implementation source Commit A f4ecd049bb09a47c38305b932ef116d45b37c160; review packet Commit B 51b9c7bf307bf5b25cc502207b7d7384db9d1815; formal training not authorized`
+latest_controller_task: `20260803_care_ase_r2_pretraining_fidelity_repair_v5`
+route_status: `MAIN_ONLY_CARE_ASE_R2_V5_PENDING_EXTERNAL_PRETRAINING_REVIEW`
+
+当前 CARE-ASE R2 v5 只到训练前实现忠实性审阅请求阶段。旧 fold2/fold3 CARE-ASE outer 结果属于历史实现，不代表 R2 v5 已获准训练，也不能作为当前 v5 的正式科学结论。当前 v5 的 `old_207f_runtime_credit` 和 `old_e987_runtime_credit` 均为 `zero`；fold1/fold4 formal training、outer access、validation/Docker/hosted upload 都仍未授权。下一步只能由外部 GPT 对 Commit B 中的轻量 evidence packet 审阅，并返回 `PRETRAINING_EXTERNAL_REVIEW_PASS` 或 `PRETRAINING_EXTERNAL_REVIEW_REVISE`。
+
+关键证据：
+
+```text
+results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/pretraining_external_review_request.json
+results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/implementation_gap_closure.json
+results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/g1_static_implementation_gate_receipt.json
+results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/g2_real_gpu_fidelity_receipt.json
+results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/reviewer_semantic/RV5-D6/review.json
+results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/reviewer_semantic/RV5-D7/review.json
+```
+
 architecture_version: `care-test-docker-final-workstation-validated-returned-20260803`
 latest_verified_runtime: `WSL2 Docker Engine built MyoPS pure five-fold nnU-Net image, loaded byte-preserved collaborator Cine image, validated CPU smoke/determinism, saved/loaded clean archives, and returned final archives to server final dist`
 latest_scientific_status: `FINAL_DOCKER_WORKSTATION_VALIDATED_RETURNED: MyoPS host equivalence PASS with documented Case1012 2-voxel stale expected-output override; Cine black-box CPU determinism PASS; no challenge/validation/netdisk upload and no organizer email`

@@ -1,5 +1,34 @@
 # CARE 当前开发状态
 
+## 2026-08-03 最新机器真值：CARE-ASE R2 v5 等待外部训练前审阅
+
+CARE-ASE R2 v5 的实现忠实性返修、G1/G2 证据包和持续 Reviewer RV5-D6/RV5-D7 内部审查已经完成；本状态只表示可以交给外部 GPT 做训练前实现审阅，不表示正式训练获准开始。fold1/fold4 的 14000-step 正式训练、outer access、validation/Docker/hosted upload 仍未授权。
+
+```text
+state_id: care_ase_r2_v5_pending_external_pretraining_review
+active_branch: main
+implementation_source_commit_sha: f4ecd049bb09a47c38305b932ef116d45b37c160
+review_packet_commit_sha: 51b9c7bf307bf5b25cc502207b7d7384db9d1815
+formal_training_authorized: false
+formal_training_started: false
+outer_access_fold1: 0
+outer_access_fold4: 0
+old_207f_runtime_credit: zero
+old_e987_runtime_credit: zero
+next_action: EXTERNAL_GPT_PRETRAINING_REVIEW
+```
+
+关键证据：
+
+```text
+results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/pretraining_external_review_request.json
+results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/implementation_gap_closure.json
+results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/g1_static_implementation_gate_receipt.json
+results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/g2_real_gpu_fidelity_receipt.json
+results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/reviewer_semantic/RV5-D6/review.json
+results/20260803_care_ase_r2_pretraining_fidelity_repair_v5/reviewer_semantic/RV5-D7/review.json
+```
+
 ## 2026-08-03 最新机器真值：最终 CARE Docker 工位构建、验证、回传已完成
 
 MyoPS 纯五折 nnU-Net Docker 已在 Windows WSL2 工位完成 build/run/save/load 黑盒验证，CineMyoPS 合作者原字节 archive 已直接 load/run 验证。两个镜像均为 `linux/amd64`，均通过 CPU smoke、重复确定性和 clean save/load/run；MyoPS host equivalence 已记录并通过，唯一差异是 Case1012 expected host output 的 2-voxel stale microdifference，按用户确认的服务器端旧 expected 输出原因作为显式 override 保留。最终 Docker archives 已回传服务器 final dist，未上传 challenge、validation、网盘，未给组织方发送邮件。
