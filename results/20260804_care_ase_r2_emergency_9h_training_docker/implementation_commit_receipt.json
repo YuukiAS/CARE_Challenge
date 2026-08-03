@@ -1,10 +1,17 @@
 {
-  "created_utc": "2026-08-03T18:08:36.494306Z",
-  "critical_source_manifest_sha256": "d4732d1a46f75adc991c13cb3a96e72ba43f49223e1ede0472ed62ddba8466cc",
+  "created_utc": "2026-08-03T18:17:01.740408Z",
+  "critical_source_manifest_sha256": "f8efa9f4473cf8da8b353422cb7db64baadd3b305a20f557c446bece0440a37b",
   "effective_contract_sha256": "1b02fb37fa30054b74f7b73b7bd15617d74ab931b4a12965ea1d700bb7fa3c1e",
-  "implementation_commit_sha": "0c6db8553bf9c4c26c2bfc6f82d8a98b70bb756e",
-  "previous_invalidated_implementation_commit_sha": "cb11c348a81ca0db53783939718d2633437d5df0",
-  "previous_invalidated_review_packet_commit_sha": "0dfb75eedb9af33bc106652289fe93ba0a171d3e",
-  "source_change_reason": "emergency final sampler category semantics, augmented source-z/footprint authority, fixed selector formula, explicit full-volume inference settings, named-evidence canary retained",
+  "formal_training_started_after_final_source_refresh": false,
+  "implementation_commit_sha": "199ab2d83657dfe0be19780cb95913d1261e1608",
+  "origin_main_sha_at_generation": "3843072e9e03a2d40b73c969b6878eb51c084bda",
+  "outer_access_fold1": 0,
+  "outer_access_fold4": 0,
+  "source_repair_scope": [
+    "current emergency monitor result root binding",
+    "stock-transform source-z authority label",
+    "step20_50_100 online runtime ETA receipt",
+    "non-log-step collect_metrics disabled for reduced synchronization"
+  ],
   "status": "PASS"
 }

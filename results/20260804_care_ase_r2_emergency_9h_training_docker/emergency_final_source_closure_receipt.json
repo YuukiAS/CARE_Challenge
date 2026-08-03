@@ -1,12 +1,22 @@
 {
   "augmentation_source_z_id_transformed_with_stock_segmentation_extra": true,
-  "created_utc": "2026-08-03T18:08:36.494306Z",
+  "created_utc": "2026-08-03T18:17:01.740408Z",
+  "critical_source_manifest_sha256": "f8efa9f4473cf8da8b353422cb7db64baadd3b305a20f557c446bece0440a37b",
+  "effective_contract_sha256": "1b02fb37fa30054b74f7b73b7bd15617d74ab931b4a12965ea1d700bb7fa3c1e",
   "extent_presence_valid_separate_from_area_valid": true,
+  "formal_runtime_step_eta_receipts": [
+    "training_runtime_eta_step00020.json",
+    "training_runtime_eta_step00050.json",
+    "training_runtime_eta_step00100.json"
+  ],
+  "formal_training_started_after_this_repair": false,
   "full_volume_inference_settings_explicit": true,
-  "implementation_commit_sha": "0c6db8553bf9c4c26c2bfc6f82d8a98b70bb756e",
+  "implementation_commit_sha": "199ab2d83657dfe0be19780cb95913d1261e1608",
+  "monitor_task_key": "20260804_care_ase_r2_emergency_9h_training_docker",
   "named_evidence_canary_before_step100": true,
   "outer_access_fold1": 0,
   "outer_access_fold4": 0,
+  "review_packet_commit_sha": "TO_BE_FILLED_BY_COMMIT_B",
   "sampler_blood_pool_adjacent_excludes_cavity": true,
   "sampler_edema_boundary_uses_physical_distance": true,
   "sampler_oof_requires_manifest_coordinates": true,
@@ -14,5 +24,6 @@
   "sampler_small_component_physical_volume_lt_1000mm3": true,
   "scar_center_patch_fragment_recentroid_forbidden": true,
   "selector_formula": "CARE_ASE_R2_FIXED_INNER_SELECTOR_V2_CONTRACT_FORMULA",
+  "source_z_authority": "stock_transform_source_z_id_authority",
   "status": "PASS"
 }
