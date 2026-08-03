@@ -12,9 +12,9 @@ def _patch_manifest_loader(monkeypatch):
         "_load_hard_negative_manifest",
         lambda _repo_root, _fold: {
             "source": "canonical_patient_held_out_stock_nnunet_oof_only",
-            "v6_manifest": True,
+            "v7_manifest": True,
             "forbidden_old_manifest_paths_rejected": True,
-            "manifest_path": "unit-test-v6-manifest.json",
+            "manifest_path": "unit-test-v7-manifest.json",
             "manifest_sha256": "unit-test",
             "cases": {},
         },
@@ -36,10 +36,10 @@ def test_sampler_stage_c_center_groups_are_runtime_selectable(monkeypatch):
     assert center_c.center == "CenterC"
 
 
-def test_sampler_rejects_old_manifest_path_when_v6_missing(tmp_path):
+def test_sampler_rejects_old_manifest_path_when_v7_missing(tmp_path):
     old = tmp_path / "results/20260803_care_ase_r2_full_fidelity_execution/hard_negative_manifest_fold1.json"
     old.parent.mkdir(parents=True)
     old.write_text("{}\n", encoding="utf-8")
 
-    with pytest.raises(FileNotFoundError, match="final code blocker hard-negative JSON manifest"):
+    with pytest.raises(FileNotFoundError, match="hard-negative JSON manifest"):
         sampler_module._load_hard_negative_manifest(tmp_path, 1)

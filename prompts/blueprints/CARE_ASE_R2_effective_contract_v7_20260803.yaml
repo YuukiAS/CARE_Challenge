@@ -1,0 +1,236 @@
+contract_id: CARE_ASE_R2_EFFECTIVE_CONTRACT_V7_20260803
+contract_status: external_review_repair_candidate
+created_date: 2026-08-03
+task_key: 20260803_care_ase_r2_external_review_repair_v7
+
+authority:
+  formal_training_authorized: false
+  outer_access_authorized: false
+  validation_upload_authorized: false
+  docker_upload_authorized: false
+  hosted_metric_claim_authorized: false
+  external_pretraining_review_required: true
+  formal_training_requires_permit_decision: PRETRAINING_EXTERNAL_REVIEW_PASS
+  final_internal_status_before_external_review: PRETRAINING_EXTERNAL_REVIEW_REQUEST_READY
+
+fixed_inputs:
+  repository: /users/a/e/aereinh/CARE
+  branch: main
+  remote: origin
+  remote_repository: YuukiAS/CARE_Challenge
+  preprocessed_dataset: data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS
+  plans_file: data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans.json
+  splits_file: data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/splits_final.json
+  modality_order: [LGE, T2, C0]
+  labels:
+    background: 0
+    myocardium_wall: 1
+    lv_blood: 2
+    rv_blood: 3
+    pure_edema: 4
+    scar: 5
+
+source_binding:
+  effective_contract_fixed_path: prompts/blueprints/CARE_ASE_R2_effective_contract_v7_20260803.yaml
+  critical_source_manifest_includes:
+    - prompts/blueprints/CARE_ASE_R2_effective_contract_v7_20260803.yaml
+    - src/care_myocardium/models/care_ase.py
+    - src/care_myocardium/training/care_ase_trainer.py
+    - src/care_myocardium/training/care_ase_sampler.py
+    - src/care_myocardium/training/care_ase_augmentation.py
+    - src/care_myocardium/inference/care_ase_r2_decode.py
+    - scripts/training/care_ase/run_care_ase_r2_chunk.py
+    - scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py
+    - scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py
+    - jobs/care_ase_r2/run_fold_chunk_htzhulab.sh
+  formal_runtime_must_recompute_effective_contract_sha256: true
+  formal_runtime_must_recompute_critical_source_manifest_sha256: true
+  checkpoint_must_store_effective_contract_sha256: true
+  checkpoint_must_store_critical_source_manifest_sha256: true
+
+model_topology:
+  stock_encoder_bottleneck_low_mid_decoder_runs: once
+  high_resolution_paths:
+    - anatomy
+    - scar
+    - edema
+  uncontracted_auxiliary_high_resolution_decoder_allowed: false
+  pathology_branches_clone_highest_two_stock_decoder_stages: true
+  pathology_classifiers_are_single_row:
+    scar_half: stock_stage4_row5
+    scar_full: stock_stage5_row5
+    edema_half: stock_stage4_row4
+    edema_full: stock_stage5_row4
+  stock_class4_5_normal_forward_logits_reused_for_pathology: false
+
+modality_and_evidence:
+  scar:
+    mandatory_evidence: [LGE]
+    forbidden_evidence: [T2]
+    c0_gate_initial_output: 0.2
+  edema:
+    mandatory_evidence: [T2]
+    c0_gate_initial_output: 0.2
+    weak_lge_gate_initial_output: 0.05
+    weak_lge_gate_delta_reason: break_zero_gate_plus_zero_residual_projection_dead_path
+    step0_final_logit_parity_preserved_by: zero_initialized_named_residual_projection
+  named_evidence_projection_required: true
+  shared_multi_source_projection_allowed: false
+  branch_residual_projections_zero_initialized: true
+  modality_adapters_live_initialized: true
+
+no_t2_contract:
+  t2_absent_edema_module_call_count: 0
+  no_t2_competition_classes: [0, 1, 2, 3, 5]
+  no_t2_class4_target: ignore
+  no_t2_class4_background_mapping_allowed: false
+  no_t2_edema_exclusive_gradient_max_abs: 0.0
+  decode_uses_fixed_argmax: true
+
+targets_and_losses:
+  segmentation_padding_value: -1
+  padding_participates_in_loss_or_physical_targets: false
+  edt_must_use_spacing_sampling: true
+  scar_center_gaussian_sigma_mm_inplane: 4.0
+  scar_center_gaussian_sigma_slices_z: 1.0
+  edema_boundary_prediction_source: components.edema_boundary
+  edema_boundary_empty_or_unobservable_full_edema:
+    target: 0
+    raw: 0
+    valid: 0
+  relation_loss_formula: relu(max(stopgrad(p_scar), stopgrad(p_edema)) - p_injury)
+  context_ce_reduction: valid_voxel_mean
+  sensitive_reductions_fp32: true
+  anatomy_deep_supervision:
+    full_anatomy_dice_ce: true
+    half_anatomy_dice_ce: true
+    total_weight: 0.50
+    weights_from_stock_trainer_renormalized: true
+  extent:
+    source: full_case_extent_profile
+    training_target_from_augmented_final_patch_segmentation_allowed: false
+    statistic_function: compute_slice_extent_statistics
+    statistic_formula: 0.5 * wall_weighted_mean + 0.5 * masked_max
+    presence_input_is_probability: true
+    presence_loss: binary_cross_entropy_on_clamped_probability
+    valid_spatial_mask_excludes_padding: true
+    all_invalid_slice_loss_bias_gradient: zero
+    full_volume_inference_applies_global_slice_bias_after_base_logit_aggregation: true
+
+sampler:
+  stage_schedule_steps:
+    A: 2000
+    B: 8000
+    C: 4000
+  stage_a_b_cycle_per_20:
+    complete: 10
+    lge_only: 5
+    lge_c0: 5
+  stage_c_complete_only: true
+  complete_center_cycle: [CenterB, CenterC]
+  complete_pathology_cycle: [scar, edema]
+  partial_events_pathology: scar
+  partial_events_advance_complete_pathology_cursor: false
+  microbatch_count_per_optimizer_step: 4
+  microbatch_case_sampling: independent_with_replacement_from_eligible_pool
+  micro_patch_rng_is_coordinate_authority: true
+  descriptor_records_requested_and_resolved_category: true
+
+hard_negative_oof:
+  manifest_template: results/20260803_care_ase_r2_external_review_repair_v7/hard_negative_manifest_fold{fold}.json
+  allowed_source: canonical_patient_held_out_stock_nnunet_oof
+  allowed_binding_method: direct_stock_inference_on_preprocessed_grid
+  forbidden_sources: [MoSAIC, SRR, cascade, refiner, in_sample, current_CARE_ASE]
+  forbidden_binding_methods: [shape_only, transpose_only, generic_zoom, min_shape_crop, fold_level_final_or_best_guess]
+
+augmentation:
+  source: stock_nnunet_trainer_runtime_transform
+  uses_initial_patch_semantics: true
+  final_patch_size: [20, 256, 256]
+  segmentation_padding_value: -1
+  augmentation_rng_checkpoint_resume_required: true
+  next_descriptor_hash_includes_four_augmentation_seeds: true
+
+optimizer_scheduler:
+  optimizer: AdamW
+  optimizer_created_once_at_step0: true
+  stage_transition_rebuilds_optimizer: false
+  parameter_groups_by_object_id: true
+  gradient_clip_error_if_nonfinite: true
+  scheduler:
+    type: stage_local_warmup_poly
+    power: 0.9
+    stage_ranges:
+      A: [0, 2000]
+      B: [2000, 10000]
+      C: [10000, 14000]
+
+checkpoint_resume:
+  schema_version: 4
+  schema_1_2_3_rejected_for_formal_resume: true
+  formal_resumable_short_smoke_allowed: false
+  placeholders_forbidden:
+    - null
+    - ""
+    - UNSET
+    - SHORT_SMOKE
+    - SHORT_SMOKE_NO_FORMAL_CREDIT
+  cross_fold_resume_rejected: true
+  resume_must_compare:
+    - fold
+    - model_config_fold
+    - stock_checkpoint_fold_path_sha
+    - split_hash
+    - actual_train_case_ids_sha
+    - hard_negative_manifest_sha
+    - area_reference_sha
+    - effective_contract_sha
+    - critical_source_manifest_sha
+    - next_optimizer_step_micro_descriptor_sha
+    - scheduler
+    - extent_ramp
+    - microbatch_cursor_zero
+  train_complete_token_allowed_only_at_step: 14000
+
+runtime_namespace:
+  formal_root_template: results/20260803_care_ase_r2_formal_training_<implementation-short>/runtime/fold_<fold>/
+  short_smoke_root: /users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_external_review_repair_v7/
+  short_smoke_writes_formal_results_root_allowed: false
+  lock_heartbeat_seconds: 300
+  lock_owner_fields: [SLURM_JOB_ID, SLURM_STEP_ID, hostname, pid, source_sha, created_utc, heartbeat_utc]
+
+gates_for_this_repair:
+  pytest_target: tests/care_ase
+  g1_validator: scripts/validation/validate_care_ase_r2_g1.py
+  gpu_probe_total_optimizer_step_budget_max: 20
+  total_actual_optimizer_step_executions_must_be_lte: 20
+  formal_training_started_after_external_review: false
+  outer_access_fold1: 0
+  outer_access_fold4: 0
+
+incremental_supervision_20260803:
+  latest_origin_main_absorbed: 28994ac76fd228270a809ce66c81950342d942d4
+  required_second_external_reaudit:
+    - results/20260803_care_ase_r2_external_reaudit_round2/external_gpt_independent_pretraining_reaudit_20260803.md
+  checkpoint_validation_rng_transparency_required: true
+  checkpoint_reload_validation_must_not_advance_training_rng: true
+  extent_source_z_mapping_required: true
+  partial_hw_extent_supervision_allowed: false
+  post_augmentation_physical_targets_recomputed_from_final_segmentation:
+    - signed_endocardial_distance
+    - signed_epicardial_distance
+    - wall_depth_rho
+    - topology_valid_mask
+    - scar_context_3mm_10mm
+    - edema_context_3mm_10mm
+    - edema_boundary_raw_target_valid
+    - scar_component_center_heatmap
+  component_metadata_interpolation_allowed: false
+  stock_transform_multitarget_spatial_identity_oracle_required: true
+  critical_manifest_must_include_transitive_repo_local_imports: true
+  environment_manifest_sha256_bound_to_checkpoint_and_permit: true
+  independent_parameter_owner_registry_required: true
+  formal_step_requires_exact_four_microbatches: true
+  checkpoint_verified_receipt_required_for_resume: true
+  cuda_determinism_frozen_before_cuda_initialization: true
+  named_evidence_step3_authority_required_for_fold1_and_fold4: true

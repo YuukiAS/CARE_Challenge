@@ -117,6 +117,7 @@ def read_prediction_from_anchor(case_id: str, entries: dict[str, dict[str, Any]]
         "anchor_probability_sha256": entry.get("probability_sha256"),
         "source_prediction_sha": str(entry.get("probability_sha256") or sha256_file(probability_path)),
         "preprocessed_grid_binding": True,
+        "producer_binding_method": "direct_stock_inference_on_preprocessed_grid",
         "source_probability_shape": list(probs.shape),
         "source_prediction_shape": list(probs.shape[1:]),
         "preprocessed_geometry_sha256": entry.get("preprocessed_geometry_sha256") or transform_binding.get("preprocessed_geometry_sha256"),
@@ -146,9 +147,11 @@ def bind_prediction_to_preprocessed_grid(gt: np.ndarray, pred: np.ndarray, *, so
         and pred.shape == gt.shape
         and explicit_shape_matches
     )
+    source_shape_matches_validation_properties = None
+    expected_source_shape = None
     if proof_ok or probability_npz_exact:
         bound_pred = pred
-        binding_mode = "already_exact_preprocessed_grid_probability_argmax"
+        binding_mode = "direct_stock_inference_on_preprocessed_grid"
     elif source_meta.get("source_kind") == "canonical_stock_nnunet_oof_probability_npz" and pred.ndim == 4:
         source_spacing = source_meta.get("validation_properties_spacing_zyx")
         if not source_spacing or len(source_spacing) != 3:
@@ -191,7 +194,7 @@ def bind_prediction_to_preprocessed_grid(gt: np.ndarray, pred: np.ndarray, *, so
             f"source_meta={source_meta} preprocessed_geometry={preprocessed_geometry}"
         )
     return bound_pred, {
-            "binding": "exact_preprocessed_grid_with_manifest_geometry_proof",
+            "binding": "direct_stock_inference_on_preprocessed_grid",
             "binding_mode": binding_mode,
             "source_prediction_shape": list(pred.shape[1:] if pred.ndim == 4 else pred.shape),
             "preprocessed_shape": list(gt.shape),
@@ -200,6 +203,7 @@ def bind_prediction_to_preprocessed_grid(gt: np.ndarray, pred: np.ndarray, *, so
             "declared_preprocessed_geometry_sha256": declared_geometry_sha,
             "declared_preprocessed_geometry_matches": explicit_geometry_matches,
             "probability_npz_exact_preprocessed_grid": probability_npz_exact,
+            "direct_stock_inference_on_preprocessed_grid": binding_mode == "direct_stock_inference_on_preprocessed_grid",
             "nnunet_plan_probability_resample": binding_mode.startswith("nnunet_plan_probability_resample"),
             "source_shape_matches_validation_properties": source_shape_matches_validation_properties,
             "validation_properties_shape_after_cropping_and_before_resampling": expected_source_shape,
@@ -438,8 +442,9 @@ def main() -> int:
     payload = {
         "status": "PASS",
         "fold": int(args.fold),
-        "v6_manifest": True,
+        "v7_manifest": True,
         "source": "canonical_patient_held_out_stock_nnunet_oof_only",
+        "allowed_binding_method": "direct_stock_inference_on_preprocessed_grid",
         "anchor_manifest": str(args.anchor_manifest.resolve()),
         "prediction_root_count": 0,
         "prediction_roots": [],
@@ -453,7 +458,7 @@ def main() -> int:
         "cases": cases,
     }
     payload["payload_sha256"] = hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()
-    output = args.output or REPO_ROOT / f"results/20260803_care_ase_r2_final_code_blocker_closure/hard_negative_manifest_fold{args.fold}.json"
+    output = args.output or REPO_ROOT / f"results/20260803_care_ase_r2_external_review_repair_v7/hard_negative_manifest_fold{args.fold}.json"
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(payload, sort_keys=True, separators=(",", ":")) + "\n", encoding="utf-8")
     print(json.dumps({"status": "PASS", "output": str(output), "case_count": len(cases)}, indent=2))

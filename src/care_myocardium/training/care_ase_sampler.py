@@ -18,7 +18,7 @@ from src.care_myocardium.data.care_ase_splits import PREPROCESSED_REL, build_car
 from src.care_myocardium.data.case_metadata import load_myops_case_metadata
 
 
-HARD_NEGATIVE_MANIFEST_TEMPLATE = "results/20260803_care_ase_r2_final_code_blocker_closure/hard_negative_manifest_fold{fold}.json"
+HARD_NEGATIVE_MANIFEST_TEMPLATE = "results/20260803_care_ase_r2_external_review_repair_v7/hard_negative_manifest_fold{fold}.json"
 
 
 @dataclass(frozen=True)
@@ -44,6 +44,7 @@ class CAREASEBatchDescriptor:
     eligible_case_count: int = 0
     candidate_coordinate_count: int = 0
     manifest_sha256: str = ""
+    augmentation_seed: int = 0
 
     def sha256(self) -> str:
         payload = json.dumps(asdict(self), sort_keys=True).encode("utf-8")
@@ -94,8 +95,8 @@ def _load_hard_negative_manifest(repo_root: Path, fold: int) -> dict[str, Any]:
         raise ValueError(f"hard-negative manifest is not a JSON object: {path}")
     if data.get("source") != "canonical_patient_held_out_stock_nnunet_oof_only":
         raise ValueError(f"hard-negative manifest source is not canonical stock OOF only: {data.get('source')}")
-    if data.get("v6_manifest") is not True:
-        raise ValueError("hard-negative manifest must declare v6_manifest=true")
+    if data.get("v7_manifest") is not True:
+        raise ValueError("hard-negative manifest must declare v7_manifest=true")
     if data.get("forbidden_old_manifest_paths_rejected") is not True:
         raise ValueError("hard-negative manifest must prove old manifest paths are rejected")
     cases = data.setdefault("cases", {})
@@ -125,7 +126,7 @@ def _load_hard_negative_manifest(repo_root: Path, fold: int) -> dict[str, Any]:
             raise ValueError(f"hard-negative manifest case {case_id} missing v6 fields: {missing}")
         if row.get("proof_case_not_in_source_fold_train") is not True:
             raise ValueError(f"hard-negative manifest case {case_id} lacks patient-held-out source proof")
-        if row.get("binding_method") != "exact_preprocessed_grid_with_manifest_geometry_proof":
+        if row.get("binding_method") != "direct_stock_inference_on_preprocessed_grid":
             raise ValueError(f"hard-negative manifest case {case_id} has illegal binding_method={row.get('binding_method')}")
         validation = row.get("coordinate_semantic_validation", {})
         if not isinstance(validation, dict) or validation.get("coordinate_bounds_valid") is not True:
@@ -421,6 +422,7 @@ class CAREASEDeterministicSampler:
             center, availability = self.case_meta[case_id]
             hard_category, hard_counts, hard_coords = _hard_negative_category(self.hard_negative_manifest, case_id, pathology, within_focus)
             selected_coord = hard_coords[self.micro_patch_rng.randrange(len(hard_coords))] if hard_coords else None
+            augmentation_seed = self.micro_patch_rng.randrange(2**32)
             resolved_category = hard_category if hard_category != "manifest_consumed_no_matching_oof" else within_focus
             descriptors.append(
                 CAREASEBatchDescriptor(
@@ -445,6 +447,7 @@ class CAREASEDeterministicSampler:
                     eligible_case_count=len(eligible_cases),
                     candidate_coordinate_count=len(hard_coords),
                     manifest_sha256=str(self.hard_negative_manifest.get("manifest_sha256", "")),
+                    augmentation_seed=int(augmentation_seed),
                 )
             )
             self.micro_patch_cursor += 1

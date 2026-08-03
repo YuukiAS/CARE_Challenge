@@ -23,7 +23,7 @@ from src.care_myocardium.training.care_ase_sampler import CAREASEDeterministicSa
 from src.care_myocardium.training.care_ase_trainer import CAREASEStageScheduler, REQUIRED_CHECKPOINT_FIELDS, REQUIRED_LOSS_WEIGHTS, care_ase_loss
 
 
-RESULT_ROOT = REPO_ROOT / "results/20260803_care_ase_r2_final_code_blocker_closure"
+RESULT_ROOT = REPO_ROOT / "results/20260803_care_ase_r2_external_review_repair_v7"
 WRAPPER = REPO_ROOT / "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh"
 ENTRYPOINT = REPO_ROOT / "scripts/training/care_ase/run_care_ase_r2_chunk.py"
 MODEL = REPO_ROOT / "src/care_myocardium/models/care_ase.py"
@@ -130,19 +130,19 @@ def coverage_rows() -> list[dict[str, Any]]:
         ("Stage A/B 10/5/5 alternating cycle", SAMPLER, "CAREASEDeterministicSampler.stage_a_b_cycle", '"lge_only",', "sampler_400_step_receipt", "stage_A_B_complete_only", "PASS"),
         ("Stage C complete-only CenterB/CenterC", SAMPLER, "CAREASEDeterministicSampler.stage_c_cycle", '("complete_centerB", "complete_centerC")', "sampler_static_contract", "stage_C_not_complete_only", "PASS"),
         ("CenterB/CenterC pathology and hard-negative cycles", SAMPLER, "CAREASEDeterministicSampler", "hard_negative_manifest", "sampler_static_contract", "break_center_or_focus_cycle", "PASS"),
-        ("hard-negative manifest consumed by formal sampler from final code blocker task path", SAMPLER, "_load_hard_negative_manifest", "20260803_care_ase_r2_final_code_blocker_closure/hard_negative_manifest_fold{fold}.json", "sampler_static_contract", "hard_negative_manifest_not_read", "PASS"),
+        ("hard-negative manifest consumed by formal sampler from external review repair v7 task path", SAMPLER, "_load_hard_negative_manifest", "20260803_care_ase_r2_external_review_repair_v7/hard_negative_manifest_fold{fold}.json", "sampler_static_contract", "hard_negative_manifest_not_read", "PASS"),
         ("hard-negative manifest provides canonical stock OOF component coordinates", MANIFEST_BUILDER, "build_case", "canonical_patient_held_out_stock_nnunet_oof_only", "canonical_stock_oof_provenance_receipt", "count_only_hard_negative_manifest", "PASS"),
         ("hard-negative OOF same-shape arrays require explicit preprocessed-grid geometry proof", MANIFEST_BUILDER, "bind_prediction_to_preprocessed_grid", "same_shape_without_grid_proof_rejected", "canonical_stock_oof_provenance_receipt", "same_shape_wrong_affine_or_orientation_oof", "PASS"),
         ("actual-train-only scar/edema area reference", SAMPLER, "compute_actual_train_area_references", "row.role == \"actual-train\"", "area_reference_receipt", "hardcoded_area_reference", "PASS"),
         ("Stage A/B/C = 2000/8000/4000", MODEL, "CAREASEConfig", "stage_b_steps: int = 8000", "scheduler_static_contract", "stage_2000_4000_8000", "PASS"),
         ("AdamW created once with object-id parameter registry and moments preserved", TRAINER, "build_optimizer", "parameter_group_coverage", "parameter_group_coverage", "optimizer_recreated_at_stage_transition", "PASS"),
         ("base LR/min LR/warmup/power poly scheduler", TRAINER, "CAREASEStageScheduler", "stage_warmup_steps", "scheduler_numeric_receipt", "scheduler_none_or_static_lr", "PASS"),
-        ("checkpoint schema v3 full fields/fsync/atomic rename/SHA/reload", TRAINER, "save_care_ase_checkpoint", "CHECKPOINT_SCHEMA_VERSION = 3", "test_checkpoint_schema_v3", "missing_checkpoint_field", "PASS"),
+        ("checkpoint schema v4 full fields/fsync/atomic rename/SHA/reload", TRAINER, "save_care_ase_checkpoint", "CHECKPOINT_SCHEMA_VERSION = 4", "test_checkpoint_schema_v4", "missing_checkpoint_field", "PASS"),
         ("single formal optimizer step API used by formal training and G2", TRAINER, "run_formal_optimizer_step", "def run_formal_optimizer_step", "formal_step_api_oracle", "duplicate_optimizer_step_logic", "PASS"),
         ("exact resume state and next optimizer-step micro-bundle hash", ENTRYPOINT, "_write_full_reload_receipt", "next_optimizer_step_micro_descriptor_hash_match", "exact_resume_receipt", "resume_not_sampler_or_next_batch", "PASS"),
         ("physical EDT/context/center target builders use full-case cache before patch slicing", TRAINER, "build_full_case_target_cache", "Formal CARE-ASE training must slice these cached full-case target fields", "physical_target_contract_receipt", "proxy_loss_targets", "PASS"),
         ("edema boundary prediction uses dedicated component head", TRAINER, "care_ase_loss", "components[\"edema_boundary\"]", "boundary_head_contract_receipt", "edema_class_logit_as_boundary", "PASS"),
-        ("context CE valid voxel mean only", TRAINER, "context_cross_entropy_valid_mean", "return (raw * valid).sum() / denom", "context_loss_normalization_receipt", "unormalized_context_ce", "PASS"),
+        ("context CE valid voxel mean only", TRAINER, "context_cross_entropy_valid_mean", "deterministic_cross_entropy", "context_loss_normalization_receipt", "unormalized_context_ce", "PASS"),
         ("formal W3 requires external review permit", ENTRYPOINT, "verify_external_review_permit", "formal CARE-ASE R2 W3 chunk requires --external-review-permit", "external_review_permit_enforcement_oracle", "formal_launch_without_external_permit", "PASS"),
         ("formal W3 stale chunk lock recovery is fail-closed for live owners", ENTRYPOINT, "acquire_chunk_lock", "stale_lock_recovered", "stale_lock_recovery_oracle", "stale_lock_no_recovery", "PASS"),
         ("fixed step14000 argmax and outer zero-access", ENTRYPOINT, "main", "args.end_step > 14000", "outer_access_audit_receipt", "outer_access_before_freeze", "PASS"),
@@ -249,7 +249,7 @@ def sampler_static_contract() -> dict[str, Any]:
         "scar_within_focus_cycle": list(CAREASEDeterministicSampler.scar_within_focus_cycle),
         "edema_within_focus_cycle": list(CAREASEDeterministicSampler.edema_within_focus_cycle),
         "hard_negative_manifest_symbol": "HARD_NEGATIVE_MANIFEST_TEMPLATE",
-        "hard_negative_manifest_template": "results/20260803_care_ase_r2_final_code_blocker_closure/hard_negative_manifest_fold{fold}.json",
+        "hard_negative_manifest_template": "results/20260803_care_ase_r2_external_review_repair_v7/hard_negative_manifest_fold{fold}.json",
         "hard_negative_manifest_consumption": "_hard_negative_category",
         "deterministic_fallbacks": "_fallback_sequence",
         "micro_patch_rng_controls_coordinate": "self.micro_patch_rng.randrange" in sampler_text and "selected_target_coordinate" in sampler_text,
@@ -267,7 +267,7 @@ def sampler_static_contract() -> dict[str, Any]:
         and stage_c == ("complete_centerB", "complete_centerC")
         and len(CAREASEDeterministicSampler.scar_within_focus_cycle) == 20
         and len(CAREASEDeterministicSampler.edema_within_focus_cycle) == 20
-        and "20260803_care_ase_r2_final_code_blocker_closure/hard_negative_manifest_fold{fold}.json" in sampler_text
+        and "20260803_care_ase_r2_external_review_repair_v7/hard_negative_manifest_fold{fold}.json" in sampler_text
         and "self.micro_patch_rng.randrange" in sampler_text
         and "provides no scar_oof_fn coordinates" in sampler_text
         and "provides no edema_safe_fp coordinates" in sampler_text
@@ -306,7 +306,7 @@ def scheduler_static_contract() -> dict[str, Any]:
 def checkpoint_schema_contract() -> dict[str, Any]:
     trainer_text = TRAINER.read_text(encoding="utf-8")
     return {
-        "schema_version": 3,
+        "schema_version": 4,
         "required_fields": list(REQUIRED_CHECKPOINT_FIELDS),
         "field_count": len(REQUIRED_CHECKPOINT_FIELDS),
         "fsync_file": "_fsync_file(tmp)" in trainer_text,
@@ -316,7 +316,7 @@ def checkpoint_schema_contract() -> dict[str, Any]:
         "early_training_complete_rejected": "TRAINING_COMPLETE is forbidden before fixed global_step 14000" in trainer_text,
         "sidecar_validated_on_load": "sidecar SHA mismatch" in trainer_text,
         "status": "PASS"
-        if "CHECKPOINT_SCHEMA_VERSION = 3" in trainer_text
+        if "CHECKPOINT_SCHEMA_VERSION = 4" in trainer_text
         and all(field in trainer_text for field in REQUIRED_CHECKPOINT_FIELDS)
         and "os.replace(tmp, path)" in trainer_text
         and "TRAINING_COMPLETE is forbidden before fixed global_step 14000" in trainer_text
@@ -350,14 +350,14 @@ def oof_binding_contract() -> dict[str, Any]:
         "rejects_shape_ratio_resampling": "shape-ratio resampling" in text or "shape_only_fallback_forbidden" in text,
         "no_generic_zoom_execution_path": "ndimage.zoom(" not in text,
         "no_resample_binding_label": "strict_raw_nifti_xyz_to_preprocessed_zyx_crop_then_nearest_resample" not in text,
-        "exact_only_binding": '"binding": "exact_preprocessed_grid_with_manifest_geometry_proof"' in text
+        "exact_only_binding": '"binding": "direct_stock_inference_on_preprocessed_grid"' in text
         and "checkpoint_final_explicit_stock_validation_artifact" in text
-        and "nnunet_plan_probability_resample_to_preprocessed_grid_with_manifest_geometry_proof" in text,
+        and "direct_stock_inference_on_preprocessed_grid" in text,
     }
     return {
         "status": "PASS" if all(checks.values()) else "FAIL",
         "checks": checks,
-        "legal_binding": "exact_preprocessed_grid_with_manifest_geometry_proof",
+        "legal_binding": "direct_stock_inference_on_preprocessed_grid",
         "forbidden_binding": ["shape_only", "transpose_only", "generic_zoom", "min_shape_crop", "fold_level_final_or_best_fallback"],
     }
 

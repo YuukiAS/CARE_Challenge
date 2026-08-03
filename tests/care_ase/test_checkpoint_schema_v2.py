@@ -10,7 +10,7 @@ from src.care_myocardium.training.care_ase_trainer import (
 )
 
 
-def test_checkpoint_schema_v3_full_reload(tmp_path):
+def test_checkpoint_schema_v4_full_reload(tmp_path):
     model = build_care_ase_for_fold(2)
     optimizer = build_optimizer(model)
     scheduler = CAREASEStageScheduler(optimizer)
@@ -39,7 +39,7 @@ def test_checkpoint_schema_v3_full_reload(tmp_path):
     )
 
     reloaded, payload = load_care_ase_checkpoint(ckpt, restore_rng=False)
-    assert payload["schema_version"] == CHECKPOINT_SCHEMA_VERSION == 3
+    assert payload["schema_version"] == CHECKPOINT_SCHEMA_VERSION == 4
     assert payload["training_source_commit_sha"] == "source"
     assert payload["critical_source_manifest_sha256"] == "critical"
     assert ckpt.with_suffix(".pt.sha256").is_file()

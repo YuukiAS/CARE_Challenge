@@ -840,6 +840,7 @@ class CAREASE(nn.Module):
         pathology: str,
         global_step: int,
         disable_extent_wall: bool = False,
+        valid_spatial_mask: torch.Tensor | None = None,
     ) -> torch.Tensor:
         ramp = 0.0 if disable_extent_wall else self.extent_wall_ramp(global_step)
         if ramp == 0.0:
@@ -849,6 +850,7 @@ class CAREASE(nn.Module):
                 components["scar_extent_presence"],
                 components["scar_extent_area"],
                 p_wall,
+                valid_spatial_mask,
             )
             presence_bias = 0.30 * self._sigmoid_logit_center(presence, 0.50)
             area_bias = 0.20 * self._sigmoid_logit_center(area, self.scar_area_reference)
@@ -858,6 +860,7 @@ class CAREASE(nn.Module):
                 components["edema_extent_presence"],
                 components["edema_extent_area"],
                 p_wall,
+                valid_spatial_mask,
             )
             presence_bias = 0.35 * self._sigmoid_logit_center(presence, 0.50)
             area_bias = 0.30 * self._sigmoid_logit_center(area, self.edema_area_reference)
@@ -878,6 +881,7 @@ class CAREASE(nn.Module):
         disable_edema_boundary: bool = False,
         disable_edema_context: bool = False,
         disable_extent_wall: bool = False,
+        extent_valid_spatial_mask: torch.Tensor | None = None,
         disable_all_evidence: bool = False,
         disabled_named_evidence_sources: set[str] | None = None,
     ) -> dict[str, Any]:
@@ -1006,10 +1010,24 @@ class CAREASE(nn.Module):
                 full_value = edema[key].clone()
                 full_value[idx] = value
                 edema[key] = full_value
-        z_scar = scar["final_logit"] + self._extent_bias(components, anatomy_context["p_wall_union"], pathology="scar", global_step=global_step, disable_extent_wall=disable_extent_wall)
+        z_scar = scar["final_logit"] + self._extent_bias(
+            components,
+            anatomy_context["p_wall_union"],
+            pathology="scar",
+            global_step=global_step,
+            disable_extent_wall=disable_extent_wall,
+            valid_spatial_mask=extent_valid_spatial_mask,
+        )
         t2 = availability[:, 1:2].view(-1, 1, 1, 1, 1)
         if run_edema_graph:
-            z_edema = edema["final_logit"] + self._extent_bias(components, anatomy_context["p_wall_union"], pathology="edema", global_step=global_step, disable_extent_wall=disable_extent_wall)
+            z_edema = edema["final_logit"] + self._extent_bias(
+                components,
+                anatomy_context["p_wall_union"],
+                pathology="edema",
+                global_step=global_step,
+                disable_extent_wall=disable_extent_wall,
+                valid_spatial_mask=extent_valid_spatial_mask,
+            )
             z_edema = torch.where(t2 > 0.5, z_edema, z_edema.detach().new_full(z_edema.shape, -1.0e4))
         else:
             z_edema = edema["final_logit"]
@@ -1097,6 +1115,11 @@ def compute_slice_extent_statistics(
         valid = F.interpolate(valid_spatial_mask.detach().float(), size=presence_logits.shape[-3:], mode="nearest").clamp(0.0, 1.0)
         wall = wall * valid
     wall_sum = wall.sum(dim=(-2, -1), keepdim=True)
+    if valid is None:
+        valid_sum = torch.full_like(wall_sum, float(presence_logits.shape[-2] * presence_logits.shape[-1]))
+    else:
+        valid_sum = valid.sum(dim=(-2, -1), keepdim=True)
+    no_valid = valid_sum <= 0.0
     low_wall = wall_sum < 1.0
     presence_prob = torch.sigmoid(presence_logits)
     area_prob = torch.sigmoid(area_logits)
@@ -1104,27 +1127,31 @@ def compute_slice_extent_statistics(
     def summarize(value: torch.Tensor) -> torch.Tensor:
         if valid is None:
             valid_value = value
-            valid_sum = torch.full_like(wall_sum, float(value.shape[-2] * value.shape[-1]))
+            local_valid_sum = valid_sum
         else:
             valid_value = value * valid
-            valid_sum = valid.sum(dim=(-2, -1), keepdim=True)
+            local_valid_sum = valid_sum
         weighted_avg = (value * wall).sum(dim=(-2, -1), keepdim=True) / wall_sum.clamp_min(1.0e-6)
         masked = value.masked_fill(wall <= 1.0e-6, -torch.inf)
         masked_max = masked.amax(dim=(-2, -1), keepdim=True)
-        fallback_masked = value.masked_fill((valid <= 0.0) if valid is not None else torch.zeros_like(value, dtype=torch.bool), -torch.inf)
-        fallback_max = fallback_masked.amax(dim=(-2, -1), keepdim=True)
-        fallback_max = torch.where(torch.isfinite(fallback_max), fallback_max, value.amax(dim=(-2, -1), keepdim=True))
+        if valid is None:
+            fallback_max = value.amax(dim=(-2, -1), keepdim=True)
+        else:
+            fallback_masked = value.masked_fill(valid <= 0.0, -torch.inf)
+            fallback_max = fallback_masked.amax(dim=(-2, -1), keepdim=True)
+            fallback_max = torch.where(torch.isfinite(fallback_max), fallback_max, torch.zeros_like(fallback_max))
         masked_max = torch.where(torch.isfinite(masked_max), masked_max, fallback_max)
-        full_avg = valid_value.sum(dim=(-2, -1), keepdim=True) / valid_sum.clamp_min(1.0)
+        full_avg = valid_value.sum(dim=(-2, -1), keepdim=True) / local_valid_sum.clamp_min(1.0)
         full_max = fallback_max
         avg = torch.where(low_wall, full_avg, weighted_avg)
         mx = torch.where(low_wall, full_max, masked_max)
-        return 0.5 * (avg + mx)
+        summary = 0.5 * (avg + mx)
+        return torch.where(no_valid, torch.zeros_like(summary), summary)
 
     presence = summarize(presence_prob)
     area = summarize(area_prob)
     wall_slice = wall.mean(dim=(-2, -1), keepdim=True)
-    return presence, area, wall_slice, low_wall.to(presence_logits)
+    return presence, area, wall_slice, (low_wall | no_valid).to(presence_logits)
 
 
 def _concat_named_evidence(items: Iterable[tuple[str, torch.Tensor]], spatial_shape: tuple[int, int, int], channels: int, schema_name: str) -> torch.Tensor:

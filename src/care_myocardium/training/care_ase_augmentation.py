@@ -6,6 +6,7 @@ from dataclasses import asdict, dataclass
 import hashlib
 import inspect
 import json
+import random
 from pathlib import Path
 from typing import Any
 
@@ -146,12 +147,14 @@ def apply_stock_training_transform_preserve_ignore(
     *,
     transform: Any,
     availability: tuple[int, ...] | list[int] | np.ndarray,
+    seed: int | None = None,
 ) -> tuple[np.ndarray, np.ndarray]:
     image, seg, _regression, _extra = apply_stock_training_transform_with_targets(
         image_patch,
         seg_patch,
         transform=transform,
         availability=availability,
+        seed=seed,
     )
     return image, seg
 
@@ -164,6 +167,7 @@ def apply_stock_training_transform_with_targets(
     availability: tuple[int, ...] | list[int] | np.ndarray,
     regression_target_patch: np.ndarray | None = None,
     segmentation_extra_patch: np.ndarray | None = None,
+    seed: int | None = None,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray | None, np.ndarray | None]:
     if image_patch.ndim != 4:
         raise ValueError(f"image_patch must be CxZxHxW, got shape {image_patch.shape}")
@@ -184,7 +188,27 @@ def apply_stock_training_transform_with_targets(
         if regression.ndim != 4:
             raise ValueError(f"regression_target_patch must be CxZxHxW, got shape {regression.shape}")
         data["regression_target"] = torch.from_numpy(np.ascontiguousarray(regression)).float()
-    out = transform(**data)
+    if seed is None:
+        out = transform(**data)
+    else:
+        py_state = random.getstate()
+        np_state = np.random.get_state()
+        torch_state = torch.random.get_rng_state()
+        cuda_state = torch.cuda.get_rng_state_all() if torch.cuda.is_available() else None
+        try:
+            seed_int = int(seed) % (2**32)
+            random.seed(seed_int)
+            np.random.seed(seed_int)
+            torch.manual_seed(seed_int)
+            if torch.cuda.is_available():
+                torch.cuda.manual_seed_all(seed_int)
+            out = transform(**data)
+        finally:
+            random.setstate(py_state)
+            np.random.set_state(np_state)
+            torch.random.set_rng_state(torch_state)
+            if cuda_state is not None:
+                torch.cuda.set_rng_state_all(cuda_state)
     image = out["image"].detach().cpu().numpy().astype(np.float32, copy=False)
     segmentation = out["segmentation"].detach().cpu().numpy().astype(np.int64, copy=False)
     seg = segmentation[0]

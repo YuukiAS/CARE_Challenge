@@ -12,9 +12,9 @@ def _patch_manifest_loader(monkeypatch):
         "_load_hard_negative_manifest",
         lambda _repo_root, _fold: {
             "source": "canonical_patient_held_out_stock_nnunet_oof_only",
-            "v6_manifest": True,
+            "v7_manifest": True,
             "forbidden_old_manifest_paths_rejected": True,
-            "manifest_path": "unit-test-v6-manifest.json",
+            "manifest_path": "unit-test-v7-manifest.json",
             "manifest_sha256": "unit-test",
             "cases": {},
         },

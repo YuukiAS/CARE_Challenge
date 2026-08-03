@@ -20,7 +20,7 @@ import torch.nn.functional as F
 from src.care_myocardium.models.care_ase import CAREASE, CAREASEConfig, compute_slice_extent_statistics
 
 
-CHECKPOINT_SCHEMA_VERSION = 3
+CHECKPOINT_SCHEMA_VERSION = 4
 FULL_CASE_TARGET_KEYS = (
     "signed_endo_distance",
     "signed_epi_distance",
@@ -71,6 +71,7 @@ REQUIRED_CHECKPOINT_FIELDS = (
     "augmentation_contract_sha256",
     "full_case_target_profile_manifest_sha256",
     "full_case_target_cache_manifest_sha256",
+    "environment_determinism_manifest_sha256",
     "formal_resumable",
     "augmentation_rng_state",
     "fold",
@@ -310,7 +311,24 @@ def per_slice_extent_loss(
     if case_valid is None:
         case_mask = torch.ones_like(target_presence_z)
     else:
-        case_mask = case_valid.float().view(-1, 1, 1).to(target_presence_z)
+        raw_case = case_valid.float().to(target_presence_z)
+        if raw_case.ndim <= 1:
+            case_mask = raw_case.view(-1, 1, 1)
+        else:
+            case_mask = raw_case.reshape(raw_case.shape[0], -1, raw_case.shape[-1])
+            if case_mask.shape[1] != 1:
+                case_mask = case_mask[:, :1]
+        if case_mask.shape[-1] != target_presence_z.shape[-1]:
+            case_mask = _downsample_slice_presence_any(case_mask, int(target_presence_z.shape[-1]))
+    if valid_spatial_mask is not None:
+        valid_z = F.interpolate(
+            valid_spatial_mask.detach().float(),
+            size=presence_logits.shape[-3:],
+            mode="nearest",
+        ).sum(dim=(-2, -1))
+        if valid_z.shape[-1] != target_presence_z.shape[-1]:
+            valid_z = _downsample_slice_presence_any(valid_z, int(target_presence_z.shape[-1]))
+        case_mask = case_mask * (valid_z > 0).to(case_mask)
     device_type = pred_presence.device.type
     with torch.amp.autocast(device_type=device_type, enabled=False):
         pred_presence_fp32 = pred_presence.float().clamp(1.0e-6, 1.0 - 1.0e-6)
@@ -650,6 +668,14 @@ def build_care_ase_targets(target: torch.Tensor, availability: torch.Tensor, out
             "edema_slice_wall_voxels",
         ):
             stacked[key] = _ensure_batch_channel(cache[key], channel=True, dtype=torch.float32)
+        if "extent_supervision_valid_by_output_z" in cache:
+            stacked["extent_supervision_valid_by_output_z"] = _ensure_batch_channel(
+                cache["extent_supervision_valid_by_output_z"],
+                channel=True,
+                dtype=torch.float32,
+            )
+        else:
+            stacked["extent_supervision_valid_by_output_z"] = torch.ones_like(stacked["scar_slice_presence"])
         stacked["valid_label_mask"] = _ensure_batch_channel(cache.get("valid_label_mask", (target >= 0).float()), channel=True, dtype=torch.float32)
         stacked["availability"] = availability
         stacked["target_builder_provenance"] = "full_case_target_cache"
@@ -753,18 +779,36 @@ def per_gt_component_tversky(logit: torch.Tensor, target: torch.Tensor, valid_ma
     return (torch.stack(losses).float() * weight_tensor).sum() / weight_tensor.sum().clamp_min(1.0e-6)
 
 
+def deterministic_cross_entropy(
+    logits: torch.Tensor,
+    target: torch.Tensor,
+    *,
+    ignore_index: int = -1,
+    reduction: str = "mean",
+) -> torch.Tensor:
+    logits_fp32 = logits.float()
+    target_long = target.to(device=logits.device, dtype=torch.long)
+    valid = target_long != int(ignore_index)
+    safe_target = target_long.clamp_min(0)
+    log_prob = torch.log_softmax(logits_fp32, dim=1)
+    raw = -log_prob.gather(1, safe_target.unsqueeze(1)).squeeze(1)
+    raw = torch.where(valid, raw, torch.zeros_like(raw))
+    if reduction == "none":
+        return raw
+    if reduction != "mean":
+        raise ValueError(f"unsupported reduction for deterministic_cross_entropy: {reduction}")
+    return raw.sum() / valid.to(raw).sum().clamp_min(1.0)
+
+
 def context_cross_entropy_valid_mean(logits: torch.Tensor, target: torch.Tensor, valid_mask: torch.Tensor | None = None) -> torch.Tensor:
-    raw = F.cross_entropy(logits.float(), target, ignore_index=-1, reduction="none")
+    raw = deterministic_cross_entropy(logits.float(), target, ignore_index=-1, reduction="none")
     valid = (target >= 0).to(raw)
     if valid_mask is not None:
         valid = valid * valid_mask.to(raw)
-    denom = valid.sum()
-    if float(denom.detach().cpu()) <= 0.0:
-        return logits.sum() * 0.0
-    return (raw * valid).sum() / denom
+    return (raw * valid).sum() / valid.sum().clamp_min(1.0)
 
 
-def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor]) -> tuple[torch.Tensor, dict[str, float]]:
+def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor], *, collect_metrics: bool = True) -> tuple[torch.Tensor, dict[str, float]]:
     logits = outputs["final_logits"]
     target = batch["seg"].to(device=logits.device, dtype=torch.long)
     availability = batch["availability"].to(logits)
@@ -773,18 +817,20 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor]) -> tu
     metrics: dict[str, torch.Tensor] = {}
     if bool(t2_present.any()):
         idx = t2_present
-        ce6 = F.cross_entropy(logits[idx], target[idx], ignore_index=-1)
+        ce6 = deterministic_cross_entropy(logits[idx], target[idx], ignore_index=-1)
         dice6 = dice_loss_softmax(logits[idx], target[idx], classes=(1, 2, 3, 4, 5))
-        metrics["six_class_ce"] = ce6
-        metrics["six_class_dice"] = dice6
+        if collect_metrics:
+            metrics["six_class_ce"] = ce6
+            metrics["six_class_dice"] = dice6
         final_terms.append(ce6 + dice6)
     if bool((~t2_present).any()):
         idx = ~t2_present
         five_logits, five_target = _five_class_logits_and_target(logits[idx], target[idx])
-        ce5 = F.cross_entropy(five_logits, five_target, ignore_index=-1)
+        ce5 = deterministic_cross_entropy(five_logits, five_target, ignore_index=-1)
         dice5 = dice_loss_softmax(five_logits, five_target, classes=(1, 2, 3, 4))
-        metrics["five_class_ce_without_class4"] = ce5
-        metrics["five_class_dice_without_class4"] = dice5
+        if collect_metrics:
+            metrics["five_class_ce_without_class4"] = ce5
+            metrics["five_class_dice_without_class4"] = dice5
         final_terms.append(ce5 + dice5)
     if "pathology_deep_supervision_weights" not in outputs:
         raise KeyError("CARE-ASE loss requires pathology_deep_supervision_weights from the model forward output")
@@ -797,10 +843,10 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor]) -> tu
     full_weight, half_weight = full_weight / weight_sum, half_weight / weight_sum
     anatomy_target = target.clone()
     anatomy_target = torch.where((anatomy_target == 4) | (anatomy_target == 5), torch.ones_like(anatomy_target), anatomy_target)
-    anatomy_ce = F.cross_entropy(outputs["anatomy_logits_0_3"], anatomy_target.clamp(-1, 3), ignore_index=-1)
+    anatomy_ce = deterministic_cross_entropy(outputs["anatomy_logits_0_3"], anatomy_target.clamp(-1, 3), ignore_index=-1)
     anatomy_dice = dice_loss_softmax(outputs["anatomy_logits_0_3"], anatomy_target.clamp(-1, 3), classes=(1, 2, 3))
     anatomy_half_target = _downsample_target(anatomy_target.unsqueeze(1), outputs["anatomy"]["half_logits4"].shape[-3:]).squeeze(1).clamp(-1, 3)
-    anatomy_half_ce = F.cross_entropy(outputs["anatomy"]["half_logits4"], anatomy_half_target, ignore_index=-1)
+    anatomy_half_ce = deterministic_cross_entropy(outputs["anatomy"]["half_logits4"], anatomy_half_target, ignore_index=-1)
     anatomy_half_dice = dice_loss_softmax(outputs["anatomy"]["half_logits4"], anatomy_half_target, classes=(1, 2, 3))
     anatomy4_loss = full_weight * (anatomy_ce + anatomy_dice) + half_weight * (anatomy_half_ce + anatomy_half_dice)
     valid_binary = (target >= 0).unsqueeze(1).to(logits)
@@ -849,7 +895,7 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor]) -> tu
         built_targets["scar_slice_presence"],
         built_targets["scar_slice_pathology_voxels"],
         built_targets["scar_slice_wall_voxels"],
-        None,
+        built_targets.get("extent_supervision_valid_by_output_z"),
         built_targets["valid_label_mask"],
     )
     edema_presence, edema_area = per_slice_extent_loss(
@@ -859,7 +905,7 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor]) -> tu
         built_targets["edema_slice_presence"],
         built_targets["edema_slice_pathology_voxels"],
         built_targets["edema_slice_wall_voxels"],
-        availability[:, 1:2],
+        built_targets.get("extent_supervision_valid_by_output_z", torch.ones_like(built_targets["edema_slice_presence"])) * availability[:, 1:2].view(-1, 1, 1),
         built_targets["valid_label_mask"],
     )
     scar_context_target = _downsample_target(built_targets["scar_context_target"].unsqueeze(1), components["scar_context"].shape[-3:]).squeeze(1)
@@ -891,37 +937,38 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor]) -> tu
         "relation": REQUIRED_LOSS_WEIGHTS["relation"] * relation,
     }
     total = torch.stack(list(weighted_terms.values())).sum()
-    metrics.update(
-        {
-            "loss": total,
-            "anatomy_ce": anatomy_ce,
-            "anatomy_dice": anatomy_dice,
-            "anatomy_half_ce": anatomy_half_ce,
-            "anatomy_half_dice": anatomy_half_dice,
-            "anatomy4_deep_supervised": anatomy4_loss,
-            "wall": wall_loss,
-            "distance": distance_loss,
-            "scar_dense": scar_dense,
-            "scar_component": scar_component,
-            "scar_center": scar_center,
-            "scar_extent_presence": scar_presence,
-            "scar_extent_area": scar_area,
-            "scar_extent": scar_extent,
-            "scar_context": scar_context,
-            "edema_dense": edema_dense,
-            "edema_binary_t2_gated": edema_dense,
-            "injury": injury,
-            "edema_boundary": edema_boundary,
-            "edema_extent_presence": edema_presence,
-            "edema_extent_area": edema_area,
-            "edema_extent": edema_extent,
-            "edema_context": edema_context,
-            "relation": relation,
-            "no_t2_edema_exclusive_total_loss": zero if not bool(t2_present.any()) else edema_dense + injury + edema_boundary + edema_extent + edema_context + relation,
-            "all_finite": torch.isfinite(total).to(total),
-            "all_nonnegative": (total >= 0).to(total),
-        }
-    )
+    if collect_metrics:
+        metrics.update(
+            {
+                "loss": total,
+                "anatomy_ce": anatomy_ce,
+                "anatomy_dice": anatomy_dice,
+                "anatomy_half_ce": anatomy_half_ce,
+                "anatomy_half_dice": anatomy_half_dice,
+                "anatomy4_deep_supervised": anatomy4_loss,
+                "wall": wall_loss,
+                "distance": distance_loss,
+                "scar_dense": scar_dense,
+                "scar_component": scar_component,
+                "scar_center": scar_center,
+                "scar_extent_presence": scar_presence,
+                "scar_extent_area": scar_area,
+                "scar_extent": scar_extent,
+                "scar_context": scar_context,
+                "edema_dense": edema_dense,
+                "edema_binary_t2_gated": edema_dense,
+                "injury": injury,
+                "edema_boundary": edema_boundary,
+                "edema_extent_presence": edema_presence,
+                "edema_extent_area": edema_area,
+                "edema_extent": edema_extent,
+                "edema_context": edema_context,
+                "relation": relation,
+                "no_t2_edema_exclusive_total_loss": zero if not bool(t2_present.any()) else edema_dense + injury + edema_boundary + edema_extent + edema_context + relation,
+                "all_finite": torch.isfinite(total).to(total),
+                "all_nonnegative": (total >= 0).to(total),
+            }
+        )
     return total, {k: float(v.detach().cpu()) for k, v in metrics.items()}
 
 
@@ -1074,16 +1121,41 @@ def _expected_parameter_group_from_aliases(names: list[str], upper_stage_indices
         for name in names
     ):
         return "shared_low_mid_decoder"
-    if any(name.startswith("anatomy_decoder.") for name in names):
+    if any(name.startswith(("anatomy_decoder.", "anatomy_top_transpconvs.", "anatomy_top_stages.", "anatomy_top_seg_layers.")) for name in names):
         return "anatomy_decoder"
     return None
+
+
+def _is_allowed_structural_alias(names: list[str]) -> bool:
+    if len(names) <= 1:
+        return True
+    if len(names) != 2:
+        return False
+    a, b = sorted(names)
+    return (
+        ".all_modules.0." in a
+        and ".conv." in b
+        and a.replace(".all_modules.0.", ".conv.") == b
+    ) or (
+        ".all_modules.1." in a
+        and ".norm." in b
+        and a.replace(".all_modules.1.", ".norm.") == b
+    )
 
 
 def parameter_group_coverage(model: CAREASE) -> dict[str, Any]:
     group_by_id, canonical_by_id, aliases = _parameter_group_registry(model)
     all_params = list(model.parameters())
-    observed_ids = [id(param) for param in all_params]
-    duplicate_count = len(observed_ids) - len(set(observed_ids))
+    named_with_duplicates = list(model.named_parameters(remove_duplicate=False))
+    name_count_by_id: dict[int, int] = {}
+    for _name, param in named_with_duplicates:
+        name_count_by_id[id(param)] = name_count_by_id.get(id(param), 0) + 1
+    unexpected_alias_ids = sorted(param_id for param_id, names in aliases.items() if name_count_by_id.get(param_id, 0) > 1 and not _is_allowed_structural_alias(names))
+    allowed_alias_ids = sorted(param_id for param_id, names in aliases.items() if name_count_by_id.get(param_id, 0) > 1 and _is_allowed_structural_alias(names))
+    optimizer_ids: list[int] = []
+    for group in optimizer_parameter_groups(model):
+        optimizer_ids.extend(id(param) for param in group["params"])
+    duplicate_count = len(optimizer_ids) - len(set(optimizer_ids))
     upper_stage_indices = _encoder_upper_stage_indices([name for names in aliases.values() for name in names])
     expected_by_id = {param_id: _expected_parameter_group_from_aliases(names, upper_stage_indices) for param_id, names in aliases.items()}
     missing_ids = sorted(param_id for param_id, expected in expected_by_id.items() if expected is None)
@@ -1111,10 +1183,13 @@ def parameter_group_coverage(model: CAREASE) -> dict[str, Any]:
             }
         )
     payload = {
-        "status": "PASS" if duplicate_count == 0 and not missing_ids and not wrong_ids else "FAIL",
+        "status": "PASS" if duplicate_count == 0 and not missing_ids and not wrong_ids and not unexpected_alias_ids else "FAIL",
         "parameter_count": len(rows),
         "group_counts": {name: sum(1 for row in rows if row["group"] == name) for name in PARAMETER_GROUP_NAMES},
         "duplicate_count": int(duplicate_count),
+        "unexpected_alias_count": len(unexpected_alias_ids),
+        "unexpected_alias_parameter_ids": unexpected_alias_ids,
+        "allowed_structural_alias_count": len(allowed_alias_ids),
         "missing_count": len(missing_ids),
         "wrong_group_count": len(wrong_ids),
         "missing_parameter_ids": missing_ids,
@@ -1162,28 +1237,62 @@ def run_formal_optimizer_step(
 ) -> dict[str, Any]:
     """Single authoritative CARE-ASE optimizer-step implementation."""
 
-    if not microbatches:
-        raise ValueError("run_formal_optimizer_step requires at least one microbatch")
+    if len(microbatches) != int(gradient_accumulation) or int(gradient_accumulation) != 4:
+        raise ValueError(
+            "formal CARE-ASE optimizer step requires exactly four microbatches "
+            f"and gradient_accumulation=4, got len={len(microbatches)} accumulation={gradient_accumulation}"
+        )
     stage = set_stage_trainability(model, global_step=int(global_step))
     scheduler.step(int(global_step))
     optimizer.zero_grad(set_to_none=True)
     loss_total = 0.0
-    metrics: dict[str, float] = {}
+    metric_sums: dict[str, float] = {}
+    metric_counts: dict[str, int] = {}
     divisor = float(gradient_accumulation)
     for batch in microbatches:
         with torch.autocast(device_type=autocast_device_type, dtype=autocast_dtype, enabled=bool(autocast_enabled)):
-            outputs = model(batch["image"], batch["availability"], global_step=int(global_step))
-            loss, batch_metrics = care_ase_loss(outputs, batch)
+            outputs = model(
+                batch["image"],
+                batch["availability"],
+                global_step=int(global_step),
+                extent_valid_spatial_mask=batch.get("extent_valid_spatial_mask"),
+            )
+            loss, batch_metrics = care_ase_loss(outputs, batch, collect_metrics=collect_metrics)
             if collect_metrics:
-                metrics = batch_metrics
+                for key, value in batch_metrics.items():
+                    metric_sums[key] = metric_sums.get(key, 0.0) + float(value)
+                    metric_counts[key] = metric_counts.get(key, 0) + 1
+        if not torch.isfinite(loss.detach()):
+            raise FloatingPointError(f"non-finite CARE-ASE microbatch loss at global_step={global_step}")
         (loss / divisor).backward()
         loss_total += float(loss.detach().cpu())
-    grad_norm = torch.nn.utils.clip_grad_norm_([p for p in model.parameters() if p.requires_grad], max_norm=float(model.config.gradient_clip_global_norm))
+    trainable_params = [p for p in model.parameters() if p.requires_grad]
+    for name, param in model.named_parameters():
+        if param.requires_grad and param.grad is not None and not torch.isfinite(param.grad).all():
+            raise FloatingPointError(f"non-finite CARE-ASE gradient in parameter {name} at global_step={global_step}")
+    grad_norm = torch.nn.utils.clip_grad_norm_(
+        trainable_params,
+        max_norm=float(model.config.gradient_clip_global_norm),
+        error_if_nonfinite=True,
+    )
+    if torch.is_tensor(grad_norm) and not torch.isfinite(grad_norm):
+        raise FloatingPointError(f"non-finite CARE-ASE gradient norm at global_step={global_step}")
     optimizer.step()
+    for name, param in model.named_parameters():
+        if not torch.isfinite(param.detach()).all():
+            raise FloatingPointError(f"non-finite CARE-ASE parameter after optimizer.step: {name}")
+    for group in optimizer.param_groups:
+        for param in group.get("params", []):
+            state = optimizer.state.get(param, {})
+            for key, value in state.items():
+                if torch.is_tensor(value) and not torch.isfinite(value).all():
+                    raise FloatingPointError(f"non-finite Adam optimizer state {key} after optimizer.step")
+    metrics = {key: metric_sums[key] / float(metric_counts[key]) for key in sorted(metric_sums)} if collect_metrics else {}
     return {
         "stage": stage,
         "loss_mean": loss_total / max(float(len(microbatches)), 1.0),
-        "metrics": dict(metrics) if collect_metrics else {},
+        "metrics": metrics,
+        "metric_aggregation": "mean_over_four_microbatches" if collect_metrics else "disabled",
         "grad_norm": float(grad_norm.detach().cpu() if torch.is_tensor(grad_norm) else grad_norm),
         "formal_step_api": "src.care_myocardium.training.care_ase_trainer.run_formal_optimizer_step",
         "microbatch_count": len(microbatches),
@@ -1356,6 +1465,7 @@ def save_care_ase_checkpoint(
     augmentation_contract_sha256: str | None = None,
     full_case_target_profile_manifest_sha256: str | None = None,
     full_case_target_cache_manifest_sha256: str | None = None,
+    environment_determinism_manifest_sha256: str | None = None,
     augmentation_rng_state: dict[str, Any] | None = None,
     precision_mode: str = "fp32_guarded_mixed_precision_allowed",
     formal_resumable: bool = False,
@@ -1390,6 +1500,7 @@ def save_care_ase_checkpoint(
         "augmentation_contract_sha256": augmentation_contract_sha256 or "UNSET",
         "full_case_target_profile_manifest_sha256": full_case_target_profile_manifest_sha256 or full_case_target_cache_manifest_sha256 or "UNSET",
         "full_case_target_cache_manifest_sha256": full_case_target_cache_manifest_sha256 or "UNSET",
+        "environment_determinism_manifest_sha256": environment_determinism_manifest_sha256 or "UNSET",
         "formal_resumable": bool(formal_resumable),
         "augmentation_rng_state": augmentation_rng_state
         or {
@@ -1462,8 +1573,13 @@ def save_care_ase_checkpoint(
             "augmentation_contract_sha256",
             "full_case_target_profile_manifest_sha256",
             "full_case_target_cache_manifest_sha256",
+            "environment_determinism_manifest_sha256",
         )
-        placeholders = [field for field in formal_fields if payload.get(field) in {None, "", "UNSET", "SHORT_SMOKE"}]
+        placeholders = [
+            field
+            for field in formal_fields
+            if payload.get(field) in {None, "", "UNSET", "SHORT_SMOKE", "SHORT_SMOKE_NO_FORMAL_CREDIT"}
+        ]
         if placeholders:
             raise ValueError(f"formal CARE-ASE checkpoint refuses placeholder provenance fields: {placeholders}")
     path.parent.mkdir(parents=True, exist_ok=True)
