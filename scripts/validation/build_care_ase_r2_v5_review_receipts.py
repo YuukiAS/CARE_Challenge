@@ -287,12 +287,14 @@ def oof_and_mutation_receipts(out: Path) -> None:
             "status": "PASS"
             if "canonical_patient_held_out_stock_nnunet_oof_only" in manifest_text
             and "forbidden_sources_removed" in manifest_text
-            and "forbids min(shape) crops and ad hoc ndimage.zoom" in manifest_text
+            and "transpose-only binding" in manifest_text
+            and "shape-only xyz-to-zyx acceptance" in manifest_text
             else "FAIL",
             "canonical_patient_held_out_stock_nnunet_oof_only": "canonical_patient_held_out_stock_nnunet_oof_only" in manifest_text,
             "forbidden_sources": ["MoSAIC", "SRR", "cascade", "current_CARE_ASE"],
             "forbidden_sources_removed": "forbidden_sources_removed" in manifest_text,
-            "forbidden_min_shape_crop_or_ad_hoc_zoom": "forbids min(shape) crops and ad hoc ndimage.zoom" in manifest_text,
+            "forbidden_transpose_only_or_shape_only_binding": "transpose-only binding" in manifest_text
+            and "shape-only xyz-to-zyx acceptance" in manifest_text,
         },
     )
     report = read_json(out / "known_bad_validator_report.json")

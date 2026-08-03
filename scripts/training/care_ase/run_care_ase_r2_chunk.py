@@ -441,7 +441,9 @@ def _sampler_state_from_checkpoint_payload(payload: dict[str, Any]) -> dict[str,
         "complete_pathology_cursor": payload.get("complete_pathology_cursor", payload.get("pathology_focus_cursor", 0)),
         "partial_case_cursors": payload.get("partial_case_cursors", {"lge_only": 0, "lge_c0": 0}),
         "micro_case_cursors_by_group": payload.get("micro_case_cursors_by_group", {}),
+        "micro_case_rng_state_by_group": payload.get("micro_case_rng_state_by_group", {}),
         "micro_patch_cursor": payload.get("micro_patch_cursor", 0),
+        "micro_patch_rng_state": payload.get("micro_patch_rng_state", "UNSET"),
         "center_cursor": payload.get("center_cursor", payload.get("complete_center_cursor", 0)),
         "pathology_focus_cursor": payload.get("pathology_focus_cursor", payload.get("complete_pathology_cursor", 0)),
         "scar_focus_cursor": payload["scar_focus_cursor"],
@@ -725,7 +727,6 @@ def main() -> int:
                 stock_checkpoint_hash=sha256_file(Path(model.config.checkpoint_path)),
                 hard_negative_manifest_sha256=sampler.hard_negative_manifest.get("manifest_sha256", "UNSET"),
                 augmentation_contract_sha256=augmentation_contract.sha256(),
-                augmentation_rng_state={"source": "global_python_numpy_torch_rng_after_augmented_microbatches"},
                 area_reference_receipt_sha256=json_sha(area),
             )
             payload = torch.load(ckpt, map_location="cpu", weights_only=False)

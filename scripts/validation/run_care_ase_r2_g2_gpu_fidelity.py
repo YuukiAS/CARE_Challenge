@@ -25,6 +25,7 @@ from scripts.evaluation.care_ase.evaluate_care_ase_r2_outer import sliding_windo
 from scripts.training.care_ase.run_care_ase_r2_chunk import (
     PREPROCESSED,
     SPLITS,
+    _sampler_state_from_checkpoint_payload,
     combined_source_hash,
     make_batch,
     parse_patch_size,
@@ -346,7 +347,7 @@ def exact_resume_behavioral_equivalence(
     reloaded_sched = CAREASEStageScheduler(reloaded_opt)
     reloaded_sched.load_state_dict(payload["scheduler"])
     reloaded_sampler = CAREASEDeterministicSampler(REPO_ROOT, fold)
-    reloaded_sampler.load_state_dict(payload)
+    reloaded_sampler.load_state_dict(_sampler_state_from_checkpoint_payload(payload))
     pre_step2_next_hash = reloaded_sampler.peek_descriptor_bundle_for_step(2).sha256()
 
     sampler_a.descriptor_bundle_for_step(2)

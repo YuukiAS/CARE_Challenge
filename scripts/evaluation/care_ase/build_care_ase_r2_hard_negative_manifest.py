@@ -91,21 +91,16 @@ def bind_prediction_to_preprocessed_grid(gt: np.ndarray, pred: np.ndarray, *, so
             "binding": "exact_preprocessed_grid_shape_match",
             "source_prediction_shape": list(pred.shape),
             "preprocessed_shape": list(gt.shape),
-        }
-    if pred.ndim == 3 and pred.shape == (gt.shape[2], gt.shape[1], gt.shape[0]):
-        converted = np.transpose(pred, (2, 1, 0))
-        return converted, {
-            "binding": "nifti_xyz_to_preprocessed_zyx_shape_match",
-            "source_prediction_shape": list(pred.shape),
-            "preprocessed_shape": list(gt.shape),
-            "axis_transform": [2, 1, 0],
-            "no_min_shape_crop": True,
+            "transpose_only_forbidden": True,
+            "shape_only_fallback_forbidden": True,
         }
     raise RuntimeError(
         "stock OOF prediction is not already bound to the preprocessed grid. "
-        "CARE-ASE R2 forbids min(shape) crops and ad hoc ndimage.zoom; provide a canonical "
-        "patient-held-out stock nnU-Net OOF array in preprocessed-grid shape or an exact xyz->zyx "
-        f"shape match. prediction_shape={tuple(pred.shape)} preprocessed_shape={tuple(gt.shape)} "
+        "CARE-ASE R2 forbids min(shape) crops, ad hoc ndimage.zoom, transpose-only binding, "
+        "and shape-only xyz-to-zyx acceptance. Provide a canonical patient-held-out stock "
+        "nnU-Net OOF array already exported in preprocessed-grid shape, or implement a strict "
+        "affine/orientation/spacing-resampled binding with round-trip geometry validation. "
+        f"prediction_shape={tuple(pred.shape)} preprocessed_shape={tuple(gt.shape)} "
         f"source_meta={source_meta} preprocessed_geometry={preprocessed_geometry}"
     )
 
