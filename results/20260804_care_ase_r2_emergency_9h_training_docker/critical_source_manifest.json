@@ -1,5 +1,5 @@
 {
-  "created_utc": "2026-08-03T18:24:58.850038Z",
+  "created_utc": "2026-08-03T18:39:40.039146Z",
   "critical_source_manifest": {
     "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh": "a1188a3fbc2e50f85e3d1b89b883c5ff9ef9c933bbd4063dc4485e4c4c546d55",
     "prompts/blueprints/CARE_ASE_R2_effective_contract_v9_20260803.yaml": "1b02fb37fa30054b74f7b73b7bd15617d74ab931b4a12965ea1d700bb7fa3c1e",
@@ -23,11 +23,11 @@
     "src/care_myocardium/models/care_ase.py": "290c799618b29133903dfb7ccd78844bf27a4ce70b885ae64483444c922b9e42",
     "src/care_myocardium/models/care_prism.py": "6af752a202faaae8f8766422724ede6b774db3650e4163c677ab2d2ffbfee0bf",
     "src/care_myocardium/training/care_ase_augmentation.py": "85a208a3a886babe0ec2927a1babced2b24ff91188d577585e65d4e38c27b283",
-    "src/care_myocardium/training/care_ase_runtime.py": "749c40a45921f6549f146a7cb0bff1e09ef7cab91de58036ba73359d1a0a00fc",
+    "src/care_myocardium/training/care_ase_runtime.py": "1b6c6dd1bc1eac2b4c38524196ba954e531b401a708a44b6ca7e07c862cba0a8",
     "src/care_myocardium/training/care_ase_sampler.py": "8268554c0497995cbe9ef6b5fe93d7783ab325ecd1ca79807751a6a6e5edd53d",
     "src/care_myocardium/training/care_ase_trainer.py": "9ac32cd2fb74ffacf704dd0ba4b4740fe3a5179a3bd914b9bf26d1f202e2b943"
   },
-  "critical_source_manifest_sha256": "4a0708a1b9571d11127ae1f03c101eb9771a5e91359be62f88b3b043d2556698",
+  "critical_source_manifest_sha256": "5558e414411cd7b6c683a94100d3152cab007515edbf4e4c817e76daec9b656f",
   "critical_source_seed_paths": [
     "prompts/blueprints/CARE_ASE_R2_effective_contract_v9_20260803.yaml",
     "prompts/tasks/20260804_care_ase_r2_emergency_9h_training_docker_controller.md",
@@ -57,7 +57,7 @@
   ],
   "effective_contract_path": "prompts/blueprints/CARE_ASE_R2_effective_contract_v9_20260803.yaml",
   "effective_contract_sha256": "1b02fb37fa30054b74f7b73b7bd15617d74ab931b4a12965ea1d700bb7fa3c1e",
-  "implementation_commit_sha": "a112faff10a402458413c17273be9b0f16574e24",
-  "origin_main_sha_at_generation": "4d7a05fdc80f79665ab3192de01c5451a39af4e4",
+  "implementation_commit_sha": "72426dfdb19ffaf87c38b2edf1bbe75e91e0a899",
+  "origin_main_sha_at_generation": "8ea497effdbb857fe8fa0b3c6011dab99c3de750",
   "status": "PASS"
 }
