@@ -173,6 +173,8 @@ third_party/MoSAIC/**/*.pt
 third_party/MoSAIC/**/predictions/
 third_party/MoSAIC/**/runtime/
 third_party/MoSAIC/**/cache/
+third_party/I_MMSeg_PINNED/
+third_party/MyoPS-Net_PINNED/
 results/**/mosaic_runtime/
 results/**/mosaic_predictions/
 results/**/native_mosaic_predictions/
