@@ -1,0 +1,14 @@
+{
+  "created_utc": "2026-08-03T18:00:58.994177Z",
+  "fold1_restart_step": 0,
+  "fold4_restart_step": 0,
+  "formal_training_credit_for_invalidated_attempt": "zero",
+  "invalidated_formal_execution_checkout_commit_sha": "4087cad07b0da0b3a0957fb19f98cbda2446356e",
+  "invalidated_implementation_source_commit_sha": "ba66f54b3be4c00767eb222bc8c64a6dc61d457a",
+  "invalidated_wave": "W3_EARLY_RUNTIME_BEFORE_CANARY_REPAIR",
+  "new_implementation_commit_sha": "cb11c348a81ca0db53783939718d2633437d5df0",
+  "outer_access_fold1": 0,
+  "outer_access_fold4": 0,
+  "reason": "contract-required named-evidence liveness canary hook was missing from formal runtime; early steps stopped and cannot count as formal training credit",
+  "status": "PASS"
+}

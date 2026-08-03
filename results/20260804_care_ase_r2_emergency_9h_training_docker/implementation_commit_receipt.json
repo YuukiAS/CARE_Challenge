@@ -1,8 +1,10 @@
 {
-  "created_utc": "2026-08-03T17:45:27.384638Z",
-  "g1_smoke_receipt": "results/20260804_care_ase_r2_emergency_9h_training_docker/g1_static_implementation_gate_receipt.json",
-  "implementation_commit_sha": "ba66f54b3be4c00767eb222bc8c64a6dc61d457a",
-  "source_repairs": "results/20260804_care_ase_r2_emergency_9h_training_docker/source_audit_and_repairs.md",
-  "status": "PASS",
-  "task_key": "20260804_care_ase_r2_emergency_9h_training_docker"
+  "created_utc": "2026-08-03T18:00:58.994177Z",
+  "critical_source_manifest_sha256": "b24c99a56f33c7a33c2d729a8be2bf34d1350dcb9dc9c84a1ac52b445828ce24",
+  "effective_contract_sha256": "1b02fb37fa30054b74f7b73b7bd15617d74ab931b4a12965ea1d700bb7fa3c1e",
+  "implementation_commit_sha": "cb11c348a81ca0db53783939718d2633437d5df0",
+  "previous_invalidated_implementation_commit_sha": "ba66f54b3be4c00767eb222bc8c64a6dc61d457a",
+  "previous_invalidated_review_packet_commit_sha": "4087cad07b0da0b3a0957fb19f98cbda2446356e",
+  "source_change_reason": "emergency named-evidence liveness canary hook added before formal restart",
+  "status": "PASS"
 }

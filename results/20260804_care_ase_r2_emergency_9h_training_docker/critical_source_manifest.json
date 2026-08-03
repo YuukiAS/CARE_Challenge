@@ -1,5 +1,5 @@
 {
-  "created_utc": "2026-08-03T17:45:27.382241Z",
+  "created_utc": "2026-08-03T18:00:58.994177Z",
   "critical_source_manifest": {
     "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh": "a1188a3fbc2e50f85e3d1b89b883c5ff9ef9c933bbd4063dc4485e4c4c546d55",
     "prompts/blueprints/CARE_ASE_R2_effective_contract_v9_20260803.yaml": "1b02fb37fa30054b74f7b73b7bd15617d74ab931b4a12965ea1d700bb7fa3c1e",
@@ -23,11 +23,11 @@
     "src/care_myocardium/models/care_ase.py": "290c799618b29133903dfb7ccd78844bf27a4ce70b885ae64483444c922b9e42",
     "src/care_myocardium/models/care_prism.py": "6af752a202faaae8f8766422724ede6b774db3650e4163c677ab2d2ffbfee0bf",
     "src/care_myocardium/training/care_ase_augmentation.py": "85a208a3a886babe0ec2927a1babced2b24ff91188d577585e65d4e38c27b283",
-    "src/care_myocardium/training/care_ase_runtime.py": "52931b2f8a84d68ef5355cf9fe24d04706971ab68432eadd845b0564ee6a1992",
+    "src/care_myocardium/training/care_ase_runtime.py": "aa6cecfbb2c84858dade23c37ff2d688d219623ea53a2899f9f83f631c34b21b",
     "src/care_myocardium/training/care_ase_sampler.py": "17ae339e68bb671eb23b360af4c0ad8cb6b0d46a7336bfc7ae6f7be33c8e4202",
     "src/care_myocardium/training/care_ase_trainer.py": "48afa854113e48d94ca659b4de3f65e442fed984c9bb51358714b6b8d398e014"
   },
-  "critical_source_manifest_sha256": "fa0575e01f0aff291924a48077ab520240dd7b9a58cdad28586dcf77f787bd98",
+  "critical_source_manifest_sha256": "b24c99a56f33c7a33c2d729a8be2bf34d1350dcb9dc9c84a1ac52b445828ce24",
   "critical_source_seed_paths": [
     "prompts/blueprints/CARE_ASE_R2_effective_contract_v9_20260803.yaml",
     "prompts/tasks/20260804_care_ase_r2_emergency_9h_training_docker_controller.md",
@@ -57,6 +57,6 @@
   ],
   "effective_contract_path": "prompts/blueprints/CARE_ASE_R2_effective_contract_v9_20260803.yaml",
   "effective_contract_sha256": "1b02fb37fa30054b74f7b73b7bd15617d74ab931b4a12965ea1d700bb7fa3c1e",
-  "implementation_commit_sha": "ba66f54b3be4c00767eb222bc8c64a6dc61d457a",
+  "implementation_commit_sha": "cb11c348a81ca0db53783939718d2633437d5df0",
   "status": "PASS"
 }
