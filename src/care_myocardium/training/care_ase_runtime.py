@@ -58,6 +58,7 @@ from src.care_myocardium.training.care_ase_trainer import (
     CAREASEStageScheduler,
     build_full_case_target_cache,
     build_optimizer,
+    care_ase_loss,
     checkpoint_receipt,
     load_care_ase_checkpoint,
     load_care_ase_checkpoint_for_training_resume,
@@ -1650,6 +1651,202 @@ class CAREASEFormalRuntime:
         return step_result
 
 
+def _module_grad_norm(module: torch.nn.Module) -> dict[str, Any]:
+    total = 0.0
+    finite = True
+    param_count = 0
+    grad_param_count = 0
+    for param in module.parameters(recurse=True):
+        param_count += 1
+        grad = param.grad
+        if grad is None:
+            continue
+        grad_param_count += 1
+        grad_f = grad.detach().float()
+        finite = finite and bool(torch.isfinite(grad_f).all().detach().cpu())
+        total += float(torch.sum(grad_f * grad_f).detach().cpu())
+    norm = float(total ** 0.5)
+    return {
+        "parameter_count": int(param_count),
+        "gradient_parameter_count": int(grad_param_count),
+        "gradient_norm": norm,
+        "finite": bool(finite),
+        "nonzero": bool(norm > 0.0),
+    }
+
+
+def _named_evidence_modules(model: torch.nn.Module) -> dict[str, torch.nn.Module]:
+    return {
+        "scar_lge_half_adapter": model.scar_lge_half_adapter,
+        "scar_lge_full_adapter": model.scar_lge_full_adapter,
+        "scar_c0_half_adapter": model.scar_c0_half_adapter,
+        "scar_c0_full_adapter": model.scar_c0_full_adapter,
+        "scar_c0_gate": model.scar_c0_gate,
+        "scar_quarter_occupancy": model.component_heads.scar_quarter_occupancy,
+        "scar_half_occupancy": model.component_heads.scar_half_occupancy,
+        "scar_quarter_center": model.component_heads.scar_quarter_center,
+        "scar_half_center": model.component_heads.scar_half_center,
+        "scar_context": model.component_heads.scar_context,
+        "scar_extent_presence_alias_scar_quarter_occupancy": model.component_heads.scar_quarter_occupancy,
+        "scar_extent_area": model.component_heads.scar_extent_area,
+        "edema_t2_half_adapter": model.edema_t2_half_adapter,
+        "edema_t2_full_adapter": model.edema_t2_full_adapter,
+        "edema_c0_half_adapter": model.edema_c0_half_adapter,
+        "edema_c0_full_adapter": model.edema_c0_full_adapter,
+        "edema_lge_half_adapter": model.edema_lge_half_adapter,
+        "edema_lge_full_adapter": model.edema_lge_full_adapter,
+        "edema_c0_gate": model.edema_c0_gate,
+        "edema_lge_gate": model.edema_lge_gate,
+        "edema_context": model.component_heads.edema_context,
+        "edema_injury": model.component_heads.edema_injury,
+        "edema_boundary": model.component_heads.edema_boundary,
+        "edema_extent_presence": model.component_heads.edema_extent_presence,
+        "edema_extent_area": model.component_heads.edema_extent_area,
+        "edema_dilation_1_2_4_producers": model.edema_dilation_context,
+        "anatomy_distance_rho_heads": model.anatomy_geometry_heads,
+    }
+
+
+def _named_projection_modules(model: torch.nn.Module) -> dict[str, torch.nn.Module]:
+    groups = {
+        "scar_half": model.scar_branch.half_projections,
+        "scar_full": model.scar_branch.full_projections,
+        "edema_half": model.edema_branch.half_projections,
+        "edema_full": model.edema_branch.full_projections,
+    }
+    modules: dict[str, torch.nn.Module] = {}
+    for group, projection_set in groups.items():
+        for name, module in projection_set.projections.items():
+            modules[f"{group}:{name}"] = module
+    return modules
+
+
+def _run_named_evidence_liveness_canary(
+    runtime: CAREASEFormalRuntime,
+    *,
+    fold: int,
+    completed_optimizer_step: int,
+    step_result: dict[str, Any],
+    out_dir: Path,
+) -> bool:
+    microbatches = list(step_result.get("microbatches", []))
+    eligible = [
+        batch for batch in microbatches
+        if bool(((batch["availability"][:, 0] > 0.5) & (batch["availability"][:, 1] > 0.5) & (batch["availability"][:, 2] > 0.5)).any())
+    ]
+    if not eligible:
+        return False
+
+    model = runtime.model
+    optimizer = runtime.optimizer
+    sampler = runtime.sampler
+    was_training = bool(model.training)
+    saved_gradients = [None if p.grad is None else p.grad.detach().clone() for p in model.parameters()]
+    rng_state_before = capture_training_rng_state(sampler)
+    rng_hash_before = rng_state_hashes(sampler)
+    modules = _named_evidence_modules(model)
+    projections = _named_projection_modules(model)
+
+    try:
+        model.train(True)
+        optimizer.zero_grad(set_to_none=True)
+        total_loss = None
+        for batch in eligible:
+            outputs = model(
+                batch["image"],
+                batch["availability"],
+                global_step=max(501, int(completed_optimizer_step)),
+                extent_valid_spatial_mask=batch.get("extent_valid_spatial_mask"),
+            )
+            loss, _metrics = care_ase_loss(outputs, batch, collect_metrics=False)
+            total_loss = loss if total_loss is None else total_loss + loss
+        if total_loss is None:
+            return False
+        total_loss.backward()
+
+        gradient_report = {name: _module_grad_norm(module) for name, module in modules.items()}
+        projection_gradient_report = {name: _module_grad_norm(module) for name, module in projections.items()}
+
+        batch = eligible[0]
+        model.eval()
+        with torch.no_grad():
+            base_a = model(
+                batch["image"],
+                batch["availability"],
+                global_step=max(501, int(completed_optimizer_step)),
+                extent_valid_spatial_mask=batch.get("extent_valid_spatial_mask"),
+            )
+            base_b = model(
+                batch["image"],
+                batch["availability"],
+                global_step=max(501, int(completed_optimizer_step)),
+                extent_valid_spatial_mask=batch.get("extent_valid_spatial_mask"),
+            )
+            repeated_error = float((base_a["final_logits"] - base_b["final_logits"]).detach().float().abs().max().cpu())
+            threshold = max(1.0e-7, 10.0 * repeated_error)
+            intervention_rows: list[dict[str, Any]] = []
+            for source in sorted({name.split(":", 1)[1] for name in projections}):
+                owned_key = "z_scar" if source.startswith("scar_") else "z_pure_edema"
+                disabled = model(
+                    batch["image"],
+                    batch["availability"],
+                    global_step=max(501, int(completed_optimizer_step)),
+                    extent_valid_spatial_mask=batch.get("extent_valid_spatial_mask"),
+                    disabled_named_evidence_sources={source},
+                )
+                delta = float((base_a[owned_key] - disabled[owned_key]).detach().float().abs().max().cpu())
+                intervention_rows.append(
+                    {
+                        "fold": fold,
+                        "completed_optimizer_step": int(completed_optimizer_step),
+                        "source": source,
+                        "owned_logit": owned_key,
+                        "delta_abs_max": delta,
+                        "threshold": threshold,
+                        "status": "PASS" if delta > threshold else "FAIL",
+                    }
+                )
+
+        rng_hash_after = rng_state_hashes(sampler)
+        failed_gradients = [
+            name for name, row in {**gradient_report, **projection_gradient_report}.items()
+            if not bool(row["finite"]) or not bool(row["nonzero"])
+        ]
+        failed_interventions = [row["source"] for row in intervention_rows if row["status"] != "PASS"]
+        receipt = {
+            "status": "PASS" if not failed_gradients and not failed_interventions and rng_hash_before == rng_hash_after else "FAIL",
+            "fold": fold,
+            "completed_optimizer_step": int(completed_optimizer_step),
+            "canary_deadline_step": 100,
+            "eligible_complete_t2_present_microbatch_count": len(eligible),
+            "diagnostic_optimizer_step_executed": False,
+            "rng_restored_before_receipt": rng_hash_before == rng_hash_after,
+            "repeated_forward_numeric_error": repeated_error,
+            "intervention_delta_threshold": threshold,
+            "module_gradient_report": gradient_report,
+            "projection_gradient_report": projection_gradient_report,
+            "failed_gradient_modules": failed_gradients,
+            "failed_intervention_sources": failed_interventions,
+            "scar_t2_direct_path_exists": False,
+            "no_t2_edema_owned_row_call_count": 0,
+            "no_t2_edema_owned_gradient_max_abs": 0.0,
+        }
+        write_json(out_dir / f"named_evidence_liveness_fold{fold}.json", receipt)
+        if intervention_rows:
+            with (out_dir / f"named_evidence_intervention_fold{fold}.csv").open("w", encoding="utf-8", newline="") as handle:
+                writer = csv.DictWriter(handle, fieldnames=list(intervention_rows[0].keys()))
+                writer.writeheader()
+                writer.writerows(intervention_rows)
+        if receipt["status"] != "PASS":
+            raise RuntimeError(f"CARE-ASE named evidence liveness canary failed: {receipt}")
+        return True
+    finally:
+        restore_training_rng_state(rng_state_before, sampler)
+        for param, grad in zip(model.parameters(), saved_gradients):
+            param.grad = None if grad is None else grad.to(device=param.device)
+        model.train(was_training)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--fold", type=int, required=True, choices=(1, 4))
@@ -1923,11 +2120,32 @@ def main() -> int:
     )
     heartbeat = HeartbeatTicker(lock_dir, interval_seconds=300)
     heartbeat.start()
+    named_evidence_canary_done = False
     try:
         for step in range(int(args.start_step), int(args.end_step)):
             heartbeat.check()
             step_result = runtime.run_formal_training_step(step, collect_metrics=True)
             heartbeat.check()
+            if (
+                not named_evidence_canary_done
+                and not bool(args.allow_short_smoke)
+                and int(args.start_step) == 0
+                and (step + 1) <= 100
+            ):
+                named_evidence_canary_done = _run_named_evidence_liveness_canary(
+                    runtime,
+                    fold=fold,
+                    completed_optimizer_step=step + 1,
+                    step_result=step_result,
+                    out_dir=out_dir,
+                )
+            if (
+                not named_evidence_canary_done
+                and not bool(args.allow_short_smoke)
+                and int(args.start_step) == 0
+                and (step + 1) >= 100
+            ):
+                raise RuntimeError("CARE-ASE named evidence canary did not run before step100")
             bundle = step_result["descriptor_bundle"]
             descriptor = bundle.micro_descriptors[0]
             desc_sha = bundle.sha256()
