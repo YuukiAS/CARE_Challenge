@@ -1,0 +1,4 @@
+term,expected,observed_valid_inside,observed_valid_far_corner,status,observed_scar_valid_slices,observed_edema_valid_slices,observed_loss
+edema_boundary_valid_region,abs(raw_mm)<=10 or gt positive,1,1,PASS,,,
+slice_area_denominator,gt wall voxels > 0 only,,,PASS,5,5,
+no_t2_edema_denominator,zero contribution,,,PASS,,,-0.0

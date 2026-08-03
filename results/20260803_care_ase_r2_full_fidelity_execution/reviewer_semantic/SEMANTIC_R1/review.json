@@ -1,0 +1,59 @@
+{
+  "candidate_commit_sha": "a527f5e7a569c5378b2e66582fd978af6ba1ef07",
+  "critical_finding_count": 2,
+  "decision": "REVISE_CONTINUE_CURRENT_GOAL",
+  "effective_contract_sha256": "f3b6559cfa796eaab8f7fd86ae33cdaddd230771e26bb2459e26dcaff2a80dad",
+  "findings": [
+    {
+      "affected_training_credit": "behavioral runtime contract; formal chunks launched with this wrapper require controller/reviewer credit decision after repair",
+      "contract_clause": "CARE_ASE_final_model_blueprint_v2 section 11 and exact implementation v2 slurm_and_resume.max_walltime_per_job_hours: each formal chunk walltime <= 8h",
+      "expected": "Formal CARE-ASE R2 training chunks request no more than 8 hours per job.",
+      "finding_id": "SEMANTIC_R1_001_FORMAL_CHUNK_WALLTIME_EXCEEDS_CONTRACT",
+      "function_or_field": "#SBATCH --time",
+      "observed": "Wrapper requests 12:00:00, i.e. 12.0 hours, exceeding the frozen chunk budget.",
+      "repair_scope": "Change the formal wrapper walltime to <=8h and rerun affected source hash / wrapper / semantic reviewer gates before crediting formal training launched through this wrapper.",
+      "reproducer_command": "cd /users/a/e/aereinh/CARE_reviewers/care_ase_r2/SEMANTIC_R1/a527f5e7a569c5378b2e66582fd978af6ba1ef07 && rg -n \"#SBATCH --time\" jobs/care_ase_r2/run_fold_chunk_htzhulab.sh",
+      "severity": "critical",
+      "source_path_or_evidence_path": "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh:8"
+    },
+    {
+      "affected_training_credit": "review evidence only unless the rerun exposes source/runtime behavior mismatch",
+      "contract_clause": "User semantic oracle instruction and continuous reviewer R2/G2: independent reviewer must verify real GPU case coverage evidence; unverified high-risk clauses require REVISE_CONTINUE_CURRENT_GOAL.",
+      "expected": "This semantic review independently reruns or otherwise directly verifies complete CenterB, complete CenterC, LGE-only, LGE+C0, small scar, no-T2 zero-gradient, sampler, scheduler, resume, and module-off checks on GPU.",
+      "finding_id": "SEMANTIC_R1_002_GPU_CASE_COVERAGE_NOT_INDEPENDENTLY_RERUN_BY_SEMANTIC_ORACLE",
+      "function_or_field": "independent GPU semantic oracle rerun",
+      "observed": "Existing project GPU receipts are present and report PASS on H100 for folds 1 and 4, but this semantic oracle did not independently rerun GPU coverage in this review process; marked high_risk_unverified=true.",
+      "repair_scope": "Run an independent semantic GPU oracle under the reviewer namespace, bind its command/device/case coverage to this candidate SHA, and resubmit a new immutable candidate/review packet.",
+      "reproducer_command": "cd /users/a/e/aereinh/CARE_reviewers/care_ase_r2/SEMANTIC_R1/a527f5e7a569c5378b2e66582fd978af6ba1ef07 && python -m json.tool results/20260803_care_ase_r2_full_fidelity_execution/g2_real_gpu_fidelity_receipt_fold1.json | sed -n \"1,80p\"",
+      "severity": "critical",
+      "source_path_or_evidence_path": "results/20260803_care_ase_r2_full_fidelity_execution/g2_real_gpu_fidelity_receipt_fold{1,4}.json; gpu_case_coverage_oracle.json"
+    }
+  ],
+  "invalidated_wave_or_none": "G2_5_pretraining_source_review",
+  "next_review_trigger": "new immutable candidate commit after same-goal repair",
+  "oracle_files": [
+    "reviewer_semantic_contract.json",
+    "contract_formula_code_oracle_matrix.csv",
+    "physical_target_oracle.json",
+    "loss_formula_oracle.json",
+    "loss_scale_audit.csv",
+    "gradient_scale_audit.csv",
+    "denominator_audit.csv",
+    "sampler_composition_oracle.json",
+    "canonical_stock_oof_oracle.json",
+    "parameter_group_oracle.json",
+    "exact_resume_oracle.json",
+    "gpu_case_coverage_oracle.json",
+    "mutation_detection_report.json",
+    "reviewed_sha_manifest.json",
+    "commands_and_exit_codes.json"
+  ],
+  "oracle_notes": {
+    "loss_formula_oracle": "rerun with pure no-T2 and pure T2-present synthetic batches",
+    "sampler_oracle": "candidate source tested against read-only main data root because protocol data are untracked and absent from detached git worktree"
+  },
+  "pass_token": null,
+  "required_repair_scope": "Fix wrapper walltime and provide independent GPU semantic rerun, then create a new immutable candidate commit for re-review.",
+  "reviewer_session_id": "semantic_oracle_local_20260803T004218Z",
+  "round_id": "SEMANTIC_R1"
+}

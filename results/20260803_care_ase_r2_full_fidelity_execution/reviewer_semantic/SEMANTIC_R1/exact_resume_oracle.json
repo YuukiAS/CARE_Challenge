@@ -1,0 +1,10 @@
+{
+  "data_root": "/users/a/e/aereinh/CARE",
+  "expected_next_descriptor_sha256": "30a0f368d24666f0d0341386da1ed4075af01481343c9ac275a64d27a5021267",
+  "observed_after_load_descriptor_sha256": "30a0f368d24666f0d0341386da1ed4075af01481343c9ac275a64d27a5021267",
+  "prefix_sequence_sha256": "56b0f1023c317f4b566d985a3cb91ad7d4e2a36b8ef4b31597d36429ac777fec",
+  "saved_next_batch_descriptor_sha256": "30a0f368d24666f0d0341386da1ed4075af01481343c9ac275a64d27a5021267",
+  "source_root": "/users/a/e/aereinh/CARE_reviewers/care_ase_r2/SEMANTIC_R1/a527f5e7a569c5378b2e66582fd978af6ba1ef07",
+  "status": "PASS",
+  "steps_consumed": 37
+}

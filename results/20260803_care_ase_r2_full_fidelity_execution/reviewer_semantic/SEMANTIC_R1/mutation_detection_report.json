@@ -1,0 +1,24 @@
+{
+  "mutations": [
+    {
+      "detected": true,
+      "expected_detector": "decode excludes class4",
+      "mutation": "set no-T2 class4 logit highest",
+      "observed_decoded_class": 0
+    },
+    {
+      "detected": true,
+      "expected_detector": "inside positive outside negative check fails",
+      "mutation": "flip edema boundary sign in oracle",
+      "observed_if_flipped_inside": -0.20000000298023224
+    },
+    {
+      "detected": true,
+      "expected_detector": "walltime audit detects >8h",
+      "mutation": "formal wrapper walltime exceeds 8h",
+      "observed_hours": 12.0,
+      "observed_walltime": "12:00:00"
+    }
+  ],
+  "status": "PASS"
+}

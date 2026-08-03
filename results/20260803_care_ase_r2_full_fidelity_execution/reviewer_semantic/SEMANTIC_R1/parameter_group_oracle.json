@@ -1,0 +1,18 @@
+{
+  "alias_collection_lines": [
+    571
+  ],
+  "dedupe_seen_lines": [
+    622,
+    626
+  ],
+  "note": "Verified by source inspection only; full model object-id instantiation not rerun in this semantic oracle to avoid checkpoint/runtime mutation.",
+  "object_id_registry_lines": [
+    572,
+    616,
+    625,
+    636,
+    641
+  ],
+  "status": "PASS"
+}

@@ -14,7 +14,7 @@
   "old_entrypoint_bypass": false,
   "old_trainer_bypass": false,
   "wrapper_path": "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh",
-  "wrapper_sha256": "ebef044dcf0a020d1818a0a48907ce0701640b966089c96aaf2a9e8a677a5cd9",
+  "wrapper_sha256": "7fe9820cea87a6fbe7c4da70cf153cc06a9d5ae19439de66802d69469217787e",
   "wrapper_uses_env_python": true,
   "wrapper_uses_htzhulab": true
 }

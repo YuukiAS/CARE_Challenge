@@ -3,8 +3,8 @@
     "case_count_denominator",
     "all_voxel_sum"
   ],
-  "implemented_context_loss": 1.4934430122375488,
-  "independent_valid_voxel_mean": 1.4934430122375488,
+  "implemented_context_loss": 1.397175669670105,
+  "independent_valid_voxel_mean": 1.397175669670105,
   "status": "PASS",
   "valid_voxel_count": 6193
 }

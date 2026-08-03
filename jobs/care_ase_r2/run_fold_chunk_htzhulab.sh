@@ -5,7 +5,7 @@
 #SBATCH --output=/dev/null
 #SBATCH --error=/dev/null
 #SBATCH --mem=64G
-#SBATCH --time=12:00:00
+#SBATCH --time=08:00:00
 #SBATCH --gres=gpu:1
 #SBATCH --partition=htzhulab
 #SBATCH --qos=gpu_access

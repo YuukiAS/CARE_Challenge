@@ -1,0 +1,20 @@
+{
+  "folds": {
+    "1": {
+      "cuda_device": "NVIDIA H100 NVL",
+      "decode_no_t2_excludes_class4": true,
+      "no_t2_zero_gradient": true,
+      "outer_access_count_before_freeze": 0,
+      "receipt_decision": "PASS"
+    },
+    "4": {
+      "cuda_device": "NVIDIA H100 NVL",
+      "decode_no_t2_excludes_class4": true,
+      "no_t2_zero_gradient": true,
+      "outer_access_count_before_freeze": 0,
+      "receipt_decision": "PASS"
+    }
+  },
+  "high_risk_unverified": true,
+  "status": "AUXILIARY_EVIDENCE_PRESENT_NOT_INDEPENDENTLY_RERUN"
+}

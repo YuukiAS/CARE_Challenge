@@ -3,7 +3,7 @@
   "failures": [],
   "remaining_gap_count": 0,
   "source_sha_manifest": {
-    "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh": "ebef044dcf0a020d1818a0a48907ce0701640b966089c96aaf2a9e8a677a5cd9",
+    "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh": "7fe9820cea87a6fbe7c4da70cf153cc06a9d5ae19439de66802d69469217787e",
     "scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py": "ed915047903633dfaa9833f3e7626efcd09501c4f21f44bf33ad45354aeb49d7",
     "scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py": "dd2ef525c83bbf20e940ac336f1b0725a6ee9b71c1f2f65a118b690ec6d802c6",
     "scripts/training/care_ase/run_care_ase_r2_chunk.py": "334f4dc7ebd726f6a02998340ad9c86bc9207e0a6a8fc33b7f82a1c9aa431454",
