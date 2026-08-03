@@ -281,6 +281,8 @@ def aggregate_fold_receipts(out: Path) -> None:
 
 def oof_and_mutation_receipts(out: Path) -> None:
     manifest_text = MANIFEST_BUILDER.read_text(encoding="utf-8")
+    explicit_grid_proof = "preprocessed_grid_binding" in manifest_text and "preprocessed_geometry_sha256" in manifest_text
+    same_shape_wrong_geometry_rejected = "same_shape_without_grid_proof_rejected" in manifest_text and "same-shape wrong-affine/orientation acceptance" in manifest_text
     write_json(
         out / "canonical_stock_oof_provenance_receipt.json",
         {
@@ -289,12 +291,16 @@ def oof_and_mutation_receipts(out: Path) -> None:
             and "forbidden_sources_removed" in manifest_text
             and "transpose-only binding" in manifest_text
             and "shape-only xyz-to-zyx acceptance" in manifest_text
+            and explicit_grid_proof
+            and same_shape_wrong_geometry_rejected
             else "FAIL",
             "canonical_patient_held_out_stock_nnunet_oof_only": "canonical_patient_held_out_stock_nnunet_oof_only" in manifest_text,
             "forbidden_sources": ["MoSAIC", "SRR", "cascade", "current_CARE_ASE"],
             "forbidden_sources_removed": "forbidden_sources_removed" in manifest_text,
             "forbidden_transpose_only_or_shape_only_binding": "transpose-only binding" in manifest_text
             and "shape-only xyz-to-zyx acceptance" in manifest_text,
+            "explicit_preprocessed_grid_binding_required": explicit_grid_proof,
+            "same_shape_wrong_affine_or_orientation_rejected": same_shape_wrong_geometry_rejected,
         },
     )
     report = read_json(out / "known_bad_validator_report.json")
@@ -312,6 +318,7 @@ def oof_and_mutation_receipts(out: Path) -> None:
         "extent_patch_local_bias_averaged_across_multiwindow_inference",
         "require_CommitA_equals_CommitB",
         "reviewer_only_checks_aggregate_branch_gradient",
+        "same_shape_wrong_affine_or_orientation_oof",
     ]
     write_json(
         out / "delta_mutation_detection_report.json",

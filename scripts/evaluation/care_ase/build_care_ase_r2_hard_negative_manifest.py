@@ -34,6 +34,11 @@ def sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
+def sha256_json(payload: dict[str, Any]) -> str:
+    text = json.dumps(payload, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
 def read_seg(path: Path) -> np.ndarray:
     return np.asarray(blosc2.open(str(path), mode="r")[:])[0].astype(np.uint8, copy=False)
 
@@ -76,31 +81,54 @@ def read_prediction_from_anchor(case_id: str, entries: dict[str, dict[str, Any]]
     path = REPO_ROOT / str(entry["prediction_path"])
     image = nib.load(str(path))
     pred = np.asarray(image.get_fdata()).astype(np.uint8)
+    transform_binding = entry.get("transform_or_exact_array_binding") if isinstance(entry.get("transform_or_exact_array_binding"), dict) else {}
     return pred, str(path), str(entry.get("prediction_sha256") or sha256_file(path)), {
+        "case_id": case_id,
         "source_kind": "canonical_stock_nnunet_oof_anchor_manifest",
         "source_stock_fold": int(entry["source_fold"]),
         "affine": np.asarray(image.affine).round(8).tolist(),
         "header_zooms": [float(v) for v in image.header.get_zooms()[:3]],
         "anchor_probability_sha256": entry.get("probability_sha256"),
+        "source_prediction_sha": str(entry.get("prediction_sha256") or sha256_file(path)),
+        "preprocessed_grid_binding": bool(entry.get("preprocessed_grid_binding") is True or transform_binding.get("preprocessed_grid_binding") is True),
+        "preprocessed_geometry_sha256": entry.get("preprocessed_geometry_sha256") or transform_binding.get("preprocessed_geometry_sha256"),
+        "preprocessed_shape": entry.get("preprocessed_shape") or transform_binding.get("preprocessed_shape"),
+        "preprocessed_geometry": entry.get("preprocessed_geometry") or transform_binding.get("preprocessed_geometry"),
+        "anchor_manifest_keys": sorted(str(key) for key in entry.keys()),
     }
 
 
 def bind_prediction_to_preprocessed_grid(gt: np.ndarray, pred: np.ndarray, *, source_meta: dict[str, Any], preprocessed_geometry: dict[str, Any]) -> tuple[np.ndarray, dict[str, Any]]:
-    if pred.shape == gt.shape:
+    geometry_sha = sha256_json(preprocessed_geometry)
+    declared_shape = source_meta.get("preprocessed_shape")
+    declared_geometry = source_meta.get("preprocessed_geometry")
+    declared_geometry_sha = source_meta.get("preprocessed_geometry_sha256")
+    geometry_hash_matches = declared_geometry_sha == geometry_sha
+    explicit_geometry_matches = isinstance(declared_geometry, dict) and declared_geometry == preprocessed_geometry
+    explicit_shape_matches = declared_shape == list(gt.shape) if declared_shape is not None else False
+    proof_ok = bool(source_meta.get("preprocessed_grid_binding") is True and pred.shape == gt.shape and explicit_shape_matches and (geometry_hash_matches or explicit_geometry_matches))
+    if proof_ok:
         return pred, {
-            "binding": "exact_preprocessed_grid_shape_match",
+            "binding": "exact_preprocessed_grid_with_manifest_geometry_proof",
             "source_prediction_shape": list(pred.shape),
             "preprocessed_shape": list(gt.shape),
+            "preprocessed_grid_binding": True,
+            "preprocessed_geometry_sha256": geometry_sha,
+            "declared_preprocessed_geometry_sha256": declared_geometry_sha,
+            "declared_preprocessed_geometry_matches": explicit_geometry_matches,
             "transpose_only_forbidden": True,
             "shape_only_fallback_forbidden": True,
+            "same_shape_without_grid_proof_rejected": True,
         }
     raise RuntimeError(
         "stock OOF prediction is not already bound to the preprocessed grid. "
         "CARE-ASE R2 forbids min(shape) crops, ad hoc ndimage.zoom, transpose-only binding, "
-        "and shape-only xyz-to-zyx acceptance. Provide a canonical patient-held-out stock "
-        "nnU-Net OOF array already exported in preprocessed-grid shape, or implement a strict "
-        "affine/orientation/spacing-resampled binding with round-trip geometry validation. "
+        "shape-only xyz-to-zyx acceptance, and same-shape wrong-affine/orientation acceptance. "
+        "Provide a canonical patient-held-out stock nnU-Net OOF array with explicit "
+        "preprocessed_grid_binding=true and matching preprocessed_geometry_sha256, or implement "
+        "a strict affine/orientation/spacing-resampled binding with round-trip geometry validation. "
         f"prediction_shape={tuple(pred.shape)} preprocessed_shape={tuple(gt.shape)} "
+        f"preprocessed_geometry_sha256={geometry_sha} "
         f"source_meta={source_meta} preprocessed_geometry={preprocessed_geometry}"
     )
 

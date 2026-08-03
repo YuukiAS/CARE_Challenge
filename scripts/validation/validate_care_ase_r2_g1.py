@@ -51,6 +51,7 @@ STRUCTURAL_KNOWN_BAD_FIXTURES = (
     "outer_before_w45",
     "proxy_loss_targets",
     "count_only_hard_negative_manifest",
+    "same_shape_wrong_affine_or_orientation_oof",
     "wrapper_points_old_entry",
     "extent_patch_local_bias_averaged_across_multiwindow_inference",
     "require_CommitA_equals_CommitB",
@@ -131,6 +132,7 @@ def coverage_rows() -> list[dict[str, Any]]:
         ("CenterB/CenterC pathology and hard-negative cycles", SAMPLER, "CAREASEDeterministicSampler", "hard_negative_manifest", "sampler_static_contract", "break_center_or_focus_cycle", "PASS"),
         ("hard-negative manifest consumed by formal sampler", SAMPLER, "_load_hard_negative_manifest", "HARD_NEGATIVE_MANIFEST_TEMPLATE", "sampler_static_contract", "hard_negative_manifest_not_read", "PASS"),
         ("hard-negative manifest provides canonical stock OOF component coordinates", MANIFEST_BUILDER, "build_case", "canonical_patient_held_out_stock_nnunet_oof_only", "canonical_stock_oof_provenance_receipt", "count_only_hard_negative_manifest", "PASS"),
+        ("hard-negative OOF same-shape arrays require explicit preprocessed-grid geometry proof", MANIFEST_BUILDER, "bind_prediction_to_preprocessed_grid", "same_shape_without_grid_proof_rejected", "canonical_stock_oof_provenance_receipt", "same_shape_wrong_affine_or_orientation_oof", "PASS"),
         ("actual-train-only scar/edema area reference", SAMPLER, "compute_actual_train_area_references", "row.role == \"actual-train\"", "area_reference_receipt", "hardcoded_area_reference", "PASS"),
         ("Stage A/B/C = 2000/8000/4000", MODEL, "CAREASEConfig", "stage_b_steps: int = 8000", "scheduler_static_contract", "stage_2000_4000_8000", "PASS"),
         ("AdamW created once with object-id parameter registry and moments preserved", TRAINER, "build_optimizer", "parameter_group_coverage", "parameter_group_coverage", "optimizer_recreated_at_stage_transition", "PASS"),
@@ -337,6 +339,7 @@ def known_bad_fixture_ids() -> list[str]:
         "outer_before_w45",
         "proxy_loss_targets",
         "count_only_hard_negative_manifest",
+        "same_shape_wrong_affine_or_orientation_oof",
         "wrapper_points_old_entry",
         "extent_patch_local_bias_averaged_across_multiwindow_inference",
         "require_CommitA_equals_CommitB",
@@ -476,6 +479,8 @@ def apply_known_bad_fixture(fixture: str, payloads: dict[str, Any]) -> None:
     elif fixture == "count_only_hard_negative_manifest":
         sampler["hard_negative_manifest_spatial_targets"] = "MISSING"
         sampler["status"] = "FAIL"
+    elif fixture == "same_shape_wrong_affine_or_orientation_oof":
+        _mark_coverage_failure(coverage, "same_shape_wrong_affine_or_orientation_oof")
     elif fixture == "wrapper_points_old_entry":
         call_chain["old_entrypoint_bypass"] = True
         call_chain["old_trainer_bypass"] = True
