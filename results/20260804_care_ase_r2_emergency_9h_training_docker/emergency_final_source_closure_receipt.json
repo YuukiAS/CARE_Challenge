@@ -1,0 +1,18 @@
+{
+  "augmentation_source_z_id_transformed_with_stock_segmentation_extra": true,
+  "created_utc": "2026-08-03T18:08:36.494306Z",
+  "extent_presence_valid_separate_from_area_valid": true,
+  "full_volume_inference_settings_explicit": true,
+  "implementation_commit_sha": "0c6db8553bf9c4c26c2bfc6f82d8a98b70bb756e",
+  "named_evidence_canary_before_step100": true,
+  "outer_access_fold1": 0,
+  "outer_access_fold4": 0,
+  "sampler_blood_pool_adjacent_excludes_cavity": true,
+  "sampler_edema_boundary_uses_physical_distance": true,
+  "sampler_oof_requires_manifest_coordinates": true,
+  "sampler_remote_background_physical_distance_gt_10mm": true,
+  "sampler_small_component_physical_volume_lt_1000mm3": true,
+  "scar_center_patch_fragment_recentroid_forbidden": true,
+  "selector_formula": "CARE_ASE_R2_FIXED_INNER_SELECTOR_V2_CONTRACT_FORMULA",
+  "status": "PASS"
+}

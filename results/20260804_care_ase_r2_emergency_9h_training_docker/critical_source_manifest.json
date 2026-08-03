@@ -1,5 +1,5 @@
 {
-  "created_utc": "2026-08-03T18:00:58.994177Z",
+  "created_utc": "2026-08-03T18:08:36.494306Z",
   "critical_source_manifest": {
     "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh": "a1188a3fbc2e50f85e3d1b89b883c5ff9ef9c933bbd4063dc4485e4c4c546d55",
     "prompts/blueprints/CARE_ASE_R2_effective_contract_v9_20260803.yaml": "1b02fb37fa30054b74f7b73b7bd15617d74ab931b4a12965ea1d700bb7fa3c1e",
@@ -12,22 +12,22 @@
     "scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py": "44f54d88a2e19ebb03a9374fc455756912f42dbc5c5bdac8b575d50acdaafc4b",
     "scripts/evaluation/care_ase/build_stock_oof_preprocessed_grid_predictions.py": "971e8202433696142739b3d135c98b448ea124720b906a5ac066f4684a71c330",
     "scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py": "e8f42de7616d7d1f369a6aac5ec8b71b388d1993247d7ac9df6d3fc716bf38af",
-    "scripts/evaluation/care_ase/monitor_care_ase_r2_inner_trend.py": "7344e5df5722e66cbfc5f952d05cd8b121cf64d15d4d8afa3bbbc7d69363300d",
-    "scripts/evaluation/care_ase/select_care_ase_r2_inner_checkpoint.py": "54ad474d4df8d3719e75fde636afba5da92d7bc975161c7275805fb38411c517",
+    "scripts/evaluation/care_ase/monitor_care_ase_r2_inner_trend.py": "9d26e8f345e6b26eb3d6c20bbb04e10c48d469b661cffe3d91dbdc6ac3f98bc0",
+    "scripts/evaluation/care_ase/select_care_ase_r2_inner_checkpoint.py": "40de3053c45813dc6c25e3ed682c56c0b2b6fc655a51e510e2b4176c47699645",
     "scripts/training/care_ase/run_care_ase_r2_chunk.py": "078767a5c8c6b8c9fe6135efe2efa6ec49dc6daec7554e2f1a3b3625a338e812",
     "scripts/validation/verify_care_ase_checkpoint_for_resume.py": "642bce64312bdefd0f7b725056a2f44da1cc5c7931b25213d504ffee7d49f16f",
     "src/care_myocardium/data/care_ase_splits.py": "81303a9db1fa3171b907bd2a0e42185b86345c27871029457dccd6e2a2e9dbf5",
     "src/care_myocardium/data/case_metadata.py": "56863a81160127dc820e0643b4a6848d6ccf808be72c90c89bcefe7698246983",
     "src/care_myocardium/inference/care_ase_r2_decode.py": "7fea71edba56d259dbbb31c3832b74709bd83d5af1f8b680a85c2e0a41acb05b",
-    "src/care_myocardium/inference/care_ase_r2_full_volume.py": "0bdbf399734f72b759b394eb18e23195cd09a0a55a4f86956ca83298a2fc31bb",
+    "src/care_myocardium/inference/care_ase_r2_full_volume.py": "f9e3c4be321e96f7776444e2486b8e0d00e5f02701814f2625ca370b7c95218f",
     "src/care_myocardium/models/care_ase.py": "290c799618b29133903dfb7ccd78844bf27a4ce70b885ae64483444c922b9e42",
     "src/care_myocardium/models/care_prism.py": "6af752a202faaae8f8766422724ede6b774db3650e4163c677ab2d2ffbfee0bf",
     "src/care_myocardium/training/care_ase_augmentation.py": "85a208a3a886babe0ec2927a1babced2b24ff91188d577585e65d4e38c27b283",
-    "src/care_myocardium/training/care_ase_runtime.py": "aa6cecfbb2c84858dade23c37ff2d688d219623ea53a2899f9f83f631c34b21b",
-    "src/care_myocardium/training/care_ase_sampler.py": "17ae339e68bb671eb23b360af4c0ad8cb6b0d46a7336bfc7ae6f7be33c8e4202",
-    "src/care_myocardium/training/care_ase_trainer.py": "48afa854113e48d94ca659b4de3f65e442fed984c9bb51358714b6b8d398e014"
+    "src/care_myocardium/training/care_ase_runtime.py": "117a1a210d3a54ade2d1164e19a033727dba715a996d1512d99f992fbe1bb5e7",
+    "src/care_myocardium/training/care_ase_sampler.py": "8268554c0497995cbe9ef6b5fe93d7783ab325ecd1ca79807751a6a6e5edd53d",
+    "src/care_myocardium/training/care_ase_trainer.py": "9ac32cd2fb74ffacf704dd0ba4b4740fe3a5179a3bd914b9bf26d1f202e2b943"
   },
-  "critical_source_manifest_sha256": "b24c99a56f33c7a33c2d729a8be2bf34d1350dcb9dc9c84a1ac52b445828ce24",
+  "critical_source_manifest_sha256": "d4732d1a46f75adc991c13cb3a96e72ba43f49223e1ede0472ed62ddba8466cc",
   "critical_source_seed_paths": [
     "prompts/blueprints/CARE_ASE_R2_effective_contract_v9_20260803.yaml",
     "prompts/tasks/20260804_care_ase_r2_emergency_9h_training_docker_controller.md",
@@ -57,6 +57,6 @@
   ],
   "effective_contract_path": "prompts/blueprints/CARE_ASE_R2_effective_contract_v9_20260803.yaml",
   "effective_contract_sha256": "1b02fb37fa30054b74f7b73b7bd15617d74ab931b4a12965ea1d700bb7fa3c1e",
-  "implementation_commit_sha": "cb11c348a81ca0db53783939718d2633437d5df0",
+  "implementation_commit_sha": "0c6db8553bf9c4c26c2bfc6f82d8a98b70bb756e",
   "status": "PASS"
 }
