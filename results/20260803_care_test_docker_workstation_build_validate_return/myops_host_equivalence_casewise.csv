@@ -1,0 +1,4 @@
+case_id,geometry_equal,changed_voxel_fraction,min_label_dice,dice_by_label,expected_path,status
+Case1012,True,1.9778481012658228e-05,0.9994155464640561,"{""0"": 0.999989611684777, ""1220"": 1.0, ""200"": 0.9994155464640561, ""2221"": 1.0, ""500"": 1.0, ""600"": 0.9996987044290448}",/runtime/extracted/myops_bundle/expected_outputs/myops/Case1012_pred.nii.gz,FAIL
+Case1001,True,3.1321255857074847e-06,0.9999011564693091,"{""0"": 0.9999983382880046, ""1220"": 1.0, ""200"": 1.0, ""2221"": 1.0, ""500"": 1.0, ""600"": 0.9999011564693091}",/runtime/extracted/myops_bundle/expected_outputs/myops/Case1001_pred.nii.gz,PASS
+Case1004,True,0.0,1.0,"{""0"": 1.0, ""1220"": 1.0, ""200"": 1.0, ""2221"": 1.0, ""500"": 1.0, ""600"": 1.0}",/runtime/extracted/myops_bundle/expected_outputs/myops/Case1004_pred.nii.gz,PASS

@@ -1,0 +1,19 @@
+{
+  "care_root": "/home/yuukias/code/CARE",
+  "care_server": "care-server",
+  "created_at_utc": "2026-08-03T01:13:37Z",
+  "downloads": "/home/yuukias/code/CARE/.local_runtime/20260803_care_test_docker_workstation_build_validate_return/downloads",
+  "final_dist": "/home/yuukias/code/CARE/dist/20260803_care_test_docker_final",
+  "forbidden_actions": {
+    "challenge_upload_performed": false,
+    "netdisk_upload_performed": false,
+    "organizer_email_sent": false,
+    "validation_upload_performed": false
+  },
+  "local_runtime": "/home/yuukias/code/CARE/.local_runtime/20260803_care_test_docker_workstation_build_validate_return",
+  "remote_final_dist": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_final_dist",
+  "remote_return_staging": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_workstation_return",
+  "remote_transfer_root": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_myops_context_hotfix_and_workstation_handoff/transfer",
+  "results": "/home/yuukias/code/CARE/results/20260803_care_test_docker_workstation_build_validate_return",
+  "task": "20260803_care_test_docker_workstation_build_validate_return"
+}

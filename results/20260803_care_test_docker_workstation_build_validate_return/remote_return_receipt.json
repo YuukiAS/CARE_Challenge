@@ -1,0 +1,21 @@
+{
+  "challenge_upload_performed": false,
+  "final_server_dist": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_final_dist",
+  "final_server_dist_files": [
+    "MyoPS-OrganAgent.tar.gz",
+    "CineMyoPS-OrganAgent.tar.gz",
+    "SHA256SUMS",
+    "receipts/WORKSTATION_VALIDATION_PACKET.tar.gz"
+  ],
+  "local_myops_sha256": "638c1d54d1c75f3514f325695025c03bd8f43625c9f2877d72841db6ee2ac73b",
+  "netdisk_upload_performed": false,
+  "organizer_email_sent": false,
+  "remote_cine_sha256": "c02db56bd52d14d3b5bbda9d204a20b7e4c061fd5e6012ffa1cebc67fb92c136",
+  "remote_myops_sha256": "638c1d54d1c75f3514f325695025c03bd8f43625c9f2877d72841db6ee2ac73b",
+  "remote_return_staging": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_workstation_return",
+  "status": "PASS",
+  "task": "20260803_care_test_docker_workstation_build_validate_return",
+  "validation_upload_performed": false,
+  "workstation_validation_packet_sha256": "f4d042db7875be5bba453dcfc510270984b36a47bb0853b3ef209b4b602ed210",
+  "workstation_validation_packet_size_bytes": 10395
+}

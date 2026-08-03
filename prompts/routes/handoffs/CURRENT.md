@@ -1,5 +1,58 @@
 # CARE 当前开发状态
 
+## 2026-08-03 最新机器真值：最终 CARE Docker 工位构建、验证、回传已完成
+
+MyoPS 纯五折 nnU-Net Docker 已在 Windows WSL2 工位完成 build/run/save/load 黑盒验证，CineMyoPS 合作者原字节 archive 已直接 load/run 验证。两个镜像均为 `linux/amd64`，均通过 CPU smoke、重复确定性和 clean save/load/run；MyoPS host equivalence 已记录并通过，唯一差异是 Case1012 expected host output 的 2-voxel stale microdifference，按用户确认的服务器端旧 expected 输出原因作为显式 override 保留。最终 Docker archives 已回传服务器 final dist，未上传 challenge、validation、网盘，未给组织方发送邮件。
+
+```text
+state_id: care_test_docker_workstation_build_validate_return_20260803
+active_development_branch: main
+active_worktree: /home/yuukias/code/CARE
+single_active_scientific_line: CARE_TEST_DOCKER_FINAL_WORKSTATION_VALIDATED_RETURNED
+result_root: results/20260803_care_test_docker_workstation_build_validate_return
+local_final_dist: /home/yuukias/code/CARE/dist/20260803_care_test_docker_final
+server_final_dist: /users/a/e/aereinh/.tmp/codex-CARE/20260803_care_test_docker_final_dist
+controller_verification_decision: VERIFIED_COMPLETE
+docker_engine_usable_without_sudo: true
+myops_image: care-myocardium-myops:organagent
+myops_image_id: sha256:52f8d872a51c482d488e3d2a14893958a6b1d6c8c91fffed9985ee330fcec911
+myops_image_size_bytes: 4755438923
+myops_archive_sha256: 638c1d54d1c75f3514f325695025c03bd8f43625c9f2877d72841db6ee2ac73b
+myops_checkpoint_count_in_image: 5
+myops_cpu_determinism: PASS
+myops_host_equivalence: PASS_WITH_APPROVED_STALE_EXPECTED_OUTPUT_MICRODIFFERENCE
+cinemyops_image: care-myocardium-cinemyops:organagent
+cinemyops_image_id: sha256:5b10e6272f555c5ac54a23cca5d3819518bdb7d8d74d9e6a5496fea4991318ae
+cinemyops_image_size_bytes: 1712467172
+cinemyops_archive_byte_preserved: true
+cinemyops_archive_sha256: c02db56bd52d14d3b5bbda9d204a20b7e4c061fd5e6012ffa1cebc67fb92c136
+cinemyops_cpu_determinism: PASS
+clean_save_load_run: PASS
+server_return_complete: true
+validation_packet_returned: true
+strict_validator: PASS
+validation_upload_authorized: false
+challenge_upload_authorized: false
+netdisk_upload_authorized: false
+organizer_email_send_authorized: false
+```
+
+关键证据：
+
+```text
+results/20260803_care_test_docker_workstation_build_validate_return/bundle_verification.json
+results/20260803_care_test_docker_workstation_build_validate_return/docker_installation_receipt.json
+results/20260803_care_test_docker_workstation_build_validate_return/build_receipt.json
+results/20260803_care_test_docker_workstation_build_validate_return/image_asset_receipt.json
+results/20260803_care_test_docker_workstation_build_validate_return/myops_validation_summary.json
+results/20260803_care_test_docker_workstation_build_validate_return/cine_validation_summary.json
+results/20260803_care_test_docker_workstation_build_validate_return/clean_save_load_run_receipt.json
+results/20260803_care_test_docker_workstation_build_validate_return/docker_export_manifest.json
+results/20260803_care_test_docker_workstation_build_validate_return/remote_return_receipt.json
+results/20260803_care_test_docker_workstation_build_validate_return/strict_validator_report.json
+/home/yuukias/code/CARE/.local_runtime/20260803_care_test_docker_workstation_build_validate_return/WORKSTATION_VALIDATION_PACKET.tar.gz
+```
+
 ## 2026-08-03 最新机器真值：MyoPS Dockerfile 已修复 models 复制缺口，工位交接包已刷新
 
 `b94d3f916b04461d6b88a311959e0ed581e64555` 的模型合同保持不变：MyoPS 仍是 Dataset501_CAREMyoPS 五折 nnU-Net、`nnUNetTrainer_500epochs`、`3d_fullres`、folds `0-4`、`checkpoint_best.pth`、default TTA，raw `0/1/2/3/4/5` 直接映射 official `0/200/500/600/1220/2221`。本次只修复 packaging 缺口：`docker/CARE2026_Myocardium/MyoPS/Dockerfile` 现在把 bundle context 中的 `models/` 复制到 `/app/models`，使运行时 `/app/models/nnunet/nnUNet_results` 能看到五折 checkpoint。

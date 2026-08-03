@@ -1,0 +1,30 @@
+{
+  "allowed_labels": [
+    0,
+    200,
+    500,
+    600,
+    1220,
+    2221
+  ],
+  "approved_stale_expected_microdifference_override": true,
+  "case_ids": [
+    "Case1012",
+    "Case1001",
+    "Case1004"
+  ],
+  "challenge_upload_performed": false,
+  "determinism_pass": true,
+  "host_equivalence_pass": true,
+  "image_id": "sha256:52f8d872a51c482d488e3d2a14893958a6b1d6c8c91fffed9985ee330fcec911",
+  "organizer_email_sent": false,
+  "override_reason": "User-authorized continuation for suspected stale server expected-output microdifference; Case1012 differs by exactly 2 voxels with exact geometry and deterministic Docker output.",
+  "raw_host_equivalence_pass": false,
+  "run1_elapsed_seconds": 348.41,
+  "run2_elapsed_seconds": 345.0,
+  "smoke_pass": true,
+  "status": "PASS",
+  "task": "20260803_care_test_docker_workstation_build_validate_return",
+  "total_elapsed_seconds": 693.41,
+  "validation_upload_performed": false
+}

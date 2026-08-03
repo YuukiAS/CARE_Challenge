@@ -1,0 +1,21 @@
+{
+  "archives": {
+    "CineMyoPS-OrganAgent.tar.gz": {
+      "byte_preserved_from_download": true,
+      "path": "/final_dist/CineMyoPS-OrganAgent.tar.gz",
+      "sha256": "c02db56bd52d14d3b5bbda9d204a20b7e4c061fd5e6012ffa1cebc67fb92c136",
+      "size_bytes": 672040570
+    },
+    "MyoPS-OrganAgent.tar.gz": {
+      "path": "/final_dist/MyoPS-OrganAgent.tar.gz",
+      "sha256": "638c1d54d1c75f3514f325695025c03bd8f43625c9f2877d72841db6ee2ac73b",
+      "size_bytes": 4741640359
+    }
+  },
+  "challenge_upload_performed": false,
+  "organizer_email_sent": false,
+  "sha256sums_path": "/final_dist/SHA256SUMS",
+  "status": "PASS",
+  "task": "20260803_care_test_docker_workstation_build_validate_return",
+  "validation_upload_performed": false
+}

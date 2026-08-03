@@ -1,0 +1,33 @@
+{
+  "after_image_ids": {
+    "cinemyops": "sha256:5b10e6272f555c5ac54a23cca5d3819518bdb7d8d74d9e6a5496fea4991318ae",
+    "myops": "sha256:52f8d872a51c482d488e3d2a14893958a6b1d6c8c91fffed9985ee330fcec911"
+  },
+  "before_image_ids": {
+    "cinemyops": "sha256:5b10e6272f555c5ac54a23cca5d3819518bdb7d8d74d9e6a5496fea4991318ae",
+    "myops": "sha256:52f8d872a51c482d488e3d2a14893958a6b1d6c8c91fffed9985ee330fcec911"
+  },
+  "challenge_upload_performed": false,
+  "cinemyops_clean_case": "Case1011",
+  "cinemyops_clean_elapsed_seconds": 92.04,
+  "cinemyops_clean_output_match": {
+    "after": "/runtime/clean_cine_case1011/cinemyops/Case1011_pred.nii.gz",
+    "array_equal": true,
+    "before": "/runtime/cine_cpu_run1/cinemyops/Case1011_pred.nii.gz",
+    "geometry_equal": true
+  },
+  "docker_prune_performed": false,
+  "myops_clean_case": "Case1012",
+  "myops_clean_elapsed_seconds": 63.62,
+  "myops_clean_output_match": {
+    "after": "/runtime/clean_myops_case1012/myops/Case1012_pred.nii.gz",
+    "array_equal": true,
+    "before": "/runtime/myops_cpu_run1/myops/Case1012_pred.nii.gz",
+    "geometry_equal": true
+  },
+  "only_task_tags_removed": true,
+  "organizer_email_sent": false,
+  "status": "PASS",
+  "task": "20260803_care_test_docker_workstation_build_validate_return",
+  "validation_upload_performed": false
+}
