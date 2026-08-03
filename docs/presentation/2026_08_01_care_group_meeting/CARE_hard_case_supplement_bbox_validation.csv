@@ -1,0 +1,5 @@
+page_number,case_id,page_width_pt,page_height_pt,content_left_pt,content_right_pt,content_top_pt,content_bottom_pt,left_margin_pt,right_margin_pt,top_margin_pt,bottom_margin_pt,status
+1,Case3008,1190.551,841.890,36.000,1154.551,805.890,36.000,36.000,36.000,36.000,36.000,PASS
+2,Case3009,1190.551,841.890,36.000,1154.551,805.890,36.000,36.000,36.000,36.000,36.000,PASS
+3,Case3027,1190.551,841.890,36.000,1154.551,805.890,36.000,36.000,36.000,36.000,36.000,PASS
+4,Case2012,1190.551,841.890,36.000,1154.551,805.890,36.000,36.000,36.000,36.000,36.000,PASS
