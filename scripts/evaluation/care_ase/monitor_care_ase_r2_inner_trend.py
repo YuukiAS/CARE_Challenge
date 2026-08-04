@@ -43,7 +43,6 @@ OLD_RESULT_ROOT_MARKER = "20260803_care_ase_r2_" + "full_fidelity_execution"
 PREPROCESSED = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans_3d_fullres"
 SPLIT_CASE_LISTS = RESULT_ROOT / "split_case_lists.csv"
 BASELINE_CASEWISE = REPO_ROOT / "results/20260801_care_nnunet_mosaic_complementarity_closure/oof_complementarity_casewise.csv"
-MONITOR_STEPS = (4000, 6000, 8000, 10000, 12000, 14000)
 
 
 def sha256_file(path: Path) -> str:
@@ -170,7 +169,7 @@ def parse_patch_size(text: str) -> tuple[int, int, int]:
 
 def require_verified_checkpoint(checkpoint: Path) -> dict[str, Any]:
     sidecar = checkpoint.with_suffix(checkpoint.suffix + ".sha256")
-    verified = checkpoint.with_name(checkpoint.stem + ".verified.json")
+    verified = checkpoint.with_suffix(checkpoint.suffix + ".verified.json")
     if not sidecar.is_file():
         raise FileNotFoundError(f"missing checkpoint sidecar: {sidecar}")
     if not verified.is_file():
@@ -219,7 +218,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--fold", type=int, required=True, choices=(1, 4))
     parser.add_argument("--checkpoint", type=Path, required=True)
-    parser.add_argument("--checkpoint-step", type=int, required=True, choices=MONITOR_STEPS)
+    parser.add_argument("--checkpoint-step", type=int, required=True)
     parser.add_argument("--output-dir", type=Path, default=None)
     parser.add_argument("--patch-size", default="20,256,256")
     parser.add_argument("--baseline-casewise", type=Path, default=BASELINE_CASEWISE)
@@ -254,6 +253,9 @@ def main() -> int:
         raise RuntimeError(
             f"checkpoint step mismatch: payload={payload.get('global_optimizer_step')} requested={args.checkpoint_step}"
         )
+    verified_step = int(verified_receipt.get("global_step", payload.get("global_optimizer_step", -1)))
+    if verified_step != int(args.checkpoint_step):
+        raise RuntimeError(f"verified receipt step mismatch: verified={verified_step} requested={args.checkpoint_step}")
 
     case_rows: list[dict[str, Any]] = []
     with torch.no_grad():
@@ -263,7 +265,13 @@ def main() -> int:
             seg = read_b2nd(PREPROCESSED / f"{case_id}_seg.b2nd")[0].astype(np.int64, copy=False)
             image = torch.from_numpy(image_np[None]).to(device=device, dtype=torch.float32)
             availability = torch.tensor([metadata[case_id].availability], device=device, dtype=torch.float32)
-            logits = predict_care_ase_r2_full_volume_logits(model, image, availability, settings=inference_settings)
+            logits = predict_care_ase_r2_full_volume_logits(
+                model,
+                image,
+                availability,
+                settings=inference_settings,
+                global_step=int(payload["global_optimizer_step"]),
+            )
             pred = decode_care_ase_r2_logits(logits, availability).cpu().numpy().astype(np.uint8)[0]
             scar_ref = baseline.get((case_id, "scar"))
             edema_ref = baseline.get((case_id, "pure_edema"))
@@ -354,7 +362,7 @@ def main() -> int:
         "checkpoint_step": int(args.checkpoint_step),
         "checkpoint_path": str(checkpoint.relative_to(REPO_ROOT)),
         "checkpoint_sha256": sha256_file(checkpoint),
-        "checkpoint_verified_receipt": str((checkpoint.with_name(checkpoint.stem + ".verified.json")).relative_to(REPO_ROOT)) if checkpoint.with_name(checkpoint.stem + ".verified.json").is_relative_to(REPO_ROOT) else str(checkpoint.with_name(checkpoint.stem + ".verified.json")),
+        "checkpoint_verified_receipt": str((checkpoint.with_suffix(checkpoint.suffix + ".verified.json")).relative_to(REPO_ROOT)) if checkpoint.with_suffix(checkpoint.suffix + ".verified.json").is_relative_to(REPO_ROOT) else str(checkpoint.with_suffix(checkpoint.suffix + ".verified.json")),
         "checkpoint_verified_receipt_status": verified_receipt.get("status"),
         "checkpoint_payload_global_optimizer_step": int(payload["global_optimizer_step"]),
         "decode": "fixed_argmax_t2_present_0_1_2_3_4_5_no_t2_0_1_2_3_5",

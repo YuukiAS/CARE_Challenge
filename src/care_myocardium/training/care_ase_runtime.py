@@ -1223,6 +1223,11 @@ def make_batch(
     device: torch.device,
 ) -> dict[str, torch.Tensor]:
     image, seg, spacing = read_preprocessed_case_arrays(str(descriptor.case_id))
+    if getattr(descriptor, "selected_target_coordinate", None) is None:
+        raise RuntimeError(
+            "formal CARE-ASE batch descriptor is missing selected_target_coordinate; "
+            "silent deterministic center fallback is forbidden"
+        )
     center = deterministic_center(
         seg,
         descriptor_sha=descriptor_sha,
@@ -2295,6 +2300,14 @@ def main() -> int:
                 "within_focus": descriptor.within_focus,
                 "hard_negative_category": descriptor.hard_negative_category,
                 "hard_negative_counts": json.dumps(descriptor.hard_negative_counts, sort_keys=True),
+                "requested_category": descriptor.requested_category,
+                "resolved_category": descriptor.resolved_category,
+                "fallback_reason": descriptor.fallback_reason,
+                "selected_coordinate": json.dumps(descriptor.selected_target_coordinate),
+                "coordinate_source": descriptor.coordinate_selection_source,
+                "eligible_case_count": descriptor.eligible_case_count,
+                "candidate_coordinate_count": descriptor.candidate_coordinate_count,
+                "manifest_sha256": descriptor.manifest_sha256,
                 "resolved_target_coordinate_count": len(descriptor.resolved_target_coordinates),
                 "fallback_sequence": "|".join(descriptor.fallback_sequence),
                 "descriptor_sha256": desc_sha,
@@ -2323,7 +2336,7 @@ def main() -> int:
             refresh_chunk_lock(lock_dir)
             heartbeat.check()
 
-            if (step + 1) % 1000 == 0 or (step + 1) == int(args.end_step):
+            if (step + 1) % 250 == 0 or (step + 1) == int(args.end_step):
                 next_descriptor = sampler.peek_descriptor_bundle_for_step(step + 1) if (step + 1) < 14000 else None
                 sampler_state = sampler.state_dict(next_descriptor=next_descriptor)
                 ckpt_name = "checkpoint_step14000.pt" if (step + 1) == 14000 else f"checkpoint_step{step + 1:05d}.pt"
@@ -2339,7 +2352,7 @@ def main() -> int:
                     logical_chunk_start=int(logical_chunk_start),
                     logical_chunk_end=int(logical_chunk_end),
                     resume_invocation_start=int(args.start_step),
-                    checkpoint_reason="chunk_terminal" if (step + 1) == int(args.end_step) else "periodic_1000",
+                    checkpoint_reason="chunk_terminal" if (step + 1) == int(args.end_step) else "periodic_250",
                     next_batch_hash=sampler_state.get("next_batch_descriptor_sha256", "TRAINING_COMPLETE"),
                     loss_history_tail=history,
                     sampler_state=sampler_state,

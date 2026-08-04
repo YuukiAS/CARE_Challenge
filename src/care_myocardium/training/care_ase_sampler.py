@@ -511,7 +511,7 @@ class CAREASEDeterministicSampler:
         for _micro in range(int(microbatch_count)):
             case_id = self._case_for_micro_from_pool(center_group, eligible_cases)
             center, availability = self.case_meta[case_id]
-            hard_category, hard_counts, hard_coords = _hard_negative_category(self.hard_negative_manifest, case_id, pathology, within_focus)
+            hard_category, hard_counts, hard_coords = _hard_negative_category(self.hard_negative_manifest, case_id, pathology, resolved_category)
             if hard_coords:
                 candidate_coords = tuple(tuple(int(v) for v in coord) for coord in hard_coords)
                 descriptor_resolved_category = hard_category
@@ -524,6 +524,8 @@ class CAREASEDeterministicSampler:
                 descriptor_fallback_reason = fallback_reason
             if not candidate_coords:
                 raise RuntimeError(f"resolved sampler category has no coordinates: case={case_id} category={resolved_category}")
+            if hard_category in {"manifest_consumed_no_matching_oof", "manifest_missing_case"}:
+                hard_category = descriptor_resolved_category
             selected_coord = candidate_coords[self.micro_patch_rng.randrange(len(candidate_coords))]
             augmentation_seed = self.micro_patch_rng.randrange(2**32)
             descriptors.append(
@@ -541,7 +543,7 @@ class CAREASEDeterministicSampler:
                     hard_negative_category=hard_category,
                     hard_negative_counts=hard_counts,
                     resolved_target_coordinates=candidate_coords,
-                    fallback_sequence=_fallback_sequence(pathology, within_focus, hard_category),
+                    fallback_sequence=_fallback_sequence(pathology, within_focus, descriptor_resolved_category),
                     selected_target_coordinate=selected_coord,
                     coordinate_selection_source=coordinate_source,
                     requested_category=within_focus,
