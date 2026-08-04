@@ -14,7 +14,7 @@ COPY requirements.lock /app/requirements.lock
 RUN pip install --no-cache-dir -r /app/requirements.lock
 
 COPY care_ase_vendor/src /app/src
-COPY care_ase_vendor/data /app/data
+COPY care_ase_vendor/data /app/src/data
 COPY models /app/models
 COPY predict.py /app/predict.py
 COPY entrypoint.sh /app/entrypoint.sh

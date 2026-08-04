@@ -8,7 +8,7 @@
 需要复制到工位电脑的文件：
 
 - `MyoPS-attempt3-self-model-workstation-bundle.tar.gz`
-  - SHA256: `0aa5983d279d181a80cde28edae1c16f38d0025ee505b6779512c3e6eaafb030`
+  - SHA256: `98e4ff2e9123a66c05230a54ca5a9f55eda906bf96634274c07b1e7ef8aaa97f`
 - `CineMyoPS-OrganAgent.tar.gz`
   - SHA256: `c02db56bd52d14d3b5bbda9d204a20b7e4c061fd5e6012ffa1cebc67fb92c136`
 - `WORKSTATION_HANDOFF_ATTEMPT3.json`
@@ -19,7 +19,7 @@
 mkdir -p ~/care_attempt3_myops
 cd ~/care_attempt3_myops
 sha256sum MyoPS-attempt3-self-model-workstation-bundle.tar.gz
-# must equal 0aa5983d279d181a80cde28edae1c16f38d0025ee505b6779512c3e6eaafb030
+# must equal 98e4ff2e9123a66c05230a54ca5a9f55eda906bf96634274c07b1e7ef8aaa97f
 tar -xzf MyoPS-attempt3-self-model-workstation-bundle.tar.gz -C .
 cd workstation_bundle_root/contexts/MyoPS
 docker build -t care-myocardium-myops:attempt3 .
@@ -29,7 +29,10 @@ Run the official 15-case MyoPS black-box rehearsal with `/input` mounted to the 
 
 ```bash
 mkdir -p ~/care_attempt3_myops/output
-docker run --rm   -v /path/to/MyoPS_validation_input:/input:ro   -v ~/care_attempt3_myops/output:/output   care-myocardium-myops:attempt3
+docker run --rm \
+  -v /path/to/MyoPS_validation_input:/input:ro \
+  -v ~/care_attempt3_myops/output:/output \
+  care-myocardium-myops:attempt3
 ```
 
 Expected output: exactly 15 files under `~/care_attempt3_myops/output/myops`, named `<CaseID>_pred.nii.gz`. Labels must be official values only: `0, 200, 500, 600, 1220, 2221`.
