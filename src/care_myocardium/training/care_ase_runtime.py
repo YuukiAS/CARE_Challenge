@@ -88,6 +88,8 @@ EFFECTIVE_CONTRACT = REPO_ROOT / "prompts/blueprints/CARE_ASE_R2_effective_contr
 CRITICAL_SOURCE_SEED_PATHS = (
     "prompts/blueprints/CARE_ASE_R2_effective_contract_v9_20260803.yaml",
     "prompts/tasks/20260804_care_ase_r2_emergency_9h_training_docker_controller.md",
+    "prompts/tasks/20260804_care_ase_r2_deadline_recovery_training_docker_controller.md",
+    "prompts/tasks/20260804_care_ase_r2_deadline_recovery_training_docker_addendum.md",
     "prompts/tasks/20260803_care_ase_r2_last_hotfix_v9.md",
     "prompts/tasks/20260803_care_ase_r2_last_hotfix_v9_executor_plan.yaml",
     "prompts/tasks/20260803_care_ase_r2_last_hotfix_v9_final_addendum.md",
