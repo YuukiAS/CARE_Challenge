@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schema_version": "AI_REVIEW_LOOP_V1",
+  "request": {
+    "required": [
+      "schema", "enabled", "mode", "repository", "branch", "task_id",
+      "status", "review_round", "loop_nonce", "implementation_sha",
+      "base_sha", "contract_path", "contract_sha256", "critical_paths",
+      "critical_fingerprint_sha256", "required_context_paths",
+      "review_profiles", "max_review_rounds", "human_gate_after_pass",
+      "created_utc"
+    ],
+    "status": "READY_FOR_GPT_REVIEW",
+    "modes": ["LIVE", "SMOKE"]
+  },
+  "review": {
+    "required": [
+      "schema", "task_id", "review_round", "request_nonce",
+      "reviewed_implementation_sha", "reviewed_contract_sha256", "decision",
+      "blocking_findings", "nonblocking_findings", "required_tests",
+      "review_profiles_completed", "created_utc"
+    ],
+    "decisions": ["PASS", "REVISE", "SMOKE_PASS"]
+  },
+  "current": {
+    "required": ["schema", "task_id", "state", "review_round", "updated_utc"],
+    "states": [
+      "DISABLED", "AWAITING_IMPLEMENTATION", "WAITING_FOR_GPT_REVIEW",
+      "GPT_REVIEW_REVISE", "CODEX_REPAIR_RUNNING", "GPT_REVIEW_PASS",
+      "AWAIT_HUMAN_DECISION", "STOPPED_STUCK", "STOPPED_DEADLINE",
+      "STOPPED_MAX_ROUNDS", "SMOKE_PASS"
+    ]
+  }
+}
