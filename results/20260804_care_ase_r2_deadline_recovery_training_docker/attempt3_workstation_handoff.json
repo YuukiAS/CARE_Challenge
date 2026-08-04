@@ -1,0 +1,861 @@
+{
+  "bundle_manifest": {
+    "all_files": [
+      {
+        "path": "README.md",
+        "sha256": "19122a781b52b38038c76c2ec57ce0651f937c2e1a21fee0b52ef0edea1c0318",
+        "size_bytes": 349
+      },
+      {
+        "path": "contexts/MyoPS/Dockerfile",
+        "sha256": "2674af9bccf26b43c838001f1d7760707dd4112fc3b882c9571c22d18e9e040c",
+        "size_bytes": 793
+      },
+      {
+        "path": "contexts/MyoPS/README.md",
+        "sha256": "c7d8a7b8610d9fab3b8abffe2455fd455c4f661beae5e831d80fc52a3b174031",
+        "size_bytes": 1530
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/data/.gitkeep",
+        "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+        "size_bytes": 1
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/data/data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/dataset.json",
+        "sha256": "8437262d92fb898c8d16a89150efd4629602dd71e0fa5bbcf1c6c80cc3b535ae",
+        "size_bytes": 675
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/data/data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans.json",
+        "sha256": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
+        "size_bytes": 11947
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/.gitkeep",
+        "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+        "size_bytes": 1
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/.gitkeep",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_bytes": 0
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/README.md",
+        "sha256": "f30ae2700f27a5d68017f7c16f909c7bc1d98add6a3bcd19204f1de1236bbc73",
+        "size_bytes": 869
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/__init__.py",
+        "sha256": "c007411ec51e4958079f4a4782ef25c199de8d67885c4a62a444a9c51840bdd8",
+        "size_bytes": 45
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/anchors/__init__.py",
+        "sha256": "130b03dbec94d7f1fe0425fbc342bd3d8b468abc8a17fb47f66c44a0cf651444",
+        "size_bytes": 63
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/anchors/myops_decode.py",
+        "sha256": "de6a23656cade646d919f7622b1e6feef4da52b806d3e494421b1ebda53fcd19",
+        "size_bytes": 12872
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/calibrator/__init__.py",
+        "sha256": "d9070209c27a809746dc8ae984d4c1b0d876ed38b57fc156ab6a8321b9d223a8",
+        "size_bytes": 45
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/calibrator/laneA_round14_model.py",
+        "sha256": "9547c0171bead463c1e251435e43715dfa118c67ac1aab4c4bd54ac33569599f",
+        "size_bytes": 2522
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/cine/__init__.py",
+        "sha256": "88256116f19bffed3f98ca0737eafce58f266e7c63bb410d99d826be1bf213f4",
+        "size_bytes": 41
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/cine/cinema_adapter.py",
+        "sha256": "3eaffe349c86b2d50175bcdee32f1393a2dfea29477c2dd184987eda96f73c7b",
+        "size_bytes": 2610
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/cine/followup/__init__.py",
+        "sha256": "706e265a53d6cb1f669853a63ce3dc4e1e367cb2c88e8f01b1ca3c47d3311750",
+        "size_bytes": 514
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/cine/followup/contracts.py",
+        "sha256": "a20ae4903699092786efeb1c14d779ef90146d6d3dd7be37413239f22d66c8da",
+        "size_bytes": 11068
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/cine/registration_model.py",
+        "sha256": "780a4b76e8490dffb4299afbcb972a82943a2d982a810d1348b84a0f1064676b",
+        "size_bytes": 3420
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/cine/temporal_dictionary.py",
+        "sha256": "4e87ff2f72b07061bbf25b9d4b0b71932d3cabb9321160bb33d5d25becc27032",
+        "size_bytes": 2374
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/cine/temporal_model.py",
+        "sha256": "ef725222aeb437b7f25162133ddbbe94789e023f717efcec3bf138b98711a1fa",
+        "size_bytes": 1563
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/cine/temporal_output.py",
+        "sha256": "e8de79800b0c96e0bd1ede8c048c46a32659f8a30ebe1e2900f09c2fce44bbfe",
+        "size_bytes": 18782
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/configs/srr_myops_minimal.yaml",
+        "sha256": "de1ad9def1be95e512d2b7188be51afd2e5f6bb00a58dec28780ba5ffd77e619",
+        "size_bytes": 1434
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/data/__init__.py",
+        "sha256": "272b910cf7447cf177489038c05c8dbad08e5d7b894f2373e213966871c20002",
+        "size_bytes": 31
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/data/care_arc_dataset.py",
+        "sha256": "4f4d3bf342623068eb4176680ef4231d708a6ab35b0a531c951facd45dfb0b00",
+        "size_bytes": 7505
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/data/care_ase_splits.py",
+        "sha256": "81303a9db1fa3171b907bd2a0e42185b86345c27871029457dccd6e2a2e9dbf5",
+        "size_bytes": 6329
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/data/care_dg_dataset.py",
+        "sha256": "96d18e1914b7e08fc029a77c0e7c21467809fa0a5e9e12ad4f1ef2208eba803a",
+        "size_bytes": 3285
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/data/care_dpr_dataset.py",
+        "sha256": "a4588ee49b165303c97610255cdaa92c0cb9320b25c46ca7ec1df2132c39bd02",
+        "size_bytes": 14331
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/data/care_mm_batch9.py",
+        "sha256": "c30d608b9070820aed246744a6dbd92036f53fb2648fcf8a3df4ef57414b0e94",
+        "size_bytes": 15425
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/data/care_prism_dataset.py",
+        "sha256": "8fc48db6e906f67dc8ea434a129bdfc5f6555326535efd1a3557d13347af1a7a",
+        "size_bytes": 20859
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/data/care_srr_cascade_runtime.py",
+        "sha256": "fae13f3498314d3631f25cc2d4b3c05559df517032e3e05fe0467500a75b331b",
+        "size_bytes": 6173
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/data/case_metadata.py",
+        "sha256": "56863a81160127dc820e0643b4a6848d6ccf808be72c90c89bcefe7698246983",
+        "size_bytes": 2521
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/data/myops_dataset.py",
+        "sha256": "0d00f87e971318b41e38f9232558ac04bc5fdb814012a2d463bb65faae707ced",
+        "size_bytes": 2024
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/inference/care_arc_predictor.py",
+        "sha256": "e805b311a4ba0ec175cb82b02223c4a2ae023a08031ba4f10e08c8fe4f44edeb",
+        "size_bytes": 5175
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/inference/care_ase_r2_decode.py",
+        "sha256": "7fea71edba56d259dbbb31c3832b74709bd83d5af1f8b680a85c2e0a41acb05b",
+        "size_bytes": 1704
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/inference/care_ase_r2_full_volume.py",
+        "sha256": "f9e3c4be321e96f7776444e2486b8e0d00e5f02701814f2625ca370b7c95218f",
+        "size_bytes": 13711
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/inference/care_dg_full_volume.py",
+        "sha256": "978a54cf29a3fe158cae63bebad9e600178ec261ca7feaf02dc3c38f97cedfd5",
+        "size_bytes": 8168
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/inference/care_dg_predictor.py",
+        "sha256": "71b3f935617b42a1190aa6937165ee09ce1a3c52e8a05ad4f6d4e53f9dcacf7c",
+        "size_bytes": 1233
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/inference/care_dpr_predictor.py",
+        "sha256": "216888b432ad4388889b5327cdad92d5fd4247ac05f980fd96b870a319d4b9b8",
+        "size_bytes": 23536
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/inference/care_prism_predictor.py",
+        "sha256": "1dcb689327573ec33fffa3bb7dad35271f25a9fbc7940d45e0a1121cc6da4191",
+        "size_bytes": 2493
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/losses/__init__.py",
+        "sha256": "5a120e9a24ad02164bfd3cc0cd387bfe52c57abb5db619aaa8a1de9742e5c891",
+        "size_bytes": 31
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/losses/care_mm_losses.py",
+        "sha256": "8c5b0e92cced519611105b7880234019da78508a9cd7ed2d3586754cd9dfa850",
+        "size_bytes": 9603
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/losses/care_srr_cascade_rescue_losses.py",
+        "sha256": "88424e31747365c7d5eabce141c161d76ea87ddffd57eb6b46557006a7b5a54a",
+        "size_bytes": 10446
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/losses/srr_losses.py",
+        "sha256": "b17a5bea6f1df26e1e077630d62deb273639e20f64314cdac6ee5897c3887a27",
+        "size_bytes": 60445
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/losses/srr_v25_loss_contract.py",
+        "sha256": "43345d8f0d5b5996e560b16c60f08a0819d68ff765abfb243e33c26b24acecf2",
+        "size_bytes": 10000
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/mednext/__init__.py",
+        "sha256": "f709b627be3dbcc9fb3124f4bf25636bbeca8a8dca3e43907140e3fb47243c61",
+        "size_bytes": 307
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/mednext/factory.py",
+        "sha256": "bccb5fd85e3e1125a95280ec3352ee3e5500dc7956f6eef2cbeaa6ecad3d6b75",
+        "size_bytes": 2087
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/models/__init__.py",
+        "sha256": "8e70160780b7d1da001f089bc5564df1e3f4c5002e708f7ec5a4a8ec19c915de",
+        "size_bytes": 32
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/models/care_arc.py",
+        "sha256": "8e891ff37434bbb6bbec3ae4965e91e7c893eb2191b2168635c6e09b76080496",
+        "size_bytes": 20566
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/models/care_ase.py",
+        "sha256": "290c799618b29133903dfb7ccd78844bf27a4ce70b885ae64483444c922b9e42",
+        "size_bytes": 67654
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/models/care_dg.py",
+        "sha256": "ee38bd7d86ca37944ef4108fa4d5904d9ead1f7ae2dc4b7ec518d784acb71d55",
+        "size_bytes": 14247
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/models/care_dpr.py",
+        "sha256": "5ba6b423af109d6a49df5267a4d04554fd17835926099db1169f53863cdf96f4",
+        "size_bytes": 31838
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/models/care_mm_reliable_distill.py",
+        "sha256": "654afd8beda19989cc10078bb1566596b540a7cf68b24b4f54c280e8ab29b26e",
+        "size_bytes": 10729
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/models/care_myopath_pilot.py",
+        "sha256": "2fb351c0676f0005f5eadade6f14b1c8298f612b3e0a5f26909825d08b13e53c",
+        "size_bytes": 14136
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/models/care_prism.py",
+        "sha256": "6af752a202faaae8f8766422724ede6b774db3650e4163c677ab2d2ffbfee0bf",
+        "size_bytes": 26293
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/models/care_srr_cascade_rescue.py",
+        "sha256": "0d5c15a68811a43d7205d39b2bbf956ddd94477ea148f144fa3d865e05b886f8",
+        "size_bytes": 14872
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/models/myowall_if/__init__.py",
+        "sha256": "92ded0d27fa7a8f69153b99962946bfc594a09a50663ad55a5976fef0e559347",
+        "size_bytes": 766
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/models/myowall_if/evaluator.py",
+        "sha256": "3094245f56418e2123f415c45093343fc76ad3f8b402df21f78b76a325fec0a0",
+        "size_bytes": 3060
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/models/myowall_if/geometry.py",
+        "sha256": "c3bf06ec3beab69f311bdaf9c8ce47bd3b129bb0d7c3a2df8f8578d9916f5f82",
+        "size_bytes": 11768
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/models/myowall_if/model.py",
+        "sha256": "40a35effb45f1b250bb341e9c19394e57d28f3a3830abdc0feb534db367d480d",
+        "size_bytes": 8028
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/models/myowall_if/stock_adapter.py",
+        "sha256": "b49a4316f821f8a0f6d9712dca07c6d7891828a7d7e10e80034c1f3b629b4e4d",
+        "size_bytes": 6659
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/models/pathology_heads.py",
+        "sha256": "34b4fa85aa959c14f7be3cff0de10119fda91ddc6715c1b525fc0aa19a487051",
+        "size_bytes": 1381
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/models/proposal_prototypes.py",
+        "sha256": "6ea89916b462fb693441fc405facf77688955f36d212d8b5bab8a3ca61ffed90",
+        "size_bytes": 8952
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/models/srr_blocks.py",
+        "sha256": "77d670922588706250592dc134a547120a63e84f9c421741a294b3c311b3453d",
+        "size_bytes": 26187
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/models/srr_dictionary_memory.py",
+        "sha256": "3c5e953de5bfef4b32f8ec35498698e2c46cce8e6c59e7adf374913e0bc139b5",
+        "size_bytes": 14613
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/models/srr_myops.py",
+        "sha256": "2ca32bdd05c8787a37e53fc89de2cf4d7af6ee786ed11c19c650d52ec90bf0a9",
+        "size_bytes": 19109
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/models/srr_propref.py",
+        "sha256": "e60e10927c47d35c39c7e9a612d06343cdc64e1e753a031c60f3b7eb050ed1eb",
+        "size_bytes": 126944
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/models/srr_spatial_dictionary.py",
+        "sha256": "df0c16225c5ba2e65affcffae6ac2cc17b9c6f5ba0ea379f0ee9944db5617dce",
+        "size_bytes": 14659
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/models/srr_v2_unet.py",
+        "sha256": "bce7bba73a545f7faef827c20c26e2a4117b98b1edcd2d1d35d0f894553332e0",
+        "size_bytes": 13731
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/models/target_domain_gap_closure.py",
+        "sha256": "80ec6c667b72f0dddbb9956ee1856c5e31c9d4f734cebe33f5506f6b646247d5",
+        "size_bytes": 6608
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/nnunet/__init__.py",
+        "sha256": "e5b1c02914158d4efd4ed428a6241b1d812a8dfb635ad979548eb4f8d6b7eb25",
+        "size_bytes": 67
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/nnunet/gap_closure_trainer.py",
+        "sha256": "02b9fe604856b7b5615e41cba0921a1c3fc1409c974ca6d9c5a43856619cbdca",
+        "size_bytes": 4889
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/nnunet/laneA_round17_trainer.py",
+        "sha256": "1c74b577dca4e0c03a55daa9e2e58fa74cd8c700a219c18891fffc61879a922a",
+        "size_bytes": 2848
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/nnunet/laneA_round4_trainer.py",
+        "sha256": "00e9983af0817d3f0e54aaf6509f852f7bb63b056330ec2414f4601aca13dc8a",
+        "size_bytes": 5683
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/nnunet/laneA_round7_trainer.py",
+        "sha256": "6f1c19c67ba8d25c34c34f1f3113b6ef262c9845631a2f8b3dc828b5ec4fdd86",
+        "size_bytes": 15357
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/nnunet/laneA_round8_trainer.py",
+        "sha256": "5a95352f0076678450358246e07bd62f2828b3da0eb7c23bd8e2467534df3864",
+        "size_bytes": 15790
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/nnunet/laneA_round9_checkpoint_loader.py",
+        "sha256": "8e838af7228b4d4a1e8e5a34e1ade5f84f6b62b1798034bdf3be09c220a9e292",
+        "size_bytes": 5316
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/nnunet/laneA_round9_refiner.py",
+        "sha256": "8c29fceaac34aae5175b3dab83c02c27899dd37c8ce49f27164b39fcddd124ba",
+        "size_bytes": 1270
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/nnunet/laneA_round9_trainer.py",
+        "sha256": "3c1eb50c5a5867cc05f777bf2e94f7220ff8f0592aed27b06ad6b414a97a840f",
+        "size_bytes": 4000
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/nnunet/target_domain_race_trainer.py",
+        "sha256": "dba42c748027df1ba9240b2bc61f8a64943c2daba7b7d4bc7bf1c747affd7b6f",
+        "size_bytes": 1841
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/postprocess/__init__.py",
+        "sha256": "aa977c303b7733e93eaed6ea525ff0093d377b47394261dd09d726538375c1de",
+        "size_bytes": 56
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/postprocess/anchor_refine.py",
+        "sha256": "08079c37b67b1f9b7318994221fcf7b3cd53ebd2f9ef546441227aa13c021494",
+        "size_bytes": 27234
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/refiner/__init__.py",
+        "sha256": "a7a5a2e641dc03895699c80e487538c5a35caa5f1ebd7929dc05e6482126623a",
+        "size_bytes": 53
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/refiner/laneA_round10_dataset.py",
+        "sha256": "148b968d504358b6bacc9bc710cb04b7dec3ba9ade173dd672534caead10cba2",
+        "size_bytes": 9678
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/refiner/laneA_round10_model.py",
+        "sha256": "0e379771daa6bb2cf737daff6aa11ce1d907f27099b409e49d5201eea62d69c5",
+        "size_bytes": 5938
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/refiner/laneA_round11_model.py",
+        "sha256": "c834bf828f41e188e2853a19be7ec1b569f0ddc6295b91652b40dad6d5a349c0",
+        "size_bytes": 4412
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/refiner/soft_roi.py",
+        "sha256": "f1909d3cf685b679f7b30a47956016901f91576f28af03c6d318700080e5ca95",
+        "size_bytes": 3665
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/route_B/__init__.py",
+        "sha256": "967b83847a84b2e21eee6eb45249c0addcc0ab0089e8569578714b161be4b0b5",
+        "size_bytes": 463
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/route_B/cine.py",
+        "sha256": "f4f6f716f5977efd8b1a43e12d85af1db852350bc3effd111c7863567ac90428",
+        "size_bytes": 9439
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/route_B/export.py",
+        "sha256": "3b61a57069a91baa4d5188bd7890c3bd3ace3a80cf8f28ca4fe2458a060f3f4a",
+        "size_bytes": 1206
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/route_B/myops.py",
+        "sha256": "6dc32d545ca86b6f3482115f2d35c34b6773847f274f5325967776dc8af73377",
+        "size_bytes": 15787
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/route_B_round03/__init__.py",
+        "sha256": "88e3d7d06b981396229ef7e696ba42bc1580853fe07c2889262fe53d20cf808a",
+        "size_bytes": 611
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/route_B_round03/cinema.py",
+        "sha256": "2f2298bd5b646745005f8f081ee4979e665d70efe5c56ab4cf3139350cfa214b",
+        "size_bytes": 2026
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/route_B_round03/contract.py",
+        "sha256": "0b0a2b546769685e685b496b46799287751c08fb256a5fe5f090db53b127e2f9",
+        "size_bytes": 2001
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/route_B_round03/known_bad.py",
+        "sha256": "fabbb5d153c5acb1245616efe27ee69c79ab5d7d1354774671f99bb83ec38b70",
+        "size_bytes": 1475
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/route_B_round03/model.py",
+        "sha256": "66da99fd2dbd2431f52150cce34bf1bea8fc302b0ffb2b0d8ced4bc0667bef88",
+        "size_bytes": 11311
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/route_B_round03/registration.py",
+        "sha256": "9fe262cd343352383d92016fac35bbfcb7e18a6e5e13eb6227370151a5441210",
+        "size_bytes": 2861
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/route_B_round03/temporal.py",
+        "sha256": "036ed3bba291ae4c7c4770750328256fce18167a0b88f614983f57492f6a11e9",
+        "size_bytes": 2205
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/route_B_round04/__init__.py",
+        "sha256": "20f96ef0524e34f5317cd2662440ec5662b32483477b2ea81f2fa73b901c517b",
+        "size_bytes": 52
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/route_B_round04/anatomy.py",
+        "sha256": "a02a6917295618017c2288e1b74d348fcabf71d97386078e9d41b9e8629fecf0",
+        "size_bytes": 2074
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/route_B_round04/cine/__init__.py",
+        "sha256": "f21f27ff022693fc9168969e90a76e6675c38c4aa21553c77bf8022c5184efb2",
+        "size_bytes": 39
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/route_B_round04/cine/registration.py",
+        "sha256": "24fca04529c7986606fc25ec7451ce3cb078cdbeaf7dc245757b1591c65a8b8b",
+        "size_bytes": 1136
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/route_B_round04/myops/__init__.py",
+        "sha256": "37e71e8030f98aeb1e2f8519e0529e8964194d01adb179daf05d52e03659c496",
+        "size_bytes": 40
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/route_B_round04/myops/joint.py",
+        "sha256": "9ba300104259551ad2e531b95663d27f03602f4d154f6ef81b507d68143402ac",
+        "size_bytes": 437
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/srr_production/__init__.py",
+        "sha256": "a1e32732fa673f8e337fde9c98899b1ece41592993b9a727087ccd3e88e978cf",
+        "size_bytes": 81
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/srr_production/anchor_manifest.py",
+        "sha256": "8efb3b814e7092f301c5b9743b73d4aba3d9301ff4f29bebf5972d09545d547b",
+        "size_bytes": 10800
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/srr_production/anchor_runtime.py",
+        "sha256": "60e9695b0865229aae75f6735482dde3432d0b73709d85436a4fba705f9aafcf",
+        "size_bytes": 5052
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/srr_production/case_prototypes.py",
+        "sha256": "b63d3e16eac3e0e9595e852f105de0f2bfb9a4210ae317c20ef44ae8e85a0ff2",
+        "size_bytes": 13245
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/srr_production/checkpoint.py",
+        "sha256": "e8fd49793f16bf9081541ede29179fd4f34768f9cf7797f5d506bda4e597fd1e",
+        "size_bytes": 7949
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/srr_production/prototype_memory.py",
+        "sha256": "ad92818ced905d3473672fd335066e16b5f3f6fec4a0667062700afd2d0d4ada",
+        "size_bytes": 6596
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/tests/__init__.py",
+        "sha256": "bb27189a93168c3ba056fad9cfebc12e8aa03913fea4cfc75db8c3390e8f3f36",
+        "size_bytes": 53
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/tests/test_cine_m10_temporal_fidelity.py",
+        "sha256": "0c52d0ae098c678d6fc26e4ede856b72628ef66ac06dfe34ed54a35877b8bacd",
+        "size_bytes": 2591
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/tests/test_handoff_policy_validator.py",
+        "sha256": "586837b05efba127fca9f75985b7ee62329760cad9dbe743cae41364df4595c2",
+        "size_bytes": 69092
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/tests/test_m10_followup_cine_fidelity.py",
+        "sha256": "cc457c117f4aab590212eb833b7632708680004d6b76f8d27a0e4a7437d920b1",
+        "size_bytes": 8464
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/tests/test_myops_decode_guardrails.py",
+        "sha256": "ed2d501631e9f8eef8246bb7d749663a04cd4c5f567f858a004834f53320c986",
+        "size_bytes": 3981
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/tests/test_operational_retry_policy.py",
+        "sha256": "ca78b473bcf626261b71093d28d46e897aed37436b898e528ea3f408d572dbab",
+        "size_bytes": 8354
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/tests/test_route_b_implementation.py",
+        "sha256": "b0c3ccf40986f035a5fc307891049b41394959d395a153db68b6e061ce394932",
+        "size_bytes": 1239
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/tests/test_soft_roi.py",
+        "sha256": "5864b22157c2b596596952dd2c4185809d9de8632b06ca123e5f82ed8730ca5f",
+        "size_bytes": 1592
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/tests/test_srr_anatomy_distance_roi_prior.py",
+        "sha256": "43c76800410bdc5a2b5950cf1aeb47636e3d91f04fdaa89c7835b9178b92a491",
+        "size_bytes": 6608
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/tests/test_srr_baseline_gate.py",
+        "sha256": "288b3f6ba9d5b587f364f40144d2be331a3398c0bfb99f8423e3777f8bb3d9cc",
+        "size_bytes": 3854
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/tests/test_srr_dictionary_bank.py",
+        "sha256": "c463d071e49c2db2878eecb2865c7d8b847cda86a09e497bcbef64aa2c37fd36",
+        "size_bytes": 5705
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/tests/test_srr_encoder_context_interface.py",
+        "sha256": "9fa9ba56dfcc15f061601222f3055a73e8a3020f69ba4e170cfa0b5c9675d804",
+        "size_bytes": 3554
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/tests/test_srr_losses.py",
+        "sha256": "85887b4bd3cd44b66a541471340c08298f298c62b28494e91d6465b621ab6302",
+        "size_bytes": 3353
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/tests/test_srr_m6_continued_gates.py",
+        "sha256": "20adb53f45f253fdf883bfc7358f5d5ba5b57f069daf657d6e290a0b69261b86",
+        "size_bytes": 5766
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/tests/test_srr_missingness.py",
+        "sha256": "0a96ce49b3538e9ea5e8837b20f4c3f87cc7fd03eac19330760fe39afddbad13",
+        "size_bytes": 1495
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/tests/test_srr_proposal_prototypes.py",
+        "sha256": "a0371bbfac27985a7401ea4325968bc524cfbbcd7862fcfe5a0f9d75ef5a73e6",
+        "size_bytes": 10774
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/tests/test_srr_runtime_prototype_bank.py",
+        "sha256": "82496b578ed2b35011399fade8132e7d43c962fc1b6a5cfe07a320896d112516",
+        "size_bytes": 3023
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/tests/test_srr_shapes.py",
+        "sha256": "f1ed65ddd595414e64efbc0b516d616a95bd5420c7bb455f3baded02b8e2d8ac",
+        "size_bytes": 2085
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/tests/test_srr_v25_anti_laziness_validator.py",
+        "sha256": "89c77cd41bfaa23916465026f7b842d7b0a943cd8352f4fa63bdab228dbd8990",
+        "size_bytes": 11107
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/tests/test_srr_v25_loss_contract.py",
+        "sha256": "49727308dedf1bced34a7efb37f49e2d993ddafc731355be14f7880aac9da471",
+        "size_bytes": 2974
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/tests/test_srr_v3_m10_fidelity.py",
+        "sha256": "e2569506ab388aad0ad2b12af2f967802ab810a98b354974781514d6b0d35207",
+        "size_bytes": 7470
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/training/care_arc_trainer.py",
+        "sha256": "b0017f681ae150a5004b8b15ad2065f5ff9f00d5206c430b0942f75000880b4f",
+        "size_bytes": 10816
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/training/care_ase_augmentation.py",
+        "sha256": "85a208a3a886babe0ec2927a1babced2b24ff91188d577585e65d4e38c27b283",
+        "size_bytes": 9632
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/training/care_ase_runtime.py",
+        "sha256": "295c29136b556c84744ea7308d0ba6ca6d924fac9ac8ef15b47c55c1cbabca38",
+        "size_bytes": 125962
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/training/care_ase_sampler.py",
+        "sha256": "e8d0b9d10f90d3e70fb9e1a8f4cfff2dd4fbae30d7f73868377350af278f65d9",
+        "size_bytes": 40750
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/training/care_ase_trainer.py",
+        "sha256": "9ac32cd2fb74ffacf704dd0ba4b4740fe3a5179a3bd914b9bf26d1f202e2b943",
+        "size_bytes": 90096
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/training/care_dg_trainer.py",
+        "sha256": "009b5f8f0d38622a958774c808600cb7c90f9d8c9b2b6064088fc9df9b3532b1",
+        "size_bytes": 11932
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/training/care_dpr_trainer.py",
+        "sha256": "247c81f44be4ff0486cf13280e5a6c5c791e4c35271c896908deac96264d7f70",
+        "size_bytes": 16623
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/training/care_myopath_pilot/__init__.py",
+        "sha256": "d62ca330c9ff490bae8cae2e27e765f617a54f4f4c799862c662f0b3bea0e43d",
+        "size_bytes": 55
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/training/care_myopath_pilot/contracts.py",
+        "sha256": "217680c806812c974d2fa761e1287521bab079b99e43564f5a30caa48f1dc8bd",
+        "size_bytes": 7147
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/training/care_prism_trainer.py",
+        "sha256": "d385130064a2ff2c911d8c90aefbe6dedd506dfceaa694b35b7fe4953638611d",
+        "size_bytes": 19622
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/training/care_srr_cascade_trainer.py",
+        "sha256": "5a43af33ec883cac8f1cde614434f59b1354249b5a059eaadc15460a9f5b12b4",
+        "size_bytes": 10638
+      },
+      {
+        "path": "contexts/MyoPS/care_ase_vendor/src/src/care_myocardium/training/nnUNetTrainerCAREMMReliableDistill.py",
+        "sha256": "57ff39cb739c9bc313c62bb37b71184ff5c8e2af640afa95c7321068fc527570",
+        "size_bytes": 30364
+      },
+      {
+        "path": "contexts/MyoPS/entrypoint.sh",
+        "sha256": "6bd7b80ba80a7aee26638f1fce81d4e3cf99f3e5af7a97c4bff9924d71cfa53b",
+        "size_bytes": 71
+      },
+      {
+        "path": "contexts/MyoPS/models/.gitkeep",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_bytes": 0
+      },
+      {
+        "path": "contexts/MyoPS/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/dataset.json",
+        "sha256": "8437262d92fb898c8d16a89150efd4629602dd71e0fa5bbcf1c6c80cc3b535ae",
+        "size_bytes": 675
+      },
+      {
+        "path": "contexts/MyoPS/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_best.pth",
+        "sha256": "f139ca5525322d340a0284c6562a9bcb9cb9cae0a512e14ef40ce85a66f53278",
+        "size_bytes": 357374639
+      },
+      {
+        "path": "contexts/MyoPS/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/checkpoint_best.pth",
+        "sha256": "b92d56b1e24ce826081671acc4e048e5d48b191f6dcb9836747ae82d93acd1e2",
+        "size_bytes": 357341103
+      },
+      {
+        "path": "contexts/MyoPS/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_2/checkpoint_best.pth",
+        "sha256": "9e328bf4bd6ed9eeadac6f41c5de303c69dfc078dfeac3e64b26e18d3e09d38d",
+        "size_bytes": 357327215
+      },
+      {
+        "path": "contexts/MyoPS/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_3/checkpoint_best.pth",
+        "sha256": "9c2c2cf0dea4eb8a691c6680fabc66f6456233ba83867466a06ffd5abda3462b",
+        "size_bytes": 357354799
+      },
+      {
+        "path": "contexts/MyoPS/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_4/checkpoint_best.pth",
+        "sha256": "11c6ccfec5dc51be7c08f1713058412694e1b7def1c5d8cd5520f7f7568aeff2",
+        "size_bytes": 357367855
+      },
+      {
+        "path": "contexts/MyoPS/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/plans.json",
+        "sha256": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
+        "size_bytes": 11947
+      },
+      {
+        "path": "contexts/MyoPS/models/self_model/care_ase_01_checkpoint_step00500.pt",
+        "sha256": "b5bb5d29bbea2a1a9451b876a78b945ea3b8a04674b8b7f14c3c1c9297222c6a",
+        "size_bytes": 194976509
+      },
+      {
+        "path": "contexts/MyoPS/models/self_model/care_ase_01_checkpoint_step00500.pt.sha256",
+        "sha256": "0981b26ad752aa772c65e33fa38d21841213b1f021c08707d85dc662400cab8c",
+        "size_bytes": 90
+      },
+      {
+        "path": "contexts/MyoPS/models/self_model/care_ase_01_nnUNetPlans.json",
+        "sha256": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
+        "size_bytes": 11947
+      },
+      {
+        "path": "contexts/MyoPS/models/self_model/care_ase_02_checkpoint_step00500.pt",
+        "sha256": "3bb36781856ac175cfdf5a1b4db717e6affab849999aedac97478e305622f59b",
+        "size_bytes": 194975165
+      },
+      {
+        "path": "contexts/MyoPS/models/self_model/care_ase_02_checkpoint_step00500.pt.sha256",
+        "sha256": "3203e18f8f0f21c1084111d7803c7b4b91ae9ea0f6e506396f57d5fcdd218360",
+        "size_bytes": 90
+      },
+      {
+        "path": "contexts/MyoPS/models/self_model/care_ase_02_nnUNetPlans.json",
+        "sha256": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
+        "size_bytes": 11947
+      },
+      {
+        "path": "contexts/MyoPS/models/self_model/selection.json",
+        "sha256": "bf3e7982a958f5616f4e937344d392a023d8f12901f0be645db3add513f4bb26",
+        "size_bytes": 1084
+      },
+      {
+        "path": "contexts/MyoPS/predict.py",
+        "sha256": "af3bd796ef83e2ed11510fa4c61354f29f1e313e5b22cb4cd05d0c7ab789b5b0",
+        "size_bytes": 11961
+      },
+      {
+        "path": "contexts/MyoPS/requirements.lock",
+        "sha256": "1969d7605484165bb2c669d48f228395e65613b852261eb4f831d3de581ab5d7",
+        "size_bytes": 274
+      }
+    ],
+    "bundle_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260804_care_ase_r2_deadline_recovery_training_docker/attempt3_docker_transfer/MyoPS-attempt3-self-model-workstation-bundle.tar.gz",
+    "bundle_sha256": "0aa5983d279d181a80cde28edae1c16f38d0025ee505b6779512c3e6eaafb030",
+    "bundle_size_bytes": 2019474781,
+    "care_runtime_file_count": 140,
+    "context_path_in_bundle": "contexts/MyoPS",
+    "created_at_utc": "2026-08-04T06:22:24.899049Z",
+    "nnunet_file_count": 7,
+    "selection": {
+      "bundled_selection": "models/self_model/selection.json",
+      "bundled_selection_sha256": "bf3e7982a958f5616f4e937344d392a023d8f12901f0be645db3add513f4bb26",
+      "copied": [
+        {
+          "bundled_checkpoint": "models/self_model/care_ase_01_checkpoint_step00500.pt",
+          "bundled_plans": "models/self_model/care_ase_01_nnUNetPlans.json",
+          "checkpoint_sha256": "b5bb5d29bbea2a1a9451b876a78b945ea3b8a04674b8b7f14c3c1c9297222c6a",
+          "plans_sha256": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
+          "source_checkpoint": "/users/a/e/aereinh/CARE/results/20260804_care_ase_r2_formal_training_e9e212dd7856/runtime_deadline_e9e212dd7856/fold_1/checkpoint_step00500.pt"
+        },
+        {
+          "bundled_checkpoint": "models/self_model/care_ase_02_checkpoint_step00500.pt",
+          "bundled_plans": "models/self_model/care_ase_02_nnUNetPlans.json",
+          "checkpoint_sha256": "3bb36781856ac175cfdf5a1b4db717e6affab849999aedac97478e305622f59b",
+          "plans_sha256": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
+          "source_checkpoint": "/users/a/e/aereinh/CARE/results/20260804_care_ase_r2_formal_training_e9e212dd7856/runtime_deadline_e9e212dd7856/fold_4/checkpoint_step00500.pt"
+        }
+      ],
+      "selection_path": "/users/a/e/aereinh/CARE/results/20260804_care_ase_r2_deadline_recovery_training_docker/attempt3_self_model_selection_current_best_step00500.json",
+      "selection_sha256": "264fa412f95f6d1a9e30b39005c51ea09692969bdd0ac8b1c4b608a6ab6f188e"
+    },
+    "status": "READY"
+  },
+  "cine_archive": "CineMyoPS-OrganAgent.tar.gz",
+  "cine_archive_sha256": "c02db56bd52d14d3b5bbda9d204a20b7e4c061fd5e6012ffa1cebc67fb92c136",
+  "cine_source": "existing MoSAIC attempt2 archive, byte-preserved",
+  "created_at_utc": "2026-08-04T06:23:41.382536Z",
+  "docker_upload_authorized": false,
+  "myops_archive_expected_from_workstation": "CARE2026_MyoPS_attempt3_self_model.tar.gz",
+  "myops_bundle": "MyoPS-attempt3-self-model-workstation-bundle.tar.gz",
+  "myops_bundle_sha256": "0aa5983d279d181a80cde28edae1c16f38d0025ee505b6779512c3e6eaafb030",
+  "myops_bundle_size_bytes": 2019474781,
+  "myops_model_choice": "CARE-ASE current best self-model selection at step500 for scar and pure edema, with nnU-Net anatomy/geometry support",
+  "myops_selection_json": "attempt3_self_model_selection_current_best_step00500.json",
+  "myops_selection_json_sha256": "264fa412f95f6d1a9e30b39005c51ea09692969bdd0ac8b1c4b608a6ab6f188e",
+  "next_action": "Transfer files to workstation/WSL, build MyoPS attempt3 Docker, save/gzip/hash, keep Cine archive unchanged, then return final SHA and public links for email draft.",
+  "nnunet_reference_only": true,
+  "organizer_email_sent": false,
+  "server_repo": "/users/a/e/aereinh/CARE",
+  "server_transfer_root": "/users/a/e/aereinh/.tmp/codex-CARE/20260804_care_ase_r2_deadline_recovery_training_docker/attempt3_docker_transfer",
+  "status": "READY_FOR_WORKSTATION_DOCKER_BUILD_AFTER_USER_CONFIRMATION",
+  "task": "20260804_care_ase_r2_deadline_recovery_training_docker",
+  "validation_prediction_upload_authorized": false
+}

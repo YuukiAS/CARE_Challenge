@@ -1,0 +1,303 @@
+{
+  "current_best_by_pathology": {
+    "pure_edema": {
+      "candidate_family": "SRR-Cascade",
+      "candidate_name": "control_seed20260724",
+      "candidate_status": "second_tier_not_direct_docker_candidate",
+      "case_count": 8,
+      "comparison_nnunet": 0.42116543611179164,
+      "delta_vs_nnunet_reference_only": 0.0015502950081338063,
+      "dice": 0.42271573111992544,
+      "notes": "scientific_gate_v2 decision=NO_CUSTOM_RESCUE_USE_BASELINE_ONLY; selection JSON says calibration ineligible.",
+      "pathology": "pure_edema",
+      "source": "results/20260724_care_myops_srr_cascade_submission_rescue/audit_casewise_metrics_v2.csv"
+    },
+    "scar": {
+      "candidate_family": "SRR-Cascade",
+      "candidate_name": "control_two_seed_probability_mean_derived_bounded_channel_correction",
+      "candidate_status": "second_tier_not_direct_docker_candidate",
+      "case_count": 22,
+      "comparison_nnunet": 0.6121808510930008,
+      "delta_vs_nnunet_reference_only": 0.00283882124439927,
+      "dice": 0.6150196723374001,
+      "notes": "scientific_gate_v2 decision=NO_CUSTOM_RESCUE_USE_BASELINE_ONLY; selection JSON says calibration ineligible.",
+      "pathology": "scar",
+      "source": "results/20260724_care_myops_srr_cascade_submission_rescue/audit_casewise_metrics_v2.csv"
+    }
+  },
+  "current_best_direct_or_active_by_pathology": {
+    "pure_edema": {
+      "candidate_family": "CARE-ASE-current",
+      "candidate_name": "CARE-ASE_step00500_fold1_fold4_mean",
+      "candidate_status": "active_training_candidate",
+      "case_count": 32,
+      "comparison_nnunet": 0.4037837314111505,
+      "delta_vs_nnunet_reference_only": -0.0058439790737562225,
+      "dice": 0.39793975233739426,
+      "notes": "nnU-Net is reference only, not submission candidate.",
+      "pathology": "pure_edema",
+      "source": "results/20260804_care_ase_r2_deadline_recovery_training_docker/outer_diagnostic_step00500_combined_summary.json"
+    },
+    "scar": {
+      "candidate_family": "CARE-ASE-current",
+      "candidate_name": "CARE-ASE_step00500_fold1_fold4_mean",
+      "candidate_status": "active_training_candidate",
+      "case_count": 88,
+      "comparison_nnunet": 0.5672950704273927,
+      "delta_vs_nnunet_reference_only": -0.01794270910086515,
+      "dice": 0.5493523613265275,
+      "notes": "nnU-Net is reference only, not submission candidate.",
+      "pathology": "scar",
+      "source": "results/20260804_care_ase_r2_deadline_recovery_training_docker/outer_diagnostic_step00500_combined_summary.json"
+    }
+  },
+  "nnunet_submission_candidate": false,
+  "rows": [
+    {
+      "candidate_family": "SRR-Cascade",
+      "candidate_name": "control_seed20260724",
+      "candidate_status": "second_tier_not_direct_docker_candidate",
+      "case_count": 8,
+      "comparison_nnunet": 0.42116543611179164,
+      "delta_vs_nnunet_reference_only": 0.0015502950081338063,
+      "dice": 0.42271573111992544,
+      "notes": "scientific_gate_v2 decision=NO_CUSTOM_RESCUE_USE_BASELINE_ONLY; selection JSON says calibration ineligible.",
+      "pathology": "pure_edema",
+      "source": "results/20260724_care_myops_srr_cascade_submission_rescue/audit_casewise_metrics_v2.csv"
+    },
+    {
+      "candidate_family": "CARE-ASE-current",
+      "candidate_name": "CARE-ASE_step00500_fold1_fold4_mean",
+      "candidate_status": "active_training_candidate",
+      "case_count": 32,
+      "comparison_nnunet": 0.4037837314111505,
+      "delta_vs_nnunet_reference_only": -0.0058439790737562225,
+      "dice": 0.39793975233739426,
+      "notes": "nnU-Net is reference only, not submission candidate.",
+      "pathology": "pure_edema",
+      "source": "results/20260804_care_ase_r2_deadline_recovery_training_docker/outer_diagnostic_step00500_combined_summary.json"
+    },
+    {
+      "candidate_family": "MMRD/Batch10",
+      "candidate_name": "MMRD_Batch10_teacher_two_seed_mean_raw_argmax",
+      "candidate_status": "possible_artifact_exists_but_not_selected",
+      "case_count": 16,
+      "comparison_nnunet": 0.3944358976789887,
+      "delta_vs_nnunet_reference_only": 0.002537309436500515,
+      "dice": 0.39697320711548917,
+      "notes": "MoSAIC comparison used located native_mosaic_predictions when shape-compatible; nnU-Net is the primary held-out OOF baseline.",
+      "pathology": "pure_edema",
+      "source": "results/20260724_care_myops_batch10_deadline_rescue/runtime/wave3_ensemble_common_space/teacher_two_seed_mean/raw_argmax"
+    },
+    {
+      "candidate_family": "SRR-Cascade",
+      "candidate_name": "control_seed20260724",
+      "candidate_status": "second_tier_not_direct_docker_candidate",
+      "case_count": 16,
+      "comparison_nnunet": 0.3914567403516176,
+      "delta_vs_nnunet_reference_only": 0.0031893843601825123,
+      "dice": 0.3946461247118001,
+      "notes": "scientific_gate_v2 decision=NO_CUSTOM_RESCUE_USE_BASELINE_ONLY; selection JSON says calibration ineligible.",
+      "pathology": "pure_edema",
+      "source": "results/20260724_care_myops_srr_cascade_submission_rescue/full44_final_candidate_metrics_v2.csv"
+    },
+    {
+      "candidate_family": "CARE-ASE-current",
+      "candidate_name": "CARE-ASE_step00750_fold1_fold4_mean",
+      "candidate_status": "active_training_candidate",
+      "case_count": 32,
+      "comparison_nnunet": 0.4038233261541466,
+      "delta_vs_nnunet_reference_only": -0.010273701983371075,
+      "dice": 0.39354962417077555,
+      "notes": "nnU-Net is reference only, not submission candidate.",
+      "pathology": "pure_edema",
+      "source": "results/20260804_care_ase_r2_deadline_recovery_training_docker/outer_diagnostic_step00750_combined_summary.json"
+    },
+    {
+      "candidate_family": "CARE-ASE-current",
+      "candidate_name": "CARE-ASE_step01000_fold1_fold4_mean",
+      "candidate_status": "active_training_candidate",
+      "case_count": 32,
+      "comparison_nnunet": 0.403811460411804,
+      "delta_vs_nnunet_reference_only": -0.010786178887113973,
+      "dice": 0.39302528152469,
+      "notes": "nnU-Net is reference only, not submission candidate.",
+      "pathology": "pure_edema",
+      "source": "results/20260804_care_ase_r2_deadline_recovery_training_docker/outer_diagnostic_step01000_combined_summary.json"
+    },
+    {
+      "candidate_family": "MMRD/Batch10",
+      "candidate_name": "MMRD_Batch10_distill_epoch25_two_seed_mean_raw_argmax",
+      "candidate_status": "possible_artifact_exists_but_not_selected",
+      "case_count": 16,
+      "comparison_nnunet": 0.3944358976789887,
+      "delta_vs_nnunet_reference_only": -0.018218614076148026,
+      "dice": 0.3762172836028406,
+      "notes": "MoSAIC comparison used located native_mosaic_predictions when shape-compatible; nnU-Net is the primary held-out OOF baseline.",
+      "pathology": "pure_edema",
+      "source": "results/20260724_care_myops_batch10_deadline_rescue/runtime/wave3_ensemble_common_space/distill_epoch25_two_seed_mean/raw_argmax"
+    },
+    {
+      "candidate_family": "MMRD/Batch10",
+      "candidate_name": "MMRD_Batch10_control_epoch25_two_seed_mean_raw_argmax",
+      "candidate_status": "possible_artifact_exists_but_not_selected",
+      "case_count": 16,
+      "comparison_nnunet": 0.3944358976789887,
+      "delta_vs_nnunet_reference_only": -0.01974186485683599,
+      "dice": 0.3746940328221527,
+      "notes": "MoSAIC comparison used located native_mosaic_predictions when shape-compatible; nnU-Net is the primary held-out OOF baseline.",
+      "pathology": "pure_edema",
+      "source": "results/20260724_care_myops_batch10_deadline_rescue/runtime/wave3_ensemble_common_space/control_epoch25_two_seed_mean/raw_argmax"
+    },
+    {
+      "candidate_family": "DG",
+      "candidate_name": "repaired_formal_scar_priority_step4000_A2_care_dg",
+      "candidate_status": "not_candidate: below nnU-Net on requested fair population",
+      "case_count": 16,
+      "comparison_nnunet": 0.3944358976789887,
+      "delta_vs_nnunet_reference_only": -0.05006337243627962,
+      "dice": 0.34437252524270906,
+      "notes": "Gate B R2 status says no inner eligible candidate.",
+      "pathology": "pure_edema",
+      "source": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_evaluation/gate_b_fold0_model_summary.csv"
+    },
+    {
+      "candidate_family": "DG",
+      "candidate_name": "DG_parity_recompute_scr_r1_predictions_pure_edema_binary",
+      "candidate_status": "not_direct_docker_candidate_for_requested_formal_dg",
+      "case_count": 16,
+      "comparison_nnunet": 0.3944358976789887,
+      "delta_vs_nnunet_reference_only": -0.2538444146788282,
+      "dice": 0.14059148300016047,
+      "notes": "MoSAIC comparison used located native_mosaic_predictions when shape-compatible; nnU-Net is the primary held-out OOF baseline.",
+      "pathology": "pure_edema",
+      "source": "results/20260727_care_dg_dual_pathology_validation/parity_recompute_fold0/scr_r1_predictions/pure_edema"
+    },
+    {
+      "candidate_family": "SRR-Cascade",
+      "candidate_name": "control_two_seed_probability_mean_derived_bounded_channel_correction",
+      "candidate_status": "second_tier_not_direct_docker_candidate",
+      "case_count": 22,
+      "comparison_nnunet": 0.6121808510930008,
+      "delta_vs_nnunet_reference_only": 0.00283882124439927,
+      "dice": 0.6150196723374001,
+      "notes": "scientific_gate_v2 decision=NO_CUSTOM_RESCUE_USE_BASELINE_ONLY; selection JSON says calibration ineligible.",
+      "pathology": "scar",
+      "source": "results/20260724_care_myops_srr_cascade_submission_rescue/audit_casewise_metrics_v2.csv"
+    },
+    {
+      "candidate_family": "SRR-Cascade",
+      "candidate_name": "control_two_seed_probability_mean_derived_bounded_channel_correction",
+      "candidate_status": "second_tier_not_direct_docker_candidate",
+      "case_count": 43,
+      "comparison_nnunet": 0.5610296397719534,
+      "delta_vs_nnunet_reference_only": 0.003390325360462576,
+      "dice": 0.564419965132416,
+      "notes": "scientific_gate_v2 decision=NO_CUSTOM_RESCUE_USE_BASELINE_ONLY; selection JSON says calibration ineligible.",
+      "pathology": "scar",
+      "source": "results/20260724_care_myops_srr_cascade_submission_rescue/full44_final_candidate_metrics_v2.csv"
+    },
+    {
+      "candidate_family": "CARE-ASE-current",
+      "candidate_name": "CARE-ASE_step00500_fold1_fold4_mean",
+      "candidate_status": "active_training_candidate",
+      "case_count": 88,
+      "comparison_nnunet": 0.5672950704273927,
+      "delta_vs_nnunet_reference_only": -0.01794270910086515,
+      "dice": 0.5493523613265275,
+      "notes": "nnU-Net is reference only, not submission candidate.",
+      "pathology": "scar",
+      "source": "results/20260804_care_ase_r2_deadline_recovery_training_docker/outer_diagnostic_step00500_combined_summary.json"
+    },
+    {
+      "candidate_family": "CARE-ASE-current",
+      "candidate_name": "CARE-ASE_step01000_fold1_fold4_mean",
+      "candidate_status": "active_training_candidate",
+      "case_count": 88,
+      "comparison_nnunet": 0.567306122300379,
+      "delta_vs_nnunet_reference_only": -0.01999500649073538,
+      "dice": 0.5473111158096436,
+      "notes": "nnU-Net is reference only, not submission candidate.",
+      "pathology": "scar",
+      "source": "results/20260804_care_ase_r2_deadline_recovery_training_docker/outer_diagnostic_step01000_combined_summary.json"
+    },
+    {
+      "candidate_family": "MMRD/Batch10",
+      "candidate_name": "MMRD_Batch10_control_epoch25_two_seed_mean_raw_argmax",
+      "candidate_status": "possible_artifact_exists_but_not_selected",
+      "case_count": 44,
+      "comparison_nnunet": 0.5601692281262312,
+      "delta_vs_nnunet_reference_only": -0.013977113438869678,
+      "dice": 0.5461921146873615,
+      "notes": "MoSAIC comparison used located native_mosaic_predictions when shape-compatible; nnU-Net is the primary held-out OOF baseline.",
+      "pathology": "scar",
+      "source": "results/20260724_care_myops_batch10_deadline_rescue/runtime/wave3_ensemble_common_space/control_epoch25_two_seed_mean/raw_argmax"
+    },
+    {
+      "candidate_family": "CARE-ASE-current",
+      "candidate_name": "CARE-ASE_step00750_fold1_fold4_mean",
+      "candidate_status": "active_training_candidate",
+      "case_count": 88,
+      "comparison_nnunet": 0.567297580971736,
+      "delta_vs_nnunet_reference_only": -0.021261041817552062,
+      "dice": 0.5460365391541839,
+      "notes": "nnU-Net is reference only, not submission candidate.",
+      "pathology": "scar",
+      "source": "results/20260804_care_ase_r2_deadline_recovery_training_docker/outer_diagnostic_step00750_combined_summary.json"
+    },
+    {
+      "candidate_family": "MMRD/Batch10",
+      "candidate_name": "MMRD_Batch10_distill_epoch25_two_seed_mean_raw_argmax",
+      "candidate_status": "possible_artifact_exists_but_not_selected",
+      "case_count": 44,
+      "comparison_nnunet": 0.5601692281262312,
+      "delta_vs_nnunet_reference_only": -0.014616476903132454,
+      "dice": 0.5455527512230988,
+      "notes": "MoSAIC comparison used located native_mosaic_predictions when shape-compatible; nnU-Net is the primary held-out OOF baseline.",
+      "pathology": "scar",
+      "source": "results/20260724_care_myops_batch10_deadline_rescue/runtime/wave3_ensemble_common_space/distill_epoch25_two_seed_mean/raw_argmax"
+    },
+    {
+      "candidate_family": "DG",
+      "candidate_name": "repaired_formal_scar_priority_step4000_A2_care_dg",
+      "candidate_status": "not_candidate: below nnU-Net on requested fair population",
+      "case_count": 44,
+      "comparison_nnunet": 0.5601692281262312,
+      "delta_vs_nnunet_reference_only": -0.01494923031627815,
+      "dice": 0.545219997809953,
+      "notes": "Gate B R2 status says no inner eligible candidate.",
+      "pathology": "scar",
+      "source": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_evaluation/gate_b_fold0_model_summary.csv"
+    },
+    {
+      "candidate_family": "MMRD/Batch10",
+      "candidate_name": "MMRD_Batch10_teacher_two_seed_mean_raw_argmax",
+      "candidate_status": "possible_artifact_exists_but_not_selected",
+      "case_count": 44,
+      "comparison_nnunet": 0.5601692281262312,
+      "delta_vs_nnunet_reference_only": -0.04580254260751615,
+      "dice": 0.514366685518715,
+      "notes": "MoSAIC comparison used located native_mosaic_predictions when shape-compatible; nnU-Net is the primary held-out OOF baseline.",
+      "pathology": "scar",
+      "source": "results/20260724_care_myops_batch10_deadline_rescue/runtime/wave3_ensemble_common_space/teacher_two_seed_mean/raw_argmax"
+    },
+    {
+      "candidate_family": "DG",
+      "candidate_name": "DG_parity_recompute_scr_r1_predictions_scar_binary",
+      "candidate_status": "not_direct_docker_candidate_for_requested_formal_dg",
+      "case_count": 44,
+      "comparison_nnunet": 0.5601692281262312,
+      "delta_vs_nnunet_reference_only": -0.3606468592045028,
+      "dice": 0.19952236892172837,
+      "notes": "MoSAIC comparison used located native_mosaic_predictions when shape-compatible; nnU-Net is the primary held-out OOF baseline.",
+      "pathology": "scar",
+      "source": "results/20260727_care_dg_dual_pathology_validation/parity_recompute_fold0/scr_r1_predictions/scar"
+    }
+  ],
+  "selection_notes": {
+    "current_direct_pool": "CARE-ASE active checkpoints plus historical direct prediction artifacts; final decision should use latest ASE checkpoints before Docker freeze",
+    "nnunet": "reference_only_not_submission_candidate",
+    "srr_cascade_audit": "highest small audit rows are kept for context but excluded from direct submission ranking because scientific_gate_v2 selected baseline-only and no direct Docker candidate evidence was located"
+  },
+  "status": "SELF_MODEL_CANDIDATE_POOL_REFERENCE_ONLY_BASELINES"
+}
