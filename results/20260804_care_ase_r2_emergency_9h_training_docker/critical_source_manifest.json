@@ -1,5 +1,5 @@
 {
-  "created_utc": "2026-08-03T18:39:40.039146Z",
+  "created_utc": "2026-08-04T00:58:10.334355Z",
   "critical_source_manifest": {
     "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh": "a1188a3fbc2e50f85e3d1b89b883c5ff9ef9c933bbd4063dc4485e4c4c546d55",
     "prompts/blueprints/CARE_ASE_R2_effective_contract_v9_20260803.yaml": "1b02fb37fa30054b74f7b73b7bd15617d74ab931b4a12965ea1d700bb7fa3c1e",
@@ -7,12 +7,14 @@
     "prompts/tasks/20260803_care_ase_r2_last_hotfix_v9.md": "786abdb2f017a334d6d6a3ddc1acde9f5a7e263720e6e66478389cbbb3384b81",
     "prompts/tasks/20260803_care_ase_r2_last_hotfix_v9_executor_plan.yaml": "4131c9ac3b0cdb1f3f6c6a8ceb4904851fd48592a9a354d922ac4465d14608f5",
     "prompts/tasks/20260803_care_ase_r2_last_hotfix_v9_final_addendum.md": "ea30e744aaaa0f429d0092574fd24eff58100ff64b08818149d6771829cfea2f",
+    "prompts/tasks/20260804_care_ase_r2_deadline_recovery_training_docker_addendum.md": "669f83eeb613017e7ed0906e708abf2c82cd658a5408a2dba7a28955b9d7108c",
+    "prompts/tasks/20260804_care_ase_r2_deadline_recovery_training_docker_controller.md": "da9c0f25f94b6807a57b1125b52711254d71cf6103184bef113ed82a02df2979",
     "prompts/tasks/20260804_care_ase_r2_emergency_9h_training_docker_controller.md": "38b406130d3ebffa355f6f19460cc6d1e876c0b3e92064f285b2ba0af6b36c74",
     "scripts/evaluation/care_ase/build_care_ase_r2_full_case_target_manifest.py": "01a1dc30974884ff2a681dd50021a5ee2ba2079fed4985b06a5f8e1184ecbf71",
     "scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py": "44f54d88a2e19ebb03a9374fc455756912f42dbc5c5bdac8b575d50acdaafc4b",
     "scripts/evaluation/care_ase/build_stock_oof_preprocessed_grid_predictions.py": "971e8202433696142739b3d135c98b448ea124720b906a5ac066f4684a71c330",
     "scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py": "e8f42de7616d7d1f369a6aac5ec8b71b388d1993247d7ac9df6d3fc716bf38af",
-    "scripts/evaluation/care_ase/monitor_care_ase_r2_inner_trend.py": "a923e38bf51e59cc67d945914a6f17d14bf74cd941755501cd670b9763ef73dc",
+    "scripts/evaluation/care_ase/monitor_care_ase_r2_inner_trend.py": "d6812e61c5b6b4b072488346a1e9742efd678a01164fc03b94e82e11ed0362df",
     "scripts/evaluation/care_ase/select_care_ase_r2_inner_checkpoint.py": "40de3053c45813dc6c25e3ed682c56c0b2b6fc655a51e510e2b4176c47699645",
     "scripts/training/care_ase/run_care_ase_r2_chunk.py": "078767a5c8c6b8c9fe6135efe2efa6ec49dc6daec7554e2f1a3b3625a338e812",
     "scripts/validation/verify_care_ase_checkpoint_for_resume.py": "642bce64312bdefd0f7b725056a2f44da1cc5c7931b25213d504ffee7d49f16f",
@@ -23,14 +25,16 @@
     "src/care_myocardium/models/care_ase.py": "290c799618b29133903dfb7ccd78844bf27a4ce70b885ae64483444c922b9e42",
     "src/care_myocardium/models/care_prism.py": "6af752a202faaae8f8766422724ede6b774db3650e4163c677ab2d2ffbfee0bf",
     "src/care_myocardium/training/care_ase_augmentation.py": "85a208a3a886babe0ec2927a1babced2b24ff91188d577585e65d4e38c27b283",
-    "src/care_myocardium/training/care_ase_runtime.py": "1b6c6dd1bc1eac2b4c38524196ba954e531b401a708a44b6ca7e07c862cba0a8",
-    "src/care_myocardium/training/care_ase_sampler.py": "8268554c0497995cbe9ef6b5fe93d7783ab325ecd1ca79807751a6a6e5edd53d",
+    "src/care_myocardium/training/care_ase_runtime.py": "295c29136b556c84744ea7308d0ba6ca6d924fac9ac8ef15b47c55c1cbabca38",
+    "src/care_myocardium/training/care_ase_sampler.py": "e8d0b9d10f90d3e70fb9e1a8f4cfff2dd4fbae30d7f73868377350af278f65d9",
     "src/care_myocardium/training/care_ase_trainer.py": "9ac32cd2fb74ffacf704dd0ba4b4740fe3a5179a3bd914b9bf26d1f202e2b943"
   },
-  "critical_source_manifest_sha256": "5558e414411cd7b6c683a94100d3152cab007515edbf4e4c817e76daec9b656f",
+  "critical_source_manifest_sha256": "f4ff89f8fe11959efaa42dfeb00bf364f1b49314af342ed849ac2828168703a1",
   "critical_source_seed_paths": [
     "prompts/blueprints/CARE_ASE_R2_effective_contract_v9_20260803.yaml",
     "prompts/tasks/20260804_care_ase_r2_emergency_9h_training_docker_controller.md",
+    "prompts/tasks/20260804_care_ase_r2_deadline_recovery_training_docker_controller.md",
+    "prompts/tasks/20260804_care_ase_r2_deadline_recovery_training_docker_addendum.md",
     "prompts/tasks/20260803_care_ase_r2_last_hotfix_v9.md",
     "prompts/tasks/20260803_care_ase_r2_last_hotfix_v9_executor_plan.yaml",
     "prompts/tasks/20260803_care_ase_r2_last_hotfix_v9_final_addendum.md",
@@ -55,9 +59,19 @@
     "scripts/validation/verify_care_ase_checkpoint_for_resume.py",
     "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh"
   ],
+  "deadline_recovery_addendum_path": "prompts/tasks/20260804_care_ase_r2_deadline_recovery_training_docker_addendum.md",
+  "deadline_recovery_contract_bound": true,
+  "deadline_recovery_controller_path": "prompts/tasks/20260804_care_ase_r2_deadline_recovery_training_docker_controller.md",
   "effective_contract_path": "prompts/blueprints/CARE_ASE_R2_effective_contract_v9_20260803.yaml",
   "effective_contract_sha256": "1b02fb37fa30054b74f7b73b7bd15617d74ab931b4a12965ea1d700bb7fa3c1e",
-  "implementation_commit_sha": "72426dfdb19ffaf87c38b2edf1bbe75e91e0a899",
-  "origin_main_sha_at_generation": "8ea497effdbb857fe8fa0b3c6011dab99c3de750",
+  "implementation_commit_sha": "40cfdcdbf4d432d46d05f319dce6a59a084991d3",
+  "invalidated_runtime_before_hotfix": {
+    "fold1_last_logged_step": 64,
+    "fold4_last_logged_step": 64,
+    "formal_training_credit": "zero",
+    "reason": "sampler requested/resolved category mismatch affected training sampler semantics",
+    "source_sha": "07032102c2a3a61fd097f99d83562526c55fd6b0"
+  },
+  "origin_main_sha_at_generation": "40cfdcdbf4d432d46d05f319dce6a59a084991d3",
   "status": "PASS"
 }
