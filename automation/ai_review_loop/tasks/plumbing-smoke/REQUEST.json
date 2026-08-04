@@ -1,0 +1,62 @@
+{
+  "base_sha": "3f9cdcdda44a70a89789bd0ccb1b109cb6e28e07",
+  "branch": "automation/ai-review-loop-v1",
+  "contract_path": "automation/ai_review_loop/PROTOCOL.md",
+  "contract_sha256": "4d84d978b518ba2f3a2999be77fef910fb894c64bcc244c01854d92215b20cf9",
+  "created_utc": "2026-08-04T09:10:00Z",
+  "critical_files": [
+    {
+      "path": "automation/ai_review_loop/PROTOCOL.md",
+      "sha256": "4d84d978b518ba2f3a2999be77fef910fb894c64bcc244c01854d92215b20cf9"
+    },
+    {
+      "path": "automation/ai_review_loop/chatgpt_hourly_task_prompt.md",
+      "sha256": "fa37dd0568f0cd349494ef5f800943065f5d829782710cb941a6234dcce9bd5b"
+    },
+    {
+      "path": "automation/ai_review_loop/schemas.json",
+      "sha256": "dcc52c528a9cffc702c92958a391b250cf371efe338f52783769b201a57d0490"
+    },
+    {
+      "path": "scripts/automation/ai_review_loop.py",
+      "sha256": "336f5bc4f7382f395b88ffbc845b722a2f50f13104d2d4f8afad5d2f08278078"
+    },
+    {
+      "path": "tests/automation/test_ai_review_loop.py",
+      "sha256": "addce5ad3e1ec31663c1b91406eaab0dc6cd916b264849e085296b954e303778"
+    }
+  ],
+  "critical_fingerprint_sha256": "2113f99fc57fbbfeef1c37e29d7dcdc693f975d8a230c24bd1fd0c72d2c49f75",
+  "critical_paths": [
+    "automation/ai_review_loop/PROTOCOL.md",
+    "automation/ai_review_loop/chatgpt_hourly_task_prompt.md",
+    "automation/ai_review_loop/schemas.json",
+    "scripts/automation/ai_review_loop.py",
+    "tests/automation/test_ai_review_loop.py"
+  ],
+  "deadline_utc": "2026-08-06T00:00:00Z",
+  "enabled": true,
+  "human_gate_after_pass": true,
+  "implementation_sha": "a68e6f7f922261674ce6d28147acf28e0556743e",
+  "loop_nonce": "c4004e635ced45c5bc1286aa514d1499",
+  "max_review_rounds": 1,
+  "mode": "SMOKE",
+  "notification_keyword": "AI_REVIEW_READY_V1",
+  "repository": "YuukiAS/CARE_Challenge",
+  "required_context_paths": [
+    "automation/ai_review_loop/README.md",
+    "automation/ai_review_loop/PROTOCOL.md",
+    "automation/ai_review_loop/schemas.json"
+  ],
+  "review_profiles": [
+    "gmail_trigger",
+    "github_exact_sha_read",
+    "github_review_artifact_write",
+    "current_last_transaction"
+  ],
+  "review_round": 1,
+  "schema": "AI_REVIEW_LOOP_V1",
+  "status": "READY_FOR_GPT_REVIEW",
+  "task_id": "plumbing-smoke",
+  "training_or_deployment_authorized": false
+}
