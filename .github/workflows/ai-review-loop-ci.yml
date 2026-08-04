@@ -1,0 +1,39 @@
+name: AI review loop contract CI
+
+on:
+  push:
+    paths:
+      - 'automation/ai_review_loop/**'
+      - 'scripts/automation/ai_review_loop.py'
+      - 'tests/automation/test_ai_review_loop.py'
+      - '.github/workflows/ai-review-loop-ci.yml'
+  pull_request:
+    paths:
+      - 'automation/ai_review_loop/**'
+      - 'scripts/automation/ai_review_loop.py'
+      - 'tests/automation/test_ai_review_loop.py'
+      - '.github/workflows/ai-review-loop-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-review-loop-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile
+        run: python -m py_compile scripts/automation/ai_review_loop.py
+      - name: Unit tests
+        run: python -m unittest tests.automation.test_ai_review_loop
+      - name: Validate tracked task state
+        run: python scripts/automation/ai_review_loop.py validate --repo-root .
