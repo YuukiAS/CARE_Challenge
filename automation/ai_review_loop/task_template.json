@@ -1,0 +1,40 @@
+{
+  "schema": "AI_REVIEW_LOOP_V1",
+  "enabled": false,
+  "mode": "LIVE",
+  "repository": "YuukiAS/CARE_Challenge",
+  "branch": "ai-review/<task_id>",
+  "task_id": "replace_me",
+  "contract_path": "prompts/tasks/<task>.md",
+  "required_context_paths": [
+    "AGENTS.md",
+    "START_HERE_FOR_GPT.md",
+    "GPT_PLANNER_CARE_PROTOCOL.md",
+    "prompts/routes/handoffs/CURRENT.md",
+    "wiki/README.md"
+  ],
+  "critical_paths": [
+    "src/**/*.py",
+    "scripts/**/*.py",
+    "jobs/**/*.sh",
+    "tests/**/*.py",
+    "prompts/blueprints/**/*"
+  ],
+  "review_profiles": [
+    "scientific_fidelity",
+    "implementation_downgrade",
+    "data_label_sampling",
+    "runtime_resume_inference",
+    "evaluation_fairness",
+    "deployment",
+    "tests_and_known_bad"
+  ],
+  "max_review_rounds": 12,
+  "deadline_utc": null,
+  "human_gate_after_pass": true,
+  "current_run_isolation": {
+    "do_not_modify_active_training_checkout": true,
+    "repair_worktree_template": "/users/a/e/aereinh/CARE_ai_review/<task_id>",
+    "codex_home_template": "/users/a/e/aereinh/.codex-homes/CARE_AI_LOOP_<task_id>"
+  }
+}
