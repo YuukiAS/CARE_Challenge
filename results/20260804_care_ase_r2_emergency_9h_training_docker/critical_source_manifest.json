@@ -1,5 +1,4 @@
 {
-  "created_utc": "2026-08-04T00:58:10.334355Z",
   "critical_source_manifest": {
     "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh": "a1188a3fbc2e50f85e3d1b89b883c5ff9ef9c933bbd4063dc4485e4c4c546d55",
     "prompts/blueprints/CARE_ASE_R2_effective_contract_v9_20260803.yaml": "1b02fb37fa30054b74f7b73b7bd15617d74ab931b4a12965ea1d700bb7fa3c1e",
@@ -25,53 +24,13 @@
     "src/care_myocardium/models/care_ase.py": "290c799618b29133903dfb7ccd78844bf27a4ce70b885ae64483444c922b9e42",
     "src/care_myocardium/models/care_prism.py": "6af752a202faaae8f8766422724ede6b774db3650e4163c677ab2d2ffbfee0bf",
     "src/care_myocardium/training/care_ase_augmentation.py": "85a208a3a886babe0ec2927a1babced2b24ff91188d577585e65d4e38c27b283",
-    "src/care_myocardium/training/care_ase_runtime.py": "295c29136b556c84744ea7308d0ba6ca6d924fac9ac8ef15b47c55c1cbabca38",
+    "src/care_myocardium/training/care_ase_runtime.py": "0f3407e39b6cef0ab35f9dd33720f7d73afd67ce8b9251298a6238c4516a1b2a",
     "src/care_myocardium/training/care_ase_sampler.py": "e8d0b9d10f90d3e70fb9e1a8f4cfff2dd4fbae30d7f73868377350af278f65d9",
-    "src/care_myocardium/training/care_ase_trainer.py": "9ac32cd2fb74ffacf704dd0ba4b4740fe3a5179a3bd914b9bf26d1f202e2b943"
+    "src/care_myocardium/training/care_ase_trainer.py": "2054f0f4aedb4b4f4bfb082d8c90ff7fa6970dfac298dbc6b5b0d7a8cf1ca621"
   },
-  "critical_source_manifest_sha256": "f4ff89f8fe11959efaa42dfeb00bf364f1b49314af342ed849ac2828168703a1",
-  "critical_source_seed_paths": [
-    "prompts/blueprints/CARE_ASE_R2_effective_contract_v9_20260803.yaml",
-    "prompts/tasks/20260804_care_ase_r2_emergency_9h_training_docker_controller.md",
-    "prompts/tasks/20260804_care_ase_r2_deadline_recovery_training_docker_controller.md",
-    "prompts/tasks/20260804_care_ase_r2_deadline_recovery_training_docker_addendum.md",
-    "prompts/tasks/20260803_care_ase_r2_last_hotfix_v9.md",
-    "prompts/tasks/20260803_care_ase_r2_last_hotfix_v9_executor_plan.yaml",
-    "prompts/tasks/20260803_care_ase_r2_last_hotfix_v9_final_addendum.md",
-    "prompts/tasks/20260803_care_ase_r2_final_pretraining_closure_v8_addendum.md",
-    "src/care_myocardium/models/care_ase.py",
-    "src/care_myocardium/models/care_prism.py",
-    "src/care_myocardium/training/care_ase_trainer.py",
-    "src/care_myocardium/training/care_ase_runtime.py",
-    "src/care_myocardium/training/care_ase_sampler.py",
-    "src/care_myocardium/training/care_ase_augmentation.py",
-    "src/care_myocardium/data/care_ase_splits.py",
-    "src/care_myocardium/data/case_metadata.py",
-    "src/care_myocardium/inference/care_ase_r2_decode.py",
-    "src/care_myocardium/inference/care_ase_r2_full_volume.py",
-    "scripts/training/care_ase/run_care_ase_r2_chunk.py",
-    "scripts/evaluation/care_ase/build_stock_oof_preprocessed_grid_predictions.py",
-    "scripts/evaluation/care_ase/build_care_ase_r2_hard_negative_manifest.py",
-    "scripts/evaluation/care_ase/build_care_ase_r2_full_case_target_manifest.py",
-    "scripts/evaluation/care_ase/monitor_care_ase_r2_inner_trend.py",
-    "scripts/evaluation/care_ase/select_care_ase_r2_inner_checkpoint.py",
-    "scripts/evaluation/care_ase/evaluate_care_ase_r2_outer.py",
-    "scripts/validation/verify_care_ase_checkpoint_for_resume.py",
-    "jobs/care_ase_r2/run_fold_chunk_htzhulab.sh"
-  ],
-  "deadline_recovery_addendum_path": "prompts/tasks/20260804_care_ase_r2_deadline_recovery_training_docker_addendum.md",
-  "deadline_recovery_contract_bound": true,
-  "deadline_recovery_controller_path": "prompts/tasks/20260804_care_ase_r2_deadline_recovery_training_docker_controller.md",
-  "effective_contract_path": "prompts/blueprints/CARE_ASE_R2_effective_contract_v9_20260803.yaml",
-  "effective_contract_sha256": "1b02fb37fa30054b74f7b73b7bd15617d74ab931b4a12965ea1d700bb7fa3c1e",
-  "implementation_commit_sha": "40cfdcdbf4d432d46d05f319dce6a59a084991d3",
-  "invalidated_runtime_before_hotfix": {
-    "fold1_last_logged_step": 64,
-    "fold4_last_logged_step": 64,
-    "formal_training_credit": "zero",
-    "reason": "sampler requested/resolved category mismatch affected training sampler semantics",
-    "source_sha": "07032102c2a3a61fd097f99d83562526c55fd6b0"
-  },
-  "origin_main_sha_at_generation": "40cfdcdbf4d432d46d05f319dce6a59a084991d3",
-  "status": "PASS"
+  "critical_source_manifest_sha256": "ebbb377c7228cf2ea8d6b49ff11f774ce00b0daa12daa2ddc24ec723793b6354",
+  "implementation_source_commit_sha": "7d7dad446ce01272fb7e23e20551980539b8a41b",
+  "runtime_lock_hotfix_commit_a": "7d7dad446ce01272fb7e23e20551980539b8a41b",
+  "status": "PASS",
+  "task_key": "20260804_care_ase_r2_emergency_9h_training_docker"
 }
