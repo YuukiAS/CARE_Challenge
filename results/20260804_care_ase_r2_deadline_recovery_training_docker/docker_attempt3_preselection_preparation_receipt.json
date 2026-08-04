@@ -1,0 +1,33 @@
+{
+  "cine_source": "reuse_existing_MoSAIC_attempt2_archive_pending_final_handoff",
+  "created_at_utc": "2026-08-04T05:51:39.451874Z",
+  "docker_behavior_with_selection": "CARE-ASE raw labels 4/5 overlay onto nnU-Net anatomy/common geometry",
+  "docker_behavior_without_selection": "legacy nnU-Net output path retained for smoke only",
+  "docker_upload_authorized": false,
+  "files": [
+    {
+      "path": "docker/CARE2026_Myocardium/MyoPS/Dockerfile",
+      "sha256": "2674af9bccf26b43c838001f1d7760707dd4112fc3b882c9571c22d18e9e040c"
+    },
+    {
+      "path": "docker/CARE2026_Myocardium/MyoPS/predict.py",
+      "sha256": "af3bd796ef83e2ed11510fa4c61354f29f1e313e5b22cb4cd05d0c7ab789b5b0"
+    },
+    {
+      "path": "docker/CARE2026_Myocardium/MyoPS/README.md",
+      "sha256": "c7d8a7b8610d9fab3b8abffe2455fd455c4f661beae5e831d80fc52a3b174031"
+    },
+    {
+      "path": "scripts/packaging/build_care_ase_attempt3_myops_bundle.py",
+      "sha256": "e9525275c9fbe72892f0229e0ae2948ccdc66c0d49ca8e660a19d6b075256fd9"
+    }
+  ],
+  "myops_anatomy_source": "nnUNet geometry/anatomy support only",
+  "myops_pathology_source": "pending self-model selection after step1250 fair comparison",
+  "nnunet_submission_candidate": false,
+  "official_email_sent": false,
+  "purpose": "Prepare MyoPS Docker attempt3 self-model pathology overlay without selecting final checkpoint yet.",
+  "py_compile": "PASS",
+  "selection_file_expected": "models/self_model/selection.json",
+  "status": "PREPARED_WAITING_STEP1250_MODEL_SELECTION"
+}
