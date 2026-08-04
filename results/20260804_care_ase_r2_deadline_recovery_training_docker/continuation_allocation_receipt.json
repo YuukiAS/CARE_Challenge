@@ -1,0 +1,18 @@
+{
+  "active_training_jobs": {
+    "fold1": "61794608",
+    "fold4": "61830309"
+  },
+  "command_template": "sbatch --parsable --job-name=<fold> --output=/dev/null --error=/dev/null --ntasks=1 --cpus-per-task=8 --mem=64G --time=2-00:00:00 --gres=gpu:1 --partition=htzhulab --qos=gpu_access --wrap='sleep 172800'",
+  "partition": "htzhulab",
+  "qos": "gpu_access",
+  "reason": "current allocations do not have enough walltime to complete 14000-step training; replacements requested proactively",
+  "replacement_allocations_submitted": {
+    "fold1": "61984832",
+    "fold4": "61984833"
+  },
+  "requested_walltime": "2-00:00:00",
+  "squeue_snapshot": "JOBID|NAME|PARTITION|STATE|TIME|TIME_LEFT|NODELIST(REASON)|TRES_PER_NODE|NODES\n61984833|CareASEFold4Cont2d|htzhulab|PENDING|0:00|2-00:00:00|(Priority)|gres/gpu:1|1\n61984832|CareASEFold1Cont2d|htzhulab|RUNNING|0:29|1-23:59:31|g180702|gres/gpu:1|1\n61830309|CareASEFold4Interactive2d|htzhulab|RUNNING|1-07:43:24|16:16:36|g1807htzh01|gres/gpu:1|1\n61794608|CareInteractive2d|htzhulab|RUNNING|1-14:45:19|9:14:41|g1807htzh01|gres/gpu:1|1\n",
+  "status": "CONTINUATION_ALLOCATIONS_SUBMITTED",
+  "written_utc": "2026-08-04T07:36:19.928523+00:00"
+}

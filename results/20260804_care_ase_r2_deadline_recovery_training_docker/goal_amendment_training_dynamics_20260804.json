@@ -1,0 +1,23 @@
+{
+  "comparison_cadence": "every_1000_verified_optimizer_steps after existing early diagnostic points",
+  "created_utc": "2026-08-04T07:29:03.259625Z",
+  "docker_cutoff_status": "demoted_to_non_primary_staging_only",
+  "early_points_retained": [
+    250,
+    500,
+    750,
+    1000
+  ],
+  "fold4_partial_segment_policy": "1001-1042 segment interrupted for user-requested MoSAIC inference; archived and not used as verified checkpoint credit; resume from checkpoint_step01000.pt",
+  "new_primary_goal": "complete fold1/fold4 CARE-ASE R2 training to 14000 optimizer steps and observe training dynamics",
+  "organizer_email_authorized": false,
+  "required_final_outputs": [
+    "training_progress_curve.csv",
+    "training_progress_curve.json",
+    "training_progress_curve.png",
+    "final Chinese controller report",
+    "commit/push/notifier"
+  ],
+  "status": "ACTIVE_GOAL_AMENDED_BY_USER",
+  "upload_authorized": false
+}
