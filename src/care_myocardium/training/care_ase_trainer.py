@@ -8,6 +8,8 @@ import os
 import json
 import random
 import re
+import threading
+import uuid
 from pathlib import Path
 from typing import Any
 
@@ -1800,7 +1802,7 @@ def checkpoint_receipt(path: Path, payload: dict[str, Any]) -> dict[str, Any]:
 
 def write_json(path: Path, payload: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_name(f".{path.name}.tmp.{os.getpid()}")
+    tmp = path.with_name(f".{path.name}.tmp.{os.getpid()}.{threading.get_ident()}.{uuid.uuid4().hex}")
     tmp.write_text(json.dumps(payload, indent=2, sort_keys=True, default=str) + "\n", encoding="utf-8")
     _fsync_file(tmp)
     os.replace(tmp, path)
