@@ -1,0 +1,13 @@
+{
+  "implementation_sha": "a68e6f7f922261674ce6d28147acf28e0556743e",
+  "next_action": "CHATGPT_HOURLY_REVIEW",
+  "repair_prompt_path": null,
+  "request_nonce": "c4004e635ced45c5bc1286aa514d1499",
+  "request_path": "automation/ai_review_loop/tasks/plumbing-smoke/REQUEST.json",
+  "review_path": null,
+  "review_round": 1,
+  "schema": "AI_REVIEW_LOOP_V1",
+  "state": "WAITING_FOR_GPT_REVIEW",
+  "task_id": "plumbing-smoke",
+  "updated_utc": "2026-08-04T09:11:00Z"
+}
