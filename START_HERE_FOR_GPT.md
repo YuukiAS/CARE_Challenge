@@ -30,17 +30,17 @@
 默认仓库：
 
 ```text
-/users/a/e/aereinh/CARE
+${CARE_REPO_ROOT}
 main
 ```
 
 禁止默认写入：
 
 ```text
-/overflow/htzhu/CARE
-/users/a/e/aereinh/CARE_worktrees/route_A
-/users/a/e/aereinh/CARE_worktrees/route_B
-/users/a/e/aereinh/CARE_worktrees/route_C
+<legacy-or-approved-historical-workspace>
+${CARE_ROUTE_WORKTREE_ROOT}/route_A
+${CARE_ROUTE_WORKTREE_ROOT}/route_B
+${CARE_ROUTE_WORKTREE_ROOT}/route_C
 ```
 
 Route A/B/C 是历史 evidence lanes。只有用户显式重新授权某条 route 时，才恢复 route worktree/controller。

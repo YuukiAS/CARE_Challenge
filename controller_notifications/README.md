@@ -4,14 +4,15 @@ Standalone controller goal notification service. It no longer depends on the rou
 
 ## Configure Email
 
-Create an untracked env file at `secrets/care_notify.env`:
+Create an untracked env file at `secrets/care_notify.env` or set `CARE_NOTIFY_ENV_FILE`:
 
 ```bash
-CARE_NOTIFY_SMTP_USER=humc2013@gmail.com
+CARE_NOTIFY_SMTP_USER=<smtp_user_email>
 CARE_NOTIFY_SMTP_PASSWORD=<gmail_app_password>
+CARE_NOTIFY_TO=<recipient_email>
 ```
 
-The default recipient and SMTP settings are in `config.example.json`. The default monitored route list is now `main` only; historical `route_A`, `route_B`, and `route_C` remain configured but disabled unless a future handoff explicitly reactivates a route controller. Email is sent as `plain_plus_html`: a short Chinese decision brief plus an HTML alternative. The body intentionally omits token counts, long goal prompts, and Markdown tables. `email.max_important_slurm_jobs` limits how many Slurm jobs are expanded in the body, but credited `COMPLETED` jobs with elapsed runtime are always included before failed/cancelled attempts are truncated.
+Public defaults are parameterized in `controller_notifications/config.example.json`. Put machine-specific values in the ignored local config `config/local/controller_notifications.json`, or point `CARE_NOTIFY_CONFIG` at another ignored file. The default monitored route list is now `main` only; historical `route_A`, `route_B`, and `route_C` remain configured but disabled unless a future handoff explicitly reactivates a route controller. Email is sent as `plain_plus_html`: a short Chinese decision brief plus an HTML alternative. The body intentionally omits token counts, long goal prompts, and Markdown tables. `email.max_important_slurm_jobs` limits how many Slurm jobs are expanded in the body, but credited `COMPLETED` jobs with elapsed runtime are always included before failed/cancelled attempts are truncated.
 
 ## Controller completion brief
 

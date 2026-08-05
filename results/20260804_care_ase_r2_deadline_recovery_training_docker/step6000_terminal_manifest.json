@@ -1,0 +1,46 @@
+{
+  "files": [
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/step6000_stop_decision.json",
+      "sha256": "43c03d9a3245cbb5c8f06a346754c50e148d4232848e2e0a90510ff426144c6d",
+      "size": 3969
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/step6000_stop_decision.md",
+      "sha256": "e89704f290ec9f4b8dea4ad71e84524af713988b4fae23b4a8aef7a2b871a6b6",
+      "size": 965
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/notification_brief.json",
+      "sha256": "154f8a59b85c4440a3df3406f21aaedc1df446ebee5b08d9c7217bce5af84b16",
+      "size": 1631
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/training_to_14000_supervisor_state.json",
+      "sha256": "e3c8b83403dd0171cbfcf9f840a87f48b4efec81e9e4bf62f1d5c80c387335c5",
+      "size": 4105
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/outer_diagnostic_step06000_combined_summary.json",
+      "sha256": "56a7feecb13e44522092e0b26f652c7b61096efca16d3f9d6887994e277f54e1",
+      "size": 5195
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/training_progress_curve/care_ase_r2_training_progress_curve.csv",
+      "sha256": "c995e383cac912647584fde1f9e47de593faa1325c851b8552f061b39bc9c2aa",
+      "size": 8974
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/training_progress_curve/care_ase_r2_training_progress_curve.json",
+      "sha256": "232231e1a199b1b21d67339f2fd94e3822b8f1415fad285eea292b5c603e91a2",
+      "size": 15301
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/training_progress_curve/care_ase_r2_training_progress_curve.png",
+      "sha256": "6316bead7d318144038936bf08442ada8a349e5d1416a54a85eb56f55270b229",
+      "size": 106107
+    }
+  ],
+  "status": "PASS",
+  "updated_utc": "2026-08-05T11:01:24.291088+00:00"
+}

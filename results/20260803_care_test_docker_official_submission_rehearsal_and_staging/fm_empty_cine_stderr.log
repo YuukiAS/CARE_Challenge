@@ -1,6 +1,0 @@
-Traceback (most recent call last):
-  File "/app/predict.py", line 236, in <module>
-    main()
-  File "/app/predict.py", line 142, in main
-    raise FileNotFoundError("No *_Cine.nii.gz CineMyoPS cases found in /input/cinemyops/")
-FileNotFoundError: No *_Cine.nii.gz CineMyoPS cases found in /input/cinemyops/

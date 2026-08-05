@@ -1,3 +1,0 @@
-2026-07-07T02:57:08.624750 watch_start htzhulab=58105084 a100=58105082
-2026-07-07T02:57:08.662313 check=1 htzhulab=[('58105084', 'htzhulab', 'RUNNING', 'g1807htzh01')] a100=[('58105082', 'a100-gpu', 'PENDING', '(Priority)')]
-2026-07-07T02:57:08.676414 cancel_a100 code=0 output=

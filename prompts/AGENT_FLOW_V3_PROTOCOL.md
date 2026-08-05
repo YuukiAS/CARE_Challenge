@@ -73,16 +73,18 @@ Only the Controller pushes `develop`. Verifier and Executor use local-only branc
 Recommended local layout:
 
 ```text
-/users/a/e/aereinh/CARE_agent_flow/<task_id>/controller
-/users/a/e/aereinh/CARE_agent_flow/<task_id>/verifier
-/users/a/e/aereinh/CARE_agent_flow/<task_id>/executor
+${CARE_AGENT_FLOW_WORKTREE_ROOT}/<task_id>/controller
+${CARE_AGENT_FLOW_WORKTREE_ROOT}/<task_id>/verifier
+${CARE_AGENT_FLOW_WORKTREE_ROOT}/<task_id>/executor
 
-/users/a/e/aereinh/.codex-homes/CARE_<task_id>_CONTROLLER
-/users/a/e/aereinh/.codex-homes/CARE_<task_id>_VERIFIER
-/users/a/e/aereinh/.codex-homes/CARE_<task_id>_EXECUTOR
+${CARE_CODEX_HOME_ROOT}/CARE_<task_id>_CONTROLLER
+${CARE_CODEX_HOME_ROOT}/CARE_<task_id>_VERIFIER
+${CARE_CODEX_HOME_ROOT}/CARE_<task_id>_EXECUTOR
 
-/users/a/e/aereinh/.agent-flow-v3/<task_id>/
+${CARE_AGENT_FLOW_STATE_ROOT}/<task_id>/
 ```
+
+Concrete server values belong in ignored local config or shell environment, not in tracked requests.
 
 `main` must not receive experimental CARE-ASE implementation commits until the user explicitly approves promotion after Planner PASS.
 

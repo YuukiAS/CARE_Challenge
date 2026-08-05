@@ -1,0 +1,18 @@
+{
+  "blocked_or_failure_reason": "not_blocked; stopped by user-defined step6000 no-go condition after verified fair comparison",
+  "commit_status": "committed_and_pushed_to_origin_main",
+  "evidence_paths": [
+    "results/20260804_care_ase_r2_deadline_recovery_training_docker/step6000_stop_decision.json",
+    "results/20260804_care_ase_r2_deadline_recovery_training_docker/step6000_stop_decision.md",
+    "results/20260804_care_ase_r2_deadline_recovery_training_docker/outer_diagnostic_step06000_combined_summary.json",
+    "results/20260804_care_ase_r2_deadline_recovery_training_docker/training_progress_curve/care_ase_r2_training_progress_curve.json",
+    "results/20260804_care_ase_r2_deadline_recovery_training_docker/training_progress_curve/care_ase_r2_training_progress_curve.csv",
+    "results/20260804_care_ase_r2_deadline_recovery_training_docker/training_progress_curve/care_ase_r2_training_progress_curve.png"
+  ],
+  "final_status": "complete",
+  "key_conclusion": "CARE-ASE fold1/fold4 both reached verified step6000, but step6000 remained below baselines: scar 0.4413 vs nnU-Net 0.5673 and MoSAIC 0.7543; pure-edema 0.4002 vs nnU-Net 0.4038 and MoSAIC 0.4058. Training was stopped by user-defined step6000 rule.",
+  "next_step": "Use step6000 stop packet and curve for GPT implementation analysis; do not use CARE-ASE as submission candidate unless separately authorized.",
+  "push_status": "origin_main_verified_after_push",
+  "slurm_terminal_status": "jobs 61984833,62007366,62007367,62125898 cancelled after verified step6000 comparison",
+  "task_name": "20260804_care_ase_r2_training_observation_to_step6000"
+}

@@ -1,0 +1,155 @@
+{
+  "generated_at_utc": "2026-08-05T16:15:32.320430+00:00",
+  "source_archive": {
+    "original_path": "/users/a/e/aereinh/CARE_visual_inbox/CARE_architecture_figures.zip",
+    "server_local_backup": "/users/a/e/aereinh/.public-repo-cleanup/20260805_CARE/architecture_zip_original/CARE_architecture_figures.zip",
+    "sha256": "46e9d10269b960a40862950c7b4699e94c4d5242a05923f5052e046a76e15f37",
+    "size_bytes": 19529487,
+    "status": "server_local_only_not_committed"
+  },
+  "assets": [
+    {
+      "path": "docs/architecture/figures/SRR-v2.png",
+      "description": "SRR v2 architecture reference.",
+      "size_bytes": 1758100,
+      "sha256": "2c77d92eb652e88fdf69d40ee13eeb7a66d37755041bfff2a0c1756f1fa1ac8a",
+      "dimensions": {
+        "width": 1448,
+        "height": 1086
+      },
+      "license_status": "project_generated_visual_asset_for_public_repository",
+      "github_blob_url": "TO_BE_FILLED_AFTER_PUSH",
+      "github_raw_url": "TO_BE_FILLED_AFTER_PUSH"
+    },
+    {
+      "path": "docs/architecture/figures/SRR-v2.5.png",
+      "description": "SRR v2.5 architecture reference.",
+      "size_bytes": 1939234,
+      "sha256": "674453e11a8d1466038ac4a22ae68332aabf9482f23d3f90e559649def6606f9",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024
+      },
+      "license_status": "project_generated_visual_asset_for_public_repository",
+      "github_blob_url": "TO_BE_FILLED_AFTER_PUSH",
+      "github_raw_url": "TO_BE_FILLED_AFTER_PUSH"
+    },
+    {
+      "path": "docs/architecture/figures/SRR-v3.png",
+      "description": "SRR v3 architecture reference.",
+      "size_bytes": 1930919,
+      "sha256": "50478ee7c07cedb6a921902aa5daa8f6ecf3b34aa2fc5e97905d60c585ea72b5",
+      "dimensions": {
+        "width": 1491,
+        "height": 1055
+      },
+      "license_status": "project_generated_visual_asset_for_public_repository",
+      "github_blob_url": "TO_BE_FILLED_AFTER_PUSH",
+      "github_raw_url": "TO_BE_FILLED_AFTER_PUSH"
+    },
+    {
+      "path": "docs/architecture/figures/CARE-MMRD.png",
+      "description": "CARE-MMRD architecture reference.",
+      "size_bytes": 1713337,
+      "sha256": "c90bf7582ff139fe1b785e4dac51c55b4ec0c8f676654dd03c9b17e551489859",
+      "dimensions": {
+        "width": 1672,
+        "height": 941
+      },
+      "license_status": "project_generated_visual_asset_for_public_repository",
+      "github_blob_url": "TO_BE_FILLED_AFTER_PUSH",
+      "github_raw_url": "TO_BE_FILLED_AFTER_PUSH"
+    },
+    {
+      "path": "docs/architecture/figures/CARE-SRR-Cascade.png",
+      "description": "CARE-SRR-Cascade architecture reference.",
+      "size_bytes": 2066218,
+      "sha256": "3596356c52a01de5cf29bdae6591ce733bc209403f3f6e8429f8a1374e66ef50",
+      "dimensions": {
+        "width": 1672,
+        "height": 941
+      },
+      "license_status": "project_generated_visual_asset_for_public_repository",
+      "github_blob_url": "TO_BE_FILLED_AFTER_PUSH",
+      "github_raw_url": "TO_BE_FILLED_AFTER_PUSH"
+    },
+    {
+      "path": "docs/architecture/figures/MoSAIC.png",
+      "description": "MoSAIC architecture reference.",
+      "size_bytes": 1764507,
+      "sha256": "d2ea85c5ba40521dc65a56d85124ecfc9a2e40ac5eff206c10cff8fbf04e09fb",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024
+      },
+      "license_status": "project_generated_visual_asset_for_public_repository",
+      "github_blob_url": "TO_BE_FILLED_AFTER_PUSH",
+      "github_raw_url": "TO_BE_FILLED_AFTER_PUSH"
+    },
+    {
+      "path": "docs/architecture/figures/CARE-DG.png",
+      "description": "CARE-DG architecture reference.",
+      "size_bytes": 1966045,
+      "sha256": "6be1b2cae31d3c4f77576f8fe8eb1df39c6623adf86729910cbd31bcfe12ad00",
+      "dimensions": {
+        "width": 1774,
+        "height": 887
+      },
+      "license_status": "project_generated_visual_asset_for_public_repository",
+      "github_blob_url": "TO_BE_FILLED_AFTER_PUSH",
+      "github_raw_url": "TO_BE_FILLED_AFTER_PUSH"
+    },
+    {
+      "path": "docs/architecture/figures/CARE-ARC.png",
+      "description": "CARE-ARC architecture reference.",
+      "size_bytes": 1807839,
+      "sha256": "387f77d42dc9c4f802fda1bdee0eb67fec46dabe921dbf971f7cde5bbcf845b8",
+      "dimensions": {
+        "width": 1774,
+        "height": 887
+      },
+      "license_status": "project_generated_visual_asset_for_public_repository",
+      "github_blob_url": "TO_BE_FILLED_AFTER_PUSH",
+      "github_raw_url": "TO_BE_FILLED_AFTER_PUSH"
+    },
+    {
+      "path": "docs/architecture/figures/CARE-PRISM.png",
+      "description": "CARE-PRISM architecture reference.",
+      "size_bytes": 1643820,
+      "sha256": "31bb8138bc6291d6e116fc605d7a2060a15ce7c3eca25d5da59e419fc2698135",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024
+      },
+      "license_status": "project_generated_visual_asset_for_public_repository",
+      "github_blob_url": "TO_BE_FILLED_AFTER_PUSH",
+      "github_raw_url": "TO_BE_FILLED_AFTER_PUSH"
+    },
+    {
+      "path": "docs/architecture/figures/CARE-MyoWall-IF.png",
+      "description": "CARE-MyoWall-IF architecture reference.",
+      "size_bytes": 1625411,
+      "sha256": "1dc3ecf58f1fffdeb7c36de948f99743a61e39861c08b57378da8c84d536e914",
+      "dimensions": {
+        "width": 1672,
+        "height": 941
+      },
+      "license_status": "project_generated_visual_asset_for_public_repository",
+      "github_blob_url": "TO_BE_FILLED_AFTER_PUSH",
+      "github_raw_url": "TO_BE_FILLED_AFTER_PUSH"
+    },
+    {
+      "path": "docs/architecture/figures/CARE-ASE.png",
+      "description": "CARE-ASE architecture reference.",
+      "size_bytes": 1795901,
+      "sha256": "af8f47713961c3b6b03dd24283b8f18d51fb5043ab1699997db2713e525710b2",
+      "dimensions": {
+        "width": 1774,
+        "height": 887
+      },
+      "license_status": "project_generated_visual_asset_for_public_repository",
+      "github_blob_url": "TO_BE_FILLED_AFTER_PUSH",
+      "github_raw_url": "TO_BE_FILLED_AFTER_PUSH"
+    }
+  ]
+}

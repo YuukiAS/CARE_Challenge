@@ -8,17 +8,17 @@ For future CARE milestones, GPT/ChatGPT must author executor/controller content 
 
 ## Temporary /users Workspace Safety
 
-Temporary rule for the `/users/a/e/aereinh/CARE` development copy only: while working from this migrated copy, treat `/users/a/e/aereinh/CARE` as the active CARE root. Do not write to `/overflow/htzhu/CARE` or other `/overflow` workspace paths from this copy. Reading `/overflow` is allowed only when needed for comparison, recovery, or historical reference; any `/overflow` write requires explicit human approval.
+Temporary rule for the `${CARE_REPO_ROOT}` development copy only: while working from this migrated copy, treat `${CARE_REPO_ROOT}` as the active CARE root. Do not write to `${CARE_LEGACY_OVERFLOW_WORKSPACE}` or other `/overflow` workspace paths from this copy. Reading `/overflow` is allowed only when needed for comparison, recovery, or historical reference; any `/overflow` write requires explicit human approval.
 
 ### Codex managed sandbox startup workaround
 
 This workaround applies to the main CARE worktree and to all active route worktrees:
 
 ```text
-/users/a/e/aereinh/CARE
-/users/a/e/aereinh/CARE_worktrees/route_A
-/users/a/e/aereinh/CARE_worktrees/route_B
-/users/a/e/aereinh/CARE_worktrees/route_C
+${CARE_REPO_ROOT}
+${CARE_ROUTE_WORKTREE_ROOT}/route_A
+${CARE_ROUTE_WORKTREE_ROOT}/route_B
+${CARE_ROUTE_WORKTREE_ROOT}/route_C
 ```
 
 Some Codex desktop threads in this migrated `/users` copy may fail before starting any ordinary sandboxed process. The symptom is that even `pwd`, `true`, or `ls` in one of the valid CARE roots returns `Io(Os { code: 2, kind: NotFound, message: "No such file or directory" })`. Do not interpret this as a missing repository, broken SSH session, or invalid worktree.
@@ -41,17 +41,17 @@ If `apply_patch` cannot read or edit CARE files because of the same sandbox star
 For Codex sessions in this temporary `/users` copy, keep runtime state, cache, and temporary files under `/users`. The only shared file that may need preservation during auth migration is Codex login auth; active config, plugins, rules, skills, memories, SQLite state, logs, cache, and temp paths must not depend on `/nas` home-directory symlinks. Use:
 
 ```bash
-cd /users/a/e/aereinh/CARE
-source /users/a/e/aereinh/CARE/.care-codex-env.sh
-source /users/a/e/aereinh/CARE/env_nnunet.sh
-export PATH=/users/a/e/aereinh/codex-runtime/bin:/users/a/e/aereinh/CARE/envs/env_CARE/bin:$PATH
+cd ${CARE_REPO_ROOT}
+source ${CARE_REPO_ROOT}/.care-codex-env.sh
+source ${CARE_REPO_ROOT}/env_nnunet.sh
+export PATH=${CARE_CODEX_RUNTIME_BIN_DIR}:${CARE_REPO_ROOT}/envs/env_CARE/bin:$PATH
 ```
 
-For this temporary migrated workspace only, prefer the `/users` local Codex runtime at `/users/a/e/aereinh/codex-runtime/bin/codex`. Codex home standardization for `/overflow/htzhu/mingcheng_new` must be explicit human-requested maintenance; otherwise do not modify the original `/overflow` wrappers from this `/users` copy. Repo writes, Codex state, logs, temp files, and CARE outputs should stay under `/users/a/e/aereinh/CARE` or the `/users/a/e/aereinh` runtime directories above, not under `/nas`.
+For this temporary migrated workspace only, prefer the configured local Codex runtime at `${CARE_CODEX_RUNTIME_BIN_DIR}/codex`. Codex home standardization for `${CODEX_HOME_CONFIGURATION_ROOT}` must be explicit human-requested maintenance; otherwise do not modify original external wrappers from this copy. Repo writes, Codex state, logs, temp files, and CARE outputs should stay under `${CARE_REPO_ROOT}` or configured local runtime directories, not under shared home-directory symlinks.
 
-The active Codex home model is defined by the shared standard in `/overflow/htzhu/mingcheng_new/Codex_Home_Configuration`. The `/users` CARE runtime may read that standard, but persistent repo state belongs under `/users/a/e/aereinh/.codex-homes/CARE`, while tmux/runtime isolation may use `/users/a/e/aereinh/.codex-runtime-homes/CARE__<session_slug>`. Treat `/users/a/e/aereinh/.codex-home-care` as legacy migration state, not the active home for new sessions. If a future audit finds `/nas` symlinks under `.codex-home*`, `.codex-homes`, `.codex-runtime-homes`, or `.codex-global`, replace them with namespace-local files or links before starting new Codex sessions.
+The active Codex home model is defined by the shared standard in `${CODEX_HOME_CONFIGURATION_ROOT}`. The `/users` CARE runtime may read that standard, but persistent repo state belongs under `${CARE_CODEX_HOME_ROOT}`, while tmux/runtime isolation may use `${CARE_CODEX_RUNTIME_ROOT}/CARE__<session_slug>`. Treat `${CARE_LEGACY_CODEX_HOME}` as legacy migration state, not the active home for new sessions. If a future audit finds `/nas` symlinks under `.codex-home*`, `.codex-homes`, `.codex-runtime-homes`, or `.codex-global`, replace them with namespace-local files or links before starting new Codex sessions.
 
-For this temporary `/users` copy, repo-local skills under `.agents/skills/` should be real directories, not symlinks back to `/overflow`. Do not refresh skills from `/overflow/htzhu/mingcheng_new/AI_Skills_Collection` unless the user explicitly asks; if a refresh is needed, copy into `/users` and keep the `/overflow` source read-only.
+For this temporary `/users` copy, repo-local skills under `.agents/skills/` should be real directories, not symlinks back to `/overflow`. Do not refresh skills from `${CARE_SKILL_SOURCE_ROOT}` unless the user explicitly asks; if a refresh is needed, copy into `/users` and keep the `/overflow` source read-only.
 
 ## Codex rule source
 
@@ -76,7 +76,7 @@ Do not stack unexplained English technical phrases. Controller analysis of statu
 
 ### Current main-only posture
 
-As of 2026-07-20, future GPT/Codex implementation defaults to `main` in `/users/a/e/aereinh/CARE`. Route A/B/C worktrees and remote route branches are retained for provenance, but they are not active development targets. Do not start a new route controller, route worktree implementation, portfolio round, validation upload, route promotion, M11, hosted metric claim, or final scientific decision unless the user explicitly authorizes that scope in a new handoff. Historical route protocols remain binding when reading route evidence or if a route is later reactivated by a human-approved handoff.
+As of 2026-07-20, future GPT/Codex implementation defaults to `main` in `${CARE_REPO_ROOT}`. Route A/B/C worktrees and remote route branches are retained for provenance, but they are not active development targets. Do not start a new route controller, route worktree implementation, portfolio round, validation upload, route promotion, M11, hosted metric claim, or final scientific decision unless the user explicitly authorizes that scope in a new handoff. Historical route protocols remain binding when reading route evidence or if a route is later reactivated by a human-approved handoff.
 
 Branch creation is not part of the default main-only workflow. Do not create, publish, or preserve a task branch unless the current user instruction explicitly authorizes that branch workflow. If a frozen task contract names an isolated branch/worktree, treat it as local isolation only unless the user also explicitly authorizes pushing that branch; after the user asks to merge into `main`, merge to `main`, push `main` only when authorized, and delete the temporary branch reference.
 
@@ -106,7 +106,7 @@ All Route A/B/C controller work must run as a Codex goal or explicit goal resume
 
 ### Controller completion email notification
 
-Future main-controller goal prompts must include this completion boundary exactly in substance: Batch 完全结束、validator/aggregation/commit/push 状态确认后，先写 `results/<task>/notification_brief.json`，再由既有 `controller_notifications/notify_goal_watcher.py` / `care_notifier:Notifier` notifier 向 `1155246312@link.cuhk.edu.hk` 发送一封中文短邮件；不得为单个任务另开 notifier，不得手写 SMTP 或 `smtp.send_message(...)` 脚本，不得引用 watchboard 作为发送路径，不得在 submitted、pending、running、monitor 包、`NEEDS_MONITOR` 或未完成 aggregation 阶段通知。
+Future main-controller goal prompts must include this completion boundary exactly in substance: Batch 完全结束、validator/aggregation/commit/push 状态确认后，先写 `results/<task>/notification_brief.json`，再由既有 `controller_notifications/notify_goal_watcher.py` / `care_notifier:Notifier` notifier 向 `${CARE_NOTIFY_TO}` 发送一封中文短邮件；不得为单个任务另开 notifier，不得手写 SMTP 或 `smtp.send_message(...)` 脚本，不得引用 watchboard 作为发送路径，不得在 submitted、pending、running、monitor 包、`NEEDS_MONITOR` 或未完成 aggregation 阶段通知。
 
 Every achieved or blocked CARE controller goal must send this email. The fixed flow is:
 
@@ -154,8 +154,8 @@ If a user prompt, generated prompt, or prior ChatGPT instruction conflicts with 
 
 ## Skill Source
 
-- Repo-level skills are installed under `.agents/skills/` from `/overflow/htzhu/mingcheng_new/AI_Skills_Collection/skills`.
-- The canonical upstream source remains `/overflow/htzhu/mingcheng_new/AI_Skills_Collection/skills`; when refreshing repo-local skills, replace duplicates with copies from that collection.
+- Repo-level skills are installed under `.agents/skills/` from `${CARE_SKILL_SOURCE_ROOT}/skills`.
+- The canonical upstream source remains `${CARE_SKILL_SOURCE_ROOT}/skills`; when refreshing repo-local skills, replace duplicates with copies from that collection.
 - This repository should install the medical imaging skill set from `AI_Skills_Collection/skills/domain/medical-imaging`.
 - CARE Slurm partition/routing rules are also installed as a repo-local skill at `.agents/skills/slurm-routing-partition/SKILL.md`; use it before every Slurm job submission and before writing any GPT/Codex milestone, goal, or handoff that will submit Slurm jobs.
 - CARE mapper and architecture-observability rules are installed as `.agents/skills/care-mapper/SKILL.md`; use it for any architecture, loss/dataflow/export, Cine temporal, or controller-observability change.
@@ -383,7 +383,7 @@ Installed: `2026-07-10T05:12:39+00:00`
 Target: `repo`
 Install mode: `domain:medical-imaging`
 Project skills: `.agents/skills/`
-Central collection: `/overflow/htzhu/mingcheng_new/AI_Skills_Collection`
+Central collection: `${CARE_SKILL_SOURCE_ROOT}`
 
 When a task matches an installed skill, read that skill's `SKILL.md` before acting. Keep progressive disclosure: load `references/` only when the skill says they are relevant.
 
@@ -399,7 +399,7 @@ When a task matches an installed skill, read that skill's `SKILL.md` before acti
 
 ## Skill Maintenance
 
-- Update command: `python3 /overflow/htzhu/mingcheng_new/AI_Skills_Collection/scripts/skills.py install --target repo --mode copy --domain medical-imaging --write-agents-md --prune-managed`
+- Update command: `python3 ${CARE_SKILL_SOURCE_ROOT}/scripts/skills.py install --target repo --mode copy --domain medical-imaging --write-agents-md --prune-managed`
 - Managed manifest: `.agents/skills/.ai-skills-collection-manifest.json`
 - The installer only manages paths recorded in that manifest.
 - User-created skills outside the manifest are never pruned.
@@ -555,7 +555,7 @@ This authorization does not permit the agent to autonomously use force push, for
 
 ### Local git operation rule
 
-In the Codex Desktop workspace sandbox, `.git` is protected as read-only. If `git status`, `git add`, `git commit`, `git fetch`, or `git push` needs to write Git index, lock, credential, or remote-tracking ref files, use the approved local git escalation path for the active `/users/a/e/aereinh/CARE` worktree instead of changing the workflow.
+In the Codex Desktop workspace sandbox, `.git` is protected as read-only. If `git status`, `git add`, `git commit`, `git fetch`, or `git push` needs to write Git index, lock, credential, or remote-tracking ref files, use the approved local git escalation path for the active `${CARE_REPO_ROOT}` worktree instead of changing the workflow.
 
 Do not replace the normal local commit/push workflow with a temporary `/tmp` clone, GitHub connector contents-API commit, or other remote-only update path merely because sandboxed `.git` writes are blocked. Those alternatives are allowed only when the user explicitly requests that mechanism after being told it will not use the current worktree's local Git history.
 
@@ -563,4 +563,4 @@ Do not replace the normal local commit/push workflow with a temporary `/tmp` clo
 
 For this repository, CARE controller notification email commands that directly invoke `./envs/env_CARE/bin/python controller_notifications/notify_goal_watcher.py --once` or start the existing watcher with `bash controller_notifications/start_in_tmux.sh` are permanently authorized and must not be sent to manual approval, Auto-review, Guardian, or another approval reviewer.
 
-This authorization is limited to the existing CARE notifier in `/users/a/e/aereinh/CARE`. It does not permit creating separate SMTP scripts, calling `smtp.send_message(...)` from ad hoc Python, exposing SMTP secrets, sending non-CARE emails, broad shell/network allow rules, referencing watchboard as the send path, or notifying before terminal aggregation, validator, commit/push, and Slurm accounting requirements are satisfied.
+This authorization is limited to the existing CARE notifier in `${CARE_REPO_ROOT}`. It does not permit creating separate SMTP scripts, calling `smtp.send_message(...)` from ad hoc Python, exposing SMTP secrets, sending non-CARE emails, broad shell/network allow rules, referencing watchboard as the send path, or notifying before terminal aggregation, validator, commit/push, and Slurm accounting requirements are satisfied.

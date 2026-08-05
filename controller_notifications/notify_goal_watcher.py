@@ -12,6 +12,7 @@ from email.message import EmailMessage
 import hashlib
 import html
 import json
+import os
 import re
 from pathlib import Path
 import smtplib
@@ -25,7 +26,7 @@ from typing import Any, Callable
 NOTIFY_STATUSES = {"complete", "blocked"}
 IGNORED_TERMINAL_STATUSES = {"paused", "usage_limited", "budget_limited"}
 ALL_GOAL_STATUSES = NOTIFY_STATUSES | IGNORED_TERMINAL_STATUSES | {"active"}
-DEFAULT_REPO_ROOT = Path("/users/a/e/aereinh/CARE")
+DEFAULT_REPO_ROOT = Path(os.environ.get("CARE_REPO_ROOT", Path(__file__).resolve().parents[1]))
 DEFAULT_STATE_PATH = Path("controller_notifications/state/notified_goals.json")
 DEFAULT_STATUS_PATH = Path("controller_notifications/state/notify_goal_watcher_status.json")
 DEFAULT_LOG_PATH = Path("controller_notifications/logs/notify_goal_watcher.log")
@@ -122,12 +123,60 @@ def load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def default_config_path() -> Path:
+    env_path = os.environ.get("CARE_NOTIFY_CONFIG")
+    if env_path:
+        return Path(env_path)
+    local_path = DEFAULT_REPO_ROOT / "config" / "local" / "controller_notifications.json"
+    if local_path.is_file():
+        return local_path
+    return Path(__file__).with_name("config.example.json")
+
+
+def default_env_path() -> Path:
+    env_path = os.environ.get("CARE_NOTIFY_ENV_FILE")
+    if env_path:
+        return Path(env_path)
+    return DEFAULT_REPO_ROOT / "secrets" / "care_notify.env"
+
+
+def config_env_defaults() -> dict[str, str]:
+    repo_root = str(DEFAULT_REPO_ROOT)
+    return {
+        "CARE_REPO_ROOT": repo_root,
+        "CARE_CODEX_RUNTIME_ROOT": str(Path(repo_root).parent / ".codex-runtime-homes"),
+        "CARE_CODEX_HOME_ROOT": str(Path(repo_root).parent / ".codex-homes" / "CARE"),
+        "CARE_ROUTE_WORKTREE_ROOT": str(Path(repo_root).parent / "CARE_worktrees"),
+        "CARE_NOTIFY_TMUX_SESSION": "care_notifier",
+        "CARE_NOTIFY_TMUX_WINDOW": "Notifier",
+        "CARE_NOTIFY_FROM": os.environ.get("CARE_NOTIFY_SMTP_USER", ""),
+        "CARE_NOTIFY_TO": os.environ.get("CARE_NOTIFY_TO", ""),
+        "CARE_ROUTE_A_TMUX_TARGET": "",
+        "CARE_ROUTE_B_TMUX_TARGET": "",
+        "CARE_ROUTE_C_TMUX_TARGET": "",
+    }
+
+
+def expand_config_placeholders(value: Any, env: dict[str, str]) -> Any:
+    if isinstance(value, str):
+        expanded = value
+        for key, replacement in env.items():
+            expanded = expanded.replace("${" + key + "}", replacement)
+        return os.path.expanduser(expanded)
+    if isinstance(value, list):
+        return [expand_config_placeholders(item, env) for item in value]
+    if isinstance(value, dict):
+        return {key: expand_config_placeholders(item, env) for key, item in value.items()}
+    return value
+
+
 def load_config(path: Path) -> dict[str, Any]:
     config = load_json(path)
+    config = expand_config_placeholders(config, config_env_defaults())
     config.setdefault("enabled_routes", [])
     config.setdefault("repo_root", str(DEFAULT_REPO_ROOT))
-    config.setdefault("codex_runtime_root", "/users/a/e/aereinh/.codex-runtime-homes")
-    config.setdefault("codex_home_root", "/users/a/e/aereinh/.codex-homes/CARE")
+    config.setdefault("codex_runtime_root", config_env_defaults()["CARE_CODEX_RUNTIME_ROOT"])
+    config.setdefault("codex_home_root", config_env_defaults()["CARE_CODEX_HOME_ROOT"])
     config.setdefault("state_path", str(DEFAULT_STATE_PATH))
     config.setdefault("status_path", str(DEFAULT_STATUS_PATH))
     config.setdefault("log_path", str(DEFAULT_LOG_PATH))
@@ -210,8 +259,9 @@ def route_config(config: dict[str, Any], route: str) -> dict[str, Any]:
 
 
 def route_runtime_goal_dbs(config: dict[str, Any], route: str) -> list[Path]:
-    runtime_root = Path(config.get("codex_runtime_root") or "/users/a/e/aereinh/.codex-runtime-homes")
-    codex_home_root = Path(config.get("codex_home_root") or "/users/a/e/aereinh/.codex-homes/CARE")
+    env_defaults = config_env_defaults()
+    runtime_root = Path(config.get("codex_runtime_root") or env_defaults["CARE_CODEX_RUNTIME_ROOT"])
+    codex_home_root = Path(config.get("codex_home_root") or env_defaults["CARE_CODEX_HOME_ROOT"])
     candidates: list[Path] = []
     seen: set[Path] = set()
 
@@ -1383,8 +1433,8 @@ def build_test_event(config: dict[str, Any]) -> NotificationEvent:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--config", type=Path, default=Path(__file__).with_name("config.example.json"))
-    parser.add_argument("--env-file", type=Path, default=DEFAULT_REPO_ROOT / "secrets" / "care_notify.env")
+    parser.add_argument("--config", type=Path, default=default_config_path())
+    parser.add_argument("--env-file", type=Path, default=default_env_path())
     parser.add_argument("--state-path", type=Path)
     parser.add_argument("--poll-seconds", type=int, default=0)
     parser.add_argument("--loop", action="store_true")

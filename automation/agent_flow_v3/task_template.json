@@ -12,25 +12,25 @@
   "verifier_executor_separation_required": true,
   "role_sessions": {
     "controller": {
-      "thread_id_file": "/users/a/e/aereinh/.agent-flow-v3/<task_id>/controller_thread_id",
-      "codex_home": "/users/a/e/aereinh/.codex-homes/CARE_<task_id>_CONTROLLER",
-      "worktree": "/users/a/e/aereinh/CARE_agent_flow/<task_id>/controller",
+      "thread_id_file": "${CARE_AGENT_FLOW_STATE_ROOT}/<task_id>/controller_thread_id",
+      "codex_home": "${CARE_CODEX_HOME_ROOT}/CARE_<task_id>_CONTROLLER",
+      "worktree": "${CARE_AGENT_FLOW_WORKTREE_ROOT}/<task_id>/controller",
       "local_branch": "local/controller/<task_id>",
       "may_edit_implementation": false,
       "may_edit_verification": false
     },
     "verifier": {
-      "thread_id_file": "/users/a/e/aereinh/.agent-flow-v3/<task_id>/verifier_thread_id",
-      "codex_home": "/users/a/e/aereinh/.codex-homes/CARE_<task_id>_VERIFIER",
-      "worktree": "/users/a/e/aereinh/CARE_agent_flow/<task_id>/verifier",
+      "thread_id_file": "${CARE_AGENT_FLOW_STATE_ROOT}/<task_id>/verifier_thread_id",
+      "codex_home": "${CARE_CODEX_HOME_ROOT}/CARE_<task_id>_VERIFIER",
+      "worktree": "${CARE_AGENT_FLOW_WORKTREE_ROOT}/<task_id>/verifier",
       "local_branch": "local/verifier/<task_id>",
       "may_edit_implementation": false,
       "may_edit_verification": true
     },
     "executor": {
-      "thread_id_file": "/users/a/e/aereinh/.agent-flow-v3/<task_id>/executor_thread_id",
-      "codex_home": "/users/a/e/aereinh/.codex-homes/CARE_<task_id>_EXECUTOR",
-      "worktree": "/users/a/e/aereinh/CARE_agent_flow/<task_id>/executor",
+      "thread_id_file": "${CARE_AGENT_FLOW_STATE_ROOT}/<task_id>/executor_thread_id",
+      "codex_home": "${CARE_CODEX_HOME_ROOT}/CARE_<task_id>_EXECUTOR",
+      "worktree": "${CARE_AGENT_FLOW_WORKTREE_ROOT}/<task_id>/executor",
       "local_branch": "local/executor/<task_id>",
       "may_edit_implementation": true,
       "may_edit_verification": false

@@ -1,5 +1,0 @@
-case_id,center,modality_group,availability,final_logits_shape,finite
-Case2019,CenterB,C0+LGE+T2,1.0|1.0|1.0,1x6x20x256x256,True
-Case3008,CenterC,C0+LGE+T2,1.0|1.0|1.0,1x6x20x256x256,True
-Case1045,CenterA,LGE-only,1.0|0.0|0.0,1x6x20x256x256,True
-Case7009,CenterG,C0+LGE,1.0|0.0|1.0,1x6x20x256x256,True
