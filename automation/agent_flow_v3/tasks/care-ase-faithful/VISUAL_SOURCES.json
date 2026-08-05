@@ -9,17 +9,106 @@
     "stable_direct_image_url"
   ],
   "sources": [
-    {"name": "SRR-v2", "repository_reference": "images/SRR-v2.png", "public_visual_url": null, "sha256": null, "required": true},
-    {"name": "SRR-v2.5", "repository_reference": "images/SRR-v2.5.png", "public_visual_url": null, "sha256": null, "required": true},
-    {"name": "SRR-v3", "repository_reference": "images/SRR-v3.png", "public_visual_url": null, "sha256": null, "required": true},
-    {"name": "CARE-MMRD", "repository_reference": "images/CARE-MMRD.png", "public_visual_url": null, "sha256": null, "required": true},
-    {"name": "CARE-SRR-Cascade", "repository_reference": "images/CARE-SRR-Cascade.png", "public_visual_url": null, "sha256": null, "required": true},
-    {"name": "CARE-DG", "repository_reference": "images/CARE-DG.png", "public_visual_url": null, "sha256": null, "required": true},
-    {"name": "CARE-ARC", "repository_reference": "images/CARE-ARC.png", "public_visual_url": null, "sha256": null, "required": true},
-    {"name": "CARE-PRISM", "repository_reference": "images/CARE-PRISM.png", "public_visual_url": null, "sha256": null, "required": true},
-    {"name": "CARE-MyoWall-IF", "repository_reference": "images/CARE-MyoWall-IF.png", "public_visual_url": null, "sha256": null, "required": true},
-    {"name": "MoSAIC", "repository_reference": "images/MoSAIC.png", "public_visual_url": null, "sha256": null, "required": true},
-    {"name": "CARE-ASE", "repository_reference": "images/CARE-ASE.png", "public_visual_url": null, "sha256": null, "required": true}
+    {
+      "name": "SRR-v2",
+      "repository_reference": "docs/architecture/figures/SRR-v2.png",
+      "public_visual_url": "https://raw.githubusercontent.com/YuukiAS/CARE_Challenge/main/docs/architecture/figures/SRR-v2.png",
+      "sha256": "2c77d92eb652e88fdf69d40ee13eeb7a66d37755041bfff2a0c1756f1fa1ac8a",
+      "required": true,
+      "github_blob_url": "https://github.com/YuukiAS/CARE_Challenge/blob/main/docs/architecture/figures/SRR-v2.png",
+      "version": "20260805_public_architecture_import"
+    },
+    {
+      "name": "SRR-v2.5",
+      "repository_reference": "docs/architecture/figures/SRR-v2.5.png",
+      "public_visual_url": "https://raw.githubusercontent.com/YuukiAS/CARE_Challenge/main/docs/architecture/figures/SRR-v2.5.png",
+      "sha256": "674453e11a8d1466038ac4a22ae68332aabf9482f23d3f90e559649def6606f9",
+      "required": true,
+      "github_blob_url": "https://github.com/YuukiAS/CARE_Challenge/blob/main/docs/architecture/figures/SRR-v2.5.png",
+      "version": "20260805_public_architecture_import"
+    },
+    {
+      "name": "SRR-v3",
+      "repository_reference": "docs/architecture/figures/SRR-v3.png",
+      "public_visual_url": "https://raw.githubusercontent.com/YuukiAS/CARE_Challenge/main/docs/architecture/figures/SRR-v3.png",
+      "sha256": "50478ee7c07cedb6a921902aa5daa8f6ecf3b34aa2fc5e97905d60c585ea72b5",
+      "required": true,
+      "github_blob_url": "https://github.com/YuukiAS/CARE_Challenge/blob/main/docs/architecture/figures/SRR-v3.png",
+      "version": "20260805_public_architecture_import"
+    },
+    {
+      "name": "CARE-MMRD",
+      "repository_reference": "docs/architecture/figures/CARE-MMRD.png",
+      "public_visual_url": "https://raw.githubusercontent.com/YuukiAS/CARE_Challenge/main/docs/architecture/figures/CARE-MMRD.png",
+      "sha256": "c90bf7582ff139fe1b785e4dac51c55b4ec0c8f676654dd03c9b17e551489859",
+      "required": true,
+      "github_blob_url": "https://github.com/YuukiAS/CARE_Challenge/blob/main/docs/architecture/figures/CARE-MMRD.png",
+      "version": "20260805_public_architecture_import"
+    },
+    {
+      "name": "CARE-SRR-Cascade",
+      "repository_reference": "docs/architecture/figures/CARE-SRR-Cascade.png",
+      "public_visual_url": "https://raw.githubusercontent.com/YuukiAS/CARE_Challenge/main/docs/architecture/figures/CARE-SRR-Cascade.png",
+      "sha256": "3596356c52a01de5cf29bdae6591ce733bc209403f3f6e8429f8a1374e66ef50",
+      "required": true,
+      "github_blob_url": "https://github.com/YuukiAS/CARE_Challenge/blob/main/docs/architecture/figures/CARE-SRR-Cascade.png",
+      "version": "20260805_public_architecture_import"
+    },
+    {
+      "name": "CARE-DG",
+      "repository_reference": "docs/architecture/figures/CARE-DG.png",
+      "public_visual_url": "https://raw.githubusercontent.com/YuukiAS/CARE_Challenge/main/docs/architecture/figures/CARE-DG.png",
+      "sha256": "6be1b2cae31d3c4f77576f8fe8eb1df39c6623adf86729910cbd31bcfe12ad00",
+      "required": true,
+      "github_blob_url": "https://github.com/YuukiAS/CARE_Challenge/blob/main/docs/architecture/figures/CARE-DG.png",
+      "version": "20260805_public_architecture_import"
+    },
+    {
+      "name": "CARE-ARC",
+      "repository_reference": "docs/architecture/figures/CARE-ARC.png",
+      "public_visual_url": "https://raw.githubusercontent.com/YuukiAS/CARE_Challenge/main/docs/architecture/figures/CARE-ARC.png",
+      "sha256": "387f77d42dc9c4f802fda1bdee0eb67fec46dabe921dbf971f7cde5bbcf845b8",
+      "required": true,
+      "github_blob_url": "https://github.com/YuukiAS/CARE_Challenge/blob/main/docs/architecture/figures/CARE-ARC.png",
+      "version": "20260805_public_architecture_import"
+    },
+    {
+      "name": "CARE-PRISM",
+      "repository_reference": "docs/architecture/figures/CARE-PRISM.png",
+      "public_visual_url": "https://raw.githubusercontent.com/YuukiAS/CARE_Challenge/main/docs/architecture/figures/CARE-PRISM.png",
+      "sha256": "31bb8138bc6291d6e116fc605d7a2060a15ce7c3eca25d5da59e419fc2698135",
+      "required": true,
+      "github_blob_url": "https://github.com/YuukiAS/CARE_Challenge/blob/main/docs/architecture/figures/CARE-PRISM.png",
+      "version": "20260805_public_architecture_import"
+    },
+    {
+      "name": "CARE-MyoWall-IF",
+      "repository_reference": "docs/architecture/figures/CARE-MyoWall-IF.png",
+      "public_visual_url": "https://raw.githubusercontent.com/YuukiAS/CARE_Challenge/main/docs/architecture/figures/CARE-MyoWall-IF.png",
+      "sha256": "1dc3ecf58f1fffdeb7c36de948f99743a61e39861c08b57378da8c84d536e914",
+      "required": true,
+      "github_blob_url": "https://github.com/YuukiAS/CARE_Challenge/blob/main/docs/architecture/figures/CARE-MyoWall-IF.png",
+      "version": "20260805_public_architecture_import"
+    },
+    {
+      "name": "MoSAIC",
+      "repository_reference": "docs/architecture/figures/MoSAIC.png",
+      "public_visual_url": "https://raw.githubusercontent.com/YuukiAS/CARE_Challenge/main/docs/architecture/figures/MoSAIC.png",
+      "sha256": "d2ea85c5ba40521dc65a56d85124ecfc9a2e40ac5eff206c10cff8fbf04e09fb",
+      "required": true,
+      "github_blob_url": "https://github.com/YuukiAS/CARE_Challenge/blob/main/docs/architecture/figures/MoSAIC.png",
+      "version": "20260805_public_architecture_import"
+    },
+    {
+      "name": "CARE-ASE",
+      "repository_reference": "docs/architecture/figures/CARE-ASE.png",
+      "public_visual_url": "https://raw.githubusercontent.com/YuukiAS/CARE_Challenge/main/docs/architecture/figures/CARE-ASE.png",
+      "sha256": "af8f47713961c3b6b03dd24283b8f18d51fb5043ab1699997db2713e525710b2",
+      "required": true,
+      "github_blob_url": "https://github.com/YuukiAS/CARE_Challenge/blob/main/docs/architecture/figures/CARE-ASE.png",
+      "version": "20260805_public_architecture_import"
+    }
   ],
-  "activation_rule": "Set ready_for_scheduled_visual_review=true only after every required source has a directly accessible visual path and the scheduled Planner/Critic smoke confirms actual image understanding rather than filename reading."
+  "activation_rule": "Set ready_for_scheduled_visual_review=true only after every required source has a directly accessible visual path and the scheduled Planner/Critic smoke confirms actual image understanding rather than filename reading.",
+  "updated_by": "20260805_public_repo_hygiene_and_architecture_assets"
 }

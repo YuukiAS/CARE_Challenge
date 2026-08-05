@@ -5,13 +5,13 @@
 ## 一、当前项目姿态
 
 ```text
-repo: /users/a/e/aereinh/CARE
+repo: ${CARE_REPO_ROOT}
 remote: YuukiAS/CARE_Challenge
 branch: main
 Route A/B/C: historical evidence lanes
 ```
 
-不得默认写 `/overflow/htzhu/CARE`，不得默认启动 route worktree/controller、portfolio round、validation upload、route promotion、M11 或 hosted metric claim。
+不得默认写外部历史工作区，具体服务器路径必须来自本地配置；不得默认启动 route worktree/controller、portfolio round、validation upload、route promotion、M11 或 hosted metric claim。
 
 开始前必须同步远端并读取 `prompts/routes/handoffs/CURRENT.md`。如果 CURRENT、wiki、watchboard、工作树或旧聊天不同步，以最新远端 main、当前代码和最新终态结果为准，并指出 stale evidence。
 

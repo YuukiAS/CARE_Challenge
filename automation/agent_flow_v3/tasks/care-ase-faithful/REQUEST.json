@@ -12,25 +12,25 @@
   "verifier_executor_separation_required": true,
   "role_sessions": {
     "controller": {
-      "thread_id_file": "/users/a/e/aereinh/.agent-flow-v3/care-ase-faithful/controller_thread_id",
-      "codex_home": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_CONTROLLER",
-      "worktree": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/controller",
+      "thread_id_file": "${CARE_AGENT_FLOW_STATE_ROOT}/care-ase-faithful/controller_thread_id",
+      "codex_home": "${CARE_CODEX_HOME_ROOT}/CARE_care-ase-faithful_CONTROLLER",
+      "worktree": "${CARE_AGENT_FLOW_WORKTREE_ROOT}/care-ase-faithful/controller",
       "local_branch": "local/controller/care-ase-faithful",
       "may_edit_implementation": false,
       "may_edit_verification": false
     },
     "verifier": {
-      "thread_id_file": "/users/a/e/aereinh/.agent-flow-v3/care-ase-faithful/verifier_thread_id",
-      "codex_home": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_VERIFIER",
-      "worktree": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/verifier",
+      "thread_id_file": "${CARE_AGENT_FLOW_STATE_ROOT}/care-ase-faithful/verifier_thread_id",
+      "codex_home": "${CARE_CODEX_HOME_ROOT}/CARE_care-ase-faithful_VERIFIER",
+      "worktree": "${CARE_AGENT_FLOW_WORKTREE_ROOT}/care-ase-faithful/verifier",
       "local_branch": "local/verifier/care-ase-faithful",
       "may_edit_implementation": false,
       "may_edit_verification": true
     },
     "executor": {
-      "thread_id_file": "/users/a/e/aereinh/.agent-flow-v3/care-ase-faithful/executor_thread_id",
-      "codex_home": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_EXECUTOR",
-      "worktree": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor",
+      "thread_id_file": "${CARE_AGENT_FLOW_STATE_ROOT}/care-ase-faithful/executor_thread_id",
+      "codex_home": "${CARE_CODEX_HOME_ROOT}/CARE_care-ase-faithful_EXECUTOR",
+      "worktree": "${CARE_AGENT_FLOW_WORKTREE_ROOT}/care-ase-faithful/executor",
       "local_branch": "local/executor/care-ase-faithful",
       "may_edit_implementation": true,
       "may_edit_verification": false

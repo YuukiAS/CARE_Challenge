@@ -28,8 +28,8 @@ def make_config(tmp_path: Path) -> dict:
         "codex_runtime_root": str(runtime),
         "state_path": str(tmp_path / "state" / "notified_goals.json"),
         "email": {
-            "from": "humc2013@gmail.com",
-            "to": ["1155246312@link.cuhk.edu.hk"],
+            "from": "sender@example.org",
+            "to": ["recipient@example.org"],
             "smtp_host": "smtp.gmail.com",
             "smtp_port": 587,
             "starttls": True,
@@ -377,16 +377,16 @@ def test_send_email_uses_starttls_login_and_recipient(monkeypatch, tmp_path):
     monkeypatch.setattr(notify.smtplib, "SMTP", FakeSMTP)
     notify.send_email(
         config,
-        {"CARE_NOTIFY_SMTP_USER": "humc2013@gmail.com", "CARE_NOTIFY_SMTP_PASSWORD": "app-password"},
+        {"CARE_NOTIFY_SMTP_USER": "sender@example.org", "CARE_NOTIFY_SMTP_PASSWORD": "app-password"},
         event,
     )
 
     assert ("connect", "smtp.gmail.com", 587, 30) in calls
     assert ("starttls",) in calls
-    assert ("login", "humc2013@gmail.com", "app-password") in calls
+    assert ("login", "sender@example.org", "app-password") in calls
     message = [call[1] for call in calls if call[0] == "send_message"][0]
-    assert message["From"] == "humc2013@gmail.com"
-    assert "1155246312@link.cuhk.edu.hk" in message["To"]
+    assert message["From"] == "sender@example.org"
+    assert "recipient@example.org" in message["To"]
     assert "[CARE][Route B][GOAL_COMPLETE][等待 reviewer]" in message["Subject"]
     assert message.is_multipart()
     parts = {part.get_content_type(): part.get_content() for part in message.iter_parts()}

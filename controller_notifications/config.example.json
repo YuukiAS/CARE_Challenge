@@ -3,14 +3,14 @@
     "main"
   ],
   "poll_seconds": 60,
-  "repo_root": "/users/a/e/aereinh/CARE",
-  "codex_runtime_root": "/users/a/e/aereinh/.codex-runtime-homes",
-  "codex_home_root": "/users/a/e/aereinh/.codex-homes/CARE",
+  "repo_root": "${CARE_REPO_ROOT}",
+  "codex_runtime_root": "${CARE_CODEX_RUNTIME_ROOT}",
+  "codex_home_root": "${CARE_CODEX_HOME_ROOT}",
   "state_path": "controller_notifications/state/notified_goals.json",
   "email": {
-    "from": "humc2013@gmail.com",
+    "from": "${CARE_NOTIFY_FROM}",
     "to": [
-      "1155246312@link.cuhk.edu.hk"
+      "${CARE_NOTIFY_TO}"
     ],
     "smtp_host": "smtp.gmail.com",
     "smtp_port": 587,
@@ -26,7 +26,7 @@
       "runtime_home_candidates": [
         "CARE__codex-controller",
         "CARE__codex-care",
-        "/users/a/e/aereinh/.codex-homes/CARE"
+        "${CARE_CODEX_HOME_ROOT}"
       ],
       "packet_paths": [],
       "notification_brief_paths": [
@@ -36,43 +36,43 @@
     },
     "route_A": {
       "label": "Route A",
-      "tmux_target": "care_route_A:RouteA-Controller",
+      "tmux_target": "${CARE_ROUTE_A_TMUX_TARGET}",
       "runtime_home_candidates": [
         "route_A_tmux_care_route_A__care_route_A",
         "route_A_tmux_care_route_A_controller__care_route_A_controller"
       ],
       "packet_paths": [
-        "/users/a/e/aereinh/CARE_worktrees/route_A/results/route_A/controller_report.md",
-        "/users/a/e/aereinh/CARE_worktrees/route_A/results/route_A/completion_check.md"
+        "${CARE_ROUTE_WORKTREE_ROOT}/route_A/results/route_A/controller_report.md",
+        "${CARE_ROUTE_WORKTREE_ROOT}/route_A/results/route_A/completion_check.md"
       ]
     },
     "route_B": {
       "label": "Route B",
-      "tmux_target": "care_route_B:RouteB-Controller",
+      "tmux_target": "${CARE_ROUTE_B_TMUX_TARGET}",
       "runtime_home_candidates": [
         "route_B_tmux_care_route_B__care_route_B",
         "route_B_tmux_care_route_B_controller__care_route_B_controller"
       ],
       "packet_paths": [
-        "/users/a/e/aereinh/CARE_worktrees/route_B/results/route_B/controller_report.md",
-        "/users/a/e/aereinh/CARE_worktrees/route_B/results/route_B/completion_check.md"
+        "${CARE_ROUTE_WORKTREE_ROOT}/route_B/results/route_B/controller_report.md",
+        "${CARE_ROUTE_WORKTREE_ROOT}/route_B/results/route_B/completion_check.md"
       ]
     },
     "route_C": {
       "label": "Route C",
-      "tmux_target": "care_route_C:RouteC-Controller",
+      "tmux_target": "${CARE_ROUTE_C_TMUX_TARGET}",
       "runtime_home_candidates": [
         "route_C_tmux_care_route_C__care_route_C",
         "route_C_tmux_care_route_C_controller__care_route_C_controller"
       ],
       "packet_paths": [
-        "/users/a/e/aereinh/CARE_worktrees/route_C/results/route_C/controller_report.md",
-        "/users/a/e/aereinh/CARE_worktrees/route_C/results/route_C/completion_check.md"
+        "${CARE_ROUTE_WORKTREE_ROOT}/route_C/results/route_C/controller_report.md",
+        "${CARE_ROUTE_WORKTREE_ROOT}/route_C/results/route_C/completion_check.md"
       ]
     }
   },
   "status_path": "controller_notifications/state/notify_goal_watcher_status.json",
   "log_path": "controller_notifications/logs/notify_goal_watcher.log",
-  "tmux_session": "care_notifier",
-  "tmux_window": "Notifier"
+  "tmux_session": "${CARE_NOTIFY_TMUX_SESSION}",
+  "tmux_window": "${CARE_NOTIFY_TMUX_WINDOW}"
 }

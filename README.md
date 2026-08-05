@@ -1,8 +1,23 @@
-# CARE 工作入口
+# CARE Challenge
 
-## 当前 10 天三路线组合计划
+This repository contains public CARE Challenge source code, reproducible lightweight evidence, protocols, validation helpers and architecture figures. It intentionally excludes credentials, personal runtime configuration, checkpoints, prediction trees, upload ZIPs, Docker archives, logs, databases and other server-local runtime state.
 
-当前工作以 `/users/a/e/aereinh/CARE` 为唯一活动 CARE 根目录。Route A、Route B、Route C 的分支、worktree、tmux、partition routing、每日 gate 和最终汇总规则见：
+## Public Repository Boundary
+
+Clone the repository anywhere and set machine-specific paths through local environment variables or ignored config files. The public tree uses placeholders such as `${CARE_REPO_ROOT}`, `${CARE_CODEX_HOME_ROOT}`, `${CARE_CODEX_RUNTIME_ROOT}`, `${CARE_AGENT_FLOW_WORKTREE_ROOT}` and `${CARE_NOTIFY_TO}`.
+
+Keep real values in local-only files, for example:
+
+```text
+config/local/controller_notifications.json
+secrets/care_notify.env
+```
+
+Do not commit personal home paths, notifier recipients, rclone remotes, tmux targets, Codex homes, checkpoints, prediction outputs, upload archives or third-party PDFs whose redistribution license has not been verified.
+
+## Current Route Records
+
+Route A、Route B、Route C 的分支、worktree、tmux、partition routing、每日 gate 和最终汇总规则见：
 
 [routes/README.md](routes/README.md)
 
@@ -10,7 +25,7 @@
 
 [ROUTE_PROMPTS.md](ROUTE_PROMPTS.md)
 
-不要从本仓库写入 `/overflow/htzhu/CARE`。旧文档、旧 job 和历史计划里可能仍出现 `/overflow/htzhu/CARE`，它们是迁移前路径或历史记录；新任务必须优先使用 `/users/a/e/aereinh/CARE` 以及各 route worktree。
+不要从本仓库写入外部历史工作区。旧文档、旧 job 和历史计划里可能仍出现机器特定路径，它们是迁移前路径或历史记录；新任务必须优先使用 `${CARE_REPO_ROOT}` 以及显式配置的 route worktree。
 
 ## 当前 tmux 与 route worktree
 
@@ -49,7 +64,7 @@ For current architecture and handoff state, start at [wiki/README.md](wiki/READM
 
 Architecture wiki generation and validation helpers live under [scripts/architecture/](scripts/architecture/). Use them to check `wiki/COMPONENTS.csv`, `wiki/architecture.yaml`, D2/SVG/PNG figures, and AI Research Toolkit health before claiming agent-flow v2 completion.
 
-Benchmark training / collection / unified evaluation commands live in [jobs/README.md](/overflow/htzhu/CARE/jobs/README.md).
+Benchmark training / collection / unified evaluation commands live in [jobs/README.md](jobs/README.md).
 
 Most common entrypoints:
 
@@ -127,7 +142,7 @@ CARE Myocardium validation uses one upload package containing both `MyoPS/` and 
 Current third-attempt zip:
 
 ```text
-/overflow/htzhu/CARE/results/submissions/care_myocardium_validation/upload_ready/20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED/CARE-Myocardium-OrganAgent.zip
+${CARE_REPO_ROOT}/results/submissions/care_myocardium_validation/upload_ready/20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED/CARE-Myocardium-OrganAgent.zip
 ```
 
 Current hosted status: the third attempt is a hosted-calibration submission, not a final leaderboard push. Do not start another Cine topology guard experiment while waiting for the hosted result. Lane A has no candidate authorized for validation packaging or upload.
@@ -229,7 +244,7 @@ Future mechanisms must enter by slot, not by wholesale repo reproduction:
 | Lane A Round11 failure summary | `results/diagnostics/care_myocardium/laneA_myops/round11_component_safe_refiner/failure_case_summary/` |
 | Lane B Round3 hosted calibration prep | `scripts/diagnostics/laneB_round03_hosted_calibration_prep.py` |
 | Lane B Round3 hosted calibration outputs | `results/diagnostics/care_myocardium/laneB_cine/round03_hosted_calibration/` |
-| Current hosted calibration zip | `/overflow/htzhu/CARE/results/submissions/care_myocardium_validation/upload_ready/20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED/CARE-Myocardium-OrganAgent.zip` |
+| Current hosted calibration zip | `${CARE_REPO_ROOT}/results/submissions/care_myocardium_validation/upload_ready/20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED/CARE-Myocardium-OrganAgent.zip` |
 | Submission package registry | `results/submissions/care_myocardium_validation/upload_ready/README.md` |
 | MyoPS-Net stop note | `docs/notes/baseline/MyoPS-Net_improvement_round8.md` |
 | U-MyoPS stop note | `docs/notes/baseline/U-MyoPS_improvement_round8.md` |
