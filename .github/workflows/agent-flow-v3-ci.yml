@@ -10,6 +10,7 @@ on:
       - 'prompts/AGENT_FLOW_V3_PROTOCOL.md'
       - 'prompts/tasks/*agent_flow_v3*'
       - 'prompts/tasks/*faithful_reimplementation*'
+      - 'scripts/automation/agent_flow_v3_runtime.py'
       - 'scripts/automation/validate_agent_flow_v3.py'
       - 'tests/automation/test_agent_flow_v3.py'
       - '.github/workflows/agent-flow-v3-ci.yml'
@@ -19,6 +20,7 @@ on:
       - 'prompts/AGENT_FLOW_V3_PROTOCOL.md'
       - 'prompts/tasks/*agent_flow_v3*'
       - 'prompts/tasks/*faithful_reimplementation*'
+      - 'scripts/automation/agent_flow_v3_runtime.py'
       - 'scripts/automation/validate_agent_flow_v3.py'
       - 'tests/automation/test_agent_flow_v3.py'
       - '.github/workflows/agent-flow-v3-ci.yml'
@@ -42,6 +44,8 @@ jobs:
           python-version: '3.11'
       - name: Compile validator
         run: python -m py_compile scripts/automation/validate_agent_flow_v3.py
+      - name: Compile runtime helper
+        run: python -m py_compile scripts/automation/agent_flow_v3_runtime.py
       - name: Unit tests
         run: python -m unittest tests.automation.test_agent_flow_v3
       - name: Validate tracked Agent-Flow v3 state

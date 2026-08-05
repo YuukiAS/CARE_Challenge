@@ -1,0 +1,9 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3",
+  "task_id": "care-ase-faithful",
+  "state": "PLANNER_REVISE_EXECUTOR",
+  "review_round": 1,
+  "request_nonce": "old-wake-smoke-nonce",
+  "frozen_contract_sha256": "c01fc64942a8d957ef3087ae38b2e0e67db306eed062021b87677528b6b5121c",
+  "integration_commit_sha": "65bcb1e164a723c16788ef4267a4dbe99ebd5486"
+}

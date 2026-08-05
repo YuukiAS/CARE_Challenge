@@ -1,0 +1,9 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3",
+  "enabled": true,
+  "task_id": "care-ase-faithful",
+  "integration_branch": "develop",
+  "request_nonce": "wake-smoke-20260805T171600Z",
+  "frozen_contract_sha256": "c01fc64942a8d957ef3087ae38b2e0e67db306eed062021b87677528b6b5121c",
+  "expected_integration_commit_sha": "1111111111111111111111111111111111111111"
+}

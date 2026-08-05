@@ -36,6 +36,8 @@ Only Controller pushes `develop`. No role merges `develop` to `main` automatical
 - `tasks/<task_id>/CURRENT.json`: current machine state, updated last in every transaction.
 - `results/<task_id>/`: role receipts, fingerprints, CI receipts and Planner review artifacts.
 - `scripts/automation/validate_agent_flow_v3.py`: repository-safe deterministic validator.
+- `scripts/automation/agent_flow_v3_runtime.py`: server-local helper for visual URL/SHA audit,
+  role-session receipt validation, and exact-session watcher dry-runs.
 - `.github/workflows/agent-flow-v3-ci.yml`: GitHub-hosted deterministic CI.
 
 ## Required session receipt
@@ -63,6 +65,18 @@ A receipt with missing or duplicate thread IDs, worktrees or `CODEX_HOME` paths 
 ## CI boundary
 
 GitHub Actions validates tracked state, role separation, SHA bindings, JSON structure, Python syntax and repository-safe unit tests. GPU, private data, hidden adversarial fixtures and Slurm checks remain server-local and must be represented by exact receipts for Planner review.
+
+Server-local v3 checks may run:
+
+```bash
+python scripts/automation/agent_flow_v3_runtime.py audit-visual-sources --repo-root .
+python scripts/automation/agent_flow_v3_runtime.py validate-role-receipts --receipt <controller> --receipt <verifier> --receipt <executor>
+python scripts/automation/agent_flow_v3_runtime.py watcher-once --repo-root . --task-id <task_id> --dry-run
+```
+
+The watcher uses exact thread IDs and must not use `--last`. A dry-run receipt proves
+routing and command construction only; it is not a substitute for a live scheduled
+Planner/Critic decision.
 
 ## Activation boundary
 

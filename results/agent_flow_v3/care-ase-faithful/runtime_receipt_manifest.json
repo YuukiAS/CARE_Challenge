@@ -1,17 +1,32 @@
 {
   "schema": "CARE_AGENT_FLOW_V3_RUNTIME_RECEIPT_MANIFEST",
   "task_id": "care-ase-faithful",
-  "status": "prelaunch_infrastructure_validated",
+  "status": "infrastructure_smoke_partial_blocked_before_request_arm",
   "receipts": [
     "results/agent_flow_v3/care-ase-faithful/activation/controller_activation_receipt.json",
-    "results/agent_flow_v3/care-ase-faithful/ci_receipt.json",
-    "results/agent_flow_v3/care-ase-faithful/final_state.json"
+    "results/agent_flow_v3/care-ase-faithful/visual_smoke/visual_source_access_receipt.json",
+    "results/agent_flow_v3/care-ase-faithful/visual_smoke/planner_visual_observation_receipt.json",
+    "results/agent_flow_v3/care-ase-faithful/visual_smoke/critic_visual_observation_receipt.json",
+    "results/agent_flow_v3/care-ase-faithful/controller_session_receipt.json",
+    "results/agent_flow_v3/care-ase-faithful/verifier_session_receipt.json",
+    "results/agent_flow_v3/care-ase-faithful/executor_session_receipt.json",
+    "results/agent_flow_v3/care-ase-faithful/session_smoke/role_receipt_validation.json",
+    "results/agent_flow_v3/care-ase-faithful/watcher_smoke/exact_resume_receipt.json",
+    "results/agent_flow_v3/care-ase-faithful/watcher_smoke/wake_smoke_receipt.json",
+    "results/agent_flow_v3/care-ase-faithful/watcher_smoke/wake_smoke_duplicate_ignored.json",
+    "results/agent_flow_v3/care-ase-faithful/watcher_smoke/wake_smoke_old_nonce_rejected.json",
+    "results/agent_flow_v3/care-ase-faithful/watcher_smoke/wake_smoke_old_sha_rejected.json",
+    "results/agent_flow_v3/care-ase-faithful/watcher_smoke/wake_smoke_wrong_thread_rejected.json",
+    "results/agent_flow_v3/care-ase-faithful/gpt_loop_smoke_receipt.json",
+    "results/agent_flow_v3/care-ase-faithful/scheduled_task_observation.json",
+    "results/agent_flow_v3/care-ase-faithful/final_state.json",
+    "results/agent_flow_v3/care-ase-faithful/ci_receipt.json"
   ],
   "role_receipts": {
-    "controller": "results/agent_flow_v3/care-ase-faithful/activation/controller_activation_receipt.json",
-    "verifier": null,
-    "executor": null
+    "controller": "results/agent_flow_v3/care-ase-faithful/controller_session_receipt.json",
+    "verifier": "results/agent_flow_v3/care-ase-faithful/verifier_session_receipt.json",
+    "executor": "results/agent_flow_v3/care-ase-faithful/executor_session_receipt.json"
   },
-  "role_receipt_absence_reason": "Verifier and Executor were not launched because the controller start gate blocks before PLAN_FROZEN.",
-  "updated_utc": "2026-08-05T15:35:57Z"
+  "scheduled_receipt_absence_reason": "No callable Scheduled GPT Planner/Critic task connector was available in this Codex turn, so scheduled visual smoke and real GPT repair-loop smoke were not run.",
+  "updated_utc": "2026-08-05T17:22:30Z"
 }

@@ -1,0 +1,15 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_SCHEDULED_TASK_OBSERVATION",
+  "task_id": "care-ase-faithful",
+  "scheduled_planner_tool_available_in_this_codex_turn": false,
+  "scheduled_critic_tool_available_in_this_codex_turn": false,
+  "tool_discovery_summary": "tool_search exposed Codex thread, GitHub, Notion and document-control tools, but no callable Scheduled GPT automation/task management tool for creating or observing the required hourly Planner/Critic tasks.",
+  "independent_visual_observers": [
+    "results/agent_flow_v3/care-ase-faithful/visual_smoke/planner_visual_observation_receipt.json",
+    "results/agent_flow_v3/care-ase-faithful/visual_smoke/critic_visual_observation_receipt.json"
+  ],
+  "scheduled_visual_smoke_status": "NOT_RUN_TOOL_UNAVAILABLE",
+  "care_ase_request_arm_decision": "DO_NOT_ARM",
+  "blocked_or_failure_reason": "The contract requires existing Scheduled Planner/Critic tasks to visually read the images and later drive real GPT repair decisions. This Codex turn has no callable scheduled-task connector, so the required scheduled visual smoke and Smoke B cannot be truthfully completed.",
+  "updated_utc": "2026-08-05T17:09:30Z"
+}

@@ -1,19 +1,21 @@
 {
   "task_name": "20260805_care_ase_develop_faithful_reimplementation_controller",
   "final_status": "blocked",
-  "commit_status": "complete: lightweight Agent-Flow v3 activation packet committed on develop",
-  "push_status": "complete: origin/develop verified equal to local develop HEAD after push",
-  "key_conclusion": "Agent-Flow v3 基础设施本地验证通过，但 CARE-ASE 实现闭环尚不能启动：视觉源、scheduled Planner/Critic 和 PLAN_FROZEN receipt 尚未完成。本轮没有开始 ASE 实现、训练、outer、Docker 或 main 合并。",
-  "blocked_or_failure_reason": "REQUEST.enabled=false, CURRENT.state=PLAN_REQUESTED, VISUAL_SOURCES.ready_for_scheduled_visual_review=false, and critic_freeze_receipt.json is absent.",
+  "commit_status": "complete_before_notifier; develop commit contains Agent-Flow v3 runtime helper, smoke receipts, and validation evidence",
+  "push_status": "complete_before_notifier; origin/develop remote SHA verified after push",
+  "key_conclusion": "Agent-Flow v3 本地基础设施和确定性唤醒 smoke 已推进，但真实 CARE-ASE 自动闭环没有打开：缺少可调用的 Scheduled Planner/Critic 工具来完成视觉 smoke 和真实 GPT 返修闭环。本轮没有开始 ASE 实现、训练、outer、Docker、上传、组织方邮件或 develop 到 main 合并。",
+  "blocked_or_failure_reason": "Scheduled Planner/Critic visual smoke and real GPT-to-Codex Smoke B could not be truthfully run from this Codex turn; care-ase-faithful remains REQUEST.enabled=false and CURRENT.state=PLAN_REQUESTED.",
   "slurm_terminal_status": "not_applicable",
   "evidence_paths": [
     "automation/agent_flow_v3/tasks/care-ase-faithful/REQUEST.json",
     "automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json",
-    "automation/agent_flow_v3/tasks/care-ase-faithful/VISUAL_SOURCES.json",
-    "results/agent_flow_v3/care-ase-faithful/activation/controller_activation_receipt.json",
-    "results/agent_flow_v3/care-ase-faithful/ci_receipt.json",
-    "results/agent_flow_v3/care-ase-faithful/controller_report.md",
+    "results/agent_flow_v3/care-ase-faithful/visual_smoke/visual_source_access_receipt.json",
+    "results/agent_flow_v3/care-ase-faithful/controller_session_receipt.json",
+    "results/agent_flow_v3/care-ase-faithful/verifier_session_receipt.json",
+    "results/agent_flow_v3/care-ase-faithful/executor_session_receipt.json",
+    "results/agent_flow_v3/care-ase-faithful/watcher_smoke/wake_smoke_receipt.json",
+    "results/agent_flow_v3/care-ase-faithful/gpt_loop_smoke_receipt.json",
     "results/agent_flow_v3/care-ase-faithful/final_state.json"
   ],
-  "next_step": "Configure stable visual sources, run scheduled Planner/Critic, freeze PLAN_FROZEN with the exact contract SHA, then resume controller activation."
+  "next_step": "Connect or expose the existing Scheduled GPT Planner/Critic automation path, then run scheduled visual smoke and real Smoke B before arming care-ase-faithful."
 }

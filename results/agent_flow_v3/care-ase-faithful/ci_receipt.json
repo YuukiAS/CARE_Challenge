@@ -4,26 +4,31 @@
   "scope": "local_deterministic_infrastructure_validation",
   "commands": [
     {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m py_compile scripts/automation/validate_agent_flow_v3.py scripts/automation/agent_flow_v3_runtime.py",
+      "exit_code": 0,
+      "summary": "validator and runtime helper syntax compile passed"
+    },
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m unittest tests.automation.test_agent_flow_v3",
+      "exit_code": 0,
+      "summary": "Ran 11 tests; OK"
+    },
+    {
       "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/automation/validate_agent_flow_v3.py --repo-root .",
       "exit_code": 0,
       "summary": "CARE Agent-Flow v3 contract validation: PASS"
     },
     {
-      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m unittest tests.automation.test_agent_flow_v3",
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/automation/agent_flow_v3_runtime.py audit-visual-sources --repo-root .",
       "exit_code": 0,
-      "summary": "Ran 5 tests; OK"
+      "summary": "11/11 local SHA and anonymous raw URL SHA checks passed; Python urlopen CA failed but curl TLS fallback passed"
     },
     {
-      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m py_compile scripts/automation/validate_agent_flow_v3.py",
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/automation/agent_flow_v3_runtime.py validate-role-receipts --receipt controller --receipt verifier --receipt executor",
       "exit_code": 0,
-      "summary": "validator syntax compile passed"
-    },
-    {
-      "command": "python3 scripts/automation/validate_agent_flow_v3.py --repo-root .",
-      "exit_code": 0,
-      "summary": "CARE Agent-Flow v3 contract validation: PASS"
+      "summary": "Controller, Verifier and Executor receipt isolation PASS"
     }
   ],
-  "github_actions_status": "pending_push",
-  "updated_utc": "2026-08-05T15:35:57Z"
+  "github_actions_status": "checked_after_develop_push_in_controller_final",
+  "updated_utc": "2026-08-05T17:33:28Z"
 }

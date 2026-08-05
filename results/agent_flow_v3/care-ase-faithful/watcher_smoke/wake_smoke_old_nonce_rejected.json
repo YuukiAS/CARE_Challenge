@@ -1,0 +1,21 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_WATCHER_RECEIPT",
+  "task_id": "care-ase-faithful",
+  "branch": "develop",
+  "state": "PLANNER_REVISE_EXECUTOR",
+  "review_round": 1,
+  "request_nonce": "old-wake-smoke-nonce",
+  "integration_commit_sha": "65bcb1e164a723c16788ef4267a4dbe99ebd5486",
+  "event_key": "care-ase-faithful:old-wake-smoke-nonce:1:PLANNER_REVISE_EXECUTOR:65bcb1e164a723c16788ef4267a4dbe99ebd5486",
+  "decision": "INVALID_EVENT",
+  "target_roles": [
+    "executor"
+  ],
+  "resume_commands": [],
+  "failures": [
+    "nonce_binding"
+  ],
+  "processed_events": [],
+  "lock_path": "/users/a/e/aereinh/.agent-flow-v3-smoke-oldnonce/care-ase-faithful/watcher.lock",
+  "updated_utc": "2026-08-05T17:17:20Z"
+}

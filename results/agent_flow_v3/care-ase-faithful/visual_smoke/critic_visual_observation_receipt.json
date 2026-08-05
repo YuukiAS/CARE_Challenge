@@ -1,0 +1,120 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_VISUAL_OBSERVATION_RECEIPT",
+  "task_id": "care-ase-faithful",
+  "role": "critic_visual_smoke",
+  "agent_id": "019fd2e1-559b-7a41-8f32-bc80019c521c",
+  "actual_visual_access": true,
+  "scheduled_gpt_task": false,
+  "images": [
+    {
+      "name": "CARE-ASE",
+      "image_sha256": "af8f47713961c3b6b03dd24283b8f18d51fb5043ab1699997db2713e525710b2",
+      "observed_modules": [
+        "stock-compatible nnU-Net trunk",
+        "anatomy/soft-wall context path",
+        "LGE-driven scar path",
+        "T2-driven pure-edema path",
+        "conditional final competition head",
+        "training schedule and safety contract strip"
+      ],
+      "observed_dataflows": [
+        "LGE/T2/C0 inputs with availability masking feed a shared trunk",
+        "top decoder features branch into three high-resolution paths",
+        "soft anatomy context is detached before pathology branches",
+        "scar and edema logits enter conditional six-class competition",
+        "T2-present and T2-absent paths use different class sets"
+      ],
+      "observed_safety_rules": [
+        "availability-controlled hard zero",
+        "detach/stop-gradient context links",
+        "no hard crop or bbox",
+        "single end-to-end checkpoint",
+        "no fixed scar priority",
+        "no post-hoc selector",
+        "no stock class-4/class-5 fallback"
+      ],
+      "explicitly_absent_components": [
+        "hard ROI crop",
+        "largest-component-only refiner",
+        "local-only refinement",
+        "bbox proposal stage",
+        "post-hoc class fallback"
+      ]
+    },
+    {
+      "name": "SRR-v3",
+      "image_sha256": "50478ee7c07cedb6a921902aa5daa8f6ecf3b34aa2fc5e97905d60c585ea72b5",
+      "observed_modules": [
+        "input availability block",
+        "shared encoder and nnU-Net context interface",
+        "semantic representation retrieval bank",
+        "anatomy-guided lesion proposal",
+        "baseline-preserving soft-ROI refinement",
+        "training objectives",
+        "cine temporal retrieval branch"
+      ],
+      "observed_dataflows": [
+        "observed modalities route through modality-specific stems into shared multi-scale encoder",
+        "availability and pooled features drive retrieval routing",
+        "anatomy/scar/edema routed features feed proposal decoders",
+        "coarse proposals and anatomy priors feed soft-ROI refinement",
+        "final logits preserve nnU-Net baseline with gated residual corrections",
+        "cine branch anchors on ED frames and uses registration/warping before temporal aggregation"
+      ],
+      "observed_safety_rules": [
+        "no zero-filling of missing modalities",
+        "baseline-preserving correction",
+        "closed gate exact nnU-Net fallback",
+        "T2-masked edema supervision",
+        "bounded residual maps",
+        "negative-space discrimination"
+      ],
+      "explicitly_absent_components": [
+        "hard crop as required path",
+        "unconditional edema when T2 absent",
+        "raw cine intensity default pathology head",
+        "free-running residual overwrite of baseline"
+      ]
+    },
+    {
+      "name": "MoSAIC",
+      "image_sha256": "d2ea85c5ba40521dc65a56d85124ecfc9a2e40ac5eff206c10cff8fbf04e09fb",
+      "observed_modules": [
+        "heterogeneous evidence and supervision block",
+        "MyoPS CoarseNet",
+        "FinePathNet scar/anatomy expert",
+        "independent edema-zone expert",
+        "multi-scale fusion decoder",
+        "MyoPS label fusion",
+        "Cine CoarseNet",
+        "CineHybridNet",
+        "motion-derived pathology head",
+        "cine inference inset",
+        "supervision-aware optimization strip"
+      ],
+      "observed_dataflows": [
+        "LGE/C0/T2 plus availability and supervision vectors feed MyoPS branches",
+        "CoarseNet produces anatomy priors and masks for downstream fusion",
+        "FinePathNet supplies LGE-reference scar evidence",
+        "edema expert contributes T2-derived edema zone",
+        "label fusion enforces scar-over-edema output logic",
+        "cine path uses ED-anchored frames, anatomy priors, motion decoder, warped anatomy, and final heat-map logic"
+      ],
+      "observed_safety_rules": [
+        "missing modality uses feature gate",
+        "missing annotation uses zero loss gradient",
+        "scar overrides edema",
+        "T2 edema logit not authoritative in scar checkpoint",
+        "no raw cine intensity enters default pathology head"
+      ],
+      "explicitly_absent_components": [
+        "single unified six-class competition head",
+        "SRR prototype retrieval bank",
+        "explicit baseline-preserving residual correction gate",
+        "CARE-ASE style full-volume scar/edema proposal branches"
+      ]
+    }
+  ],
+  "caveat": "Independent visual-smoke observation from attached images only; not a scheduled GPT task and not sufficient to arm care-ase-faithful.",
+  "updated_utc": "2026-08-05T17:09:30Z"
+}

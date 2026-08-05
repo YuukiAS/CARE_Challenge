@@ -1,0 +1,29 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_WATCHER_RECEIPT",
+  "task_id": "care-ase-faithful",
+  "branch": "develop",
+  "state": "PLANNER_REVISE_EXECUTOR",
+  "review_round": 1,
+  "request_nonce": "wake-smoke-20260805T171600Z",
+  "integration_commit_sha": "65bcb1e164a723c16788ef4267a4dbe99ebd5486",
+  "event_key": "care-ase-faithful:wake-smoke-20260805T171600Z:1:PLANNER_REVISE_EXECUTOR:65bcb1e164a723c16788ef4267a4dbe99ebd5486",
+  "decision": "DRY_RUN_RESUME",
+  "target_roles": [
+    "executor"
+  ],
+  "resume_commands": [
+    {
+      "role": "executor",
+      "thread_id": "019fd2ea-30f3-7d72-b605-2fc7a2d901ba",
+      "codex_home": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_EXECUTOR",
+      "worktree": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor",
+      "command": "/users/a/e/aereinh/codex-runtime/bin/codex exec -C /users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor resume 019fd2ea-30f3-7d72-b605-2fc7a2d901ba -"
+    }
+  ],
+  "failures": [],
+  "processed_events": [
+    "care-ase-faithful:wake-smoke-20260805T171600Z:1:PLANNER_REVISE_EXECUTOR:65bcb1e164a723c16788ef4267a4dbe99ebd5486"
+  ],
+  "lock_path": "/users/a/e/aereinh/.agent-flow-v3-smoke/care-ase-faithful/watcher.lock",
+  "updated_utc": "2026-08-05T17:17:21Z"
+}

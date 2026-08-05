@@ -1,0 +1,28 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_ROLE_SESSION_RECEIPT",
+  "role": "controller",
+  "thread_id": "019fd2ea-8bac-7e22-b699-6c1301ebb863",
+  "codex_home": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_CONTROLLER",
+  "worktree": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/controller",
+  "local_branch": "local/controller/care-ase-faithful",
+  "pid_or_process_status": "cli_smoke_exited_0_not_live_controller",
+  "log_path": "/users/a/e/aereinh/.agent-flow-v3/care-ase-faithful/controller_cli_smoke.log",
+  "state_path": "/users/a/e/aereinh/.agent-flow-v3/care-ase-faithful/controller_state.json",
+  "write_scope": [
+    "automation/agent_flow_v3/tasks/care-ase-faithful/**",
+    "results/agent_flow_v3/care-ase-faithful/**",
+    "controller_notifications/**"
+  ],
+  "forbidden_scope": [
+    "src/**",
+    "scripts/training/**",
+    "scripts/inference/**",
+    "jobs/**",
+    "configs/**",
+    "tests/**",
+    "validators/**"
+  ],
+  "last_commit_sha": "65bcb1e164a723c16788ef4267a4dbe99ebd5486",
+  "started_utc": "2026-08-05T17:14:43Z",
+  "updated_utc": "2026-08-05T17:14:43Z"
+}

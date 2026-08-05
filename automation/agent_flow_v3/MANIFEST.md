@@ -24,6 +24,7 @@ automation/agent_flow_v3/task_template.json
 automation/agent_flow_v3/planner_scheduled_task_prompt.md
 automation/agent_flow_v3/critic_scheduled_task_prompt.md
 scripts/automation/validate_agent_flow_v3.py
+scripts/automation/agent_flow_v3_runtime.py
 tests/automation/test_agent_flow_v3.py
 .github/workflows/agent-flow-v3-ci.yml
 ```
@@ -50,3 +51,12 @@ automation/agent_flow_v3/tasks/care-ase-faithful/VISUAL_SOURCES.json
 ## Safety boundary
 
 No current or historical CARE-ASE training process, checkpoint, permit, Docker artifact or `CURRENT.md` history is modified by this bootstrap. No training, outer access, deployment, upload or merge from `develop` to `main` is authorized.
+
+## 2026-08-05 runtime helper status
+
+The tracked runtime helper can audit public visual raw URLs, validate role-session
+receipts, and dry-run exact-session watcher routing. These checks support
+infrastructure activation, but they do not replace the required scheduled GPT
+Planner/Critic visual smoke or the real GPT-to-Codex repair-loop smoke. The
+`care-ase-faithful` request must remain unarmed until those external scheduled
+smokes pass with receipts.

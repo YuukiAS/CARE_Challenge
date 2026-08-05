@@ -1,0 +1,139 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_VISUAL_OBSERVATION_RECEIPT",
+  "task_id": "care-ase-faithful",
+  "role": "planner_visual_smoke",
+  "agent_id": "019fd2e1-36e0-7941-b464-590ab34acb29",
+  "actual_visual_access": true,
+  "scheduled_gpt_task": false,
+  "images": [
+    {
+      "name": "CARE-ASE",
+      "image_sha256": "af8f47713961c3b6b03dd24283b8f18d51fb5043ab1699997db2713e525710b2",
+      "observed_modules": [
+        "tri-modal short-axis inputs with availability vector",
+        "stock-compatible nnU-Net trunk",
+        "anatomy/soft-wall context path",
+        "LGE-driven scar path",
+        "T2-driven pure-edema path",
+        "conditional final six-class competition",
+        "global-step training schedule and safety contract"
+      ],
+      "observed_dataflows": [
+        "LGE/T2/C0 inputs feed shared stock trunk",
+        "top decoder features branch into three high-resolution paths",
+        "soft anatomy context is detached before pathology branches",
+        "scar path uses LGE evidence plus weak C0/support and soft context",
+        "edema path uses T2 evidence plus weak LGE/C0/support and soft context",
+        "final logits combine anatomy, pure-edema, and scar logits with T2-present/T2-absent class competition"
+      ],
+      "observed_safety_rules": [
+        "availability-controlled hard zero",
+        "detach/stop-gradient from context to pathology branches",
+        "no bbox",
+        "no hard ROI crop",
+        "no largest-component rule",
+        "no local-only refiner",
+        "single end-to-end checkpoint",
+        "no fixed scar priority",
+        "no post-hoc selector",
+        "no stock class-4/class-5 logit fallback",
+        "no-T2 edema gradient equals zero",
+        "train/inner/outer disjoint",
+        "final checkpoint complete-step-14000 state"
+      ],
+      "explicitly_absent_components": [
+        "hard crop",
+        "bounding box proposal",
+        "largest connected component post-processing",
+        "local-only refinement",
+        "post-hoc selector",
+        "fixed scar-over-edema priority"
+      ]
+    },
+    {
+      "name": "SRR-v3",
+      "image_sha256": "50478ee7c07cedb6a921902aa5daa8f6ecf3b34aa2fc5e97905d60c585ea72b5",
+      "observed_modules": [
+        "inputs and availability mask",
+        "shared multi-scale encoder",
+        "availability and pooled feature router",
+        "nnU-Net anchor/context interface",
+        "semantic representation retrieval bank",
+        "anatomy-guided lesion proposal",
+        "soft-ROI generator",
+        "scar refinement",
+        "edema refinement",
+        "training objectives",
+        "Cine registration-aware temporal retrieval branch"
+      ],
+      "observed_dataflows": [
+        "observed modalities enter modality-specific stems and shared encoder",
+        "availability plus pooled features route retrieval dictionaries",
+        "routed anatomy/scar/edema features feed proposal decoders",
+        "anatomy prior/distance/uncertainty gates guide lesion proposal",
+        "scar and edema proposals feed separate soft-ROI refiners",
+        "final output is nnU-Net baseline plus bounded residual corrections",
+        "cine frames use ED anchor, registration/warping, temporal retrieval, and aggregation"
+      ],
+      "observed_safety_rules": [
+        "no zero-filling; only observed modalities used",
+        "baseline-preserving correction",
+        "closed gate gives exact nnU-Net fallback",
+        "bounded residual maps",
+        "T2-masked edema supervision",
+        "no-T2 is not edema-negative",
+        "negative-space discrimination",
+        "soft ROI rather than hard ROI"
+      ],
+      "explicitly_absent_components": [
+        "hard crop",
+        "hard replacement of nnU-Net baseline",
+        "unbounded residual correction",
+        "T2-absent edema-negative assumption",
+        "manual post-hoc component selector"
+      ]
+    },
+    {
+      "name": "MoSAIC",
+      "image_sha256": "d2ea85c5ba40521dc65a56d85124ecfc9a2e40ac5eff206c10cff8fbf04e09fb",
+      "observed_modules": [
+        "heterogeneous evidence and supervision panel",
+        "MyoPS CoarseNet",
+        "FinePathNet LGE-reference scar/anatomy expert",
+        "independent edema zone expert",
+        "multi-scale fusion decoder with attention gating",
+        "MyoPS label fusion",
+        "Cine CoarseNet",
+        "CineHybridNet",
+        "motion-derived pathology head",
+        "cine inference deployment inset",
+        "supervision-aware optimization losses"
+      ],
+      "observed_dataflows": [
+        "LGE/C0/T2 plus availability and supervision vectors feed MyoPS branches",
+        "CoarseNet produces myocardium/LV/RV anatomy priors",
+        "FinePathNet uses LGE/C0/T2 encoders and TPS alignment for scar authority",
+        "edema expert uses cardiac mask and modality features to generate edema zone",
+        "fusion decoder combines multi-scale skip features with learned gates",
+        "scar overrides edema during label fusion",
+        "cine branch uses ED-anchored selected frames, anatomy prior, shared encoder, motion decoder, and pathology head"
+      ],
+      "observed_safety_rules": [
+        "missing modality uses feature gate",
+        "missing annotation has zero loss gradient",
+        "scar is authoritative over edema in final fusion",
+        "stop-gradient shown for detached references",
+        "inference constraints include class-specific thresholds, small-component removal, largest edema-zone component, and largest scar component",
+        "default cine pathology head does not use raw cine intensity"
+      ],
+      "explicitly_absent_components": [
+        "single unified end-to-end MyoPS/Cine model",
+        "T2-only scar authority",
+        "raw cine intensity in default pathology head",
+        "edema overriding scar"
+      ]
+    }
+  ],
+  "caveat": "Independent visual-smoke observation from attached images only; not a scheduled GPT task and not sufficient to arm care-ase-faithful.",
+  "updated_utc": "2026-08-05T17:09:30Z"
+}

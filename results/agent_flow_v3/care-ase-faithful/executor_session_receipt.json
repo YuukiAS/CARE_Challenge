@@ -1,0 +1,29 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_ROLE_SESSION_RECEIPT",
+  "role": "executor",
+  "thread_id": "019fd2ea-30f3-7d72-b605-2fc7a2d901ba",
+  "codex_home": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_EXECUTOR",
+  "worktree": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor",
+  "local_branch": "local/executor/care-ase-faithful",
+  "pid_or_process_status": "cli_smoke_exited_0_not_live_executor",
+  "log_path": "/users/a/e/aereinh/.agent-flow-v3/care-ase-faithful/executor_cli_smoke.log",
+  "state_path": "/users/a/e/aereinh/.agent-flow-v3/care-ase-faithful/executor_state.json",
+  "write_scope": [
+    "src/**",
+    "scripts/training/**",
+    "scripts/inference/**",
+    "jobs/**",
+    "configs/**",
+    "results/agent_flow_v3/care-ase-faithful/implementation/**"
+  ],
+  "forbidden_scope": [
+    "tests/**",
+    "validators/**",
+    "automation/agent_flow_v3/schema.json",
+    "prompts/blueprints/**",
+    "prompts/tasks/20260805_care_ase_develop_faithful_reimplementation_loop.md"
+  ],
+  "last_commit_sha": "65bcb1e164a723c16788ef4267a4dbe99ebd5486",
+  "started_utc": "2026-08-05T17:14:43Z",
+  "updated_utc": "2026-08-05T17:14:43Z"
+}

@@ -1,0 +1,29 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_ROLE_SESSION_RECEIPT",
+  "role": "verifier",
+  "thread_id": "019fd2ea-92b5-7601-a323-9ac3d87d4a2d",
+  "codex_home": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_VERIFIER",
+  "worktree": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/verifier",
+  "local_branch": "local/verifier/care-ase-faithful",
+  "pid_or_process_status": "cli_smoke_exited_0_not_live_verifier",
+  "log_path": "/users/a/e/aereinh/.agent-flow-v3/care-ase-faithful/verifier_cli_smoke.log",
+  "state_path": "/users/a/e/aereinh/.agent-flow-v3/care-ase-faithful/verifier_state.json",
+  "write_scope": [
+    "tests/**",
+    "validators/**",
+    "automation/agent_flow_v3/**",
+    "results/agent_flow_v3/care-ase-faithful/verification/**"
+  ],
+  "forbidden_scope": [
+    "src/**",
+    "scripts/training/**",
+    "scripts/inference/**",
+    "jobs/**",
+    "configs/**",
+    "prompts/blueprints/**",
+    "prompts/tasks/20260805_care_ase_develop_faithful_reimplementation_loop.md"
+  ],
+  "last_commit_sha": "65bcb1e164a723c16788ef4267a4dbe99ebd5486",
+  "started_utc": "2026-08-05T17:14:43Z",
+  "updated_utc": "2026-08-05T17:14:43Z"
+}

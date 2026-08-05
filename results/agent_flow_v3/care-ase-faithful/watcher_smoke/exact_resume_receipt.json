@@ -1,0 +1,13 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_EXACT_RESUME_RECEIPT",
+  "task_id": "care-ase-faithful",
+  "role": "executor",
+  "thread_id": "019fd2ea-30f3-7d72-b605-2fc7a2d901ba",
+  "command_family": "codex exec -C <worktree> resume <exact_thread_id>",
+  "used_last": false,
+  "observed_thread_id": "019fd2ea-30f3-7d72-b605-2fc7a2d901ba",
+  "observed_reply": "EXECUTOR_EXACT_RESUME_OK",
+  "exit_code": 0,
+  "file_edits_requested": false,
+  "updated_utc": "2026-08-05T17:16:00Z"
+}
