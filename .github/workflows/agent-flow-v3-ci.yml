@@ -1,0 +1,48 @@
+name: CARE Agent-Flow v3 deterministic CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'automation/agent_flow_v3/**'
+      - 'prompts/AGENT_FLOW_V3_PROTOCOL.md'
+      - 'prompts/tasks/*agent_flow_v3*'
+      - 'prompts/tasks/*faithful_reimplementation*'
+      - 'scripts/automation/validate_agent_flow_v3.py'
+      - 'tests/automation/test_agent_flow_v3.py'
+      - '.github/workflows/agent-flow-v3-ci.yml'
+  pull_request:
+    paths:
+      - 'automation/agent_flow_v3/**'
+      - 'prompts/AGENT_FLOW_V3_PROTOCOL.md'
+      - 'prompts/tasks/*agent_flow_v3*'
+      - 'prompts/tasks/*faithful_reimplementation*'
+      - 'scripts/automation/validate_agent_flow_v3.py'
+      - 'tests/automation/test_agent_flow_v3.py'
+      - '.github/workflows/agent-flow-v3-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: care-agent-flow-v3-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deterministic-contract-checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile validator
+        run: python -m py_compile scripts/automation/validate_agent_flow_v3.py
+      - name: Unit tests
+        run: python -m unittest tests.automation.test_agent_flow_v3
+      - name: Validate tracked Agent-Flow v3 state
+        run: python scripts/automation/validate_agent_flow_v3.py --repo-root .
