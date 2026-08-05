@@ -1,0 +1,49 @@
+{
+  "checkpoint_step": 500,
+  "combined": {
+    "care_minus_nnunet_pure_edema_mean": -0.0058439790737562225,
+    "care_minus_nnunet_scar_mean": -0.01794270910086515,
+    "care_pure_edema_mean": 0.39793975233739426,
+    "care_scar_mean": 0.5493523613265275,
+    "nnunet_pure_edema_mean": 0.4037837314111505,
+    "nnunet_scar_mean": 0.5672950704273927
+  },
+  "decision": "USER_OVERRIDE_OUTER_DIAGNOSTIC_STEP500_COMPLETE",
+  "folds": {
+    "fold1": {
+      "case_count": 44,
+      "casewise_csv": "results/20260804_care_ase_r2_deadline_recovery_training_docker/user_override_outer_diagnostic_step00500/fold_1/outer_casewise_metrics.csv",
+      "casewise_csv_sha256": "7da92d65a307e05e6f24f4da85e9abd150ef4f84278c6bf376ad5df307355308",
+      "edema_t2_case_count": 16,
+      "summary": {
+        "care_minus_nnunet_pure_edema_mean": -0.009614075182684811,
+        "care_minus_nnunet_scar_mean": -0.008592091105301125,
+        "care_pure_edema_mean": 0.4268074476638203,
+        "care_scar_mean": 0.5591666786337383,
+        "nnunet_pure_edema_mean": 0.4364215228465051,
+        "nnunet_scar_mean": 0.5677587697390394
+      },
+      "summary_path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/user_override_outer_diagnostic_step00500/fold_1/outer_diagnostic_summary.json",
+      "summary_sha256": "43d89acdd1d0080338d39d847fd8840b0bff752435a5013cebc4dc87eb397a1e"
+    },
+    "fold4": {
+      "case_count": 44,
+      "casewise_csv": "results/20260804_care_ase_r2_deadline_recovery_training_docker/user_override_outer_diagnostic_step00500/fold_4/outer_casewise_metrics.csv",
+      "casewise_csv_sha256": "80849b529f14b362cdfeb731e3c8a106e3cf31966dac3ff73caf9466b0e1c9a5",
+      "edema_t2_case_count": 16,
+      "summary": {
+        "care_minus_nnunet_pure_edema_mean": -0.002073882964827578,
+        "care_minus_nnunet_scar_mean": -0.027293327096429176,
+        "care_pure_edema_mean": 0.36907205701096824,
+        "care_scar_mean": 0.5395380440193167,
+        "nnunet_pure_edema_mean": 0.3711459399757958,
+        "nnunet_scar_mean": 0.5668313711157459
+      },
+      "summary_path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/user_override_outer_diagnostic_step00500/fold_4/outer_diagnostic_summary.json",
+      "summary_sha256": "3c1ed730e5bb0463e2a9cf1b64a1d2ef0f94bb0685be6928746c7241a3991e55"
+    }
+  },
+  "note": "This is the first real held-out outer diagnostic comparison requested by user override. It supersedes inner 0.9 numbers for fair generalization interpretation.",
+  "outer_access_user_override": true,
+  "status": "PASS"
+}

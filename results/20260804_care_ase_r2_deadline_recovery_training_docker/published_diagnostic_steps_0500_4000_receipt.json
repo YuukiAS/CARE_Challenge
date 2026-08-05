@@ -1,0 +1,122 @@
+{
+  "created_utc": "2026-08-05T02:46:03.741262Z",
+  "missing_expected_summaries": [],
+  "note": "Published from isolated detached worktree; active formal training checkout was not fast-forwarded.",
+  "origin_main_before": "f1bcdaea566c6ff94b08fbdc4099025b37a5b4d2",
+  "published_files": [
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/fair_comparison_step00500_full_inner_summary.json",
+      "sha256": "37135010d9c45e4d14ed9dcfe5989dfdff2a95c336fb84845ff40e8f39a95281"
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/fair_comparison_step00500_recomputed_oof_summary.json",
+      "sha256": "0ca3c9a40c80f90f848dffec1d16a8147789823a127e1ad6a52d26bd95b367ce"
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/fair_comparison_step00500_summary.json",
+      "sha256": "b11f05867beebd48315daa8ea54eb515fc051cee68e611b08ac1b404437b49c4"
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/outer_diagnostic_step00500_combined_summary.json",
+      "sha256": "19d8f7d875cecc9b79af9e45bd2e662c6d71778d131b4aece1a6020fb946c3e9"
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/outer_diagnostic_step00750_combined_summary.json",
+      "sha256": "fab325e117a98ea8ce555a7881a42a567c04bc39c33f30ec70370ac66c108e9e"
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/outer_diagnostic_step01000_combined_summary.json",
+      "sha256": "09f663fea971232343e77d6c45e6fa487d96cf18fa476e68587f9664dba7854d"
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/outer_diagnostic_step02000_combined_summary.json",
+      "sha256": "69f44383d8078fc1273f8f9f85ea7a9f933db3d6f463319ccfec746e0017094f"
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/outer_diagnostic_step03000_combined_summary.json",
+      "sha256": "541ba09f5e6b02ed01565068302f67c487edee702b7f507f593d4b98cbc17b87"
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/outer_diagnostic_step04000_combined_summary.json",
+      "sha256": "2ea01429dca4661c5300ec92def6ded21c3b3868c758e96d94dc587b56d80bb0"
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/training_progress_curve/care_ase_r2_training_progress_curve.csv",
+      "sha256": "46a25fa7567fa7420715d6bb7c6a613c950ae26e7fd7946507f2ac5b576236a6"
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/training_progress_curve/care_ase_r2_training_progress_curve.json",
+      "sha256": "efd47aefba407c4e9a5dd0fe166b24c939c2327d43df50a2c8555a798678e1d1"
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/training_progress_curve/care_ase_r2_training_progress_curve.png",
+      "sha256": "ed3b394fdf857aab2b5444935e59a347bd266d1710e69249bc704f1a06c8bcbf"
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/user_override_outer_diagnostic_step00500/fold_1/outer_casewise_metrics.csv",
+      "sha256": "7da92d65a307e05e6f24f4da85e9abd150ef4f84278c6bf376ad5df307355308"
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/user_override_outer_diagnostic_step00500/fold_1/outer_diagnostic_summary.json",
+      "sha256": "43d89acdd1d0080338d39d847fd8840b0bff752435a5013cebc4dc87eb397a1e"
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/user_override_outer_diagnostic_step00500/fold_4/outer_casewise_metrics.csv",
+      "sha256": "80849b529f14b362cdfeb731e3c8a106e3cf31966dac3ff73caf9466b0e1c9a5"
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/user_override_outer_diagnostic_step00500/fold_4/outer_diagnostic_summary.json",
+      "sha256": "3c1ed730e5bb0463e2a9cf1b64a1d2ef0f94bb0685be6928746c7241a3991e55"
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/user_override_outer_diagnostic_step00750/fold_1/outer_casewise_metrics.csv",
+      "sha256": "2cd36b7fd690e43d4dc78fa4208881ce40753531e0ec68e3f480a9f12fb79872"
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/user_override_outer_diagnostic_step00750/fold_4/outer_casewise_metrics.csv",
+      "sha256": "b900fd624edb91a612b6bc94db6af159069ee629fa3881b31a9602fa48ee3822"
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/user_override_outer_diagnostic_step01000/fold_1/outer_casewise_metrics.csv",
+      "sha256": "5a7db9089ac284201f27c79fc3276f6d42215c6efae2545af1b25db64636e872"
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/user_override_outer_diagnostic_step01000/fold_4/outer_casewise_metrics.csv",
+      "sha256": "3eda7a310da59750e0f5764f52363d23b1d4375966d7f5158cce7e830d91ce48"
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/user_override_outer_diagnostic_step02000/fold_1/outer_casewise_metrics.csv",
+      "sha256": "27a927f2d92c16b4471330f9c84eb324240ede692ba645b7e298ff6891b1f070"
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/user_override_outer_diagnostic_step02000/fold_4/outer_casewise_metrics.csv",
+      "sha256": "44b72a04ec8593048bda1418bdb0567e7e2f5ff21c5e2c1eda9688a817d59f76"
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/user_override_outer_diagnostic_step03000/fold_1/outer_casewise_metrics.csv",
+      "sha256": "f90a87ba2f1695914f153a296dfeb2221926f3bbc55db9beac88c9fde3ffa26e"
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/user_override_outer_diagnostic_step03000/fold_4/outer_casewise_metrics.csv",
+      "sha256": "2a9615932a3ea167e5a33bc3558bdcdf18f12ded91059ac40563002a9e3f4a91"
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/user_override_outer_diagnostic_step04000/fold_1/outer_casewise_metrics.csv",
+      "sha256": "8583a965988fd59cb8bcc4ea0002bd1df38e53c37c3777cd357135851d689cff"
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/user_override_outer_diagnostic_step04000/fold_4/outer_casewise_metrics.csv",
+      "sha256": "2737f0ac6d15098a35c53caa27bb94f5640831af77d1c2c36ebce1bdf34d6ad3"
+    }
+  ],
+  "status": "PUBLISHED_DIAGNOSTIC_STEPS_0500_4000",
+  "steps": [
+    500,
+    750,
+    1000,
+    2000,
+    3000,
+    4000
+  ],
+  "training_source_checkout_head": "3f9cdcdda44a70a89789bd0ccb1b109cb6e28e07"
+}

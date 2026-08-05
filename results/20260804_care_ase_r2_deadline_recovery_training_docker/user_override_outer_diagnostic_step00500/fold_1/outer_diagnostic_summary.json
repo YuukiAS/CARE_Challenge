@@ -1,0 +1,41 @@
+{
+  "case_count": 44,
+  "casewise_csv": "results/20260804_care_ase_r2_deadline_recovery_training_docker/user_override_outer_diagnostic_step00500/fold_1/outer_casewise_metrics.csv",
+  "casewise_csv_sha256": "7da92d65a307e05e6f24f4da85e9abd150ef4f84278c6bf376ad5df307355308",
+  "checkpoint": "results/20260804_care_ase_r2_formal_training_e9e212dd7856/runtime_deadline_e9e212dd7856/fold_1/checkpoint_step00500.pt",
+  "checkpoint_sha256": "b5bb5d29bbea2a1a9451b876a78b945ea3b8a04674b8b7f14c3c1c9297222c6a",
+  "checkpoint_step": 500,
+  "decision": "USER_OVERRIDE_OUTER_DIAGNOSTIC_STEP500",
+  "edema_t2_case_count": 16,
+  "fold": 1,
+  "inference_settings": {
+    "allowed_mirror_axes": [
+      0,
+      1,
+      2
+    ],
+    "decode": "fixed_argmax_t2_present_0_1_2_3_4_5_no_t2_0_1_2_3_5",
+    "gaussian_sigma_scale": 0.125,
+    "padding_mode": "constant_zero_symmetric_pad_nd_image",
+    "patch_size": [
+      20,
+      256,
+      256
+    ],
+    "precision": "fp32",
+    "tile_step_size": 0.5,
+    "use_gaussian": true,
+    "use_mirroring": true
+  },
+  "status": "PASS",
+  "stock_checkpoint": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/checkpoint_final.pth",
+  "stock_checkpoint_sha256": "5310569ff62f2f9a6ff2bc7dd3754404140071427a2025caf5e25d2916cfe400",
+  "summary": {
+    "care_minus_nnunet_pure_edema_mean": -0.009614075182684811,
+    "care_minus_nnunet_scar_mean": -0.008592091105301125,
+    "care_pure_edema_mean": 0.4268074476638203,
+    "care_scar_mean": 0.5591666786337383,
+    "nnunet_pure_edema_mean": 0.4364215228465051,
+    "nnunet_scar_mean": 0.5677587697390394
+  }
+}

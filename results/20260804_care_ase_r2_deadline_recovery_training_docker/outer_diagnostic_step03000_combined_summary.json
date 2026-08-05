@@ -1,0 +1,117 @@
+{
+  "case_count_total": 88,
+  "checkpoint_step": 3000,
+  "decision": "USER_AUTHORIZED_HELDOUT_DIAGNOSTIC_STEP3000",
+  "edema_t2_case_count_total": 32,
+  "folds": [
+    {
+      "case_count": 44,
+      "casewise_csv": "results/20260804_care_ase_r2_deadline_recovery_training_docker/user_override_outer_diagnostic_step03000/fold_1/outer_casewise_metrics.csv",
+      "casewise_csv_sha256": "f90a87ba2f1695914f153a296dfeb2221926f3bbc55db9beac88c9fde3ffa26e",
+      "checkpoint": "/users/a/e/aereinh/CARE/results/20260804_care_ase_r2_formal_training_e9e212dd7856/runtime_deadline_e9e212dd7856/fold_1/checkpoint_step03000.pt",
+      "checkpoint_sha256": "b2635cebfe57424e2d42c342990c795dd707ea5d265ef220cad415cf268b1864",
+      "checkpoint_step": 3000,
+      "decision": "USER_AUTHORIZED_HELDOUT_DIAGNOSTIC_STEP3000",
+      "edema_t2_case_count": 16,
+      "fold": 1,
+      "inference_settings": {
+        "allowed_mirror_axes": [
+          0,
+          1,
+          2
+        ],
+        "decode": "fixed_argmax_t2_present_0_1_2_3_4_5_no_t2_0_1_2_3_5",
+        "gaussian_sigma_scale": 0.125,
+        "padding_mode": "constant_zero_symmetric_pad_nd_image",
+        "patch_size": [
+          20,
+          256,
+          256
+        ],
+        "precision": "fp32",
+        "tile_step_size": 0.5,
+        "use_gaussian": true,
+        "use_mirroring": true
+      },
+      "status": "PASS",
+      "stock_checkpoint": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/checkpoint_final.pth",
+      "stock_checkpoint_sha256": "5310569ff62f2f9a6ff2bc7dd3754404140071427a2025caf5e25d2916cfe400",
+      "summary": {
+        "care_minus_nnunet_pure_edema_mean": 0.005670792330864982,
+        "care_minus_nnunet_scar_mean": -0.06124782364303549,
+        "care_pure_edema_mean": 0.44211160744439926,
+        "care_scar_mean": 0.5064948495950832,
+        "nnunet_pure_edema_mean": 0.4364408151135343,
+        "nnunet_scar_mean": 0.5677426732381187
+      }
+    },
+    {
+      "case_count": 44,
+      "casewise_csv": "results/20260804_care_ase_r2_deadline_recovery_training_docker/user_override_outer_diagnostic_step03000/fold_4/outer_casewise_metrics.csv",
+      "casewise_csv_sha256": "2a9615932a3ea167e5a33bc3558bdcdf18f12ded91059ac40563002a9e3f4a91",
+      "checkpoint": "/users/a/e/aereinh/CARE/results/20260804_care_ase_r2_formal_training_e9e212dd7856/runtime_deadline_e9e212dd7856/fold_4/checkpoint_step03000.pt",
+      "checkpoint_sha256": "bd8cbd07e854dcd42820960609a5c2e69fd6ee174df15df54f53a37b4427b620",
+      "checkpoint_step": 3000,
+      "decision": "USER_AUTHORIZED_HELDOUT_DIAGNOSTIC_STEP3000",
+      "edema_t2_case_count": 16,
+      "fold": 4,
+      "inference_settings": {
+        "allowed_mirror_axes": [
+          0,
+          1,
+          2
+        ],
+        "decode": "fixed_argmax_t2_present_0_1_2_3_4_5_no_t2_0_1_2_3_5",
+        "gaussian_sigma_scale": 0.125,
+        "padding_mode": "constant_zero_symmetric_pad_nd_image",
+        "patch_size": [
+          20,
+          256,
+          256
+        ],
+        "precision": "fp32",
+        "tile_step_size": 0.5,
+        "use_gaussian": true,
+        "use_mirroring": true
+      },
+      "status": "PASS",
+      "stock_checkpoint": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_4/checkpoint_final.pth",
+      "stock_checkpoint_sha256": "9971020827eb50fabe53ef339f5ea2ac8c5a7929584c5c9c0541e83119df0847",
+      "summary": {
+        "care_minus_nnunet_pure_edema_mean": 0.016188580194601898,
+        "care_minus_nnunet_scar_mean": -0.039105411716186866,
+        "care_pure_edema_mean": 0.38736193911127753,
+        "care_scar_mean": 0.5277059005663912,
+        "nnunet_pure_edema_mean": 0.37117335891667563,
+        "nnunet_scar_mean": 0.5668113122825781
+      }
+    }
+  ],
+  "mosaic_reference": {
+    "note": "MoSAIC full-data MyoPS weights; same cases and metric labels, not OOF-equivalent training exposure.",
+    "pure_edema_mean": 0.40575365342046227,
+    "scar_mean": 0.7543350066891704,
+    "source": "/users/a/e/aereinh/.tmp/codex-CARE/20260804_care_ase_r2_emergency_9h_training_docker/mosaic_full_myops_heldout_eval_trainlabels/mosaic_full_myops_heldout_summary.json",
+    "source_sha256": "a10bd8cc75babefa5a3edb1a48582f1263d4c547bb0c60675b0bad9fbd080999",
+    "weights": {
+      "coarse.pt": "/users/a/e/aereinh/MoSAIC/code/weights/myops/coarse.pt",
+      "coarse_edema.pt": "/users/a/e/aereinh/MoSAIC/code/weights/myops/coarse_edema.pt",
+      "edema.pt": "/users/a/e/aereinh/MoSAIC/code/weights/myops/edema.pt",
+      "fine_scar.pt": "/users/a/e/aereinh/MoSAIC/code/weights/myops/fine_scar.pt"
+    }
+  },
+  "outer_access_authorization": "explicit_user_authorized_diagnostic_heldout_comparison",
+  "pure_edema": {
+    "care_mean": 0.4147367732778384,
+    "delta_care_minus_mosaic": 0.008983119857376154,
+    "delta_care_minus_nnunet": 0.010929686262733496,
+    "nnunet_mean": 0.4038070870151049
+  },
+  "scar": {
+    "care_mean": 0.5171003750807373,
+    "delta_care_minus_mosaic": -0.23723463160843317,
+    "delta_care_minus_nnunet": -0.050176617679611124,
+    "nnunet_mean": 0.5672769927603484
+  },
+  "status": "PASS"
+}

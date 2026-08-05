@@ -1,0 +1,101 @@
+{
+  "case_count_total": 88,
+  "checkpoint_step": 750,
+  "decision": "USER_OVERRIDE_OUTER_DIAGNOSTIC_STEP750",
+  "edema_t2_case_count_total": 32,
+  "folds": [
+    {
+      "case_count": 44,
+      "casewise_csv": "results/20260804_care_ase_r2_deadline_recovery_training_docker/user_override_outer_diagnostic_step00750/fold_1/outer_casewise_metrics.csv",
+      "casewise_csv_sha256": "2cd36b7fd690e43d4dc78fa4208881ce40753531e0ec68e3f480a9f12fb79872",
+      "checkpoint": "results/20260804_care_ase_r2_formal_training_e9e212dd7856/runtime_deadline_e9e212dd7856/fold_1/checkpoint_step00750.pt",
+      "checkpoint_sha256": "4f46ae6942cf31fa363145d70e150575c91c1bb9ed7cffe66c72ea5345f074ad",
+      "checkpoint_step": 750,
+      "decision": "USER_OVERRIDE_OUTER_DIAGNOSTIC_STEP750",
+      "edema_t2_case_count": 16,
+      "fold": 1,
+      "inference_settings": {
+        "allowed_mirror_axes": [
+          0,
+          1,
+          2
+        ],
+        "decode": "fixed_argmax_t2_present_0_1_2_3_4_5_no_t2_0_1_2_3_5",
+        "gaussian_sigma_scale": 0.125,
+        "padding_mode": "constant_zero_symmetric_pad_nd_image",
+        "patch_size": [
+          20,
+          256,
+          256
+        ],
+        "precision": "fp32",
+        "tile_step_size": 0.5,
+        "use_gaussian": true,
+        "use_mirroring": true
+      },
+      "status": "PASS",
+      "stock_checkpoint": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/checkpoint_final.pth",
+      "stock_checkpoint_sha256": "5310569ff62f2f9a6ff2bc7dd3754404140071427a2025caf5e25d2916cfe400",
+      "summary": {
+        "care_minus_nnunet_pure_edema_mean": -0.005252133012239091,
+        "care_minus_nnunet_scar_mean": -0.024743445240608564,
+        "care_pure_edema_mean": 0.4311411459146796,
+        "care_scar_mean": 0.5430278551510423,
+        "nnunet_pure_edema_mean": 0.4363932789269187,
+        "nnunet_scar_mean": 0.5677713003916509
+      }
+    },
+    {
+      "case_count": 44,
+      "casewise_csv": "results/20260804_care_ase_r2_deadline_recovery_training_docker/user_override_outer_diagnostic_step00750/fold_4/outer_casewise_metrics.csv",
+      "casewise_csv_sha256": "b900fd624edb91a612b6bc94db6af159069ee629fa3881b31a9602fa48ee3822",
+      "checkpoint": "results/20260804_care_ase_r2_formal_training_e9e212dd7856/runtime_deadline_e9e212dd7856/fold_4/checkpoint_step00750.pt",
+      "checkpoint_sha256": "fe76b39e4a7714e5b3e1859028059d9eae422fe9535f948dd871dfff334a1dc8",
+      "checkpoint_step": 750,
+      "decision": "USER_OVERRIDE_OUTER_DIAGNOSTIC_STEP750",
+      "edema_t2_case_count": 16,
+      "fold": 4,
+      "inference_settings": {
+        "allowed_mirror_axes": [
+          0,
+          1,
+          2
+        ],
+        "decode": "fixed_argmax_t2_present_0_1_2_3_4_5_no_t2_0_1_2_3_5",
+        "gaussian_sigma_scale": 0.125,
+        "padding_mode": "constant_zero_symmetric_pad_nd_image",
+        "patch_size": [
+          20,
+          256,
+          256
+        ],
+        "precision": "fp32",
+        "tile_step_size": 0.5,
+        "use_gaussian": true,
+        "use_mirroring": true
+      },
+      "status": "PASS",
+      "stock_checkpoint": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_4/checkpoint_final.pth",
+      "stock_checkpoint_sha256": "9971020827eb50fabe53ef339f5ea2ac8c5a7929584c5c9c0541e83119df0847",
+      "summary": {
+        "care_minus_nnunet_pure_edema_mean": -0.01529527095450306,
+        "care_minus_nnunet_scar_mean": -0.01777863839449556,
+        "care_pure_edema_mean": 0.3559581024268715,
+        "care_scar_mean": 0.5490452231573256,
+        "nnunet_pure_edema_mean": 0.37125337338137454,
+        "nnunet_scar_mean": 0.5668238615518212
+      }
+    }
+  ],
+  "outer_access_authorization": "explicit_user_override_for_diagnostic_fair_comparison",
+  "pure_edema": {
+    "care_mean": 0.39354962417077555,
+    "delta_care_minus_nnunet": -0.010273701983371075,
+    "nnunet_mean": 0.4038233261541466
+  },
+  "scar": {
+    "care_mean": 0.5460365391541839,
+    "delta_care_minus_nnunet": -0.021261041817552062,
+    "nnunet_mean": 0.567297580971736
+  }
+}

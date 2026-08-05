@@ -1,0 +1,101 @@
+{
+  "allowed_uses": [
+    "learning_trend",
+    "implementation_or_numeric_anomaly_detection",
+    "user_progress_report"
+  ],
+  "checkpoint_step": 500,
+  "comparison_schedule_from_now": "every_250_optimizer_steps_full_inner_fair_comparison",
+  "created_utc": "2026-08-04T03:45:37.974422Z",
+  "current_hkt": "2026-08-04T11:45:37.974781+08:00",
+  "folds": {
+    "1": {
+      "casewise_metrics_path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/full_fair_panel/fold_1/step00500/casewise_metrics.csv",
+      "checkpoint_step": 500,
+      "checkpoint_verified_status": "PASS",
+      "current_grad_norm": 2.359950304031372,
+      "current_loss": 1.0430012941360474,
+      "current_stage": "A",
+      "current_training_step_after_panel": 533,
+      "inner_case_count": 35,
+      "monitor_packet_path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/full_fair_panel/fold_1/step00500/monitor_packet.json",
+      "monitor_packet_sha256": "3f05005351f1684d4438a1a08d17bc1fc009e659ab6753a1170ded9be592dc5c",
+      "outer_access_count_delta": 0,
+      "pure_edema_dice_mean": 0.901311464703348,
+      "pure_edema_dice_median": 0.9219315895372233,
+      "pure_edema_help_harm_neutral_vs_mosaic": {
+        "harm": 0,
+        "help": 13,
+        "neutral": 0
+      },
+      "pure_edema_help_harm_neutral_vs_nnunet": {
+        "harm": 0,
+        "help": 13,
+        "neutral": 0
+      },
+      "scar_dice_mean": 0.9122333814644397,
+      "scar_dice_median": 0.9042606516290727,
+      "scar_help_harm_neutral_vs_mosaic": {
+        "harm": 0,
+        "help": 35,
+        "neutral": 0
+      },
+      "scar_help_harm_neutral_vs_nnunet": {
+        "harm": 0,
+        "help": 35,
+        "neutral": 0
+      }
+    },
+    "4": {
+      "casewise_metrics_path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/full_fair_panel/fold_4/step00500/casewise_metrics.csv",
+      "checkpoint_step": 500,
+      "checkpoint_verified_status": "PASS",
+      "current_grad_norm": 0.9552843570709229,
+      "current_loss": 1.7223653495311737,
+      "current_stage": "A",
+      "current_training_step_after_panel": 534,
+      "inner_case_count": 35,
+      "monitor_packet_path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/full_fair_panel/fold_4/step00500/monitor_packet.json",
+      "monitor_packet_sha256": "7e5b652e5d37e51c4de1f9e355183873085dbc112444bfbb9f3252caa8d99681",
+      "outer_access_count_delta": 0,
+      "pure_edema_dice_mean": 0.927701693297705,
+      "pure_edema_dice_median": 0.9318479685452162,
+      "pure_edema_help_harm_neutral_vs_mosaic": {
+        "harm": 0,
+        "help": 13,
+        "neutral": 0
+      },
+      "pure_edema_help_harm_neutral_vs_nnunet": {
+        "harm": 0,
+        "help": 13,
+        "neutral": 0
+      },
+      "scar_dice_mean": 0.8924609662655639,
+      "scar_dice_median": 0.8905253901956474,
+      "scar_help_harm_neutral_vs_mosaic": {
+        "harm": 0,
+        "help": 35,
+        "neutral": 0
+      },
+      "scar_help_harm_neutral_vs_nnunet": {
+        "harm": 0,
+        "help": 35,
+        "neutral": 0
+      }
+    }
+  },
+  "forbidden_uses": [
+    "early_stop",
+    "formal_checkpoint_selection",
+    "model_loss_sampler_scheduler_change",
+    "threshold_tuning",
+    "training_budget_change",
+    "final_baseline_claim"
+  ],
+  "implementation_source_sha": "40cfdcdbf4d432d46d05f319dce6a59a084991d3",
+  "next_checkpoint_step": 750,
+  "outer_access": 0,
+  "panel_type": "FULL_INNER_35_CASES",
+  "source_sha": "e9e212dd7856f14e3f93ec4ed4516a07f87adade",
+  "status": "PASS_FULL_INNER_FAIR_COMPARISON_TREND_ONLY"
+}

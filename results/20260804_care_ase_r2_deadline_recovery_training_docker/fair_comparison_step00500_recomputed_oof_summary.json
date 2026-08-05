@@ -1,0 +1,44 @@
+{
+  "checkpoint_step": 500,
+  "folds": {
+    "fold1": {
+      "case_count": 35,
+      "edema_t2_case_count": 13,
+      "source_path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/recomputed_heldout_oof_inner/fold_1/step00500/recomputed_heldout_oof_summary.json",
+      "source_sha256": "49634ff54e2dc2d0cf9ae04705a095db743f2e528edf16648af0d42ea82f891d",
+      "summary": {
+        "baseline_file_nnunet_pure_edema_mean": 0.4067975944308178,
+        "baseline_file_nnunet_scar_mean": 0.5665871915313493,
+        "care_minus_recomputed_oof_pure_edema_mean": 0.48720388447322127,
+        "care_minus_recomputed_oof_scar_mean": 0.3443620439964906,
+        "care_pure_edema_mean": 0.901311464703348,
+        "care_scar_mean": 0.9122333814644397,
+        "recomputed_minus_baseline_file_pure_edema_mean": 0.007309985799308916,
+        "recomputed_minus_baseline_file_scar_mean": 0.0012841459365997565,
+        "recomputed_nnunet_oof_pure_edema_mean": 0.4141075802301267,
+        "recomputed_nnunet_oof_scar_mean": 0.567871337467949
+      }
+    },
+    "fold4": {
+      "case_count": 35,
+      "edema_t2_case_count": 13,
+      "source_path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/recomputed_heldout_oof_inner/fold_4/step00500/recomputed_heldout_oof_summary.json",
+      "source_sha256": "d36e9ed12ad4e3db694ee131b89b6aa689ac1c38595a04ea7f224bd2c9fa2448",
+      "summary": {
+        "baseline_file_nnunet_pure_edema_mean": 0.38398823619852185,
+        "baseline_file_nnunet_scar_mean": 0.5814772171710899,
+        "care_minus_recomputed_oof_pure_edema_mean": 0.5448019197059437,
+        "care_minus_recomputed_oof_scar_mean": 0.3135630402346742,
+        "care_pure_edema_mean": 0.927701693297705,
+        "care_scar_mean": 0.8924609662655639,
+        "recomputed_minus_baseline_file_pure_edema_mean": -0.001088462606760543,
+        "recomputed_minus_baseline_file_scar_mean": -0.0025792911402001684,
+        "recomputed_nnunet_oof_pure_edema_mean": 0.3828997735917613,
+        "recomputed_nnunet_oof_scar_mean": 0.5788979260308897
+      }
+    }
+  },
+  "method": "fresh held-out stock nnU-Net OOF recomputation for frozen inner monitor cases",
+  "outer_access": 0,
+  "status": "PASS"
+}
