@@ -1,0 +1,36 @@
+{
+  "created_utc": "2026-08-05T05:31:30.738126Z",
+  "formal_training_started_after_publish": false,
+  "note": "Published from isolated worktree; active formal training checkout was not fast-forwarded.",
+  "origin_main_before": "457a2d4db9fbcbc1ac0e9b03744d6a717407b0f0",
+  "published_files": [
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/outer_diagnostic_step05000_combined_summary.json",
+      "sha256": "13cbe0502b44b472b6937d12033370af80fe74230fbecb18ffef74bd38b8e2e0"
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/training_progress_curve/care_ase_r2_training_progress_curve.csv",
+      "sha256": "410f0d9cd0f7d301a94ed7fe486e60b5ee007fca5b7fc1e6bda3dc8475e7525c"
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/training_progress_curve/care_ase_r2_training_progress_curve.json",
+      "sha256": "3a7bebbd37689a9e8f29cb2be465d182145d977d615f157818d70c3e08085e8c"
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/training_progress_curve/care_ase_r2_training_progress_curve.png",
+      "sha256": "ed3b394fdf857aab2b5444935e59a347bd266d1710e69249bc704f1a06c8bcbf"
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/user_override_outer_diagnostic_step05000/fold_1/outer_casewise_metrics.csv",
+      "sha256": "0f3da86faad9daea5511a3a51b2c0f6cea2795f0fe6685b49a30cd778091307d"
+    },
+    {
+      "path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/user_override_outer_diagnostic_step05000/fold_4/outer_casewise_metrics.csv",
+      "sha256": "6dd50a95c57fbcaad5b0a70ce717f51a590475d8fa1ae256a5fb738742f5ffc7"
+    }
+  ],
+  "status": "STEP5000_DIAGNOSTIC_COMPARISON_PUBLISHED",
+  "summary": "results/20260804_care_ase_r2_deadline_recovery_training_docker/outer_diagnostic_step05000_combined_summary.json",
+  "summary_sha256": "13cbe0502b44b472b6937d12033370af80fe74230fbecb18ffef74bd38b8e2e0",
+  "training_source_checkout_head": "457a2d4db9fbcbc1ac0e9b03744d6a717407b0f0"
+}
