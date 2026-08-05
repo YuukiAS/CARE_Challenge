@@ -1,0 +1,21 @@
+{
+  "base_origin_main_sha": "a1d78e48142b88c8d57ab1fb566ae2afb1a7ef43",
+  "excluded_later_steps": [
+    5000
+  ],
+  "generated_utc": "2026-08-05T05:43:21.780050+00:00",
+  "included_steps": [
+    500,
+    750,
+    1000,
+    2000,
+    3000,
+    4000
+  ],
+  "note": "Exact pushed commit SHA is verified after git push; this receipt binds the generated <=step4000 packet file SHAs.",
+  "scope_json_path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/diagnostic_review_scope_through_step04000.json",
+  "scope_json_sha256": "5a5ff37eaea461da610892c37f02db44f27644ecbd24ea5edcc7ae09c6331ede",
+  "scope_md_path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/diagnostic_review_scope_through_step04000.md",
+  "scope_md_sha256": "6a912da868e246d1db2e9d8a79d89c237d89cc5c5805106f4a1c86d92197a038",
+  "status": "READY_FOR_UPLOAD_COMMIT"
+}
