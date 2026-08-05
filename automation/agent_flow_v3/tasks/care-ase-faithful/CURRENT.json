@@ -1,0 +1,13 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3",
+  "task_id": "care-ase-faithful",
+  "state": "PLAN_REQUESTED",
+  "review_round": 0,
+  "request_nonce": "bootstrap-unarmed-20260805",
+  "frozen_contract_sha256": null,
+  "integration_commit_sha": null,
+  "implementation_fingerprint_sha256": null,
+  "verifier_fingerprint_sha256": null,
+  "next_action": "CONFIGURE_VISUAL_SOURCES_AND_SCHEDULED_TASKS_THEN_ENABLE_REQUEST",
+  "updated_utc": "2026-08-05T10:05:00Z"
+}
