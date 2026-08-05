@@ -1,0 +1,205 @@
+{
+  "assets": {
+    "dataset.json": {
+      "path": "/app/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/dataset.json",
+      "sha256": "8437262d92fb898c8d16a89150efd4629602dd71e0fa5bbcf1c6c80cc3b535ae",
+      "size_bytes": 675
+    },
+    "entrypoint.sh": {
+      "path": "/app/entrypoint.sh",
+      "sha256": "6bd7b80ba80a7aee26638f1fce81d4e3cf99f3e5af7a97c4bff9924d71cfa53b",
+      "size_bytes": 71
+    },
+    "plans.json": {
+      "path": "/app/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/plans.json",
+      "sha256": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
+      "size_bytes": 11947
+    },
+    "predict.py": {
+      "path": "/app/predict.py",
+      "sha256": "97238913481c2d39c5bc241361de0c36e8536ce634da452f787fa37eb098fefc",
+      "size_bytes": 5022
+    },
+    "requirements.lock": {
+      "path": "/app/requirements.lock",
+      "sha256": "1969d7605484165bb2c669d48f228395e65613b852261eb4f831d3de581ab5d7",
+      "size_bytes": 274
+    }
+  },
+  "boundary_matrix": {
+    "all_finite": true,
+    "all_labels_allowed": true,
+    "all_outputs_geometry_match": true,
+    "depth1_cases_passed": 7,
+    "depth2_cases_passed": 5,
+    "expected_case_count": 13,
+    "missing_outputs": [],
+    "mode": "synthetic",
+    "output_count": 13,
+    "status": "PASS",
+    "unknown_outputs": []
+  },
+  "checkpoint_selection_changed": false,
+  "checkpoints": [
+    {
+      "fold": 0,
+      "path": "/app/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_best.pth",
+      "sha256": "f139ca5525322d340a0284c6562a9bcb9cb9cae0a512e14ef40ce85a66f53278",
+      "size_bytes": 357374639
+    },
+    {
+      "fold": 1,
+      "path": "/app/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/checkpoint_best.pth",
+      "sha256": "b92d56b1e24ce826081671acc4e048e5d48b191f6dcb9836747ae82d93acd1e2",
+      "size_bytes": 357341103
+    },
+    {
+      "fold": 2,
+      "path": "/app/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_2/checkpoint_best.pth",
+      "sha256": "9e328bf4bd6ed9eeadac6f41c5de303c69dfc078dfeac3e64b26e18d3e09d38d",
+      "size_bytes": 357327215
+    },
+    {
+      "fold": 3,
+      "path": "/app/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_3/checkpoint_best.pth",
+      "sha256": "9c2c2cf0dea4eb8a691c6680fabc66f6456233ba83867466a06ffd5abda3462b",
+      "size_bytes": 357354799
+    },
+    {
+      "fold": 4,
+      "path": "/app/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_4/checkpoint_best.pth",
+      "sha256": "11c6ccfec5dc51be7c08f1713058412694e1b7def1c5d8cd5520f7f7568aeff2",
+      "size_bytes": 357367855
+    }
+  ],
+  "clean_save_load": {
+    "architecture": "amd64",
+    "archive_reload_performed": true,
+    "entrypoint": [
+      "/app/entrypoint.sh"
+    ],
+    "image_id": "sha256:511e16d6e3d660044e34ebee94cad7d897c5526246cf789fc2e9e858f3428c8d",
+    "normal_compare_pass": true,
+    "os": "linux",
+    "status": "PASS",
+    "synthetic_full_matrix_rerun_pass": true,
+    "synthetic_full_matrix_rerun_summary": "results/20260805_care_myops_single_slice_hotfix_repackage/clean_synthetic_full_summary.json",
+    "synthetic_rerun_pass": true
+  },
+  "created_at_utc": "2026-08-05T04:34:13.045566Z",
+  "failure_mode_expansion": {
+    "case_count": 10,
+    "failures": [
+      {
+        "exit_code": 0,
+        "expected_nonzero": true,
+        "expected_text": "SS_Z1_SP4",
+        "expected_text_found": true,
+        "legal_success_expected": false,
+        "mode": "geometry_mismatch",
+        "nonblocking_reason": "Malformed cross-modality geometry is outside the frozen valid-input single-slice hotfix contract per resume authorization addendum.",
+        "output_files": "['myops/SS_Z1_SP4_pred.nii.gz']",
+        "status": "INHERITED_BASE_BEHAVIOR_OUT_OF_SCOPE_NONBLOCKING",
+        "unrelated_preserved": true
+      }
+    ],
+    "nonblocking_inherited_behavior_token": "INHERITED_BASE_BEHAVIOR_OUT_OF_SCOPE_NONBLOCKING",
+    "pass_count": 9,
+    "status": "PASS_WITH_INHERITED_BASE_BEHAVIOR_OUT_OF_SCOPE_NONBLOCKING"
+  },
+  "git_commit": null,
+  "google_drive": {
+    "authorized_upload_only": [
+      "MyoPS-OrganAgent-corrected.tar.gz",
+      "SHA256SUMS"
+    ],
+    "archive_file_id": "1ATXgeTn99xFZAB3SLH1-aSpTuIb5EO5a",
+    "archive_sha256": "fcf1c67a2123ab655a8e6c32dc46e6d98feaa43f41c698c6969aebfaa51f79ff",
+    "archive_size_bytes": 4742235545,
+    "public_access_ok": true,
+    "public_link": "https://drive.google.com/open?id=1ATXgeTn99xFZAB3SLH1-aSpTuIb5EO5a",
+    "receipt": "results/20260805_care_myops_single_slice_hotfix_repackage/google_drive_corrected_upload_receipt.json",
+    "reused_old_failed_url": false
+  },
+  "inference_configuration_changed": false,
+  "mixed_batch": {
+    "all_finite": true,
+    "all_labels_allowed": true,
+    "all_outputs_geometry_match": true,
+    "array_exact_count": 15,
+    "canonical_sha_exact_count": 15,
+    "case_count": 28,
+    "depth1_cases_passed": 7,
+    "depth2_cases_passed": 5,
+    "expected_case_count": 28,
+    "geometry_exact_count": 15,
+    "missing_outputs": [],
+    "mode": "mixed",
+    "normal_case_exact_against_base_count": 15,
+    "output_count": 28,
+    "status": "PASS",
+    "unknown_outputs": []
+  },
+  "model_changed": false,
+  "new_archive_sha256": "fcf1c67a2123ab655a8e6c32dc46e6d98feaa43f41c698c6969aebfaa51f79ff",
+  "new_archive_size_bytes": 4742235545,
+  "new_image_id": "sha256:511e16d6e3d660044e34ebee94cad7d897c5526246cf789fc2e9e858f3428c8d",
+  "new_rootfs_diff_ids": [
+    "sha256:f2ec4de84f559f5c7be4233b589cdbdbb5507807e05621b77320edd55a1f2a0f",
+    "sha256:ccbaccfc0388284959cf106031557105fad2067d6c4435937b3414ce90760167",
+    "sha256:83fdf57f71f28b640f11d5072c284c81eadefc5ea538050fedcedba6149879bd",
+    "sha256:b80f3ed1ee6de85c788d9ae7203207c44724eab4baac8697390ca1412954ad2f",
+    "sha256:7f51b309eff9b3ba2ffd120df400b9bb125c60abff745575fbd462a65bf2b94a",
+    "sha256:f832726b2e19696277f061dc23a7c00ec2f98165e3609e25f703ed25b8a9c2ce",
+    "sha256:a7f11b3f6cc427dd258551e4ef9c6f547b61138313146d622bc16ff467685cb8",
+    "sha256:187b230f92715d967e699d6912b0f12722b38b476f94b1c85a72f653ab940227",
+    "sha256:7789ce0824645651b57584e9ff185e5331258b08b4a5de32a11b7382d1f067e2",
+    "sha256:56052aaa4df58c76e346cb3442f10d046216386716ab5d8ffd2dd8f3665c66da",
+    "sha256:2b3c02e20f88e560f97de312d13a9ce0bf46e7f58e4d1edbe4db8fa247563da8",
+    "sha256:293f88907bd9d8feadd805314403336c2278a376e09f6f64f8e5301de582c6bb",
+    "sha256:634144c8ba79ca8ba2aa26482692eb8ee14efd11635cdf936be3f48365681c66"
+  ],
+  "nnunet_source_new_sha256": "609c8915f7a2be2d44661db5df9a965106a3947c60dd83d3d8ef737791372029",
+  "nnunet_source_old_sha256": "0925abcba8f87d84819921ae661fdafa5c871226a5dbceca61e9947e63acad98",
+  "normal_15case_exact_regression": {
+    "all_finite": true,
+    "all_labels_allowed": true,
+    "all_outputs_geometry_match": true,
+    "array_exact_count": 15,
+    "canonical_sha_exact_count": 15,
+    "case_count": 15,
+    "depth1_cases_passed": 0,
+    "depth2_cases_passed": 0,
+    "expected_case_count": 15,
+    "geometry_exact_count": 15,
+    "missing_outputs": [],
+    "mode": "normal",
+    "normal_case_exact_against_base_count": 15,
+    "output_count": 15,
+    "status": "PASS",
+    "unknown_outputs": []
+  },
+  "old_archive_sha256": "638c1d54d1c75f3514f325695025c03bd8f43625c9f2877d72841db6ee2ac73b",
+  "old_archive_size_bytes": 4741640359,
+  "old_image_id": "sha256:52f8d872a51c482d488e3d2a14893958a6b1d6c8c91fffed9985ee330fcec911",
+  "old_rootfs_diff_ids": [
+    "sha256:f2ec4de84f559f5c7be4233b589cdbdbb5507807e05621b77320edd55a1f2a0f",
+    "sha256:ccbaccfc0388284959cf106031557105fad2067d6c4435937b3414ce90760167",
+    "sha256:83fdf57f71f28b640f11d5072c284c81eadefc5ea538050fedcedba6149879bd",
+    "sha256:b80f3ed1ee6de85c788d9ae7203207c44724eab4baac8697390ca1412954ad2f",
+    "sha256:7f51b309eff9b3ba2ffd120df400b9bb125c60abff745575fbd462a65bf2b94a",
+    "sha256:f832726b2e19696277f061dc23a7c00ec2f98165e3609e25f703ed25b8a9c2ce",
+    "sha256:a7f11b3f6cc427dd258551e4ef9c6f547b61138313146d622bc16ff467685cb8",
+    "sha256:187b230f92715d967e699d6912b0f12722b38b476f94b1c85a72f653ab940227",
+    "sha256:7789ce0824645651b57584e9ff185e5331258b08b4a5de32a11b7382d1f067e2",
+    "sha256:56052aaa4df58c76e346cb3442f10d046216386716ab5d8ffd2dd8f3665c66da",
+    "sha256:2b3c02e20f88e560f97de312d13a9ce0bf46e7f58e4d1edbe4db8fa247563da8"
+  ],
+  "only_runtime_preprocessing_fix": true,
+  "patch": {
+    "added": "new_shape = np.array([int(round(i / j * k)) for i, j, k in zip(old_spacing, new_spacing, old_shape)])\n    new_shape = np.maximum(new_shape, 1)\n    return new_shape",
+    "removed": "new_shape = np.array([int(round(i / j * k)) for i, j, k in zip(old_spacing, new_spacing, old_shape)])\n    return new_shape"
+  },
+  "pip_freeze_equal": true,
+  "training_performed": false
+}

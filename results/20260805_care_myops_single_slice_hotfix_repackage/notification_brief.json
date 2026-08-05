@@ -1,0 +1,17 @@
+{
+  "blocked_or_failure_reason": "",
+  "commit_status": "pending_lightweight_commit",
+  "evidence_paths": [
+    "results/20260805_care_myops_single_slice_hotfix_repackage/strict_validator_report.json",
+    "results/20260805_care_myops_single_slice_hotfix_repackage/google_drive_corrected_upload_receipt.json",
+    "results/20260805_care_myops_single_slice_hotfix_repackage/google_drive_corrected_public_link.json",
+    "results/20260805_care_myops_single_slice_hotfix_server_audit/final_readiness.json",
+    "results/20260805_care_myops_single_slice_hotfix_server_audit/server_corrected_archive_receipt.json"
+  ],
+  "final_status": "complete",
+  "key_conclusion": "旧 MyoPS single-slice 崩溃已复现；runtime-only clamp 修复通过；模型/checkpoint/inference 配置不变；corrected archive 已上传并通过服务器静态审计。组织方邮件未发送。",
+  "next_step": "After lightweight commit/push and notifier, user may manually send the organizer reply draft.",
+  "push_status": "pending_lightweight_push",
+  "slurm_terminal_status": "not_applicable",
+  "task_name": "20260805_care_myops_single_slice_hotfix_repackage"
+}

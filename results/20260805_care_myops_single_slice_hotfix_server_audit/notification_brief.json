@@ -1,0 +1,16 @@
+{
+  "blocked_or_failure_reason": "",
+  "commit_status": "pending_local_commit_push",
+  "evidence_paths": [
+    "/users/a/e/aereinh/CARE/results/20260805_care_myops_single_slice_hotfix_server_audit/final_readiness.json",
+    "/users/a/e/aereinh/CARE/results/20260805_care_myops_single_slice_hotfix_server_audit/server_corrected_archive_receipt.json",
+    "/users/a/e/aereinh/CARE/results/20260805_care_myops_single_slice_hotfix_server_audit/provenance_packet_audit.json",
+    "/users/a/e/aereinh/CARE/results/20260805_care_myops_single_slice_hotfix_server_audit/drive_link_server_audit.json"
+  ],
+  "final_status": "complete",
+  "key_conclusion": "Corrected MyoPS runtime-only single-slice hotfix passed server static provenance audit; organizer email was not sent.",
+  "next_step": "Commit/push lightweight receipts, run existing CARE notifier, then user may manually send organizer reply.",
+  "push_status": "pending_local_commit_push",
+  "slurm_terminal_status": "not_applicable",
+  "task_name": "20260805_care_myops_single_slice_hotfix_repackage"
+}

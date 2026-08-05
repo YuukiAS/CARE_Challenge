@@ -1,0 +1,14 @@
+{
+  "architecture": "amd64",
+  "archive_reload_performed": true,
+  "entrypoint": [
+    "/app/entrypoint.sh"
+  ],
+  "image_id": "sha256:511e16d6e3d660044e34ebee94cad7d897c5526246cf789fc2e9e858f3428c8d",
+  "normal_compare_pass": true,
+  "os": "linux",
+  "status": "PASS",
+  "synthetic_full_matrix_rerun_pass": true,
+  "synthetic_full_matrix_rerun_summary": "results/20260805_care_myops_single_slice_hotfix_repackage/clean_synthetic_full_summary.json",
+  "synthetic_rerun_pass": true
+}

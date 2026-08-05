@@ -1,0 +1,19 @@
+{
+  "archive_sha256": "fcf1c67a2123ab655a8e6c32dc46e6d98feaa43f41c698c6969aebfaa51f79ff",
+  "archive_size_bytes": 4742235545,
+  "file_id": "1ATXgeTn99xFZAB3SLH1-aSpTuIb5EO5a",
+  "http_check": {
+    "authenticated": false,
+    "final_http_status": 200,
+    "redirect_chain_observed": [
+      307,
+      200
+    ],
+    "checked_at_utc": "2026-08-05T04:41:27Z"
+  },
+  "link": "https://drive.google.com/open?id=1ATXgeTn99xFZAB3SLH1-aSpTuIb5EO5a",
+  "public_access_ok": true,
+  "remote_path": "gdrive:/CARE2026_Myocardium_MyoPS_Corrected_20260805/MyoPS-OrganAgent-corrected.tar.gz",
+  "reused_old_failed_url": false,
+  "status": "PASS"
+}

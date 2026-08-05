@@ -1,0 +1,11 @@
+{
+  "checkpoint_hashes_match_frozen_contract": true,
+  "entrypoint_cmd_env_equal": true,
+  "forbidden_model_assets_present": true,
+  "model_checkpoint_hashes_equal": true,
+  "pip_freeze_equal": true,
+  "plans_dataset_hashes_equal": true,
+  "predict_entrypoint_requirements_hashes_equal": true,
+  "rootfs_prefix": true,
+  "status": "PASS"
+}

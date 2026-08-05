@@ -724,3 +724,42 @@ Key numbers:
 - pure edema T2-present 80-case: nnU-Net mean Dice `0.430812`, MoSAIC clean OOF mean Dice `0.052756`, case-oracle gain `0.002293`, MoSAIC rescue fraction `0/80`.
 
 This closure does not authorize training, threshold tuning, case-level selector construction, validation upload, Docker upload, or hosted metric claims.
+
+## 2026-08-05 MyoPS single-slice runtime-only Docker hotfix
+
+这次闭合的是已提交 MyoPS Docker 的单层输入运行时问题，而不是新模型路线。旧镜像先复现了合法 `(x, y, 1)` 输入触发 nnU-Net resampling 产生 0 维并导致整批失败的路径；corrected 镜像只在 nnU-Net `compute_new_shape` 后增加最小 1 voxel clamp，模型权重、fold、TTA、label map、`/app/predict.py`、`/app/entrypoint.sh`、`requirements.lock`、依赖和入口配置均保持不变。畸形跨模态 geometry mismatch 作为冻结 wrapper 的继承行为记录为 `INHERITED_BASE_BEHAVIOR_OUT_OF_SCOPE_NONBLOCKING`，不作为本次合法单层热修的 blocking gate。
+
+```text
+local_result_root:
+results/20260805_care_myops_single_slice_hotfix_repackage
+
+server_audit_root:
+results/20260805_care_myops_single_slice_hotfix_server_audit
+
+server_terminal_token:
+CORRECTED_MYOPS_RUNTIME_ONLY_HOTFIX_READY_FOR_ORGANIZER_REEVALUATION
+
+corrected_archive:
+dist/20260805_care_myops_single_slice_hotfix/MyoPS-OrganAgent-corrected.tar.gz
+
+corrected_archive_size:
+4742235545
+
+corrected_archive_sha256:
+fcf1c67a2123ab655a8e6c32dc46e6d98feaa43f41c698c6969aebfaa51f79ff
+
+drive_link:
+https://drive.google.com/open?id=1ATXgeTn99xFZAB3SLH1-aSpTuIb5EO5a
+
+organizer_email_sent:
+false
+```
+
+Evidence summary:
+
+- old single-slice failure reproduced before patching;
+- checkpoint/model/provenance invariance PASS;
+- 15/15 normal public MyoPS cases bitwise/geometrically/canonical-SHA exact;
+- depth1/depth2 valid synthetic boundary matrix, mixed batch, determinism, and clean save/load rerun PASS;
+- corrected archive and `SHA256SUMS` uploaded to a new Google Drive folder only;
+- server static audit under `/users/a/e/aereinh/CARE` returned the terminal token above without running Docker.

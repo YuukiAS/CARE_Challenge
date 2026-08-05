@@ -1,0 +1,29 @@
+case_id,output_exists,shape_match_input,spacing_match_input,origin_match_input,direction_match_input,dimension,depth,labels,labels_allowed,finite,integer_valued,canonical_sha256,array_exact_vs_base,geometry_exact_vs_base,canonical_sha_exact_vs_base
+Case1001,True,True,True,True,True,3,6,"[0, 200, 500, 600, 1220, 2221]",True,True,True,28a26ff5ee2cfe404603ac23e5b32fa14450e1080a9b311535bb646c4b4af6c8,True,True,True
+Case1002,True,True,True,True,True,3,6,"[0, 200, 500, 600, 1220, 2221]",True,True,True,ffa60f05c02f9d760598784763712f8fb968c765cb917db463d4f75d34bdadd5,True,True,True
+Case1003,True,True,True,True,True,3,6,"[0, 200, 500, 600, 1220, 2221]",True,True,True,5ad68c0ecd515b919f9125b5bb3cb7e166c03def642f69367deed243396107ca,True,True,True
+Case1004,True,True,True,True,True,3,7,"[0, 200, 500, 600, 1220, 2221]",True,True,True,ee2eba3a3d1dbd61e2937f75ceb3b22a7e4666d69cfb4f89dd8a59df92327d97,True,True,True
+Case1005,True,True,True,True,True,3,5,"[0, 200, 500, 600, 1220, 2221]",True,True,True,cf0cc50ac477d2240f3cb17f86007e9bb6fab5f4de63e1b276d6155fc86ad4b7,True,True,True
+Case1006,True,True,True,True,True,3,3,"[0, 200, 500, 600, 1220, 2221]",True,True,True,bec0aa5fce82ce58b269e9e97c373e6c9b0b8d12098c24593a770a54c45915ee,True,True,True
+Case1007,True,True,True,True,True,3,5,"[0, 200, 500, 600, 1220, 2221]",True,True,True,0b3b08911aefb42ddb2e707a6081b3b2a140ccab103206b507d64af12c55132a,True,True,True
+Case1008,True,True,True,True,True,3,3,"[0, 200, 500, 600, 1220, 2221]",True,True,True,6b8445959aaae1343596de46b42b955efa4753c6a2dc1c1bf18e8679a07de47f,True,True,True
+Case1009,True,True,True,True,True,3,4,"[0, 200, 500, 600, 1220, 2221]",True,True,True,38271947aa1f5dcadf368d446b4b7c23e9ca418202f256a13406b286d25a9269,True,True,True
+Case1010,True,True,True,True,True,3,4,"[0, 200, 500, 600, 1220, 2221]",True,True,True,30332fd908bf37a6077f7674582b0eb9cd4221a7fe9f9b2b5fef10a33d7d03c3,True,True,True
+Case1011,True,True,True,True,True,3,6,"[0, 200, 500, 600, 1220, 2221]",True,True,True,8cfd0beb4040718db891efbbe59a8a673e9999f87b5b51bf354f69b32e14982c,True,True,True
+Case1012,True,True,True,True,True,3,4,"[0, 200, 500, 600, 1220, 2221]",True,True,True,9a1d701892dcc32d0572dd91554653b42a99011be33fae6fd36ca9eec9b191aa,True,True,True
+Case1013,True,True,True,True,True,3,6,"[0, 200, 500, 600, 1220, 2221]",True,True,True,4dffcbc7a5b91ae8b7ff36ea7204b5c4d0995e7dcb22260b38829ee3beb7065c,True,True,True
+Case1014,True,True,True,True,True,3,6,"[0, 200, 500, 600, 1220, 2221]",True,True,True,40bb79faf66392de11b9993a837e10cccb07fceda3083d4d5175377fdc10c3fb,True,True,True
+Case1015,True,True,True,True,True,3,4,"[0, 200, 500, 600, 1220, 2221]",True,True,True,004fdddeaa6d5fe4db20e7397f05e22fb02364f007064f126268dbc782b81927,True,True,True
+SS_TINY_Z1,True,True,True,True,True,3,1,[0],True,True,True,911986fbbadef60fce6002c467b25ab297857a647ff1ec406d0882b520d14427,,,
+SS_Z1_SP1,True,True,True,True,True,3,1,"[0, 500]",True,True,True,28b81c6bf6fe8b2f540d49a4273d67e9ef2334f6aa330e6e424fe649727b5930,,,
+SS_Z1_SP10,True,True,True,True,True,3,1,[0],True,True,True,c7384b9bd587c57d25ec5953a2a746d4dc56359cc975a863889b6afe0919fdd8,,,
+SS_Z1_SP20,True,True,True,True,True,3,1,"[0, 200, 500, 600, 2221]",True,True,True,a87218d2822d15bbef66b3e3fff1560e5d7a5341c7095d1c95ea83ff18cc6410,,,
+SS_Z1_SP4,True,True,True,True,True,3,1,"[0, 500]",True,True,True,b553591816bd63f10b25845e162ecda025b4dc97876b927b3cda1f76b000f743,,,
+SS_Z1_SP5,True,True,True,True,True,3,1,"[0, 500]",True,True,True,a7455547e345ed44e6589ad0e940bf685ccc0b06179dbddc66910321d3dea70e,,,
+SS_Z1_SP50,True,True,True,True,True,3,1,"[0, 200, 500, 600, 2221]",True,True,True,0a5633609d51cb837a08b641fbceed00c3feb39ff6fca5c1a49ce7e1a40daf27,,,
+SS_Z1_SP9P9,True,True,True,True,True,3,1,[0],True,True,True,5bb0ef40865e56e268c75d7afc91330c6ea9f8f08630b2363250ceb3b9d2d98f,,,
+SS_Z2_SP1,True,True,True,True,True,3,2,"[0, 500]",True,True,True,385446908566f63c045ee831cd3271161c442b36fe84c9ef652a52aaa7a6f79e,,,
+SS_Z2_SP10,True,True,True,True,True,3,2,"[0, 200, 500, 600, 1220, 2221]",True,True,True,f963f9b68e6f4b0e1b566ecec620693e134dcefd302966b4d556b11223784f65,,,
+SS_Z2_SP20,True,True,True,True,True,3,2,"[0, 200, 500, 600, 1220, 2221]",True,True,True,bbf50fd44dfeaad0a8c55ac90bc2385e49930d2eb67b58f8c22682e34711f2d8,,,
+SS_Z2_SP4,True,True,True,True,True,3,2,"[0, 500]",True,True,True,8f871a889f7963e08cf691876ad74e403ca50706610516398494b34cab5849fd,,,
+SS_Z2_SP5,True,True,True,True,True,3,2,"[0, 500]",True,True,True,36c9128eee83f3ca4b94011dff7c33b1516cc2ae6de40564f4137831622e662f,,,

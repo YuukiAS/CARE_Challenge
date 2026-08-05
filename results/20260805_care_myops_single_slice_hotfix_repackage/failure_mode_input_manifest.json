@@ -1,0 +1,15 @@
+{
+  "fixture_root": "/workspace/.local_runtime/20260805_care_myops_single_slice_hotfix_repackage/failure_modes",
+  "fixtures": [
+    "empty_myops",
+    "geometry_mismatch",
+    "invalid_spacing",
+    "missing_t2",
+    "output_subdir_absent",
+    "readonly_input",
+    "single_slice_first",
+    "single_slice_last",
+    "single_slice_middle",
+    "unrelated_file"
+  ]
+}

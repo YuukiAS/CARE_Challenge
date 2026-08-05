@@ -1,0 +1,13 @@
+{
+  "all_finite": true,
+  "all_labels_allowed": true,
+  "all_outputs_geometry_match": true,
+  "depth1_cases_passed": 7,
+  "depth2_cases_passed": 5,
+  "expected_case_count": 13,
+  "missing_outputs": [],
+  "mode": "synthetic",
+  "output_count": 13,
+  "status": "PASS",
+  "unknown_outputs": []
+}

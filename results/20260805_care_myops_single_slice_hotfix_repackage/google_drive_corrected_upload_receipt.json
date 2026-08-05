@@ -1,0 +1,43 @@
+{
+  "authorized_files": [
+    "MyoPS-OrganAgent-corrected.tar.gz",
+    "SHA256SUMS"
+  ],
+  "forbidden_payloads_uploaded": false,
+  "local_archive": {
+    "path": "dist/20260805_care_myops_single_slice_hotfix/MyoPS-OrganAgent-corrected.tar.gz",
+    "sha256": "fcf1c67a2123ab655a8e6c32dc46e6d98feaa43f41c698c6969aebfaa51f79ff",
+    "size_bytes": 4742235545
+  },
+  "non_overwrite_check": {
+    "remote_folder_empty_before_upload": true,
+    "remote_folder": "gdrive:/CARE2026_Myocardium_MyoPS_Corrected_20260805/"
+  },
+  "rclone_check": {
+    "command": "rclone check dist/20260805_care_myops_single_slice_hotfix gdrive:/CARE2026_Myocardium_MyoPS_Corrected_20260805 --include 'MyoPS-OrganAgent-corrected.tar.gz' --include 'SHA256SUMS' --size-only",
+    "matching_files": 2,
+    "differences_found": 0,
+    "status": "PASS"
+  },
+  "remote_archive": {
+    "file_id": "1ATXgeTn99xFZAB3SLH1-aSpTuIb5EO5a",
+    "md5": "ed5d714d308d3f982ba8d0c32901a62e",
+    "path": "gdrive:/CARE2026_Myocardium_MyoPS_Corrected_20260805/MyoPS-OrganAgent-corrected.tar.gz",
+    "sha1": "ecb82983b0f55b8f68c4d74ce802ffe3d03fa1bd",
+    "sha256": "fcf1c67a2123ab655a8e6c32dc46e6d98feaa43f41c698c6969aebfaa51f79ff",
+    "size_bytes": 4742235545
+  },
+  "remote_folder_size": {
+    "objects": 2,
+    "size_bytes": 4742235645
+  },
+  "remote_sha256sums": {
+    "file_id": "15xqp5sRWreZpGO2O6BDsWeBT1DZA3Tcq",
+    "path": "gdrive:/CARE2026_Myocardium_MyoPS_Corrected_20260805/SHA256SUMS",
+    "sha256": "73e726c93dd59291cc40da2014415ae4a5e793ccde570611a2a9a8a684e843b5",
+    "size_bytes": 100
+  },
+  "secret_material_read_or_printed": false,
+  "status": "PASS",
+  "uploaded_at_utc": "2026-08-05T04:41:27Z"
+}

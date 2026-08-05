@@ -1,0 +1,5 @@
+{
+  "require_upload": true,
+  "server_static_audit": true,
+  "status": "PASS"
+}

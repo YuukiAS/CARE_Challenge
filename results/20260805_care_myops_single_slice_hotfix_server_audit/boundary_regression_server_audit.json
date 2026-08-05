@@ -1,0 +1,15 @@
+{
+  "clean_save_load_status": "PASS",
+  "clean_synthetic_full_matrix_rerun_pass": true,
+  "depth1_cases_passed": 7,
+  "depth2_cases_passed": 5,
+  "edge_status": "PASS",
+  "mixed_missing_outputs": [],
+  "mixed_status": "PASS",
+  "normal_array_exact_count": 15,
+  "normal_canonical_sha_exact_count": 15,
+  "normal_case_count": 15,
+  "normal_geometry_exact_count": 15,
+  "normal_status": "PASS",
+  "status": "PASS"
+}

@@ -990,3 +990,44 @@ results/20260801_care_nnunet_mosaic_complementarity_closure/strict_validator_rep
 - `oof_case_oracle_bounds.csv` 是上界，不是可部署 selector。
 - `m10_diagnostic_casewise.csv` 中 M10 行标记 `trained_on_case_possible=true` 与 `not_valid_for_generalization_claim=true`。
 - validation disagreement 只能说明两个预测的差异，不能写成谁更好。
+
+## 2026-08-05 MyoPS single-slice runtime-only Docker hotfix
+
+这次修复的是已经提交给组织方的 MyoPS Docker 在合法单层输入上可能因 nnU-Net 重采样尺寸被算成 0 而整批失败的问题。修复只在运行时给 nnU-Net `compute_new_shape` 结果增加 `np.maximum(new_shape, 1)` 保护；没有更换 checkpoint、fold、TTA、label map、`/app/predict.py`、`/app/entrypoint.sh`、`requirements.lock`、依赖或模型配置。畸形跨模态 geometry mismatch 被记录为继承的非阻塞基础行为：`INHERITED_BASE_BEHAVIOR_OUT_OF_SCOPE_NONBLOCKING`。
+
+```text
+local_result_root:
+results/20260805_care_myops_single_slice_hotfix_repackage
+
+server_audit_root:
+results/20260805_care_myops_single_slice_hotfix_server_audit
+
+server_terminal_token:
+CORRECTED_MYOPS_RUNTIME_ONLY_HOTFIX_READY_FOR_ORGANIZER_REEVALUATION
+
+corrected_archive:
+dist/20260805_care_myops_single_slice_hotfix/MyoPS-OrganAgent-corrected.tar.gz
+
+corrected_archive_size:
+4742235545
+
+corrected_archive_sha256:
+fcf1c67a2123ab655a8e6c32dc46e6d98feaa43f41c698c6969aebfaa51f79ff
+
+drive_link:
+https://drive.google.com/open?id=1ATXgeTn99xFZAB3SLH1-aSpTuIb5EO5a
+
+organizer_email_sent:
+false
+```
+
+Verified evidence:
+
+- old single-slice failure reproduced before patching;
+- model invariance PASS for five `checkpoint_best.pth` files, plans/dataset, `/app/predict.py`, `/app/entrypoint.sh`, `requirements.lock`, pip freeze, ENTRYPOINT/Cmd/Env, and rootfs prefix;
+- 15/15 normal public MyoPS cases bitwise/geometrically/canonical-SHA exact between base and corrected images;
+- depth1/depth2 valid synthetic single-slice matrix PASS;
+- mixed normal-plus-single-slice batch PASS with no missing output;
+- determinism and clean save/load/full synthetic rerun PASS;
+- corrected archive uploaded only with `SHA256SUMS` to the new Drive folder and public access checked;
+- `/users/a/e/aereinh/CARE` server performed static provenance audit only, with Docker not run.

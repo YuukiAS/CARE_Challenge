@@ -1,0 +1,12 @@
+{
+  "authenticated": false,
+  "checked_at_utc": "2026-08-05T04:41:27Z",
+  "final_http_status": 200,
+  "link": "https://drive.google.com/open?id=1ATXgeTn99xFZAB3SLH1-aSpTuIb5EO5a",
+  "public_access_ok": true,
+  "redirect_chain_observed": [
+    307,
+    200
+  ],
+  "status": "PASS"
+}

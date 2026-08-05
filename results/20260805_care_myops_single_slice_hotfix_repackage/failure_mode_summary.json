@@ -1,0 +1,20 @@
+{
+  "case_count": 10,
+  "failures": [
+    {
+      "exit_code": 0,
+      "expected_nonzero": true,
+      "expected_text": "SS_Z1_SP4",
+      "expected_text_found": true,
+      "legal_success_expected": false,
+      "mode": "geometry_mismatch",
+      "nonblocking_reason": "Malformed cross-modality geometry is outside the frozen valid-input single-slice hotfix contract per resume authorization addendum.",
+      "output_files": "['myops/SS_Z1_SP4_pred.nii.gz']",
+      "status": "INHERITED_BASE_BEHAVIOR_OUT_OF_SCOPE_NONBLOCKING",
+      "unrelated_preserved": true
+    }
+  ],
+  "nonblocking_inherited_behavior_token": "INHERITED_BASE_BEHAVIOR_OUT_OF_SCOPE_NONBLOCKING",
+  "pass_count": 9,
+  "status": "PASS_WITH_INHERITED_BASE_BEHAVIOR_OUT_OF_SCOPE_NONBLOCKING"
+}

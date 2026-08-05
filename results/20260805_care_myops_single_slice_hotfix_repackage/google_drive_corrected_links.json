@@ -1,0 +1,10 @@
+{
+  "archive_file_id": "1ATXgeTn99xFZAB3SLH1-aSpTuIb5EO5a",
+  "archive_sha256": "fcf1c67a2123ab655a8e6c32dc46e6d98feaa43f41c698c6969aebfaa51f79ff",
+  "archive_size_bytes": 4742235545,
+  "download_link": "https://drive.google.com/open?id=1ATXgeTn99xFZAB3SLH1-aSpTuIb5EO5a",
+  "remote_archive": "gdrive:/CARE2026_Myocardium_MyoPS_Corrected_20260805/MyoPS-OrganAgent-corrected.tar.gz",
+  "remote_sha256sums": "gdrive:/CARE2026_Myocardium_MyoPS_Corrected_20260805/SHA256SUMS",
+  "reused_old_failed_url": false,
+  "status": "PASS"
+}

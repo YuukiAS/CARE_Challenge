@@ -1,0 +1,14 @@
+case_id,output_exists,shape_match_input,spacing_match_input,origin_match_input,direction_match_input,dimension,depth,labels,labels_allowed,finite,integer_valued,canonical_sha256
+SS_TINY_Z1,True,True,True,True,True,3,1,[0],True,True,True,911986fbbadef60fce6002c467b25ab297857a647ff1ec406d0882b520d14427
+SS_Z1_SP1,True,True,True,True,True,3,1,"[0, 500]",True,True,True,28b81c6bf6fe8b2f540d49a4273d67e9ef2334f6aa330e6e424fe649727b5930
+SS_Z1_SP10,True,True,True,True,True,3,1,[0],True,True,True,c7384b9bd587c57d25ec5953a2a746d4dc56359cc975a863889b6afe0919fdd8
+SS_Z1_SP20,True,True,True,True,True,3,1,"[0, 200, 500, 600, 2221]",True,True,True,a87218d2822d15bbef66b3e3fff1560e5d7a5341c7095d1c95ea83ff18cc6410
+SS_Z1_SP4,True,True,True,True,True,3,1,"[0, 500]",True,True,True,b553591816bd63f10b25845e162ecda025b4dc97876b927b3cda1f76b000f743
+SS_Z1_SP5,True,True,True,True,True,3,1,"[0, 500]",True,True,True,a7455547e345ed44e6589ad0e940bf685ccc0b06179dbddc66910321d3dea70e
+SS_Z1_SP50,True,True,True,True,True,3,1,"[0, 200, 500, 600, 2221]",True,True,True,0a5633609d51cb837a08b641fbceed00c3feb39ff6fca5c1a49ce7e1a40daf27
+SS_Z1_SP9P9,True,True,True,True,True,3,1,[0],True,True,True,5bb0ef40865e56e268c75d7afc91330c6ea9f8f08630b2363250ceb3b9d2d98f
+SS_Z2_SP1,True,True,True,True,True,3,2,"[0, 500]",True,True,True,385446908566f63c045ee831cd3271161c442b36fe84c9ef652a52aaa7a6f79e
+SS_Z2_SP10,True,True,True,True,True,3,2,"[0, 200, 500, 600, 1220, 2221]",True,True,True,f963f9b68e6f4b0e1b566ecec620693e134dcefd302966b4d556b11223784f65
+SS_Z2_SP20,True,True,True,True,True,3,2,"[0, 200, 500, 600, 1220, 2221]",True,True,True,bbf50fd44dfeaad0a8c55ac90bc2385e49930d2eb67b58f8c22682e34711f2d8
+SS_Z2_SP4,True,True,True,True,True,3,2,"[0, 500]",True,True,True,8f871a889f7963e08cf691876ad74e403ca50706610516398494b34cab5849fd
+SS_Z2_SP5,True,True,True,True,True,3,2,"[0, 500]",True,True,True,36c9128eee83f3ca4b94011dff7c33b1516cc2ae6de40564f4137831622e662f

@@ -1,0 +1,10 @@
+{
+  "base_rootfs_diff_ids_are_exact_prefix": true,
+  "entrypoint_cmd_env_equal": true,
+  "forbidden_model_assets_present": false,
+  "model_checkpoint_hashes_equal": true,
+  "pip_freeze_equal": true,
+  "plans_dataset_hashes_equal": true,
+  "predict_entrypoint_requirements_hashes_equal": true,
+  "status": "PASS"
+}
