@@ -1,0 +1,38 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_CONTROLLER_ACTIVATION_RECEIPT",
+  "task_id": "care-ase-faithful",
+  "controller_task_path": "prompts/tasks/20260805_care_ase_develop_faithful_reimplementation_controller.md",
+  "integration_branch": "develop",
+  "controller_thread_id": "019fd28c-8f8c-7662-b899-c21c9bd2d203",
+  "controller_worktree_used": "/users/a/e/aereinh/CARE/.worktrees/20260805_ase_v3_develop",
+  "controller_role_plan_worktree": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/controller",
+  "develop_head_at_activation": "26919efb9c517a17e5b16b003e15ab9f89dbf7cc",
+  "origin_develop_head_at_activation": "26919efb9c517a17e5b16b003e15ab9f89dbf7cc",
+  "origin_main_head_at_activation": "d23d415b181f1be1eac22575ce18db00544818ed",
+  "frozen_contract_path": "prompts/tasks/20260805_care_ase_develop_faithful_reimplementation_loop.md",
+  "frozen_contract_sha256_computed": "c01fc64942a8d957ef3087ae38b2e0e67db306eed062021b87677528b6b5121c",
+  "request_sha256": "b095763f638bcf3f59914e1f398dd82771523f6f0c17c15bff80193b7843b918",
+  "current_sha256": "09bd88f00a89ae0b7f19e88b03a972c148c5377e817ad7f484148362715bfbb8",
+  "visual_sources_sha256": "7dc003ce1823284a45adcdeeb6d7b1a67ebad1b04a62d82db9be85dc5a0b131a",
+  "validator_sha256": "d399e6d3c1a77360743a0d9ab970a10ba50a55afbed2f6eea3f804699d33ca64",
+  "unit_test_sha256": "8432ab31e4adbf088dc6badbcf2120caa11eefbacb58c23347d79a84ba08dac5",
+  "start_gate": {
+    "loop_contract_current": true,
+    "critic_plan_frozen_receipt_present": false,
+    "request_enabled": false,
+    "current_state": "PLAN_REQUESTED",
+    "visual_source_gate_passed": false,
+    "develop_exists": true,
+    "historical_runtime_modification_attempted": false
+  },
+  "activation_decision": "BLOCKED_UNTIL_PLAN_FROZEN",
+  "role_launch_decision": "NOT_LAUNCHED",
+  "forbidden_actions_observed": {
+    "ase_implementation_started": false,
+    "training_started": false,
+    "outer_access_started": false,
+    "docker_started": false,
+    "main_merge_started": false
+  },
+  "updated_utc": "2026-08-05T15:35:57Z"
+}

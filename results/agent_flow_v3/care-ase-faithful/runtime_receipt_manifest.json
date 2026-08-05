@@ -1,0 +1,17 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_RUNTIME_RECEIPT_MANIFEST",
+  "task_id": "care-ase-faithful",
+  "status": "prelaunch_infrastructure_validated",
+  "receipts": [
+    "results/agent_flow_v3/care-ase-faithful/activation/controller_activation_receipt.json",
+    "results/agent_flow_v3/care-ase-faithful/ci_receipt.json",
+    "results/agent_flow_v3/care-ase-faithful/final_state.json"
+  ],
+  "role_receipts": {
+    "controller": "results/agent_flow_v3/care-ase-faithful/activation/controller_activation_receipt.json",
+    "verifier": null,
+    "executor": null
+  },
+  "role_receipt_absence_reason": "Verifier and Executor were not launched because the controller start gate blocks before PLAN_FROZEN.",
+  "updated_utc": "2026-08-05T15:35:57Z"
+}

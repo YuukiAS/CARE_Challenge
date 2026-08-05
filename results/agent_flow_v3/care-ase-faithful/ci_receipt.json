@@ -1,0 +1,29 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_CI_RECEIPT",
+  "task_id": "care-ase-faithful",
+  "scope": "local_deterministic_infrastructure_validation",
+  "commands": [
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/automation/validate_agent_flow_v3.py --repo-root .",
+      "exit_code": 0,
+      "summary": "CARE Agent-Flow v3 contract validation: PASS"
+    },
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m unittest tests.automation.test_agent_flow_v3",
+      "exit_code": 0,
+      "summary": "Ran 5 tests; OK"
+    },
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m py_compile scripts/automation/validate_agent_flow_v3.py",
+      "exit_code": 0,
+      "summary": "validator syntax compile passed"
+    },
+    {
+      "command": "python3 scripts/automation/validate_agent_flow_v3.py --repo-root .",
+      "exit_code": 0,
+      "summary": "CARE Agent-Flow v3 contract validation: PASS"
+    }
+  ],
+  "github_actions_status": "pending_push",
+  "updated_utc": "2026-08-05T15:35:57Z"
+}
