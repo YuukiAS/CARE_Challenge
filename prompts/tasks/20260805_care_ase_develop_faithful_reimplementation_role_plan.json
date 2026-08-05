@@ -1,0 +1,113 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_ROLE_PLAN",
+  "task_id": "care-ase-faithful",
+  "integration_branch": "develop",
+  "remote_role_branches_authorized": false,
+  "controller_pushes_integration_branch": true,
+  "merge_to_main_authorized": false,
+  "roles": {
+    "planner": {
+      "backend": "scheduled_gpt",
+      "persistent_task": true,
+      "responsibilities": [
+        "author_initial_contract",
+        "post_implementation_exact_sha_review",
+        "route_repair_findings",
+        "return_planner_pass_or_revise"
+      ]
+    },
+    "critic": {
+      "backend": "scheduled_gpt",
+      "persistent_task": true,
+      "responsibilities": [
+        "independent_contract_audit",
+        "direct_contract_repair",
+        "freeze_exact_contract_sha"
+      ]
+    },
+    "controller": {
+      "backend": "persistent_codex_session",
+      "worktree": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/controller",
+      "codex_home": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_CONTROLLER",
+      "thread_id_file": "/users/a/e/aereinh/.agent-flow-v3/care-ase-faithful/controller_thread_id",
+      "local_branch": "local/controller/care-ase-faithful",
+      "write_scope": [
+        "automation/agent_flow_v3/tasks/care-ase-faithful/**",
+        "results/agent_flow_v3/care-ase-faithful/**",
+        "controller_notifications/**"
+      ],
+      "forbidden_scope": [
+        "src/**",
+        "scripts/training/**",
+        "scripts/inference/**",
+        "jobs/**",
+        "configs/**",
+        "tests/**",
+        "validators/**"
+      ]
+    },
+    "verifier": {
+      "backend": "persistent_codex_session",
+      "worktree": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/verifier",
+      "codex_home": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_VERIFIER",
+      "thread_id_file": "/users/a/e/aereinh/.agent-flow-v3/care-ase-faithful/verifier_thread_id",
+      "local_branch": "local/verifier/care-ase-faithful",
+      "write_scope": [
+        "tests/**",
+        "validators/**",
+        "automation/agent_flow_v3/**",
+        "results/agent_flow_v3/care-ase-faithful/verification/**"
+      ],
+      "forbidden_scope": [
+        "src/**",
+        "scripts/training/**",
+        "scripts/inference/**",
+        "jobs/**",
+        "configs/**",
+        "prompts/blueprints/**",
+        "prompts/tasks/20260805_care_ase_develop_faithful_reimplementation_loop.md"
+      ]
+    },
+    "executor": {
+      "backend": "persistent_codex_session",
+      "worktree": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor",
+      "codex_home": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_EXECUTOR",
+      "thread_id_file": "/users/a/e/aereinh/.agent-flow-v3/care-ase-faithful/executor_thread_id",
+      "local_branch": "local/executor/care-ase-faithful",
+      "write_scope": [
+        "src/**",
+        "scripts/training/**",
+        "scripts/inference/**",
+        "jobs/**",
+        "configs/**",
+        "results/agent_flow_v3/care-ase-faithful/implementation/**"
+      ],
+      "forbidden_scope": [
+        "tests/**",
+        "validators/**",
+        "automation/agent_flow_v3/schema.json",
+        "prompts/blueprints/**",
+        "prompts/tasks/20260805_care_ase_develop_faithful_reimplementation_loop.md"
+      ]
+    }
+  },
+  "launch_order": [
+    "controller",
+    "verifier",
+    "executor"
+  ],
+  "integration_order": [
+    "verifier_commit",
+    "executor_commit"
+  ],
+  "planner_decisions": [
+    "PLANNER_REVISE_EXECUTOR",
+    "PLANNER_REVISE_VERIFIER",
+    "PLANNER_REVISE_BOTH",
+    "PLANNER_PASS"
+  ],
+  "human_gate_after_planner_pass": true,
+  "training_authorized": false,
+  "outer_access_authorized": false,
+  "deployment_authorized": false
+}
