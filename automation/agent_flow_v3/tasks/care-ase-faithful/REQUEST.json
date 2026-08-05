@@ -1,0 +1,56 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3",
+  "enabled": false,
+  "task_id": "care-ase-faithful",
+  "repository": "YuukiAS/CARE_Challenge",
+  "integration_branch": "develop",
+  "frozen_contract_path": "prompts/tasks/20260805_care_ase_develop_faithful_reimplementation_loop.md",
+  "frozen_contract_sha256": null,
+  "planner_reentry_required": true,
+  "critic_freeze_required": true,
+  "controller_executor_separation_required": true,
+  "verifier_executor_separation_required": true,
+  "role_sessions": {
+    "controller": {
+      "thread_id_file": "/users/a/e/aereinh/.agent-flow-v3/care-ase-faithful/controller_thread_id",
+      "codex_home": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_CONTROLLER",
+      "worktree": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/controller",
+      "local_branch": "local/controller/care-ase-faithful",
+      "may_edit_implementation": false,
+      "may_edit_verification": false
+    },
+    "verifier": {
+      "thread_id_file": "/users/a/e/aereinh/.agent-flow-v3/care-ase-faithful/verifier_thread_id",
+      "codex_home": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_VERIFIER",
+      "worktree": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/verifier",
+      "local_branch": "local/verifier/care-ase-faithful",
+      "may_edit_implementation": false,
+      "may_edit_verification": true
+    },
+    "executor": {
+      "thread_id_file": "/users/a/e/aereinh/.agent-flow-v3/care-ase-faithful/executor_thread_id",
+      "codex_home": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_EXECUTOR",
+      "worktree": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor",
+      "local_branch": "local/executor/care-ase-faithful",
+      "may_edit_implementation": true,
+      "may_edit_verification": false
+    }
+  },
+  "critical_paths": [
+    "prompts/blueprints/**",
+    "src/**",
+    "scripts/training/**",
+    "scripts/inference/**",
+    "jobs/**",
+    "configs/**",
+    "tests/**",
+    "validators/**"
+  ],
+  "visual_sources_path": "automation/agent_flow_v3/tasks/care-ase-faithful/VISUAL_SOURCES.json",
+  "max_repair_rounds": 12,
+  "human_gate_after_planner_pass": true,
+  "training_authorized": false,
+  "outer_access_authorized": false,
+  "deployment_authorized": false,
+  "created_utc": "2026-08-05T10:05:00Z"
+}
