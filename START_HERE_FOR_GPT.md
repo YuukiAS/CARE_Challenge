@@ -9,14 +9,15 @@
 3. `AGENTS.md`
 4. `prompts/FINAL_OUTPUT_READABILITY_POLICY.md`
 5. `prompts/AGENT_FLOW_V2_PROTOCOL.md`
-6. `prompts/HANDOFF_GATE_POLICY.md`
-7. `prompts/GPT_HARD_GATE_PROMPT.md`
-8. `prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md`
-9. `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md`
-10. `prompts/routes/handoffs/CURRENT.md`
-11. `routes/README.md`
-12. `wiki/README.md`
-13. 当前任务、结果、代码和必要 skill。
+6. 当具体任务声明 `agent_flow_version: v3` 时，追加读取 `prompts/AGENT_FLOW_V3_PROTOCOL.md` 与 `automation/agent_flow_v3/README.md`
+7. `prompts/HANDOFF_GATE_POLICY.md`
+8. `prompts/GPT_HARD_GATE_PROMPT.md`
+9. `prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md`
+10. `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md`
+11. `prompts/routes/handoffs/CURRENT.md`
+12. `routes/README.md`
+13. `wiki/README.md`
+14. 当前任务、结果、代码和必要 skill。
 
 不得用旧聊天记忆、watchboard、旧 route 状态或自然语言总结替代当前远端 `main` 和 `CURRENT.md`。
 
@@ -24,7 +25,7 @@
 
 面向用户、Planner 或科研负责人的最终分析必须先给自然中文判断，再给内部标签、路径、指标和命令。不得把仓库内部实验名、状态 token、机制标签或英文短语堆叠当作标题或结论；内部代号只能放在解释后的括号中用于定位。发送前按 `prompts/FINAL_OUTPUT_READABILITY_POLICY.md` 做可读性验收。
 
-## 当前 main-only posture
+## 当前 main-only posture 与显式 develop 例外
 
 默认仓库：
 
@@ -44,9 +45,11 @@ main
 
 Route A/B/C 是历史 evidence lanes。只有用户显式重新授权某条 route 时，才恢复 route worktree/controller。
 
+用户已显式授权一个独立例外：CARE Agent-Flow v3 可以使用远端 `develop` 作为隔离集成分支，用于 Controller、Verifier、Executor 三个独立 Codex 会话的 CARE-ASE 忠实实现闭环。该例外只适用于明确声明 `agent_flow_version: v3` 和 `integration_branch: develop` 的任务，不改变其他任务的 main-only 默认，也不授权自动合并回 main、训练、outer、部署或上传。
+
 ## 默认 Sprint Flow
 
-当前默认流程：
+当前默认 v2 流程：
 
 ```text
 Planner
@@ -84,6 +87,24 @@ reviewer: none
 
 只有用户或 Planner 在具体任务中显式设置 `planning_review_required: true` 或 `review_required: true`，才启用旧的独立 planning critic 或 read-only reviewer。
 
+### Agent-Flow v3 显式流程
+
+当具体任务声明 `agent_flow_version: v3` 时，使用：
+
+```text
+scheduled GPT Planner
+-> scheduled GPT Critic directly repairs and freezes the contract
+-> persistent Codex Controller (coordination only)
+-> persistent isolated Codex Verifier
+-> persistent isolated Codex Executor
+-> deterministic CI
+-> scheduled GPT Planner implementation review
+-> Controller resumes Verifier/Executor until PLANNER_PASS
+-> AWAIT_HUMAN_DECISION
+```
+
+v3 不使用单独 Reviewer。Controller、Verifier、Executor 必须是不同的持久 Codex 会话、worktree、`CODEX_HOME` 和 exact thread ID；Controller 不得亲自写实现或验证代码。详见 `prompts/AGENT_FLOW_V3_PROTOCOL.md`。
+
 ## 新任务必须声明
 
 ```yaml
@@ -117,6 +138,18 @@ auto_git_push: false
 allow_diagnostic_push: false
 ```
 
+v3 任务还必须声明：
+
+```yaml
+agent_flow_version: v3
+integration_branch: develop
+planner_reentry_required: true
+critic_freeze_required: true
+controller_executor_separation_required: true
+verifier_executor_separation_required: true
+human_gate_after_planner_pass: true
+```
+
 长 Slurm/overnight/multi-job/high-resume-risk 必须用 `controller_supervised` 和 durable finalizer。任何 `executor_count > 1` 必须有隔离写入范围和有效 executor plan。
 
 ## Prompt 结构
@@ -128,7 +161,7 @@ allow_diagnostic_push: false
 ## Executor Prompt
 ```
 
-长 controller 任务默认：
+长 controller task 默认：
 
 ```text
 ## Execution Contract
@@ -143,7 +176,7 @@ allow_diagnostic_push: false
 ## Reviewer Prompt
 ```
 
-Reviewer prompt 不得作为所有 milestone 的默认必需段。
+Reviewer prompt 不得作为所有 milestone 的默认必需段。v3 不添加独立 Reviewer，而是提供 Critic、Controller、Verifier、Executor 和 Planner re-entry 合同。
 
 ## Controller 完成语义
 
@@ -166,6 +199,8 @@ controller_verification_decision: VERIFIED_COMPLETE | NEEDS_REPAIR | OPERATIONAL
 ```
 
 `VERIFIED_COMPLETE` 只代表当前 Batch 执行合同完成。下一 Batch、训练扩展、route promotion、validation upload、hosted claim 和 final scientific decision仍由 Planner/用户决定。
+
+在 v3 中，Controller 还必须证明 Controller、Verifier、Executor 的独立 session receipts，并在 `PLANNER_PASS` 后停止为 `AWAIT_HUMAN_DECISION`。
 
 ## SRR/MyoPS/Cine 图视觉门
 
@@ -198,6 +233,8 @@ SRR-v3
 BLOCKED_PROJECT_ROUTE_DIAGRAMS_UNAVAILABLE
 ```
 
+对于 scheduled GPT，允许使用经过 smoke 验证的公开静态网站、公开仓库原图或稳定直链；必须确认实际视觉理解，不能只读文件名。
+
 ## Slurm 门
 
 涉及 Slurm 时必须读取 `.agents/skills/slurm-routing-partition/SKILL.md`。正式 wrapper 禁止裸 `python`。Submitted、pending、running、monitor、awaiting sacct 均不是完成。Controller 必须持续负责到所有 job terminal、aggregation 和 validator 完成。
@@ -208,4 +245,4 @@ BLOCKED_PROJECT_ROUTE_DIAGRAMS_UNAVAILABLE
 
 ## 历史 reviewer 协议
 
-`prompts/MILESTONE_REVIEW_PROTOCOL.md` 只适用于显式 `review_required: true` 的历史或特殊任务。默认 Batch 不得因为缺少 `review.md` 被阻塞。
+`prompts/MILESTONE_REVIEW_PROTOCOL.md` 只适用于显式 `review_required: true` 的历史或特殊任务。默认 Batch 不得因为缺少 `review.md` 被阻塞。Agent-Flow v3 使用 Planner re-entry，不要求独立 Reviewer。
