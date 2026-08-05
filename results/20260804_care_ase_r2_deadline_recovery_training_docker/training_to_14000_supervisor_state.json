@@ -1,0 +1,71 @@
+{
+  "best_pure_edema_checkpoint": {
+    "care_pure_edema_mean": 0.4147367732778384,
+    "delta_vs_mosaic": 0.008983119857376154,
+    "delta_vs_nnunet": 0.010929686262733496,
+    "step": 3000
+  },
+  "best_scar_checkpoint": {
+    "care_scar_mean": 0.5493523613265275,
+    "delta_vs_mosaic": null,
+    "delta_vs_nnunet": -0.01794270910086515,
+    "step": 500
+  },
+  "cancelled_slurm_jobs": [
+    61984833,
+    62007366,
+    62007367,
+    62125898
+  ],
+  "docker_upload": 0,
+  "final_scientific_result": "CARE_ASE_INNER_NO_GO_USE_FALLBACK",
+  "fold1_verified_step": 6000,
+  "fold4_verified_step": 6000,
+  "formal_training_started": true,
+  "highest_verified": {
+    "fold1": 6000,
+    "fold4": 6000
+  },
+  "objective": "fold1_fold4_to_step6000_then_stop_because_not_ideal",
+  "organizer_email_sent": false,
+  "outer_access_authorized_diagnostic": true,
+  "status": "TERMINAL_STOPPED_AT_STEP6000_NOT_IDEAL",
+  "step6000_metrics": {
+    "care_minus_mosaic_pure_edema_mean": -0.005578805834477063,
+    "care_minus_mosaic_scar_mean": -0.31302227461015536,
+    "care_minus_nnunet_pure_edema_mean": -0.0035869500508246,
+    "care_minus_nnunet_scar_mean": -0.12598307353064814,
+    "care_pure_edema_mean": 0.4001748475859852,
+    "care_scar_mean": 0.44131273207901506,
+    "case_count_total": 88,
+    "edema_t2_case_count_total": 32,
+    "fold1_checkpoint": "/users/a/e/aereinh/CARE/results/20260804_care_ase_r2_formal_training_e9e212dd7856/runtime_deadline_e9e212dd7856/fold_1/checkpoint_step06000.pt",
+    "fold1_checkpoint_sha256": "ce26fb1535190abe3c54eea3a60c86f34f304bf57f9a81f940648c1f20494207",
+    "fold1_verified_receipt": "results/20260804_care_ase_r2_formal_training_e9e212dd7856/runtime_deadline_e9e212dd7856/fold_1/checkpoint_step06000.pt.verified.json",
+    "fold1_verified_receipt_sha256": "4942d4e8ee0df64c7e0532120144a09da9f73d985f083c97fccc7cec04f13f6e",
+    "fold4_checkpoint": "/users/a/e/aereinh/CARE/results/20260804_care_ase_r2_formal_training_e9e212dd7856/runtime_deadline_e9e212dd7856/fold_4/checkpoint_step06000.pt",
+    "fold4_checkpoint_sha256": "dd22ee28fa0a0f102a8b9c5b918e6cb7eee4e8b81f4519a077fd78cc6c4b6080",
+    "fold4_verified_receipt": "results/20260804_care_ase_r2_formal_training_e9e212dd7856/runtime_deadline_e9e212dd7856/fold_4/checkpoint_step06000.pt.verified.json",
+    "fold4_verified_receipt_sha256": "c5c3c63a38e9922f343ad56038db41f22dbf6f263169312a2b812528a753a372",
+    "mosaic_pure_edema_mean": 0.40575365342046227,
+    "mosaic_scar_mean": 0.7543350066891704,
+    "nnunet_pure_edema_mean": 0.4037617976368098,
+    "nnunet_scar_mean": 0.5672958056096632,
+    "step": 6000,
+    "summary_path": "results/20260804_care_ase_r2_deadline_recovery_training_docker/outer_diagnostic_step06000_combined_summary.json",
+    "summary_sha256": "56a7feecb13e44522092e0b26f652c7b61096efca16d3f9d6887994e277f54e1"
+  },
+  "step6000_summary": "results/20260804_care_ase_r2_deadline_recovery_training_docker/outer_diagnostic_step06000_combined_summary.json",
+  "step6000_summary_sha256": "56a7feecb13e44522092e0b26f652c7b61096efca16d3f9d6887994e277f54e1",
+  "stop_condition": "user_defined_stop_if_step6000_still_not_ideal",
+  "stopped_after_verified_step": 6000,
+  "training_progress_curve_csv": "results/20260804_care_ase_r2_deadline_recovery_training_docker/training_progress_curve/care_ase_r2_training_progress_curve.csv",
+  "training_progress_curve_csv_sha256": "c995e383cac912647584fde1f9e47de593faa1325c851b8552f061b39bc9c2aa",
+  "training_progress_curve_json": "results/20260804_care_ase_r2_deadline_recovery_training_docker/training_progress_curve/care_ase_r2_training_progress_curve.json",
+  "training_progress_curve_json_sha256": "232231e1a199b1b21d67339f2fd94e3822b8f1415fad285eea292b5c603e91a2",
+  "training_progress_curve_png": "results/20260804_care_ase_r2_deadline_recovery_training_docker/training_progress_curve/care_ase_r2_training_progress_curve.png",
+  "training_progress_curve_png_sha256": "6316bead7d318144038936bf08442ada8a349e5d1416a54a85eb56f55270b229",
+  "training_stopped": true,
+  "updated_utc": "2026-08-05T11:01:24.291088+00:00",
+  "validation_upload": 0
+}
