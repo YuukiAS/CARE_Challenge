@@ -1,0 +1,4 @@
+path,asset_type,license_status,action,evidence
+third_party/MoSAIC/source,vendored_source,Apache-2.0 license file present,retained,third_party/MoSAIC/source/LICENSE
+docs/literature/**/*.pdf,third_party_pdf,redistribution license not verified,backed_up_and_detracked,detracking_manifest.csv
+docs/architecture/figures/*.png,project_architecture_figure,project-provided public architecture asset,imported_and_tracked,architecture_assets_import_manifest.csv

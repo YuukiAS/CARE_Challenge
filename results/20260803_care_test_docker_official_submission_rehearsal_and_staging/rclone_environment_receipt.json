@@ -1,7 +1,0 @@
-{
-  "oauth_secret_printed": false,
-  "rclone_config_read": false,
-  "remote": "gdrive:",
-  "status": "PASS",
-  "target_dir": "gdrive:/CARE2026_Myocardium_Test_OrganAgent_20260803"
-}
