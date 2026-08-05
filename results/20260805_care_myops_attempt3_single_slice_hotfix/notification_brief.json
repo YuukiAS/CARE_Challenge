@@ -9,7 +9,7 @@
     "dist/20260805_care_myops_attempt3_single_slice_hotfix/MyoPS-OrganAgent-Attempt3-corrected.tar.gz"
   ],
   "final_status": "complete",
-  "key_conclusion": "Attempt 3 MyoPS single-slice runtime-only hotfix is complete: original crash reproduced, only nnU-Net min-one shape clamp added, normal outputs remain 15/15 bitwise exact, corrected archive uploaded with public link, and server static audit passed without running Docker.",
+  "key_conclusion": "Attempt 3 MyoPS single-slice runtime-only hotfix is complete: original crash reproduced, only nnU-Net min-one shape clamp added, normal outputs remain 15/15 bitwise exact, corrected archive uploaded with public link, and server static audit passed with Docker not executed on the server.",
   "next_step": "Human may send the organizer draft; continue using the original CineMyoPS archive intentionally.",
   "push_status": "complete",
   "slurm_terminal_status": "not_used_no_slurm",
