@@ -1,0 +1,55 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3",
+  "enabled": false,
+  "task_id": "replace_me",
+  "repository": "YuukiAS/CARE_Challenge",
+  "integration_branch": "develop",
+  "frozen_contract_path": "prompts/tasks/<task>.md",
+  "frozen_contract_sha256": null,
+  "planner_reentry_required": true,
+  "critic_freeze_required": true,
+  "controller_executor_separation_required": true,
+  "verifier_executor_separation_required": true,
+  "role_sessions": {
+    "controller": {
+      "thread_id_file": "/users/a/e/aereinh/.agent-flow-v3/<task_id>/controller_thread_id",
+      "codex_home": "/users/a/e/aereinh/.codex-homes/CARE_<task_id>_CONTROLLER",
+      "worktree": "/users/a/e/aereinh/CARE_agent_flow/<task_id>/controller",
+      "local_branch": "local/controller/<task_id>",
+      "may_edit_implementation": false,
+      "may_edit_verification": false
+    },
+    "verifier": {
+      "thread_id_file": "/users/a/e/aereinh/.agent-flow-v3/<task_id>/verifier_thread_id",
+      "codex_home": "/users/a/e/aereinh/.codex-homes/CARE_<task_id>_VERIFIER",
+      "worktree": "/users/a/e/aereinh/CARE_agent_flow/<task_id>/verifier",
+      "local_branch": "local/verifier/<task_id>",
+      "may_edit_implementation": false,
+      "may_edit_verification": true
+    },
+    "executor": {
+      "thread_id_file": "/users/a/e/aereinh/.agent-flow-v3/<task_id>/executor_thread_id",
+      "codex_home": "/users/a/e/aereinh/.codex-homes/CARE_<task_id>_EXECUTOR",
+      "worktree": "/users/a/e/aereinh/CARE_agent_flow/<task_id>/executor",
+      "local_branch": "local/executor/<task_id>",
+      "may_edit_implementation": true,
+      "may_edit_verification": false
+    }
+  },
+  "critical_paths": [
+    "prompts/blueprints/**",
+    "src/**",
+    "scripts/training/**",
+    "scripts/inference/**",
+    "jobs/**",
+    "configs/**",
+    "tests/**",
+    "validators/**"
+  ],
+  "max_repair_rounds": 12,
+  "human_gate_after_planner_pass": true,
+  "training_authorized": false,
+  "outer_access_authorized": false,
+  "deployment_authorized": false,
+  "created_utc": null
+}
