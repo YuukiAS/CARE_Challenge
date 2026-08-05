@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schema_version": "CARE_AGENT_FLOW_V3",
+  "request_required": [
+    "schema",
+    "enabled",
+    "task_id",
+    "repository",
+    "integration_branch",
+    "frozen_contract_path",
+    "frozen_contract_sha256",
+    "planner_reentry_required",
+    "critic_freeze_required",
+    "controller_executor_separation_required",
+    "verifier_executor_separation_required",
+    "role_sessions",
+    "critical_paths",
+    "max_repair_rounds",
+    "human_gate_after_planner_pass",
+    "training_authorized",
+    "outer_access_authorized",
+    "deployment_authorized",
+    "created_utc"
+  ],
+  "roles": [
+    "planner",
+    "critic",
+    "controller",
+    "verifier",
+    "executor"
+  ],
+  "codex_roles": [
+    "controller",
+    "verifier",
+    "executor"
+  ],
+  "normal_states": [
+    "PLAN_REQUESTED",
+    "PLAN_READY_FOR_CRITIC",
+    "PLAN_FROZEN",
+    "CONTROLLER_INITIALIZING",
+    "VERIFIER_RUNNING",
+    "VERIFIER_FROZEN",
+    "EXECUTOR_RUNNING",
+    "INTEGRATION_RUNNING",
+    "CI_RUNNING",
+    "READY_FOR_PLANNER_REVIEW",
+    "PLANNER_REVISE_EXECUTOR",
+    "PLANNER_REVISE_VERIFIER",
+    "PLANNER_REVISE_BOTH",
+    "PLANNER_PASS",
+    "AWAIT_HUMAN_DECISION"
+  ],
+  "exception_states": [
+    "BLOCKED_VISUAL_SOURCES",
+    "BLOCKED_ROLE_ISOLATION",
+    "BLOCKED_CONTRACT_DRIFT",
+    "BLOCKED_CI",
+    "STOPPED_STUCK",
+    "STOPPED_DEADLINE",
+    "STOPPED_MAX_ROUNDS"
+  ],
+  "current_required": [
+    "schema",
+    "task_id",
+    "state",
+    "review_round",
+    "request_nonce",
+    "frozen_contract_sha256",
+    "integration_commit_sha",
+    "implementation_fingerprint_sha256",
+    "verifier_fingerprint_sha256",
+    "next_action",
+    "updated_utc"
+  ],
+  "planner_decisions": [
+    "PLANNER_REVISE_EXECUTOR",
+    "PLANNER_REVISE_VERIFIER",
+    "PLANNER_REVISE_BOTH",
+    "PLANNER_PASS"
+  ]
+}
