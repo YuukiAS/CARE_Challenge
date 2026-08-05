@@ -1,0 +1,10 @@
+{
+  "archive": "/users/a/e/aereinh/.tmp/codex-CARE/20260805_care_myops_attempt3_single_slice_hotfix/workstation_return/dist/20260805_care_myops_attempt3_single_slice_hotfix/MyoPS-OrganAgent-Attempt3-corrected.tar.gz",
+  "checked_at_utc": "2026-08-05T22:37:45Z",
+  "expected_sha256": "52c39ab06abc0d1e4411def14bea445e27099ca9c13164dab67eb0e063c93709",
+  "expected_size_bytes": 5103476746,
+  "sha256": "52c39ab06abc0d1e4411def14bea445e27099ca9c13164dab67eb0e063c93709",
+  "sha256sums_contains_expected": true,
+  "size_bytes": 5103476746,
+  "status": "PASS"
+}

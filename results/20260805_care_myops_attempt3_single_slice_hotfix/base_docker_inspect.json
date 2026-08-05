@@ -1,0 +1,70 @@
+{
+  "Architecture": "amd64",
+  "Comment": "buildkit.dockerfile.v0",
+  "Config": {
+    "Entrypoint": [
+      "/app/entrypoint.sh"
+    ],
+    "Env": [
+      "PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+      "LANG=C.UTF-8",
+      "GPG_KEY=7169605F62C751356D054A26A821E680E5FA6305",
+      "PYTHON_VERSION=3.12.13",
+      "PYTHON_SHA256=c08bc65a81971c1dd5783182826503369466c7e67374d1646519adf05207b684",
+      "PYTHONUNBUFFERED=1",
+      "CARE_DEVICE=cpu",
+      "CARE_INPUT_DIR=/input",
+      "CARE_OUTPUT_DIR=/output/myops",
+      "CARE_SELF_MODEL_DIR=/app/models/self_model",
+      "nnUNet_raw=/app/models/nnunet/nnUNet_raw",
+      "nnUNet_preprocessed=/app/models/nnunet/nnUNet_preprocessed",
+      "nnUNet_results=/app/models/nnunet/nnUNet_results"
+    ],
+    "WorkingDir": "/app"
+  },
+  "Created": "2026-08-04T15:29:50.219135019+08:00",
+  "Descriptor": {
+    "digest": "sha256:a291ab1e51a52c0739970a45db567b4e4a8cb103e06946626509800fa6f258bf",
+    "mediaType": "application/vnd.oci.image.index.v1+json",
+    "size": 856
+  },
+  "Id": "sha256:a291ab1e51a52c0739970a45db567b4e4a8cb103e06946626509800fa6f258bf",
+  "Identity": {
+    "Build": [
+      {
+        "CreatedAt": "2026-08-04T15:29:50.302251444+08:00",
+        "Ref": "72hpuazt3sykblducrnhmf67i"
+      }
+    ]
+  },
+  "Metadata": {
+    "LastTagTime": "2026-08-05T10:13:54.770750458Z"
+  },
+  "Os": "linux",
+  "RepoDigests": [
+    "care-myocardium-myops@sha256:a291ab1e51a52c0739970a45db567b4e4a8cb103e06946626509800fa6f258bf"
+  ],
+  "RepoTags": [
+    "care-myocardium-myops:attempt3",
+    "care-myocardium-myops:attempt3-failed-base"
+  ],
+  "RootFS": {
+    "Layers": [
+      "sha256:f2ec4de84f559f5c7be4233b589cdbdbb5507807e05621b77320edd55a1f2a0f",
+      "sha256:ccbaccfc0388284959cf106031557105fad2067d6c4435937b3414ce90760167",
+      "sha256:83fdf57f71f28b640f11d5072c284c81eadefc5ea538050fedcedba6149879bd",
+      "sha256:b80f3ed1ee6de85c788d9ae7203207c44724eab4baac8697390ca1412954ad2f",
+      "sha256:7f51b309eff9b3ba2ffd120df400b9bb125c60abff745575fbd462a65bf2b94a",
+      "sha256:f832726b2e19696277f061dc23a7c00ec2f98165e3609e25f703ed25b8a9c2ce",
+      "sha256:116d06837d7e9b6c6854edadefe3d98abcecc8bd145f379d3cbcc1734acebbb2",
+      "sha256:2cccf2ab18f814870c4ecc5d107b340a9ab3268b90c0dc10480f1461c3130d57",
+      "sha256:3cdb8d61760fe0ad908c83f2339ceb9216297993166a0145fe1da71fd1a8557a",
+      "sha256:fe0503423eb7415c032f4a082d816819555936ca410646262eb0ee7d068ae364",
+      "sha256:b5ef2f1cca2b198a8ac051f75ddd9a0b5f646c28338aa378a4f123c8327d9943",
+      "sha256:88ca98d20a8de845961958e140c9a64cfafc3357285b58e77609755a261c424d",
+      "sha256:a6d940f0f81c46990253483c39ec13646c0e0b3a70b06d86e14367f2c6ecb79a"
+    ],
+    "Type": "layers"
+  },
+  "Size": 5116634404
+}

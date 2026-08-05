@@ -1,0 +1,109 @@
+Found 16 complete MyoPS cases under /input
+Using CARE self-model overlay from /app/models/self_model/selection.json
+
+#######################################################################
+Please cite the following paper when using nnU-Net:
+Isensee, F., Jaeger, P. F., Kohl, S. A., Petersen, J., & Maier-Hein, K. H. (2021). nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation. Nature methods, 18(2), 203-211.
+#######################################################################
+
+perform_everything_on_device=True is only supported for cuda devices! Setting this to False
+There are 16 cases in the source folder
+I am processing 0 out of 1 (max process ID is 0, we start counting with 0!)
+There are 16 cases that I would like to predict
+
+Predicting Case1001:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with Case1001
+
+Predicting Case1002:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with Case1002
+
+Predicting Case1003:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with Case1003
+
+Predicting SS_TINY_Z1:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with SS_TINY_Z1
+
+Predicting SS_Z1_SP1:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with SS_Z1_SP1
+
+Predicting SS_Z1_SP10:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with SS_Z1_SP10
+
+Predicting SS_Z1_SP20:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with SS_Z1_SP20
+
+Predicting SS_Z1_SP4:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with SS_Z1_SP4
+
+Predicting SS_Z1_SP5:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with SS_Z1_SP5
+
+Predicting SS_Z1_SP50:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with SS_Z1_SP50
+
+Predicting SS_Z1_SP9P9:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with SS_Z1_SP9P9
+
+Predicting SS_Z2_SP1:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with SS_Z2_SP1
+
+Predicting SS_Z2_SP10:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with SS_Z2_SP10
+
+Predicting SS_Z2_SP20:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with SS_Z2_SP20
+
+Predicting SS_Z2_SP4:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with SS_Z2_SP4
+
+Predicting SS_Z2_SP5:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with SS_Z2_SP5
+perform_everything_on_device=True is only supported for cuda devices! Setting this to False
+Case1001: wrote /output/myops/Case1001_pred.nii.gz
+Case1002: wrote /output/myops/Case1002_pred.nii.gz
+Case1003: wrote /output/myops/Case1003_pred.nii.gz
+SS_TINY_Z1: wrote /output/myops/SS_TINY_Z1_pred.nii.gz
+SS_Z1_SP1: wrote /output/myops/SS_Z1_SP1_pred.nii.gz
+SS_Z1_SP10: wrote /output/myops/SS_Z1_SP10_pred.nii.gz
+SS_Z1_SP20: wrote /output/myops/SS_Z1_SP20_pred.nii.gz
+SS_Z1_SP4: wrote /output/myops/SS_Z1_SP4_pred.nii.gz
+SS_Z1_SP5: wrote /output/myops/SS_Z1_SP5_pred.nii.gz
+SS_Z1_SP50: wrote /output/myops/SS_Z1_SP50_pred.nii.gz
+SS_Z1_SP9P9: wrote /output/myops/SS_Z1_SP9P9_pred.nii.gz
+SS_Z2_SP1: wrote /output/myops/SS_Z2_SP1_pred.nii.gz
+SS_Z2_SP10: wrote /output/myops/SS_Z2_SP10_pred.nii.gz
+SS_Z2_SP20: wrote /output/myops/SS_Z2_SP20_pred.nii.gz
+SS_Z2_SP4: wrote /output/myops/SS_Z2_SP4_pred.nii.gz
+SS_Z2_SP5: wrote /output/myops/SS_Z2_SP5_pred.nii.gz

@@ -1,0 +1,16 @@
+{
+  "allowed_effective_changes": [
+    "/usr/local/lib/python3.12/site-packages/nnunetv2/preprocessing/resampling/default_resampling.py",
+    "/app/hotfix/attempt3_single_slice_hotfix_receipt.json",
+    "/tmp/apply_single_slice_hotfix.py whiteout/removal metadata",
+    "OCI description/provenance labels"
+  ],
+  "base_rootfs_layer_count": 13,
+  "corrected_rootfs_layer_count": 15,
+  "model_files_changed": false,
+  "new_layer_diff_ids": [
+    "sha256:b66d864ed61decdd8a4647a90345bd5fb4dfc28fdcbdc3642f1685214fbc52b0",
+    "sha256:ecb11de4b4641fcaabbc85005bcf90784f391f2a6493b09878ccfd1c3c97c38e"
+  ],
+  "status": "PASS"
+}

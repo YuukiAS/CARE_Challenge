@@ -1,0 +1,103 @@
+Found 15 complete MyoPS cases under /input
+Using CARE self-model overlay from /app/models/self_model/selection.json
+
+#######################################################################
+Please cite the following paper when using nnU-Net:
+Isensee, F., Jaeger, P. F., Kohl, S. A., Petersen, J., & Maier-Hein, K. H. (2021). nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation. Nature methods, 18(2), 203-211.
+#######################################################################
+
+perform_everything_on_device=True is only supported for cuda devices! Setting this to False
+There are 15 cases in the source folder
+I am processing 0 out of 1 (max process ID is 0, we start counting with 0!)
+There are 15 cases that I would like to predict
+
+Predicting Case1001:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with Case1001
+
+Predicting Case1002:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with Case1002
+
+Predicting Case1003:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with Case1003
+
+Predicting Case1004:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with Case1004
+
+Predicting Case1005:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with Case1005
+
+Predicting Case1006:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with Case1006
+
+Predicting Case1007:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with Case1007
+
+Predicting Case1008:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with Case1008
+
+Predicting Case1009:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with Case1009
+
+Predicting Case1010:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with Case1010
+
+Predicting Case1011:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with Case1011
+
+Predicting Case1012:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with Case1012
+
+Predicting Case1013:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with Case1013
+
+Predicting Case1014:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with Case1014
+
+Predicting Case1015:
+perform_everything_on_device: False
+sending off prediction to background worker for resampling and export
+done with Case1015
+perform_everything_on_device=True is only supported for cuda devices! Setting this to False
+Case1001: wrote /output/myops/Case1001_pred.nii.gz
+Case1002: wrote /output/myops/Case1002_pred.nii.gz
+Case1003: wrote /output/myops/Case1003_pred.nii.gz
+Case1004: wrote /output/myops/Case1004_pred.nii.gz
+Case1005: wrote /output/myops/Case1005_pred.nii.gz
+Case1006: wrote /output/myops/Case1006_pred.nii.gz
+Case1007: wrote /output/myops/Case1007_pred.nii.gz
+Case1008: wrote /output/myops/Case1008_pred.nii.gz
+Case1009: wrote /output/myops/Case1009_pred.nii.gz
+Case1010: wrote /output/myops/Case1010_pred.nii.gz
+Case1011: wrote /output/myops/Case1011_pred.nii.gz
+Case1012: wrote /output/myops/Case1012_pred.nii.gz
+Case1013: wrote /output/myops/Case1013_pred.nii.gz
+Case1014: wrote /output/myops/Case1014_pred.nii.gz
+Case1015: wrote /output/myops/Case1015_pred.nii.gz

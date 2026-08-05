@@ -1,0 +1,14 @@
+{
+  "command": "docker run --rm --network none -v /home/yuukias/code/CARE/.local_runtime/20260805_care_myops_attempt3_single_slice_hotfix/synthetic_input:/input:ro -v /home/yuukias/code/CARE/.local_runtime/20260805_care_myops_attempt3_single_slice_hotfix/base_failure_output:/output care-myocardium-myops:attempt3-failed-base",
+  "exit_code": 1,
+  "failure_markers_detected": [
+    "divide by zero",
+    "zero-size"
+  ],
+  "incomplete_output": true,
+  "old_direct_function_zero_dimension": true,
+  "old_end_to_end_failure_reproduced": true,
+  "output_files": [],
+  "runtime_seconds": 8.567355394363403,
+  "status": "PASS"
+}

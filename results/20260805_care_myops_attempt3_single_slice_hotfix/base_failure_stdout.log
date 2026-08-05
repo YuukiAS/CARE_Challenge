@@ -1,0 +1,12 @@
+Found 13 complete MyoPS cases under /input
+Using CARE self-model overlay from /app/models/self_model/selection.json
+
+#######################################################################
+Please cite the following paper when using nnU-Net:
+Isensee, F., Jaeger, P. F., Kohl, S. A., Petersen, J., & Maier-Hein, K. H. (2021). nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation. Nature methods, 18(2), 203-211.
+#######################################################################
+
+perform_everything_on_device=True is only supported for cuda devices! Setting this to False
+There are 13 cases in the source folder
+I am processing 0 out of 1 (max process ID is 0, we start counting with 0!)
+There are 13 cases that I would like to predict

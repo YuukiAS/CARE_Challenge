@@ -1,0 +1,9 @@
+{
+  "archive_path": "/home/yuukias/code/CARE/dist/20260805_care_myops_attempt3_single_slice_hotfix/MyoPS-OrganAgent-Attempt3-corrected.tar.gz",
+  "archive_sha256": "52c39ab06abc0d1e4411def14bea445e27099ca9c13164dab67eb0e063c93709",
+  "archive_size_bytes": 5103476746,
+  "created_at_utc": "2026-08-05T20:18:16.954102Z",
+  "image_id": "sha256:3eddfad0b8d01ab82e65b8bc4928542bfa67a23cf116869348457d9b2fb02561",
+  "image_tag": "care-myocardium-myops:organagent",
+  "sha256_file": "/home/yuukias/code/CARE/dist/20260805_care_myops_attempt3_single_slice_hotfix/SHA256SUMS"
+}

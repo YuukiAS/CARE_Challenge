@@ -1,5 +1,46 @@
 # CARE 当前开发状态
 
+## 2026-08-05 最新机器真值：Attempt 3 MyoPS 单层输入 runtime-only corrected archive 已完成
+
+这次修复的是组织方实际测试失败的 Attempt 3 MyoPS Docker archive 在合法 depth=1 输入上触发 nnU-Net 重采样 0 维并导致整批失败的问题。已先唯一绑定原 Attempt 3 archive `921a0115428b8d597c67d57d45862de1371bf6d3097b5dc8c9b27e7407589ef3`，并在原镜像 `sha256:a291ab1e51a52c0739970a45db567b4e4a8cb103e06946626509800fa6f258bf` 上真实复现崩溃；修正版只在 nnU-Net `compute_new_shape` 原有 rounding 后增加 `np.maximum(new_shape, 1)`，没有更换或修改 checkpoint、`selection.json`、`predict.py`、entrypoint、requirements、fold、TTA、threshold、label map、overlay 逻辑或依赖。
+
+```text
+local_result_root:
+results/20260805_care_myops_attempt3_single_slice_hotfix
+
+server_audit_root:
+results/20260805_care_myops_attempt3_single_slice_hotfix_server_audit
+
+server_terminal_token:
+ATTEMPT3_CORRECTED_MYOPS_RUNTIME_ONLY_HOTFIX_READY_FOR_ORGANIZER_REEVALUATION
+
+corrected_archive:
+dist/20260805_care_myops_attempt3_single_slice_hotfix/MyoPS-OrganAgent-Attempt3-corrected.tar.gz
+
+corrected_archive_size:
+5103476746
+
+corrected_archive_sha256:
+52c39ab06abc0d1e4411def14bea445e27099ca9c13164dab67eb0e063c93709
+
+drive_link:
+https://drive.google.com/open?id=1Q7CExNmP5oPJ3z3PbEdiM4Kilx5onz67
+
+organizer_email_sent:
+false
+```
+
+Verified evidence:
+
+- Attempt 3 原镜像 depth=1 zero-dimension crash 已复现；
+- five nnU-Net checkpoint、two CARE-ASE step500 checkpoint、`selection.json`、推理源码、entrypoint、requirements、pip freeze、ENTRYPOINT/Cmd/Env 和 rootfs prefix invariance PASS；
+- Attempt 3 原镜像和修正版各一次 15-case normal inference 15/15 bitwise/geometrically/canonical-SHA exact；
+- depth1/depth2 synthetic matrix、15 normal + synthetic mixed batch、synthetic determinism、clean save/load 后完整 synthetic + 3 normal sentinel 全部 PASS；
+- corrected archive 和 `SHA256SUMS` 只上传到新的 Google Drive 文件夹，公开链接未登录 HTTP 检查通过；
+- `/users/a/e/aereinh/CARE` server 只做静态审计，Docker 没有在服务器运行；
+- CineMyoPS 不重建，继续复用原 Cine archive 是有意边界；
+- 没有发送组织方邮件，没有上传 challenge 或 validation predictions。
+
 ## 2026-08-03 最新机器真值：CARE-ASE R2 v9 等待外部训练前审阅
 
 CARE-ASE R2 v9 已完成 last-hotfix source closure、executor plan validation、pytest、G1，以及 fold1/fold4 short-smoke GPU diagnostic probes。当前只准备交给外部 GPT 做训练许可审阅，不表示正式训练获准。v8 implementation `648bb4d79da255438469aa9acfa939616aebf251` 和 v8 review packet `8d01cd4c4a5caa3ab1eb44f365bd830a69a34664` 已被 v9 取代；v8 及更早训练/probe credit 均不得作为正式训练。formal training 未启动，fold1/fold4 outer access 均为 0。下一步只能是外部 GPT 返回 `PRETRAINING_EXTERNAL_REVIEW_PASS` 或 revise。

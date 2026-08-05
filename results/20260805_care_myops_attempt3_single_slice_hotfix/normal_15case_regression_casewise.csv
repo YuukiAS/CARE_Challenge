@@ -1,0 +1,16 @@
+case_id,output_exists,shape_match_input,spacing_match_input,origin_match_input,direction_match_input,dimension,depth,labels,labels_allowed,finite,integer_valued,canonical_sha256,array_exact_vs_base,geometry_exact_vs_base,canonical_sha_exact_vs_base
+Case1001,True,True,True,True,True,3,6,"[0, 200, 500, 600, 1220, 2221]",True,True,True,d51e4953e9af3efc3d5b7fe424ca9d821d0a4e693edc70fc2c60d134cc13745c,True,True,True
+Case1002,True,True,True,True,True,3,6,"[0, 200, 500, 600, 1220, 2221]",True,True,True,39441e80240d820097193d13e2f784bde746abfccfeba5e279098807798f7258,True,True,True
+Case1003,True,True,True,True,True,3,6,"[0, 200, 500, 600, 1220, 2221]",True,True,True,e5fb64ab4dac0c7416e8c9de82ed5ce52711af7986c4e8c6a03e598de189f4d1,True,True,True
+Case1004,True,True,True,True,True,3,7,"[0, 200, 500, 600, 1220, 2221]",True,True,True,f84c2a6c461a662c58e07f190050450a18d49f0326687eb6968fd1088d992488,True,True,True
+Case1005,True,True,True,True,True,3,5,"[0, 200, 500, 600, 1220, 2221]",True,True,True,18c58a84cfc6e026c3e8755238c6ac01ccb7972c61327176fa10286c15fefa19,True,True,True
+Case1006,True,True,True,True,True,3,3,"[0, 200, 500, 600, 1220, 2221]",True,True,True,3315d8390fa66510af2d2771a4e77d34cd571fa74bf35e1e5e4ee7d91cf821ad,True,True,True
+Case1007,True,True,True,True,True,3,5,"[0, 200, 500, 600, 1220, 2221]",True,True,True,b4e81824c6dd8bf3b21b15958942dd7896710f3dc59296d9c98d6c275221727a,True,True,True
+Case1008,True,True,True,True,True,3,3,"[0, 200, 500, 600, 1220, 2221]",True,True,True,a5a256a01aa00fb6179cd08c511e90cba7b4e5a35a86c9fe10aacb3275f0a14f,True,True,True
+Case1009,True,True,True,True,True,3,4,"[0, 200, 500, 600, 1220, 2221]",True,True,True,78d5b30804ba83dfbb05b8b87a7f4d6e49468bbd888523e71309fa46c5ee35f5,True,True,True
+Case1010,True,True,True,True,True,3,4,"[0, 200, 500, 600, 1220, 2221]",True,True,True,dbdd692b556fea4a3075dfb5de8b7f84dd98b0fccb1ccf0c4262b01917fd879d,True,True,True
+Case1011,True,True,True,True,True,3,6,"[0, 200, 500, 600, 1220, 2221]",True,True,True,17c49bfff38350113229f76b2a3a1fe3ba1ecd5c37b58ed578c284f09f06ea1c,True,True,True
+Case1012,True,True,True,True,True,3,4,"[0, 200, 500, 600, 1220, 2221]",True,True,True,995cc109e36e50a8a60d9dd76d7e64b18bb223bc29f5837bdb8db7f017df2b5b,True,True,True
+Case1013,True,True,True,True,True,3,6,"[0, 200, 500, 600, 1220, 2221]",True,True,True,4c8a6eb360ac4bb1eca6aefd304caed13d43c60cc44d9a9bb7ce0ed94fc10d21,True,True,True
+Case1014,True,True,True,True,True,3,6,"[0, 200, 500, 600, 1220, 2221]",True,True,True,db7a88edb8ad77aaff0d892b567c67bc8d13817799b1baf024bcdd69ff15927f,True,True,True
+Case1015,True,True,True,True,True,3,4,"[0, 200, 500, 600, 1220, 2221]",True,True,True,16ec7103ac902042e2ca5ccf7c577bae682de24610f17fcdcbe3d8a0d5d1a1f2,True,True,True

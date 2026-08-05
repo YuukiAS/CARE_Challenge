@@ -1,0 +1,21 @@
+{
+  "boundary_summary": {
+    "all_positive": true,
+    "any_zero": false,
+    "rows": 16
+  },
+  "module": "nnunetv2.preprocessing.resampling.default_resampling",
+  "original_source_sha256": "0925abcba8f87d84819921ae661fdafa5c871226a5dbceca61e9947e63acad98",
+  "package": "nnunetv2",
+  "patch": {
+    "added": "new_shape = np.array([int(round(i / j * k)) for i, j, k in zip(old_spacing, new_spacing, old_shape)])\n    new_shape = np.maximum(new_shape, 1)\n    return new_shape",
+    "removed": "new_shape = np.array([int(round(i / j * k)) for i, j, k in zip(old_spacing, new_spacing, old_shape)])\n    return new_shape"
+  },
+  "patched_function_source": "def compute_new_shape(old_shape: Union[Tuple[int, ...], List[int], np.ndarray],\n                      old_spacing: Union[Tuple[float, ...], List[float], np.ndarray],\n                      new_spacing: Union[Tuple[float, ...], List[float], np.ndarray]) -> np.ndarray:\n    assert len(old_spacing) == len(old_shape)\n    assert len(old_shape) == len(new_spacing)\n    new_shape = np.array([int(round(i / j * k)) for i, j, k in zip(old_spacing, new_spacing, old_shape)])\n    new_shape = np.maximum(new_shape, 1)\n    return new_shape\n",
+  "patched_source_sha256": "609c8915f7a2be2d44661db5df9a965106a3947c60dd83d3d8ef737791372029",
+  "replacement_count": 1,
+  "single_slice_clamp_minimum_one": true,
+  "source_path": "/usr/local/lib/python3.12/site-packages/nnunetv2/preprocessing/resampling/default_resampling.py",
+  "timestamp_utc": "2026-08-05T10:14:30.930836Z",
+  "version": "2.7.0"
+}

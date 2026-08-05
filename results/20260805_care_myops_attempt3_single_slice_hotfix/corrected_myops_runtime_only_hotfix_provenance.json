@@ -1,0 +1,247 @@
+{
+  "assets": {
+    "care_ase_decode_source": {
+      "path": "/app/src/src/care_myocardium/inference/care_ase_r2_decode.py",
+      "sha256": "7fea71edba56d259dbbb31c3832b74709bd83d5af1f8b680a85c2e0a41acb05b",
+      "size_bytes": 1704
+    },
+    "care_ase_fold1_step00500": {
+      "path": "/app/models/self_model/care_ase_01_checkpoint_step00500.pt",
+      "sha256": "b5bb5d29bbea2a1a9451b876a78b945ea3b8a04674b8b7f14c3c1c9297222c6a",
+      "size_bytes": 194976509
+    },
+    "care_ase_fold1_step00500_sha256_sidecar": {
+      "path": "/app/models/self_model/care_ase_01_checkpoint_step00500.pt.sha256",
+      "sha256": "0981b26ad752aa772c65e33fa38d21841213b1f021c08707d85dc662400cab8c",
+      "size_bytes": 90
+    },
+    "care_ase_fold4_step00500": {
+      "path": "/app/models/self_model/care_ase_02_checkpoint_step00500.pt",
+      "sha256": "3bb36781856ac175cfdf5a1b4db717e6affab849999aedac97478e305622f59b",
+      "size_bytes": 194975165
+    },
+    "care_ase_fold4_step00500_sha256_sidecar": {
+      "path": "/app/models/self_model/care_ase_02_checkpoint_step00500.pt.sha256",
+      "sha256": "3203e18f8f0f21c1084111d7803c7b4b91ae9ea0f6e506396f57d5fcdd218360",
+      "size_bytes": 90
+    },
+    "care_ase_full_volume_source": {
+      "path": "/app/src/src/care_myocardium/inference/care_ase_r2_full_volume.py",
+      "sha256": "f9e3c4be321e96f7776444e2486b8e0d00e5f02701814f2625ca370b7c95218f",
+      "size_bytes": 13711
+    },
+    "care_ase_model_source": {
+      "path": "/app/src/src/care_myocardium/models/care_ase.py",
+      "sha256": "290c799618b29133903dfb7ccd78844bf27a4ce70b885ae64483444c922b9e42",
+      "size_bytes": 67654
+    },
+    "dataset.json": {
+      "path": "/app/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/dataset.json",
+      "sha256": "8437262d92fb898c8d16a89150efd4629602dd71e0fa5bbcf1c6c80cc3b535ae",
+      "size_bytes": 675
+    },
+    "entrypoint.sh": {
+      "path": "/app/entrypoint.sh",
+      "sha256": "6bd7b80ba80a7aee26638f1fce81d4e3cf99f3e5af7a97c4bff9924d71cfa53b",
+      "size_bytes": 71
+    },
+    "plans.json": {
+      "path": "/app/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/plans.json",
+      "sha256": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
+      "size_bytes": 11947
+    },
+    "predict.py": {
+      "path": "/app/predict.py",
+      "sha256": "af3bd796ef83e2ed11510fa4c61354f29f1e313e5b22cb4cd05d0c7ab789b5b0",
+      "size_bytes": 11961
+    },
+    "preprocessed_dataset.json": {
+      "path": "/app/src/data/data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/dataset.json",
+      "sha256": "8437262d92fb898c8d16a89150efd4629602dd71e0fa5bbcf1c6c80cc3b535ae",
+      "size_bytes": 675
+    },
+    "preprocessed_nnunetplans.json": {
+      "path": "/app/src/data/data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans.json",
+      "sha256": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
+      "size_bytes": 11947
+    },
+    "requirements.lock": {
+      "path": "/app/requirements.lock",
+      "sha256": "1969d7605484165bb2c669d48f228395e65613b852261eb4f831d3de581ab5d7",
+      "size_bytes": 274
+    },
+    "selection.json": {
+      "path": "/app/models/self_model/selection.json",
+      "sha256": "bf3e7982a958f5616f4e937344d392a023d8f12901f0be645db3add513f4bb26",
+      "size_bytes": 1084
+    }
+  },
+  "boundary_matrix": {
+    "all_finite": true,
+    "all_labels_allowed": true,
+    "all_outputs_geometry_match": true,
+    "depth1_cases_passed": 7,
+    "depth2_cases_passed": 5,
+    "expected_case_count": 13,
+    "missing_outputs": [],
+    "mode": "synthetic",
+    "output_count": 13,
+    "status": "PASS",
+    "unknown_outputs": []
+  },
+  "checkpoint_selection_changed": false,
+  "checkpoints": [
+    {
+      "fold": 0,
+      "path": "/app/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_best.pth",
+      "sha256": "f139ca5525322d340a0284c6562a9bcb9cb9cae0a512e14ef40ce85a66f53278",
+      "size_bytes": 357374639
+    },
+    {
+      "fold": 1,
+      "path": "/app/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/checkpoint_best.pth",
+      "sha256": "b92d56b1e24ce826081671acc4e048e5d48b191f6dcb9836747ae82d93acd1e2",
+      "size_bytes": 357341103
+    },
+    {
+      "fold": 2,
+      "path": "/app/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_2/checkpoint_best.pth",
+      "sha256": "9e328bf4bd6ed9eeadac6f41c5de303c69dfc078dfeac3e64b26e18d3e09d38d",
+      "size_bytes": 357327215
+    },
+    {
+      "fold": 3,
+      "path": "/app/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_3/checkpoint_best.pth",
+      "sha256": "9c2c2cf0dea4eb8a691c6680fabc66f6456233ba83867466a06ffd5abda3462b",
+      "size_bytes": 357354799
+    },
+    {
+      "fold": 4,
+      "path": "/app/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_4/checkpoint_best.pth",
+      "sha256": "11c6ccfec5dc51be7c08f1713058412694e1b7def1c5d8cd5520f7f7568aeff2",
+      "size_bytes": 357367855
+    }
+  ],
+  "clean_save_load": {
+    "architecture": "amd64",
+    "archive_reload_performed": true,
+    "entrypoint": [
+      "/app/entrypoint.sh"
+    ],
+    "image_id": "sha256:3eddfad0b8d01ab82e65b8bc4928542bfa67a23cf116869348457d9b2fb02561",
+    "normal_compare_pass": true,
+    "normal_sentinel_count": 3,
+    "os": "linux",
+    "status": "PASS",
+    "synthetic_full_matrix_rerun_pass": true,
+    "synthetic_full_matrix_rerun_summary": "results/20260805_care_myops_attempt3_single_slice_hotfix/clean_synthetic_full_summary.json",
+    "synthetic_plus_normal_mixed_batch_pass": true,
+    "synthetic_rerun_pass": true
+  },
+  "created_at_utc": "2026-08-05T22:02:50.476886Z",
+  "failure_mode_expansion": {
+    "case_count": 10,
+    "failures": [
+      {
+        "exit_code": 0,
+        "expected_nonzero": true,
+        "expected_text": "SS_Z1_SP4",
+        "expected_text_found": true,
+        "legal_success_expected": false,
+        "mode": "geometry_mismatch",
+        "output_files": "['myops/SS_Z1_SP4_pred.nii.gz']",
+        "status": "INHERITED_BASE_BEHAVIOR_OUT_OF_SCOPE_NONBLOCKING",
+        "unrelated_preserved": true
+      }
+    ],
+    "nonblocking_inherited_behavior_token": "INHERITED_BASE_BEHAVIOR_OUT_OF_SCOPE_NONBLOCKING",
+    "pass_count": 9,
+    "status": "PASS_WITH_INHERITED_BASE_BEHAVIOR_OUT_OF_SCOPE_NONBLOCKING"
+  },
+  "git_commit": null,
+  "inference_configuration_changed": false,
+  "mixed_batch": {
+    "all_finite": true,
+    "all_labels_allowed": true,
+    "all_outputs_geometry_match": true,
+    "array_exact_count": 15,
+    "canonical_sha_exact_count": 15,
+    "case_count": 28,
+    "depth1_cases_passed": 7,
+    "depth2_cases_passed": 5,
+    "expected_case_count": 28,
+    "geometry_exact_count": 15,
+    "missing_outputs": [],
+    "mode": "mixed",
+    "normal_case_exact_against_base_count": 15,
+    "output_count": 28,
+    "status": "PASS",
+    "unknown_outputs": []
+  },
+  "model_changed": false,
+  "new_archive_sha256": "52c39ab06abc0d1e4411def14bea445e27099ca9c13164dab67eb0e063c93709",
+  "new_archive_size_bytes": 5103476746,
+  "new_image_id": "sha256:3eddfad0b8d01ab82e65b8bc4928542bfa67a23cf116869348457d9b2fb02561",
+  "new_rootfs_diff_ids": [
+    "sha256:f2ec4de84f559f5c7be4233b589cdbdbb5507807e05621b77320edd55a1f2a0f",
+    "sha256:ccbaccfc0388284959cf106031557105fad2067d6c4435937b3414ce90760167",
+    "sha256:83fdf57f71f28b640f11d5072c284c81eadefc5ea538050fedcedba6149879bd",
+    "sha256:b80f3ed1ee6de85c788d9ae7203207c44724eab4baac8697390ca1412954ad2f",
+    "sha256:7f51b309eff9b3ba2ffd120df400b9bb125c60abff745575fbd462a65bf2b94a",
+    "sha256:f832726b2e19696277f061dc23a7c00ec2f98165e3609e25f703ed25b8a9c2ce",
+    "sha256:116d06837d7e9b6c6854edadefe3d98abcecc8bd145f379d3cbcc1734acebbb2",
+    "sha256:2cccf2ab18f814870c4ecc5d107b340a9ab3268b90c0dc10480f1461c3130d57",
+    "sha256:3cdb8d61760fe0ad908c83f2339ceb9216297993166a0145fe1da71fd1a8557a",
+    "sha256:fe0503423eb7415c032f4a082d816819555936ca410646262eb0ee7d068ae364",
+    "sha256:b5ef2f1cca2b198a8ac051f75ddd9a0b5f646c28338aa378a4f123c8327d9943",
+    "sha256:88ca98d20a8de845961958e140c9a64cfafc3357285b58e77609755a261c424d",
+    "sha256:a6d940f0f81c46990253483c39ec13646c0e0b3a70b06d86e14367f2c6ecb79a",
+    "sha256:b66d864ed61decdd8a4647a90345bd5fb4dfc28fdcbdc3642f1685214fbc52b0",
+    "sha256:ecb11de4b4641fcaabbc85005bcf90784f391f2a6493b09878ccfd1c3c97c38e"
+  ],
+  "nnunet_source_new_sha256": "609c8915f7a2be2d44661db5df9a965106a3947c60dd83d3d8ef737791372029",
+  "nnunet_source_old_sha256": "0925abcba8f87d84819921ae661fdafa5c871226a5dbceca61e9947e63acad98",
+  "normal_15case_exact_regression": {
+    "all_finite": true,
+    "all_labels_allowed": true,
+    "all_outputs_geometry_match": true,
+    "array_exact_count": 15,
+    "canonical_sha_exact_count": 15,
+    "case_count": 15,
+    "depth1_cases_passed": 0,
+    "depth2_cases_passed": 0,
+    "expected_case_count": 15,
+    "geometry_exact_count": 15,
+    "missing_outputs": [],
+    "mode": "normal",
+    "normal_case_exact_against_base_count": 15,
+    "output_count": 15,
+    "status": "PASS",
+    "unknown_outputs": []
+  },
+  "old_archive_sha256": "921a0115428b8d597c67d57d45862de1371bf6d3097b5dc8c9b27e7407589ef3",
+  "old_archive_size_bytes": 5102883153,
+  "old_image_id": "sha256:a291ab1e51a52c0739970a45db567b4e4a8cb103e06946626509800fa6f258bf",
+  "old_rootfs_diff_ids": [
+    "sha256:f2ec4de84f559f5c7be4233b589cdbdbb5507807e05621b77320edd55a1f2a0f",
+    "sha256:ccbaccfc0388284959cf106031557105fad2067d6c4435937b3414ce90760167",
+    "sha256:83fdf57f71f28b640f11d5072c284c81eadefc5ea538050fedcedba6149879bd",
+    "sha256:b80f3ed1ee6de85c788d9ae7203207c44724eab4baac8697390ca1412954ad2f",
+    "sha256:7f51b309eff9b3ba2ffd120df400b9bb125c60abff745575fbd462a65bf2b94a",
+    "sha256:f832726b2e19696277f061dc23a7c00ec2f98165e3609e25f703ed25b8a9c2ce",
+    "sha256:116d06837d7e9b6c6854edadefe3d98abcecc8bd145f379d3cbcc1734acebbb2",
+    "sha256:2cccf2ab18f814870c4ecc5d107b340a9ab3268b90c0dc10480f1461c3130d57",
+    "sha256:3cdb8d61760fe0ad908c83f2339ceb9216297993166a0145fe1da71fd1a8557a",
+    "sha256:fe0503423eb7415c032f4a082d816819555936ca410646262eb0ee7d068ae364",
+    "sha256:b5ef2f1cca2b198a8ac051f75ddd9a0b5f646c28338aa378a4f123c8327d9943",
+    "sha256:88ca98d20a8de845961958e140c9a64cfafc3357285b58e77609755a261c424d",
+    "sha256:a6d940f0f81c46990253483c39ec13646c0e0b3a70b06d86e14367f2c6ecb79a"
+  ],
+  "only_runtime_preprocessing_fix": true,
+  "patch": {
+    "added": "new_shape = np.array([int(round(i / j * k)) for i, j, k in zip(old_spacing, new_spacing, old_shape)])\n    new_shape = np.maximum(new_shape, 1)\n    return new_shape",
+    "removed": "new_shape = np.array([int(round(i / j * k)) for i, j, k in zip(old_spacing, new_spacing, old_shape)])\n    return new_shape"
+  },
+  "pip_freeze_equal": true,
+  "training_performed": false
+}

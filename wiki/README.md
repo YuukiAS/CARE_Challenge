@@ -1,5 +1,23 @@
 # CARE 架构 Wiki
 
+architecture_version: `care-myops-attempt3-single-slice-hotfix-ready-20260805`
+latest_verified_runtime: `Attempt 3 MyoPS submitted archive was uniquely identified, original depth=1 crash reproduced, runtime-only nnU-Net min-one shape clamp applied, corrected archive validated and server-static audited`
+latest_scientific_status: `ATTEMPT3_CORRECTED_MYOPS_RUNTIME_ONLY_HOTFIX_READY_FOR_ORGANIZER_REEVALUATION: no checkpoint/config/inference changes, no server Docker run, no challenge/validation prediction upload, organizer email not sent`
+latest_controller_task: `20260805_care_myops_attempt3_single_slice_hotfix`
+route_status: `MAIN_ONLY_ATTEMPT3_MYOPS_RUNTIME_HOTFIX_READY`
+
+这次闭合的是组织方实际测试失败的 Attempt 3 MyoPS Docker 单层输入问题，不是新模型或性能改进。原 Attempt 3 archive 已按 size/SHA、Drive 记录、CARE-ASE 资产和镜像 ID 唯一绑定；原镜像已真实复现 depth=1 输入使 nnU-Net 重采样尺寸变成 0 并导致推理失败。修正版只在 nnU-Net `compute_new_shape` 原有 rounding 后增加 `np.maximum(new_shape, 1)`，五个 nnU-Net checkpoint、两个 CARE-ASE step500 checkpoint、`selection.json`、`predict.py`、entrypoint、requirements、fold、TTA、threshold、label map 和 overlay 逻辑均保持不变。Corrected archive 已上传到新的 Google Drive 链接；服务器只做静态审计，没有运行 Docker；没有发送组织方邮件，也没有上传 challenge 或 validation predictions。CineMyoPS 不重建，继续复用原 Cine archive 是有意边界。
+
+关键证据：
+
+```text
+results/20260805_care_myops_attempt3_single_slice_hotfix/controller_report.md
+results/20260805_care_myops_attempt3_single_slice_hotfix/completion_check.md
+results/20260805_care_myops_attempt3_single_slice_hotfix/validator_report.json
+results/20260805_care_myops_attempt3_single_slice_hotfix_server_audit/final_readiness.json
+dist/20260805_care_myops_attempt3_single_slice_hotfix/MyoPS-OrganAgent-Attempt3-corrected.tar.gz
+```
+
 architecture_version: `care-ase-r2-v9-pending-external-pretraining-review-20260803`
 latest_verified_runtime: `CARE-ASE R2 v9 source/tests/G1 and fold1/fold4 diagnostic GPU short-smoke probes are complete; final formal training remains unauthorized`
 latest_scientific_status: `PRETRAINING_EXTERNAL_REVIEW_REQUEST_READY_PENDING_PUSH: implementation source Commit A 2069527d4d2f6357a0fddfa9df0c49223691a96f; review packet Commit B reported after push; no formal training and no outer access`

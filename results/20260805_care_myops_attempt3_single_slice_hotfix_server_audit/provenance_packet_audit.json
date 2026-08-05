@@ -1,0 +1,11 @@
+{
+  "archive_sha256_matches": true,
+  "archive_size_matches": true,
+  "attempt3_identity_matches": true,
+  "geometry_mismatch_status": "INHERITED_BASE_BEHAVIOR_OUT_OF_SCOPE_NONBLOCKING",
+  "model_changed": false,
+  "only_runtime_preprocessing_fix": true,
+  "packet_results": "/users/a/e/aereinh/.tmp/codex-CARE/20260805_care_myops_attempt3_single_slice_hotfix/workstation_return/results/20260805_care_myops_attempt3_single_slice_hotfix",
+  "status": "PASS",
+  "strict_validator_pass": true
+}

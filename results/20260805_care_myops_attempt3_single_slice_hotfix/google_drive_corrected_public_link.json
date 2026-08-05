@@ -1,0 +1,21 @@
+{
+  "archive": {
+    "authenticated": false,
+    "checked_at_utc": "2026-08-05T22:09:30Z",
+    "file_id": "1Q7CExNmP5oPJ3z3PbEdiM4Kilx5onz67",
+    "final_http_status": 200,
+    "link": "https://drive.google.com/open?id=1Q7CExNmP5oPJ3z3PbEdiM4Kilx5onz67",
+    "public_access_ok": true
+  },
+  "public_access_ok": true,
+  "reused_old_failed_url": false,
+  "sha256sums": {
+    "authenticated": false,
+    "checked_at_utc": "2026-08-05T22:09:30Z",
+    "file_id": "1DtKWBiF1wI0HJ1mpq2Fh_Xip-YZBXuss",
+    "final_http_status": 200,
+    "link": "https://drive.google.com/open?id=1DtKWBiF1wI0HJ1mpq2Fh_Xip-YZBXuss",
+    "public_access_ok": true
+  },
+  "status": "PASS"
+}

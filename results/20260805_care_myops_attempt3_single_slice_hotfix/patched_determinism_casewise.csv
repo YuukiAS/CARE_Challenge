@@ -1,0 +1,14 @@
+case_id,output_exists,shape_match_input,spacing_match_input,origin_match_input,direction_match_input,dimension,depth,labels,labels_allowed,finite,integer_valued,canonical_sha256,array_exact_vs_base,geometry_exact_vs_base,canonical_sha_exact_vs_base
+SS_TINY_Z1,True,True,True,True,True,3,1,[0],True,True,True,911986fbbadef60fce6002c467b25ab297857a647ff1ec406d0882b520d14427,True,True,True
+SS_Z1_SP1,True,True,True,True,True,3,1,"[0, 500]",True,True,True,28b81c6bf6fe8b2f540d49a4273d67e9ef2334f6aa330e6e424fe649727b5930,True,True,True
+SS_Z1_SP10,True,True,True,True,True,3,1,[0],True,True,True,c7384b9bd587c57d25ec5953a2a746d4dc56359cc975a863889b6afe0919fdd8,True,True,True
+SS_Z1_SP20,True,True,True,True,True,3,1,"[0, 200, 500, 600, 2221]",True,True,True,f4d7a466fdb0b238eadea056f9659048cdb010c5ada9f93ecbfcbe5b54044d89,True,True,True
+SS_Z1_SP4,True,True,True,True,True,3,1,"[0, 500]",True,True,True,b553591816bd63f10b25845e162ecda025b4dc97876b927b3cda1f76b000f743,True,True,True
+SS_Z1_SP5,True,True,True,True,True,3,1,"[0, 500]",True,True,True,a7455547e345ed44e6589ad0e940bf685ccc0b06179dbddc66910321d3dea70e,True,True,True
+SS_Z1_SP50,True,True,True,True,True,3,1,"[0, 200, 500, 600, 2221]",True,True,True,0e5cedd2a1abf45239f2e32ce52b081e8eab29c21f9f647e86e8bab1da11f285,True,True,True
+SS_Z1_SP9P9,True,True,True,True,True,3,1,[0],True,True,True,5bb0ef40865e56e268c75d7afc91330c6ea9f8f08630b2363250ceb3b9d2d98f,True,True,True
+SS_Z2_SP1,True,True,True,True,True,3,2,"[0, 500]",True,True,True,385446908566f63c045ee831cd3271161c442b36fe84c9ef652a52aaa7a6f79e,True,True,True
+SS_Z2_SP10,True,True,True,True,True,3,2,"[0, 200, 500, 600, 1220, 2221]",True,True,True,d1ef66214c52829544e69d76f581e0be054849863891a10148e8d4d318b06cf5,True,True,True
+SS_Z2_SP20,True,True,True,True,True,3,2,"[0, 200, 500, 600, 1220, 2221]",True,True,True,0fcaabadfb2c9c170e9bf010ef1d17b3084b62c3cb797570c0b6f07c62ab4c8c,True,True,True
+SS_Z2_SP4,True,True,True,True,True,3,2,"[0, 500]",True,True,True,8f871a889f7963e08cf691876ad74e403ca50706610516398494b34cab5849fd,True,True,True
+SS_Z2_SP5,True,True,True,True,True,3,2,"[0, 500]",True,True,True,36c9128eee83f3ca4b94011dff7c33b1516cc2ae6de40564f4137831622e662f,True,True,True

@@ -1,0 +1,10 @@
+{
+  "clean_load_status": "PASS",
+  "determinism_exact_count": 13,
+  "failure_mode_status": "PASS_WITH_INHERITED_BASE_BEHAVIOR_OUT_OF_SCOPE_NONBLOCKING",
+  "mixed_normal_exact_count": 15,
+  "normal_15case_bitwise_exact": 15,
+  "status": "PASS",
+  "synthetic_depth1_cases_passed": 7,
+  "synthetic_depth2_cases_passed": 5
+}

@@ -1,0 +1,41 @@
+Process SpawnProcess-15:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/local/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/usr/local/lib/python3.12/site-packages/nnunetv2/inference/data_iterators.py", line 58, in preprocess_fromfiles_save_to_queue
+    raise e
+  File "/usr/local/lib/python3.12/site-packages/nnunetv2/inference/data_iterators.py", line 31, in preprocess_fromfiles_save_to_queue
+    data, seg, data_properties = preprocessor.run_case(list_of_lists[idx],
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/nnunetv2/preprocessing/preprocessors/default_preprocessor.py", line 135, in run_case
+    data, data_properties = rw.read_images(image_files)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/nnunetv2/imageio/simpleitk_reader_writer.py", line 38, in read_images
+    itk_image = sitk.ReadImage(f)
+                ^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/SimpleITK/extra.py", line 384, in ReadImage
+    return reader.Execute()
+           ^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/SimpleITK/SimpleITK.py", line 8502, in Execute
+    return _SimpleITK.ImageFileReader_Execute(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Exception thrown in SimpleITK ImageFileReader_Execute: /tmp/SimpleITK/Code/IO/src/sitkImageReaderBase.cxx:99:
+sitk::ERROR: Unable to determine ImageIO reader for "/tmp/care_myops_nnunet_vbbegy_1/input/SS_Z1_SP4_0001.nii.gz"
+Traceback (most recent call last):
+  File "/usr/local/bin/nnUNetv2_predict", line 8, in <module>
+    sys.exit(predict_entry_point())
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/nnunetv2/inference/predict_from_raw_data.py", line 1015, in predict_entry_point
+    predictor.predict_from_files(args.i, args.o, save_probabilities=args.save_probabilities,
+  File "/usr/local/lib/python3.12/site-packages/nnunetv2/inference/predict_from_raw_data.py", line 285, in predict_from_files
+    return self.predict_from_data_iterator(data_iterator, save_probabilities, num_processes_segmentation_export)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/nnunetv2/inference/predict_from_raw_data.py", line 378, in predict_from_data_iterator
+    for preprocessed in data_iterator:
+                        ^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/nnunetv2/inference/data_iterators.py", line 111, in preprocessing_iterator_fromfiles
+    raise RuntimeError('Background workers died. Look for the error message further up! If there is '
+RuntimeError: Background workers died. Look for the error message further up! If there is none then your RAM was full and the worker was killed by the OS. Use fewer workers or get more RAM in that case!
+CARE MyoPS inference failed: Command '['nnUNetv2_predict', '-d', '501', '-tr', 'nnUNetTrainer_500epochs', '-c', '3d_fullres', '-f', '0', '1', '2', '3', '4', '-chk', 'checkpoint_best.pth', '-i', '/tmp/care_myops_nnunet_vbbegy_1/input', '-o', '/tmp/care_myops_nnunet_vbbegy_1/output', '-npp', '1', '-nps', '1', '-device', 'cpu', '--disable_progress_bar']' returned non-zero exit status 1.

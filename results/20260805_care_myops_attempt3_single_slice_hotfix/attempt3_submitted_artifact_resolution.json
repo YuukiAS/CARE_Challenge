@@ -1,0 +1,69 @@
+{
+  "attempt2_difference_evidence": "Attempt 3 contains /app/models/self_model/selection.json and two CARE-ASE step00500 checkpoints; Attempt 2 pure/corrected archives do not.",
+  "binding_priority_used": [
+    "Attempt 3 Google Drive upload receipt",
+    "Attempt 3 workstation docker-save receipt",
+    "local archive with exact size and SHA match",
+    "loaded Docker image ID and entrypoint"
+  ],
+  "care_ase_checkpoint_sha256": {
+    "care_ase_01_checkpoint_step00500.pt": "b5bb5d29bbea2a1a9451b876a78b945ea3b8a04674b8b7f14c3c1c9297222c6a",
+    "care_ase_02_checkpoint_step00500.pt": "3bb36781856ac175cfdf5a1b4db717e6affab849999aedac97478e305622f59b"
+  },
+  "care_ase_sidecar_sha256": {
+    "care_ase_01_checkpoint_step00500.pt.sha256": "0981b26ad752aa772c65e33fa38d21841213b1f021c08707d85dc662400cab8c",
+    "care_ase_02_checkpoint_step00500.pt.sha256": "3203e18f8f0f21c1084111d7803c7b4b91ae9ea0f6e506396f57d5fcdd218360"
+  },
+  "cmd": null,
+  "created_at_utc": "2026-08-05T10:13:59.286808Z",
+  "drive_recorded_sha256": "921a0115428b8d597c67d57d45862de1371bf6d3097b5dc8c9b27e7407589ef3",
+  "drive_recorded_size_bytes": 5102883153,
+  "entrypoint": [
+    "/app/entrypoint.sh"
+  ],
+  "loaded_image_id": "sha256:a291ab1e51a52c0739970a45db567b4e4a8cb103e06946626509800fa6f258bf",
+  "loaded_image_tag": "care-myocardium-myops:attempt3-failed-base",
+  "local_archive_path": "/home/yuukias/code/CARE/.local_runtime/20260804_care_ase_r2_deadline_recovery_training_docker/attempt3_workstation/MyoPS-OrganAgent-attempt3.tar.gz",
+  "local_archive_sha256": "921a0115428b8d597c67d57d45862de1371bf6d3097b5dc8c9b27e7407589ef3",
+  "local_archive_size_bytes": 5102883153,
+  "nnunet_checkpoint_sha256": [
+    {
+      "fold": 0,
+      "path": "/app/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_best.pth",
+      "sha256": "f139ca5525322d340a0284c6562a9bcb9cb9cae0a512e14ef40ce85a66f53278",
+      "size_bytes": 357374639
+    },
+    {
+      "fold": 1,
+      "path": "/app/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/checkpoint_best.pth",
+      "sha256": "b92d56b1e24ce826081671acc4e048e5d48b191f6dcb9836747ae82d93acd1e2",
+      "size_bytes": 357341103
+    },
+    {
+      "fold": 2,
+      "path": "/app/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_2/checkpoint_best.pth",
+      "sha256": "9e328bf4bd6ed9eeadac6f41c5de303c69dfc078dfeac3e64b26e18d3e09d38d",
+      "size_bytes": 357327215
+    },
+    {
+      "fold": 3,
+      "path": "/app/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_3/checkpoint_best.pth",
+      "sha256": "9c2c2cf0dea4eb8a691c6680fabc66f6456233ba83867466a06ffd5abda3462b",
+      "size_bytes": 357354799
+    },
+    {
+      "fold": 4,
+      "path": "/app/models/nnunet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_4/checkpoint_best.pth",
+      "sha256": "11c6ccfec5dc51be7c08f1713058412694e1b7def1c5d8cd5520f7f7568aeff2",
+      "size_bytes": 357367855
+    }
+  ],
+  "not_attempt2_corrected_archive": true,
+  "not_attempt2_pure_nnunet_archive": true,
+  "selection_json_sha256": "bf3e7982a958f5616f4e937344d392a023d8f12901f0be645db3add513f4bb26",
+  "status": "PASS",
+  "submitted_drive_link": "https://drive.google.com/open?id=1R1KjagKWhJuhHiKRofZn9Kbo-R6vTiSx",
+  "submitted_filename": "MyoPS-OrganAgent-attempt3.tar.gz",
+  "submitted_sha256_link": "https://drive.google.com/open?id=17vVvKCavpoBBRFh3X5toZlBgLr_65pJf",
+  "working_dir": "/app"
+}

@@ -1,0 +1,12 @@
+{
+  "base_archive": "/home/yuukias/code/CARE/.local_runtime/20260804_care_ase_r2_deadline_recovery_training_docker/attempt3_workstation/MyoPS-OrganAgent-attempt3.tar.gz",
+  "challenge_upload_performed": false,
+  "dist": "/home/yuukias/code/CARE/dist/20260805_care_myops_attempt3_single_slice_hotfix",
+  "organizer_email_sent": false,
+  "results": "/home/yuukias/code/CARE/results/20260805_care_myops_attempt3_single_slice_hotfix",
+  "runtime": "/home/yuukias/code/CARE/.local_runtime/20260805_care_myops_attempt3_single_slice_hotfix",
+  "server_mount_present": false,
+  "task_name": "20260805_care_myops_attempt3_single_slice_hotfix",
+  "validation_predictions_uploaded": false,
+  "worktree": "/home/yuukias/code/CARE"
+}

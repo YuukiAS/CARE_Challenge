@@ -1,0 +1,11 @@
+mode,exit_code,expected_nonzero,expected_text,expected_text_found,legal_success_expected,output_files,unrelated_preserved,status
+empty_myops,1,True,No MyoPS LGE,True,False,[],True,PASS
+missing_t2,1,True,missing modalities,True,False,[],True,PASS
+geometry_mismatch,0,True,SS_Z1_SP4,True,False,['myops/SS_Z1_SP4_pred.nii.gz'],True,INHERITED_BASE_BEHAVIOR_OUT_OF_SCOPE_NONBLOCKING
+invalid_spacing,1,True,SS_Z1_SP4,True,False,[],True,PASS
+output_subdir_absent,0,False,,True,True,['myops/SS_Z1_SP4_pred.nii.gz'],True,PASS
+unrelated_file,0,False,,True,True,"['keep_me.txt', 'myops/SS_Z1_SP4_pred.nii.gz']",True,PASS
+readonly_input,0,False,,True,True,['myops/SS_Z1_SP4_pred.nii.gz'],True,PASS
+single_slice_first,0,False,,True,True,"['myops/Case1001_pred.nii.gz', 'myops/Case1002_pred.nii.gz', 'myops/SS_Z1_SP4_pred.nii.gz']",True,PASS
+single_slice_middle,0,False,,True,True,"['myops/Case1001_pred.nii.gz', 'myops/Case1002_pred.nii.gz', 'myops/SS_Z1_SP4_pred.nii.gz']",True,PASS
+single_slice_last,0,False,,True,True,"['myops/Case1001_pred.nii.gz', 'myops/Case1002_pred.nii.gz', 'myops/SS_Z1_SP4_pred.nii.gz']",True,PASS
