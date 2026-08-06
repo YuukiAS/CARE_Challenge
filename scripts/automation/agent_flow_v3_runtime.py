@@ -2063,6 +2063,13 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
             and not care_ase_controller_start_satisfied(args.state_root, current)
         ):
             processed = {key for key in processed if not key.startswith(event_key)}
+        if (
+            task_id == "care-ase-faithful"
+            and current.get("state") == "VERIFIER_FROZEN"
+            and stage_event_was_processed(event_key, processed)
+            and not care_ase_role_launch_satisfied(args.state_root, current, "executor")
+        ):
+            processed = {key for key in processed if not key.startswith(event_key)}
         visual_final = None
         visual_final_path = f"results/agent_flow_v3/{task_id}/visual_smoke_final.json"
         raw_visual_final = git_show_text_or_none(repo, ref, visual_final_path)
