@@ -324,6 +324,82 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
 
         self.assertEqual(receipt["decision"], "STOP_AT_HUMAN_GATE")
 
+    def test_smoke_b_planner_pass_requires_exact_current_bindings(self) -> None:
+        request = {
+            "task_id": "gpt-loop-smoke-b",
+            "request_nonce": "nonce-1",
+        }
+        current = {
+            "task_id": "gpt-loop-smoke-b",
+            "state": "PLANNER_PASS",
+            "request_nonce": "nonce-1",
+            "review_round": 1,
+            "frozen_contract_sha256": "a" * 64,
+            "integration_commit_sha": "b" * 40,
+            "implementation_fingerprint_sha256": "c" * 64,
+            "verifier_fingerprint_sha256": "d" * 64,
+        }
+        review = {
+            "schema": "CARE_AGENT_FLOW_V3_PLANNER_REVIEW",
+            "task_id": "gpt-loop-smoke-b",
+            "decision": "PLANNER_PASS",
+            "request_nonce": "nonce-1",
+            "review_round": 1,
+            "frozen_contract_sha256": "a" * 64,
+            "integration_commit_sha": "e" * 40,
+            "implementation_fingerprint_sha256": "c" * 64,
+            "verifier_fingerprint_sha256": "d" * 64,
+            "blocking_findings": [],
+        }
+
+        failures = RUNTIME.validate_smoke_b_planner_pass(review, request=request, current=current)
+
+        self.assertIn("integration_commit_sha", failures)
+
+    def test_prepare_care_ase_activation_requires_visual_and_smoke_b_pass(self) -> None:
+        request = {
+            "task_id": "care-ase-faithful",
+            "enabled": False,
+            "frozen_contract_sha256": None,
+        }
+        current = {
+            "task_id": "care-ase-faithful",
+            "state": "PLAN_REQUESTED",
+            "review_round": 0,
+            "request_nonce": "bootstrap",
+            "frozen_contract_sha256": None,
+            "integration_commit_sha": None,
+            "implementation_fingerprint_sha256": None,
+            "verifier_fingerprint_sha256": None,
+            "next_action": "CONFIGURE_VISUAL_SOURCES_AND_SCHEDULED_TASKS_THEN_ENABLE_REQUEST",
+            "updated_utc": "2026-08-05T00:00:00Z",
+        }
+        visual_sources = {
+            "schema": "CARE_VISUAL_SOURCES_V1",
+            "task_id": "care-ase-faithful",
+            "ready_for_scheduled_visual_review": False,
+        }
+        visual_final = {"status": "PASS", "request_nonce": "visual-nonce"}
+        smoke_b_final = {"status": "PASS", "request_nonce": "smoke-b-nonce"}
+
+        armed_request, armed_current, activation_state, failures = RUNTIME.prepare_care_ase_activation_after_smoke_b(
+            request=request,
+            current=current,
+            visual_sources=visual_sources,
+            visual_smoke_final=visual_final,
+            smoke_b_final=smoke_b_final,
+            activation_nonce="care-ase-20260806T000000Z",
+            frozen_contract_sha256="f" * 64,
+        )
+
+        self.assertEqual(failures, [])
+        self.assertIs(armed_request["enabled"], True)
+        self.assertEqual(armed_request["request_nonce"], "care-ase-20260806T000000Z")
+        self.assertEqual(armed_current["state"], "PLAN_REQUESTED")
+        self.assertEqual(armed_current["next_action"], "WAIT_FOR_TRUE_SCHEDULED_PLANNER_AND_CRITIC")
+        self.assertEqual(activation_state["status"], "ARMED")
+        self.assertIn("no CARE-ASE implementation started by activation", activation_state["forbidden_actions_confirmed"])
+
     def test_watcher_rejects_old_nonce(self) -> None:
         args = argparse.Namespace(
             task_id="smoke-task",
