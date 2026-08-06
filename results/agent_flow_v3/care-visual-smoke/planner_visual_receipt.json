@@ -1,0 +1,104 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_PLANNER_VISUAL_RECEIPT",
+  "task_id": "care-visual-smoke",
+  "request_nonce": "visual-smoke-20260806T031345Z",
+  "role": "planner",
+  "actual_visual_access": true,
+  "access_context": "scheduled ChatGPT Planner using the project File Library images corresponding to the public repository figures; observations were made independently before reading any Critic receipt",
+  "source_manifest_path": "automation/agent_flow_v3/tasks/care-visual-smoke/VISUAL_SOURCES.json",
+  "images": [
+    {
+      "name": "CARE-ASE",
+      "repository_path": "docs/architecture/figures/CARE-ASE.png",
+      "sha256": "af8f47713961c3b6b03dd24283b8f18d51fb5043ab1699997db2713e525710b2",
+      "main_modules_visible": [
+        "LGE/T2/C0 multi-sequence inputs with modality availability",
+        "stock-compatible encoder, bottleneck and shared low/mid decoder",
+        "anatomy-preserving high-resolution route",
+        "LGE-dominant scar proposal/localization and scar reconstruction route",
+        "T2-dominant pure-edema reconstruction route with weaker C0/LGE support",
+        "conditional pathology competition and full-volume decoding safeguards"
+      ],
+      "key_dataflow": "Observed modalities enter one stock-compatible full-volume backbone. Shared low/mid decoding preserves mature anatomy context, after which scar and pure-edema receive asymmetric high-resolution routes: LGE provides the principal scar localization evidence, while T2 provides the principal edema evidence. The pathology logits rejoin anatomy logits only at the final conditional class competition and deployment-compatible decoder.",
+      "missing_modality_and_no_t2_rules": [
+        "availability is explicit rather than treating a missing sequence as an ordinary image",
+        "when T2 is absent, the edema-owned graph is excluded and class 4 does not participate in final competition",
+        "the no-T2 output is therefore a five-class competition over background, anatomy and scar rather than a zeroed edema logit inside a six-class argmax"
+      ],
+      "explicitly_absent_components": [
+        "no Transformer or Mamba block is shown",
+        "no second complete U-Net/backbone is shown",
+        "no prototype dictionary or retrieval memory is shown",
+        "no nnU-Net-anchor residual arbitration stage is shown",
+        "no Cine temporal branch is shown"
+      ]
+    },
+    {
+      "name": "SRR-v3",
+      "repository_path": "docs/architecture/figures/SRR-v3.png",
+      "sha256": "50478ee7c07cedb6a921902aa5daa8f6ecf3b34aa2fc5e97905d60c585ea72b5",
+      "main_modules_visible": [
+        "partially observed LGE/T2/C0 inputs and availability-aware routing",
+        "nnU-Net interface supplying anchor logits/features, anatomy context, uncertainty and component evidence",
+        "modality-specific semantic representations with shared/private/interaction retrieval",
+        "positive, negative and safe-negative prototype or memory evidence",
+        "separate anatomy-guided scar and edema proposals",
+        "pathology-specific soft-ROI refiners",
+        "bounded residual correction back to the nnU-Net anchor",
+        "CineMA/registration/temporal retrieval lane for CineMyoPS"
+      ],
+      "key_dataflow": "The observed modalities are encoded and selectively routed into shared, private and interaction representation banks. Retrieved task evidence is combined with nnU-Net anatomy, anchor probability, uncertainty, connected-component and prototype evidence to form separate scar and edema proposals. Soft regions of interest then drive different scar and edema refiners, whose deltas are written back through bounded gates around the anchor rather than replacing the whole baseline prediction. The Cine lane separately aligns multi-frame anatomy/features before temporal aggregation.",
+      "missing_modality_and_no_t2_rules": [
+        "unavailable modality slots and their interactions are masked from retrieval",
+        "no-T2 myocardium is not treated as an edema-negative label source",
+        "edema correction is fail-closed without reliable T2 evidence while anatomy and scar paths may continue"
+      ],
+      "explicitly_absent_components": [
+        "no direct single-backbone pathology reconstruction with unrestricted final authority is shown",
+        "no generic one-head scar/edema decoder is shown",
+        "no Transformer or Mamba block is shown",
+        "no center-ID-dependent inference route is shown"
+      ]
+    },
+    {
+      "name": "MoSAIC",
+      "repository_path": "docs/architecture/figures/MoSAIC.png",
+      "sha256": "d2ea85c5ba40521dc65a56d85124ecfc9a2e40ac5eff206c10cff8fbf04e09fb",
+      "main_modules_visible": [
+        "separate Multi-sequence MyoPS and CineMyoPS systems",
+        "heterogeneous multi-sequence evidence and anatomy-conditioned fusion",
+        "CoarseNet localization stages",
+        "FinePathNet or independent pathology-zone experts",
+        "anatomy decoder and pathology output merging",
+        "ED-anchored Cine motion inference for the cine task"
+      ],
+      "key_dataflow": "For MyoPS, multi-sequence images feed coarse localization and anatomy-conditioned fusion before independent fine pathology experts reconstruct scar and edema-zone outputs and merge them with anatomy. For CineMyoPS, an end-diastolic reference anchors anatomy and motion evidence that is propagated or aggregated over cine frames to form pathology-aware myocardium output.",
+      "missing_modality_and_no_t2_rules": [
+        "the figure emphasizes heterogeneous evidence and supervision-aware expert use",
+        "no explicit row-wise no-T2 five-class exclusion rule is visible",
+        "no explicit availability-router plus safe-negative memory rule is visible"
+      ],
+      "explicitly_absent_components": [
+        "no nnU-Net anchor with bounded residual correction is shown",
+        "no shared/private/interaction representation dictionary is shown",
+        "no prototype-memory intervention path is shown",
+        "no explicit five-class no-T2 final competition is shown"
+      ]
+    }
+  ],
+  "structural_differences": [
+    "CARE-ASE is a single stock-compatible full-volume reconstruction system with asymmetric scar and edema branches; it gives the new branches direct end-to-end reconstruction responsibility while retaining the mature shared decoder.",
+    "SRR-v3 is an evidence-selection and bounded-correction system around a strong nnU-Net anchor. Its distinctive burden is the retrieval/prototype/proposal/soft-ROI/refiner chain and the requirement to prove that each stage reaches final logits.",
+    "MoSAIC is a coarse-to-fine multi-network system with independent pathology experts and a separate ED-anchored cine pipeline. It does not use SRR-style dictionaries or anchor-bounded correction.",
+    "The no-T2 rule is most explicit and computationally strict in CARE-ASE; SRR-v3 expresses it through availability masking, reliable-label supervision and fail-closed edema correction; MoSAIC's figure does not expose the same row-wise five-class contract."
+  ],
+  "planner_decision": "VISUAL_SMOKE_PLANNER_PASS",
+  "critic_required_next": true,
+  "forbidden_actions_confirmed": [
+    "no Controller/Verifier/Executor launch",
+    "no CARE-ASE implementation",
+    "no training or outer access",
+    "no Docker, upload, organizer email or develop-to-main merge"
+  ],
+  "updated_utc": "2026-08-06T04:05:00Z"
+}
