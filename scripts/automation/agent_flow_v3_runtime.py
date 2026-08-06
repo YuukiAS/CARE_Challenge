@@ -1275,7 +1275,7 @@ def build_care_ase_controller_start_prompt(
 ) -> bytes:
     contract_path = str(current.get("frozen_contract_path") or request.get("frozen_contract_path"))
     contract_text = git_show_text_or_none(repo, ref, contract_path) or ""
-    prompt = f"""You are the CARE Agent-Flow v3 Controller for care-ase-faithful.
+    prompt = f"""/goal You are the CARE Agent-Flow v3 Controller for care-ase-faithful.
 
 Read and obey the current repository rules and protocol before acting:
 - AGENTS.md
@@ -1430,7 +1430,7 @@ def start_care_ase_controller_from_frozen_contract(
 
 
 def build_care_ase_verifier_start_prompt(current: dict[str, Any]) -> bytes:
-    prompt = f"""You are the independent Verifier for CARE Agent-Flow v3 task care-ase-faithful.
+    prompt = f"""/goal You are the independent Verifier for CARE Agent-Flow v3 task care-ase-faithful.
 
 This is an execution turn. Do not stop with a plan.
 
