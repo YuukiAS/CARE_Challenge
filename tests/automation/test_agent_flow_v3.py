@@ -570,6 +570,62 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         bad["roles"]["executor"]["pushes_integration_branch"] = True
         self.assertIn("executor:pushes_integration_branch", RUNTIME.validate_role_plan_push_authority(bad))
 
+    def test_visual_smoke_receipt_requires_scheduled_gpt_provenance(self) -> None:
+        receipt = {
+            "role": "planner_visual_smoke",
+            "request_nonce": "nonce-1",
+            "image_sha256": {
+                "CARE-ASE": "a" * 64,
+                "SRR-v3": "b" * 64,
+                "MoSAIC": "c" * 64,
+            },
+            "answers": {
+                "main_modules": "This answer is long enough to prove structured visual content.",
+                "key_data_flow": "This answer is long enough to prove structured visual content.",
+                "missing_modality_no_t2_safety": "This answer is long enough to prove structured visual content.",
+                "explicitly_absent_components": "This answer is long enough to prove structured visual content.",
+                "structural_differences": "This answer is long enough to prove structured visual content.",
+            },
+            "provenance": {"producer": "scheduled_gpt"},
+        }
+        self.assertEqual(
+            RUNTIME.validate_visual_smoke_receipt(
+                receipt,
+                expected_role="planner_visual_smoke",
+                request_nonce="nonce-1",
+                expected_shas={"CARE-ASE": "a" * 64, "SRR-v3": "b" * 64, "MoSAIC": "c" * 64},
+            ),
+            [],
+        )
+        receipt["provenance"] = {"producer": "codex"}
+        self.assertIn(
+            "provenance:scheduled_gpt",
+            RUNTIME.validate_visual_smoke_receipt(
+                receipt,
+                expected_role="planner_visual_smoke",
+                request_nonce="nonce-1",
+                expected_shas={"CARE-ASE": "a" * 64, "SRR-v3": "b" * 64, "MoSAIC": "c" * 64},
+            ),
+        )
+
+    def test_visual_smoke_receipt_rejects_wrong_nonce_and_image_sha(self) -> None:
+        receipt = {
+            "role": "critic_visual_smoke",
+            "request_nonce": "old-nonce",
+            "image_sha256": {"CARE-ASE": "x", "SRR-v3": "b" * 64, "MoSAIC": "c" * 64},
+            "answers": {},
+            "provenance": {"producer": "scheduled_gpt"},
+        }
+        failures = RUNTIME.validate_visual_smoke_receipt(
+            receipt,
+            expected_role="critic_visual_smoke",
+            request_nonce="new-nonce",
+            expected_shas={"CARE-ASE": "a" * 64, "SRR-v3": "b" * 64, "MoSAIC": "c" * 64},
+        )
+        self.assertIn("request_nonce", failures)
+        self.assertIn("image_sha256:CARE-ASE", failures)
+        self.assertIn("answers:main_modules", failures)
+
 
 if __name__ == "__main__":
     unittest.main()

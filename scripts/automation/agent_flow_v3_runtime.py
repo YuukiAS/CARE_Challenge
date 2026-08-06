@@ -29,6 +29,7 @@ WATCHER_RECEIPT_SCHEMA = "CARE_AGENT_FLOW_V3_WATCHER_RECEIPT"
 WATCHER_STATE_SCHEMA = "CARE_AGENT_FLOW_V3_WATCHER_STATE"
 RESUME_RECEIPT_SCHEMA = "CARE_AGENT_FLOW_V3_EXACT_RESUME_RECEIPT"
 VISUAL_RECEIPT_SCHEMA = "CARE_AGENT_FLOW_V3_VISUAL_SOURCE_ACCESS_RECEIPT"
+VISUAL_SMOKE_FINAL_SCHEMA = "CARE_AGENT_FLOW_V3_VISUAL_SMOKE_FINAL"
 SHA40_RE = re.compile(r"^[0-9a-f]{40}$")
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 CODEX_ROLES = ("controller", "verifier", "executor")
@@ -88,6 +89,24 @@ def git_show_json(repo: Path, ref: str, rel_path: str) -> dict[str, Any]:
     if not isinstance(data, dict):
         raise RuntimeErrorV3(f"remote JSON root is not an object: {ref}:{rel_path}")
     return data
+
+
+def git_show_text_or_none(repo: Path, ref: str, rel_path: str) -> str | None:
+    cp = subprocess.run(
+        ["git", "show", f"{ref}:{rel_path}"],
+        cwd=repo,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    return cp.stdout if cp.returncode == 0 else None
+
+
+def parse_utc(value: str) -> datetime:
+    if value.endswith("Z"):
+        value = value[:-1] + "+00:00"
+    return datetime.fromisoformat(value)
 
 
 def safe_rel_path(value: str) -> Path:
@@ -769,6 +788,115 @@ def cmd_status_watcher(args: argparse.Namespace) -> int:
     return 0
 
 
+def validate_visual_smoke_receipt(
+    receipt: dict[str, Any],
+    *,
+    expected_role: str,
+    request_nonce: str,
+    expected_shas: dict[str, str],
+) -> list[str]:
+    failures: list[str] = []
+    if receipt.get("role") != expected_role:
+        failures.append("role")
+    if receipt.get("request_nonce") != request_nonce:
+        failures.append("request_nonce")
+    image_sha256 = receipt.get("image_sha256")
+    if not isinstance(image_sha256, dict):
+        failures.append("image_sha256")
+    else:
+        for name, digest in expected_shas.items():
+            if image_sha256.get(name) != digest:
+                failures.append(f"image_sha256:{name}")
+    answers = receipt.get("answers")
+    required_answers = (
+        "main_modules",
+        "key_data_flow",
+        "missing_modality_no_t2_safety",
+        "explicitly_absent_components",
+        "structural_differences",
+    )
+    if not isinstance(answers, dict):
+        failures.append("answers")
+    else:
+        for key in required_answers:
+            value = answers.get(key)
+            if not isinstance(value, str) or len(value.strip()) < 20:
+                failures.append(f"answers:{key}")
+    provenance = receipt.get("provenance")
+    if not isinstance(provenance, dict) or provenance.get("producer") != "scheduled_gpt":
+        failures.append("provenance:scheduled_gpt")
+    return failures
+
+
+def cmd_observe_visual_smoke(args: argparse.Namespace) -> int:
+    repo = args.repo_root.resolve()
+    if args.fetch:
+        git(repo, "fetch", "origin", args.branch, "--prune")
+    ref = f"origin/{args.branch}" if args.from_origin else "HEAD"
+    request = git_show_json(repo, ref, args.request_path)
+    current = git_show_json(repo, ref, args.current_path)
+    visual = git_show_json(repo, ref, args.visual_sources_path)
+    expected_shas = {
+        str(source["name"]): str(source["sha256"])
+        for source in visual.get("sources", [])
+        if isinstance(source, dict) and source.get("name") in {"CARE-ASE", "SRR-v3", "MoSAIC"}
+    }
+    request_nonce = str(request.get("request_nonce") or current.get("request_nonce") or "")
+    start_utc = str(request.get("created_utc") or current.get("updated_utc"))
+    elapsed_seconds = max(0, int((datetime.now(timezone.utc) - parse_utc(start_utc)).total_seconds()))
+    completed_windows = elapsed_seconds // args.window_seconds
+
+    receipt_status: dict[str, Any] = {}
+    all_failures: list[str] = []
+    for role in ("planner", "critic"):
+        rel = f"results/agent_flow_v3/{args.task_id}/{role}_visual_receipt.json"
+        raw = git_show_text_or_none(repo, ref, rel)
+        status: dict[str, Any] = {"path": rel, "exists": raw is not None, "valid": False, "failures": []}
+        if raw is not None:
+            try:
+                data = json.loads(raw)
+                if not isinstance(data, dict):
+                    raise ValueError("not object")
+                failures = validate_visual_smoke_receipt(
+                    data,
+                    expected_role=f"{role}_visual_smoke",
+                    request_nonce=request_nonce,
+                    expected_shas=expected_shas,
+                )
+                status["valid"] = not failures
+                status["failures"] = failures
+                status["commit_sha"] = git(repo, "log", "-1", "--format=%H", ref, "--", rel)
+            except Exception as exc:  # noqa: BLE001 - receipt preserves validation problem.
+                status["failures"] = [f"unreadable:{type(exc).__name__}:{exc}"]
+        if not status["valid"]:
+            all_failures.extend(f"{role}:{failure}" for failure in status["failures"] or ["missing"])
+        receipt_status[role] = status
+
+    passed = not all_failures and completed_windows >= args.min_windows
+    result = {
+        "schema": VISUAL_SMOKE_FINAL_SCHEMA,
+        "task_id": args.task_id,
+        "branch": args.branch,
+        "request_nonce": request_nonce,
+        "request_enabled": request.get("enabled"),
+        "current_state": current.get("state"),
+        "expected_image_sha256": expected_shas,
+        "window_seconds": args.window_seconds,
+        "minimum_wait_windows_required": args.min_windows,
+        "minimum_wait_windows_completed": completed_windows,
+        "elapsed_seconds": elapsed_seconds,
+        "scheduled_planner_receipt": receipt_status["planner"],
+        "scheduled_critic_receipt": receipt_status["critic"],
+        "status": "PASS" if passed else "AWAITING_REAL_SCHEDULED_GPT_RECEIPTS",
+        "failures": all_failures,
+        "updated_utc": now(),
+    }
+    if args.output:
+        write_json(args.output, result)
+    print(json.dumps(result, indent=2, ensure_ascii=False))
+    return 0 if passed else 1
+
+
 def cmd_write_role_receipt(args: argparse.Namespace) -> int:
     receipt = {
         "schema": ROLE_RECEIPT_SCHEMA,
@@ -873,6 +1001,20 @@ def parser() -> argparse.ArgumentParser:
     q.add_argument("--tmux-window", default="Watcher")
     q.add_argument("--output", type=Path)
     q.set_defaults(func=cmd_status_watcher)
+
+    q = sub.add_parser("observe-visual-smoke")
+    q.add_argument("--repo-root", type=Path, required=True)
+    q.add_argument("--task-id", default="care-visual-smoke")
+    q.add_argument("--branch", default="develop")
+    q.add_argument("--request-path", default="automation/agent_flow_v3/tasks/care-visual-smoke/REQUEST.json")
+    q.add_argument("--current-path", default="automation/agent_flow_v3/tasks/care-visual-smoke/CURRENT.json")
+    q.add_argument("--visual-sources-path", default="automation/agent_flow_v3/tasks/care-visual-smoke/VISUAL_SOURCES.json")
+    q.add_argument("--from-origin", action="store_true")
+    q.add_argument("--fetch", action="store_true")
+    q.add_argument("--window-seconds", type=int, default=3600)
+    q.add_argument("--min-windows", type=int, default=2)
+    q.add_argument("--output", type=Path)
+    q.set_defaults(func=cmd_observe_visual_smoke)
 
     return p
 

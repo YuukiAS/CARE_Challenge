@@ -17,6 +17,9 @@ Receipts:
   proving the production watcher is running and polling the visual-smoke state.
 - `scheduled_task_observation.json`: publication and waiting status for the real
   Scheduled Planner/Critic visual smoke.
+- `visual_smoke_final.json`: remote observer output for the current
+  `origin/develop` state; PASS only when both scheduled-GPT receipts are present,
+  valid, and at least two scheduling windows have elapsed.
 
 This directory must not contain Codex-authored substitutes for the required
 Scheduled Planner/Critic visual receipts. The smoke passes only after real

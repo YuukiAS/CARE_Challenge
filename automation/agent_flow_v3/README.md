@@ -116,6 +116,22 @@ events, stale nonce/SHA/review-round bindings, wrong thread receipts, disabled
 requests, and an already active role process fail closed without stopping the
 long-running watcher.
 
+For the isolated visual smoke, use the observer below to poll `origin/develop`
+without invoking any Scheduled Task connector:
+
+```bash
+python scripts/automation/agent_flow_v3_runtime.py observe-visual-smoke \
+  --repo-root . \
+  --from-origin \
+  --fetch \
+  --output results/agent_flow_v3/care-visual-smoke/visual_smoke_final.json
+```
+
+The observer requires real scheduled-GPT `planner_visual_receipt.json` and
+`critic_visual_receipt.json` commits, binds them to the request nonce and image
+SHA256 values, and counts completed scheduling windows. Missing receipts return a
+nonzero exit code because the smoke has not passed.
+
 ## Activation boundary
 
 The initial CARE-ASE task contract is:

@@ -65,3 +65,9 @@ the watcher implementation support infrastructure activation, but they do not
 replace the required scheduled GPT Planner/Critic visual smoke or the real
 GPT-to-Codex repair-loop smoke. The `care-ase-faithful` request must remain
 unarmed until those external scheduled smokes pass with receipts.
+
+The helper also includes `observe-visual-smoke`, a read-only remote observer for
+`care-visual-smoke`. It records whether real scheduled-GPT Planner/Critic visual
+receipts exist on `origin/develop`, validates nonce and image SHA bindings, and
+counts scheduling windows. It must not be used to synthesize or substitute the
+required visual receipts.
