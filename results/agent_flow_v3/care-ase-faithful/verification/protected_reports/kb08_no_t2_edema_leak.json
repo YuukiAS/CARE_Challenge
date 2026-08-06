@@ -1,0 +1,11 @@
+{
+  "failure_count": 2,
+  "failures": [
+    "kb08.edema_call_count",
+    "kb08.class4_competition"
+  ],
+  "known_bad_case_id": "kb08_no_t2_edema_leak",
+  "passed": false,
+  "schema": "CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1",
+  "task_id": "care-ase-faithful"
+}

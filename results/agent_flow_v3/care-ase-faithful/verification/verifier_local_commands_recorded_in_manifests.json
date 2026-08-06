@@ -1,0 +1,531 @@
+{
+  "artifact_builder_command": [
+    "/usr/bin/python",
+    "validators/care_ase_faithful/build_verification_artifacts.py"
+  ],
+  "created_utc": "2026-08-06T14:21:45Z",
+  "protected_known_bad_invocations": [
+    {
+      "command": [
+        "/usr/bin/python",
+        "validators/care_ase_faithful/validate_contract_evidence.py",
+        "--verification-contract",
+        "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+        "--known-bad-id",
+        "kb01_role_isolation_overlap",
+        "--report-json",
+        "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb01_role_isolation_overlap.json"
+      ],
+      "contract_category": 1,
+      "exit_code": 2,
+      "id": "kb01_role_isolation_overlap",
+      "passed_fail_closed": true,
+      "public_label": "role/session isolation overlap",
+      "report_path": "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb01_role_isolation_overlap.json",
+      "report_sha256": "01b9586c3c52395331829445ccf350d46787bae9ea616e3efe9460bed94ce779",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "01b9586c3c52395331829445ccf350d46787bae9ea616e3efe9460bed94ce779"
+    },
+    {
+      "command": [
+        "/usr/bin/python",
+        "validators/care_ase_faithful/validate_contract_evidence.py",
+        "--verification-contract",
+        "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+        "--known-bad-id",
+        "kb02_trunk_inheritance_degraded",
+        "--report-json",
+        "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb02_trunk_inheritance_degraded.json"
+      ],
+      "contract_category": 2,
+      "exit_code": 2,
+      "id": "kb02_trunk_inheritance_degraded",
+      "passed_fail_closed": true,
+      "public_label": "stock trunk inheritance degraded",
+      "report_path": "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb02_trunk_inheritance_degraded.json",
+      "report_sha256": "8af58acc05f617b03dd20ba8650975cef63684c282d1af1da01d9d7af407a1f8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "8af58acc05f617b03dd20ba8650975cef63684c282d1af1da01d9d7af407a1f8"
+    },
+    {
+      "command": [
+        "/usr/bin/python",
+        "validators/care_ase_faithful/validate_contract_evidence.py",
+        "--verification-contract",
+        "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+        "--known-bad-id",
+        "kb03_shallow_decoder_head",
+        "--report-json",
+        "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb03_shallow_decoder_head.json"
+      ],
+      "contract_category": 3,
+      "exit_code": 2,
+      "id": "kb03_shallow_decoder_head",
+      "passed_fail_closed": true,
+      "public_label": "shallow head substitutes for required decoders",
+      "report_path": "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb03_shallow_decoder_head.json",
+      "report_sha256": "bd8fa163b535709e6db7feb402131dcfd015e75bf449e88c189c4dc6dc963dd4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "bd8fa163b535709e6db7feb402131dcfd015e75bf449e88c189c4dc6dc963dd4"
+    },
+    {
+      "command": [
+        "/usr/bin/python",
+        "validators/care_ase_faithful/validate_contract_evidence.py",
+        "--verification-contract",
+        "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+        "--known-bad-id",
+        "kb04_stock_class_shortcut",
+        "--report-json",
+        "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb04_stock_class_shortcut.json"
+      ],
+      "contract_category": 4,
+      "exit_code": 2,
+      "id": "kb04_stock_class_shortcut",
+      "passed_fail_closed": true,
+      "public_label": "stock class shortcut enters normal forward",
+      "report_path": "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb04_stock_class_shortcut.json",
+      "report_sha256": "baf91fb4c1ff8aeeee70b5bb8d8c3fba4be3006a0d6acd077fbcbf2f75b00f52",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "baf91fb4c1ff8aeeee70b5bb8d8c3fba4be3006a0d6acd077fbcbf2f75b00f52"
+    },
+    {
+      "command": [
+        "/usr/bin/python",
+        "validators/care_ase_faithful/validate_contract_evidence.py",
+        "--verification-contract",
+        "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+        "--known-bad-id",
+        "kb05_required_module_no_authority",
+        "--report-json",
+        "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb05_required_module_no_authority.json"
+      ],
+      "contract_category": 5,
+      "exit_code": 2,
+      "id": "kb05_required_module_no_authority",
+      "passed_fail_closed": true,
+      "public_label": "required module has no target/final authority",
+      "report_path": "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb05_required_module_no_authority.json",
+      "report_sha256": "f232f0213f4430dfc64df76787e91a346d2cd929016fb7bb6d2d929a30c5fc7a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "f232f0213f4430dfc64df76787e91a346d2cd929016fb7bb6d2d929a30c5fc7a"
+    },
+    {
+      "command": [
+        "/usr/bin/python",
+        "validators/care_ase_faithful/validate_contract_evidence.py",
+        "--verification-contract",
+        "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+        "--known-bad-id",
+        "kb06_dead_gradient_double_zero",
+        "--report-json",
+        "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb06_dead_gradient_double_zero.json"
+      ],
+      "contract_category": 6,
+      "exit_code": 2,
+      "id": "kb06_dead_gradient_double_zero",
+      "passed_fail_closed": true,
+      "public_label": "double zero initialization dead gradient",
+      "report_path": "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb06_dead_gradient_double_zero.json",
+      "report_sha256": "7ac953e25ac17701e33e6b64a347ab20730628c64796e2ba3f65ecae3f400b93",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "7ac953e25ac17701e33e6b64a347ab20730628c64796e2ba3f65ecae3f400b93"
+    },
+    {
+      "command": [
+        "/usr/bin/python",
+        "validators/care_ase_faithful/validate_contract_evidence.py",
+        "--verification-contract",
+        "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+        "--known-bad-id",
+        "kb07_modality_role_violation",
+        "--report-json",
+        "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb07_modality_role_violation.json"
+      ],
+      "contract_category": 7,
+      "exit_code": 2,
+      "id": "kb07_modality_role_violation",
+      "passed_fail_closed": true,
+      "public_label": "scar/edema modality ownership violated",
+      "report_path": "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb07_modality_role_violation.json",
+      "report_sha256": "c85a986134dedbffe8e9efbf5870f392e07a0571f2ad58a55f14759b1cf46513",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "c85a986134dedbffe8e9efbf5870f392e07a0571f2ad58a55f14759b1cf46513"
+    },
+    {
+      "command": [
+        "/usr/bin/python",
+        "validators/care_ase_faithful/validate_contract_evidence.py",
+        "--verification-contract",
+        "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+        "--known-bad-id",
+        "kb08_no_t2_edema_leak",
+        "--report-json",
+        "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb08_no_t2_edema_leak.json"
+      ],
+      "contract_category": 8,
+      "exit_code": 2,
+      "id": "kb08_no_t2_edema_leak",
+      "passed_fail_closed": true,
+      "public_label": "no-T2 rows leak into edema graph or class-4 competition",
+      "report_path": "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb08_no_t2_edema_leak.json",
+      "report_sha256": "99ca451509bc110a95a1daefe116eb95fd3bfe213bc28a968cb70031b20a1b86",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "99ca451509bc110a95a1daefe116eb95fd3bfe213bc28a968cb70031b20a1b86"
+    },
+    {
+      "command": [
+        "/usr/bin/python",
+        "validators/care_ase_faithful/validate_contract_evidence.py",
+        "--verification-contract",
+        "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+        "--known-bad-id",
+        "kb09_auxiliary_only_context_extent",
+        "--report-json",
+        "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb09_auxiliary_only_context_extent.json"
+      ],
+      "contract_category": 9,
+      "exit_code": 2,
+      "id": "kb09_auxiliary_only_context_extent",
+      "passed_fail_closed": true,
+      "public_label": "context/extent/soft-wall are auxiliary only",
+      "report_path": "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb09_auxiliary_only_context_extent.json",
+      "report_sha256": "28840e44929e09437f417907c5ac001ed0cfb5240a222998850fc8d21cc69f00",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "28840e44929e09437f417907c5ac001ed0cfb5240a222998850fc8d21cc69f00"
+    },
+    {
+      "command": [
+        "/usr/bin/python",
+        "validators/care_ase_faithful/validate_contract_evidence.py",
+        "--verification-contract",
+        "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+        "--known-bad-id",
+        "kb10_hard_or_forbidden_mechanism",
+        "--report-json",
+        "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb10_hard_or_forbidden_mechanism.json"
+      ],
+      "contract_category": 10,
+      "exit_code": 2,
+      "id": "kb10_hard_or_forbidden_mechanism",
+      "passed_fail_closed": true,
+      "public_label": "hard ROI/wall/prototype/fixed-priority mechanism",
+      "report_path": "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb10_hard_or_forbidden_mechanism.json",
+      "report_sha256": "ac0723f03450aefa90cbdd5e62fb4549f83b8c01fc8f9ba63a0ad7901e0c1563",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "ac0723f03450aefa90cbdd5e62fb4549f83b8c01fc8f9ba63a0ad7901e0c1563"
+    },
+    {
+      "command": [
+        "/usr/bin/python",
+        "validators/care_ase_faithful/validate_contract_evidence.py",
+        "--verification-contract",
+        "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+        "--known-bad-id",
+        "kb11_patch_local_extent_or_invalid_bias",
+        "--report-json",
+        "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb11_patch_local_extent_or_invalid_bias.json"
+      ],
+      "contract_category": 11,
+      "exit_code": 2,
+      "id": "kb11_patch_local_extent_or_invalid_bias",
+      "passed_fail_closed": true,
+      "public_label": "patch-local extent or invalid-slice bias",
+      "report_path": "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb11_patch_local_extent_or_invalid_bias.json",
+      "report_sha256": "a82921286001cd5a73c4b02636f523a97c4079737248716e943a5c197c204cf4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "a82921286001cd5a73c4b02636f523a97c4079737248716e943a5c197c204cf4"
+    },
+    {
+      "command": [
+        "/usr/bin/python",
+        "validators/care_ase_faithful/validate_contract_evidence.py",
+        "--verification-contract",
+        "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+        "--known-bad-id",
+        "kb12_tile_bias_or_path_fork",
+        "--report-json",
+        "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb12_tile_bias_or_path_fork.json"
+      ],
+      "contract_category": 12,
+      "exit_code": 2,
+      "id": "kb12_tile_bias_or_path_fork",
+      "passed_fail_closed": true,
+      "public_label": "tile-local final bias or single/multi path fork",
+      "report_path": "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb12_tile_bias_or_path_fork.json",
+      "report_sha256": "cc86ff11f58d69115e32a227f3665a19e937c6c48d53ed7dc046d0299a10469f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "cc86ff11f58d69115e32a227f3665a19e937c6c48d53ed7dc046d0299a10469f"
+    },
+    {
+      "command": [
+        "/usr/bin/python",
+        "validators/care_ase_faithful/validate_contract_evidence.py",
+        "--verification-contract",
+        "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+        "--known-bad-id",
+        "kb13_loss_excluded_or_fake_denominator",
+        "--report-json",
+        "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb13_loss_excluded_or_fake_denominator.json"
+      ],
+      "contract_category": 13,
+      "exit_code": 2,
+      "id": "kb13_loss_excluded_or_fake_denominator",
+      "passed_fail_closed": true,
+      "public_label": "declared loss excluded or zero denominator counted",
+      "report_path": "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb13_loss_excluded_or_fake_denominator.json",
+      "report_sha256": "15395b71f4218123727d4971354c299e4fd9263adf685e4cfd2e3363ce9896be",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "15395b71f4218123727d4971354c299e4fd9263adf685e4cfd2e3363ce9896be"
+    },
+    {
+      "command": [
+        "/usr/bin/python",
+        "validators/care_ase_faithful/validate_contract_evidence.py",
+        "--verification-contract",
+        "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+        "--known-bad-id",
+        "kb14_hard_negative_unbound",
+        "--report-json",
+        "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb14_hard_negative_unbound.json"
+      ],
+      "contract_category": 14,
+      "exit_code": 2,
+      "id": "kb14_hard_negative_unbound",
+      "passed_fail_closed": true,
+      "public_label": "hard negative lacks mask/coordinate/checkpoint/grid binding",
+      "report_path": "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb14_hard_negative_unbound.json",
+      "report_sha256": "d8a61b1bd5c7f78fbdccb62f23f79b32c86f07869013a31db51da97a77f3e5ee",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "d8a61b1bd5c7f78fbdccb62f23f79b32c86f07869013a31db51da97a77f3e5ee"
+    },
+    {
+      "command": [
+        "/usr/bin/python",
+        "validators/care_ase_faithful/validate_contract_evidence.py",
+        "--verification-contract",
+        "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+        "--known-bad-id",
+        "kb15_unrecorded_sampler_fallback",
+        "--report-json",
+        "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb15_unrecorded_sampler_fallback.json"
+      ],
+      "contract_category": 15,
+      "exit_code": 2,
+      "id": "kb15_unrecorded_sampler_fallback",
+      "passed_fail_closed": true,
+      "public_label": "requested/resolved sampler category mismatch unrecorded",
+      "report_path": "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb15_unrecorded_sampler_fallback.json",
+      "report_sha256": "59a1a294336e67a126f1fe66ee897a73aa8da41b678122ea02744f804ddfa776",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "59a1a294336e67a126f1fe66ee897a73aa8da41b678122ea02744f804ddfa776"
+    },
+    {
+      "command": [
+        "/usr/bin/python",
+        "validators/care_ase_faithful/validate_contract_evidence.py",
+        "--verification-contract",
+        "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+        "--known-bad-id",
+        "kb16_checkpoint_resume_drift",
+        "--report-json",
+        "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb16_checkpoint_resume_drift.json"
+      ],
+      "contract_category": 16,
+      "exit_code": 2,
+      "id": "kb16_checkpoint_resume_drift",
+      "passed_fail_closed": true,
+      "public_label": "checkpoint schema or exact resume is unsafe",
+      "report_path": "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb16_checkpoint_resume_drift.json",
+      "report_sha256": "44b22b24c4648db2969362c8d13942a5e5cb130338a97f841875aa2cfa1e1a48",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "44b22b24c4648db2969362c8d13942a5e5cb130338a97f841875aa2cfa1e1a48"
+    },
+    {
+      "command": [
+        "/usr/bin/python",
+        "validators/care_ase_faithful/validate_contract_evidence.py",
+        "--verification-contract",
+        "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+        "--known-bad-id",
+        "kb17_early_checkpoint_final_ramp",
+        "--report-json",
+        "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb17_early_checkpoint_final_ramp.json"
+      ],
+      "contract_category": 17,
+      "exit_code": 2,
+      "id": "kb17_early_checkpoint_final_ramp",
+      "passed_fail_closed": true,
+      "public_label": "early checkpoint inference uses final-step ramp",
+      "report_path": "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb17_early_checkpoint_final_ramp.json",
+      "report_sha256": "ab631e74e47072d4f00c8cab8076766034f7eab03ebdd5ce3d90a4a907b1395b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "ab631e74e47072d4f00c8cab8076766034f7eab03ebdd5ce3d90a4a907b1395b"
+    },
+    {
+      "command": [
+        "/usr/bin/python",
+        "validators/care_ase_faithful/validate_contract_evidence.py",
+        "--verification-contract",
+        "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+        "--known-bad-id",
+        "kb18_canned_receipt_without_execution",
+        "--report-json",
+        "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb18_canned_receipt_without_execution.json"
+      ],
+      "contract_category": 18,
+      "exit_code": 2,
+      "id": "kb18_canned_receipt_without_execution",
+      "passed_fail_closed": true,
+      "public_label": "canned receipt without real execution evidence",
+      "report_path": "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb18_canned_receipt_without_execution.json",
+      "report_sha256": "9aec2f99d18f693b7971babfc705ec2d268299c953f23ce6b50a74693034c6f1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "9aec2f99d18f693b7971babfc705ec2d268299c953f23ce6b50a74693034c6f1"
+    },
+    {
+      "command": [
+        "/usr/bin/python",
+        "validators/care_ase_faithful/validate_contract_evidence.py",
+        "--verification-contract",
+        "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+        "--known-bad-id",
+        "kb19_patch_proxy_evaluator",
+        "--report-json",
+        "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb19_patch_proxy_evaluator.json"
+      ],
+      "contract_category": 19,
+      "exit_code": 2,
+      "id": "kb19_patch_proxy_evaluator",
+      "passed_fail_closed": true,
+      "public_label": "patch proxy or unfair evaluator substitutes full volume",
+      "report_path": "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb19_patch_proxy_evaluator.json",
+      "report_sha256": "de07ac2733099b35393674d886c4b53c3a2ecd8faebd153181f1f3c69d4c4983",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "de07ac2733099b35393674d886c4b53c3a2ecd8faebd153181f1f3c69d4c4983"
+    },
+    {
+      "command": [
+        "/usr/bin/python",
+        "validators/care_ase_faithful/validate_contract_evidence.py",
+        "--verification-contract",
+        "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+        "--known-bad-id",
+        "kb20_incomplete_training_counted",
+        "--report-json",
+        "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb20_incomplete_training_counted.json"
+      ],
+      "contract_category": 20,
+      "exit_code": 2,
+      "id": "kb20_incomplete_training_counted",
+      "passed_fail_closed": true,
+      "public_label": "under-budget or non-terminal run counted as training",
+      "report_path": "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb20_incomplete_training_counted.json",
+      "report_sha256": "a6c083e22adffbfab1e76156d1fd0f7c80352d0f059d1faec69eac607e329d4f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "a6c083e22adffbfab1e76156d1fd0f7c80352d0f059d1faec69eac607e329d4f"
+    },
+    {
+      "command": [
+        "/usr/bin/python",
+        "validators/care_ase_faithful/validate_contract_evidence.py",
+        "--verification-contract",
+        "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+        "--known-bad-id",
+        "kb21_outer_selection_leak",
+        "--report-json",
+        "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb21_outer_selection_leak.json"
+      ],
+      "contract_category": 21,
+      "exit_code": 2,
+      "id": "kb21_outer_selection_leak",
+      "passed_fail_closed": true,
+      "public_label": "outer data used for selection",
+      "report_path": "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb21_outer_selection_leak.json",
+      "report_sha256": "779e859b8457cca38e1b3ff3fac7ece6eace637eb9dbf00204f639b7351aa05d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "779e859b8457cca38e1b3ff3fac7ece6eace637eb9dbf00204f639b7351aa05d"
+    },
+    {
+      "command": [
+        "/usr/bin/python",
+        "validators/care_ase_faithful/validate_contract_evidence.py",
+        "--verification-contract",
+        "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+        "--known-bad-id",
+        "kb22_hidden_asset_or_old_wrapper",
+        "--report-json",
+        "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb22_hidden_asset_or_old_wrapper.json"
+      ],
+      "contract_category": 22,
+      "exit_code": 2,
+      "id": "kb22_hidden_asset_or_old_wrapper",
+      "passed_fail_closed": true,
+      "public_label": "hidden host asset or old wrapper bypass",
+      "report_path": "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb22_hidden_asset_or_old_wrapper.json",
+      "report_sha256": "b2345f875d883d1cf5ec9a39512b03368ca5126f2cd35dd59c6546da8ec59e93",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "b2345f875d883d1cf5ec9a39512b03368ca5126f2cd35dd59c6546da8ec59e93"
+    },
+    {
+      "command": [
+        "/usr/bin/python",
+        "validators/care_ase_faithful/validate_contract_evidence.py",
+        "--verification-contract",
+        "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+        "--known-bad-id",
+        "kb23_dual_truth_implementation",
+        "--report-json",
+        "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb23_dual_truth_implementation.json"
+      ],
+      "contract_category": 23,
+      "exit_code": 2,
+      "id": "kb23_dual_truth_implementation",
+      "passed_fail_closed": true,
+      "public_label": "monolith and module implementation both runnable",
+      "report_path": "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb23_dual_truth_implementation.json",
+      "report_sha256": "c07aeb21c41d18527561191f9f3fa5e04fb6d712c6d669274da750db6182aa7d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "c07aeb21c41d18527561191f9f3fa5e04fb6d712c6d669274da750db6182aa7d"
+    },
+    {
+      "command": [
+        "/usr/bin/python",
+        "validators/care_ase_faithful/validate_contract_evidence.py",
+        "--verification-contract",
+        "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+        "--known-bad-id",
+        "kb24_metric_interface_missing",
+        "--report-json",
+        "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb24_metric_interface_missing.json"
+      ],
+      "contract_category": 24,
+      "exit_code": 2,
+      "id": "kb24_metric_interface_missing",
+      "passed_fail_closed": true,
+      "public_label": "required metric or sentinel interface missing",
+      "report_path": "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb24_metric_interface_missing.json",
+      "report_sha256": "77459a35ee37c38a05f207f253eb45a84bb2e8738f608883de333b0780f3e2f5",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "77459a35ee37c38a05f207f253eb45a84bb2e8738f608883de333b0780f3e2f5"
+    }
+  ],
+  "public_reference_validation": {
+    "command": [
+      "/usr/bin/python",
+      "validators/care_ase_faithful/validate_contract_evidence.py",
+      "--verification-contract",
+      "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+      "--evidence",
+      "results/agent_flow_v3/care-ase-faithful/verification/public_reference_evidence.json"
+    ],
+    "exit_code": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_tail": "",
+    "stdout_sha256": "7ca147703ccf89a824fb57c9603d9755ab11f42ec6c000ec130a054de271dec9",
+    "stdout_tail": "{\n  \"failure_count\": 0,\n  \"failures\": [],\n  \"known_bad_case_id\": null,\n  \"passed\": true,\n  \"schema\": \"CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1\",\n  \"task_id\": \"care-ase-faithful\"\n}\n"
+  },
+  "request_nonce": "care-ase-20260806T090955Z",
+  "schema": "CARE_ASE_FAITHFUL_VERIFIER_COMMAND_LOG_V1",
+  "task_id": "care-ase-faithful"
+}

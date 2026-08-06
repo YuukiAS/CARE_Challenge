@@ -1,0 +1,11 @@
+{
+  "failure_count": 2,
+  "failures": [
+    "kb19.patch_proxy",
+    "kb19.fair_baseline"
+  ],
+  "known_bad_case_id": "kb19_patch_proxy_evaluator",
+  "passed": false,
+  "schema": "CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1",
+  "task_id": "care-ase-faithful"
+}

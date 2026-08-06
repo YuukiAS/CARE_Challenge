@@ -1,0 +1,11 @@
+{
+  "failure_count": 2,
+  "failures": [
+    "kb18.canned_receipt",
+    "kb18.forward_backward_probe.executed"
+  ],
+  "known_bad_case_id": "kb18_canned_receipt_without_execution",
+  "passed": false,
+  "schema": "CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1",
+  "task_id": "care-ase-faithful"
+}

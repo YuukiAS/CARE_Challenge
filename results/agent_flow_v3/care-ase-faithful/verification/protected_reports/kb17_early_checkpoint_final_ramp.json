@@ -1,0 +1,10 @@
+{
+  "failure_count": 1,
+  "failures": [
+    "kb17.final_step_ramp"
+  ],
+  "known_bad_case_id": "kb17_early_checkpoint_final_ramp",
+  "passed": false,
+  "schema": "CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1",
+  "task_id": "care-ase-faithful"
+}
