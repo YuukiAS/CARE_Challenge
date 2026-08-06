@@ -335,6 +335,31 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         self.assertEqual(receipt["last_observed_remote_sha"], "d" * 40)
         self.assertRegex(receipt["last_poll_utc"], r"^\d{4}-\d{2}-\d{2}T")
 
+    def test_orchestrator_plan_requested_records_external_gpt_wait_metadata(self) -> None:
+        current = {
+            "request_nonce": "care-ase-nonce",
+            "review_round": 0,
+            "state": "PLAN_REQUESTED",
+        }
+
+        receipt = RUNTIME.evaluate_stage_event(
+            task_id="care-ase-faithful",
+            request={"enabled": True},
+            current=current,
+            visual_final=None,
+            remote_sha="e" * 40,
+            processed=set(),
+            default_wait_hours=4,
+        )
+
+        self.assertEqual(receipt["decision"], "WAITING_FOR_EXTERNAL_GPT")
+        self.assertEqual(receipt["state"], "PLAN_REQUESTED")
+        self.assertIn("Scheduled Planner", receipt["expected_state_or_artifact"])
+        self.assertEqual(receipt["last_observed_remote_sha"], "e" * 40)
+        started = RUNTIME.parse_utc(receipt["external_wait_started_utc"])
+        deadline = RUNTIME.parse_utc(receipt["external_wait_deadline_utc"])
+        self.assertGreaterEqual((deadline - started).total_seconds(), 4 * 3600)
+
     def test_orchestrator_keeps_generic_planner_pass_at_human_gate(self) -> None:
         current = {
             "request_nonce": "nonce-1",

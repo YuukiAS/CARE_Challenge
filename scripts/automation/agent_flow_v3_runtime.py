@@ -981,10 +981,29 @@ def evaluate_stage_event(
     decision = "IGNORE"
     action = "none"
     failures: list[str] = []
+    wait_current = current
     if request.get("enabled") is not True:
         decision = "IGNORE_DISABLED"
     elif stage_event_was_processed(event_key, processed):
         decision = "IGNORE_PROCESSED"
+    elif state == "PLAN_REQUESTED":
+        decision = "WAITING_FOR_EXTERNAL_GPT"
+        action = "scheduled Planner initial planning"
+        wait_current = update_wait_fields(
+            current,
+            remote_sha=remote_sha,
+            expected="Scheduled Planner updates CURRENT to PLAN_READY_FOR_CRITIC or BLOCKED_VISUAL_SOURCES with a bound planning artifact.",
+            default_hours=default_wait_hours,
+        )
+    elif state == "PLAN_READY_FOR_CRITIC":
+        decision = "WAITING_FOR_EXTERNAL_GPT"
+        action = "scheduled Critic direct repair and freeze"
+        wait_current = update_wait_fields(
+            current,
+            remote_sha=remote_sha,
+            expected="Scheduled Critic updates CURRENT to PLAN_FROZEN, NEEDS_USER_SCIENTIFIC_CHOICE, or BLOCKED_VISUAL_SOURCES with a bound freeze artifact.",
+            default_hours=default_wait_hours,
+        )
     elif state == "WAITING_FOR_EXTERNAL_GPT":
         deadline_raw = current.get("external_wait_deadline_utc")
         if not isinstance(deadline_raw, str):
@@ -1002,6 +1021,12 @@ def evaluate_stage_event(
     elif state == "READY_FOR_PLANNER_REVIEW":
         decision = "WAITING_FOR_EXTERNAL_GPT"
         action = "scheduled Planner review"
+        wait_current = update_wait_fields(
+            current,
+            remote_sha=remote_sha,
+            expected="Scheduled Planner returns PLANNER_PASS or a bound PLANNER_REVISE_* artifact for the current integration SHA.",
+            default_hours=default_wait_hours,
+        )
     elif task_id == "gpt-loop-smoke-b" and state == "PLANNER_PASS":
         decision = "CONTROLLER_UPDATE_REQUIRED"
         action = "validate Smoke B Planner PASS artifact, write gpt_loop_smoke_final PASS, then arm care-ase-faithful"
@@ -1031,12 +1056,12 @@ def evaluate_stage_event(
         "request_nonce": current.get("request_nonce"),
         "review_round": current.get("review_round"),
         "remote_sha": remote_sha,
-        "external_wait_started_utc": current.get("external_wait_started_utc"),
-        "external_wait_deadline_utc": current.get("external_wait_deadline_utc"),
-        "expected_state_or_artifact": current.get("expected_state_or_artifact"),
+        "external_wait_started_utc": wait_current.get("external_wait_started_utc"),
+        "external_wait_deadline_utc": wait_current.get("external_wait_deadline_utc"),
+        "expected_state_or_artifact": wait_current.get("expected_state_or_artifact"),
         "last_observed_remote_sha": remote_sha,
-        "last_poll_utc": now(),
-        "updated_utc": now(),
+        "last_poll_utc": wait_current.get("last_poll_utc") or now(),
+        "updated_utc": wait_current.get("updated_utc") or now(),
         "default_external_wait_hours": default_wait_hours,
     }
 
