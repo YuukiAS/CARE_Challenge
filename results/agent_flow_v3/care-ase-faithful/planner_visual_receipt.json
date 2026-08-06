@@ -1,0 +1,180 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_PLANNER_VISUAL_RECEIPT",
+  "task_id": "care-ase-faithful",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "role": "planner",
+  "actual_visual_access": true,
+  "access_context": "Scheduled ChatGPT Planner independently inspected the 11 architecture figures corresponding to VISUAL_SOURCES.json through the ChatGPT project/file visual source. Repository paths and SHA-256 bindings were checked before synthesis; prior Critic artifacts were not used as substitutes for image inspection.",
+  "source_manifest_path": "automation/agent_flow_v3/tasks/care-ase-faithful/VISUAL_SOURCES.json",
+  "source_manifest_git_blob_sha": "1387c29faa65fcd9efdfb9d52172b0da8fd2ae14",
+  "images": [
+    {
+      "name": "SRR-v2",
+      "repository_path": "docs/architecture/figures/SRR-v2.png",
+      "sha256": "2c77d92eb652e88fdf69d40ee13eeb7a66d37755041bfff2a0c1756f1fa1ac8a",
+      "observed_design": [
+        "availability-aware modality-specific input handling",
+        "shared/private/interaction representation retrieval",
+        "anatomy-guided lesion proposal",
+        "separate scar and edema soft-ROI refinement",
+        "optional Cine registration and temporal aggregation"
+      ],
+      "lesson_for_care_ase": "Retain explicit modality roles and pathology separation, but do not restore a long retrieval/dictionary chain or local-only refinement."
+    },
+    {
+      "name": "SRR-v2.5",
+      "repository_path": "docs/architecture/figures/SRR-v2.5.png",
+      "sha256": "674453e11a8d1466038ac4a22ae68332aabf9482f23d3f90e559649def6606f9",
+      "observed_design": [
+        "LGE-dominant scar proposal",
+        "T2-conditioned edema proposal",
+        "pathology-specific proposal/refinement authority",
+        "availability masking before evidence use"
+      ],
+      "lesson_for_care_ase": "Freeze asymmetric modality authority: LGE is primary for scar, T2 is primary for pure edema; a generic shared pathology head is a downgrade."
+    },
+    {
+      "name": "SRR-v3",
+      "repository_path": "docs/architecture/figures/SRR-v3.png",
+      "sha256": "50478ee7c07cedb6a921902aa5daa8f6ecf3b34aa2fc5e97905d60c585ea72b5",
+      "observed_design": [
+        "strong nnU-Net anchor/context interface",
+        "positive, negative and safe-negative prototype evidence",
+        "scar/edema proposals and soft-ROI refiners",
+        "bounded residual correction around the anchor",
+        "Cine anatomy, registration and temporal retrieval lane"
+      ],
+      "lesson_for_care_ase": "Use SRR-v3 as anti-downgrade history: modules must reach final logits, but CARE-ASE must not reintroduce anchor-bounded correction, prototypes, dictionaries or a Cine branch."
+    },
+    {
+      "name": "CARE-MMRD",
+      "repository_path": "docs/architecture/figures/CARE-MMRD.png",
+      "sha256": "c90bf7582ff139fe1b785e4dac51c55b4ec0c8f676654dd03c9b17e551489859",
+      "observed_design": [
+        "modality-specific stems with explicit availability",
+        "mature ResidualEncoderUNet-style backbone",
+        "reliable-label edema supervision",
+        "no-T2 safety and structured modality dropout",
+        "direct anatomy/scar/edema output heads"
+      ],
+      "lesson_for_care_ase": "Retain explicit missingness, reliable-label masking and hard-zero missing adapters; do not restore weak residual heads or distillation."
+    },
+    {
+      "name": "CARE-SRR-Cascade",
+      "repository_path": "docs/architecture/figures/CARE-SRR-Cascade.png",
+      "sha256": "3596356c52a01de5cf29bdae6591ce733bc209403f3f6e8429f8a1374e66ef50",
+      "observed_design": [
+        "frozen nnU-Net anchor",
+        "separate evidence/prototype support",
+        "pathology-specific correction heads",
+        "bounded correction and exact fallback",
+        "independent scar and edema safety audit"
+      ],
+      "lesson_for_care_ase": "Preserve independent pathology audits and exact fallback tests as historical safeguards, but final CARE-ASE pathology authority must be direct rather than anchor-bounded."
+    },
+    {
+      "name": "CARE-DG",
+      "repository_path": "docs/architecture/figures/CARE-DG.png",
+      "sha256": "6be1b2cae31d3c4f77576f8fe8eb1df39c6623adf86729910cbd31bcfe12ad00",
+      "observed_design": [
+        "explicit false-negative and false-positive gates",
+        "separate scar and edema-zone decoders",
+        "protected anatomy composition",
+        "error-centric sampling and reliable-label supervision"
+      ],
+      "lesson_for_care_ase": "Retain real OOF FN/FP sampling and pathology-specific help/harm tests; do not restore bounded gated correction."
+    },
+    {
+      "name": "CARE-ARC",
+      "repository_path": "docs/architecture/figures/CARE-ARC.png",
+      "sha256": "387f77d42dc9c4f802fda1bdee0eb67fec46dabe921dbf971f7cde5bbcf845b8",
+      "observed_design": [
+        "one shared encoder with direct anatomy/scar/edema reconstruction decoders",
+        "anchor-relaxed final-output authority",
+        "direct pathology logits",
+        "deterministic composition"
+      ],
+      "lesson_for_care_ase": "Retain direct pathology reconstruction and final-output tracing, but reject decoder reset, shallow random heads and fixed scar-priority composition."
+    },
+    {
+      "name": "CARE-PRISM",
+      "repository_path": "docs/architecture/figures/CARE-PRISM.png",
+      "sha256": "31bb8138bc6291d6e116fc605d7a2060a15ce7c3eca25d5da59e419fc2698135",
+      "observed_design": [
+        "stock-compatible shared encoding",
+        "modality-private feature pyramids",
+        "internal anatomy decoding",
+        "soft proposal/retrieval and multi-scale pathology refiners",
+        "explicit final composition"
+      ],
+      "lesson_for_care_ase": "Require every declared proposal/context tensor to have causal final-logit authority; do not adopt retrieval memory or fixed scar priority."
+    },
+    {
+      "name": "CARE-MyoWall-IF",
+      "repository_path": "docs/architecture/figures/CARE-MyoWall-IF.png",
+      "sha256": "1dc3ecf58f1fffdeb7c36de948f99743a61e39861c08b57378da8c84d536e914",
+      "observed_design": [
+        "predicted myocardium geometry",
+        "wall-coordinate transformation",
+        "wall-space pathology inference",
+        "inverse mapping",
+        "geometry reliability gate"
+      ],
+      "lesson_for_care_ase": "Use endocardial/epicardial distance and wall depth only as detached soft context; hard transforms, crops, clipping and geometry fail-stop remain forbidden."
+    },
+    {
+      "name": "MoSAIC",
+      "repository_path": "docs/architecture/figures/MoSAIC.png",
+      "sha256": "d2ea85c5ba40521dc65a56d85124ecfc9a2e40ac5eff206c10cff8fbf04e09fb",
+      "observed_design": [
+        "MyoPS coarse localization followed by independent pathology experts",
+        "anatomy-conditioned multi-sequence fusion",
+        "scar continuity-oriented fine path",
+        "T2 edema-zone expert",
+        "separate ED-anchored cine motion workflow"
+      ],
+      "lesson_for_care_ase": "Treat MoSAIC as a read-only benchmark and source of pathology-specific authority; no ensemble, teacher, selector, copied weights or Cine path enters CARE-ASE."
+    },
+    {
+      "name": "CARE-ASE",
+      "repository_path": "docs/architecture/figures/CARE-ASE.png",
+      "sha256": "af8f47713961c3b6b03dd24283b8f18d51fb5043ab1699997db2713e525710b2",
+      "observed_design": [
+        "one stock-compatible full-volume encoder/bottleneck/shared low-mid decoder",
+        "three independent highest-two-scale paths for anatomy, scar and edema",
+        "detached soft wall/anatomy context",
+        "LGE-driven scar occupancy/component-center/safe-negative formation",
+        "T2-driven full-volume edema reconstruction with injury, boundary, slice extent and dilation context",
+        "conditional final competition: six classes with T2 and five classes excluding edema without T2",
+        "three mandatory stages totaling 14000 optimizer steps"
+      ],
+      "explicitly_absent_from_figure": [
+        "second complete backbone",
+        "Transformer or Mamba",
+        "prototype/dictionary/query memory",
+        "frozen-anchor residual arbitration",
+        "hard ROI or hard wall transform",
+        "fixed scar-priority overwrite",
+        "Cine branch"
+      ],
+      "planner_interpretation": "This figure is the primary visual architecture authority. The implementation must preserve direct branch ownership, real final-logit interventions and row-wise no-T2 graph exclusion rather than merely naming these modules."
+    }
+  ],
+  "cross_figure_frozen_synthesis": [
+    "CARE-ASE is not another residual correction system: stock nnU-Net supplies a complete initialized trunk, while new scar and edema branches directly own class-5 and class-4 logits.",
+    "Scar and pure edema have different information and morphology contracts; LGE/T2 authority, branch topology, targets, sampling and negative spaces remain distinct.",
+    "Anatomy geometry is soft detached context, never a hard gate.",
+    "The no-T2 rule is computational and semantic: edema-owned modules are not called for absent rows, all edema losses/gradients are zero, and class 4 is removed from final competition.",
+    "Historical methods are benchmarks and failure evidence only; no deprecated mechanism may be silently restored."
+  ],
+  "visual_gate_decision": "PLANNING_VISUAL_GATE_PASS",
+  "critic_required_next": true,
+  "forbidden_actions_confirmed": [
+    "no implementation edits",
+    "no training",
+    "no outer access",
+    "no develop-to-main merge",
+    "no deployment or upload"
+  ],
+  "updated_utc": "2026-08-06T10:12:26Z"
+}
