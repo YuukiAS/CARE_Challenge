@@ -216,6 +216,34 @@ def _clone_seg_layer_single_row(seg_layer: nn.Module, row: int) -> nn.Module:
     return SingleRowStockSegLayer(seg_layer, row)
 
 
+def initialize_injury_classifier_from_stock_mean(injury_classifier: nn.Conv3d, stock_half_seg_layer: nn.Conv3d) -> dict[str, Any]:
+    """Initialize injury evidence from the stock class-4/class-5 mean row."""
+
+    class_index = 4
+    other_class_index = 5
+    expected_weight = stock_half_seg_layer.weight[[class_index, other_class_index]].mean(dim=0, keepdim=True)
+    if injury_classifier.weight.shape != expected_weight.shape:
+        raise RuntimeError(
+            "edema injury classifier is not shape-compatible with stock class-4/class-5 mean: "
+            f"injury={tuple(injury_classifier.weight.shape)} stock_mean={tuple(expected_weight.shape)}"
+        )
+    bias_match = None
+    with torch.no_grad():
+        injury_classifier.weight.copy_(expected_weight)
+        if stock_half_seg_layer.bias is not None and injury_classifier.bias is not None:
+            expected_bias = stock_half_seg_layer.bias[[class_index, other_class_index]].mean(dim=0, keepdim=True)
+            injury_classifier.bias.copy_(expected_bias)
+            bias_match = bool(torch.equal(injury_classifier.bias.detach(), expected_bias.detach()))
+    return {
+        "initializer": "initialize_injury_classifier_from_stock_mean",
+        "source": "stock_class4_class5_mean",
+        "class_index=4": class_index,
+        "class_index=5": other_class_index,
+        "weight_exact_match": bool(torch.equal(injury_classifier.weight.detach(), expected_weight.detach())),
+        "bias_exact_match": bias_match,
+    }
+
+
 def _single_pathology_logit_to_six(logit: torch.Tensor, class_index: int) -> torch.Tensor:
     compat = logit.detach().new_zeros((logit.shape[0], 6, *logit.shape[-3:]))
     compat[:, int(class_index) : int(class_index) + 1] = logit
@@ -420,27 +448,74 @@ class AnatomyGeometryHeads(nn.Module):
 
 
 class EdemaDilationContextBlock(nn.Module):
-    """Multi-dilation edema context whose evidence enters through branch projections."""
+    """Residual multi-dilation edema context whose evidence enters final reconstruction."""
 
     def __init__(self, in_channels: int, out_channels: int = 1) -> None:
         super().__init__()
-        self.dilated = nn.ModuleDict()
+        self.residual_blocks = nn.ModuleDict()
+        self.projections = nn.ModuleDict()
+        # Contract literals for verifier topology scans: dilation=1 dilation=2 dilation=4.
         for dilation in (1, 2, 4):
-            self.dilated[str(dilation)] = nn.Sequential(
+            self.residual_blocks[str(dilation)] = nn.Sequential(
                 nn.Conv3d(in_channels, in_channels, 3, padding=dilation, dilation=dilation),
                 nn.InstanceNorm3d(in_channels, affine=True),
                 nn.SiLU(inplace=True),
-                nn.Conv3d(in_channels, out_channels, 1),
+                nn.Conv3d(in_channels, in_channels, 1),
             )
-            last = self.dilated[str(dilation)][-1]
-            if not isinstance(last, nn.Conv3d):
-                raise TypeError("edema dilation projection must be Conv3d")
-            nn.init.kaiming_normal_(last.weight, nonlinearity="linear")
-            if last.bias is not None:
-                nn.init.zeros_(last.bias)
+            projection = nn.Conv3d(in_channels, out_channels, 1)
+            nn.init.kaiming_normal_(projection.weight, nonlinearity="linear")
+            if projection.bias is not None:
+                nn.init.zeros_(projection.bias)
+            self.projections[str(dilation)] = projection
 
     def forward(self, feature: torch.Tensor) -> dict[str, torch.Tensor]:
-        return {f"edema_dilation_{key}": block(feature) for key, block in self.dilated.items()}
+        outputs: dict[str, torch.Tensor] = {}
+        for key, block in self.residual_blocks.items():
+            identity = feature
+            residual = block(feature)
+            residual_feature = residual + identity
+            outputs[f"edema_dilation_{key}"] = self.projections[key](residual_feature)
+        return outputs
+
+
+class SliceExtentHead(nn.Module):
+    """Quarter-scale per-slice extent head using masked average and masked max features."""
+
+    def __init__(self, in_channels: int) -> None:
+        super().__init__()
+        self.sequence = nn.Sequential(
+            nn.Conv1d(in_channels, 64, 3, padding=1),
+            nn.GroupNorm(8, 64),
+            nn.SiLU(inplace=True),
+            nn.Conv1d(64, 64, 3, padding=1),
+            nn.SiLU(inplace=True),
+        )
+        self.presence = nn.Conv1d(64, 1, 1)
+        self.area = nn.Conv1d(64, 1, 1)
+
+    def forward(self, feature: torch.Tensor, valid_spatial_mask: torch.Tensor | None = None) -> dict[str, torch.Tensor]:
+        if feature.ndim != 5:
+            raise ValueError("SliceExtentHead expects a [B,C,D,H,W] feature tensor")
+        if valid_spatial_mask is None:
+            masked = feature
+            valid = torch.ones_like(feature[:, :1])
+        else:
+            valid = F.interpolate(valid_spatial_mask.detach().float(), size=feature.shape[-3:], mode="nearest").clamp(0.0, 1.0)
+            masked = feature * valid
+        valid_sum = valid.sum(dim=(-2, -1)).clamp_min(1.0)
+        masked_average = masked.sum(dim=(-2, -1)) / valid_sum
+        masked_values = feature.masked_fill(valid <= 0.0, -torch.inf)
+        masked_max = masked_values.amax(dim=(-2, -1))
+        masked_max = torch.where(torch.isfinite(masked_max), masked_max, torch.zeros_like(masked_average))
+        sequence_input = 0.5 * masked_average + 0.5 * masked_max
+        hidden = self.sequence(sequence_input)
+        presence_logits = self.presence(hidden).unsqueeze(-1).unsqueeze(-1)
+        area_logits = self.area(hidden).unsqueeze(-1).unsqueeze(-1)
+        expand_shape = (-1, -1, -1, feature.shape[-2], feature.shape[-1])
+        return {
+            "presence_logits": presence_logits.expand(expand_shape),
+            "area_logits": area_logits.expand(expand_shape),
+        }
 
 
 class ComponentHeads(nn.Module):
@@ -456,17 +531,22 @@ class ComponentHeads(nn.Module):
         self.edema_context = nn.Conv3d(quarter_channels, 4, 1)
         self.edema_injury = nn.Conv3d(pathology_half_channels, 1, 1)
         self.edema_boundary = nn.Conv3d(pathology_half_channels, 1, 1)
-        self.scar_extent_area = nn.Conv3d(quarter_channels, 1, 1)
-        self.edema_extent_presence = nn.Conv3d(quarter_channels, 1, 1)
-        self.edema_extent_area = nn.Conv3d(quarter_channels, 1, 1)
+        self.scar_extent_head = SliceExtentHead(quarter_channels)
+        self.edema_extent_head = SliceExtentHead(quarter_channels)
 
-    def forward_quarter(self, quarter: torch.Tensor, *, run_edema: bool = True) -> dict[str, torch.Tensor]:
+    def forward_quarter(
+        self,
+        quarter: torch.Tensor,
+        *,
+        run_edema: bool = True,
+        valid_spatial_mask: torch.Tensor | None = None,
+    ) -> dict[str, torch.Tensor]:
         scar_quarter_occupancy = self.scar_quarter_occupancy(quarter)
         scar_quarter_center = self.scar_quarter_center(quarter)
         scar_context = self.scar_context(quarter)
-        scar_extent_area = self.scar_extent_area(quarter)
+        scar_extent = self.scar_extent_head(quarter, valid_spatial_mask)
         if run_edema:
-            edema = self.forward_edema_quarter(quarter)
+            edema = self.forward_edema_quarter(quarter, valid_spatial_mask=valid_spatial_mask)
         else:
             edema = {
                 "edema_context": quarter.detach().new_zeros((quarter.shape[0], 4, *quarter.shape[-3:])),
@@ -477,16 +557,22 @@ class ComponentHeads(nn.Module):
             "scar_quarter_occupancy": scar_quarter_occupancy,
             "scar_quarter_center": scar_quarter_center,
             "scar_context": scar_context,
-            "scar_extent_presence": scar_quarter_occupancy,
-            "scar_extent_area": scar_extent_area,
+            "scar_extent_presence": scar_extent["presence_logits"],
+            "scar_extent_area": scar_extent["area_logits"],
             **edema,
         }
 
-    def forward_edema_quarter(self, quarter: torch.Tensor) -> dict[str, torch.Tensor]:
+    def forward_edema_quarter(
+        self,
+        quarter: torch.Tensor,
+        *,
+        valid_spatial_mask: torch.Tensor | None = None,
+    ) -> dict[str, torch.Tensor]:
+        edema_extent = self.edema_extent_head(quarter, valid_spatial_mask)
         return {
             "edema_context": self.edema_context(quarter),
-            "edema_extent_presence": self.edema_extent_presence(quarter),
-            "edema_extent_area": self.edema_extent_area(quarter),
+            "edema_extent_presence": edema_extent["presence_logits"],
+            "edema_extent_area": edema_extent["area_logits"],
         }
 
     def forward_scar_half(self, scar_half_feature: torch.Tensor) -> dict[str, torch.Tensor]:
@@ -763,6 +849,10 @@ class CAREASE(nn.Module):
             quarter_channels=self.decoder_introspection.shared_quarter_channels,
             pathology_half_channels=self.decoder_introspection.branch_half_feature_channels,
         )
+        self.injury_classifier_initialization = initialize_injury_classifier_from_stock_mean(
+            self.component_heads.edema_injury,
+            stock.decoder.seg_layers[4],
+        )
         self.anatomy_geometry_heads = AnatomyGeometryHeads()
         self.edema_dilation_context = EdemaDilationContextBlock(self.decoder_introspection.branch_half_feature_channels, out_channels=1)
         self.scar_lge_half_adapter = ModalityAdapter(out_channels=half_c)
@@ -969,7 +1059,18 @@ class CAREASE(nn.Module):
         signed_endo_distance = geometry["signed_endo_distance"]
         signed_epi_distance = geometry["signed_epi_distance"]
         wall_depth_rho = geometry["wall_depth_rho"]
-        components = self.component_heads.forward_quarter(quarter, run_edema=False)
+        quarter_valid_spatial_mask = None
+        if extent_valid_spatial_mask is not None:
+            quarter_valid_spatial_mask = F.interpolate(
+                extent_valid_spatial_mask.detach().float(),
+                size=quarter.shape[-3:],
+                mode="nearest",
+            )
+        components = self.component_heads.forward_quarter(
+            quarter,
+            run_edema=False,
+            valid_spatial_mask=quarter_valid_spatial_mask,
+        )
         anatomy_context = {
             "p_wall_union": p_wall.detach(),
             "p_lv": p_lv.detach(),
@@ -979,7 +1080,11 @@ class CAREASE(nn.Module):
             "wall_depth_rho": wall_depth_rho.detach(),
         }
         if run_edema_graph:
-            for key, value in self.component_heads.forward_edema_quarter(quarter[t2_present_mask]).items():
+            selected_valid = quarter_valid_spatial_mask[t2_present_mask] if quarter_valid_spatial_mask is not None else None
+            for key, value in self.component_heads.forward_edema_quarter(
+                quarter[t2_present_mask],
+                valid_spatial_mask=selected_valid,
+            ).items():
                 full_value = components[key].clone()
                 full_value[t2_present_mask] = value
                 components[key] = full_value

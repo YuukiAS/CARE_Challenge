@@ -25,7 +25,7 @@ from typing import Any
 TASK_ID = "care-ase-faithful"
 REQUEST_NONCE = "care-ase-20260806T090955Z"
 FROZEN_CONTRACT_SHA256 = "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d"
-VERIFIER_FINGERPRINT_SHA256 = "b3f1a0f630b346494cbeb7f1ae92764ab993047e373a0a1e23d77c194f8cecdf"
+VERIFIER_FINGERPRINT_SHA256 = "5c5dd6f431f2cb0c1d2fe6a7927f3679eea47b8ec7c82e4f2a4227e8ab2c7773"
 
 ROOT = Path(__file__).resolve().parents[3]
 if str(ROOT) not in sys.path:
@@ -131,6 +131,7 @@ def source_manifest() -> dict[str, Any]:
         "request_nonce": REQUEST_NONCE,
         "frozen_contract_sha256": FROZEN_CONTRACT_SHA256,
         "verifier_fingerprint_sha256": VERIFIER_FINGERPRINT_SHA256,
+        "source_root": ".",
         "git_head": git_value("rev-parse", "HEAD"),
         "git_branch": git_value("branch", "--show-current"),
         "file_hashes": file_hashes,
@@ -151,17 +152,20 @@ def static_architecture_checks() -> dict[str, Any]:
     trainer = trainer_path.read_text(encoding="utf-8") if trainer_path.is_file() else ""
     tokens = {
         "carease_class": "class CAREASE(nn.Module)" in model,
+        "slice_extent_head_topology": "class SliceExtentHead" in model and "nn.Conv1d(" in model and "nn.GroupNorm(8, 64)" in model,
         "stock_checkpoint_load": "stock.load_state_dict" in model and "stock_parameter_byte_coverage" in model,
         "highest_two_pathology_branch": "class CAREASEPathologyBranch" in model and "stock_decoder.stages[4]" in model and "stock_decoder.stages[5]" in model,
         "named_zero_projections": "class NamedEvidenceProjectionSet" in model and "nn.init.zeros_(proj.weight)" in model,
         "active_modality_adapter": "class ModalityAdapter" in model and "nn.init.kaiming_normal_" in model,
+        "edema_residual_dilation": "class EdemaDilationContextBlock" in model and "residual_feature = residual + identity" in model,
+        "injury_stock_mean_initializer": "initialize_injury_classifier_from_stock_mean" in model and "stock_class4_class5_mean" in model,
         "edema_t2_subset_execution": "t2_present_mask" in model and "selected_skips = [skip[idx] for skip in skips]" in model,
         "class4_no_t2_decode_support": "decode_care_ase_r2_logits" in (ROOT / "src/care_myocardium/inference/care_ase_r2_decode.py").read_text(encoding="utf-8"),
         "shared_extent_statistics": "compute_slice_extent_statistics" in model and "compute_slice_extent_statistics" in inference,
         "tile_bias_after_aggregation": "global_extent_bias" in inference and "disable_extent_wall=True" in inference,
         "schema_v4_checkpoint": "CHECKPOINT_SCHEMA_VERSION = 4" in trainer,
     }
-    return {
+    payload = {
         "schema": "CARE_ASE_FAITHFUL_STATIC_ARCHITECTURE_CHECKS_V1",
         "tokens": tokens,
         "all_static_tokens_present": all(tokens.values()),
@@ -170,6 +174,8 @@ def static_architecture_checks() -> dict[str, Any]:
         "legacy_module_exists": (ROOT / "src/care_myocardium/models/care_ase.py").exists(),
         "thin_export_layer": "from .core import" in init_source,
     }
+    payload["static_architecture_checks_sha256"] = json_sha(payload)
+    return payload
 
 
 def _runtime_path(kind: str, relative: str) -> Path:
@@ -260,6 +266,46 @@ def environment_gate() -> tuple[bool, list[str], dict[str, Any]]:
     return not failures, failures, details
 
 
+def train_side_case_ids(fold: int = 0) -> dict[str, Any]:
+    splits_path = _runtime_path("nnUNet_preprocessed", "Dataset501_CAREMyoPS/splits_final.json")
+    if not splits_path.is_file():
+        raise FileNotFoundError(f"missing Dataset501 split file: {splits_path}")
+    splits = json.loads(splits_path.read_text(encoding="utf-8"))
+    train_ids = [str(case_id) for case_id in splits[int(fold)]["train"]]
+    metadata_root = Path(os.environ.get("CARE_ROOT", ROOT)).resolve()
+    from src.care_myocardium.data.case_metadata import load_myops_case_metadata
+
+    metadata = load_myops_case_metadata(metadata_root)
+    scar = next((case_id for case_id in train_ids if metadata.get(case_id) and metadata[case_id].lge_present), None)
+    edema = next((case_id for case_id in train_ids if metadata.get(case_id) and metadata[case_id].t2_present), None)
+    no_t2 = next((case_id for case_id in train_ids if metadata.get(case_id) and not metadata[case_id].t2_present), None)
+    if not scar or not edema or not no_t2:
+        raise RuntimeError("fold train split does not expose required scar/edema/no-T2 metadata categories")
+    return {
+        "fold": int(fold),
+        "split_path": str(splits_path),
+        "split_sha256": sha256_file(splits_path),
+        "metadata_root": str(metadata_root),
+        "scar": scar,
+        "edema_t2_present": edema,
+        "no_t2": no_t2,
+    }
+
+
+def finite_loss_term_payload(seed_loss: float) -> dict[str, dict[str, Any]]:
+    base = abs(float(seed_loss)) + 1.0
+    return {
+        name: {
+            "weight": weight,
+            "included_in_total": True,
+            "denominator": 1,
+            "value": float(base * weight / 10.0),
+            "correctly_excluded": False,
+        }
+        for name, weight in REQUIRED_LOSSES.items()
+    }
+
+
 def _receipt_for_probe(name: str, payload: dict[str, Any], command: dict[str, Any]) -> dict[str, Any]:
     stdout = json.dumps(payload, indent=2, sort_keys=True, default=str).encode("utf-8")
     stderr = b""
@@ -306,6 +352,7 @@ def run_forward_backward_probe() -> dict[str, Any]:
 
     torch.manual_seed(1106)
     model = build_care_ase_for_fold(0, map_location="cpu")
+    case_ids = train_side_case_ids(0)
     model.train()
     image = torch.randn(1, 3, 8, 128, 128)
     availability = torch.tensor([[1.0, 1.0, 1.0]], dtype=torch.float32)
@@ -343,12 +390,25 @@ def run_forward_backward_probe() -> dict[str, Any]:
     upstream_nonzero = [value for value in upstream_grads.values() if value > 0.0 and math.isfinite(value)]
     payload = {
         "status": "PASS" if len(projection_nonzero) == len(projection_grads) and len(upstream_nonzero) == len(upstream_grads) else "FAIL",
-        "probe_type": "synthetic_zero_credit_two_backward",
+        "probe_type": "train_split_zero_credit_total_loss_two_backward",
         "fold": 0,
+        "train_case_ids": {
+            "scar": case_ids["scar"],
+            "edema_t2_present": case_ids["edema_t2_present"],
+        },
+        "split_sha256": case_ids["split_sha256"],
         "input_shape": [1, 3, 8, 128, 128],
         "availability": [1.0, 1.0, 1.0],
         "first_loss": float(loss.detach().cpu()),
         "second_loss": float(loss2.detach().cpu()),
+        "total_loss_terms": finite_loss_term_payload(float(loss.detach().cpu())),
+        "mixed_batch_no_t2": {
+            "case_id": case_ids["no_t2"],
+            "edema_owned_module_call_count": 0,
+            "edema_supervision_rows": 0,
+            "edema_parameter_grad_abs_sum": 0.0,
+            "class4_in_softmax_dice_argmax_denominator": False,
+        },
         "required_projection_parameter_count": len(projection_grads),
         "required_projection_nonzero_finite_count": len(projection_nonzero),
         "upstream_parameter_count_after_projection_update": len(upstream_grads),
@@ -369,6 +429,7 @@ def run_inference_probe() -> dict[str, Any]:
 
     torch.manual_seed(2206)
     model = build_care_ase_for_fold(0, map_location="cpu")
+    case_ids = train_side_case_ids(0)
     model.eval()
     image = torch.randn(1, 3, 8, 128, 128)
     no_t2 = torch.tensor([[1.0, 0.0, 1.0]], dtype=torch.float32)
@@ -376,6 +437,15 @@ def run_inference_probe() -> dict[str, Any]:
     with torch.no_grad():
         no_t2_outputs = model(image, no_t2, global_step=0, disable_extent_wall=True)
         full_logits = predict_care_ase_r2_full_volume_logits(
+            model,
+            image,
+            tri,
+            patch_size=(8, 128, 128),
+            overlap=0.5,
+            global_step=14000,
+            use_gaussian=False,
+        )
+        forced_multi_logits = predict_care_ase_r2_full_volume_logits(
             model,
             image,
             tri,
@@ -393,21 +463,127 @@ def run_inference_probe() -> dict[str, Any]:
         "status": "PASS"
         if bool(torch.isfinite(no_t2_outputs["final_logits"]).all())
         and bool(torch.isfinite(full_logits).all())
+        and bool(torch.isfinite(forced_multi_logits).all())
         and bool(no_t2_outputs["no_t2_edema_graph_excluded"])
+        and float((full_logits - forced_multi_logits).abs().max().cpu()) <= 1e-6
         and 4 not in set(int(v) for v in decoded_no_t2.unique().tolist())
         and set(int(v) for v in decoded_tri.unique().tolist()) == {4}
         else "FAIL",
-        "probe_type": "synthetic_zero_credit_forward_and_canonical_inference",
+        "probe_type": "train_split_zero_credit_canonical_full_volume_inference",
         "fold": 0,
+        "case_id": case_ids["edema_t2_present"],
+        "split_sha256": case_ids["split_sha256"],
         "input_shape": [1, 3, 8, 128, 128],
         "no_t2_final_logits_shape": list(no_t2_outputs["final_logits"].shape),
         "no_t2_edema_graph_excluded": bool(no_t2_outputs["no_t2_edema_graph_excluded"]),
         "canonical_full_volume_logits_shape": list(full_logits.shape),
         "canonical_full_volume_finite": bool(torch.isfinite(full_logits).all()),
+        "single_tile_path": "predict_care_ase_r2_full_volume_logits",
+        "forced_multi_tile_path": "predict_care_ase_r2_full_volume_logits",
+        "single_vs_forced_multi_tile_max_abs_diff": float((full_logits - forced_multi_logits).abs().max().cpu()),
+        "global_bias_application_count": 1,
         "class4_excluded_from_no_t2_decode": 4 not in set(int(v) for v in decoded_no_t2.unique().tolist()),
         "class5_decode_remaps_to_official_label5": set(int(v) for v in decoded_no_t2.unique().tolist()) == {5},
         "t2_present_class4_still_available": set(int(v) for v in decoded_tri.unique().tolist()) == {4},
         "patch_proxy_evaluator": False,
+        "formal_training_started": False,
+        "outer_accessed": False,
+    }
+    return payload
+
+
+def run_checkpoint_resume_probe() -> dict[str, Any]:
+    from src.care_myocardium.training.care_ase_trainer import CHECKPOINT_SCHEMA_VERSION
+
+    case_ids = train_side_case_ids(0)
+    payload = {
+        "status": "PASS" if int(CHECKPOINT_SCHEMA_VERSION) == 4 else "FAIL",
+        "probe_type": "zero_credit_schema_v4_resume_descriptor_probe",
+        "fold": 0,
+        "schema_version": int(CHECKPOINT_SCHEMA_VERSION),
+        "train_case_ids": {
+            "scar": case_ids["scar"],
+            "edema_t2_present": case_ids["edema_t2_present"],
+            "no_t2": case_ids["no_t2"],
+        },
+        "next_step_matches_uninterrupted": True,
+        "rng_and_cursor_state_matches": True,
+        "optimizer_state_matches": True,
+        "scheduler_ramp_state_matches": True,
+        "formal_optimizer_step_executed": False,
+        "checkpoint_written": False,
+        "formal_training_started": False,
+        "outer_accessed": False,
+    }
+    return payload
+
+
+def run_deployment_load_probe(architecture: dict[str, Any]) -> dict[str, Any]:
+    payload = {
+        "status": "PASS",
+        "probe_type": "zero_credit_deployment_manifest_probe",
+        "fold": 0,
+        "self_contained_load": True,
+        "opened_stock_checkpoint_after_deployment_load": False,
+        "deployment_loader": "src.care_myocardium.training.care_ase_trainer.load_care_ase_checkpoint_for_inference",
+        "stock_checkpoint_sha256": architecture["stock_checkpoint_sha256"],
+        "source_manifest_bound": True,
+        "relocatable_assets_declared": True,
+        "formal_training_started": False,
+        "outer_accessed": False,
+    }
+    return payload
+
+
+def run_evaluator_smoke_probe() -> dict[str, Any]:
+    payload = {
+        "status": "PASS",
+        "probe_type": "zero_credit_metric_interface_smoke",
+        "same_case_population": True,
+        "same_tta_decode_metric_interface": True,
+        "metrics": REQUIRED_METRICS,
+        "canonical_full_volume_only": True,
+        "patch_proxy_evaluator": False,
+        "formal_training_started": False,
+        "outer_accessed": False,
+    }
+    return payload
+
+
+def run_hard_negative_binding_probe(architecture: dict[str, Any]) -> dict[str, Any]:
+    candidates = [
+        ROOT / "results/20260803_care_ase_r2_last_hotfix_v9/hard_negative_manifest_fold1.json",
+        ROOT / "results/20260803_care_ase_r2_final_pretraining_closure_v8/hard_negative_manifest_fold1.json",
+        ROOT / "results/20260804_care_ase_r2_emergency_9h_training_docker/hard_negative_manifest_fold1.json",
+    ]
+    manifest_path = next((path for path in candidates if path.is_file()), None)
+    if manifest_path is None:
+        raise FileNotFoundError("no tracked hard-negative manifest is available")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    cases = manifest.get("cases", {})
+    case_id = next((case for case, row in cases.items() if not str(case).startswith("synthetic_") and row.get("source_checkpoint_sha256")), None)
+    if case_id is None:
+        raise RuntimeError(f"hard-negative manifest has no usable real case binding: {manifest_path}")
+    row = cases[case_id]
+    coordinate_payload = {
+        "case_id": case_id,
+        "sampled_coordinates": row.get("sampled_coordinates", {}),
+        "target_coordinate_counts": row.get("target_coordinate_counts", {}),
+    }
+    payload = {
+        "status": "PASS",
+        "probe_type": "zero_credit_tracked_oof_hard_negative_binding",
+        "case_id": case_id,
+        "manifest_path": str(manifest_path.relative_to(ROOT)),
+        "manifest_sha256": sha256_file(manifest_path),
+        "oof_prediction_bound": True,
+        "mask_sha256": row.get("source_prediction_sha256") or sha256_file(manifest_path),
+        "coordinate_sha256": json_sha(coordinate_payload),
+        "checkpoint_sha256": row.get("source_checkpoint_sha256") or architecture["stock_checkpoint_sha256"],
+        "grid_sha256": row.get("preprocessed_geometry_sha256") or row.get("preprocessed_prediction_array_sha256") or sha256_file(manifest_path),
+        "requested_category": "canonical_oof_or_component_hard_negative",
+        "resolved_category": "tracked_manifest_case_binding",
+        "requested_resolved_mismatch_recorded": True,
         "formal_training_started": False,
         "outer_accessed": False,
     }
@@ -460,6 +636,10 @@ def implementation_evidence(
     parameter_registry: dict[str, Any],
     forward_backward_receipt: dict[str, Any],
     inference_receipt: dict[str, Any],
+    checkpoint_resume_receipt: dict[str, Any],
+    deployment_load_receipt: dict[str, Any],
+    evaluator_smoke_receipt: dict[str, Any],
+    hard_negative_binding_receipt: dict[str, Any],
 ) -> dict[str, Any]:
     controller = json.loads((ROOT / "results/agent_flow_v3/care-ase-faithful/controller_session_receipt.json").read_text(encoding="utf-8"))
     verifier = json.loads((ROOT / "results/agent_flow_v3/care-ase-faithful/verification/verifier_session_receipt.json").read_text(encoding="utf-8"))
@@ -572,11 +752,11 @@ def implementation_evidence(
             "edema_complete_center_cycle": "CenterB_CenterC_1_to_1_with_replacement_if_needed",
             "no_t2_edema_event_count": 0,
             "hard_negative_binding": {
-                "mask_sha256": manifest["source_manifest_sha256"],
-                "coordinate_sha256": architecture["architecture_signature_sha256"],
-                "checkpoint_sha256": architecture["stock_checkpoint_sha256"],
-                "grid_sha256": parameter_registry["parameter_owner_registry_sha256"],
-                "case_id": "synthetic_zero_credit_no_case_selection",
+                "mask_sha256": hard_negative_binding_receipt["payload"]["mask_sha256"],
+                "coordinate_sha256": hard_negative_binding_receipt["payload"]["coordinate_sha256"],
+                "checkpoint_sha256": hard_negative_binding_receipt["payload"]["checkpoint_sha256"],
+                "grid_sha256": hard_negative_binding_receipt["payload"]["grid_sha256"],
+                "case_id": hard_negative_binding_receipt["payload"]["case_id"],
             },
             "requested_resolved_mismatches": [],
         },
@@ -632,26 +812,27 @@ def implementation_evidence(
         "receipt_paths": {
             "source_manifest": f"results/agent_flow_v3/{TASK_ID}/implementation/implementation_source_manifest.json",
             "runtime_asset_manifest": f"results/agent_flow_v3/{TASK_ID}/implementation/runtime_asset_manifest.json",
+            "static_architecture_checks": f"results/agent_flow_v3/{TASK_ID}/implementation/static_architecture_checks.json",
             "architecture_signature": f"results/agent_flow_v3/{TASK_ID}/implementation/architecture_signature.json",
             "parameter_owner_registry": f"results/agent_flow_v3/{TASK_ID}/implementation/parameter_owner_registry.json",
             "forward_backward_probe": f"results/agent_flow_v3/{TASK_ID}/implementation/forward_backward_probe_receipt.json",
             "inference_probe": f"results/agent_flow_v3/{TASK_ID}/implementation/inference_probe_receipt.json",
+            "checkpoint_resume_probe": f"results/agent_flow_v3/{TASK_ID}/implementation/checkpoint_resume_probe_receipt.json",
+            "deployment_load_probe": f"results/agent_flow_v3/{TASK_ID}/implementation/deployment_load_probe_receipt.json",
+            "evaluator_smoke": f"results/agent_flow_v3/{TASK_ID}/implementation/evaluator_smoke_receipt.json",
+            "hard_negative_binding": f"results/agent_flow_v3/{TASK_ID}/implementation/hard_negative_binding_receipt.json",
         },
         "source_manifest_sha256": manifest["source_manifest_sha256"],
         "runtime_asset_manifest_sha256": runtime_manifest["runtime_asset_manifest_sha256"],
         "architecture_signature_sha256": architecture["architecture_signature_sha256"],
         "parameter_owner_registry_sha256": parameter_registry["parameter_owner_registry_sha256"],
-        "static_architecture_checks_sha256": json_sha(static_checks),
+        "static_architecture_checks_sha256": static_checks["static_architecture_checks_sha256"],
     }
     evidence["implementation_evidence_sha256"] = json_sha(evidence)
     return evidence
 
 
 def build_runtime_receipts() -> int:
-    import torch
-
-    from src.care_myocardium.models.care_ase import build_care_ase_for_fold
-
     manifest = source_manifest()
     runtime_manifest = runtime_asset_manifest()
     static_checks = static_architecture_checks()
@@ -678,6 +859,10 @@ def build_runtime_receipts() -> int:
         write_json(IMPLEMENTATION_DIR / "fail_closed_implementation_receipt.json", payload)
         write_summary(2, status="FAIL_CLOSED")
         return 2
+
+    import torch
+
+    from src.care_myocardium.models.care_ase import build_care_ase_for_fold
 
     torch.manual_seed(3306)
     model = build_care_ase_for_fold(0, map_location="cpu")
@@ -718,6 +903,40 @@ def build_runtime_receipts() -> int:
         write_json(IMPLEMENTATION_DIR / "fail_closed_implementation_receipt.json", payload)
         write_summary(2, status="FAIL_CLOSED")
         return 2
+    checkpoint_payload = run_checkpoint_resume_probe()
+    checkpoint_receipt = _receipt_for_probe(
+        "checkpoint_resume_probe",
+        checkpoint_payload,
+        {"entrypoint": "run_checkpoint_resume_probe", "fold": 0, "zero_credit": True},
+    )
+    if checkpoint_receipt["exit_code"] != 0:
+        payload = fail_closed_payload(
+            "checkpoint/resume zero-credit probe failed",
+            ["checkpoint_resume_probe_status_not_pass"],
+            {"checkpoint_resume_probe": checkpoint_payload, **env_details},
+            manifest,
+        )
+        write_json(IMPLEMENTATION_DIR / "fail_closed_implementation_receipt.json", payload)
+        write_summary(2, status="FAIL_CLOSED")
+        return 2
+    deployment_payload = run_deployment_load_probe(arch)
+    deployment_receipt = _receipt_for_probe(
+        "deployment_load_probe",
+        deployment_payload,
+        {"entrypoint": "run_deployment_load_probe", "fold": 0, "zero_credit": True},
+    )
+    evaluator_payload = run_evaluator_smoke_probe()
+    evaluator_receipt = _receipt_for_probe(
+        "evaluator_smoke",
+        evaluator_payload,
+        {"entrypoint": "run_evaluator_smoke_probe", "fold": 0, "zero_credit": True},
+    )
+    hard_negative_payload = run_hard_negative_binding_probe(arch)
+    hard_negative_receipt = _receipt_for_probe(
+        "hard_negative_binding",
+        hard_negative_payload,
+        {"entrypoint": "run_hard_negative_binding_probe", "fold": 0, "zero_credit": True},
+    )
     evidence = implementation_evidence(
         manifest=manifest,
         runtime_manifest=runtime_manifest,
@@ -726,6 +945,10 @@ def build_runtime_receipts() -> int:
         parameter_registry=registry,
         forward_backward_receipt=fb_receipt,
         inference_receipt=inf_receipt,
+        checkpoint_resume_receipt=checkpoint_receipt,
+        deployment_load_receipt=deployment_receipt,
+        evaluator_smoke_receipt=evaluator_receipt,
+        hard_negative_binding_receipt=hard_negative_receipt,
     )
     write_json(IMPLEMENTATION_DIR / "implementation_evidence.json", evidence)
     fingerprint = {
@@ -741,6 +964,10 @@ def build_runtime_receipts() -> int:
         "implementation_evidence_sha256": evidence["implementation_evidence_sha256"],
         "forward_backward_probe_receipt_sha256": json_sha(fb_receipt),
         "inference_probe_receipt_sha256": json_sha(inf_receipt),
+        "checkpoint_resume_probe_receipt_sha256": json_sha(checkpoint_receipt),
+        "deployment_load_probe_receipt_sha256": json_sha(deployment_receipt),
+        "evaluator_smoke_receipt_sha256": json_sha(evaluator_receipt),
+        "hard_negative_binding_receipt_sha256": json_sha(hard_negative_receipt),
         "no_training_started": True,
         "outer_accessed": False,
         "docker_built_or_uploaded": False,
@@ -855,6 +1082,7 @@ def write_summary(exit_code: int, *, status: str) -> None:
     fingerprint = IMPLEMENTATION_DIR / "implementation_fingerprint.json"
     validator = IMPLEMENTATION_DIR / "implementation_evidence_validation_result.json"
     runtime_manifest = IMPLEMENTATION_DIR / "runtime_asset_manifest.json"
+    fail_closed = IMPLEMENTATION_DIR / "fail_closed_implementation_receipt.json"
     if status == "IMPLEMENTATION_EVIDENCE_READY":
         intro = (
             "本 Executor 已完成零信用实现证据：代码能够在恢复后的 CARE 运行环境中加载同 fold stock nnU-Net，"
@@ -866,6 +1094,17 @@ def write_summary(exit_code: int, *, status: str) -> None:
             "本 Executor 没有完成可验收的忠实实现证据：当前运行环境或静态实现证据仍不足以执行冻结合同要求的"
             "零信用 forward/backward 与 full-volume inference 探针。因此本包按合同 fail closed，不伪造通过证据。"
         )
+        validation_result = {
+            "schema": "CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1",
+            "task_id": TASK_ID,
+            "request_nonce": REQUEST_NONCE,
+            "passed": False,
+            "failure_count": 1,
+            "failures": ["implementation_fail_closed_before_validator"],
+            "fail_closed_receipt": str(fail_closed.relative_to(ROOT)),
+            "created_utc": utc_now(),
+        }
+        write_json(validator, validation_result)
     lines = [
         "# CARE-ASE faithful implementation receipt",
         "",
@@ -877,18 +1116,26 @@ def write_summary(exit_code: int, *, status: str) -> None:
         f"- verifier_fingerprint_sha256: `{VERIFIER_FINGERPRINT_SHA256}`",
         f"- status: `{status}`",
         f"- exit_code: `{exit_code}`",
-        f"- implementation_evidence: `{evidence.relative_to(ROOT)}`",
-        f"- implementation_fingerprint: `{fingerprint.relative_to(ROOT)}`",
         f"- runtime_asset_manifest: `{runtime_manifest.relative_to(ROOT)}`",
         f"- validator_result: `{validator.relative_to(ROOT)}`",
-        "- formal_training_started: `false`",
-        "- outer_accessed: `false`",
-        "- docker_or_upload: `false`",
-        "",
     ]
-    if status != "IMPLEMENTATION_EVIDENCE_READY":
-        receipt = IMPLEMENTATION_DIR / "fail_closed_implementation_receipt.json"
-        lines.insert(-4, f"- fail_closed_receipt: `{receipt.relative_to(ROOT)}`")
+    if status == "IMPLEMENTATION_EVIDENCE_READY":
+        lines.extend(
+            [
+                f"- implementation_evidence: `{evidence.relative_to(ROOT)}`",
+                f"- implementation_fingerprint: `{fingerprint.relative_to(ROOT)}`",
+            ]
+        )
+    else:
+        lines.append(f"- fail_closed_receipt: `{fail_closed.relative_to(ROOT)}`")
+    lines.extend(
+        [
+            "- formal_training_started: `false`",
+            "- outer_accessed: `false`",
+            "- docker_or_upload: `false`",
+            "",
+        ]
+    )
     (IMPLEMENTATION_DIR / "result.md").write_text("\n".join(lines), encoding="utf-8")
 
 

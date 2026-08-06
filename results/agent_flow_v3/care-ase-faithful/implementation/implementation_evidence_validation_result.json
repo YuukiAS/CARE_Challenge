@@ -1,8 +1,12 @@
 {
-  "failure_count": 0,
-  "failures": [],
-  "known_bad_case_id": null,
-  "passed": true,
+  "created_utc": "2026-08-06T16:45:54Z",
+  "fail_closed_receipt": "results/agent_flow_v3/care-ase-faithful/implementation/fail_closed_implementation_receipt.json",
+  "failure_count": 1,
+  "failures": [
+    "implementation_fail_closed_before_validator"
+  ],
+  "passed": false,
+  "request_nonce": "care-ase-20260806T090955Z",
   "schema": "CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1",
   "task_id": "care-ase-faithful"
 }
