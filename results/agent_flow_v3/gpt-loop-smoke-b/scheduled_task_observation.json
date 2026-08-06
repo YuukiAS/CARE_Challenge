@@ -1,0 +1,21 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_SCHEDULED_TASK_OBSERVATION",
+  "task_id": "gpt-loop-smoke-b",
+  "request_nonce": "smoke-b-20260806T062800Z",
+  "current_state": "WAITING_FOR_EXTERNAL_GPT",
+  "review_round": 1,
+  "last_true_planner_review": {
+    "artifact": "results/agent_flow_v3/gpt-loop-smoke-b/planner_reviews/round_000.json",
+    "commit_sha": "0dac14da69de6dcbdb068b2f2a4453de27e954f0",
+    "decision": "PLANNER_REVISE_EXECUTOR",
+    "finding_id": "SMOKE_B_EXECUTOR_PROVENANCE_MARKER_MISSING"
+  },
+  "repaired_integration_commit_sha": "041ac2de61b736fe549c9603fc5e3c7e3d573a03",
+  "waiting_for": "True Scheduled Planner round 1 decision: PLANNER_PASS or new PLANNER_REVISE_* bound to repaired integration.",
+  "external_wait_started_utc": "2026-08-06T07:43:52Z",
+  "external_wait_deadline_utc": "2026-08-06T11:43:52Z",
+  "codex_scheduled_task_connector_used": false,
+  "codex_fabricated_planner_decision": false,
+  "forbidden_scope_touched": false,
+  "updated_utc": "2026-08-06T07:49:00Z"
+}
