@@ -1,0 +1,27 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_VERIFIER_FREEZE_RECEIPT",
+  "task_id": "gpt-loop-smoke-b",
+  "request_nonce": "smoke-b-20260806T062800Z",
+  "role": "verifier",
+  "thread_id": "019fd5c5-ad98-7933-b8c4-107d14a4f416",
+  "role_commit_sha": "e85bc9905ab6e2fbd5cf5e8eb530520f27d4ce30",
+  "integration_commit_sha": "8055aa60650d54fad3e204666c20fb45be799448",
+  "frozen_contract_sha256": "c2c3eca2155fce19af8c335173f313a0f49bec72ef43ce2dcbc7b560afeb2366",
+  "artifacts": [
+    {
+      "path": "tests/automation/test_agent_flow_v3_smoke_b.py",
+      "sha256": "51060f30d0c70187bda0983a689938b4a7bac5d9cda4f386ac3b232b9afe9579",
+      "purpose": "public fail-closed verifier tests for evaluate_payload(payload, expected_nonce)"
+    },
+    {
+      "path": "results/agent_flow_v3/gpt-loop-smoke-b/verifier_session_notes.md",
+      "sha256": "a852e1687435cefe58ad70468e5e0bc77cff1a2840300b67dbc76698e42065b6",
+      "purpose": "verifier role session notes and expected initial failure record"
+    }
+  ],
+  "initial_test_command": "python -m unittest tests.automation.test_agent_flow_v3_smoke_b",
+  "initial_test_exit_code": 1,
+  "initial_test_expected_failure": "ModuleNotFoundError before Executor creates automation.agent_flow_v3.smoke_b.toy_gate",
+  "source_edits_forbidden_to_verifier": true,
+  "updated_utc": "2026-08-06T06:37:39Z"
+}

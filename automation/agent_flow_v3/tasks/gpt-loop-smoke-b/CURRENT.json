@@ -1,13 +1,17 @@
 {
   "schema": "CARE_AGENT_FLOW_V3",
   "task_id": "gpt-loop-smoke-b",
-  "state": "PLAN_FROZEN",
+  "state": "VERIFIER_FROZEN",
   "review_round": 0,
   "request_nonce": "smoke-b-20260806T062800Z",
   "frozen_contract_sha256": "c2c3eca2155fce19af8c335173f313a0f49bec72ef43ce2dcbc7b560afeb2366",
-  "integration_commit_sha": null,
+  "verifier_thread_id": "019fd5c5-ad98-7933-b8c4-107d14a4f416",
+  "verifier_role_commit_sha": "e85bc9905ab6e2fbd5cf5e8eb530520f27d4ce30",
+  "verifier_integration_commit_sha": "8055aa60650d54fad3e204666c20fb45be799448",
+  "integration_commit_sha": "8055aa60650d54fad3e204666c20fb45be799448",
   "implementation_fingerprint_sha256": null,
-  "verifier_fingerprint_sha256": null,
-  "next_action": "START_TOY_CONTROLLER_THEN_VERIFIER",
-  "updated_utc": "2026-08-06T06:28:00Z"
+  "verifier_fingerprint_sha256": "51060f30d0c70187bda0983a689938b4a7bac5d9cda4f386ac3b232b9afe9579",
+  "verifier_session_notes_sha256": "a852e1687435cefe58ad70468e5e0bc77cff1a2840300b67dbc76698e42065b6",
+  "next_action": "START_TOY_EXECUTOR",
+  "updated_utc": "2026-08-06T06:37:39Z"
 }
