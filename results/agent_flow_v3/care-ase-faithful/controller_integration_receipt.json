@@ -1,0 +1,79 @@
+{
+  "schema": "CARE_ASE_FAITHFUL_CONTROLLER_INTEGRATION_RECEIPT_V1",
+  "task_id": "care-ase-faithful",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "created_utc": "2026-08-06T15:32:13Z",
+  "state_transition": {
+    "from": "EXECUTOR_RUNNING",
+    "to": "CI_RUNNING"
+  },
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "origin_develop_before_integration_sha": "4a36ad16c8f7519a7870d0784d87b278187a46ff",
+  "executor_thread_id": "019fd795-7c46-7972-93b9-ff4357f17a06",
+  "executor_local_commit_sha": "b7d1a3bb60a47d10ed14f23a868acf427f0f4b6c",
+  "controller_cherry_pick_commit_sha": "9709d972cfb455dc18017895dd3765163d9b45af",
+  "verifier_thread_id": "019fd76e-6aa2-7d21-b12d-5bfd9983aed5",
+  "verifier_commit_sha": "dd150398e6c779a8e45b4665361024ec9f0e2ade",
+  "verifier_fingerprint_sha256": "b3f1a0f630b346494cbeb7f1ae92764ab993047e373a0a1e23d77c194f8cecdf",
+  "verification_contract_sha256": "99a2c5c7a11a65358b0bf9a3a1e712e614eae8062b2871914f21731827d20db9",
+  "public_test_manifest_sha256": "03a9084fb22804e1a86444bc537c264f2c589041369a6e266a0640f0eae313f3",
+  "protected_known_bad_manifest_sha256": "aa76fbd1bb804b9441c9baba8e30fcc020fabcd8112bb1b74c0ef6336fce84f0",
+  "implementation_fingerprint_sha256": "000aa0564427d118a4cc361a7a7c09ba4d671851aacd9b3b28e4166c072a0dd5",
+  "implementation_fingerprint_file_sha256": "941dc415e51c621933c8757351a0293242a2ffb03ee1366e45f3b686d619899a",
+  "implementation_evidence_payload_sha256": "e7a14c11d5cb51616ca2aadb75b34fa0c6367c71c2fa317f05703eefa02e98f0",
+  "implementation_evidence_file_sha256": "afcf8f461720fe7b8e48942691a06d69af78522dae39ffd51dc614078a452564",
+  "implementation_source_manifest_sha256": "734c0707ee07346808c1bcf0e728bcaf4c05f08f4472667eb8e432adbb5d6470",
+  "runtime_asset_manifest_sha256": "cdbbdd3e40d354c8ebcd01c70679d2f6016bf58211c9698396e973b1c5f831fc",
+  "local_controller_gates": [
+    {
+      "name": "agent_flow_v3_contract_validation",
+      "command": "/usr/bin/python scripts/automation/validate_agent_flow_v3.py --repo-root .",
+      "exit_code": 0,
+      "summary": "CARE Agent-Flow v3 contract validation: PASS"
+    },
+    {
+      "name": "frozen_verifier_validate_implementation_evidence",
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python validators/care_ase_faithful/validate_contract_evidence.py --verification-contract results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json --evidence results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json",
+      "exit_code": 0,
+      "summary": "passed true, failure_count 0"
+    },
+    {
+      "name": "py_compile_integrated_sources",
+      "command": "PYTHONDONTWRITEBYTECODE=1 /users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m py_compile scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py src/care_myocardium/models/care_ase/__init__.py src/care_myocardium/models/care_ase/core.py",
+      "exit_code": 0,
+      "summary": "compile completed with no output"
+    },
+    {
+      "name": "public_verifier_pytest",
+      "command": "CARE_ROOT=/users/a/e/aereinh/CARE ... /users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m pytest tests/care_ase_faithful/test_verifier_package.py",
+      "exit_code": 0,
+      "summary": "3 passed in 1.95s"
+    },
+    {
+      "name": "selected_care_ase_runtime_pytest",
+      "command": "CARE_ROOT=/users/a/e/aereinh/CARE ... /users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m pytest tests/care_ase/test_loss_and_gradient_contract.py tests/care_ase/test_no_t2_safety.py tests/care_ase/test_canonical_full_volume_single_tile_path.py",
+      "exit_code": 0,
+      "summary": "4 passed, 23 warnings in 137.28s"
+    }
+  ],
+  "role_separation_review": {
+    "controller_direct_implementation_edits": false,
+    "controller_direct_verifier_test_edits": false,
+    "executor_changed_tests_or_validators": false,
+    "executor_commit_paths_reviewed": true,
+    "changed_path_scope": [
+      "src/care_myocardium/models/care_ase/",
+      "scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py",
+      "results/agent_flow_v3/care-ase-faithful/implementation/"
+    ]
+  },
+  "forbidden_actions": {
+    "formal_training_started": false,
+    "outer_accessed": false,
+    "docker_built_or_uploaded": false,
+    "validation_or_challenge_uploaded": false,
+    "organizer_email_sent": false,
+    "develop_to_main_merge": false
+  },
+  "next_action": "Commit CI_RUNNING state, push develop, then wait for GitHub Actions or record CI lookup failure fail-closed."
+}
