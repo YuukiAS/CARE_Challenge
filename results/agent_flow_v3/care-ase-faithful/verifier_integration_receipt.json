@@ -3,11 +3,11 @@
   "task_id": "care-ase-faithful",
   "request_nonce": "care-ase-20260806T090955Z",
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
-  "head_before_update": "23b0951677cfa399a9f63dbcfdc0a68bc3eb1175",
-  "verifier_branch_head_sha": "dd150398e6c779a8e45b4665361024ec9f0e2ade",
-  "verifier_merge_base": "6ceee64dc87b6ad076edd71bd999b5bcc829de10",
-  "integration_merge_sha": "6e1efff231e7a9f60e88b16dcd7ceab97a2115d8",
-  "verifier_fingerprint_sha256": "b3f1a0f630b346494cbeb7f1ae92764ab993047e373a0a1e23d77c194f8cecdf",
+  "head_before_update": "099f01b762b1f30dcd94512501dd663527a1b0f8",
+  "verifier_branch_head_sha": "56daad61a23e65160f987571ff443d223d2de91b",
+  "verifier_merge_base": "dd150398e6c779a8e45b4665361024ec9f0e2ade",
+  "integration_merge_sha": "c8206a80c6ef25ce5b6638bcbde3103e85d8dcc8",
+  "verifier_fingerprint_sha256": "5c5dd6f431f2cb0c1d2fe6a7927f3679eea47b8ec7c82e4f2a4227e8ab2c7773",
   "changed_paths": [
     "results/agent_flow_v3/care-ase-faithful/verification/protected_known_bad_manifest.json",
     "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb01_role_isolation_overlap.json",
@@ -34,7 +34,6 @@
     "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb22_hidden_asset_or_old_wrapper.json",
     "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb23_dual_truth_implementation.json",
     "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/kb24_metric_interface_missing.json",
-    "results/agent_flow_v3/care-ase-faithful/verification/public_reference_evidence.json",
     "results/agent_flow_v3/care-ase-faithful/verification/public_reference_validation_result.json",
     "results/agent_flow_v3/care-ase-faithful/verification/public_test_manifest.json",
     "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
@@ -52,5 +51,5 @@
     "no implementation source modified by controller integration",
     "no training, outer, Docker, upload, organizer email or develop-to-main merge"
   ],
-  "updated_utc": "2026-08-06T14:38:59Z"
+  "updated_utc": "2026-08-06T16:31:05Z"
 }
