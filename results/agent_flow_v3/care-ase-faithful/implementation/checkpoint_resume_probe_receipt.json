@@ -1,0 +1,40 @@
+{
+  "command": {
+    "entrypoint": "run_checkpoint_resume_probe",
+    "fold": 0,
+    "zero_credit": true
+  },
+  "command_sha256": "fe3ccdb34c1d7ae3527dd96a65a3916a0c0b1bc712c0401d065b6f089096d180",
+  "created_utc": "2026-08-06T16:58:17Z",
+  "docker_or_upload": false,
+  "executed": true,
+  "exit_code": 0,
+  "formal_training_started": false,
+  "outer_accessed": false,
+  "payload": {
+    "checkpoint_written": false,
+    "fold": 0,
+    "formal_optimizer_step_executed": false,
+    "formal_training_started": false,
+    "next_step_matches_uninterrupted": true,
+    "optimizer_state_matches": true,
+    "outer_accessed": false,
+    "probe_type": "zero_credit_schema_v4_resume_descriptor_probe",
+    "rng_and_cursor_state_matches": true,
+    "scheduler_ramp_state_matches": true,
+    "schema_version": 4,
+    "status": "PASS",
+    "train_case_ids": {
+      "edema_t2_present": "Case2001",
+      "no_t2": "Case1001",
+      "scar": "Case1001"
+    }
+  },
+  "probe": "checkpoint_resume_probe",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "schema": "CARE_ASE_FAITHFUL_ZERO_CREDIT_PROBE_RECEIPT_V1",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "1858c815bbd8f51b5e12202478d04635c4e3b0b30aee6ded8f1c536126934ce0",
+  "task_id": "care-ase-faithful",
+  "zero_credit": true
+}

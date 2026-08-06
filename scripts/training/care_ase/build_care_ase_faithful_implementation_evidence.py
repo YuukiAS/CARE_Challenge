@@ -1086,7 +1086,7 @@ def write_summary(exit_code: int, *, status: str) -> None:
     if status == "IMPLEMENTATION_EVIDENCE_READY":
         intro = (
             "本 Executor 已完成零信用实现证据：代码能够在恢复后的 CARE 运行环境中加载同 fold stock nnU-Net，"
-            "执行合成 forward/backward 梯度活性探针，并通过 canonical full-volume inference 探针。"
+            "执行绑定 train-side case ID 的 forward/backward 梯度活性探针，并通过 canonical full-volume inference 探针。"
             "这些探针不构成正式训练或性能结论，也未访问 outer、未上传、未构建 Docker。"
         )
     else:

@@ -1,0 +1,19 @@
+{
+  "checkpoint_written": false,
+  "fold": 0,
+  "formal_optimizer_step_executed": false,
+  "formal_training_started": false,
+  "next_step_matches_uninterrupted": true,
+  "optimizer_state_matches": true,
+  "outer_accessed": false,
+  "probe_type": "zero_credit_schema_v4_resume_descriptor_probe",
+  "rng_and_cursor_state_matches": true,
+  "scheduler_ramp_state_matches": true,
+  "schema_version": 4,
+  "status": "PASS",
+  "train_case_ids": {
+    "edema_t2_present": "Case2001",
+    "no_t2": "Case1001",
+    "scar": "Case1001"
+  }
+}

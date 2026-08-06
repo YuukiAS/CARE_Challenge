@@ -1,0 +1,17 @@
+{
+  "case_id": "Case1002",
+  "checkpoint_sha256": "8bceb20cae8920e87d43b14665a0db9dfd4f1204533d25a3cd6e40ad9de74111",
+  "coordinate_sha256": "04a7fee009dea78ce67ebdc896de0f698ecd6f6373201ae95b839a1fd4772162",
+  "formal_training_started": false,
+  "grid_sha256": "84cd50805fe52513d7c03807b9ccc986c3b38e02c14786b37762f8fe4d63caa7",
+  "manifest_path": "results/20260803_care_ase_r2_last_hotfix_v9/hard_negative_manifest_fold1.json",
+  "manifest_sha256": "6d793249e3c6fc42aa29ff97f84fa75431cece9c8a4e08d243ed1cf96ce4da21",
+  "mask_sha256": "60c285329432abdf268a9400cdb29f6a25da81df932e0af5baf84431332fdb15",
+  "oof_prediction_bound": true,
+  "outer_accessed": false,
+  "probe_type": "zero_credit_tracked_oof_hard_negative_binding",
+  "requested_category": "canonical_oof_or_component_hard_negative",
+  "requested_resolved_mismatch_recorded": true,
+  "resolved_category": "tracked_manifest_case_binding",
+  "status": "PASS"
+}

@@ -1,0 +1,48 @@
+{
+  "command": {
+    "entrypoint": "run_evaluator_smoke_probe",
+    "fold": 0,
+    "zero_credit": true
+  },
+  "command_sha256": "5735db4394765b2bda44eac196dabd06a8ff0e9e99ea84c8191fd0855de1a9e8",
+  "created_utc": "2026-08-06T16:58:17Z",
+  "docker_or_upload": false,
+  "executed": true,
+  "exit_code": 0,
+  "formal_training_started": false,
+  "outer_accessed": false,
+  "payload": {
+    "canonical_full_volume_only": true,
+    "formal_training_started": false,
+    "metrics": [
+      "blood_pool_adjacent_fp",
+      "casewise_help_harm",
+      "centerB_centerC_subgroup",
+      "component_count",
+      "dice",
+      "exact_hd",
+      "hd95",
+      "lesion_recall",
+      "precision",
+      "remote_fp_count",
+      "remote_fp_volume",
+      "sensitivity",
+      "sentinel_case",
+      "small_lesion_recall",
+      "volume_ratio"
+    ],
+    "outer_accessed": false,
+    "patch_proxy_evaluator": false,
+    "probe_type": "zero_credit_metric_interface_smoke",
+    "same_case_population": true,
+    "same_tta_decode_metric_interface": true,
+    "status": "PASS"
+  },
+  "probe": "evaluator_smoke",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "schema": "CARE_ASE_FAITHFUL_ZERO_CREDIT_PROBE_RECEIPT_V1",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "e701cd1314da09e4404d2971b8dba9bad59f0aa15be3d60ffa75d5793d247d64",
+  "task_id": "care-ase-faithful",
+  "zero_credit": true
+}

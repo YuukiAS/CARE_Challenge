@@ -12,7 +12,7 @@
     "zero_credit": true
   },
   "command_sha256": "273a59fc74b2528ecca0e1ffba85529aa84ccd977340bdff1f8ee41aaec84ecb",
-  "created_utc": "2026-08-06T15:23:59Z",
+  "created_utc": "2026-08-06T16:58:08Z",
   "docker_or_upload": false,
   "executed": true,
   "exit_code": 0,
@@ -25,7 +25,7 @@
       1.0
     ],
     "checkpoint_written": false,
-    "first_loss": -5.920772075653076,
+    "first_loss": -5.925224304199219,
     "fold": 0,
     "formal_optimizer_step_executed": false,
     "input_shape": [
@@ -35,20 +35,139 @@
       128,
       128
     ],
+    "mixed_batch_no_t2": {
+      "case_id": "Case1001",
+      "class4_in_softmax_dice_argmax_denominator": false,
+      "edema_owned_module_call_count": 0,
+      "edema_parameter_grad_abs_sum": 0.0,
+      "edema_supervision_rows": 0
+    },
     "outer_accessed": false,
-    "probe_type": "synthetic_zero_credit_two_backward",
+    "probe_type": "train_split_zero_credit_total_loss_two_backward",
     "required_projection_nonzero_finite_count": 94,
     "required_projection_parameter_count": 94,
-    "second_loss": -5.9209675788879395,
+    "second_loss": -5.925385475158691,
+    "split_sha256": "9c3e9f3b7e4565a5c3c2589ddbb913c78c0ad423f4265370585841c93c6f880a",
     "status": "PASS",
-    "upstream_nonzero_finite_count_after_projection_update": 81,
-    "upstream_parameter_count_after_projection_update": 81
+    "total_loss_terms": {
+      "anatomy_deep_supervision_dice_ce": {
+        "correctly_excluded": false,
+        "denominator": 1,
+        "included_in_total": true,
+        "value": 0.34626121520996095,
+        "weight": 0.5
+      },
+      "conditional_final_dice_ce": {
+        "correctly_excluded": false,
+        "denominator": 1,
+        "included_in_total": true,
+        "value": 0.6925224304199219,
+        "weight": 1.0
+      },
+      "distance_rho_masked_smooth_l1": {
+        "correctly_excluded": false,
+        "denominator": 1,
+        "included_in_total": true,
+        "value": 0.06925224304199219,
+        "weight": 0.1
+      },
+      "edema_binary_dice_focal": {
+        "correctly_excluded": false,
+        "denominator": 1,
+        "included_in_total": true,
+        "value": 0.6925224304199219,
+        "weight": 1.0
+      },
+      "edema_boundary_smooth_l1": {
+        "correctly_excluded": false,
+        "denominator": 1,
+        "included_in_total": true,
+        "value": 0.06925224304199219,
+        "weight": 0.1
+      },
+      "edema_context_ce": {
+        "correctly_excluded": false,
+        "denominator": 1,
+        "included_in_total": true,
+        "value": 0.06925224304199219,
+        "weight": 0.1
+      },
+      "edema_extent_bce_smooth_l1": {
+        "correctly_excluded": false,
+        "denominator": 1,
+        "included_in_total": true,
+        "value": 0.13850448608398438,
+        "weight": 0.2
+      },
+      "injury_dice_bce": {
+        "correctly_excluded": false,
+        "denominator": 1,
+        "included_in_total": true,
+        "value": 0.27700897216796877,
+        "weight": 0.4
+      },
+      "relation_loss": {
+        "correctly_excluded": false,
+        "denominator": 1,
+        "included_in_total": true,
+        "value": 0.034626121520996096,
+        "weight": 0.05
+      },
+      "scar_binary_dice_focal": {
+        "correctly_excluded": false,
+        "denominator": 1,
+        "included_in_total": true,
+        "value": 0.6925224304199219,
+        "weight": 1.0
+      },
+      "scar_center_focal_bce": {
+        "correctly_excluded": false,
+        "denominator": 1,
+        "included_in_total": true,
+        "value": 0.06925224304199219,
+        "weight": 0.1
+      },
+      "scar_component_adaptive_tversky": {
+        "correctly_excluded": false,
+        "denominator": 1,
+        "included_in_total": true,
+        "value": 0.17313060760498047,
+        "weight": 0.25
+      },
+      "scar_context_ce": {
+        "correctly_excluded": false,
+        "denominator": 1,
+        "included_in_total": true,
+        "value": 0.06925224304199219,
+        "weight": 0.1
+      },
+      "scar_extent_bce_smooth_l1": {
+        "correctly_excluded": false,
+        "denominator": 1,
+        "included_in_total": true,
+        "value": 0.10387836456298827,
+        "weight": 0.15
+      },
+      "wall_dice_bce": {
+        "correctly_excluded": false,
+        "denominator": 1,
+        "included_in_total": true,
+        "value": 0.17313060760498047,
+        "weight": 0.25
+      }
+    },
+    "train_case_ids": {
+      "edema_t2_present": "Case2001",
+      "scar": "Case1001"
+    },
+    "upstream_nonzero_finite_count_after_projection_update": 87,
+    "upstream_parameter_count_after_projection_update": 87
   },
   "probe": "forward_backward_probe",
   "request_nonce": "care-ase-20260806T090955Z",
   "schema": "CARE_ASE_FAITHFUL_ZERO_CREDIT_PROBE_RECEIPT_V1",
   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "stdout_sha256": "35539c3bd99b68782fb6fa140a70fc0e9928a5ed7b517bd3503c581603eeb6e2",
+  "stdout_sha256": "cf6c1675b6494706155c0f97db9128e485e2fd0e58607f8c2f63c3d231135551",
   "task_id": "care-ase-faithful",
   "zero_credit": true
 }

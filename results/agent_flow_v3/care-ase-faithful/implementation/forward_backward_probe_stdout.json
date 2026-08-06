@@ -5,7 +5,7 @@
     1.0
   ],
   "checkpoint_written": false,
-  "first_loss": -5.920772075653076,
+  "first_loss": -5.925224304199219,
   "fold": 0,
   "formal_optimizer_step_executed": false,
   "input_shape": [
@@ -15,12 +15,131 @@
     128,
     128
   ],
+  "mixed_batch_no_t2": {
+    "case_id": "Case1001",
+    "class4_in_softmax_dice_argmax_denominator": false,
+    "edema_owned_module_call_count": 0,
+    "edema_parameter_grad_abs_sum": 0.0,
+    "edema_supervision_rows": 0
+  },
   "outer_accessed": false,
-  "probe_type": "synthetic_zero_credit_two_backward",
+  "probe_type": "train_split_zero_credit_total_loss_two_backward",
   "required_projection_nonzero_finite_count": 94,
   "required_projection_parameter_count": 94,
-  "second_loss": -5.9209675788879395,
+  "second_loss": -5.925385475158691,
+  "split_sha256": "9c3e9f3b7e4565a5c3c2589ddbb913c78c0ad423f4265370585841c93c6f880a",
   "status": "PASS",
-  "upstream_nonzero_finite_count_after_projection_update": 81,
-  "upstream_parameter_count_after_projection_update": 81
+  "total_loss_terms": {
+    "anatomy_deep_supervision_dice_ce": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.34626121520996095,
+      "weight": 0.5
+    },
+    "conditional_final_dice_ce": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.6925224304199219,
+      "weight": 1.0
+    },
+    "distance_rho_masked_smooth_l1": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.06925224304199219,
+      "weight": 0.1
+    },
+    "edema_binary_dice_focal": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.6925224304199219,
+      "weight": 1.0
+    },
+    "edema_boundary_smooth_l1": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.06925224304199219,
+      "weight": 0.1
+    },
+    "edema_context_ce": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.06925224304199219,
+      "weight": 0.1
+    },
+    "edema_extent_bce_smooth_l1": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.13850448608398438,
+      "weight": 0.2
+    },
+    "injury_dice_bce": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.27700897216796877,
+      "weight": 0.4
+    },
+    "relation_loss": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.034626121520996096,
+      "weight": 0.05
+    },
+    "scar_binary_dice_focal": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.6925224304199219,
+      "weight": 1.0
+    },
+    "scar_center_focal_bce": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.06925224304199219,
+      "weight": 0.1
+    },
+    "scar_component_adaptive_tversky": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.17313060760498047,
+      "weight": 0.25
+    },
+    "scar_context_ce": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.06925224304199219,
+      "weight": 0.1
+    },
+    "scar_extent_bce_smooth_l1": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.10387836456298827,
+      "weight": 0.15
+    },
+    "wall_dice_bce": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.17313060760498047,
+      "weight": 0.25
+    }
+  },
+  "train_case_ids": {
+    "edema_t2_present": "Case2001",
+    "scar": "Case1001"
+  },
+  "upstream_nonzero_finite_count_after_projection_update": 87,
+  "upstream_parameter_count_after_projection_update": 87
 }

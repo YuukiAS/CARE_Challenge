@@ -44,7 +44,7 @@
       "trunk_permanently_frozen": false
     }
   },
-  "architecture_signature_sha256": "a2f10c967b2857d6ed1f4b7b601f4a8de953c3ee92b7596e3288a14e02943829",
+  "architecture_signature_sha256": "e444929a35cf68eb842ebe227501e445296ba790a8b6255a6c6e244d6b56d9dd",
   "checkpoint_and_resume": {
     "contract_manifest_environment_drift_rejected": true,
     "cross_fold_resume_rejected": true,
@@ -106,7 +106,7 @@
     "visited_stages": []
   },
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
-  "implementation_evidence_sha256": "e7a14c11d5cb51616ca2aadb75b34fa0c6367c71c2fa317f05703eefa02e98f0",
+  "implementation_evidence_sha256": "b21f9f32ebc3934a1a9bb15eb04743ef3afbfb00109c513a81a1d2b1d84a15b0",
   "losses": {
     "eligible_row_voxel_normalization": true,
     "fp32_sensitive_reductions": true,
@@ -200,26 +200,31 @@
     "edema_supervision_rows": 0,
     "mixed_batch_safe_scatter": true
   },
-  "parameter_owner_registry_sha256": "58b95ff01f422ba854a80480ee6a9b640407575c252cc476572aa2642167de2d",
+  "parameter_owner_registry_sha256": "4ec4026861e57123a26cf514fb36e4cbbca2f872bb7ca664768192fd5b983e8d",
   "receipt_paths": {
     "architecture_signature": "results/agent_flow_v3/care-ase-faithful/implementation/architecture_signature.json",
+    "checkpoint_resume_probe": "results/agent_flow_v3/care-ase-faithful/implementation/checkpoint_resume_probe_receipt.json",
+    "deployment_load_probe": "results/agent_flow_v3/care-ase-faithful/implementation/deployment_load_probe_receipt.json",
+    "evaluator_smoke": "results/agent_flow_v3/care-ase-faithful/implementation/evaluator_smoke_receipt.json",
     "forward_backward_probe": "results/agent_flow_v3/care-ase-faithful/implementation/forward_backward_probe_receipt.json",
+    "hard_negative_binding": "results/agent_flow_v3/care-ase-faithful/implementation/hard_negative_binding_receipt.json",
     "inference_probe": "results/agent_flow_v3/care-ase-faithful/implementation/inference_probe_receipt.json",
     "parameter_owner_registry": "results/agent_flow_v3/care-ase-faithful/implementation/parameter_owner_registry.json",
     "runtime_asset_manifest": "results/agent_flow_v3/care-ase-faithful/implementation/runtime_asset_manifest.json",
-    "source_manifest": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_source_manifest.json"
+    "source_manifest": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_source_manifest.json",
+    "static_architecture_checks": "results/agent_flow_v3/care-ase-faithful/implementation/static_architecture_checks.json"
   },
   "request_nonce": "care-ase-20260806T090955Z",
   "role_receipts": {
     "controller": {
-      "codex_home": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_CONTROLLER",
-      "thread_id": "019fd2ea-8bac-7e22-b699-6c1301ebb863",
-      "worktree": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/controller"
+      "codex_home": "${CARE_CODEX_HOME_ROOT}/CARE_care-ase-faithful_CONTROLLER",
+      "thread_id": "019fd7c0-2979-7061-94d3-99577ba9c834",
+      "worktree": "${CARE_AGENT_FLOW_WORKTREE_ROOT}/care-ase-faithful/controller"
     },
     "executor": {
-      "codex_home": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_EXECUTOR",
-      "thread_id": "019fd2ea-30f3-7d72-b605-2fc7a2d901ba",
-      "worktree": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor"
+      "codex_home": "${CARE_CODEX_HOME_ROOT}/CARE_care-ase-faithful_EXECUTOR",
+      "thread_id": "019fd7c1-8358-7632-9022-367e62ecfbd1",
+      "worktree": "${CARE_AGENT_FLOW_WORKTREE_ROOT}/care-ase-faithful/executor"
     },
     "verifier": {
       "codex_home": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_VERIFIER",
@@ -227,7 +232,7 @@
       "worktree": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/verifier"
     }
   },
-  "runtime_asset_manifest_sha256": "cdbbdd3e40d354c8ebcd01c70679d2f6016bf58211c9698396e973b1c5f831fc",
+  "runtime_asset_manifest_sha256": "1b7a784401f8d490558cb9c45a5fe062f7b806475ab59f13fad223929064ccf6",
   "runtime_receipts": {
     "canned_without_execution": false,
     "forward_backward_probe": {
@@ -235,14 +240,14 @@
       "executed": true,
       "exit_code": 0,
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "35539c3bd99b68782fb6fa140a70fc0e9928a5ed7b517bd3503c581603eeb6e2"
+      "stdout_sha256": "cf6c1675b6494706155c0f97db9128e485e2fd0e58607f8c2f63c3d231135551"
     },
     "inference_probe": {
       "command_sha256": "a904254c1e8d8baed9aa5db5e1bdab2ebe52483619f7ee1f0c5a0771a4231f4f",
       "executed": true,
       "exit_code": 0,
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "e2f6008a069014a9383cd0bdec5a2fe1d1b20d00613ba085b39cc246b9207ce4"
+      "stdout_sha256": "69be70c9fb53d7b4a0ed44044d39b7d00679c3791fd7e1bb10400259d489d499"
     }
   },
   "sampler_and_hard_negatives": {
@@ -255,11 +260,11 @@
       10
     ],
     "hard_negative_binding": {
-      "case_id": "synthetic_zero_credit_no_case_selection",
+      "case_id": "Case1002",
       "checkpoint_sha256": "8bceb20cae8920e87d43b14665a0db9dfd4f1204533d25a3cd6e40ad9de74111",
-      "coordinate_sha256": "a2f10c967b2857d6ed1f4b7b601f4a8de953c3ee92b7596e3288a14e02943829",
-      "grid_sha256": "58b95ff01f422ba854a80480ee6a9b640407575c252cc476572aa2642167de2d",
-      "mask_sha256": "734c0707ee07346808c1bcf0e728bcaf4c05f08f4472667eb8e432adbb5d6470"
+      "coordinate_sha256": "04a7fee009dea78ce67ebdc896de0f698ecd6f6373201ae95b839a1fd4772162",
+      "grid_sha256": "84cd50805fe52513d7c03807b9ccc986c3b38e02c14786b37762f8fe4d63caa7",
+      "mask_sha256": "60c285329432abdf268a9400cdb29f6a25da81df932e0af5baf84431332fdb15"
     },
     "no_t2_edema_event_count": 0,
     "requested_resolved_mismatches": [],
@@ -272,7 +277,7 @@
     ]
   },
   "schema": "CARE_ASE_FAITHFUL_IMPLEMENTATION_EVIDENCE_V1",
-  "source_manifest_sha256": "734c0707ee07346808c1bcf0e728bcaf4c05f08f4472667eb8e432adbb5d6470",
-  "static_architecture_checks_sha256": "b909ea49b57d57e0f01f8a8f3773f7102b8a651aff34973bd9815881d47a008c",
+  "source_manifest_sha256": "831819feb5d3989960cfd20ef5453a60881e6f8d6688d8354ee27189c9f0f69f",
+  "static_architecture_checks_sha256": "7e970f141b72fb660542a52de6e3f1ac3b6ad34112c420ec7c206c1b4bce8acc",
   "task_id": "care-ase-faithful"
 }

@@ -12,7 +12,7 @@
     "zero_credit": true
   },
   "command_sha256": "a904254c1e8d8baed9aa5db5e1bdab2ebe52483619f7ee1f0c5a0771a4231f4f",
-  "created_utc": "2026-08-06T15:24:08Z",
+  "created_utc": "2026-08-06T16:58:17Z",
   "docker_or_upload": false,
   "executed": true,
   "exit_code": 0,
@@ -27,10 +27,13 @@
       128,
       128
     ],
+    "case_id": "Case2001",
     "class4_excluded_from_no_t2_decode": true,
     "class5_decode_remaps_to_official_label5": true,
     "fold": 0,
+    "forced_multi_tile_path": "predict_care_ase_r2_full_volume_logits",
     "formal_training_started": false,
+    "global_bias_application_count": 1,
     "input_shape": [
       1,
       3,
@@ -48,7 +51,10 @@
     ],
     "outer_accessed": false,
     "patch_proxy_evaluator": false,
-    "probe_type": "synthetic_zero_credit_forward_and_canonical_inference",
+    "probe_type": "train_split_zero_credit_canonical_full_volume_inference",
+    "single_tile_path": "predict_care_ase_r2_full_volume_logits",
+    "single_vs_forced_multi_tile_max_abs_diff": 0.0,
+    "split_sha256": "9c3e9f3b7e4565a5c3c2589ddbb913c78c0ad423f4265370585841c93c6f880a",
     "status": "PASS",
     "t2_present_class4_still_available": true
   },
@@ -56,7 +62,7 @@
   "request_nonce": "care-ase-20260806T090955Z",
   "schema": "CARE_ASE_FAITHFUL_ZERO_CREDIT_PROBE_RECEIPT_V1",
   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "stdout_sha256": "e2f6008a069014a9383cd0bdec5a2fe1d1b20d00613ba085b39cc246b9207ce4",
+  "stdout_sha256": "69be70c9fb53d7b4a0ed44044d39b7d00679c3791fd7e1bb10400259d489d499",
   "task_id": "care-ase-faithful",
   "zero_credit": true
 }

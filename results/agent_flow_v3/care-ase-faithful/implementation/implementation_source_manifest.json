@@ -1,6 +1,6 @@
 {
   "file_hashes": {
-    "scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py": "d30b481f7a552173a137d966697bee675e5f7f3d12e3e2e49372de42de064b65",
+    "scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py": "4fe1f3a55f7dee14585846911e7f30d5a80ab532a9dcc2eafe51013fbcc690e1",
     "scripts/training/care_ase/run_care_ase_r2_chunk.py": "078767a5c8c6b8c9fe6135efe2efa6ec49dc6daec7554e2f1a3b3625a338e812",
     "scripts/training/care_ase/run_care_ase_train.py": "d4a613bc6160267538de83b71bf615ea4d87c15c2b06240af126973428e540b6",
     "src/care_myocardium/inference/care_ase_r2_decode.py": "7fea71edba56d259dbbb31c3832b74709bd83d5af1f8b680a85c2e0a41acb05b",
@@ -14,11 +14,11 @@
   },
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
   "git_branch": "local/executor/care-ase-faithful",
-  "git_head": "ac6540cc7054b30b7de8b2ec321718a83e3ca449",
+  "git_head": "c86ade192fc141a5cd28f5c11a233ad3eb12a89a",
   "missing_files": [],
   "request_nonce": "care-ase-20260806T090955Z",
   "schema": "CARE_ASE_FAITHFUL_IMPLEMENTATION_SOURCE_MANIFEST_V1",
-  "source_manifest_sha256": "e86a0cd0228befac3f0ddeb0b205b90b29de6f50401a910b6da185faadd8496c",
+  "source_manifest_sha256": "831819feb5d3989960cfd20ef5453a60881e6f8d6688d8354ee27189c9f0f69f",
   "source_root": ".",
   "task_id": "care-ase-faithful",
   "verifier_fingerprint_sha256": "5c5dd6f431f2cb0c1d2fe6a7927f3679eea47b8ec7c82e4f2a4227e8ab2c7773"
