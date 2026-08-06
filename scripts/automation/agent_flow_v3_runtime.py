@@ -1404,6 +1404,23 @@ def build_smoke_b_final_receipt(
     }
 
 
+def smoke_b_planner_review_candidates(current: dict[str, Any]) -> list[str]:
+    candidates: list[str] = []
+    review_round = current.get("review_round")
+    if isinstance(review_round, int):
+        candidates.append(f"results/agent_flow_v3/gpt-loop-smoke-b/planner_reviews/round_{review_round:03d}.json")
+    artifact = current.get("planner_review_artifact")
+    if isinstance(artifact, str):
+        candidates.append(artifact)
+    unique: list[str] = []
+    seen: set[str] = set()
+    for candidate in candidates:
+        if candidate not in seen:
+            seen.add(candidate)
+            unique.append(candidate)
+    return unique
+
+
 def prepare_care_ase_activation_after_smoke_b(
     *,
     request: dict[str, Any],
@@ -1412,8 +1429,8 @@ def prepare_care_ase_activation_after_smoke_b(
     visual_smoke_final: dict[str, Any],
     smoke_b_final: dict[str, Any],
     activation_nonce: str,
-    frozen_contract_sha256: str,
-) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any], list[str]]:
+    frozen_contract_sha256: str | None,
+) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any], dict[str, Any], list[str]]:
     failures: list[str] = []
     if visual_smoke_final.get("status") != "PASS":
         failures.append("visual_smoke_final")
@@ -1423,7 +1440,7 @@ def prepare_care_ase_activation_after_smoke_b(
         failures.append("task_id")
     if not activation_nonce:
         failures.append("activation_nonce")
-    if not SHA256_RE.fullmatch(frozen_contract_sha256):
+    if frozen_contract_sha256 is not None and not SHA256_RE.fullmatch(frozen_contract_sha256):
         failures.append("frozen_contract_sha256")
 
     armed_request = dict(request)
@@ -1471,7 +1488,94 @@ def prepare_care_ase_activation_after_smoke_b(
         ],
         "updated_utc": now(),
     }
-    return armed_request, armed_current, activation_state, failures
+    return armed_request, armed_current, armed_visual_sources, activation_state, failures
+
+
+def cmd_activate_care_ase_after_smoke_b(args: argparse.Namespace) -> int:
+    repo = args.repo_root.resolve()
+    if args.fetch:
+        git(repo, "fetch", "origin", args.branch, "--prune")
+    ref = f"origin/{args.branch}" if args.from_origin else "HEAD"
+    smoke_request_path = "automation/agent_flow_v3/tasks/gpt-loop-smoke-b/REQUEST.json"
+    smoke_current_path = "automation/agent_flow_v3/tasks/gpt-loop-smoke-b/CURRENT.json"
+    care_request_path = "automation/agent_flow_v3/tasks/care-ase-faithful/REQUEST.json"
+    care_current_path = "automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json"
+    care_visual_sources_path = "automation/agent_flow_v3/tasks/care-ase-faithful/VISUAL_SOURCES.json"
+    visual_final_path = "results/agent_flow_v3/care-visual-smoke/visual_smoke_final.json"
+    smoke_final_path = "results/agent_flow_v3/gpt-loop-smoke-b/gpt_loop_smoke_final.json"
+    activation_state_path = "results/agent_flow_v3/care-ase-faithful/care_ase_activation_state.json"
+
+    smoke_request = git_show_json(repo, ref, smoke_request_path)
+    smoke_current = git_show_json(repo, ref, smoke_current_path)
+    care_request = git_show_json(repo, ref, care_request_path)
+    care_current = git_show_json(repo, ref, care_current_path)
+    visual_sources = git_show_json(repo, ref, care_visual_sources_path)
+    visual_final = git_show_json(repo, ref, visual_final_path)
+
+    review_path = ""
+    review: dict[str, Any] | None = None
+    for candidate in smoke_b_planner_review_candidates(smoke_current):
+        raw = git_show_text_or_none(repo, ref, candidate)
+        if raw is None:
+            continue
+        parsed = json.loads(raw)
+        if isinstance(parsed, dict):
+            review_path = candidate
+            review = parsed
+            break
+    if review is None:
+        raise RuntimeErrorV3("smoke_b_planner_pass_artifact_missing")
+    review_commit_sha = git(repo, "log", "-1", "--format=%H", ref, "--", review_path)
+    smoke_final = build_smoke_b_final_receipt(
+        request=smoke_request,
+        current=smoke_current,
+        review=review,
+        review_path=review_path,
+        review_commit_sha=review_commit_sha,
+    )
+    if smoke_final["status"] != "PASS":
+        raise RuntimeErrorV3("smoke_b_planner_pass_invalid:" + ",".join(smoke_final.get("failures", [])))
+
+    activation_nonce = args.activation_nonce or "care-ase-" + now().replace(":", "").replace("-", "")
+    frozen_contract_sha256 = care_request.get("frozen_contract_sha256")
+    if frozen_contract_sha256 is not None:
+        frozen_contract_sha256 = str(frozen_contract_sha256)
+    armed_request, armed_current, armed_visual_sources, activation_state, failures = prepare_care_ase_activation_after_smoke_b(
+        request=care_request,
+        current=care_current,
+        visual_sources=visual_sources,
+        visual_smoke_final=visual_final,
+        smoke_b_final=smoke_final,
+        activation_nonce=activation_nonce,
+        frozen_contract_sha256=frozen_contract_sha256,
+    )
+    if failures:
+        raise RuntimeErrorV3("care_ase_activation_invalid:" + ",".join(failures))
+    result = {
+        "schema": "CARE_AGENT_FLOW_V3_CARE_ASE_ACTIVATION_COMMAND",
+        "status": "DRY_RUN" if args.dry_run else "WROTE_FILES",
+        "branch": args.branch,
+        "source_ref": ref,
+        "smoke_final_path": smoke_final_path,
+        "activation_state_path": activation_state_path,
+        "updated_paths": [
+            smoke_final_path,
+            care_visual_sources_path,
+            care_request_path,
+            care_current_path,
+            activation_state_path,
+        ],
+        "request_nonce": activation_nonce,
+        "updated_utc": now(),
+    }
+    if not args.dry_run:
+        write_json(repo / smoke_final_path, smoke_final)
+        write_json(repo / care_visual_sources_path, armed_visual_sources)
+        write_json(repo / care_request_path, armed_request)
+        write_json(repo / care_current_path, armed_current)
+        write_json(repo / activation_state_path, activation_state)
+    print(json.dumps(result, indent=2, ensure_ascii=False))
+    return 0
 
 
 def cmd_observe_visual_smoke(args: argparse.Namespace) -> int:
@@ -1734,6 +1838,15 @@ def parser() -> argparse.ArgumentParser:
     q.add_argument("--min-windows", type=int, default=2)
     q.add_argument("--output", type=Path)
     q.set_defaults(func=cmd_observe_visual_smoke)
+
+    q = sub.add_parser("activate-care-ase-after-smoke-b")
+    q.add_argument("--repo-root", type=Path, required=True)
+    q.add_argument("--branch", default="develop")
+    q.add_argument("--from-origin", action="store_true")
+    q.add_argument("--fetch", action="store_true")
+    q.add_argument("--dry-run", action="store_true")
+    q.add_argument("--activation-nonce", default="")
+    q.set_defaults(func=cmd_activate_care_ase_after_smoke_b)
 
     return p
 

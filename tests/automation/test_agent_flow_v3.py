@@ -356,6 +356,45 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
 
         self.assertIn("integration_commit_sha", failures)
 
+    def test_smoke_b_final_receipt_passes_with_exact_planner_bindings(self) -> None:
+        request = {
+            "task_id": "gpt-loop-smoke-b",
+            "request_nonce": "nonce-1",
+        }
+        current = {
+            "task_id": "gpt-loop-smoke-b",
+            "state": "PLANNER_PASS",
+            "request_nonce": "nonce-1",
+            "review_round": 1,
+            "frozen_contract_sha256": "a" * 64,
+            "integration_commit_sha": "b" * 40,
+            "implementation_fingerprint_sha256": "c" * 64,
+            "verifier_fingerprint_sha256": "d" * 64,
+        }
+        review = {
+            "schema": "CARE_AGENT_FLOW_V3_PLANNER_REVIEW",
+            "task_id": "gpt-loop-smoke-b",
+            "decision": "PLANNER_PASS",
+            "request_nonce": "nonce-1",
+            "review_round": 1,
+            "frozen_contract_sha256": "a" * 64,
+            "integration_commit_sha": "b" * 40,
+            "implementation_fingerprint_sha256": "c" * 64,
+            "verifier_fingerprint_sha256": "d" * 64,
+            "blocking_findings": [],
+        }
+
+        receipt = RUNTIME.build_smoke_b_final_receipt(
+            request=request,
+            current=current,
+            review=review,
+            review_path="results/agent_flow_v3/gpt-loop-smoke-b/planner_reviews/round_001.json",
+            review_commit_sha="e" * 40,
+        )
+
+        self.assertEqual(receipt["status"], "PASS")
+        self.assertEqual(receipt["failures"], [])
+
     def test_prepare_care_ase_activation_requires_visual_and_smoke_b_pass(self) -> None:
         request = {
             "task_id": "care-ase-faithful",
@@ -382,21 +421,23 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         visual_final = {"status": "PASS", "request_nonce": "visual-nonce"}
         smoke_b_final = {"status": "PASS", "request_nonce": "smoke-b-nonce"}
 
-        armed_request, armed_current, activation_state, failures = RUNTIME.prepare_care_ase_activation_after_smoke_b(
+        armed_request, armed_current, armed_visual_sources, activation_state, failures = RUNTIME.prepare_care_ase_activation_after_smoke_b(
             request=request,
             current=current,
             visual_sources=visual_sources,
             visual_smoke_final=visual_final,
             smoke_b_final=smoke_b_final,
             activation_nonce="care-ase-20260806T000000Z",
-            frozen_contract_sha256="f" * 64,
+            frozen_contract_sha256=None,
         )
 
         self.assertEqual(failures, [])
         self.assertIs(armed_request["enabled"], True)
         self.assertEqual(armed_request["request_nonce"], "care-ase-20260806T000000Z")
+        self.assertIsNone(armed_request["frozen_contract_sha256"])
         self.assertEqual(armed_current["state"], "PLAN_REQUESTED")
         self.assertEqual(armed_current["next_action"], "WAIT_FOR_TRUE_SCHEDULED_PLANNER_AND_CRITIC")
+        self.assertIs(armed_visual_sources["ready_for_scheduled_visual_review"], True)
         self.assertEqual(activation_state["status"], "ARMED")
         self.assertIn("no CARE-ASE implementation started by activation", activation_state["forbidden_actions_confirmed"])
 
