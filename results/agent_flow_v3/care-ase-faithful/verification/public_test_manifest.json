@@ -1,0 +1,75 @@
+{
+  "created_utc": "2026-08-06T14:37:15Z",
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "public_reference_evidence_path": "results/agent_flow_v3/care-ase-faithful/verification/public_reference_evidence.json",
+  "public_reference_validation": {
+    "command": [
+      "/usr/bin/python",
+      "validators/care_ase_faithful/validate_contract_evidence.py",
+      "--verification-contract",
+      "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+      "--evidence",
+      "results/agent_flow_v3/care-ase-faithful/verification/public_reference_evidence.json"
+    ],
+    "exit_code": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_tail": "",
+    "stdout_sha256": "7ca147703ccf89a824fb57c9603d9755ab11f42ec6c000ec130a054de271dec9",
+    "stdout_tail": "{\n  \"failure_count\": 0,\n  \"failures\": [],\n  \"known_bad_case_id\": null,\n  \"passed\": true,\n  \"schema\": \"CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1\",\n  \"task_id\": \"care-ase-faithful\"\n}\n"
+  },
+  "public_tests": [
+    {
+      "path": "tests/care_ase_faithful/test_verifier_package.py",
+      "purpose": "validator reference evidence passes and all known-bad ids fail closed through subprocess invocation"
+    }
+  ],
+  "repository_safe_commands": [
+    {
+      "command": [
+        "/usr/bin/python",
+        "validators/care_ase_faithful/validate_contract_evidence.py",
+        "--verification-contract",
+        "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+        "--evidence",
+        "results/agent_flow_v3/care-ase-faithful/verification/public_reference_evidence.json"
+      ],
+      "exit_code": 0,
+      "purpose": "public reference evidence validates under the frozen contract",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_sha256": "7ca147703ccf89a824fb57c9603d9755ab11f42ec6c000ec130a054de271dec9",
+      "stdout_tail": "{\n  \"failure_count\": 0,\n  \"failures\": [],\n  \"known_bad_case_id\": null,\n  \"passed\": true,\n  \"schema\": \"CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1\",\n  \"task_id\": \"care-ase-faithful\"\n}\n"
+    },
+    {
+      "command": [
+        "/usr/bin/python",
+        "-m",
+        "unittest",
+        "tests.care_ase_faithful.test_verifier_package"
+      ],
+      "exit_code": 0,
+      "purpose": "verifier unittest package exercises public reference and all protected known-bad categories",
+      "stderr_sha256": "51b64ec554d6c23ea2df62c454afd4f7534f0c9f528b7c7b4fa2327ce1f2d3b5",
+      "stderr_tail": "...\n----------------------------------------------------------------------\nRan 3 tests in 1.277s\n\nOK\n",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_tail": ""
+    },
+    {
+      "command": [
+        "/usr/bin/python",
+        "scripts/automation/validate_agent_flow_v3.py",
+        "--repo-root",
+        "."
+      ],
+      "exit_code": 0,
+      "purpose": "Agent-Flow v3 request/current deterministic state validation",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_sha256": "d01b6f1fe2a59e7594158769515feccd834e48618ac06c03a990bbe9414d352b",
+      "stdout_tail": "CARE Agent-Flow v3 contract validation: PASS\n"
+    }
+  ],
+  "request_nonce": "care-ase-20260806T090955Z",
+  "schema": "CARE_ASE_FAITHFUL_PUBLIC_TEST_MANIFEST_V1",
+  "task_id": "care-ase-faithful"
+}

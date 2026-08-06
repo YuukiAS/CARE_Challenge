@@ -1,0 +1,26 @@
+{
+  "controller_verified_launch_origin_develop_sha": "e628bd14582350b265567ef5ec70b1d74d273b3b",
+  "controller_verified_launch_verifier_worktree_head": "e628bd14582350b265567ef5ec70b1d74d273b3b",
+  "created_utc": "2026-08-06T14:37:15Z",
+  "executor_may_start_after_controller_freezes_this_commit": true,
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "observed_origin_develop_sha_at_freeze": "23b0951677cfa399a9f63dbcfdc0a68bc3eb1175",
+  "protected_known_bad_all_nonzero": true,
+  "protected_known_bad_count": 24,
+  "public_reference_exit_code": 0,
+  "request_nonce": "care-ase-20260806T090955Z",
+  "required_artifacts": [
+    "verification_contract.json",
+    "public_test_manifest.json",
+    "protected_known_bad_manifest.json",
+    "verifier_fingerprint.json",
+    "verifier_session_receipt.json",
+    "verifier_freeze_receipt.json"
+  ],
+  "schema": "CARE_ASE_FAITHFUL_VERIFIER_FREEZE_RECEIPT_V1",
+  "state_for_controller": "VERIFIER_FROZEN",
+  "task_id": "care-ase-faithful",
+  "verifier_branch": "local/verifier/care-ase-faithful",
+  "verifier_fingerprint_sha256": "b3f1a0f630b346494cbeb7f1ae92764ab993047e373a0a1e23d77c194f8cecdf",
+  "verifier_worktree_head_before_freeze_commit": "7730f710a7996e24e27cf8eb0c6d25880f071635"
+}

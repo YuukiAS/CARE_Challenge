@@ -1,0 +1,10 @@
+{
+  "failure_count": 1,
+  "failures": [
+    "kb15.unrecorded_mismatch"
+  ],
+  "known_bad_case_id": "kb15_unrecorded_sampler_fallback",
+  "passed": false,
+  "schema": "CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1",
+  "task_id": "care-ase-faithful"
+}

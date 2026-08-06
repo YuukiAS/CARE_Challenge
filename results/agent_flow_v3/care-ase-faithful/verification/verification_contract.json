@@ -1,0 +1,180 @@
+{
+  "created_utc": "2026-08-06T14:37:15Z",
+  "evidence_schema": "CARE_ASE_FAITHFUL_IMPLEMENTATION_EVIDENCE_V1",
+  "executor_boundary": {
+    "may_read_public_manifest": true,
+    "must_not_edit": [
+      "tests/**",
+      "validators/**",
+      "automation/agent_flow_v3/schema.json",
+      "prompts/blueprints/**"
+    ],
+    "must_produce_real_runtime_receipts": true
+  },
+  "exit_code_semantics": {
+    "0": "all required faithful-implementation evidence is present and internally consistent",
+    "2": "fail-closed contract violation or missing evidence"
+  },
+  "frozen_contract_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "protected_known_bad_categories": [
+    {
+      "contract_category": 1,
+      "id": "kb01_role_isolation_overlap",
+      "public_label": "role/session isolation overlap"
+    },
+    {
+      "contract_category": 2,
+      "id": "kb02_trunk_inheritance_degraded",
+      "public_label": "stock trunk inheritance degraded"
+    },
+    {
+      "contract_category": 3,
+      "id": "kb03_shallow_decoder_head",
+      "public_label": "shallow head substitutes for required decoders"
+    },
+    {
+      "contract_category": 4,
+      "id": "kb04_stock_class_shortcut",
+      "public_label": "stock class shortcut enters normal forward"
+    },
+    {
+      "contract_category": 5,
+      "id": "kb05_required_module_no_authority",
+      "public_label": "required module has no target/final authority"
+    },
+    {
+      "contract_category": 6,
+      "id": "kb06_dead_gradient_double_zero",
+      "public_label": "double zero initialization dead gradient"
+    },
+    {
+      "contract_category": 7,
+      "id": "kb07_modality_role_violation",
+      "public_label": "scar/edema modality ownership violated"
+    },
+    {
+      "contract_category": 8,
+      "id": "kb08_no_t2_edema_leak",
+      "public_label": "no-T2 rows leak into edema graph or class-4 competition"
+    },
+    {
+      "contract_category": 9,
+      "id": "kb09_auxiliary_only_context_extent",
+      "public_label": "context/extent/soft-wall are auxiliary only"
+    },
+    {
+      "contract_category": 10,
+      "id": "kb10_hard_or_forbidden_mechanism",
+      "public_label": "hard ROI/wall/prototype/fixed-priority mechanism"
+    },
+    {
+      "contract_category": 11,
+      "id": "kb11_patch_local_extent_or_invalid_bias",
+      "public_label": "patch-local extent or invalid-slice bias"
+    },
+    {
+      "contract_category": 12,
+      "id": "kb12_tile_bias_or_path_fork",
+      "public_label": "tile-local final bias or single/multi path fork"
+    },
+    {
+      "contract_category": 13,
+      "id": "kb13_loss_excluded_or_fake_denominator",
+      "public_label": "declared loss excluded or zero denominator counted"
+    },
+    {
+      "contract_category": 14,
+      "id": "kb14_hard_negative_unbound",
+      "public_label": "hard negative lacks mask/coordinate/checkpoint/grid binding"
+    },
+    {
+      "contract_category": 15,
+      "id": "kb15_unrecorded_sampler_fallback",
+      "public_label": "requested/resolved sampler category mismatch unrecorded"
+    },
+    {
+      "contract_category": 16,
+      "id": "kb16_checkpoint_resume_drift",
+      "public_label": "checkpoint schema or exact resume is unsafe"
+    },
+    {
+      "contract_category": 17,
+      "id": "kb17_early_checkpoint_final_ramp",
+      "public_label": "early checkpoint inference uses final-step ramp"
+    },
+    {
+      "contract_category": 18,
+      "id": "kb18_canned_receipt_without_execution",
+      "public_label": "canned receipt without real execution evidence"
+    },
+    {
+      "contract_category": 19,
+      "id": "kb19_patch_proxy_evaluator",
+      "public_label": "patch proxy or unfair evaluator substitutes full volume"
+    },
+    {
+      "contract_category": 20,
+      "id": "kb20_incomplete_training_counted",
+      "public_label": "under-budget or non-terminal run counted as training"
+    },
+    {
+      "contract_category": 21,
+      "id": "kb21_outer_selection_leak",
+      "public_label": "outer data used for selection"
+    },
+    {
+      "contract_category": 22,
+      "id": "kb22_hidden_asset_or_old_wrapper",
+      "public_label": "hidden host asset or old wrapper bypass"
+    },
+    {
+      "contract_category": 23,
+      "id": "kb23_dual_truth_implementation",
+      "public_label": "monolith and module implementation both runnable"
+    },
+    {
+      "contract_category": 24,
+      "id": "kb24_metric_interface_missing",
+      "public_label": "required metric or sentinel interface missing"
+    }
+  ],
+  "request_nonce": "care-ase-20260806T090955Z",
+  "required_loss_terms": [
+    "conditional_final_dice_ce",
+    "anatomy_deep_supervision_dice_ce",
+    "wall_dice_bce",
+    "distance_rho_masked_smooth_l1",
+    "scar_binary_dice_focal",
+    "scar_component_adaptive_tversky",
+    "scar_center_focal_bce",
+    "scar_extent_bce_smooth_l1",
+    "scar_context_ce",
+    "edema_binary_dice_focal",
+    "injury_dice_bce",
+    "edema_boundary_smooth_l1",
+    "edema_extent_bce_smooth_l1",
+    "edema_context_ce",
+    "relation_loss"
+  ],
+  "required_metric_interfaces": [
+    "blood_pool_adjacent_fp",
+    "casewise_help_harm",
+    "centerB_centerC_subgroup",
+    "component_count",
+    "dice",
+    "exact_hd",
+    "hd95",
+    "lesion_recall",
+    "precision",
+    "remote_fp_count",
+    "remote_fp_volume",
+    "sensitivity",
+    "sentinel_case",
+    "small_lesion_recall",
+    "volume_ratio"
+  ],
+  "schema": "CARE_ASE_FAITHFUL_VERIFICATION_CONTRACT_V1",
+  "task_id": "care-ase-faithful",
+  "validator": "validators/care_ase_faithful/validate_contract_evidence.py"
+}

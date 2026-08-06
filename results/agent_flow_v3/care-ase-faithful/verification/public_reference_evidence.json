@@ -1,0 +1,264 @@
+{
+  "architecture": {
+    "forbidden_mechanisms": {
+      "bbox_crop": false,
+      "fixed_scar_priority": false,
+      "hard_roi": false,
+      "hard_wall": false,
+      "local_refiner": false,
+      "prototype_dictionary_query": false
+    },
+    "pathology_decoders": {
+      "d0_shallow_head_substitute": false,
+      "edema_context_logits_enter_final_path": true,
+      "edema_highest_two_scale_independent_decoder": true,
+      "scar_context_logits_enter_final_path": true,
+      "scar_highest_two_scale_independent_decoder": true,
+      "stock_class4_5_normal_forward_shortcut": false
+    },
+    "required_module_authority": {
+      "context_affects_final_logits": true,
+      "edema_dilation_affects_final_logits": true,
+      "extent_affects_final_logits": true,
+      "modality_adapters_affect_final_logits": true,
+      "scar_proposal_affects_final_logits": true,
+      "soft_wall_affects_final_logits": true
+    },
+    "single_truth": {
+      "canonical_package": "src/care_myocardium/models/care_ase",
+      "duplicate_runtime_truth": false,
+      "legacy_imports_are_thin_forwarders": true,
+      "monolith_runnable": false
+    },
+    "stock_trunk": {
+      "bottleneck_byte_coverage": 1.0,
+      "channels_from_plan_introspection": true,
+      "channels_shrunk": false,
+      "decoder_byte_coverage": 0.995,
+      "decoder_reset": false,
+      "deep_supervision_head_byte_coverage": 0.995,
+      "encoder_and_shared_low_mid_decoder_run_once": true,
+      "encoder_byte_coverage": 0.995,
+      "stock_compatible_argmax_changed_voxels": 0,
+      "stock_compatible_logits_max_abs_err": 0.0,
+      "trunk_permanently_frozen": false
+    }
+  },
+  "checkpoint_and_resume": {
+    "contract_manifest_environment_drift_rejected": true,
+    "cross_fold_resume_rejected": true,
+    "early_checkpoint_uses_final_step_ramp": false,
+    "early_checkpoint_uses_saved_step_ramp": true,
+    "nonfinite_blocks_optimizer_commit": true,
+    "reload_next_step_matches_uninterrupted": true,
+    "reload_validation_advances_training_rng": false,
+    "schema_version": 4,
+    "self_contained_deployment": true
+  },
+  "context_and_extent": {
+    "anatomy_context_detached_before_pathology": true,
+    "context_soft_wall_extent_have_final_authority": true,
+    "full_case_extent_targets": true,
+    "global_bias_applied_once_after_aggregation": true,
+    "invalid_padding_partial_hw_bias_zero": true,
+    "presence_area_validity_separate": true,
+    "ramp_formula": "piecewise_0_500_2000_or_deploy",
+    "single_tile_multi_tile_same_path": true,
+    "tile_outputs_base_logits_only": true,
+    "training_inference_compute_slice_extent_statistics_shared": true
+  },
+  "data_boundary": {
+    "hidden_host_asset_required": false,
+    "old_wrapper_bypasses_new_implementation": false,
+    "outer_used_for_checkpoint": false,
+    "outer_used_for_coefficients": false,
+    "outer_used_for_source_selection": false,
+    "outer_used_for_threshold": false
+  },
+  "evaluation_interface": {
+    "canonical_full_volume_only": true,
+    "fair_baseline_same_cases_tta_decode_population": true,
+    "metrics": [
+      "blood_pool_adjacent_fp",
+      "casewise_help_harm",
+      "centerB_centerC_subgroup",
+      "component_count",
+      "dice",
+      "exact_hd",
+      "hd95",
+      "lesion_recall",
+      "precision",
+      "remote_fp_count",
+      "remote_fp_volume",
+      "sensitivity",
+      "sentinel_case",
+      "small_lesion_recall",
+      "volume_ratio"
+    ],
+    "patch_proxy_evaluator": false
+  },
+  "formal_training_accounting": {
+    "claims_formal_training": false,
+    "completed_optimizer_steps": 0,
+    "pending_or_preempted_counted": false,
+    "stage_b_or_c_skipped": false,
+    "visited_stages": []
+  },
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "losses": {
+    "eligible_row_voxel_normalization": true,
+    "fp32_sensitive_reductions": true,
+    "per_loss_denominators_reported": true,
+    "terms": {
+      "anatomy_deep_supervision_dice_ce": {
+        "included_in_total": true,
+        "weight": 0.5
+      },
+      "conditional_final_dice_ce": {
+        "included_in_total": true,
+        "weight": 1.0
+      },
+      "distance_rho_masked_smooth_l1": {
+        "included_in_total": true,
+        "weight": 0.1
+      },
+      "edema_binary_dice_focal": {
+        "included_in_total": true,
+        "weight": 1.0
+      },
+      "edema_boundary_smooth_l1": {
+        "included_in_total": true,
+        "weight": 0.1
+      },
+      "edema_context_ce": {
+        "included_in_total": true,
+        "weight": 0.1
+      },
+      "edema_extent_bce_smooth_l1": {
+        "included_in_total": true,
+        "weight": 0.2
+      },
+      "injury_dice_bce": {
+        "included_in_total": true,
+        "weight": 0.4
+      },
+      "relation_loss": {
+        "included_in_total": true,
+        "weight": 0.05
+      },
+      "scar_binary_dice_focal": {
+        "included_in_total": true,
+        "weight": 1.0
+      },
+      "scar_center_focal_bce": {
+        "included_in_total": true,
+        "weight": 0.1
+      },
+      "scar_component_adaptive_tversky": {
+        "included_in_total": true,
+        "weight": 0.25
+      },
+      "scar_context_ce": {
+        "included_in_total": true,
+        "weight": 0.1
+      },
+      "scar_extent_bce_smooth_l1": {
+        "included_in_total": true,
+        "weight": 0.15
+      },
+      "wall_dice_bce": {
+        "included_in_total": true,
+        "weight": 0.25
+      }
+    },
+    "zero_denominator_claims_coverage": false
+  },
+  "modalities_and_gradients": {
+    "adapter_and_projection_double_zero": false,
+    "adapters_active_initialized": true,
+    "edema_c0_gate_initial_output": 0.2,
+    "edema_lge_gate_initial_output": 0.05,
+    "edema_uses_c0_auxiliary": true,
+    "edema_uses_lge_weak_context": true,
+    "edema_uses_t2_primary": true,
+    "first_backward_required_projection_grad_nonzero_finite": true,
+    "named_zero_residual_projections": true,
+    "scar_c0_gate_initial_output": 0.2,
+    "scar_uses_c0_auxiliary": true,
+    "scar_uses_lge_primary": true,
+    "scar_uses_t2": false,
+    "second_backward_adapter_gate_context_grad_nonzero_finite": true
+  },
+  "no_t2_semantics": {
+    "class4_in_softmax_dice_argmax_denominator": false,
+    "class5_decode_remaps_to_official_label5": true,
+    "edema_negative_rows": 0,
+    "edema_owned_module_call_count": 0,
+    "edema_parameter_grad_abs_sum": 0.0,
+    "edema_supervision_rows": 0,
+    "mixed_batch_safe_scatter": true
+  },
+  "request_nonce": "care-ase-20260806T090955Z",
+  "role_receipts": {
+    "controller": {
+      "codex_home": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_CONTROLLER",
+      "thread_id": "thread-controller",
+      "worktree": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/controller"
+    },
+    "executor": {
+      "codex_home": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_EXECUTOR",
+      "thread_id": "thread-executor",
+      "worktree": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor"
+    },
+    "verifier": {
+      "codex_home": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_VERIFIER",
+      "thread_id": "thread-verifier",
+      "worktree": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/verifier"
+    }
+  },
+  "runtime_receipts": {
+    "canned_without_execution": false,
+    "forward_backward_probe": {
+      "command_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "executed": true,
+      "exit_code": 0,
+      "stderr_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "stdout_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "inference_probe": {
+      "command_sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+      "executed": true,
+      "exit_code": 0,
+      "stderr_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "stdout_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    }
+  },
+  "sampler_and_hard_negatives": {
+    "edema_complete_center_cycle": "CenterB_CenterC_1_to_1_with_replacement_if_needed",
+    "edema_sampler_percentages": [
+      35,
+      20,
+      20,
+      15,
+      10
+    ],
+    "hard_negative_binding": {
+      "case_id": "Case0001",
+      "checkpoint_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+      "coordinate_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "grid_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+      "mask_sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+    },
+    "no_t2_edema_event_count": 0,
+    "requested_resolved_mismatches": [],
+    "scar_sampler_percentages": [
+      35,
+      20,
+      20,
+      15,
+      10
+    ]
+  },
+  "schema": "CARE_ASE_FAITHFUL_IMPLEMENTATION_EVIDENCE_V1",
+  "task_id": "care-ase-faithful"
+}

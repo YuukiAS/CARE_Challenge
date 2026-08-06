@@ -1,0 +1,10 @@
+{
+  "failure_count": 1,
+  "failures": [
+    "kb24.required_metrics"
+  ],
+  "known_bad_case_id": "kb24_metric_interface_missing",
+  "passed": false,
+  "schema": "CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1",
+  "task_id": "care-ase-faithful"
+}
