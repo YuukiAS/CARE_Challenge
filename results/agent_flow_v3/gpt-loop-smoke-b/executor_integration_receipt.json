@@ -1,0 +1,56 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_EXECUTOR_INTEGRATION_RECEIPT",
+  "task_id": "gpt-loop-smoke-b",
+  "request_nonce": "smoke-b-20260806T062800Z",
+  "role": "controller",
+  "executor_thread_id": "019fd5cd-5d0e-7ad2-989d-e000849a83e6",
+  "executor_role_commit_sha": "8b7e9e7c9bcb0e7e10913e75aa7515c4a55135e6",
+  "executor_integration_commit_sha": "04ca913deb13ae86810621a021d29f466ea25ce8",
+  "verifier_thread_id": "019fd5c5-ad98-7933-b8c4-107d14a4f416",
+  "verifier_role_commit_sha": "e85bc9905ab6e2fbd5cf5e8eb530520f27d4ce30",
+  "verifier_integration_commit_sha": "8055aa60650d54fad3e204666c20fb45be799448",
+  "frozen_contract_sha256": "c2c3eca2155fce19af8c335173f313a0f49bec72ef43ce2dcbc7b560afeb2366",
+  "artifacts": [
+    {
+      "path": "automation/agent_flow_v3/smoke_b/__init__.py",
+      "sha256": "5ae7fdf4a0b63e2bb8e60637128ca7ce91f605a349700a2c9e8feb9513d039ec",
+      "role": "executor"
+    },
+    {
+      "path": "automation/agent_flow_v3/smoke_b/toy_gate.py",
+      "sha256": "9ef70e77636b40c87bf8f20a2c991a77db6418d22a0697d4dc57f4cb49816e40",
+      "role": "executor"
+    },
+    {
+      "path": "results/agent_flow_v3/gpt-loop-smoke-b/executor_session_notes.md",
+      "sha256": "da0eda48905eda26c8539f1171801fb8648a330f43f8c5066a7ef1da5c22e864",
+      "role": "executor"
+    },
+    {
+      "path": "tests/automation/test_agent_flow_v3_smoke_b.py",
+      "sha256": "51060f30d0c70187bda0983a689938b4a7bac5d9cda4f386ac3b232b9afe9579",
+      "role": "verifier"
+    }
+  ],
+  "local_ci": [
+    {
+      "command": "python -m unittest tests.automation.test_agent_flow_v3 tests.automation.test_agent_flow_v3_smoke_b",
+      "exit_code": 0,
+      "summary": "32 tests OK"
+    },
+    {
+      "command": "python scripts/automation/validate_agent_flow_v3.py --repo-root .",
+      "exit_code": 0,
+      "summary": "CARE Agent-Flow v3 contract validation: PASS"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "summary": "PASS"
+    }
+  ],
+  "scheduled_planner_expected_decision": "PLANNER_REVISE_EXECUTOR for missing planner_review_gap_marker, or PLANNER_PASS if the Scheduled Planner accepts the provenance-level gap",
+  "planner_decision_fabricated_by_codex": false,
+  "forbidden_scope_touched": false,
+  "updated_utc": "2026-08-06T06:45:39Z"
+}

@@ -1,17 +1,27 @@
 {
   "schema": "CARE_AGENT_FLOW_V3",
   "task_id": "gpt-loop-smoke-b",
-  "state": "VERIFIER_FROZEN",
+  "state": "READY_FOR_PLANNER_REVIEW",
   "review_round": 0,
   "request_nonce": "smoke-b-20260806T062800Z",
   "frozen_contract_sha256": "c2c3eca2155fce19af8c335173f313a0f49bec72ef43ce2dcbc7b560afeb2366",
   "verifier_thread_id": "019fd5c5-ad98-7933-b8c4-107d14a4f416",
   "verifier_role_commit_sha": "e85bc9905ab6e2fbd5cf5e8eb530520f27d4ce30",
   "verifier_integration_commit_sha": "8055aa60650d54fad3e204666c20fb45be799448",
-  "integration_commit_sha": "8055aa60650d54fad3e204666c20fb45be799448",
-  "implementation_fingerprint_sha256": null,
+  "executor_thread_id": "019fd5cd-5d0e-7ad2-989d-e000849a83e6",
+  "executor_role_commit_sha": "8b7e9e7c9bcb0e7e10913e75aa7515c4a55135e6",
+  "executor_integration_commit_sha": "04ca913deb13ae86810621a021d29f466ea25ce8",
+  "integration_commit_sha": "04ca913deb13ae86810621a021d29f466ea25ce8",
+  "implementation_fingerprint_sha256": "9ef70e77636b40c87bf8f20a2c991a77db6418d22a0697d4dc57f4cb49816e40",
+  "implementation_package_init_sha256": "5ae7fdf4a0b63e2bb8e60637128ca7ce91f605a349700a2c9e8feb9513d039ec",
+  "executor_session_notes_sha256": "da0eda48905eda26c8539f1171801fb8648a330f43f8c5066a7ef1da5c22e864",
   "verifier_fingerprint_sha256": "51060f30d0c70187bda0983a689938b4a7bac5d9cda4f386ac3b232b9afe9579",
   "verifier_session_notes_sha256": "a852e1687435cefe58ad70468e5e0bc77cff1a2840300b67dbc76698e42065b6",
-  "next_action": "START_TOY_EXECUTOR",
-  "updated_utc": "2026-08-06T06:37:39Z"
+  "local_ci": {
+    "python -m unittest tests.automation.test_agent_flow_v3 tests.automation.test_agent_flow_v3_smoke_b": "PASS",
+    "python scripts/automation/validate_agent_flow_v3.py --repo-root .": "PASS",
+    "git diff --check": "PASS"
+  },
+  "next_action": "WAIT_FOR_SCHEDULED_PLANNER_REVIEW",
+  "updated_utc": "2026-08-06T06:45:39Z"
 }
