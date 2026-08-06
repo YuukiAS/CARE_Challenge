@@ -873,28 +873,7 @@ def care_ase_role_launch_satisfied(stage_state_root: Path, current: dict[str, An
 
 
 def care_ase_controller_start_satisfied(stage_state_root: Path, current: dict[str, Any]) -> bool:
-    if care_ase_role_launch_satisfied(stage_state_root, current, "verifier"):
-        return True
-    receipt_path = care_ase_controller_start_receipt_path(stage_state_root)
-    if not receipt_path.is_file():
-        return False
-    try:
-        receipt = load_json(receipt_path)
-    except RuntimeErrorV3:
-        return False
-    if receipt.get("schema") != CONTROLLER_START_RECEIPT_SCHEMA:
-        return False
-    if receipt.get("task_id") != "care-ase-faithful":
-        return False
-    if receipt.get("request_nonce") != current.get("request_nonce"):
-        return False
-    if receipt.get("frozen_contract_sha256") != current.get("frozen_contract_sha256"):
-        return False
-    if receipt.get("status") not in {"STARTED", "ALREADY_RUNNING"}:
-        return False
-    if not tmux_window_exists("care_agent_flow_v3", "Controller-care-ase-faithful"):
-        return False
-    return process_has_child(tmux_pane_pid("care_agent_flow_v3", "Controller-care-ase-faithful"))
+    return care_ase_role_launch_satisfied(stage_state_root, current, "verifier")
 
 
 def resolve_watcher_paths(args: argparse.Namespace) -> argparse.Namespace:
