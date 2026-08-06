@@ -87,6 +87,10 @@ def git_status_short(repo: Path) -> str:
     return subprocess.check_output(["git", "status", "--porcelain"], cwd=repo, text=True).strip()
 
 
+def git_commit_subject(repo: Path, commit_sha: str) -> str:
+    return git(repo, "show", "-s", "--format=%s", commit_sha)
+
+
 def ensure_clean_ff_to_remote(repo: Path, branch: str) -> str:
     status = git_status_short(repo)
     if status:
@@ -287,6 +291,43 @@ def role_rollout_paths(codex_home: Path, thread_id: str) -> list[Path]:
 
 def role_rollout_exists(codex_home: str, thread_id: str) -> bool:
     return bool(role_rollout_paths(Path(codex_home), thread_id))
+
+
+def role_rollout_goal_complete(codex_home: str, thread_id: str) -> dict[str, Any] | None:
+    latest: dict[str, Any] | None = None
+    for rollout in role_rollout_paths(Path(codex_home), thread_id):
+        try:
+            lines = rollout.read_text(encoding="utf-8").splitlines()
+        except OSError:
+            continue
+        for line in lines:
+            try:
+                event = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            payload = event.get("payload")
+            if not isinstance(payload, dict):
+                continue
+            if payload.get("type") != "function_call_output":
+                continue
+            output = payload.get("output")
+            if not isinstance(output, str) or '"goal"' not in output or '"status"' not in output:
+                continue
+            try:
+                parsed = json.loads(output)
+            except json.JSONDecodeError:
+                continue
+            goal = parsed.get("goal")
+            if isinstance(goal, dict) and goal.get("status") == "complete":
+                latest = {
+                    "rollout_path": str(rollout),
+                    "thread_id": goal.get("threadId") or thread_id,
+                    "status": goal.get("status"),
+                    "tokens_used": goal.get("tokensUsed"),
+                    "time_used_seconds": goal.get("timeUsedSeconds"),
+                    "updated_at": goal.get("updatedAt"),
+                }
+    return latest
 
 
 def validate_role_receipts(receipts: dict[str, dict[str, Any]], *, require_production: bool = False) -> list[str]:
@@ -1175,6 +1216,7 @@ def evaluate_stage_event(
     remote_sha: str,
     processed: set[str],
     default_wait_hours: int,
+    care_ase_executor_complete: bool = False,
 ) -> dict[str, Any]:
     state = str(current.get("state"))
     event_key = stage_event_key(task_id, current, remote_sha)
@@ -1247,8 +1289,12 @@ def evaluate_stage_event(
         decision = "CONTROLLER_UPDATE_REQUIRED"
         action = "validate and integrate Verifier freeze commit, then mark VERIFIER_FROZEN"
     elif task_id == "care-ase-faithful" and state == "VERIFIER_FROZEN":
-        decision = "STAGE_READY"
-        action = "start persistent CARE-ASE Executor exact session after Verifier freeze"
+        if care_ase_executor_complete:
+            decision = "CONTROLLER_UPDATE_REQUIRED"
+            action = "validate and integrate Executor implementation commit, then enter WAITING_FOR_EXTERNAL_GPT"
+        else:
+            decision = "STAGE_READY"
+            action = "start persistent CARE-ASE Executor exact session after Verifier freeze"
     else:
         decision = "MONITOR_ONLY"
         action = f"observed state {state}"
@@ -2119,6 +2165,368 @@ def start_care_ase_executor_from_verifier_freeze(
     return receipt
 
 
+def run_controller_gate(name: str, command: list[str], *, repo: Path, env: dict[str, str] | None = None) -> dict[str, Any]:
+    completed = subprocess.run(
+        command,
+        cwd=repo,
+        env=env,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+    return {
+        "name": name,
+        "command": shlex.join(command),
+        "exit_code": int(completed.returncode),
+        "stdout_tail": completed.stdout[-2000:],
+        "stderr_tail": completed.stderr[-2000:],
+    }
+
+
+def load_care_ase_executor_binding(args: argparse.Namespace, current: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any], Path, str, str]:
+    role_plan = load_json((args.repo_root.resolve() / args.controller_role_plan).resolve())
+    executor = dict(role_plan.get("roles", {}).get("executor", {}))
+    worktree = Path(str(executor.get("worktree", "")))
+    codex_home = str(executor.get("codex_home", ""))
+    thread_file = Path(str(executor.get("thread_id_file", "")))
+    thread_id = thread_file.read_text(encoding="utf-8").strip() if thread_file.is_file() else ""
+    current_thread = str(current.get("executor_production_thread_id") or current.get("executor_thread_id") or "")
+    if current_thread and thread_id and current_thread != thread_id:
+        raise RuntimeErrorV3("executor_thread_id_current_mismatch")
+    return role_plan, executor, worktree, codex_home, thread_id
+
+
+def care_ase_executor_completion_available(args: argparse.Namespace, current: dict[str, Any]) -> bool:
+    try:
+        _, _, worktree, codex_home, thread_id = load_care_ase_executor_binding(args, current)
+    except RuntimeErrorV3:
+        return False
+    if not worktree.is_dir() or not thread_id:
+        return False
+    if role_rollout_goal_complete(codex_home, thread_id) is None:
+        return False
+    if git_status_short(worktree):
+        return False
+    executor_head = git(worktree, "rev-parse", "HEAD")
+    origin_ref = f"origin/{args.branch}"
+    subprocess.run(["git", "fetch", "origin", args.branch, "--prune"], cwd=worktree, check=False)
+    merge_base = git(worktree, "merge-base", origin_ref, executor_head)
+    if merge_base == executor_head:
+        return False
+    validation_path = worktree / "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence_validation_result.json"
+    if not validation_path.is_file():
+        return False
+    try:
+        validation = load_json(validation_path)
+    except RuntimeErrorV3:
+        return False
+    return validation.get("passed") is True and validation.get("failure_count") == 0
+
+
+def validate_care_ase_executor_completion(
+    *,
+    args: argparse.Namespace,
+    request: dict[str, Any],
+    current: dict[str, Any],
+) -> dict[str, Any]:
+    role_plan, executor, worktree, codex_home, thread_id = load_care_ase_executor_binding(args, current)
+    failures = validate_role_plan_push_authority(role_plan)
+    if request.get("enabled") is not True:
+        failures.append("request_enabled")
+    if current.get("state") != "VERIFIER_FROZEN":
+        failures.append("current_state")
+    if current.get("request_nonce") != request.get("request_nonce"):
+        failures.append("request_nonce")
+    if current.get("frozen_contract_sha256") != request.get("frozen_contract_sha256"):
+        failures.append("frozen_contract_sha256")
+    if not worktree.is_dir():
+        failures.append("executor_worktree_missing")
+    if not thread_id:
+        failures.append("executor_thread_id")
+    if failures:
+        raise RuntimeErrorV3("care_ase_executor_completion_invalid:" + ",".join(failures))
+
+    git(worktree, "fetch", "origin", args.branch, "--prune")
+    executor_head = git(worktree, "rev-parse", "HEAD")
+    origin_ref = f"origin/{args.branch}"
+    merge_base = git(worktree, "merge-base", origin_ref, executor_head)
+    changed_paths = git(worktree, "diff", "--name-only", f"{merge_base}..{executor_head}").splitlines()
+    scope_failures = validate_role_commit_scope(changed_paths, executor)
+    status = git_status_short(worktree)
+    if status:
+        scope_failures.append("executor_worktree_dirty")
+    if merge_base == executor_head:
+        scope_failures.append("executor_no_local_commit")
+
+    goal_complete = role_rollout_goal_complete(codex_home, thread_id)
+    if goal_complete is None:
+        scope_failures.append("executor_goal_not_complete")
+
+    implementation_dir = worktree / "results/agent_flow_v3/care-ase-faithful/implementation"
+    validation = load_json(implementation_dir / "implementation_evidence_validation_result.json")
+    fingerprint = load_json(implementation_dir / "implementation_fingerprint.json")
+    evidence = load_json(implementation_dir / "implementation_evidence.json")
+    source_manifest = load_json(implementation_dir / "implementation_source_manifest.json")
+    if validation.get("passed") is not True or validation.get("failure_count") != 0:
+        scope_failures.append("implementation_validation_failed")
+    if fingerprint.get("frozen_contract_sha256") != current.get("frozen_contract_sha256"):
+        scope_failures.append("fingerprint_frozen_contract_sha256")
+    if fingerprint.get("request_nonce") != current.get("request_nonce"):
+        scope_failures.append("fingerprint_request_nonce")
+    if fingerprint.get("verifier_fingerprint_sha256") != current.get("verifier_fingerprint_sha256"):
+        scope_failures.append("fingerprint_verifier_fingerprint_sha256")
+    if evidence.get("source_manifest_sha256") != fingerprint.get("source_manifest_sha256"):
+        scope_failures.append("evidence_source_manifest_sha256")
+    if source_manifest.get("frozen_contract_sha256") != current.get("frozen_contract_sha256"):
+        scope_failures.append("source_manifest_frozen_contract_sha256")
+    if source_manifest.get("request_nonce") != current.get("request_nonce"):
+        scope_failures.append("source_manifest_request_nonce")
+
+    if scope_failures:
+        raise RuntimeErrorV3("care_ase_executor_completion_invalid:" + ",".join(scope_failures))
+    return {
+        "executor_head": executor_head,
+        "executor_commit_subject": git_commit_subject(worktree, executor_head),
+        "merge_base": merge_base,
+        "changed_paths": changed_paths,
+        "thread_id": thread_id,
+        "codex_home": codex_home,
+        "worktree": str(worktree),
+        "goal_complete": goal_complete,
+        "implementation_fingerprint_sha256": fingerprint.get("implementation_fingerprint_sha256"),
+        "implementation_evidence_sha256": evidence.get("implementation_evidence_sha256"),
+        "source_manifest_sha256": fingerprint.get("source_manifest_sha256"),
+        "implementation_fingerprint_file_sha256": sha_file(implementation_dir / "implementation_fingerprint.json"),
+        "implementation_evidence_file_sha256": sha_file(implementation_dir / "implementation_evidence.json"),
+        "implementation_source_manifest_file_sha256": sha_file(implementation_dir / "implementation_source_manifest.json"),
+        "runtime_asset_manifest_file_sha256": sha_file(implementation_dir / "runtime_asset_manifest.json"),
+        "validation_result_file_sha256": sha_file(implementation_dir / "implementation_evidence_validation_result.json"),
+    }
+
+
+def apply_care_ase_executor_completion_controller_update(
+    *,
+    args: argparse.Namespace,
+    repo: Path,
+    request: dict[str, Any],
+    current: dict[str, Any],
+    remote_sha: str,
+) -> dict[str, Any]:
+    completion = validate_care_ase_executor_completion(args=args, request=request, current=current)
+    head_before = ensure_clean_ff_to_remote(repo, args.branch)
+    subprocess.check_call(
+        ["git", "merge", "--no-ff", "-m", "implementation: integrate care ase faithful round 0 repair", completion["executor_head"]],
+        cwd=repo,
+    )
+    integration_merge_sha = git(repo, "rev-parse", "HEAD")
+
+    env = os.environ.copy()
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
+    env["CARE_ROOT"] = str(repo)
+    care_python = "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python"
+    local_gates = [
+        run_controller_gate(
+            "agent_flow_v3_contract_validation",
+            [sys.executable, "scripts/automation/validate_agent_flow_v3.py", "--repo-root", "."],
+            repo=repo,
+            env=env,
+        ),
+        run_controller_gate(
+            "frozen_verifier_validate_implementation_evidence",
+            [
+                care_python,
+                "validators/care_ase_faithful/validate_contract_evidence.py",
+                "--verification-contract",
+                "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+                "--evidence",
+                "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json",
+                "--output",
+                "results/agent_flow_v3/care-ase-faithful/implementation/frozen_verifier_validation_result.json",
+            ],
+            repo=repo,
+            env=env,
+        ),
+        run_controller_gate(
+            "py_compile_integrated_sources",
+            [
+                care_python,
+                "-m",
+                "py_compile",
+                "scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py",
+                "src/care_myocardium/models/care_ase/__init__.py",
+                "src/care_myocardium/models/care_ase/core.py",
+                "src/care_myocardium/training/care_ase_runtime.py",
+                "src/care_myocardium/training/care_ase_trainer.py",
+            ],
+            repo=repo,
+            env=env,
+        ),
+        run_controller_gate(
+            "public_verifier_pytest",
+            [care_python, "-m", "pytest", "tests/care_ase_faithful/test_verifier_package.py", "-q"],
+            repo=repo,
+            env=env,
+        ),
+    ]
+    gate_failures = [gate["name"] for gate in local_gates if gate["exit_code"] != 0]
+    if gate_failures:
+        raise RuntimeErrorV3("care_ase_executor_local_gates_failed:" + ",".join(gate_failures))
+
+    integration_receipt_path = repo / "results/agent_flow_v3/care-ase-faithful/controller_integration_receipt.json"
+    ci_receipt_path = repo / "results/agent_flow_v3/care-ase-faithful/controller_ci_receipt.json"
+    planner_packet_path = repo / "results/agent_flow_v3/care-ase-faithful/planner_review_packet.json"
+    integration_receipt = {
+        "schema": "CARE_ASE_FAITHFUL_CONTROLLER_INTEGRATION_RECEIPT_V2",
+        "task_id": "care-ase-faithful",
+        "request_nonce": current.get("request_nonce"),
+        "created_utc": now(),
+        "state_transition": {
+            "from": "VERIFIER_FROZEN",
+            "through": ["INTEGRATION_RUNNING", "CI_RUNNING", "READY_FOR_PLANNER_REVIEW"],
+            "to": "WAITING_FOR_EXTERNAL_GPT",
+        },
+        "frozen_contract_sha256": current.get("frozen_contract_sha256"),
+        "origin_develop_before_integration_sha": head_before,
+        "last_observed_remote_sha_before_integration": remote_sha,
+        "executor_thread_id": completion.get("thread_id"),
+        "executor_local_commit_sha": completion.get("executor_head"),
+        "executor_local_commit_subject": completion.get("executor_commit_subject"),
+        "executor_merge_base": completion.get("merge_base"),
+        "executor_goal_complete": completion.get("goal_complete"),
+        "integration_merge_sha": integration_merge_sha,
+        "verifier_fingerprint_sha256": current.get("verifier_fingerprint_sha256"),
+        "verifier_freeze_receipt_commit_sha": current.get("verifier_freeze_receipt_commit_sha"),
+        "implementation_fingerprint_sha256": completion.get("implementation_fingerprint_sha256"),
+        "implementation_evidence_payload_sha256": completion.get("implementation_evidence_sha256"),
+        "source_manifest_sha256": completion.get("source_manifest_sha256"),
+        "implementation_fingerprint_file_sha256": completion.get("implementation_fingerprint_file_sha256"),
+        "implementation_evidence_file_sha256": completion.get("implementation_evidence_file_sha256"),
+        "implementation_source_manifest_file_sha256": completion.get("implementation_source_manifest_file_sha256"),
+        "runtime_asset_manifest_file_sha256": completion.get("runtime_asset_manifest_file_sha256"),
+        "implementation_validation_result_file_sha256": completion.get("validation_result_file_sha256"),
+        "local_controller_gates": local_gates,
+        "role_separation_review": {
+            "controller_direct_implementation_edits": False,
+            "controller_direct_verifier_test_edits": False,
+            "executor_changed_tests_or_validators": False,
+            "executor_commit_paths_reviewed": True,
+            "changed_paths": completion.get("changed_paths"),
+        },
+        "supersedes_prior_executor_status": current.get("executor_status"),
+        "supersedes_prior_executor_commits": [
+            current.get("executor_original_commit_sha"),
+            current.get("executor_retry_commit_sha"),
+            current.get("executor_integrated_retry_commit_sha"),
+        ],
+        "forbidden_actions": {
+            "formal_training_started": False,
+            "outer_accessed": False,
+            "docker_built_or_uploaded": False,
+            "validation_or_challenge_uploaded": False,
+            "organizer_email_sent": False,
+            "develop_to_main_merge": False,
+            "planner_or_critic_decision_generated": False,
+        },
+        "updated_utc": now(),
+    }
+    write_json(integration_receipt_path, integration_receipt)
+    wait_started = now()
+    wait_deadline_value = wait_deadline(wait_started, max(4, int(args.default_wait_hours)))
+    ci_receipt = {
+        "schema": "CARE_ASE_FAITHFUL_CONTROLLER_CI_RECEIPT_V2",
+        "task_id": "care-ase-faithful",
+        "request_nonce": current.get("request_nonce"),
+        "created_utc": now(),
+        "checked_commit_sha": integration_merge_sha,
+        "local_gates_status": "PASS",
+        "local_gates": local_gates,
+        "github_actions_status": "PENDING_AFTER_PUSH",
+        "workflow_path": ".github/workflows/agent-flow-v3-ci.yml",
+    }
+    write_json(ci_receipt_path, ci_receipt)
+    planner_packet = {
+        "schema": "CARE_ASE_FAITHFUL_PLANNER_REVIEW_PACKET_V2",
+        "task_id": "care-ase-faithful",
+        "request_nonce": current.get("request_nonce"),
+        "created_utc": now(),
+        "decision_requested": "PLANNER_REVIEW",
+        "current_state_after_commit": "WAITING_FOR_EXTERNAL_GPT",
+        "ready_state_reached_before_wait": "READY_FOR_PLANNER_REVIEW",
+        "frozen_contract_sha256": current.get("frozen_contract_sha256"),
+        "verifier_fingerprint_sha256": current.get("verifier_fingerprint_sha256"),
+        "executor_thread_id": completion.get("thread_id"),
+        "executor_local_commit_sha": completion.get("executor_head"),
+        "controller_integration_merge_sha": integration_merge_sha,
+        "implementation_fingerprint_sha256": completion.get("implementation_fingerprint_sha256"),
+        "controller_integration_receipt": str(integration_receipt_path.relative_to(repo)),
+        "controller_ci_receipt": str(ci_receipt_path.relative_to(repo)),
+        "local_gates": "PASS",
+        "ci_for_integration_state": "PENDING_AFTER_PUSH",
+        "planner_allowed_decisions": sorted({"PLANNER_REVISE_EXECUTOR", "PLANNER_REVISE_VERIFIER", "PLANNER_REVISE_BOTH", "PLANNER_PASS"}),
+    }
+    write_json(planner_packet_path, planner_packet)
+    current_path = repo / "automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json"
+    updated_current = load_json(current_path)
+    updated_current.update(
+        {
+            "state": "WAITING_FOR_EXTERNAL_GPT",
+            "ready_state_reached_before_wait": "READY_FOR_PLANNER_REVIEW",
+            "review_round": int(current.get("review_round", 0)) + 1,
+            "planner_decision": None,
+            "planner_review_artifact": None,
+            "planner_review_artifact_commit_sha": None,
+            "repair_prompt_path": None,
+            "repair_prompts": {},
+            "integration_commit_sha": integration_merge_sha,
+            "executor_thread_id": completion.get("thread_id"),
+            "executor_production_thread_id": completion.get("thread_id"),
+            "executor_local_commit_sha": completion.get("executor_head"),
+            "executor_integration_merge_sha": integration_merge_sha,
+            "implementation_fingerprint_sha256": completion.get("implementation_fingerprint_sha256"),
+            "controller_integration_receipt_path": str(integration_receipt_path.relative_to(repo)),
+            "controller_integration_receipt_sha256": sha_file(integration_receipt_path),
+            "controller_ci_receipt_path": str(ci_receipt_path.relative_to(repo)),
+            "controller_ci_receipt_sha256": sha_file(ci_receipt_path),
+            "planner_review_packet_path": str(planner_packet_path.relative_to(repo)),
+            "planner_review_packet_sha256": sha_file(planner_packet_path),
+            "controller_local_gates_status": "PASS",
+            "ci_status": "PENDING_AFTER_PUSH",
+            "external_wait_started_utc": wait_started,
+            "external_wait_deadline_utc": wait_deadline_value,
+            "expected_state_or_artifact": "Scheduled Planner returns PLANNER_PASS or bound PLANNER_REVISE_* artifact for the current integration SHA and review_round 1.",
+            "last_observed_remote_sha": remote_sha,
+            "last_poll_utc": now(),
+            "next_action": "KEEP_FETCHING_ORIGIN_DEVELOP_UNTIL_SCHEDULED_PLANNER_REVIEW_ARRIVES",
+            "updated_utc": now(),
+        }
+    )
+    write_json(current_path, updated_current)
+    commit_result = commit_and_push(
+        repo,
+        args.branch,
+        [
+            "automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json",
+            "results/agent_flow_v3/care-ase-faithful/controller_integration_receipt.json",
+            "results/agent_flow_v3/care-ase-faithful/controller_ci_receipt.json",
+            "results/agent_flow_v3/care-ase-faithful/planner_review_packet.json",
+            "results/agent_flow_v3/care-ase-faithful/implementation/frozen_verifier_validation_result.json",
+        ],
+        "automation: integrate care ase executor repair",
+    )
+    return {
+        "status": "APPLIED",
+        "completion": completion,
+        "integration_receipt_path": str(integration_receipt_path),
+        "ci_receipt_path": str(ci_receipt_path),
+        "planner_review_packet_path": str(planner_packet_path),
+        "commit": commit_result,
+        "external_wait_started_utc": wait_started,
+        "external_wait_deadline_utc": wait_deadline_value,
+        "updated_utc": now(),
+    }
+
+
 def stage_event_should_mark_processed(event: dict[str, Any]) -> bool:
     if event.get("decision") == "STOP_AT_HUMAN_GATE":
         return True
@@ -2151,6 +2559,9 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
             dict(local_state.get("waits", {})).get(task_id),
         )
         event_key = stage_event_key(task_id, current, remote_sha)
+        care_ase_executor_complete = False
+        if task_id == "care-ase-faithful" and current.get("state") == "VERIFIER_FROZEN":
+            care_ase_executor_complete = care_ase_executor_completion_available(args, current)
         if (
             task_id == "care-ase-faithful"
             and current.get("state") == "PLAN_FROZEN"
@@ -2163,6 +2574,13 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
             and current.get("state") == "VERIFIER_FROZEN"
             and stage_event_was_processed(event_key, processed)
             and not care_ase_role_launch_satisfied(args.state_root, current, "executor")
+        ):
+            processed = {key for key in processed if not key.startswith(event_key)}
+        if (
+            task_id == "care-ase-faithful"
+            and current.get("state") == "VERIFIER_FROZEN"
+            and stage_event_was_processed(event_key, processed)
+            and care_ase_executor_complete
         ):
             processed = {key for key in processed if not key.startswith(event_key)}
         visual_final = None
@@ -2183,6 +2601,7 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
             remote_sha=remote_sha,
             processed=processed,
             default_wait_hours=max(4, int(args.default_wait_hours)),
+            care_ase_executor_complete=care_ase_executor_complete,
         )
         if stage_event_should_mark_processed(event):
             processed.add(event["event_key"])
@@ -2270,6 +2689,30 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
                     "updated_utc": now(),
                 }
                 event["failures"] = list(event.get("failures", [])) + ["verifier_freeze_integration_failed"]
+        elif (
+            event["decision"] == "CONTROLLER_UPDATE_REQUIRED"
+            and task_id == "care-ase-faithful"
+            and event["state"] == "VERIFIER_FROZEN"
+        ):
+            try:
+                event["action_result"] = apply_care_ase_executor_completion_controller_update(
+                    args=args,
+                    repo=repo,
+                    request=request,
+                    current=current,
+                    remote_sha=remote_sha,
+                )
+                event["decision"] = "CONTROLLER_UPDATE_APPLIED"
+                event["action"] = "Executor commit validated, integrated, pushed, and CURRENT moved to WAITING_FOR_EXTERNAL_GPT"
+                processed.add(event["event_key"])
+                event["remote_sha_after_controller_update"] = remote_head(repo, args.branch)
+            except Exception as exc:  # noqa: BLE001 - keep polling; do not fake Executor completion.
+                event["action_result"] = {
+                    "status": "FAILED",
+                    "error": f"{type(exc).__name__}: {exc}",
+                    "updated_utc": now(),
+                }
+                event["failures"] = list(event.get("failures", [])) + ["executor_integration_failed"]
         elif (
             event["decision"] == "STAGE_READY"
             and task_id == "care-ase-faithful"
