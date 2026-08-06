@@ -510,6 +510,19 @@ def role_active_process(state_root: Path, task_id: str, role: str) -> dict[str, 
     return None
 
 
+def completed_role_resume_receipt(state_root: Path, task_id: str, role: str) -> dict[str, Any] | None:
+    path = active_process_path(state_root, task_id, role)
+    if not path.is_file():
+        return None
+    try:
+        data = load_json(path)
+    except RuntimeErrorV3:
+        return None
+    if data.get("role") == role and data.get("exit_code") == 0:
+        return data
+    return None
+
+
 def prompt_candidate_rel_paths(task_id: str, role: str, current: dict[str, Any]) -> list[Path]:
     candidates: list[Path] = []
     role_prompts = current.get("repair_prompts")
@@ -2578,6 +2591,81 @@ def stage_event_should_mark_processed(event: dict[str, Any]) -> bool:
     )
 
 
+def care_ase_verifier_repair_ready_for_controller_update(
+    *,
+    args: argparse.Namespace,
+    repo: Path,
+    request: dict[str, Any],
+    current: dict[str, Any],
+) -> tuple[bool, dict[str, Any]]:
+    failures: list[str] = []
+    state = current.get("state")
+    if state not in {"PLANNER_REVISE_VERIFIER", "PLANNER_REVISE_BOTH"}:
+        failures.append("state_not_verifier_revision")
+    repair_prompts = current.get("repair_prompts")
+    verifier_prompt_rel = None
+    if isinstance(repair_prompts, dict) and isinstance(repair_prompts.get("verifier"), str):
+        verifier_prompt_rel = safe_rel_path(str(repair_prompts["verifier"]))
+    else:
+        failures.append("verifier_repair_prompt_missing")
+
+    receipt = completed_role_resume_receipt(args.state_root.resolve(), "care-ase-faithful", "verifier")
+    if receipt is None:
+        failures.append("verifier_resume_not_completed")
+    elif verifier_prompt_rel is not None:
+        expected_prompt_path = (repo / verifier_prompt_rel).resolve()
+        if Path(str(receipt.get("prompt_path", ""))).resolve() != expected_prompt_path:
+            failures.append("verifier_resume_prompt_path")
+        elif expected_prompt_path.is_file() and receipt.get("prompt_sha256") != sha_file(expected_prompt_path):
+            failures.append("verifier_resume_prompt_sha256")
+
+    try:
+        role_plan = load_json((repo / args.controller_role_plan).resolve())
+        verifier = dict(role_plan.get("roles", {}).get("verifier", {}))
+        verifier_worktree = Path(str(verifier.get("worktree", "")))
+        verifier_head = git(verifier_worktree, "rev-parse", "HEAD")
+    except Exception as exc:  # noqa: BLE001 - surfaced in orchestrator receipt.
+        verifier_worktree = Path()
+        verifier_head = ""
+        failures.append(f"verifier_head_unreadable:{type(exc).__name__}")
+
+    if verifier_head:
+        if verifier_head == current.get("verifier_branch_head_sha"):
+            failures.append("verifier_head_not_new")
+        freeze_rel = "results/agent_flow_v3/care-ase-faithful/verification/verifier_freeze_receipt.json"
+        freeze_raw = git_show_text_or_none(verifier_worktree, verifier_head, freeze_rel)
+        if freeze_raw is None:
+            freeze = {}
+            failures.append("verifier_freeze_receipt_missing")
+        else:
+            try:
+                freeze = json.loads(freeze_raw)
+                if not isinstance(freeze, dict):
+                    raise ValueError("not object")
+            except Exception as exc:  # noqa: BLE001
+                freeze = {}
+                failures.append(f"verifier_freeze_receipt_unreadable:{type(exc).__name__}")
+        if freeze:
+            if freeze.get("request_nonce") != request.get("request_nonce") or freeze.get("request_nonce") != current.get("request_nonce"):
+                failures.append("verifier_freeze_nonce")
+            if freeze.get("frozen_contract_sha256") != request.get("frozen_contract_sha256"):
+                failures.append("verifier_freeze_contract_sha")
+            if freeze.get("verifier_fingerprint_sha256") == current.get("verifier_fingerprint_sha256"):
+                failures.append("verifier_fingerprint_not_new")
+            if freeze.get("executor_may_start_after_controller_freezes_this_commit") is not True:
+                failures.append("verifier_executor_gate")
+
+    return not failures, {
+        "status": "READY" if not failures else "NOT_READY",
+        "failures": failures,
+        "verifier_resume_receipt": receipt,
+        "verifier_worktree": str(verifier_worktree) if verifier_worktree else None,
+        "verifier_head": verifier_head or None,
+        "expected_verifier_prompt": str((repo / verifier_prompt_rel).resolve()) if verifier_prompt_rel is not None else None,
+        "updated_utc": now(),
+    }
+
+
 def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, Any]:
     repo = args.repo_root.resolve()
     git(repo, "fetch", "origin", args.branch, "--prune")
@@ -2643,6 +2731,21 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
             default_wait_hours=max(4, int(args.default_wait_hours)),
             care_ase_executor_complete=care_ase_executor_complete,
         )
+        if (
+            task_id == "care-ase-faithful"
+            and event["decision"] == "HANDOFF_TO_WATCHER"
+            and event["state"] in {"PLANNER_REVISE_VERIFIER", "PLANNER_REVISE_BOTH"}
+        ):
+            ready, readiness = care_ase_verifier_repair_ready_for_controller_update(
+                args=args,
+                repo=repo,
+                request=request,
+                current=current,
+            )
+            event["verifier_repair_readiness"] = readiness
+            if ready:
+                event["decision"] = "CONTROLLER_UPDATE_REQUIRED"
+                event["action"] = "watcher completed Verifier repair; validate and integrate Verifier freeze before Executor starts"
         if stage_event_should_mark_processed(event):
             processed.add(event["event_key"])
         elif (
@@ -2709,7 +2812,7 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
         elif (
             event["decision"] == "CONTROLLER_UPDATE_REQUIRED"
             and task_id == "care-ase-faithful"
-            and event["state"] == "VERIFIER_RUNNING"
+            and event["state"] in {"VERIFIER_RUNNING", "PLANNER_REVISE_VERIFIER", "PLANNER_REVISE_BOTH"}
         ):
             try:
                 event["action_result"] = apply_care_ase_verifier_freeze_controller_update(

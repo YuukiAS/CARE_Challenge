@@ -1071,6 +1071,21 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             ):
                 self.assertIsNone(RUNTIME.role_active_process(root / "state", "smoke-task", "executor"))
 
+    def test_completed_resume_receipt_is_detected_but_not_active(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            active_path = RUNTIME.active_process_path(root / "state", "smoke-task", "verifier")
+            active_path.parent.mkdir(parents=True)
+            active_path.write_text(
+                json.dumps({"role": "verifier", "pid": os.getpid(), "exit_code": 0}),
+                encoding="utf-8",
+            )
+            self.assertIsNone(RUNTIME.role_active_process(root / "state", "smoke-task", "verifier"))
+            receipt = RUNTIME.completed_role_resume_receipt(root / "state", "smoke-task", "verifier")
+            self.assertIsNotNone(receipt)
+            assert receipt is not None
+            self.assertEqual(receipt["role"], "verifier")
+
     def test_watcher_restart_keeps_processed_state(self) -> None:
         args = argparse.Namespace(
             task_id="smoke-task",
