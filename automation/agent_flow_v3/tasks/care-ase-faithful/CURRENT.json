@@ -1,13 +1,19 @@
 {
   "schema": "CARE_AGENT_FLOW_V3",
   "task_id": "care-ase-faithful",
-  "state": "PLAN_REQUESTED",
+  "state": "PLAN_READY_FOR_CRITIC",
   "review_round": 0,
   "request_nonce": "care-ase-20260806T090955Z",
   "frozen_contract_sha256": null,
-  "integration_commit_sha": null,
+  "integration_commit_sha": "abf549e57452e0047a767332e786ea3a06c214cb",
   "implementation_fingerprint_sha256": null,
   "verifier_fingerprint_sha256": null,
-  "next_action": "WAIT_FOR_TRUE_SCHEDULED_PLANNER_AND_CRITIC",
-  "updated_utc": "2026-08-06T09:09:55Z"
+  "planner_visual_receipt_path": "results/agent_flow_v3/care-ase-faithful/planner_visual_receipt.json",
+  "planner_visual_receipt_commit_sha": "0e4030ed92ea6d72bc3b5e37e9fc97253b690d85",
+  "planner_visual_receipt_sha256": "69577e8e5dc09e12f4cc1eca02131e47b2164ac111abb0539244a140af9848e1",
+  "planner_draft_path": "automation/agent_flow_v3/tasks/care-ase-faithful/PLANNER_DRAFT.md",
+  "planner_draft_commit_sha": "abf549e57452e0047a767332e786ea3a06c214cb",
+  "planner_draft_sha256": "d945b065c656fa26b1b661e135195ac3e5934ff21649ee748cff716260409649",
+  "next_action": "CRITIC_DIRECT_REPAIR_FULL_AUDIT_AND_FREEZE",
+  "updated_utc": "2026-08-06T10:12:26Z"
 }
