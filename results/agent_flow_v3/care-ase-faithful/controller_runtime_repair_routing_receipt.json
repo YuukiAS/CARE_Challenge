@@ -1,0 +1,53 @@
+{
+  "created_utc": "2026-08-06T20:13:57Z",
+  "critic_decision_generated": false,
+  "executor_integration_merge_sha": "edb4f2e290c72e92e1bcbd74295c525fef924f11",
+  "executor_local_commit_sha": "812ae623015d7914c36a70bd494488d7d9bca3a3",
+  "executor_runtime_probe_summary": {
+    "checkpoint_resume_probe": "PASS",
+    "deployment_load_probe": "PASS",
+    "docker_or_upload": false,
+    "evaluator_smoke": "PASS",
+    "formal_training_started": false,
+    "forward_backward_probe": "PASS",
+    "gpu_name": "NVIDIA A100-SXM4-80GB",
+    "hard_negative_binding": "PASS",
+    "inference_probe": "PASS",
+    "outer_accessed": false,
+    "slurm_job_id": "61987724",
+    "slurm_partition": "htzhulab",
+    "step0_parity_probe": "PASS"
+  },
+  "executor_thread_id": "019fd7c1-8358-7632-9022-367e62ecfbd1",
+  "fail_closed_receipt_sha256": "6f9710f2c7fe0b6d7b1d5c209acb3792c3a50beafdaa34dc24b88fd1afecff77",
+  "forbidden_actions_confirmed": {
+    "develop_to_main_merge": false,
+    "docker_built_or_uploaded": false,
+    "formal_training_started": false,
+    "organizer_email_sent": false,
+    "outer_accessed": false,
+    "planner_or_critic_decision_generated": false,
+    "validation_or_challenge_uploaded": false
+  },
+  "implementation_evidence_sha256": "0ce6fbaccd7a0a2d4a86ad34fe923dbb41ca7cd37bfedf408d5258710d2bc61e",
+  "implementation_fingerprint_sha256": "3eabfb0be9eda776da6dd6fe3068004894ea7a5b4c30966941fc05bdc412e0dc",
+  "planner_decision_basis": "PLANNER_REVISE_BOTH",
+  "planner_decision_generated": false,
+  "request_nonce": "care-ase-20260806T090955Z",
+  "review_round": 1,
+  "schema": "CARE_ASE_FAITHFUL_CONTROLLER_RUNTIME_REPAIR_ROUTING_RECEIPT_V1",
+  "state_transition": {
+    "from": "WAITING_FOR_RUNTIME_REPAIR",
+    "reason": "Executor runtime probes passed, but frozen validator rejects verifier-owned executable receipt bound to prior implementation fingerprint.",
+    "to": "VERIFIER_RUNNING"
+  },
+  "task_id": "care-ase-faithful",
+  "validator_failure": {
+    "failure_token": "verifier_owned.executable.not_fixture",
+    "repair_owner": "verifier",
+    "verifier_owned_executable_fixture_mode": true,
+    "verifier_owned_executable_implementation_fingerprint_sha256": "b0db561e7a40c0e52c8363b8b43e96bc2441184a7ce28bc17681d41bededa1a1"
+  },
+  "verifier_repair_prompt_path": "automation/agent_flow_v3/tasks/care-ase-faithful/repairs/round_001_verifier_operational_runtime_receipt.md",
+  "verifier_repair_prompt_sha256": "f5b75dd1f471545d35511785980eb29e79b1a418c74a6f74e22b65c7e10b089a"
+}
