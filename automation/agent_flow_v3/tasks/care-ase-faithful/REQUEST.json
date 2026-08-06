@@ -1,6 +1,6 @@
 {
   "schema": "CARE_AGENT_FLOW_V3",
-  "enabled": false,
+  "enabled": true,
   "task_id": "care-ase-faithful",
   "repository": "YuukiAS/CARE_Challenge",
   "integration_branch": "develop",
@@ -52,5 +52,6 @@
   "training_authorized": false,
   "outer_access_authorized": false,
   "deployment_authorized": false,
-  "created_utc": "2026-08-05T10:05:00Z"
+  "created_utc": "2026-08-05T10:05:00Z",
+  "request_nonce": "care-ase-20260806T090955Z"
 }

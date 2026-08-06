@@ -1,7 +1,7 @@
 {
   "schema": "CARE_VISUAL_SOURCES_V1",
   "task_id": "care-ase-faithful",
-  "ready_for_scheduled_visual_review": false,
+  "ready_for_scheduled_visual_review": true,
   "accepted_access_modes": [
     "chatgpt_project_visual_file",
     "public_static_website",
@@ -110,5 +110,13 @@
     }
   ],
   "activation_rule": "Set ready_for_scheduled_visual_review=true only after every required source has a directly accessible visual path and the scheduled Planner/Critic smoke confirms actual image understanding rather than filename reading.",
-  "updated_by": "20260805_public_repo_hygiene_and_architecture_assets"
+  "updated_by": "20260805_public_repo_hygiene_and_architecture_assets",
+  "activation_binding": {
+    "visual_smoke_final_status": "PASS",
+    "visual_smoke_request_nonce": "visual-smoke-20260806T031345Z",
+    "gpt_loop_smoke_final_status": "PASS",
+    "gpt_loop_smoke_request_nonce": "smoke-b-20260806T062800Z",
+    "activated_request_nonce": "care-ase-20260806T090955Z",
+    "updated_utc": "2026-08-06T09:09:55Z"
+  }
 }

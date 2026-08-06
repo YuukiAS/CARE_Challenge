@@ -1,0 +1,15 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_CARE_ASE_ACTIVATION_STATE",
+  "task_id": "care-ase-faithful",
+  "status": "ARMED",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "frozen_contract_sha256": null,
+  "visual_smoke_final_status": "PASS",
+  "gpt_loop_smoke_final_status": "PASS",
+  "failures": [],
+  "forbidden_actions_confirmed": [
+    "no CARE-ASE implementation started by activation",
+    "no training, outer, Docker, upload, organizer email or develop-to-main merge"
+  ],
+  "updated_utc": "2026-08-06T09:09:55Z"
+}
