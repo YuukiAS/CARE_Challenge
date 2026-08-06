@@ -1,0 +1,112 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_CRITIC_FREEZE_RECEIPT",
+  "task_id": "care-ase-faithful",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "planner_draft_path": "automation/agent_flow_v3/tasks/care-ase-faithful/PLANNER_DRAFT.md",
+  "planner_draft_sha": "abf549e57452e0047a767332e786ea3a06c214cb",
+  "planner_draft_sha256": "d945b065c656fa26b1b661e135195ac3e5934ff21649ee748cff716260409649",
+  "critic_input_sha": "abf549e57452e0047a767332e786ea3a06c214cb",
+  "frozen_contract_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "frozen_contract_commit": "6806b38c215f8b644b86da5275b20832bb9a7d50",
+  "critic_visual_receipt_path": "results/agent_flow_v3/care-ase-faithful/critic_visual_receipt.json",
+  "critic_visual_receipt_commit_sha": "1d31f51376e565914ed6287e2e588c594fc481fb",
+  "critic_visual_receipt_sha256": "90ab276b0bf6f442289dbc1de19b06bc8bf50c2c25aa696285304b43ed59fcfb",
+  "visual_sources_reviewed": [
+    {
+      "name": "SRR-v2",
+      "repository_path": "docs/architecture/figures/SRR-v2.png",
+      "sha256": "2c77d92eb652e88fdf69d40ee13eeb7a66d37755041bfff2a0c1756f1fa1ac8a",
+      "actual_visual_access": true
+    },
+    {
+      "name": "SRR-v2.5",
+      "repository_path": "docs/architecture/figures/SRR-v2.5.png",
+      "sha256": "674453e11a8d1466038ac4a22ae68332aabf9482f23d3f90e559649def6606f9",
+      "actual_visual_access": true
+    },
+    {
+      "name": "SRR-v3",
+      "repository_path": "docs/architecture/figures/SRR-v3.png",
+      "sha256": "50478ee7c07cedb6a921902aa5daa8f6ecf3b34aa2fc5e97905d60c585ea72b5",
+      "actual_visual_access": true
+    },
+    {
+      "name": "CARE-MMRD",
+      "repository_path": "docs/architecture/figures/CARE-MMRD.png",
+      "sha256": "c90bf7582ff139fe1b785e4dac51c55b4ec0c8f676654dd03c9b17e551489859",
+      "actual_visual_access": true
+    },
+    {
+      "name": "CARE-SRR-Cascade",
+      "repository_path": "docs/architecture/figures/CARE-SRR-Cascade.png",
+      "sha256": "3596356c52a01de5cf29bdae6591ce733bc209403f3f6e8429f8a1374e66ef50",
+      "actual_visual_access": true
+    },
+    {
+      "name": "CARE-DG",
+      "repository_path": "docs/architecture/figures/CARE-DG.png",
+      "sha256": "6be1b2cae31d3c4f77576f8fe8eb1df39c6623adf86729910cbd31bcfe12ad00",
+      "actual_visual_access": true
+    },
+    {
+      "name": "CARE-ARC",
+      "repository_path": "docs/architecture/figures/CARE-ARC.png",
+      "sha256": "387f77d42dc9c4f802fda1bdee0eb67fec46dabe921dbf971f7cde5bbcf845b8",
+      "actual_visual_access": true
+    },
+    {
+      "name": "CARE-PRISM",
+      "repository_path": "docs/architecture/figures/CARE-PRISM.png",
+      "sha256": "31bb8138bc6291d6e116fc605d7a2060a15ce7c3eca25d5da59e419fc2698135",
+      "actual_visual_access": true
+    },
+    {
+      "name": "CARE-MyoWall-IF",
+      "repository_path": "docs/architecture/figures/CARE-MyoWall-IF.png",
+      "sha256": "1dc3ecf58f1fffdeb7c36de948f99743a61e39861c08b57378da8c84d536e914",
+      "actual_visual_access": true
+    },
+    {
+      "name": "MoSAIC",
+      "repository_path": "docs/architecture/figures/MoSAIC.png",
+      "sha256": "d2ea85c5ba40521dc65a56d85124ecfc9a2e40ac5eff206c10cff8fbf04e09fb",
+      "actual_visual_access": true
+    },
+    {
+      "name": "CARE-ASE",
+      "repository_path": "docs/architecture/figures/CARE-ASE.png",
+      "sha256": "af8f47713961c3b6b03dd24283b8f18d51fb5043ab1699997db2713e525710b2",
+      "actual_visual_access": true
+    }
+  ],
+  "planner_material_errors": [],
+  "deterministic_repairs_applied": [
+    "Made the frozen artifact self-contained and changed it from a loose hierarchy of drafts into one exact contract.",
+    "Defined row-wise conditional final DiceCE: six classes for T2-present and five classes excluding class 4 for no-T2 rows, including label reindexing and eligible-row normalization.",
+    "Bound scar and pure-edema half/full classifier initialization to the corresponding stock class rows while prohibiting normal-forward stock pathology shortcuts.",
+    "Fixed component weighting, context reduction, FP32 sensitive reductions, relation eligibility and degenerate edema-boundary semantics.",
+    "Fixed extent statistic, validity behavior, coefficients, global step 500-to-2000 ramp and one-time post-aggregation application.",
+    "Fixed half-open stage ranges, all parameter-group learning rates, warmups A=200/B=500/C=0, polynomial power 0.9 and post-step checkpoint semantics.",
+    "Fixed the deterministic stage-group-pathology-case-coordinate sampling order and four independent microbatches.",
+    "Strengthened checkpoint schema-v4, exact-resume, manifest, environment and deployment self-containment requirements.",
+    "Strengthened protected known-bad gates against module-presence-without-final-authority and dual implementation truth."
+  ],
+  "source_conflicts_resolved": [
+    "edema weak LGE gate is 0.05 with downstream zero-initialized named projection",
+    "modality adapters are live initialized",
+    "no-T2 is graph exclusion and five-class competition, never class-4 zero masking",
+    "canonical full-volume extent is applied once after aggregation",
+    "integration branch is develop and formal training remains unauthorized"
+  ],
+  "open_scientific_choices": [],
+  "critic_decision": "PLAN_FROZEN",
+  "next_action": "ORCHESTRATOR_START_CONTROLLER_FROM_FROZEN_CONTRACT",
+  "forbidden_actions_confirmed": [
+    "no implementation or verification source edits",
+    "no Controller, Verifier or Executor launch by Critic",
+    "no training or outer access",
+    "no branch merge, deployment or upload"
+  ],
+  "updated_utc": "2026-08-06T10:44:09Z"
+}
