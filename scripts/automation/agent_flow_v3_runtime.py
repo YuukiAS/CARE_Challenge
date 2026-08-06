@@ -1347,6 +1347,9 @@ def evaluate_stage_event(
     elif state in REVISION_STATES:
         decision = "HANDOFF_TO_WATCHER"
         action = "existing watcher resumes exact role sessions"
+    elif state == "CI_RUNNING":
+        decision = "WAITING_FOR_CI"
+        action = str(current.get("expected_state_or_artifact") or "hosted CI result")
     elif state == "READY_FOR_PLANNER_REVIEW":
         decision = "WAITING_FOR_EXTERNAL_GPT"
         action = "scheduled Planner review"
