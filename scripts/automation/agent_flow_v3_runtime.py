@@ -2314,12 +2314,31 @@ def apply_care_ase_executor_completion_controller_update(
     remote_sha: str,
 ) -> dict[str, Any]:
     completion = validate_care_ase_executor_completion(args=args, request=request, current=current)
-    head_before = ensure_clean_ff_to_remote(repo, args.branch)
-    subprocess.check_call(
-        ["git", "merge", "--no-ff", "-m", "implementation: integrate care ase faithful round 0 repair", completion["executor_head"]],
+    origin_ref = f"origin/{args.branch}"
+    repo_head = git(repo, "rev-parse", "HEAD")
+    executor_already_merged = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", str(completion["executor_head"]), repo_head],
         cwd=repo,
-    )
-    integration_merge_sha = git(repo, "rev-parse", "HEAD")
+        check=False,
+    ).returncode == 0
+    origin_already_ancestor = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", origin_ref, repo_head],
+        cwd=repo,
+        check=False,
+    ).returncode == 0
+    if executor_already_merged and origin_already_ancestor and repo_head != git(repo, "rev-parse", origin_ref):
+        if git_status_short(repo):
+            raise RuntimeErrorV3("worktree_not_clean_after_existing_executor_merge")
+        head_before = remote_sha
+        merge_candidates = git(repo, "rev-list", "--merges", "--reverse", f"{origin_ref}..{repo_head}").splitlines()
+        integration_merge_sha = merge_candidates[-1] if merge_candidates else repo_head
+    else:
+        head_before = ensure_clean_ff_to_remote(repo, args.branch)
+        subprocess.check_call(
+            ["git", "merge", "--no-ff", "-m", "implementation: integrate care ase faithful round 0 repair", completion["executor_head"]],
+            cwd=repo,
+        )
+        integration_merge_sha = git(repo, "rev-parse", "HEAD")
 
     env = os.environ.copy()
     env["PYTHONDONTWRITEBYTECODE"] = "1"
@@ -2341,7 +2360,7 @@ def apply_care_ase_executor_completion_controller_update(
                 "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
                 "--evidence",
                 "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json",
-                "--output",
+                "--report-json",
                 "results/agent_flow_v3/care-ase-faithful/implementation/frozen_verifier_validation_result.json",
             ],
             repo=repo,
