@@ -849,20 +849,32 @@ def care_ase_verifier_launch_receipt_path(stage_state_root: Path) -> Path:
     return stage_state_root.resolve().parent / "care-ase-faithful" / "verifier_launch_receipt.json"
 
 
+def care_ase_role_launch_receipt_path(stage_state_root: Path, role: str) -> Path:
+    return stage_state_root.resolve().parent / "care-ase-faithful" / f"{role}_launch_receipt.json"
+
+
+def care_ase_role_launch_satisfied(stage_state_root: Path, current: dict[str, Any], role: str) -> bool:
+    receipt_path = care_ase_role_launch_receipt_path(stage_state_root, role)
+    if not receipt_path.is_file():
+        return False
+    try:
+        receipt = load_json(receipt_path)
+    except RuntimeErrorV3:
+        return False
+    if receipt.get("task_id") != "care-ase-faithful":
+        return False
+    if receipt.get("role") != role:
+        return False
+    if receipt.get("request_nonce") != current.get("request_nonce"):
+        return False
+    if receipt.get("frozen_contract_sha256") != current.get("frozen_contract_sha256"):
+        return False
+    return receipt.get("status") in {"STARTED", "ALREADY_RUNNING", "VERIFIER_FREEZE_COMPLETE"}
+
+
 def care_ase_controller_start_satisfied(stage_state_root: Path, current: dict[str, Any]) -> bool:
-    verifier_launch_path = care_ase_verifier_launch_receipt_path(stage_state_root)
-    if verifier_launch_path.is_file():
-        try:
-            verifier_launch = load_json(verifier_launch_path)
-            if (
-                verifier_launch.get("task_id") == "care-ase-faithful"
-                and verifier_launch.get("request_nonce") == current.get("request_nonce")
-                and verifier_launch.get("frozen_contract_sha256") == current.get("frozen_contract_sha256")
-                and verifier_launch.get("status") in {"STARTED", "ALREADY_RUNNING", "VERIFIER_FREEZE_COMPLETE"}
-            ):
-                return True
-        except RuntimeErrorV3:
-            pass
+    if care_ase_role_launch_satisfied(stage_state_root, current, "verifier"):
+        return True
     receipt_path = care_ase_controller_start_receipt_path(stage_state_root)
     if not receipt_path.is_file():
         return False
@@ -1438,6 +1450,137 @@ def start_care_ase_controller_from_frozen_contract(
     return receipt
 
 
+def build_care_ase_verifier_start_prompt(current: dict[str, Any]) -> bytes:
+    prompt = f"""You are the independent Verifier for CARE Agent-Flow v3 task care-ase-faithful.
+
+This is an execution turn. Do not stop with a plan.
+
+Read and obey:
+- AGENTS.md
+- prompts/AGENT_FLOW_V3_PROTOCOL.md
+- prompts/tasks/20260805_care_ase_develop_faithful_reimplementation_role_plan.json
+- automation/agent_flow_v3/tasks/care-ase-faithful/REQUEST.json
+- automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json
+- automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md
+
+Current binding:
+- request_nonce: {current.get("request_nonce")}
+- frozen_contract_sha256: {current.get("frozen_contract_sha256")}
+- CURRENT.state: {current.get("state")}
+
+Your required output is a real fail-closed Verifier freeze before any Executor implementation starts. You may edit only tests, validators, automation/agent_flow_v3, and results/agent_flow_v3/care-ase-faithful/verification as allowed by the role plan. You must not edit src, scripts/training, scripts/inference, jobs, configs, blueprints, or the frozen contract.
+
+Write and run deterministic tests/validators that fail on protected known-bad cases from section 15 of FROZEN_CONTRACT.md. Produce verification_contract.json, public_test_manifest.json, protected_known_bad_manifest.json, verifier_fingerprint.json, and verifier_session_receipt.json under results/agent_flow_v3/care-ase-faithful/verification or the task receipt root as appropriate. Commit your verifier-only changes on the verifier local branch. Do not push develop; Controller owns integration/push.
+
+Forbidden: no CARE-ASE implementation edits, no training, no outer access, no Docker, no upload, no organizer email, no Planner/Critic decision fabrication, no --last, no TUI key injection.
+
+If you cannot complete the Verifier freeze, write a fail-closed receipt with the concrete cause before ending.
+"""
+    return prompt.encode("utf-8")
+
+
+def start_care_ase_verifier_from_frozen_contract(
+    *,
+    args: argparse.Namespace,
+    repo: Path,
+    ref: str,
+    request: dict[str, Any],
+    current: dict[str, Any],
+) -> dict[str, Any]:
+    failures = validate_care_ase_plan_frozen_for_controller_start(repo, ref, request, current)
+    state_root = args.state_root.resolve().parent
+    receipt_path = care_ase_role_launch_receipt_path(args.state_root, "verifier")
+    task_state_dir = state_root / "care-ase-faithful"
+    task_state_dir.mkdir(parents=True, exist_ok=True)
+    target = tmux_target(args.verifier_tmux_session, args.verifier_tmux_window)
+    if failures:
+        receipt = {
+            "schema": CONTROLLER_START_RECEIPT_SCHEMA,
+            "status": "INVALID_PLAN_FROZEN",
+            "task_id": "care-ase-faithful",
+            "role": "verifier",
+            "request_nonce": current.get("request_nonce"),
+            "frozen_contract_sha256": current.get("frozen_contract_sha256"),
+            "failures": failures,
+            "target": target,
+            "updated_utc": now(),
+        }
+        write_json(receipt_path, receipt)
+        raise RuntimeErrorV3("care_ase_verifier_start_invalid:" + ",".join(failures))
+
+    role_plan = load_json((repo / args.controller_role_plan).resolve())
+    verifier = dict(role_plan.get("roles", {}).get("verifier", {}))
+    worktree = Path(str(verifier.get("worktree", "")))
+    codex_home = str(verifier.get("codex_home", ""))
+    thread_file = Path(str(verifier.get("thread_id_file", "")))
+    thread_id = thread_file.read_text(encoding="utf-8").strip() if thread_file.is_file() else ""
+    command = build_controller_start_command(args.codex_bin, worktree, thread_id)
+    prompt_payload = build_care_ase_verifier_start_prompt(current)
+    prompt_sha = sha_bytes(prompt_payload)
+    stamp = now().replace(":", "").replace("-", "")
+    prompt_path = task_state_dir / f"verifier_start_prompt_{stamp}.md"
+    stdout_path = task_state_dir / f"verifier_start_{stamp}.stdout.log"
+    stderr_path = task_state_dir / f"verifier_start_{stamp}.stderr.log"
+    prompt_path.write_bytes(prompt_payload)
+
+    head_after_ff = ensure_role_worktree_current(worktree, args.branch)
+    shell_command = (
+        f"CODEX_HOME={shlex.quote(codex_home)} "
+        f"CODEX_PERSISTENT_HOME={shlex.quote(codex_home)} "
+        f"{shlex.join(command)} "
+        f"< {shlex.quote(str(prompt_path))} "
+        f"> {shlex.quote(str(stdout_path))} "
+        f"2> {shlex.quote(str(stderr_path))}"
+    )
+
+    if tmux_window_exists(args.verifier_tmux_session, args.verifier_tmux_window) and process_has_child(tmux_pane_pid(args.verifier_tmux_session, args.verifier_tmux_window)):
+        pane_pid = tmux_pane_pid(args.verifier_tmux_session, args.verifier_tmux_window)
+        status = "ALREADY_RUNNING"
+    else:
+        if tmux_window_exists(args.verifier_tmux_session, args.verifier_tmux_window):
+            subprocess.run(["tmux", "kill-window", "-t", target], check=False)
+        if subprocess.run(["tmux", "has-session", "-t", args.verifier_tmux_session], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False).returncode != 0:
+            tmux_cmd = ["tmux", "new-session", "-d", "-s", args.verifier_tmux_session, "-n", args.verifier_tmux_window, shell_command]
+        else:
+            tmux_cmd = ["tmux", "new-window", "-d", "-t", args.verifier_tmux_session, "-n", args.verifier_tmux_window, shell_command]
+        subprocess.check_call(tmux_cmd)
+        time.sleep(1)
+        pane_pid = tmux_pane_pid(args.verifier_tmux_session, args.verifier_tmux_window)
+        status = "STARTED"
+
+    receipt = {
+        "schema": CONTROLLER_START_RECEIPT_SCHEMA,
+        "status": status,
+        "task_id": "care-ase-faithful",
+        "role": "verifier",
+        "request_nonce": current.get("request_nonce"),
+        "frozen_contract_sha256": current.get("frozen_contract_sha256"),
+        "target": target,
+        "pane_pid": pane_pid,
+        "thread_id": thread_id,
+        "codex_home": codex_home,
+        "worktree": str(worktree),
+        "worktree_head_after_ff": head_after_ff,
+        "command": shell_command,
+        "prompt_path": str(prompt_path),
+        "prompt_sha256": prompt_sha,
+        "stdout_log": str(stdout_path),
+        "stderr_log": str(stderr_path),
+        "failures": [],
+        "forbidden_actions_confirmed": [
+            "no Planner/Critic decision generated",
+            "no implementation source modified by orchestrator",
+            "no --last resume",
+            "no TUI key injection",
+            "no training, outer, Docker, upload, organizer email or develop-to-main merge",
+        ],
+        "updated_utc": now(),
+    }
+    write_json(receipt_path, receipt)
+    write_json(active_process_path(state_root, "care-ase-faithful", "verifier"), {**receipt, "pid": pane_pid, "exit_code": None})
+    return receipt
+
+
 def stage_event_should_mark_processed(event: dict[str, Any]) -> bool:
     if event.get("decision") == "STOP_AT_HUMAN_GATE":
         return True
@@ -1508,8 +1651,16 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
                     request=request,
                     current=current,
                 )
+                if not care_ase_role_launch_satisfied(args.state_root, current, "verifier"):
+                    event["verifier_action_result"] = start_care_ase_verifier_from_frozen_contract(
+                        args=args,
+                        repo=repo,
+                        ref=ref,
+                        request=request,
+                        current=current,
+                    )
                 event["decision"] = "CONTROLLER_START_APPLIED"
-                event["action"] = "PLAN_FROZEN validated and persistent CARE-ASE Controller started"
+                event["action"] = "PLAN_FROZEN validated; Controller and Verifier exact sessions started"
                 processed.add(event["event_key"])
             except Exception as exc:  # noqa: BLE001 - keep polling; do not mark failed start processed.
                 event["action_result"] = {
@@ -2321,6 +2472,8 @@ def parser() -> argparse.ArgumentParser:
         )
         q.add_argument("--controller-tmux-session", default="care_agent_flow_v3")
         q.add_argument("--controller-tmux-window", default="Controller-care-ase-faithful")
+        q.add_argument("--verifier-tmux-session", default="care_agent_flow_v3")
+        q.add_argument("--verifier-tmux-window", default="Verifier-care-ase-faithful")
 
     q = sub.add_parser("stage-orchestrator-once")
     add_orchestrator_args(q)
