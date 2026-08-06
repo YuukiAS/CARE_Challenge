@@ -1,3 +1,6 @@
+CARE_ASE_ZERO_CREDIT_INFERENCE_PROBE=1
+SLURM_JOB_ID=61987724
+CUDA_VISIBLE_DEVICES=0
 {
   "all_global_bias_application_count_across_compared_calls": 2,
   "canonical_full_volume_finite": true,
@@ -16,19 +19,8 @@
   "forced_multi_tile_base_logit_call_count": 2,
   "forced_multi_tile_call_id": "forced_multi_tile_real_case",
   "forced_multi_tile_count": 2,
-  "forced_multi_tile_exact_context_patch_size": [
-    20,
-    320,
-    256
-  ],
   "forced_multi_tile_metadata": {
     "call_id": "forced_multi_tile_real_case",
-    "exact_context_patch_size": [
-      20,
-      320,
-      256
-    ],
-    "exact_context_tiling": true,
     "global_bias_application_count": 1,
     "input_shape": [
       1,
@@ -125,8 +117,6 @@
   "single_tile_call_id": "single_tile_real_case",
   "single_tile_metadata": {
     "call_id": "single_tile_real_case",
-    "exact_context_patch_size": null,
-    "exact_context_tiling": false,
     "global_bias_application_count": 1,
     "input_shape": [
       1,
@@ -166,10 +156,10 @@
     256
   ],
   "single_tile_path": "predict_care_ase_r2_full_volume_logits",
-  "single_vs_forced_multi_tile_decode_changed_voxels": 0,
-  "single_vs_forced_multi_tile_max_abs_diff": 4.76837158203125e-07,
+  "single_vs_forced_multi_tile_decode_changed_voxels": 562,
+  "single_vs_forced_multi_tile_max_abs_diff": 6.0555925369262695,
   "split_sha256": "9c3e9f3b7e4565a5c3c2589ddbb913c78c0ad423f4265370585841c93c6f880a",
-  "status": "PASS",
+  "status": "FAIL",
   "t2_present_case": {
     "array_sha256": "78d0e980500f4af842a421ab6de5cdab0da77fd4c6cf41ab49bd3945677e1544",
     "availability": [
@@ -201,3 +191,4 @@
   },
   "t2_present_class4_still_available": true
 }
+srun: error: g180702: task 0: Exited with exit code 2

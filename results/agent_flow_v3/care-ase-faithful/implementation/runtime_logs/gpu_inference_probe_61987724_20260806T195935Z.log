@@ -1,3 +1,6 @@
+CARE_ASE_ZERO_CREDIT_INFERENCE_PROBE=1
+SLURM_JOB_ID=61987724
+CUDA_VISIBLE_DEVICES=0
 {
   "all_global_bias_application_count_across_compared_calls": 2,
   "canonical_full_volume_finite": true,
@@ -166,10 +169,10 @@
     256
   ],
   "single_tile_path": "predict_care_ase_r2_full_volume_logits",
-  "single_vs_forced_multi_tile_decode_changed_voxels": 0,
-  "single_vs_forced_multi_tile_max_abs_diff": 4.76837158203125e-07,
+  "single_vs_forced_multi_tile_decode_changed_voxels": 28758,
+  "single_vs_forced_multi_tile_max_abs_diff": 32.56244659423828,
   "split_sha256": "9c3e9f3b7e4565a5c3c2589ddbb913c78c0ad423f4265370585841c93c6f880a",
-  "status": "PASS",
+  "status": "FAIL",
   "t2_present_case": {
     "array_sha256": "78d0e980500f4af842a421ab6de5cdab0da77fd4c6cf41ab49bd3945677e1544",
     "availability": [
@@ -201,3 +204,4 @@
   },
   "t2_present_class4_still_available": true
 }
+srun: error: g180702: task 0: Exited with exit code 2

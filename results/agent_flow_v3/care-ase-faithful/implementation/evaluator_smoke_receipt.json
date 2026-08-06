@@ -5,14 +5,137 @@
     "zero_credit": true
   },
   "command_sha256": "5735db4394765b2bda44eac196dabd06a8ff0e9e99ea84c8191fd0855de1a9e8",
-  "created_utc": "2026-08-06T17:28:37Z",
+  "created_utc": "2026-08-06T20:04:07Z",
   "docker_or_upload": false,
   "executed": true,
   "exit_code": 0,
   "formal_training_started": false,
   "outer_accessed": false,
   "payload": {
+    "baseline_prediction_sha256": "7bec564750691e5fcf464e8bc4f5d38619b0e9e3a63d48b8c781db00b6aad7f9",
+    "called_module": "src.care_myocardium.evaluation.care_ase_r2_evaluator.evaluate_care_ase_r2_prediction_pair",
     "canonical_full_volume_only": true,
+    "care_prediction_sha256": "7bec564750691e5fcf464e8bc4f5d38619b0e9e3a63d48b8c781db00b6aad7f9",
+    "case": {
+      "array_sha256": "82de36600aec40679228da8ab29e29dfa42265a76d8b844a4f497f75acd05c13",
+      "availability": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "case_id": "Case2001",
+      "center": "CenterB",
+      "geometry_sha256": "e5c7f209f92873ef6138d6714e6485931a47feba52b5ecf9c76ac5b0a49a8509",
+      "image_shape": [
+        3,
+        12,
+        249,
+        250
+      ],
+      "properties_sha256": "5757646d5287a011c5861d50e5b14fcffe29f919c6b92f9c7caf450f02d90787",
+      "segmentation_sha256": "f2c082d359161c08132732c3c1f466267d7763a9bcf45301c3e952cdf0ddc952",
+      "segmentation_shape": [
+        12,
+        249,
+        250
+      ],
+      "spacing_zyx": [
+        10.0,
+        1.328125,
+        1.328125
+      ]
+    },
+    "case_selection": "smallest_train_side_preprocessed_t2_case_by_stride_aligned_patch_volume",
+    "evaluator_result": {
+      "baseline": {
+        "4": {
+          "blood_pool_adjacent_fp": 1010,
+          "component_count": 5,
+          "dice": 0.9462708798808384,
+          "exact_hd": 8.399800034822258,
+          "hd95": 1.328125,
+          "lesion_recall": 0.7142857142857143,
+          "precision": 0.9328718271449549,
+          "remote_fp_count": 1,
+          "remote_fp_volume": 17.63916015625,
+          "sensitivity": 0.9600604490500864,
+          "small_lesion_recall": 0.6666666666666666,
+          "volume_ratio": 1.0291450777202074
+        },
+        "5": {
+          "blood_pool_adjacent_fp": 192,
+          "component_count": 1,
+          "dice": 0.969368520263902,
+          "exact_hd": 1.328125,
+          "hd95": 1.328125,
+          "lesion_recall": 1.0,
+          "precision": 0.9767331433998101,
+          "remote_fp_count": 0,
+          "remote_fp_volume": 0.0,
+          "sensitivity": 0.9621141253507951,
+          "small_lesion_recall": 1.0,
+          "volume_ratio": 0.9850327408793265
+        }
+      },
+      "care": {
+        "4": {
+          "blood_pool_adjacent_fp": 1010,
+          "component_count": 5,
+          "dice": 0.9462708798808384,
+          "exact_hd": 8.399800034822258,
+          "hd95": 1.328125,
+          "lesion_recall": 0.7142857142857143,
+          "precision": 0.9328718271449549,
+          "remote_fp_count": 1,
+          "remote_fp_volume": 17.63916015625,
+          "sensitivity": 0.9600604490500864,
+          "small_lesion_recall": 0.6666666666666666,
+          "volume_ratio": 1.0291450777202074
+        },
+        "5": {
+          "blood_pool_adjacent_fp": 192,
+          "component_count": 1,
+          "dice": 0.969368520263902,
+          "exact_hd": 1.328125,
+          "hd95": 1.328125,
+          "lesion_recall": 1.0,
+          "precision": 0.9767331433998101,
+          "remote_fp_count": 0,
+          "remote_fp_volume": 0.0,
+          "sensitivity": 0.9621141253507951,
+          "small_lesion_recall": 1.0,
+          "volume_ratio": 0.9850327408793265
+        }
+      },
+      "case_id": "Case2001",
+      "casewise_help_harm": "NO_CHANGE",
+      "centerB_centerC_subgroup": true,
+      "metrics": [
+        "blood_pool_adjacent_fp",
+        "casewise_help_harm",
+        "centerB_centerC_subgroup",
+        "component_count",
+        "dice",
+        "exact_hd",
+        "hd95",
+        "lesion_recall",
+        "precision",
+        "remote_fp_count",
+        "remote_fp_volume",
+        "sensitivity",
+        "sentinel_case",
+        "small_lesion_recall",
+        "volume_ratio"
+      ],
+      "same_case_population": true,
+      "same_decode": "fixed_argmax_t2_present_0_1_2_3_4_5_no_t2_0_1_2_3_5",
+      "same_metric_population": [
+        5,
+        4
+      ],
+      "same_tta": "none",
+      "sentinel_case": "Case2001"
+    },
     "formal_training_started": false,
     "metrics": [
       "blood_pool_adjacent_fp",
@@ -34,6 +157,7 @@
     "outer_accessed": false,
     "patch_proxy_evaluator": false,
     "probe_type": "zero_credit_metric_interface_smoke",
+    "result_sha256": "8e8d1755ab7546d5d10c57a34758ff3e309895f53428d43a69ebe5c2ceef70b5",
     "same_case_population": true,
     "same_tta_decode_metric_interface": true,
     "status": "PASS"
@@ -42,7 +166,7 @@
   "request_nonce": "care-ase-20260806T090955Z",
   "schema": "CARE_ASE_FAITHFUL_ZERO_CREDIT_PROBE_RECEIPT_V1",
   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "stdout_sha256": "e701cd1314da09e4404d2971b8dba9bad59f0aa15be3d60ffa75d5793d247d64",
+  "stdout_sha256": "c38bd765bb8e7fdcb3fa11cc3d104ff3c45fb63966729792f6d6b11b1edb48f7",
   "task_id": "care-ase-faithful",
   "zero_credit": true
 }

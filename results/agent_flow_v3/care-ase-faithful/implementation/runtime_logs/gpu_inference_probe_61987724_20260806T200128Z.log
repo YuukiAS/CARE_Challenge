@@ -1,3 +1,6 @@
+CARE_ASE_ZERO_CREDIT_INFERENCE_PROBE=1
+SLURM_JOB_ID=61987724
+CUDA_VISIBLE_DEVICES=0
 {
   "all_global_bias_application_count_across_compared_calls": 2,
   "canonical_full_volume_finite": true,

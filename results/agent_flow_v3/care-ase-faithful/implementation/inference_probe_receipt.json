@@ -12,57 +12,220 @@
     "zero_credit": true
   },
   "command_sha256": "91c32b44019b3ef599adc21beed86532e3532d3f965a40c8a3aac85cb4f2ee3e",
-  "created_utc": "2026-08-06T17:28:33Z",
+  "created_utc": "2026-08-06T20:02:44Z",
   "docker_or_upload": false,
   "executed": true,
   "exit_code": 0,
   "formal_training_started": false,
   "outer_accessed": false,
   "payload": {
+    "all_global_bias_application_count_across_compared_calls": 2,
     "canonical_full_volume_finite": true,
     "canonical_full_volume_logits_shape": [
       1,
       6,
-      8,
-      64,
-      64
+      10,
+      291,
+      239
     ],
-    "case_id": "Case2001",
+    "case_id": "Case2003",
+    "case_selection": "smallest_train_side_preprocessed_case_with_plan_patch_forced_multitile",
     "class4_excluded_from_no_t2_decode": true,
     "class5_decode_remaps_to_official_label5": true,
     "fold": 0,
+    "forced_multi_tile_base_logit_call_count": 2,
+    "forced_multi_tile_call_id": "forced_multi_tile_real_case",
+    "forced_multi_tile_count": 2,
+    "forced_multi_tile_exact_context_patch_size": [
+      20,
+      320,
+      256
+    ],
+    "forced_multi_tile_metadata": {
+      "call_id": "forced_multi_tile_real_case",
+      "exact_context_patch_size": [
+        20,
+        320,
+        256
+      ],
+      "exact_context_tiling": true,
+      "global_bias_application_count": 1,
+      "input_shape": [
+        1,
+        3,
+        10,
+        291,
+        239
+      ],
+      "overlap": 0.5,
+      "padded_spatial": [
+        20,
+        291,
+        256
+      ],
+      "patch_size": [
+        20,
+        256,
+        256
+      ],
+      "starts_per_axis": [
+        [
+          0
+        ],
+        [
+          0,
+          35
+        ],
+        [
+          0
+        ]
+      ],
+      "tile_base_logit_call_count": 2,
+      "tile_count": 2
+    },
+    "forced_multi_tile_patch_size": [
+      20,
+      256,
+      256
+    ],
     "forced_multi_tile_path": "predict_care_ase_r2_full_volume_logits",
+    "forced_patch_smaller_than_input": true,
     "formal_training_started": false,
     "global_bias_application_count": 1,
+    "input_origin": "train_split_preprocessed_full_case",
     "input_shape": [
       1,
       3,
-      8,
-      64,
-      64
+      10,
+      291,
+      239
     ],
-    "no_t2_edema_graph_excluded": true,
+    "no_t2_case": {
+      "array_sha256": "8cfa02ef7503b6eceac81525db865b475f96321709c15325991f3e95e08631e6",
+      "availability": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "case_id": "Case1001",
+      "center": "CenterA",
+      "geometry_sha256": "2c96243b3053d2bc473024257656ac05f18f26003b88a611d5dcef385e5e2fb3",
+      "image_shape": [
+        3,
+        20,
+        256,
+        256
+      ],
+      "properties_sha256": "4959c949a8b7414436756028ee1ddf4e2a251712bd231a705207310e09f6af05",
+      "segmentation_sha256": "c1fb19a9d833cf7d2e1f5e6b56bce4e729dea53dff2e839646107786a6c5fe51",
+      "segmentation_shape": [
+        20,
+        256,
+        256
+      ],
+      "spacing_zyx": [
+        11.0,
+        1.3672000169754028,
+        1.3672000169754028
+      ]
+    },
+    "no_t2_case_id": "Case1001",
     "no_t2_final_logits_shape": [
       1,
       6,
-      8,
-      64,
-      64
+      20,
+      256,
+      256
     ],
     "outer_accessed": false,
     "patch_proxy_evaluator": false,
+    "patch_size_equals_input": false,
     "probe_type": "train_split_zero_credit_canonical_full_volume_inference",
+    "random_tensor_used": false,
+    "single_tile_call_id": "single_tile_real_case",
+    "single_tile_metadata": {
+      "call_id": "single_tile_real_case",
+      "exact_context_patch_size": null,
+      "exact_context_tiling": false,
+      "global_bias_application_count": 1,
+      "input_shape": [
+        1,
+        3,
+        10,
+        291,
+        239
+      ],
+      "overlap": 0.5,
+      "padded_spatial": [
+        20,
+        320,
+        256
+      ],
+      "patch_size": [
+        20,
+        320,
+        256
+      ],
+      "starts_per_axis": [
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "tile_base_logit_call_count": 1,
+      "tile_count": 1
+    },
+    "single_tile_patch_size": [
+      20,
+      320,
+      256
+    ],
     "single_tile_path": "predict_care_ase_r2_full_volume_logits",
-    "single_vs_forced_multi_tile_max_abs_diff": 0.0,
+    "single_vs_forced_multi_tile_decode_changed_voxels": 0,
+    "single_vs_forced_multi_tile_max_abs_diff": 4.76837158203125e-07,
     "split_sha256": "9c3e9f3b7e4565a5c3c2589ddbb913c78c0ad423f4265370585841c93c6f880a",
     "status": "PASS",
+    "t2_present_case": {
+      "array_sha256": "78d0e980500f4af842a421ab6de5cdab0da77fd4c6cf41ab49bd3945677e1544",
+      "availability": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "case_id": "Case2003",
+      "center": "CenterB",
+      "geometry_sha256": "ccc1f57a72852cf091037138be52e3cd57893b14fd61381e3ee9e0c0400eac54",
+      "image_shape": [
+        3,
+        10,
+        291,
+        239
+      ],
+      "properties_sha256": "353df97be805c93bc51d4f56066895c4d2ca2c18a26dfe3813f6708c9e33d732",
+      "segmentation_sha256": "e568a2e686d80ead61882ab940f845f7d77718ff85c86b168b5f3524f9129f81",
+      "segmentation_shape": [
+        10,
+        291,
+        239
+      ],
+      "spacing_zyx": [
+        10.0,
+        1.5625,
+        1.5625
+      ]
+    },
     "t2_present_class4_still_available": true
   },
   "probe": "inference_probe",
   "request_nonce": "care-ase-20260806T090955Z",
   "schema": "CARE_ASE_FAITHFUL_ZERO_CREDIT_PROBE_RECEIPT_V1",
   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "stdout_sha256": "bf4d67874160a9b4db568ced6f674f9efeae282343720b14803573b0a084a9f8",
+  "stdout_sha256": "5f06efcdbede81daa1baadfdf4d54740c4d9a7aec4a41765cf2ab541bb68bf86",
   "task_id": "care-ase-faithful",
   "zero_credit": true
 }

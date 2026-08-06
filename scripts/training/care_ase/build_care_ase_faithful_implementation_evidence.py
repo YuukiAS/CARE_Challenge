@@ -10,12 +10,14 @@ passing evidence packet.
 from __future__ import annotations
 
 import argparse
+import builtins
 import copy
 import hashlib
 import importlib.util
 import json
 import math
 import os
+import pickle
 import subprocess
 import sys
 import tempfile
@@ -27,7 +29,7 @@ from typing import Any
 TASK_ID = "care-ase-faithful"
 REQUEST_NONCE = "care-ase-20260806T090955Z"
 FROZEN_CONTRACT_SHA256 = "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d"
-VERIFIER_FINGERPRINT_SHA256 = "5c5dd6f431f2cb0c1d2fe6a7927f3679eea47b8ec7c82e4f2a4227e8ab2c7773"
+VERIFIER_FINGERPRINT_SHA256 = "9fbed451e765fd4b44e759cecee4458b5100eccac59da79bbd9e4c87ebc54243"
 
 ROOT = Path(__file__).resolve().parents[3]
 if str(ROOT) not in sys.path:
@@ -35,6 +37,8 @@ if str(ROOT) not in sys.path:
 IMPLEMENTATION_DIR = ROOT / "results" / "agent_flow_v3" / TASK_ID / "implementation"
 VERIFICATION_CONTRACT = ROOT / "results" / "agent_flow_v3" / TASK_ID / "verification" / "verification_contract.json"
 ZERO_CREDIT_PATCH_SIZE = (8, 64, 64)
+PLAN_PATCH_SIZE = (20, 256, 256)
+PLAN_COMPATIBLE_MULTIPLE = (4, 64, 64)
 
 SOURCE_PATHS = [
     "src/care_myocardium/models/care_ase/__init__.py",
@@ -43,6 +47,7 @@ SOURCE_PATHS = [
     "src/care_myocardium/training/care_ase_runtime.py",
     "src/care_myocardium/training/care_ase_sampler.py",
     "src/care_myocardium/training/care_ase_augmentation.py",
+    "src/care_myocardium/evaluation/care_ase_r2_evaluator.py",
     "src/care_myocardium/inference/care_ase_r2_decode.py",
     "src/care_myocardium/inference/care_ase_r2_full_volume.py",
     "scripts/training/care_ase/run_care_ase_r2_chunk.py",
@@ -105,6 +110,10 @@ def sha256_file(path: Path) -> str:
 
 def json_sha(payload: Any) -> str:
     return sha256_bytes(json.dumps(payload, sort_keys=True, default=str).encode("utf-8"))
+
+
+def _is_sha256_like(value: Any) -> bool:
+    return isinstance(value, str) and len(value) == 64 and all(ch in "0123456789abcdef" for ch in value)
 
 
 def write_json(path: Path, payload: dict[str, Any]) -> None:
@@ -293,6 +302,122 @@ def train_side_case_ids(fold: int = 0) -> dict[str, Any]:
         "edema_t2_present": edema,
         "no_t2": no_t2,
     }
+
+
+def _smallest_train_case_id(*, fold: int, t2_present: bool, require_forced_multitile: bool = False) -> str:
+    import blosc2
+    import numpy as np
+
+    splits_path = _runtime_path("nnUNet_preprocessed", "Dataset501_CAREMyoPS/splits_final.json")
+    splits = json.loads(splits_path.read_text(encoding="utf-8"))
+    train_ids = [str(case_id) for case_id in splits[int(fold)]["train"]]
+    from src.care_myocardium.data.case_metadata import load_myops_case_metadata
+
+    metadata = load_myops_case_metadata(Path(os.environ.get("CARE_ROOT", ROOT)).resolve())
+    rows: list[tuple[int, str]] = []
+    for case_id in train_ids:
+        meta = metadata.get(case_id)
+        if meta is None or bool(meta.t2_present) is not bool(t2_present):
+            continue
+        path = _preprocessed_case_paths(case_id)["array"]
+        if not path.is_file():
+            continue
+        shape = tuple(int(v) for v in np.asarray(blosc2.open(str(path), mode="r")[:]).shape[-3:])
+        if require_forced_multitile and not any(int(dim) > int(tile) for dim, tile in zip(shape, PLAN_PATCH_SIZE)):
+            continue
+        patch = _full_cover_patch_size(shape)
+        rows.append((int(patch[0] * patch[1] * patch[2]), case_id))
+    if not rows:
+        raise RuntimeError(f"no fold{fold} train case found for t2_present={t2_present}")
+    return sorted(rows)[0][1]
+
+
+def _preprocessed_case_paths(case_id: str) -> dict[str, Path]:
+    root = _runtime_path("nnUNet_preprocessed", "Dataset501_CAREMyoPS/nnUNetPlans_3d_fullres")
+    return {
+        "array": root / f"{case_id}.b2nd",
+        "segmentation": root / f"{case_id}_seg.b2nd",
+        "properties": root / f"{case_id}.pkl",
+    }
+
+
+def _load_preprocessed_case(case_id: str) -> dict[str, Any]:
+    import blosc2
+    import numpy as np
+
+    paths = _preprocessed_case_paths(case_id)
+    missing = [name for name, path in paths.items() if not path.is_file()]
+    if missing:
+        raise FileNotFoundError(f"preprocessed case {case_id} is missing required files: {missing}")
+    image = np.asarray(blosc2.open(str(paths["array"]), mode="r")[:], dtype=np.float32)
+    seg = np.asarray(blosc2.open(str(paths["segmentation"]), mode="r")[:])
+    if image.ndim != 4 or image.shape[0] != 3:
+        raise ValueError(f"CARE-ASE expects preprocessed image shape (3,Z,Y,X), got {image.shape} for {case_id}")
+    if seg.ndim == 4 and seg.shape[0] == 1:
+        seg = seg[0]
+    if seg.shape != image.shape[-3:]:
+        raise ValueError(f"segmentation shape {seg.shape} does not match image spatial {image.shape[-3:]} for {case_id}")
+    with paths["properties"].open("rb") as f:
+        properties = pickle.load(f)
+    spacing = tuple(float(v) for v in properties.get("spacing", (1.0, 1.0, 1.0)))
+    geometry_payload = {
+        "case_id": str(case_id),
+        "image_shape": [int(v) for v in image.shape],
+        "segmentation_shape": [int(v) for v in seg.shape],
+        "spacing_zyx": [float(v) for v in spacing],
+        "properties_sha256": sha256_file(paths["properties"]),
+    }
+    return {
+        "case_id": str(case_id),
+        "image": image,
+        "segmentation": seg,
+        "spacing_zyx": spacing,
+        "paths": {name: str(path) for name, path in paths.items()},
+        "array_sha256": sha256_file(paths["array"]),
+        "segmentation_sha256": sha256_file(paths["segmentation"]),
+        "properties_sha256": sha256_file(paths["properties"]),
+        "geometry_sha256": json_sha(geometry_payload),
+        "geometry": geometry_payload,
+    }
+
+
+def _torch_full_case(case: dict[str, Any], device: Any) -> Any:
+    import torch
+
+    return torch.from_numpy(case["image"]).unsqueeze(0).to(device=device, dtype=torch.float32)
+
+
+def _availability_tensor(availability: tuple[float, float, float], device: Any) -> Any:
+    import torch
+
+    return torch.tensor([list(availability)], device=device, dtype=torch.float32)
+
+
+def _case_binding_payload(case: dict[str, Any], *, availability: tuple[float, float, float], center: str) -> dict[str, Any]:
+    return {
+        "case_id": case["case_id"],
+        "availability": [float(v) for v in availability],
+        "center": center,
+        "image_shape": [int(v) for v in case["image"].shape],
+        "segmentation_shape": [int(v) for v in case["segmentation"].shape],
+        "spacing_zyx": [float(v) for v in case["spacing_zyx"]],
+        "array_sha256": case["array_sha256"],
+        "segmentation_sha256": case["segmentation_sha256"],
+        "properties_sha256": case["properties_sha256"],
+        "geometry_sha256": case["geometry_sha256"],
+    }
+
+
+def _ceil_to_multiple(value: int, multiple: int) -> int:
+    return int(math.ceil(int(value) / float(multiple)) * int(multiple))
+
+
+def _full_cover_patch_size(spatial: tuple[int, int, int]) -> tuple[int, int, int]:
+    return (
+        max(PLAN_PATCH_SIZE[0], _ceil_to_multiple(spatial[0], PLAN_COMPATIBLE_MULTIPLE[0]), int(spatial[0])),
+        max(PLAN_PATCH_SIZE[1], _ceil_to_multiple(spatial[1], PLAN_COMPATIBLE_MULTIPLE[1]), int(spatial[1])),
+        max(PLAN_PATCH_SIZE[2], _ceil_to_multiple(spatial[2], PLAN_COMPATIBLE_MULTIPLE[2]), int(spatial[2])),
+    )
 
 
 def finite_loss_term_payload(seed_loss: float) -> dict[str, dict[str, Any]]:
@@ -488,17 +613,50 @@ def _model_optimizer_scheduler_digest(model: Any, optimizer: Any, scheduler: Any
     return json_sha(payload)
 
 
-def _set_single_probe_gradient(model: Any, parameter_name: str, fill_value: float) -> str:
-    import torch
+def _gradient_digest(model: Any) -> str:
+    payload = {}
+    for name, param in model.named_parameters():
+        grad = getattr(param, "grad", None)
+        if grad is not None:
+            payload[name] = _state_value_digest(grad)
+    return json_sha(payload)
 
-    named = dict(model.named_parameters())
-    if parameter_name not in named:
-        raise KeyError(f"missing checkpoint probe parameter: {parameter_name}")
-    for param in model.parameters():
-        param.grad = None
-    param = named[parameter_name]
-    param.grad = torch.full_like(param, float(fill_value))
-    return hashlib.sha256(param.grad.detach().cpu().contiguous().numpy().tobytes()).hexdigest()
+
+def _canonical_microbatch_bundle(
+    *,
+    case_ids: dict[str, Any],
+    metadata: dict[str, Any],
+    device: Any,
+) -> tuple[list[dict[str, Any]], str]:
+    t2_case = str(case_ids["edema_t2_present"])
+    no_t2_case = str(case_ids["no_t2"])
+    scar_case = str(case_ids["scar"])
+    specs = (
+        (t2_case, "edema"),
+        (no_t2_case, "scar"),
+        (scar_case, "scar"),
+        (t2_case, "edema"),
+    )
+    microbatches = [
+        _make_real_case_batch(
+            case_id=case_id,
+            pathology_focus=focus,
+            availability=tuple(float(v) for v in metadata[case_id].availability),
+            center=metadata[case_id].center,
+            device=device,
+        )
+        for case_id, focus in specs
+    ]
+    descriptor_bundle = {
+        "case_ids": [batch["case_id"] for batch in microbatches],
+        "descriptor_sha256": [batch["descriptor_sha256"] for batch in microbatches],
+        "segmentation_sha256": [batch["segmentation_sha256"] for batch in microbatches],
+        "global_step": 0,
+        "stage_id": "A",
+        "target_construction": "src.care_myocardium.training.care_ase_runtime.make_batch",
+        "total_loss": "src.care_myocardium.training.care_ase_trainer.care_ase_loss",
+    }
+    return microbatches, json_sha(descriptor_bundle)
 
 
 def _receipt_for_probe(name: str, payload: dict[str, Any], command: dict[str, Any]) -> dict[str, Any]:
@@ -545,7 +703,7 @@ def run_forward_backward_probe() -> dict[str, Any]:
 
     from src.care_myocardium.models.care_ase import build_care_ase_for_fold
     from src.care_myocardium.data.case_metadata import load_myops_case_metadata
-    from src.care_myocardium.training.care_ase_trainer import care_ase_loss
+    from src.care_myocardium.training.care_ase_trainer import care_ase_loss, care_ase_loss_with_term_details
 
     torch.manual_seed(1106)
     model = build_care_ase_for_fold(0, map_location="cpu")
@@ -576,7 +734,7 @@ def run_forward_backward_probe() -> dict[str, Any]:
         global_step=2000,
         extent_valid_spatial_mask=mixed_batch["extent_valid_spatial_mask"],
     )
-    loss, metrics = care_ase_loss(outputs, mixed_batch)
+    loss, metrics, terms = care_ase_loss_with_term_details(outputs, mixed_batch)
     loss.backward()
     named = dict(model.named_parameters())
     projection_grads = _grad_abs_sum(
@@ -594,7 +752,7 @@ def run_forward_backward_probe() -> dict[str, Any]:
         global_step=2000,
         extent_valid_spatial_mask=mixed_batch["extent_valid_spatial_mask"],
     )
-    loss2, metrics2 = care_ase_loss(outputs2, mixed_batch)
+    loss2, metrics2, terms2 = care_ase_loss_with_term_details(outputs2, mixed_batch)
     loss2.backward()
     named2 = dict(model.named_parameters())
     upstream_grads = _grad_abs_sum(
@@ -663,8 +821,8 @@ def run_forward_backward_probe() -> dict[str, Any]:
         ) and param.grad is not None:
             no_t2_edema_grad += float(param.grad.detach().abs().sum().cpu())
     no_t2_call_count = int(sum(call_counts.values()))
-    terms = _loss_terms_from_metrics(metrics)
     loss_terms_finite = all(math.isfinite(float(term["value"])) for term in terms.values())
+    constant_denominator_count = sum(1 for term in terms.values() if int(term.get("denominator", 0)) == 1)
     payload = {
         "status": "PASS"
         if len(projection_nonzero) == len(projection_grads)
@@ -684,12 +842,15 @@ def run_forward_backward_probe() -> dict[str, Any]:
         "mixed_batch_segmentation_sha256": mixed_batch["segmentation_sha256"],
         "split_sha256": case_ids["split_sha256"],
         "input_shape": list(mixed_batch["image"].shape),
+        "input_origin": "train_split_preprocessed_real_case_microbatch",
+        "random_tensor_used": False,
         "zero_credit_patch_size": list(ZERO_CREDIT_PATCH_SIZE),
         "availability": mixed_batch["availability"].detach().cpu().tolist(),
         "first_loss": float(loss.detach().cpu()),
         "second_loss": float(loss2.detach().cpu()),
         "total_loss_terms": terms,
-        "second_total_loss_terms": _loss_terms_from_metrics(metrics2),
+        "second_total_loss_terms": terms2,
+        "constant_denominator_count": constant_denominator_count,
         "mixed_batch_no_t2": {
             "case_id": no_t2_case,
             "edema_owned_module_call_count": no_t2_call_count,
@@ -710,71 +871,254 @@ def run_forward_backward_probe() -> dict[str, Any]:
     return payload
 
 
+def run_step0_parity_probe() -> dict[str, Any]:
+    import torch
+
+    from src.care_myocardium.data.case_metadata import load_myops_case_metadata
+    from src.care_myocardium.inference.care_ase_r2_full_volume import predict_care_ase_r2_full_volume_logits
+    from src.care_myocardium.models.care_ase import build_care_ase_for_fold
+
+    torch.manual_seed(1206)
+    device = torch.device("cpu")
+    model = build_care_ase_for_fold(0, map_location="cpu").to(device)
+    case_ids = train_side_case_ids(0)
+    metadata_root = Path(os.environ.get("CARE_ROOT", ROOT)).resolve()
+    metadata = load_myops_case_metadata(metadata_root)
+    t2_case_id = _smallest_train_case_id(fold=0, t2_present=True, require_forced_multitile=True)
+    no_t2_case_id = _smallest_train_case_id(fold=0, t2_present=False)
+    t2_case = _load_preprocessed_case(t2_case_id)
+    no_t2_case = _load_preprocessed_case(no_t2_case_id)
+    t2_availability = tuple(float(v) for v in metadata[t2_case_id].availability)
+    no_t2_availability = tuple(float(v) for v in metadata[no_t2_case_id].availability)
+    t2_batch = _make_real_case_batch(
+        case_id=t2_case_id,
+        pathology_focus="edema",
+        availability=t2_availability,
+        center=metadata[t2_case_id].center,
+        device=device,
+    )
+    no_t2_batch = _make_real_case_batch(
+        case_id=no_t2_case_id,
+        pathology_focus="scar",
+        availability=no_t2_availability,
+        center=metadata[no_t2_case_id].center,
+        device=device,
+    )
+    try:
+        t2_report = model.step0_parity_report(t2_batch["image"], t2_batch["availability"])
+        no_t2_report = model.step0_parity_report(no_t2_batch["image"], no_t2_batch["availability"])
+        attribute_error_ignored = False
+        error = None
+    except AttributeError as exc:
+        t2_report = {}
+        no_t2_report = {}
+        attribute_error_ignored = True
+        error = repr(exc)
+    t2_max = float(
+        max(
+            float(t2_report.get("anatomy_step0_parity_max_abs_error", 1.0)),
+            float(t2_report.get("step0_scar_logit_parity_vs_stock_class5_max_abs_error", 1.0)),
+            float(t2_report.get("step0_edema_logit_parity_vs_stock_class4_t2_present_only_max_abs_error", 1.0)),
+        )
+    )
+    no_t2_max = float(
+        max(
+            float(no_t2_report.get("anatomy_step0_parity_max_abs_error", 1.0)),
+            float(no_t2_report.get("step0_scar_logit_parity_vs_stock_class5_max_abs_error", 1.0)),
+        )
+    )
+    changed_voxels = int(t2_report.get("compatibility_argmax_changed_voxels", 1)) + int(
+        no_t2_report.get("compatibility_argmax_changed_voxels", 1)
+    )
+    no_t2_calls = int(no_t2_report.get("no_t2_edema_owned_row_call_count", -1))
+    payload = {
+        "status": "PASS"
+        if not attribute_error_ignored
+        and t2_max <= 1.0e-6
+        and no_t2_max <= 1.0e-6
+        and changed_voxels == 0
+        and no_t2_calls == 0
+        and no_t2_report.get("no_t2_class4_excluded_from_competition") is True
+        else "FAIL",
+        "probe_type": "train_split_real_case_step0_stock_parity_and_no_t2_regression",
+        "fold": 0,
+        "imported_step0_parity_report": hasattr(model, "step0_parity_report"),
+        "attribute_error_ignored": attribute_error_ignored,
+        "attribute_error": error,
+        "t2_present_case": _case_binding_payload(t2_case, availability=t2_availability, center=metadata[t2_case_id].center),
+        "no_t2_case": _case_binding_payload(no_t2_case, availability=no_t2_availability, center=metadata[no_t2_case_id].center),
+        "t2_present_descriptor_sha256": t2_batch["descriptor_sha256"],
+        "no_t2_descriptor_sha256": no_t2_batch["descriptor_sha256"],
+        "step0_sample_shape": list(t2_batch["image"].shape),
+        "split_sha256": case_ids["split_sha256"],
+        "t2_present_stock_max_abs_err": t2_max,
+        "no_t2_stock_max_abs_err": no_t2_max,
+        "compatible_argmax_changed_voxels": changed_voxels,
+        "no_t2_edema_owned_module_call_count": no_t2_calls,
+        "no_t2_class4_in_final_competition": not bool(no_t2_report.get("no_t2_class4_excluded_from_competition", False)),
+        "t2_present_step0_report": t2_report,
+        "no_t2_step0_report": no_t2_report,
+        "random_tensor_used": False,
+        "formal_training_started": False,
+        "outer_accessed": False,
+    }
+    return payload
+
+
 def run_inference_probe() -> dict[str, Any]:
     import torch
 
+    from src.care_myocardium.data.case_metadata import load_myops_case_metadata
     from src.care_myocardium.inference.care_ase_r2_decode import decode_care_ase_r2_logits
     from src.care_myocardium.inference.care_ase_r2_full_volume import predict_care_ase_r2_full_volume_logits
     from src.care_myocardium.models.care_ase import build_care_ase_for_fold
 
     torch.manual_seed(2206)
-    model = build_care_ase_for_fold(0, map_location="cpu")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     case_ids = train_side_case_ids(0)
+    metadata_root = Path(os.environ.get("CARE_ROOT", ROOT)).resolve()
+    metadata = load_myops_case_metadata(metadata_root)
+    t2_case_id = _smallest_train_case_id(fold=0, t2_present=True, require_forced_multitile=True)
+    no_t2_case_id = _smallest_train_case_id(fold=0, t2_present=False)
+    t2_case = _load_preprocessed_case(t2_case_id)
+    no_t2_case = _load_preprocessed_case(no_t2_case_id)
+    t2_availability = tuple(float(v) for v in metadata[t2_case_id].availability)
+    no_t2_availability = tuple(float(v) for v in metadata[no_t2_case_id].availability)
+    if device.type == "cpu" and os.environ.get("CARE_ASE_ALLOW_SLOW_CPU_FULL_VOLUME_PROBE") != "1":
+        return {
+            "status": "FAIL",
+            "probe_type": "train_split_zero_credit_canonical_full_volume_inference",
+            "fold": 0,
+            "case_id": t2_case_id,
+            "no_t2_case_id": no_t2_case_id,
+            "case_selection": "smallest_train_side_preprocessed_case_by_stride_aligned_patch_volume",
+            "split_sha256": case_ids["split_sha256"],
+            "t2_present_case": _case_binding_payload(t2_case, availability=t2_availability, center=metadata[t2_case_id].center),
+            "no_t2_case": _case_binding_payload(no_t2_case, availability=no_t2_availability, center=metadata[no_t2_case_id].center),
+            "input_origin": "train_split_preprocessed_full_case",
+            "random_tensor_used": False,
+            "failure_reason": "local_executor_session_has_no_cuda_and_cpu_full_volume_probe_exceeded_interactive_resource_budget",
+            "requires_gpu_or_explicit_CARE_ASE_ALLOW_SLOW_CPU_FULL_VOLUME_PROBE": True,
+            "formal_training_started": False,
+            "outer_accessed": False,
+        }
+    model = build_care_ase_for_fold(0, map_location=device).to(device)
+    t2_image = _torch_full_case(t2_case, device)
+    no_t2_image = _torch_full_case(no_t2_case, device)
+    t2_avail = _availability_tensor(t2_availability, device)
+    no_t2_avail = _availability_tensor(no_t2_availability, device)
+    spatial = tuple(int(v) for v in t2_image.shape[-3:])
+    single_patch_size = _full_cover_patch_size(spatial)
+    forced_patch_size = PLAN_PATCH_SIZE
+    forced_patch_smaller_than_input = any(int(tile) < int(dim) for tile, dim in zip(forced_patch_size, spatial))
+    if not forced_patch_smaller_than_input:
+        return {
+            "status": "FAIL",
+            "probe_type": "train_split_zero_credit_canonical_full_volume_inference",
+            "fold": 0,
+            "case_id": t2_case_id,
+            "no_t2_case_id": no_t2_case_id,
+            "case_selection": "smallest_train_side_preprocessed_case_with_plan_patch_forced_multitile",
+            "split_sha256": case_ids["split_sha256"],
+            "t2_present_case": _case_binding_payload(t2_case, availability=t2_availability, center=metadata[t2_case_id].center),
+            "no_t2_case": _case_binding_payload(no_t2_case, availability=no_t2_availability, center=metadata[no_t2_case_id].center),
+            "input_origin": "train_split_preprocessed_full_case",
+            "random_tensor_used": False,
+            "failure_reason": "selected_t2_case_not_larger_than_plan_patch_for_forced_multitile",
+            "single_tile_patch_size": [int(v) for v in single_patch_size],
+            "forced_multi_tile_patch_size": [int(v) for v in forced_patch_size],
+            "formal_training_started": False,
+            "outer_accessed": False,
+        }
     model.eval()
-    image = torch.randn(1, 3, *ZERO_CREDIT_PATCH_SIZE)
-    no_t2 = torch.tensor([[1.0, 0.0, 1.0]], dtype=torch.float32)
-    tri = torch.tensor([[1.0, 1.0, 1.0]], dtype=torch.float32)
+    single_metadata: dict[str, Any] = {"call_id": "single_tile_real_case"}
+    forced_metadata: dict[str, Any] = {"call_id": "forced_multi_tile_real_case"}
+    no_t2_metadata: dict[str, Any] = {"call_id": "no_t2_real_case"}
     with torch.no_grad():
-        no_t2_outputs = model(image, no_t2, global_step=0, disable_extent_wall=True)
         full_logits = predict_care_ase_r2_full_volume_logits(
             model,
-            image,
-            tri,
-            patch_size=ZERO_CREDIT_PATCH_SIZE,
+            t2_image,
+            t2_avail,
+            patch_size=single_patch_size,
             overlap=0.5,
             global_step=14000,
             use_gaussian=False,
+            metadata=single_metadata,
         )
         forced_multi_logits = predict_care_ase_r2_full_volume_logits(
             model,
-            image,
-            tri,
-            patch_size=ZERO_CREDIT_PATCH_SIZE,
+            t2_image,
+            t2_avail,
+            patch_size=forced_patch_size,
             overlap=0.5,
             global_step=14000,
             use_gaussian=False,
+            metadata=forced_metadata,
+            exact_context_patch_size=single_patch_size,
         )
-    synthetic_logits = torch.zeros(1, 6, 2, 2, 2)
-    synthetic_logits[:, 4] = 100.0
-    synthetic_logits[:, 5] = 50.0
-    decoded_no_t2 = decode_care_ase_r2_logits(synthetic_logits, no_t2)
-    decoded_tri = decode_care_ase_r2_logits(synthetic_logits, tri)
+        no_t2_logits = predict_care_ase_r2_full_volume_logits(
+            model,
+            no_t2_image,
+            no_t2_avail,
+            patch_size=_full_cover_patch_size(tuple(int(v) for v in no_t2_image.shape[-3:])),
+            overlap=0.5,
+            global_step=14000,
+            use_gaussian=False,
+            metadata=no_t2_metadata,
+        )
+    decoded_no_t2 = decode_care_ase_r2_logits(no_t2_logits, no_t2_avail)
+    decoded_tri = decode_care_ase_r2_logits(full_logits, t2_avail)
+    max_abs_diff = float((full_logits - forced_multi_logits).abs().max().cpu())
+    decoded_diff = int((decode_care_ase_r2_logits(full_logits, t2_avail) != decode_care_ase_r2_logits(forced_multi_logits, t2_avail)).sum().cpu())
+    forced_tile_count = int(forced_metadata.get("tile_count", 0))
+    global_bias_count = int(single_metadata.get("global_bias_application_count", 0)) + int(
+        forced_metadata.get("global_bias_application_count", 0)
+    )
     payload = {
         "status": "PASS"
-        if bool(torch.isfinite(no_t2_outputs["final_logits"]).all())
+        if bool(torch.isfinite(no_t2_logits).all())
         and bool(torch.isfinite(full_logits).all())
         and bool(torch.isfinite(forced_multi_logits).all())
-        and bool(no_t2_outputs["no_t2_edema_graph_excluded"])
-        and float((full_logits - forced_multi_logits).abs().max().cpu()) <= 1e-6
+        and forced_tile_count > 1
+        and int(forced_metadata.get("global_bias_application_count", 0)) == 1
+        and max_abs_diff <= 1e-6
+        and decoded_diff == 0
         and 4 not in set(int(v) for v in decoded_no_t2.unique().tolist())
-        and set(int(v) for v in decoded_tri.unique().tolist()) == {4}
         else "FAIL",
         "probe_type": "train_split_zero_credit_canonical_full_volume_inference",
         "fold": 0,
-        "case_id": case_ids["edema_t2_present"],
+        "case_id": t2_case_id,
+        "no_t2_case_id": no_t2_case_id,
+        "case_selection": "smallest_train_side_preprocessed_case_with_plan_patch_forced_multitile",
         "split_sha256": case_ids["split_sha256"],
-        "input_shape": [1, 3, *ZERO_CREDIT_PATCH_SIZE],
-        "no_t2_final_logits_shape": list(no_t2_outputs["final_logits"].shape),
-        "no_t2_edema_graph_excluded": bool(no_t2_outputs["no_t2_edema_graph_excluded"]),
+        "t2_present_case": _case_binding_payload(t2_case, availability=t2_availability, center=metadata[t2_case_id].center),
+        "no_t2_case": _case_binding_payload(no_t2_case, availability=no_t2_availability, center=metadata[no_t2_case_id].center),
+        "input_shape": list(t2_image.shape),
+        "input_origin": "train_split_preprocessed_full_case",
+        "random_tensor_used": False,
+        "no_t2_final_logits_shape": list(no_t2_logits.shape),
         "canonical_full_volume_logits_shape": list(full_logits.shape),
         "canonical_full_volume_finite": bool(torch.isfinite(full_logits).all()),
         "single_tile_path": "predict_care_ase_r2_full_volume_logits",
         "forced_multi_tile_path": "predict_care_ase_r2_full_volume_logits",
-        "single_vs_forced_multi_tile_max_abs_diff": float((full_logits - forced_multi_logits).abs().max().cpu()),
-        "global_bias_application_count": 1,
+        "single_tile_call_id": single_metadata["call_id"],
+        "forced_multi_tile_call_id": forced_metadata["call_id"],
+        "single_tile_metadata": single_metadata,
+        "forced_multi_tile_metadata": forced_metadata,
+        "single_tile_patch_size": [int(v) for v in single_patch_size],
+        "forced_multi_tile_patch_size": [int(v) for v in forced_patch_size],
+        "patch_size_equals_input": forced_patch_size == spatial,
+        "forced_patch_smaller_than_input": bool(forced_patch_smaller_than_input),
+        "forced_multi_tile_exact_context_patch_size": [int(v) for v in single_patch_size],
+        "forced_multi_tile_count": forced_tile_count,
+        "forced_multi_tile_base_logit_call_count": int(forced_metadata.get("tile_base_logit_call_count", 0)),
+        "single_vs_forced_multi_tile_max_abs_diff": max_abs_diff,
+        "single_vs_forced_multi_tile_decode_changed_voxels": decoded_diff,
+        "global_bias_application_count": int(forced_metadata.get("global_bias_application_count", 0)),
+        "all_global_bias_application_count_across_compared_calls": global_bias_count,
         "class4_excluded_from_no_t2_decode": 4 not in set(int(v) for v in decoded_no_t2.unique().tolist()),
-        "class5_decode_remaps_to_official_label5": set(int(v) for v in decoded_no_t2.unique().tolist()) == {5},
-        "t2_present_class4_still_available": set(int(v) for v in decoded_tri.unique().tolist()) == {4},
+        "class5_decode_remaps_to_official_label5": 5 in set(int(v) for v in decoded_no_t2.unique().tolist()),
+        "t2_present_class4_still_available": 4 in set(int(v) for v in decoded_tri.unique().tolist()),
         "patch_proxy_evaluator": False,
         "formal_training_started": False,
         "outer_accessed": False,
@@ -785,39 +1129,65 @@ def run_inference_probe() -> dict[str, Any]:
 def run_checkpoint_resume_probe() -> dict[str, Any]:
     import torch
 
+    from src.care_myocardium.data.case_metadata import load_myops_case_metadata
     from src.care_myocardium.models.care_ase import build_care_ase_for_fold
     from src.care_myocardium.training.care_ase_trainer import (
         CAREASEStageScheduler,
         CHECKPOINT_SCHEMA_VERSION,
+        _optimizer_step_from_materialized_microbatches,
         build_optimizer,
         load_care_ase_checkpoint,
         save_care_ase_checkpoint,
     )
 
     case_ids = train_side_case_ids(0)
+    metadata = load_myops_case_metadata(Path(os.environ.get("CARE_ROOT", ROOT)).resolve())
+    device = torch.device("cpu")
     torch.manual_seed(4404)
-    model = build_care_ase_for_fold(0, map_location="cpu")
+    model = build_care_ase_for_fold(0, map_location="cpu").to(device)
     optimizer = build_optimizer(model)
     scheduler = CAREASEStageScheduler(optimizer)
-    scheduler.step(1)
-    probe_parameter = "component_heads.scar_extent_head.presence.weight"
-    first_grad_sha = _set_single_probe_gradient(model, probe_parameter, 1.0e-4)
-    optimizer.step()
-    optimizer.zero_grad(set_to_none=True)
+    first_microbatches, first_descriptor = _canonical_microbatch_bundle(case_ids=case_ids, metadata=metadata, device=device)
+    first_step = _optimizer_step_from_materialized_microbatches(
+        model=model,
+        optimizer=optimizer,
+        scheduler=scheduler,
+        microbatches=first_microbatches,
+        global_step=0,
+        gradient_accumulation=4,
+        autocast_device_type="cpu",
+        autocast_enabled=False,
+        collect_metrics=True,
+    )
+    first_grad_sha = _gradient_digest(model)
     control_model = copy.deepcopy(model)
     control_optimizer = build_optimizer(control_model)
     control_optimizer.load_state_dict(copy.deepcopy(optimizer.state_dict()))
     control_scheduler = CAREASEStageScheduler(control_optimizer)
     control_scheduler.load_state_dict(copy.deepcopy(scheduler.state_dict()))
-    next_descriptor = json_sha(
-        {
-            "probe": "checkpoint_resume",
-            "fold": 0,
-            "case_ids": case_ids,
-            "next_zero_credit_step": 2,
-            "parameter": probe_parameter,
-        }
-    )
+    next_microbatches, next_descriptor = _canonical_microbatch_bundle(case_ids=case_ids, metadata=metadata, device=device)
+    next_bundle = [batch["descriptor_sha256"] for batch in next_microbatches]
+    sampler_cursor_state = {
+        "case_group_cursor": 1,
+        "complete_center_selector_cursor": 1,
+        "complete_centerB_case_cursor": 1,
+        "complete_centerC_case_cursor": 0,
+        "complete_center_cursor": 1,
+        "complete_pathology_cursor": 1,
+        "partial_case_cursors": {"lge_only": 1, "lge_c0": 0},
+        "micro_case_cursors_by_group": {"complete": 2, "lge_only": 1},
+        "micro_case_rng_state_by_group": {},
+        "micro_patch_cursor": 4,
+        "micro_patch_rng_state": "ZERO_CREDIT_DETERMINISTIC_PATCH_DESCRIPTOR",
+        "scar_focus_cursor": 1,
+        "edema_focus_cursor": 1,
+        "sampler_rng_state": "ZERO_CREDIT_CANONICAL_DESCRIPTOR_NO_RANDOM_ADVANCE",
+        "batch_descriptor_cursor": 1,
+        "next_batch_descriptor_sha256": next_descriptor,
+        "next_optimizer_step_micro_descriptor_sha256": next_descriptor,
+        "next_optimizer_step_micro_descriptor_bundle": next_bundle,
+    }
+    rng_before_save = {"torch": _state_value_digest(torch.random.get_rng_state())}
     source = source_manifest()
     git_head = git_value("rev-parse", "HEAD") or "UNSET"
     with tempfile.TemporaryDirectory(prefix="care_ase_resume_probe_") as tmp:
@@ -831,27 +1201,8 @@ def run_checkpoint_resume_probe() -> dict[str, Any]:
             microbatch_cursor=0,
             stage_id="A",
             next_batch_hash=next_descriptor,
-            loss_history_tail=[{"probe": "zero_credit_synthetic_optimizer_state", "loss": 0.0}],
-            sampler_state={
-                "case_group_cursor": 0,
-                "complete_center_selector_cursor": 0,
-                "complete_centerB_case_cursor": 0,
-                "complete_centerC_case_cursor": 0,
-                "complete_center_cursor": 0,
-                "complete_pathology_cursor": 0,
-                "partial_case_cursors": {"lge_only": 0, "lge_c0": 0},
-                "micro_case_cursors_by_group": {},
-                "micro_case_rng_state_by_group": {},
-                "micro_patch_cursor": 0,
-                "micro_patch_rng_state": "ZERO_CREDIT_PROBE",
-                "scar_focus_cursor": 0,
-                "edema_focus_cursor": 0,
-                "sampler_rng_state": "ZERO_CREDIT_PROBE",
-                "batch_descriptor_cursor": 0,
-                "next_batch_descriptor_sha256": next_descriptor,
-                "next_optimizer_step_micro_descriptor_sha256": next_descriptor,
-                "next_optimizer_step_micro_descriptor_bundle": [],
-            },
+            loss_history_tail=[{"probe": "zero_credit_real_total_loss_step0", "loss": float(first_step["loss_mean"])}],
+            sampler_state=sampler_cursor_state,
             code_hash=source["source_manifest_sha256"],
             config_hash=json_sha({"probe": "checkpoint_resume_zero_credit", "schema_version": int(CHECKPOINT_SCHEMA_VERSION)}),
             split_hash=case_ids["split_sha256"],
@@ -889,14 +1240,33 @@ def run_checkpoint_resume_probe() -> dict[str, Any]:
         reloaded_optimizer.load_state_dict(reloaded_payload["optimizer"])
         reloaded_scheduler = CAREASEStageScheduler(reloaded_optimizer)
         reloaded_scheduler.load_state_dict(reloaded_payload["scheduler"])
-        reloaded_scheduler.step(2)
-        control_scheduler.step(2)
-        second_grad_reload_sha = _set_single_probe_gradient(reloaded_model, probe_parameter, 2.0e-4)
-        second_grad_control_sha = _set_single_probe_gradient(control_model, probe_parameter, 2.0e-4)
-        reloaded_optimizer.step()
-        control_optimizer.step()
+        reload_next = _optimizer_step_from_materialized_microbatches(
+            model=reloaded_model,
+            optimizer=reloaded_optimizer,
+            scheduler=reloaded_scheduler,
+            microbatches=next_microbatches,
+            global_step=1,
+            gradient_accumulation=4,
+            autocast_device_type="cpu",
+            autocast_enabled=False,
+            collect_metrics=True,
+        )
+        reload_grad_sha = _gradient_digest(reloaded_model)
+        control_next = _optimizer_step_from_materialized_microbatches(
+            model=control_model,
+            optimizer=control_optimizer,
+            scheduler=control_scheduler,
+            microbatches=next_microbatches,
+            global_step=1,
+            gradient_accumulation=4,
+            autocast_device_type="cpu",
+            autocast_enabled=False,
+            collect_metrics=True,
+        )
+        control_grad_sha = _gradient_digest(control_model)
         reload_digest = _model_optimizer_scheduler_digest(reloaded_model, reloaded_optimizer, reloaded_scheduler)
         control_digest = _model_optimizer_scheduler_digest(control_model, control_optimizer, control_scheduler)
+        rng_after_reload_next = {"torch": _state_value_digest(torch.random.get_rng_state())}
         sidecar_sha = checkpoint_path.with_suffix(checkpoint_path.suffix + ".sha256").read_text(encoding="utf-8").split()[0]
     next_step_matches = reload_digest == control_digest
     sidecar_matches = sidecar_sha == checkpoint_sha
@@ -904,6 +1274,8 @@ def run_checkpoint_resume_probe() -> dict[str, Any]:
         _state_value_digest(control_optimizer.state_dict())
     )
     scheduler_ramp_state_matches = reloaded_scheduler.state_dict() == control_scheduler.state_dict()
+    loss_matches = abs(float(reload_next["loss_mean"]) - float(control_next["loss_mean"])) <= 1.0e-8
+    gradient_matches = reload_grad_sha == control_grad_sha
     payload = {
         "status": "PASS"
         if int(CHECKPOINT_SCHEMA_VERSION) == 4
@@ -911,6 +1283,8 @@ def run_checkpoint_resume_probe() -> dict[str, Any]:
         and next_step_matches
         and optimizer_state_matches
         and scheduler_ramp_state_matches
+        and loss_matches
+        and gradient_matches
         else "FAIL",
         "probe_type": "zero_credit_schema_v4_save_reload_next_step_probe",
         "fold": 0,
@@ -923,19 +1297,30 @@ def run_checkpoint_resume_probe() -> dict[str, Any]:
         "checkpoint_sha256": checkpoint_sha,
         "checkpoint_sidecar_sha256": sidecar_sha,
         "checkpoint_sidecar_matches": sidecar_matches,
+        "first_descriptor_sha256": first_descriptor,
         "next_descriptor_sha256": next_descriptor,
-        "probe_parameter": probe_parameter,
-        "first_synthetic_gradient_sha256": first_grad_sha,
-        "second_reload_synthetic_gradient_sha256": second_grad_reload_sha,
-        "second_control_synthetic_gradient_sha256": second_grad_control_sha,
+        "first_step": first_step,
+        "reload_next_step": reload_next,
+        "control_next_step": control_next,
+        "first_real_total_loss_gradient_sha256": first_grad_sha,
+        "second_reload_real_total_loss_gradient_sha256": reload_grad_sha,
+        "second_control_real_total_loss_gradient_sha256": control_grad_sha,
+        "next_loss_matches_uninterrupted": loss_matches,
+        "next_gradient_matches_uninterrupted": gradient_matches,
         "next_step_matches_uninterrupted": next_step_matches,
         "reload_state_digest_sha256": reload_digest,
         "control_state_digest_sha256": control_digest,
-        "rng_and_cursor_state_matches": bool(reloaded_payload["next_optimizer_step_micro_descriptor_sha256"] == next_descriptor),
+        "rng_before_save": rng_before_save,
+        "rng_after_reload_next": rng_after_reload_next,
+        "rng_and_cursor_state_matches": bool(
+            reloaded_payload["next_optimizer_step_micro_descriptor_sha256"] == next_descriptor
+            and reloaded_payload["next_optimizer_step_micro_descriptor_bundle"] == next_bundle
+        ),
         "optimizer_state_matches": optimizer_state_matches,
         "scheduler_ramp_state_matches": scheduler_ramp_state_matches,
         "formal_optimizer_step_executed": False,
-        "zero_credit_synthetic_optimizer_steps": 2,
+        "zero_credit_real_total_loss_optimizer_steps": 2,
+        "synthetic_gradient_used": False,
         "checkpoint_written": True,
         "checkpoint_storage": "temporary_directory_removed_after_hashing",
         "formal_training_started": False,
@@ -944,17 +1329,156 @@ def run_checkpoint_resume_probe() -> dict[str, Any]:
     return payload
 
 
+def _save_zero_credit_inference_checkpoint(path: Path, model: Any, architecture: dict[str, Any], *, case_ids: dict[str, Any]) -> None:
+    from src.care_myocardium.training.care_ase_trainer import (
+        CAREASEStageScheduler,
+        CHECKPOINT_SCHEMA_VERSION,
+        build_optimizer,
+        save_care_ase_checkpoint,
+    )
+
+    optimizer = build_optimizer(model)
+    scheduler = CAREASEStageScheduler(optimizer)
+    source = source_manifest()
+    git_head = git_value("rev-parse", "HEAD") or "UNSET"
+    save_care_ase_checkpoint(
+        path,
+        model=model,
+        optimizer=optimizer,
+        scheduler=scheduler,
+        global_step=1,
+        microbatch_cursor=0,
+        stage_id="A",
+        next_batch_hash="ZERO_CREDIT_DEPLOYMENT_LOAD_ONLY",
+        loss_history_tail=[{"probe": "zero_credit_deployment_loader", "loss": 0.0}],
+        sampler_state={"next_batch_descriptor_sha256": "ZERO_CREDIT_DEPLOYMENT_LOAD_ONLY"},
+        code_hash=source["source_manifest_sha256"],
+        config_hash=json_sha({"probe": "deployment_loader_zero_credit", "schema_version": int(CHECKPOINT_SCHEMA_VERSION)}),
+        split_hash=case_ids["split_sha256"],
+        plans_hash=sha256_file(Path(model.config.plans_path)),
+        stock_checkpoint_hash=architecture["stock_checkpoint_sha256"],
+        training_source_commit_sha=git_head,
+        formal_execution_checkout_commit_sha=git_head,
+        review_packet_commit_sha=git_head,
+        origin_main_sha=git_head,
+        origin_main_at_review_request_sha=git_head,
+        effective_contract_sha256=FROZEN_CONTRACT_SHA256,
+        external_review_permit_sha256="ZERO_CREDIT_PROBE_NOT_FORMAL_TRAINING",
+        formal_runtime_input_bundle_sha256="ZERO_CREDIT_PROBE_NOT_FORMAL_TRAINING",
+        critical_source_manifest_sha256=source["source_manifest_sha256"],
+        split_file_sha256=case_ids["split_sha256"],
+        split_case_lists_sha256=json_sha(case_ids),
+        actual_train_case_ids_sha256=json_sha(case_ids),
+        hard_negative_manifest_sha256="ZERO_CREDIT_PROBE_NOT_FORMAL_TRAINING",
+        area_reference_receipt_sha256="ZERO_CREDIT_PROBE_NOT_FORMAL_TRAINING",
+        case_metadata_sha256="ZERO_CREDIT_PROBE_NOT_FORMAL_TRAINING",
+        augmentation_contract_sha256="ZERO_CREDIT_PROBE_NOT_FORMAL_TRAINING",
+        full_case_target_profile_manifest_sha256="ZERO_CREDIT_PROBE_NOT_FORMAL_TRAINING",
+        full_case_target_cache_manifest_sha256="ZERO_CREDIT_PROBE_NOT_FORMAL_TRAINING",
+        logical_chunk_start=0,
+        logical_chunk_end=2000,
+        resume_invocation_start=0,
+        checkpoint_reason="zero_credit_deployment_loader_probe",
+        environment_determinism_manifest_sha256="ZERO_CREDIT_PROBE_NOT_FORMAL_TRAINING",
+        precision_mode="fp32_zero_credit_probe",
+        formal_resumable=False,
+    )
+
+
 def run_deployment_load_probe(architecture: dict[str, Any]) -> dict[str, Any]:
+    import shutil
+    import torch
+
+    from src.care_myocardium.data.case_metadata import load_myops_case_metadata
+    from src.care_myocardium.inference.care_ase_r2_full_volume import predict_care_ase_r2_full_volume_logits
+    from src.care_myocardium.models.care_ase import build_care_ase_for_fold
+    from src.care_myocardium.training.care_ase_trainer import load_care_ase_checkpoint_for_inference
+
+    case_ids = train_side_case_ids(0)
+    metadata = load_myops_case_metadata(Path(os.environ.get("CARE_ROOT", ROOT)).resolve())
+    case_id = _smallest_train_case_id(fold=0, t2_present=False)
+    case = _load_preprocessed_case(case_id)
+    availability = tuple(float(v) for v in metadata[case_id].availability)
+    opened_paths: list[str] = []
+    blocked_paths: list[str] = []
+    stock_checkpoint = Path(architecture["stock_checkpoint_path"]).resolve()
+    with tempfile.TemporaryDirectory(prefix="care_ase_deployment_probe_") as tmp:
+        deploy_dir = Path(tmp) / "portable_care_ase"
+        deploy_dir.mkdir(parents=True)
+        plans_src = _runtime_path("nnUNet_preprocessed", "Dataset501_CAREMyoPS/nnUNetPlans.json")
+        plans_dst = deploy_dir / "nnUNetPlans.json"
+        shutil.copy2(plans_src, plans_dst)
+        model = build_care_ase_for_fold(0, map_location="cpu")
+        checkpoint_path = deploy_dir / "care_ase_zero_credit_inference.pth"
+        _save_zero_credit_inference_checkpoint(checkpoint_path, model, architecture, case_ids=case_ids)
+
+        original_open = builtins.open
+        original_path_open = Path.open
+
+        def _audit_path(path: Any) -> None:
+            try:
+                resolved = Path(path).resolve()
+            except Exception:
+                return
+            opened_paths.append(str(resolved))
+            if resolved == stock_checkpoint or str(resolved).startswith(str(ROOT.resolve())):
+                blocked_paths.append(str(resolved))
+                raise RuntimeError(f"deployment load attempted forbidden host path: {resolved}")
+
+        def audited_open(file: Any, *args: Any, **kwargs: Any) -> Any:
+            _audit_path(file)
+            return original_open(file, *args, **kwargs)
+
+        def audited_path_open(self: Path, *args: Any, **kwargs: Any) -> Any:
+            _audit_path(self)
+            return original_path_open(self, *args, **kwargs)
+
+        builtins.open = audited_open
+        Path.open = audited_path_open  # type: ignore[method-assign]
+        try:
+            loaded_model, loaded_payload = load_care_ase_checkpoint_for_inference(
+                checkpoint_path,
+                map_location="cpu",
+                plans_path=plans_dst,
+            )
+        finally:
+            builtins.open = original_open
+            Path.open = original_path_open  # type: ignore[method-assign]
+        loaded_model.eval()
+        image = _torch_full_case(case, torch.device("cpu"))
+        avail = _availability_tensor(availability, torch.device("cpu"))
+        with torch.no_grad():
+            logits = predict_care_ase_r2_full_volume_logits(
+                loaded_model,
+                image,
+                avail,
+                patch_size=_full_cover_patch_size(tuple(int(v) for v in image.shape[-3:])),
+                overlap=0.5,
+                global_step=14000,
+                use_gaussian=False,
+            )
     payload = {
-        "status": "PASS",
+        "status": "PASS"
+        if bool(torch.isfinite(logits).all())
+        and loaded_payload.get("deployment_load_requires_stock_checkpoint") is False
+        and not blocked_paths
+        else "FAIL",
         "probe_type": "zero_credit_deployment_manifest_probe",
         "fold": 0,
+        "case": _case_binding_payload(case, availability=availability, center=metadata[case_id].center),
+        "case_selection": "smallest_train_side_preprocessed_no_t2_case_by_stride_aligned_patch_volume",
         "self_contained_load": True,
-        "opened_stock_checkpoint_after_deployment_load": False,
+        "opened_stock_checkpoint_after_deployment_load": stock_checkpoint.as_posix() in opened_paths,
+        "blocked_forbidden_paths": blocked_paths,
+        "opened_file_manifest_sha256": json_sha(sorted(opened_paths)),
+        "opened_file_count": len(opened_paths),
         "deployment_loader": "src.care_myocardium.training.care_ase_trainer.load_care_ase_checkpoint_for_inference",
         "stock_checkpoint_sha256": architecture["stock_checkpoint_sha256"],
         "source_manifest_bound": True,
         "relocatable_assets_declared": True,
+        "declared_assets": ["care_ase_zero_credit_inference.pth", "care_ase_zero_credit_inference.pth.sha256", "nnUNetPlans.json"],
+        "inference_logits_shape": list(logits.shape),
+        "inference_logits_finite": bool(torch.isfinite(logits).all()),
         "formal_training_started": False,
         "outer_accessed": False,
     }
@@ -962,12 +1486,61 @@ def run_deployment_load_probe(architecture: dict[str, Any]) -> dict[str, Any]:
 
 
 def run_evaluator_smoke_probe() -> dict[str, Any]:
+    import numpy as np
+    import torch
+
+    from src.care_myocardium.data.case_metadata import load_myops_case_metadata
+    from src.care_myocardium.evaluation.care_ase_r2_evaluator import evaluate_care_ase_r2_prediction_pair
+    from src.care_myocardium.inference.care_ase_r2_decode import decode_care_ase_r2_logits
+    from src.care_myocardium.inference.care_ase_r2_full_volume import predict_care_ase_r2_full_volume_logits
+    from src.care_myocardium.models.care_ase import build_care_ase_for_fold
+
+    case_ids = train_side_case_ids(0)
+    metadata = load_myops_case_metadata(Path(os.environ.get("CARE_ROOT", ROOT)).resolve())
+    case_id = _smallest_train_case_id(fold=0, t2_present=True)
+    case = _load_preprocessed_case(case_id)
+    availability = tuple(float(v) for v in metadata[case_id].availability)
+    image = _torch_full_case(case, torch.device("cpu"))
+    avail = _availability_tensor(availability, torch.device("cpu"))
+    model = build_care_ase_for_fold(0, map_location="cpu")
+    model.eval()
+    with torch.no_grad():
+        logits = predict_care_ase_r2_full_volume_logits(
+            model,
+            image,
+            avail,
+            patch_size=_full_cover_patch_size(tuple(int(v) for v in image.shape[-3:])),
+            overlap=0.5,
+            global_step=14000,
+            use_gaussian=False,
+        )
+    care_pred = decode_care_ase_r2_logits(logits, avail).squeeze(0).cpu().numpy().astype(np.int16)
+    baseline_pred = care_pred.copy()
+    result = evaluate_care_ase_r2_prediction_pair(
+        case_id=case_id,
+        care_prediction=care_pred,
+        baseline_prediction=baseline_pred,
+        ground_truth=case["segmentation"],
+        availability=availability,
+        spacing_zyx=case["spacing_zyx"],
+        tta="none",
+        decode="fixed_argmax_t2_present_0_1_2_3_4_5_no_t2_0_1_2_3_5",
+        center=metadata[case_id].center,
+    )
     payload = {
-        "status": "PASS",
+        "status": "PASS" if set(REQUIRED_METRICS).issubset(set(result["metrics"])) else "FAIL",
         "probe_type": "zero_credit_metric_interface_smoke",
-        "same_case_population": True,
-        "same_tta_decode_metric_interface": True,
+        "case": _case_binding_payload(case, availability=availability, center=metadata[case_id].center),
+        "case_selection": "smallest_train_side_preprocessed_t2_case_by_stride_aligned_patch_volume",
+        "same_case_population": bool(result["same_case_population"]),
+        "same_tta_decode_metric_interface": result["same_tta"] == "none"
+        and result["same_decode"] == "fixed_argmax_t2_present_0_1_2_3_4_5_no_t2_0_1_2_3_5",
         "metrics": REQUIRED_METRICS,
+        "evaluator_result": result,
+        "called_module": "src.care_myocardium.evaluation.care_ase_r2_evaluator.evaluate_care_ase_r2_prediction_pair",
+        "care_prediction_sha256": sha256_bytes(care_pred.tobytes()),
+        "baseline_prediction_sha256": sha256_bytes(baseline_pred.tobytes()),
+        "result_sha256": json_sha(result),
         "canonical_full_volume_only": True,
         "patch_proxy_evaluator": False,
         "formal_training_started": False,
@@ -977,42 +1550,96 @@ def run_evaluator_smoke_probe() -> dict[str, Any]:
 
 
 def run_hard_negative_binding_probe(architecture: dict[str, Any]) -> dict[str, Any]:
-    candidates = [
+    preferred = [
+        ROOT / "results/20260804_care_ase_r2_emergency_9h_training_docker/hard_negative_manifest_fold0.json",
+        ROOT / "results/20260803_care_ase_r2_last_hotfix_v9/hard_negative_manifest_fold0.json",
+        ROOT / "results/20260803_care_ase_r2_final_pretraining_closure_v8/hard_negative_manifest_fold0.json",
+    ]
+    fallback = [
+        ROOT / "results/20260804_care_ase_r2_emergency_9h_training_docker/hard_negative_manifest_fold1.json",
         ROOT / "results/20260803_care_ase_r2_last_hotfix_v9/hard_negative_manifest_fold1.json",
         ROOT / "results/20260803_care_ase_r2_final_pretraining_closure_v8/hard_negative_manifest_fold1.json",
-        ROOT / "results/20260804_care_ase_r2_emergency_9h_training_docker/hard_negative_manifest_fold1.json",
+        ROOT / "results/20260804_care_ase_r2_emergency_9h_training_docker/hard_negative_manifest_fold4.json",
+        ROOT / "results/20260803_care_ase_r2_last_hotfix_v9/hard_negative_manifest_fold4.json",
+        ROOT / "results/20260803_care_ase_r2_final_pretraining_closure_v8/hard_negative_manifest_fold4.json",
     ]
+    candidates = preferred + fallback
     manifest_path = next((path for path in candidates if path.is_file()), None)
     if manifest_path is None:
         raise FileNotFoundError("no tracked hard-negative manifest is available")
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     cases = manifest.get("cases", {})
-    case_id = next((case for case, row in cases.items() if not str(case).startswith("synthetic_") and row.get("source_checkpoint_sha256")), None)
+    case_id = next(
+        (
+            case
+            for case, row in cases.items()
+            if not str(case).startswith("synthetic_")
+            and row.get("source_checkpoint_sha256")
+            and int(row.get("source_stock_fold", -1)) == 0
+            and row.get("proof_case_not_in_source_fold_train") is True
+        ),
+        None,
+    )
     if case_id is None:
         raise RuntimeError(f"hard-negative manifest has no usable real case binding: {manifest_path}")
     row = cases[case_id]
+    source_prediction_path = Path(str(row.get("source_prediction_path", "")))
+    source_prediction_exists = source_prediction_path.is_file()
+    source_prediction_sha = sha256_file(source_prediction_path) if source_prediction_exists else row.get("source_prediction_sha256")
+    mask_payload = {
+        "case_id": case_id,
+        "target_masks_counts": row.get("target_masks_counts", {}),
+        "component_receipts": row.get("component_receipts", {}),
+        "source_prediction_sha256": source_prediction_sha,
+    }
     coordinate_payload = {
         "case_id": case_id,
         "sampled_coordinates": row.get("sampled_coordinates", {}),
         "target_coordinate_counts": row.get("target_coordinate_counts", {}),
+        "coordinate_semantic_validation": row.get("coordinate_semantic_validation", {}),
     }
+    manifest_fold = int(manifest.get("fold", -1))
+    fallback_used = manifest_path not in preferred
     payload = {
         "status": "PASS",
         "probe_type": "zero_credit_tracked_oof_hard_negative_binding",
         "case_id": case_id,
+        "source_train_split_fold": 0,
+        "source_validation_fold": manifest_fold,
         "manifest_path": str(manifest_path.relative_to(ROOT)),
         "manifest_sha256": sha256_file(manifest_path),
         "oof_prediction_bound": True,
-        "mask_sha256": row.get("source_prediction_sha256") or sha256_file(manifest_path),
+        "source_prediction_path": str(row.get("source_prediction_path")),
+        "source_prediction_exists": source_prediction_exists,
+        "source_prediction_sha256": source_prediction_sha,
+        "source_checkpoint_path": str(row.get("source_checkpoint_path")),
+        "source_checkpoint_sha256": row.get("source_checkpoint_sha256"),
+        "source_stock_fold": int(row.get("source_stock_fold", -1)),
+        "proof_case_not_in_source_fold_train": bool(row.get("proof_case_not_in_source_fold_train")),
+        "mask_sha256": json_sha(mask_payload),
         "coordinate_sha256": json_sha(coordinate_payload),
         "checkpoint_sha256": row.get("source_checkpoint_sha256") or architecture["stock_checkpoint_sha256"],
         "grid_sha256": row.get("preprocessed_geometry_sha256") or row.get("preprocessed_prediction_array_sha256") or sha256_file(manifest_path),
         "requested_category": "canonical_oof_or_component_hard_negative",
-        "resolved_category": "tracked_manifest_case_binding",
-        "requested_resolved_mismatch_recorded": True,
+        "resolved_category": "same_source_fold_oof_manifest_case_binding" if not fallback_used else "cross_validation_fold_oof_manifest_case_binding",
+        "fallback_used": fallback_used,
+        "fallback_reason": None if not fallback_used else "fold0_hard_negative_manifest_absent_but_manifest_row_proves_source_stock_fold0_and_case_not_in_source_fold_train",
+        "requested_resolved_mismatch_recorded": fallback_used,
+        "coordinate_semantic_validation": row.get("coordinate_semantic_validation", {}),
         "formal_training_started": False,
         "outer_accessed": False,
     }
+    payload["status"] = (
+        "PASS"
+        if payload["oof_prediction_bound"]
+        and payload["proof_case_not_in_source_fold_train"]
+        and int(payload["source_stock_fold"]) == 0
+        and _is_sha256_like(payload["checkpoint_sha256"])
+        and _is_sha256_like(payload["grid_sha256"])
+        and _is_sha256_like(payload["mask_sha256"])
+        and _is_sha256_like(payload["coordinate_sha256"])
+        else "FAIL"
+    )
     return payload
 
 
@@ -1060,6 +1687,7 @@ def implementation_evidence(
     static_checks: dict[str, Any],
     architecture: dict[str, Any],
     parameter_registry: dict[str, Any],
+    step0_parity_receipt: dict[str, Any],
     forward_backward_receipt: dict[str, Any],
     inference_receipt: dict[str, Any],
     checkpoint_resume_receipt: dict[str, Any],
@@ -1071,6 +1699,7 @@ def implementation_evidence(
     verifier = json.loads((ROOT / "results/agent_flow_v3/care-ase-faithful/verification/verifier_session_receipt.json").read_text(encoding="utf-8"))
     executor = json.loads((ROOT / "results/agent_flow_v3/care-ase-faithful/executor_session_receipt.json").read_text(encoding="utf-8"))
     stock = architecture["stock_parameter_byte_coverage"]
+    step0_payload = step0_parity_receipt["payload"]
     projection_ok = forward_backward_receipt["payload"]["required_projection_nonzero_finite_count"] == forward_backward_receipt["payload"]["required_projection_parameter_count"]
     upstream_ok = forward_backward_receipt["payload"]["upstream_nonzero_finite_count_after_projection_update"] == forward_backward_receipt["payload"]["upstream_parameter_count_after_projection_update"]
     evidence = {
@@ -1093,8 +1722,11 @@ def implementation_evidence(
                 "decoder_reset": False,
                 "channels_shrunk": False,
                 "trunk_permanently_frozen": False,
-                "stock_compatible_logits_max_abs_err": 0.0,
-                "stock_compatible_argmax_changed_voxels": 0,
+                "stock_compatible_logits_max_abs_err": max(
+                    float(step0_payload["t2_present_stock_max_abs_err"]),
+                    float(step0_payload["no_t2_stock_max_abs_err"]),
+                ),
+                "stock_compatible_argmax_changed_voxels": int(step0_payload["compatible_argmax_changed_voxels"]),
                 "encoder_and_shared_low_mid_decoder_run_once": True,
             },
             "pathology_decoders": {
@@ -1145,10 +1777,10 @@ def implementation_evidence(
             "second_backward_adapter_gate_context_grad_nonzero_finite": upstream_ok,
         },
         "no_t2_semantics": {
-            "edema_owned_module_call_count": 0,
-            "edema_supervision_rows": 0,
+            "edema_owned_module_call_count": int(forward_backward_receipt["payload"]["mixed_batch_no_t2"]["edema_owned_module_call_count"]),
+            "edema_supervision_rows": int(forward_backward_receipt["payload"]["mixed_batch_no_t2"]["edema_supervision_rows"]),
             "edema_negative_rows": 0,
-            "edema_parameter_grad_abs_sum": 0.0,
+            "edema_parameter_grad_abs_sum": float(forward_backward_receipt["payload"]["mixed_batch_no_t2"]["edema_parameter_grad_abs_sum"]),
             "class4_in_softmax_dice_argmax_denominator": False,
             "class5_decode_remaps_to_official_label5": inference_receipt["payload"]["class5_decode_remaps_to_official_label5"],
             "mixed_batch_safe_scatter": True,
@@ -1198,6 +1830,13 @@ def implementation_evidence(
             "early_checkpoint_uses_final_step_ramp": False,
         },
         "runtime_receipts": {
+            "step0_parity_probe": {
+                "executed": True,
+                "command_sha256": step0_parity_receipt["command_sha256"],
+                "exit_code": step0_parity_receipt["exit_code"],
+                "stdout_sha256": step0_parity_receipt["stdout_sha256"],
+                "stderr_sha256": step0_parity_receipt["stderr_sha256"],
+            },
             "forward_backward_probe": {
                 "executed": True,
                 "command_sha256": forward_backward_receipt["command_sha256"],
@@ -1211,6 +1850,34 @@ def implementation_evidence(
                 "exit_code": inference_receipt["exit_code"],
                 "stdout_sha256": inference_receipt["stdout_sha256"],
                 "stderr_sha256": inference_receipt["stderr_sha256"],
+            },
+            "checkpoint_resume_probe": {
+                "executed": True,
+                "command_sha256": checkpoint_resume_receipt["command_sha256"],
+                "exit_code": checkpoint_resume_receipt["exit_code"],
+                "stdout_sha256": checkpoint_resume_receipt["stdout_sha256"],
+                "stderr_sha256": checkpoint_resume_receipt["stderr_sha256"],
+            },
+            "deployment_load_probe": {
+                "executed": True,
+                "command_sha256": deployment_load_receipt["command_sha256"],
+                "exit_code": deployment_load_receipt["exit_code"],
+                "stdout_sha256": deployment_load_receipt["stdout_sha256"],
+                "stderr_sha256": deployment_load_receipt["stderr_sha256"],
+            },
+            "evaluator_smoke": {
+                "executed": True,
+                "command_sha256": evaluator_smoke_receipt["command_sha256"],
+                "exit_code": evaluator_smoke_receipt["exit_code"],
+                "stdout_sha256": evaluator_smoke_receipt["stdout_sha256"],
+                "stderr_sha256": evaluator_smoke_receipt["stderr_sha256"],
+            },
+            "hard_negative_binding": {
+                "executed": True,
+                "command_sha256": hard_negative_binding_receipt["command_sha256"],
+                "exit_code": hard_negative_binding_receipt["exit_code"],
+                "stdout_sha256": hard_negative_binding_receipt["stdout_sha256"],
+                "stderr_sha256": hard_negative_binding_receipt["stderr_sha256"],
             },
             "canned_without_execution": False,
         },
@@ -1241,6 +1908,7 @@ def implementation_evidence(
             "static_architecture_checks": f"results/agent_flow_v3/{TASK_ID}/implementation/static_architecture_checks.json",
             "architecture_signature": f"results/agent_flow_v3/{TASK_ID}/implementation/architecture_signature.json",
             "parameter_owner_registry": f"results/agent_flow_v3/{TASK_ID}/implementation/parameter_owner_registry.json",
+            "step0_parity_probe": f"results/agent_flow_v3/{TASK_ID}/implementation/step0_parity_probe_receipt.json",
             "forward_backward_probe": f"results/agent_flow_v3/{TASK_ID}/implementation/forward_backward_probe_receipt.json",
             "inference_probe": f"results/agent_flow_v3/{TASK_ID}/implementation/inference_probe_receipt.json",
             "checkpoint_resume_probe": f"results/agent_flow_v3/{TASK_ID}/implementation/checkpoint_resume_probe_receipt.json",
@@ -1297,6 +1965,22 @@ def build_runtime_receipts() -> int:
     write_json(IMPLEMENTATION_DIR / "architecture_signature.json", arch)
     write_json(IMPLEMENTATION_DIR / "parameter_owner_registry.json", registry)
 
+    step0_payload = run_step0_parity_probe()
+    step0_receipt = _receipt_for_probe(
+        "step0_parity_probe",
+        step0_payload,
+        {"entrypoint": "run_step0_parity_probe", "fold": 0, "real_train_cases": True, "zero_credit": True},
+    )
+    if step0_receipt["exit_code"] != 0:
+        payload = fail_closed_payload(
+            "step0 stock parity zero-credit probe failed",
+            ["step0_parity_probe_status_not_pass"],
+            {"step0_parity_probe": step0_payload, **env_details},
+            manifest,
+        )
+        write_json(IMPLEMENTATION_DIR / "fail_closed_implementation_receipt.json", payload)
+        write_summary(2, status="FAIL_CLOSED")
+        return 2
     fb_payload = run_forward_backward_probe()
     fb_receipt = _receipt_for_probe(
         "forward_backward_probe",
@@ -1369,6 +2053,7 @@ def build_runtime_receipts() -> int:
         static_checks=static_checks,
         architecture=arch,
         parameter_registry=registry,
+        step0_parity_receipt=step0_receipt,
         forward_backward_receipt=fb_receipt,
         inference_receipt=inf_receipt,
         checkpoint_resume_receipt=checkpoint_receipt,
@@ -1388,6 +2073,7 @@ def build_runtime_receipts() -> int:
         "architecture_signature_sha256": arch["architecture_signature_sha256"],
         "parameter_owner_registry_sha256": registry["parameter_owner_registry_sha256"],
         "implementation_evidence_sha256": evidence["implementation_evidence_sha256"],
+        "step0_parity_probe_receipt_sha256": json_sha(step0_receipt),
         "forward_backward_probe_receipt_sha256": json_sha(fb_receipt),
         "inference_probe_receipt_sha256": json_sha(inf_receipt),
         "checkpoint_resume_probe_receipt_sha256": json_sha(checkpoint_receipt),

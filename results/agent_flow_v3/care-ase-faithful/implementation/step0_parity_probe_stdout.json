@@ -1,0 +1,200 @@
+{
+  "attribute_error": null,
+  "attribute_error_ignored": false,
+  "compatible_argmax_changed_voxels": 0,
+  "fold": 0,
+  "formal_training_started": false,
+  "imported_step0_parity_report": true,
+  "no_t2_case": {
+    "array_sha256": "8cfa02ef7503b6eceac81525db865b475f96321709c15325991f3e95e08631e6",
+    "availability": [
+      1.0,
+      0.0,
+      0.0
+    ],
+    "case_id": "Case1001",
+    "center": "CenterA",
+    "geometry_sha256": "2c96243b3053d2bc473024257656ac05f18f26003b88a611d5dcef385e5e2fb3",
+    "image_shape": [
+      3,
+      20,
+      256,
+      256
+    ],
+    "properties_sha256": "4959c949a8b7414436756028ee1ddf4e2a251712bd231a705207310e09f6af05",
+    "segmentation_sha256": "c1fb19a9d833cf7d2e1f5e6b56bce4e729dea53dff2e839646107786a6c5fe51",
+    "segmentation_shape": [
+      20,
+      256,
+      256
+    ],
+    "spacing_zyx": [
+      11.0,
+      1.3672000169754028,
+      1.3672000169754028
+    ]
+  },
+  "no_t2_class4_in_final_competition": false,
+  "no_t2_descriptor_sha256": "d90b0a97d0c53a6da73f35b727ff8b58912414aa3416dcff7f048c46fb62a7a4",
+  "no_t2_edema_owned_module_call_count": 0,
+  "no_t2_step0_report": {
+    "anatomy_step0_parity_max_abs_error": 0.0,
+    "auxiliary_half_feature_source": "removed_uncontracted_auxiliary_tower_pathology_branches_own_half_features",
+    "checkpoint_path": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_final.pth",
+    "checkpoint_sha256": "8bceb20cae8920e87d43b14665a0db9dfd4f1204533d25a3cd6e40ad9de74111",
+    "clone_decoder_stage_indices": [
+      4,
+      5
+    ],
+    "compatibility_argmax_changed_voxels": 0,
+    "edema_owned_forward_call_counts": {
+      "component_heads.edema_boundary": 0,
+      "component_heads.edema_context": 0,
+      "component_heads.edema_extent_head": 0,
+      "component_heads.edema_injury": 0,
+      "edema_branch": 0,
+      "edema_c0_full_adapter": 0,
+      "edema_c0_half_adapter": 0,
+      "edema_dilation_context": 0,
+      "edema_full_projections": 0,
+      "edema_half_projections": 0,
+      "edema_lge_full_adapter": 0,
+      "edema_lge_half_adapter": 0,
+      "edema_t2_full_adapter": 0,
+      "edema_t2_half_adapter": 0
+    },
+    "fold": 0,
+    "mixed_batch_rowwise_edema_execution": {
+      "edema_graph_called_for_t2_present_subset": false,
+      "no_t2_rows": 1,
+      "no_t2_rows_excluded_by_indexing": true,
+      "t2_present_rows": 0
+    },
+    "no_t2_class4_excluded_from_competition": true,
+    "no_t2_decode_class_set": [
+      0,
+      1,
+      2,
+      3,
+      5
+    ],
+    "no_t2_edema_owned_row_call_count": 0,
+    "no_t2_five_class_decode_changed_voxels": 0,
+    "no_t2_stock_class4_zeroed_into_six_class_argmax": false,
+    "normal_forward_reads_stock_pathology_logits": false,
+    "reference_load_missing_keys": [],
+    "reference_load_unexpected_keys": [],
+    "single_shared_low_mid_decoder_forward": true,
+    "split_before_highest_decoder_resolutions": 2,
+    "status": "PASS",
+    "step0_edema_logit_parity_vs_stock_class4_max_abs_error": 0.0,
+    "step0_edema_logit_parity_vs_stock_class4_t2_present_only_max_abs_error": 0.0,
+    "step0_scar_logit_parity_vs_stock_class5_max_abs_error": 0.0,
+    "stock_load_missing_keys": [],
+    "stock_load_unexpected_keys": [],
+    "stock_parameter_byte_coverage": 1.0,
+    "t2_present_six_class_decode_changed_voxels": 0
+  },
+  "no_t2_stock_max_abs_err": 0.0,
+  "outer_accessed": false,
+  "probe_type": "train_split_real_case_step0_stock_parity_and_no_t2_regression",
+  "random_tensor_used": false,
+  "split_sha256": "9c3e9f3b7e4565a5c3c2589ddbb913c78c0ad423f4265370585841c93c6f880a",
+  "status": "PASS",
+  "step0_sample_shape": [
+    1,
+    3,
+    8,
+    64,
+    64
+  ],
+  "t2_present_case": {
+    "array_sha256": "78d0e980500f4af842a421ab6de5cdab0da77fd4c6cf41ab49bd3945677e1544",
+    "availability": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "case_id": "Case2003",
+    "center": "CenterB",
+    "geometry_sha256": "ccc1f57a72852cf091037138be52e3cd57893b14fd61381e3ee9e0c0400eac54",
+    "image_shape": [
+      3,
+      10,
+      291,
+      239
+    ],
+    "properties_sha256": "353df97be805c93bc51d4f56066895c4d2ca2c18a26dfe3813f6708c9e33d732",
+    "segmentation_sha256": "e568a2e686d80ead61882ab940f845f7d77718ff85c86b168b5f3524f9129f81",
+    "segmentation_shape": [
+      10,
+      291,
+      239
+    ],
+    "spacing_zyx": [
+      10.0,
+      1.5625,
+      1.5625
+    ]
+  },
+  "t2_present_descriptor_sha256": "8bf123099f9abe4b257377c9f99fde719dc4d59d6ef68de32b533b629fb244fb",
+  "t2_present_step0_report": {
+    "anatomy_step0_parity_max_abs_error": 0.0,
+    "auxiliary_half_feature_source": "removed_uncontracted_auxiliary_tower_pathology_branches_own_half_features",
+    "checkpoint_path": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_final.pth",
+    "checkpoint_sha256": "8bceb20cae8920e87d43b14665a0db9dfd4f1204533d25a3cd6e40ad9de74111",
+    "clone_decoder_stage_indices": [
+      4,
+      5
+    ],
+    "compatibility_argmax_changed_voxels": 0,
+    "edema_owned_forward_call_counts": {
+      "component_heads.edema_boundary": 1,
+      "component_heads.edema_context": 1,
+      "component_heads.edema_extent_head": 1,
+      "component_heads.edema_injury": 1,
+      "edema_branch": 0,
+      "edema_c0_full_adapter": 1,
+      "edema_c0_half_adapter": 1,
+      "edema_dilation_context": 1,
+      "edema_full_projections": 1,
+      "edema_half_projections": 1,
+      "edema_lge_full_adapter": 1,
+      "edema_lge_half_adapter": 1,
+      "edema_t2_full_adapter": 1,
+      "edema_t2_half_adapter": 1
+    },
+    "fold": 0,
+    "mixed_batch_rowwise_edema_execution": {
+      "edema_graph_called_for_t2_present_subset": true,
+      "no_t2_rows": 0,
+      "no_t2_rows_excluded_by_indexing": false,
+      "t2_present_rows": 1
+    },
+    "no_t2_class4_excluded_from_competition": true,
+    "no_t2_decode_class_set": [
+      0,
+      1,
+      2,
+      3,
+      5
+    ],
+    "no_t2_edema_owned_row_call_count": 0,
+    "no_t2_five_class_decode_changed_voxels": 0,
+    "no_t2_stock_class4_zeroed_into_six_class_argmax": false,
+    "normal_forward_reads_stock_pathology_logits": false,
+    "reference_load_missing_keys": [],
+    "reference_load_unexpected_keys": [],
+    "single_shared_low_mid_decoder_forward": true,
+    "split_before_highest_decoder_resolutions": 2,
+    "status": "PASS",
+    "step0_edema_logit_parity_vs_stock_class4_max_abs_error": 0.0,
+    "step0_edema_logit_parity_vs_stock_class4_t2_present_only_max_abs_error": 0.0,
+    "step0_scar_logit_parity_vs_stock_class5_max_abs_error": 0.0,
+    "stock_load_missing_keys": [],
+    "stock_load_unexpected_keys": [],
+    "stock_parameter_byte_coverage": 1.0,
+    "t2_present_six_class_decode_changed_voxels": 0
+  },
+  "t2_present_stock_max_abs_err": 0.0
+}

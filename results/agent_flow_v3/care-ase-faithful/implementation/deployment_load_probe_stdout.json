@@ -1,7 +1,53 @@
 {
+  "blocked_forbidden_paths": [],
+  "case": {
+    "array_sha256": "8cfa02ef7503b6eceac81525db865b475f96321709c15325991f3e95e08631e6",
+    "availability": [
+      1.0,
+      0.0,
+      0.0
+    ],
+    "case_id": "Case1001",
+    "center": "CenterA",
+    "geometry_sha256": "2c96243b3053d2bc473024257656ac05f18f26003b88a611d5dcef385e5e2fb3",
+    "image_shape": [
+      3,
+      20,
+      256,
+      256
+    ],
+    "properties_sha256": "4959c949a8b7414436756028ee1ddf4e2a251712bd231a705207310e09f6af05",
+    "segmentation_sha256": "c1fb19a9d833cf7d2e1f5e6b56bce4e729dea53dff2e839646107786a6c5fe51",
+    "segmentation_shape": [
+      20,
+      256,
+      256
+    ],
+    "spacing_zyx": [
+      11.0,
+      1.3672000169754028,
+      1.3672000169754028
+    ]
+  },
+  "case_selection": "smallest_train_side_preprocessed_no_t2_case_by_stride_aligned_patch_volume",
+  "declared_assets": [
+    "care_ase_zero_credit_inference.pth",
+    "care_ase_zero_credit_inference.pth.sha256",
+    "nnUNetPlans.json"
+  ],
   "deployment_loader": "src.care_myocardium.training.care_ase_trainer.load_care_ase_checkpoint_for_inference",
   "fold": 0,
   "formal_training_started": false,
+  "inference_logits_finite": true,
+  "inference_logits_shape": [
+    1,
+    6,
+    20,
+    256,
+    256
+  ],
+  "opened_file_count": 6,
+  "opened_file_manifest_sha256": "204d018b61caa6fec610be7e5f5aedf6b2a1647f40a5cfd484b65535adf2360d",
   "opened_stock_checkpoint_after_deployment_load": false,
   "outer_accessed": false,
   "probe_type": "zero_credit_deployment_manifest_probe",

@@ -5,16 +5,62 @@
     "zero_credit": true
   },
   "command_sha256": "4d63aa253f31cfc1d47e65546003a89a2b7088c58efb422b74157c30aa317eb5",
-  "created_utc": "2026-08-06T17:28:37Z",
+  "created_utc": "2026-08-06T20:03:30Z",
   "docker_or_upload": false,
   "executed": true,
   "exit_code": 0,
   "formal_training_started": false,
   "outer_accessed": false,
   "payload": {
+    "blocked_forbidden_paths": [],
+    "case": {
+      "array_sha256": "8cfa02ef7503b6eceac81525db865b475f96321709c15325991f3e95e08631e6",
+      "availability": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "case_id": "Case1001",
+      "center": "CenterA",
+      "geometry_sha256": "2c96243b3053d2bc473024257656ac05f18f26003b88a611d5dcef385e5e2fb3",
+      "image_shape": [
+        3,
+        20,
+        256,
+        256
+      ],
+      "properties_sha256": "4959c949a8b7414436756028ee1ddf4e2a251712bd231a705207310e09f6af05",
+      "segmentation_sha256": "c1fb19a9d833cf7d2e1f5e6b56bce4e729dea53dff2e839646107786a6c5fe51",
+      "segmentation_shape": [
+        20,
+        256,
+        256
+      ],
+      "spacing_zyx": [
+        11.0,
+        1.3672000169754028,
+        1.3672000169754028
+      ]
+    },
+    "case_selection": "smallest_train_side_preprocessed_no_t2_case_by_stride_aligned_patch_volume",
+    "declared_assets": [
+      "care_ase_zero_credit_inference.pth",
+      "care_ase_zero_credit_inference.pth.sha256",
+      "nnUNetPlans.json"
+    ],
     "deployment_loader": "src.care_myocardium.training.care_ase_trainer.load_care_ase_checkpoint_for_inference",
     "fold": 0,
     "formal_training_started": false,
+    "inference_logits_finite": true,
+    "inference_logits_shape": [
+      1,
+      6,
+      20,
+      256,
+      256
+    ],
+    "opened_file_count": 6,
+    "opened_file_manifest_sha256": "204d018b61caa6fec610be7e5f5aedf6b2a1647f40a5cfd484b65535adf2360d",
     "opened_stock_checkpoint_after_deployment_load": false,
     "outer_accessed": false,
     "probe_type": "zero_credit_deployment_manifest_probe",
@@ -28,7 +74,7 @@
   "request_nonce": "care-ase-20260806T090955Z",
   "schema": "CARE_ASE_FAITHFUL_ZERO_CREDIT_PROBE_RECEIPT_V1",
   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "stdout_sha256": "40b0190359ec3ef4031d8da7f0989db4c79aacc569565e28754f1c3490304860",
+  "stdout_sha256": "be9f2e7a84d73bb7d5e17e73026484ff2441212e2faab97f1aef3c70ab9be7f3",
   "task_id": "care-ase-faithful",
   "zero_credit": true
 }

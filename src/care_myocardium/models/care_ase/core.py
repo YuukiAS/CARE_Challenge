@@ -1256,8 +1256,7 @@ class CAREASE(nn.Module):
             "component_heads.edema_context": self.component_heads.edema_context,
             "component_heads.edema_injury": self.component_heads.edema_injury,
             "component_heads.edema_boundary": self.component_heads.edema_boundary,
-            "component_heads.edema_extent_presence": self.component_heads.edema_extent_presence,
-            "component_heads.edema_extent_area": self.component_heads.edema_extent_area,
+            "component_heads.edema_extent_head": self.component_heads.edema_extent_head,
             "edema_half_projections": self.edema_branch.half_projections,
             "edema_full_projections": self.edema_branch.full_projections,
         }

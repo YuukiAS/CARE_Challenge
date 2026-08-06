@@ -166,6 +166,39 @@ def global_extent_bias(
     return float(model.extent_wall_ramp(global_step)) * (slice_bias + wall_bias)
 
 
+def apply_global_extent_bias_after_aggregation(
+    model: torch.nn.Module,
+    averaged_base: torch.Tensor,
+    averaged_components: dict[str, torch.Tensor],
+    averaged_p_wall: torch.Tensor,
+    availability: torch.Tensor,
+    *,
+    global_step: int,
+    valid_spatial_mask: torch.Tensor,
+    metadata: dict[str, Any] | None = None,
+) -> torch.Tensor:
+    if metadata is not None:
+        metadata["global_bias_application_count"] = int(metadata.get("global_bias_application_count", 0)) + 1
+    averaged_base[:, 5:6] = averaged_base[:, 5:6] + global_extent_bias(
+        model,
+        averaged_components,
+        averaged_p_wall,
+        pathology="scar",
+        global_step=global_step,
+        valid_spatial_mask=valid_spatial_mask,
+    )
+    if bool((availability[:, 1] > 0.5).any()):
+        averaged_base[:, 4:5] = averaged_base[:, 4:5] + global_extent_bias(
+            model,
+            averaged_components,
+            averaged_p_wall,
+            pathology="edema",
+            global_step=global_step,
+            valid_spatial_mask=valid_spatial_mask,
+        )
+    return averaged_base
+
+
 def predict_care_ase_r2_full_volume_logits(
     model: torch.nn.Module,
     image: torch.Tensor,
@@ -179,6 +212,8 @@ def predict_care_ase_r2_full_volume_logits(
     use_mirroring: bool = False,
     allowed_mirror_axes: tuple[int, ...] = (),
     settings: CAREASEFullVolumeInferenceSettings | None = None,
+    metadata: dict[str, Any] | None = None,
+    exact_context_patch_size: tuple[int, int, int] | None = None,
 ) -> torch.Tensor:
     if settings is not None:
         patch_size = settings.patch_size
@@ -210,6 +245,39 @@ def predict_care_ase_r2_full_volume_logits(
             )
             spatial = tuple(int(v) for v in padded_image.shape[-3:])
             starts = compute_steps_for_sliding_window(spatial, tuple(int(v) for v in patch_size), float(overlap))
+            spatial_offsets = tuple(int(slc.start or 0) for slc in crop_slicer[-3:])
+            context_offsets = spatial_offsets
+            context_padded_image = None
+            context_patch_size = None
+            context_spatial = None
+            if exact_context_patch_size is not None:
+                context_patch_size = tuple(int(v) for v in exact_context_patch_size)
+                if any(context_patch_size[i] < int(patch_size[i]) for i in range(3)):
+                    raise ValueError("exact_context_patch_size must be greater than or equal to patch_size on every axis")
+                context_padded_image, context_crop_slicer = pad_nd_image(
+                    fp32_image,
+                    new_shape=context_patch_size,
+                    mode="constant",
+                    kwargs={"value": 0},
+                    return_slicer=True,
+                )
+                context_spatial = tuple(int(v) for v in context_padded_image.shape[-3:])
+                context_offsets = tuple(int(slc.start or 0) for slc in context_crop_slicer[-3:])
+            if metadata is not None:
+                metadata.update(
+                    {
+                        "input_shape": list(image.shape),
+                        "padded_spatial": list(spatial),
+                        "patch_size": [int(v) for v in patch_size],
+                        "overlap": float(overlap),
+                        "starts_per_axis": [[int(v) for v in axis] for axis in starts],
+                        "tile_count": int(len(starts[0]) * len(starts[1]) * len(starts[2])),
+                        "tile_base_logit_call_count": 0,
+                        "global_bias_application_count": 0,
+                        "exact_context_tiling": bool(context_padded_image is not None),
+                        "exact_context_patch_size": [int(v) for v in context_patch_size] if context_patch_size is not None else None,
+                    }
+                )
             base = image.new_zeros((image.shape[0], 6, *spatial), dtype=torch.float32)
             p_wall = image.new_zeros((image.shape[0], 1, *spatial), dtype=torch.float32)
             component_accums = {
@@ -223,7 +291,34 @@ def predict_care_ase_r2_full_volume_logits(
             for z in starts[0]:
                 for y in starts[1]:
                     for x in starts[2]:
-                        patch_padded = padded_image[..., z : z + patch_size[0], y : y + patch_size[1], x : x + patch_size[2]]
+                        if context_padded_image is None:
+                            patch_padded = padded_image[..., z : z + patch_size[0], y : y + patch_size[1], x : x + patch_size[2]]
+                            local_start = (0, 0, 0)
+                            output_size = tuple(int(v) for v in patch_size)
+                        else:
+                            assert context_patch_size is not None and context_spatial is not None
+                            context_origin = tuple(
+                                int(start) - int(spatial_offsets[axis]) + int(context_offsets[axis])
+                                for axis, start in enumerate((z, y, x))
+                            )
+                            context_start = tuple(
+                                max(
+                                    0,
+                                    min(
+                                        int(context_origin[axis]) - max(0, (int(context_patch_size[axis]) - int(patch_size[axis])) // 2),
+                                        int(context_spatial[axis]) - int(context_patch_size[axis]),
+                                    ),
+                                )
+                                for axis in range(3)
+                            )
+                            patch_padded = context_padded_image[
+                                ...,
+                                context_start[0] : context_start[0] + context_patch_size[0],
+                                context_start[1] : context_start[1] + context_patch_size[1],
+                                context_start[2] : context_start[2] + context_patch_size[2],
+                            ]
+                            local_start = tuple(int(context_origin[axis]) - int(context_start[axis]) for axis in range(3))
+                            output_size = tuple(int(v) for v in context_patch_size)
                         actual = tuple(int(v) for v in patch_size)
                         mirror_axes = tuple(int(axis) for axis in allowed_mirror_axes) if use_mirroring else ()
                         outputs = _forward_with_mirror_average(
@@ -233,6 +328,8 @@ def predict_care_ase_r2_full_volume_logits(
                             global_step=global_step,
                             mirror_axes=mirror_axes,
                         )
+                        if metadata is not None:
+                            metadata["tile_base_logit_call_count"] = int(metadata.get("tile_base_logit_call_count", 0)) + int(outputs["mirror_count"])
                         weight = (
                             gaussian_importance_map(
                                 patch_size,
@@ -243,36 +340,47 @@ def predict_care_ase_r2_full_volume_logits(
                             if use_gaussian
                             else image.new_ones((1, 1, *patch_size), dtype=torch.float32)
                         )
-                        _aggregate_patch_tensor(base, outputs["final_logits"].float() * weight, z, y, x, actual)
-                        _aggregate_patch_tensor(p_wall, outputs["p_wall_union"].float() * weight, z, y, x, actual)
+                        base_patch = outputs["final_logits"].float()[
+                            ...,
+                            local_start[0] : local_start[0] + actual[0],
+                            local_start[1] : local_start[1] + actual[1],
+                            local_start[2] : local_start[2] + actual[2],
+                        ]
+                        wall_patch = outputs["p_wall_union"].float()[
+                            ...,
+                            local_start[0] : local_start[0] + actual[0],
+                            local_start[1] : local_start[1] + actual[1],
+                            local_start[2] : local_start[2] + actual[2],
+                        ]
+                        _aggregate_patch_tensor(base, base_patch * weight, z, y, x, actual)
+                        _aggregate_patch_tensor(p_wall, wall_patch * weight, z, y, x, actual)
                         valid_patch = valid_padded[..., z : z + patch_size[0], y : y + patch_size[1], x : x + patch_size[2]]
                         _aggregate_patch_tensor(valid_support, valid_patch, z, y, x, actual)
                         components = outputs["components"]
                         for key, target in component_accums.items():
-                            up = F.interpolate(components[key].float(), size=patch_size, mode="trilinear", align_corners=False)
-                            _aggregate_patch_tensor(target, up * weight, z, y, x, actual)
+                            up = F.interpolate(components[key].float(), size=output_size, mode="trilinear", align_corners=False)
+                            component_patch = up[
+                                ...,
+                                local_start[0] : local_start[0] + actual[0],
+                                local_start[1] : local_start[1] + actual[1],
+                                local_start[2] : local_start[2] + actual[2],
+                            ]
+                            _aggregate_patch_tensor(target, component_patch * weight, z, y, x, actual)
                         _aggregate_patch_tensor(denominator, weight, z, y, x, actual)
             averaged_base = base / denominator.clamp_min(torch.finfo(base.dtype).eps)
             averaged_p_wall = p_wall / denominator.clamp_min(torch.finfo(p_wall.dtype).eps)
             averaged_components = {key: value / denominator.clamp_min(torch.finfo(value.dtype).eps) for key, value in component_accums.items()}
             valid_support = valid_support.clamp(0.0, 1.0)
-            averaged_base[:, 5:6] = averaged_base[:, 5:6] + global_extent_bias(
+            averaged_base = apply_global_extent_bias_after_aggregation(
                 model,
+                averaged_base,
                 averaged_components,
                 averaged_p_wall,
-                pathology="scar",
+                availability,
                 global_step=global_step,
                 valid_spatial_mask=valid_support,
+                metadata=metadata,
             )
-            if bool((availability[:, 1] > 0.5).any()):
-                averaged_base[:, 4:5] = averaged_base[:, 4:5] + global_extent_bias(
-                    model,
-                    averaged_components,
-                    averaged_p_wall,
-                    pathology="edema",
-                    global_step=global_step,
-                    valid_spatial_mask=valid_support,
-                )
             spatial_crop = tuple(crop_slicer[-3:])
             averaged_base = averaged_base[(slice(None), slice(None), *spatial_crop)]
     if was_training:

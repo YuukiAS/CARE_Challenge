@@ -144,6 +144,40 @@ REQUIRED_LOSS_WEIGHTS = {
     "edema_context": 0.10,
     "relation": 0.05,
 }
+CANONICAL_LOSS_TERM_TO_METRIC = {
+    "conditional_final_dice_ce": ("final_competition", "all"),
+    "anatomy_deep_supervision_dice_ce": ("anatomy4_deep_supervised", "all"),
+    "wall_dice_bce": ("wall", "all"),
+    "distance_rho_masked_smooth_l1": ("distance", "geometry"),
+    "scar_binary_dice_focal": ("scar_dense", "all"),
+    "scar_component_adaptive_tversky": ("scar_component_adaptive_tversky", "scar"),
+    "scar_center_focal_bce": ("scar_center", "all"),
+    "scar_extent_bce_smooth_l1": ("scar_extent", "scar_extent"),
+    "scar_context_ce": ("scar_context", "scar_context"),
+    "edema_binary_dice_focal": ("edema_dense", "edema"),
+    "injury_dice_bce": ("injury", "edema"),
+    "edema_boundary_smooth_l1": ("edema_boundary", "edema_boundary"),
+    "edema_extent_bce_smooth_l1": ("edema_extent", "edema_extent"),
+    "edema_context_ce": ("edema_context", "edema_context"),
+    "relation_loss": ("relation", "edema"),
+}
+CANONICAL_LOSS_TERM_WEIGHTS = {
+    "conditional_final_dice_ce": 1.00,
+    "anatomy_deep_supervision_dice_ce": 0.50,
+    "wall_dice_bce": 0.25,
+    "distance_rho_masked_smooth_l1": 0.10,
+    "scar_binary_dice_focal": 1.00,
+    "scar_component_adaptive_tversky": 0.25,
+    "scar_center_focal_bce": 0.10,
+    "scar_extent_bce_smooth_l1": 0.15,
+    "scar_context_ce": 0.10,
+    "edema_binary_dice_focal": 1.00,
+    "injury_dice_bce": 0.40,
+    "edema_boundary_smooth_l1": 0.10,
+    "edema_extent_bce_smooth_l1": 0.20,
+    "edema_context_ce": 0.10,
+    "relation_loss": 0.05,
+}
 
 
 def dice_loss_softmax(logits: torch.Tensor, target: torch.Tensor, *, classes: tuple[int, ...], eps: float = 1.0e-5) -> torch.Tensor:
@@ -970,15 +1004,17 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor], *, co
     zero = logits.sum() * 0.0
     if not final_terms:
         final_terms.append(zero)
+    final_competition = torch.stack(final_terms).mean()
     scar_extent = 0.5 * scar_presence + 0.5 * scar_area
     edema_extent = 0.5 * edema_presence + 0.5 * edema_area
+    scar_component_supervision = 0.5 * scar_component + 0.5 * scar_occupancy
     weighted_terms = {
-        "final_competition": REQUIRED_LOSS_WEIGHTS["final_competition"] * torch.stack(final_terms).mean(),
+        "final_competition": REQUIRED_LOSS_WEIGHTS["final_competition"] * final_competition,
         "anatomy4": REQUIRED_LOSS_WEIGHTS["anatomy4"] * anatomy4_loss,
         "wall": REQUIRED_LOSS_WEIGHTS["wall"] * wall_loss,
         "distance": REQUIRED_LOSS_WEIGHTS["distance"] * distance_loss,
         "scar_dense": REQUIRED_LOSS_WEIGHTS["scar_dense"] * scar_dense,
-        "scar_component": REQUIRED_LOSS_WEIGHTS["scar_component"] * (0.5 * scar_component + 0.5 * scar_occupancy),
+        "scar_component": REQUIRED_LOSS_WEIGHTS["scar_component"] * scar_component_supervision,
         "scar_center": REQUIRED_LOSS_WEIGHTS["scar_center"] * scar_center,
         "scar_extent": REQUIRED_LOSS_WEIGHTS["scar_extent"] * scar_extent,
         "scar_context": REQUIRED_LOSS_WEIGHTS["scar_context"] * scar_context,
@@ -994,6 +1030,7 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor], *, co
         metrics.update(
             {
                 "loss": total,
+                "final_competition": final_competition,
                 "anatomy_ce": anatomy_ce,
                 "anatomy_dice": anatomy_dice,
                 "anatomy_half_ce": anatomy_half_ce,
@@ -1003,6 +1040,8 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor], *, co
                 "distance": distance_loss,
                 "scar_dense": scar_dense,
                 "scar_component": scar_component,
+                "scar_occupancy": scar_occupancy,
+                "scar_component_adaptive_tversky": scar_component_supervision,
                 "scar_center": scar_center,
                 "scar_extent_presence": scar_presence,
                 "scar_extent_area": scar_area,
@@ -1023,6 +1062,90 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor], *, co
             }
         )
     return total, {k: float(v.detach().cpu()) for k, v in metrics.items()}
+
+
+def _count_mask(mask: torch.Tensor) -> int:
+    return int(mask.detach().float().sum().cpu().item())
+
+
+def care_ase_loss_with_term_details(outputs: dict[str, Any], batch: dict[str, torch.Tensor]) -> tuple[torch.Tensor, dict[str, float], dict[str, dict[str, Any]]]:
+    """Return canonical CARE-ASE loss plus per-term denominator evidence."""
+
+    total, metrics = care_ase_loss(outputs, batch, collect_metrics=True)
+    logits = outputs["final_logits"]
+    target = batch["seg"].to(device=logits.device, dtype=torch.long)
+    availability = batch["availability"].to(logits)
+    t2_present = availability[:, 1] > 0.5
+    valid_binary = (target >= 0).unsqueeze(1).to(logits)
+    t2_mask = availability[:, 1].view(-1, 1, 1, 1, 1)
+    edema_valid = valid_binary * t2_mask
+    built_targets = build_care_ase_targets(target, availability, outputs, batch)
+    components = outputs["components"]
+    scar_context_valid = ((
+        _downsample_target(built_targets["scar_context_target"].unsqueeze(1), components["scar_context"].shape[-3:]).squeeze(1)
+    ) >= 0).to(logits)
+    edema_context_valid = ((
+        _downsample_target(built_targets["edema_context_target"].unsqueeze(1), components["edema_context"].shape[-3:]).squeeze(1)
+    ) >= 0).to(logits) * availability[:, 1].view(-1, 1, 1, 1)
+    scar_extent_presence_valid = built_targets.get(
+        "extent_presence_valid_by_output_z",
+        built_targets.get("extent_supervision_valid_by_output_z", torch.ones_like(built_targets["scar_slice_presence"])),
+    )
+    scar_extent_area_valid = built_targets.get(
+        "extent_area_valid_by_output_z",
+        built_targets.get("extent_supervision_valid_by_output_z", torch.ones_like(built_targets["scar_slice_presence"])),
+    )
+    edema_extent_presence_valid = built_targets.get(
+        "extent_presence_valid_by_output_z",
+        built_targets.get("extent_supervision_valid_by_output_z", torch.ones_like(built_targets["edema_slice_presence"])),
+    ) * availability[:, 1:2].view(-1, 1, 1)
+    edema_extent_area_valid = built_targets.get(
+        "extent_area_valid_by_output_z",
+        built_targets.get("extent_supervision_valid_by_output_z", torch.ones_like(built_targets["edema_slice_presence"])),
+    ) * availability[:, 1:2].view(-1, 1, 1)
+    denominator_by_group = {
+        "all": _count_mask(valid_binary),
+        "geometry": _count_mask(built_targets["geometry_valid"]),
+        "scar": _count_mask(valid_binary),
+        "edema": _count_mask(edema_valid),
+        "edema_boundary": _count_mask(built_targets["edema_boundary_valid"].to(logits) * t2_mask),
+        "scar_extent": _count_mask(scar_extent_presence_valid) + _count_mask(scar_extent_area_valid),
+        "edema_extent": _count_mask(edema_extent_presence_valid) + _count_mask(edema_extent_area_valid),
+        "scar_context": _count_mask(scar_context_valid),
+        "edema_context": _count_mask(edema_context_valid),
+    }
+    eligible_rows_by_group = {
+        "all": int(target.shape[0]),
+        "geometry": int(target.shape[0]),
+        "scar": int(target.shape[0]),
+        "scar_extent": int(target.shape[0]),
+        "scar_context": int(target.shape[0]),
+        "edema": int(t2_present.sum().item()),
+        "edema_boundary": int(t2_present.sum().item()),
+        "edema_extent": int(t2_present.sum().item()),
+        "edema_context": int(t2_present.sum().item()),
+    }
+    details: dict[str, dict[str, Any]] = {}
+    for term_name, (metric_key, group) in CANONICAL_LOSS_TERM_TO_METRIC.items():
+        weight = float(CANONICAL_LOSS_TERM_WEIGHTS[term_name])
+        denominator = int(denominator_by_group[group])
+        eligible_rows = int(eligible_rows_by_group[group])
+        correctly_excluded = denominator == 0 or eligible_rows == 0
+        value = 0.0 if correctly_excluded else float(metrics.get(metric_key, 0.0))
+        details[term_name] = {
+            "value": value,
+            "unweighted_value": value,
+            "weight": weight,
+            "weighted_contribution": value * weight,
+            "eligible_row_count": eligible_rows,
+            "eligible_voxel_or_count_denominator": denominator,
+            "denominator": denominator,
+            "correctly_excluded": bool(correctly_excluded),
+            "exclusion_reason": "no_eligible_rows_or_voxels" if correctly_excluded else None,
+            "included_in_total": True,
+            "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
+        }
+    return total, metrics, details
 
 
 def _encoder_stage_index(name: str) -> int | None:
