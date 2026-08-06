@@ -1,0 +1,48 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_CRITIC_FREEZE_RECEIPT",
+  "task_id": "care-visual-smoke",
+  "request_nonce": "visual-smoke-20260806T031345Z",
+  "planner_draft_sha": "75b1cd5752d3b9419e99ec5385e125c6e8c2a446",
+  "planner_visual_receipt_commit_sha": "182dc161fc3c6d39495e2e192c8c8f9137702bba",
+  "critic_input_sha": "75b1cd5752d3b9419e99ec5385e125c6e8c2a446",
+  "frozen_contract_path": "automation/agent_flow_v3/tasks/care-visual-smoke/CONTRACT.md",
+  "frozen_contract_sha256": "279550638c5b9940567211ea5e05560048acd0150c6f1ac07ede6a258f139afe",
+  "frozen_contract_commit": "75b1cd5752d3b9419e99ec5385e125c6e8c2a446",
+  "critic_visual_receipt_path": "results/agent_flow_v3/care-visual-smoke/critic_visual_receipt.json",
+  "critic_visual_receipt_commit_sha": "bc60c4d90d272aa25539fef4263282ceaf40faf4",
+  "visual_sources_reviewed": [
+    {
+      "name": "CARE-ASE",
+      "repository_path": "docs/architecture/figures/CARE-ASE.png",
+      "sha256": "af8f47713961c3b6b03dd24283b8f18d51fb5043ab1699997db2713e525710b2",
+      "actual_visual_access": true
+    },
+    {
+      "name": "SRR-v3",
+      "repository_path": "docs/architecture/figures/SRR-v3.png",
+      "sha256": "50478ee7c07cedb6a921902aa5daa8f6ecf3b34aa2fc5e97905d60c585ea72b5",
+      "actual_visual_access": true
+    },
+    {
+      "name": "MoSAIC",
+      "repository_path": "docs/architecture/figures/MoSAIC.png",
+      "sha256": "d2ea85c5ba40521dc65a56d85124ecfc9a2e40ac5eff206c10cff8fbf04e09fb",
+      "actual_visual_access": true
+    }
+  ],
+  "planner_material_errors": [],
+  "deterministic_repairs_applied": [],
+  "precision_clarifications": [
+    "Absent-component statements are limited to the visible diagram and are not substitutes for later source-code fidelity review.",
+    "The visual Cine anatomy/registration/temporal lane does not by itself satisfy later exact external-asset provenance requirements."
+  ],
+  "open_scientific_choices": [],
+  "critic_decision": "PLAN_FROZEN",
+  "forbidden_actions_confirmed": [
+    "no Controller, Verifier or Executor launch",
+    "no implementation edit",
+    "no training or outer access",
+    "no branch merge, deployment or upload"
+  ],
+  "updated_utc": "2026-08-06T05:44:00Z"
+}
