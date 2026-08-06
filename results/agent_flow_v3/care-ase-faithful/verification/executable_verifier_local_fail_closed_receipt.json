@@ -1,10 +1,10 @@
 {
-  "created_utc": "2026-08-06T18:26:16Z",
+  "created_utc": "2026-08-06T20:30:14Z",
   "docker_or_upload": false,
   "environment": {
     "cwd": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/verifier",
     "git_branch": "local/verifier/care-ase-faithful",
-    "git_head": "56daad61a23e65160f987571ff443d223d2de91b",
+    "git_head": "302b42f6ed0ddd69ab0b932295a267e3f403bd63",
     "nnunetv2_available": false,
     "platform": "Linux-5.14.0-611.16.1.el9_7.x86_64-x86_64-with-glibc2.34",
     "python_executable": "/usr/bin/python",
@@ -17,10 +17,9 @@
     },
     "torch_available": false
   },
-  "executable_verifier_receipt_sha256": "14b9900a1cfa3f6e429dd11bb65f0080296b4bd092df38db730417af365d60d5",
-  "failure_count": 11,
+  "executable_verifier_receipt_sha256": "0ee01b6a7599a5a000e810216790ab1a5a3fb11ab8f0b6919c9ac36c8b5862d4",
+  "failure_count": 10,
   "failures": [
-    "transaction.integration_sha.git_head_mismatch",
     "runtime.torch_missing",
     "executable_probe.missing:model_build_and_stock_parity",
     "executable_probe.missing:real_train_case_total_loss_forward_backward",
@@ -45,8 +44,10 @@
   ],
   "formal_training_started": false,
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
-  "implementation_fingerprint_sha256": "b0db561e7a40c0e52c8363b8b43e96bc2441184a7ce28bc17681d41bededa1a1",
-  "integration_sha": "885d5db3089e109136e52c9cbde4d349a62c9092",
+  "implementation_evidence_file_sha256": null,
+  "implementation_evidence_path": null,
+  "implementation_fingerprint_sha256": "3eabfb0be9eda776da6dd6fe3068004894ea7a5b4c30966941fc05bdc412e0dc",
+  "integration_sha": "edb4f2e290c72e92e1bcbd74295c525fef924f11",
   "outer_accessed": false,
   "passed": false,
   "planner_review_commit": "38dbbb0e32556e5f12127699c67ff31d45e5e934",
@@ -64,32 +65,33 @@
     "step0_parity_report_regression"
   ],
   "review_round": 1,
+  "runtime_receipt_bindings": {},
   "schema": "CARE_ASE_FAITHFUL_EXECUTABLE_VERIFIER_RECEIPT_V1",
   "source_artifacts": {
     "file_hashes": {
       "src/care_myocardium/inference/care_ase_r2_decode.py": "7fea71edba56d259dbbb31c3832b74709bd83d5af1f8b680a85c2e0a41acb05b",
-      "src/care_myocardium/inference/care_ase_r2_full_volume.py": "f9e3c4be321e96f7776444e2486b8e0d00e5f02701814f2625ca370b7c95218f",
+      "src/care_myocardium/inference/care_ase_r2_full_volume.py": "052568607476861f6d95fa94706a063a74a3136700b26a29f9ba24ac789d109f",
+      "src/care_myocardium/models/care_ase/__init__.py": "96ac8f3265ee8bc5bc1e0f0264846fa7f5a6e740648799c8dd1e83cc2d996a62",
+      "src/care_myocardium/models/care_ase/core.py": "709c8022037be7d0c4001f3faa1177b14fbbb9fa67fcba4aeb6da6ca7a1c6a9e",
       "src/care_myocardium/training/care_ase_sampler.py": "e8d0b9d10f90d3e70fb9e1a8f4cfff2dd4fbae30d7f73868377350af278f65d9",
-      "src/care_myocardium/training/care_ase_trainer.py": "2054f0f4aedb4b4f4bfb082d8c90ff7fa6970dfac298dbc6b5b0d7a8cf1ca621"
+      "src/care_myocardium/training/care_ase_trainer.py": "32fb5fe199bc8f735aa5e33ac5b8c363d7645836f0bf99bae0bac619a178de32"
     },
-    "missing_files": [
-      "src/care_myocardium/models/care_ase/__init__.py",
-      "src/care_myocardium/models/care_ase/core.py"
-    ],
-    "source_manifest_sha256": "d3cff5b0710f4e057231919c7c31c8f74a23b8a3c8d5732e6bc140af6dddbb6c"
+    "missing_files": [],
+    "source_manifest_sha256": "8f7ee7bde0ef6360578959d08a0e80bc64ee3745c169d4754433ef2b733bad4f"
   },
   "status": "FAIL_CLOSED",
   "task_id": "care-ase-faithful",
   "transaction_gate": {
     "expected_review_round": 1,
     "fixture_mode": false,
-    "implementation_fingerprint_sha256": "b0db561e7a40c0e52c8363b8b43e96bc2441184a7ce28bc17681d41bededa1a1",
-    "integration_sha": "885d5db3089e109136e52c9cbde4d349a62c9092",
-    "observed_git_head": "56daad61a23e65160f987571ff443d223d2de91b",
+    "implementation_fingerprint_sha256": "3eabfb0be9eda776da6dd6fe3068004894ea7a5b4c30966941fc05bdc412e0dc",
+    "integration_sha": "edb4f2e290c72e92e1bcbd74295c525fef924f11",
+    "integration_sha_is_ancestor_of_observed_git_head": true,
+    "observed_git_head": "302b42f6ed0ddd69ab0b932295a267e3f403bd63",
     "planner_review_commit": "38dbbb0e32556e5f12127699c67ff31d45e5e934",
     "review_round": 1,
-    "verifier_fingerprint_sha256": "5c5dd6f431f2cb0c1d2fe6a7927f3679eea47b8ec7c82e4f2a4227e8ab2c7773"
+    "verifier_fingerprint_sha256": "9fbed451e765fd4b44e759cecee4458b5100eccac59da79bbd9e4c87ebc54243"
   },
-  "verifier_fingerprint_sha256": "5c5dd6f431f2cb0c1d2fe6a7927f3679eea47b8ec7c82e4f2a4227e8ab2c7773",
+  "verifier_fingerprint_sha256": "9fbed451e765fd4b44e759cecee4458b5100eccac59da79bbd9e4c87ebc54243",
   "zero_credit": true
 }

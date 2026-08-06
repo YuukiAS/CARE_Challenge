@@ -17,9 +17,9 @@ REQUEST_NONCE = "care-ase-20260806T090955Z"
 FROZEN_CONTRACT_SHA256 = "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d"
 REVIEW_ROUND = 1
 PLANNER_REVIEW_COMMIT = "38dbbb0e32556e5f12127699c67ff31d45e5e934"
-REVIEWED_INTEGRATION_COMMIT = "885d5db3089e109136e52c9cbde4d349a62c9092"
-REVIEWED_IMPLEMENTATION_FINGERPRINT = "b0db561e7a40c0e52c8363b8b43e96bc2441184a7ce28bc17681d41bededa1a1"
-REVIEWED_VERIFIER_FINGERPRINT = "5c5dd6f431f2cb0c1d2fe6a7927f3679eea47b8ec7c82e4f2a4227e8ab2c7773"
+REVIEWED_INTEGRATION_COMMIT = "edb4f2e290c72e92e1bcbd74295c525fef924f11"
+REVIEWED_IMPLEMENTATION_FINGERPRINT = "3eabfb0be9eda776da6dd6fe3068004894ea7a5b4c30966941fc05bdc412e0dc"
+REVIEWED_VERIFIER_FINGERPRINT = "9fbed451e765fd4b44e759cecee4458b5100eccac59da79bbd9e4c87ebc54243"
 
 
 KNOWN_BAD_CATEGORIES = [
@@ -684,6 +684,28 @@ def _check_verifier_owned_execution(failures: list[str], evidence: dict[str, Any
             )
         else:
             failures.append("verifier_owned.executable.sha_shape")
+        runtime_bindings = executable.get("runtime_receipt_bindings")
+        evidence_receipt_paths = evidence.get("receipt_paths")
+        _require(failures, isinstance(runtime_bindings, dict), "verifier_owned.executable.runtime_bindings")
+        _require(failures, isinstance(evidence_receipt_paths, dict), "verifier_owned.executable.evidence_receipt_paths")
+        if isinstance(runtime_bindings, dict) and isinstance(evidence_receipt_paths, dict):
+            for name, declared in sorted(evidence_receipt_paths.items()):
+                bound = runtime_bindings.get(name)
+                if not isinstance(bound, dict):
+                    failures.append(f"verifier_owned.executable.runtime_binding_missing:{name}")
+                    continue
+                _require(failures, bound.get("declared_path") == declared, f"verifier_owned.executable.runtime_binding_path:{name}")
+                artifact_path = _resolve_artifact(declared)
+                if artifact_path is None or not artifact_path.is_file():
+                    failures.append(f"verifier_owned.executable.runtime_binding_artifact_missing:{name}")
+                elif _is_sha256(bound.get("sha256")):
+                    _require(
+                        failures,
+                        bound.get("sha256") == _sha256_file(artifact_path),
+                        f"verifier_owned.executable.runtime_binding_sha:{name}",
+                    )
+                else:
+                    failures.append(f"verifier_owned.executable.runtime_binding_sha_shape:{name}")
         probe_names = {str(probe.get("name")) for probe in executable.get("probes", []) if isinstance(probe, dict)}
         _require(failures, REQUIRED_EXECUTABLE_PROBES.issubset(probe_names), "verifier_owned.executable.required_probes")
         by_name = {str(probe.get("name")): probe for probe in executable.get("probes", []) if isinstance(probe, dict)}

@@ -385,6 +385,8 @@ class VerifierPackageTests(unittest.TestCase):
                 or "verifier_owned.transaction_gate_receipt.missing" in failures
                 or "verifier_owned.executable.not_fixture" in failures
                 or "verifier_owned.executable.passed" in failures
+                or any(item.startswith("verifier_owned.executable.runtime_binding_path:") for item in failures)
+                or any(item.startswith("verifier_owned.executable.runtime_binding_sha:") for item in failures)
             )
 
     def test_receipt_hash_mismatch_fails_closed(self) -> None:

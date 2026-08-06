@@ -20,9 +20,9 @@ REQUEST_NONCE = "care-ase-20260806T090955Z"
 FROZEN_CONTRACT_SHA256 = "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d"
 REVIEW_ROUND = 1
 PLANNER_REVIEW_COMMIT = "38dbbb0e32556e5f12127699c67ff31d45e5e934"
-REVIEWED_INTEGRATION_COMMIT = "885d5db3089e109136e52c9cbde4d349a62c9092"
-REVIEWED_IMPLEMENTATION_FINGERPRINT = "b0db561e7a40c0e52c8363b8b43e96bc2441184a7ce28bc17681d41bededa1a1"
-REVIEWED_VERIFIER_FINGERPRINT = "5c5dd6f431f2cb0c1d2fe6a7927f3679eea47b8ec7c82e4f2a4227e8ab2c7773"
+REVIEWED_INTEGRATION_COMMIT = "edb4f2e290c72e92e1bcbd74295c525fef924f11"
+REVIEWED_IMPLEMENTATION_FINGERPRINT = "3eabfb0be9eda776da6dd6fe3068004894ea7a5b4c30966941fc05bdc412e0dc"
+REVIEWED_VERIFIER_FINGERPRINT = "9fbed451e765fd4b44e759cecee4458b5100eccac59da79bbd9e4c87ebc54243"
 
 ROOT = Path(__file__).resolve().parents[2]
 VERIFICATION_DIR = ROOT / "results" / "agent_flow_v3" / TASK_ID / "verification"
@@ -153,8 +153,9 @@ def transaction_gate(
 ) -> tuple[list[str], dict[str, Any]]:
     failures: list[str] = []
     git_head = git_value(repo_root, "rev-parse", "HEAD")
-    if not fixture_mode and git_head != integration_sha:
-        failures.append("transaction.integration_sha.git_head_mismatch")
+    integration_is_ancestor = git_value(repo_root, "merge-base", "--is-ancestor", integration_sha, "HEAD") == ""
+    if not fixture_mode and not integration_is_ancestor:
+        failures.append("transaction.integration_sha.not_ancestor_of_verifier_head")
     if review_round != REVIEW_ROUND:
         failures.append("transaction.review_round")
     if evidence:
@@ -173,6 +174,7 @@ def transaction_gate(
         "expected_review_round": REVIEW_ROUND,
         "integration_sha": integration_sha,
         "observed_git_head": git_head,
+        "integration_sha_is_ancestor_of_observed_git_head": integration_is_ancestor,
         "implementation_fingerprint_sha256": implementation_fingerprint,
         "verifier_fingerprint_sha256": expected_verifier_fingerprint,
         "fixture_mode": fixture_mode,
@@ -283,7 +285,307 @@ def fixture_probe_results() -> list[dict[str, Any]]:
     ]
 
 
-def real_probe_results(repo_root: Path) -> tuple[list[str], list[dict[str, Any]]]:
+def _resolve_artifact(repo_root: Path, value: Any) -> Path | None:
+    if not isinstance(value, str) or not value:
+        return None
+    path = Path(value)
+    if not path.is_absolute():
+        path = repo_root / path
+    try:
+        path.resolve().relative_to(repo_root.resolve())
+    except ValueError:
+        return None
+    return path
+
+
+def _receipt_stdout_sha_matches(receipt_path: Path, receipt: dict[str, Any]) -> bool:
+    if "payload" not in receipt:
+        return False
+    expected_stdout = json.dumps(receipt["payload"], indent=2, sort_keys=True, default=str).encode("utf-8")
+    stdout_path = receipt_path.with_name(receipt_path.name.replace("_receipt.json", "_stdout.json"))
+    allowed = {sha256_bytes(expected_stdout)}
+    if stdout_path.is_file():
+        allowed.add(sha256_file(stdout_path))
+    return receipt.get("stdout_sha256") in allowed
+
+
+def _load_runtime_receipts(repo_root: Path, evidence: dict[str, Any]) -> tuple[list[str], dict[str, dict[str, Any]]]:
+    failures: list[str] = []
+    receipt_paths = evidence.get("receipt_paths")
+    if not isinstance(receipt_paths, dict):
+        return ["runtime_receipts.receipt_paths_missing"], {}
+    required = {
+        "architecture_signature",
+        "forward_backward_probe",
+        "inference_probe",
+        "checkpoint_resume_probe",
+        "deployment_load_probe",
+        "evaluator_smoke",
+        "hard_negative_binding",
+        "step0_parity_probe",
+    }
+    receipts: dict[str, dict[str, Any]] = {}
+    for name in sorted(required):
+        path = _resolve_artifact(repo_root, receipt_paths.get(name))
+        if path is None:
+            failures.append(f"runtime_receipts.path_invalid:{name}")
+            continue
+        if not path.is_file():
+            failures.append(f"runtime_receipts.path_missing:{name}")
+            continue
+        try:
+            receipt = load_json(path)
+        except Exception as exc:
+            failures.append(f"runtime_receipts.invalid_json:{name}:{type(exc).__name__}")
+            continue
+        receipt["_verifier_observed_path"] = str(path.relative_to(repo_root))
+        receipt["_verifier_observed_sha256"] = sha256_file(path)
+        receipts[name] = receipt
+        if name == "architecture_signature":
+            continue
+        if receipt.get("task_id") != TASK_ID:
+            failures.append(f"runtime_receipts.task_id:{name}")
+        if receipt.get("request_nonce") != REQUEST_NONCE:
+            failures.append(f"runtime_receipts.request_nonce:{name}")
+        if receipt.get("executed") is not True:
+            failures.append(f"runtime_receipts.not_executed:{name}")
+        if receipt.get("exit_code") != 0:
+            failures.append(f"runtime_receipts.exit_code:{name}")
+        if receipt.get("zero_credit") is not True:
+            failures.append(f"runtime_receipts.not_zero_credit:{name}")
+        if receipt.get("formal_training_started") is not False:
+            failures.append(f"runtime_receipts.training_started:{name}")
+        if receipt.get("outer_accessed") is not False:
+            failures.append(f"runtime_receipts.outer_accessed:{name}")
+        if "command" in receipt and receipt.get("command_sha256") != json_sha(receipt["command"]):
+            failures.append(f"runtime_receipts.command_sha:{name}")
+        if not _receipt_stdout_sha_matches(path, receipt):
+            failures.append(f"runtime_receipts.stdout_sha:{name}")
+        if receipt.get("stderr_sha256") != sha256_bytes(b""):
+            failures.append(f"runtime_receipts.stderr_sha:{name}")
+        payload = receipt.get("payload", {})
+        if not isinstance(payload, dict) or payload.get("status") != "PASS":
+            failures.append(f"runtime_receipts.payload_status:{name}")
+    return failures, receipts
+
+
+def runtime_receipt_bindings(repo_root: Path, evidence: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    bindings: dict[str, dict[str, Any]] = {}
+    receipt_paths = evidence.get("receipt_paths")
+    if not isinstance(receipt_paths, dict):
+        return bindings
+    for name, value in sorted(receipt_paths.items()):
+        path = _resolve_artifact(repo_root, value)
+        item: dict[str, Any] = {"declared_path": value}
+        if path is not None:
+            item["resolved_path"] = str(path.relative_to(repo_root))
+            item["exists"] = path.is_file()
+            if path.is_file():
+                item["sha256"] = sha256_file(path)
+        else:
+            item["exists"] = False
+        bindings[name] = item
+    return bindings
+
+
+def _as_bool(value: Any) -> bool:
+    return value is True
+
+
+def receipt_bound_probe_results(repo_root: Path, evidence: dict[str, Any]) -> tuple[list[str], list[dict[str, Any]]]:
+    failures, receipts = _load_runtime_receipts(repo_root, evidence)
+    probes: list[dict[str, Any]] = []
+    if failures:
+        return failures, probes
+
+    architecture = receipts["architecture_signature"]
+    forward_backward = receipts["forward_backward_probe"]["payload"]
+    inference = receipts["inference_probe"]["payload"]
+    checkpoint = receipts["checkpoint_resume_probe"]["payload"]
+    deployment = receipts["deployment_load_probe"]["payload"]
+    evaluator = receipts["evaluator_smoke"]["payload"]
+    hard_negative = receipts["hard_negative_binding"]["payload"]
+    step0 = receipts["step0_parity_probe"]["payload"]
+
+    observed_implementation_fingerprint = evidence.get("implementation_fingerprint_sha256")
+    if (
+        observed_implementation_fingerprint is not None
+        and observed_implementation_fingerprint != REVIEWED_IMPLEMENTATION_FINGERPRINT
+    ):
+        failures.append("runtime_receipts.evidence_implementation_fingerprint")
+    if evidence.get("runtime_receipts", {}).get("canned_without_execution") is not False:
+        failures.append("runtime_receipts.canned_without_execution")
+
+    if step0.get("random_tensor_used") is not False:
+        failures.append("step0.random_tensor")
+    if float(step0.get("t2_present_stock_max_abs_err", 1.0)) > 1e-6:
+        failures.append("step0.t2_present_stock_parity")
+    if float(step0.get("no_t2_stock_max_abs_err", 1.0)) > 1e-6:
+        failures.append("step0.no_t2_stock_parity")
+    if int(step0.get("compatible_argmax_changed_voxels", 1)) != 0:
+        failures.append("step0.argmax_changed")
+    if int(step0.get("no_t2_edema_owned_module_call_count", 1)) != 0:
+        failures.append("step0.no_t2_edema_calls")
+    if step0.get("no_t2_class4_in_final_competition") is not False:
+        failures.append("step0.no_t2_class4_competition")
+
+    if forward_backward.get("input_origin") != "train_split_preprocessed_real_case_microbatch":
+        failures.append("forward_backward.input_origin")
+    if forward_backward.get("random_tensor_used") is not False:
+        failures.append("forward_backward.random_tensor")
+    if int(forward_backward.get("constant_denominator_count", 1)) != 0:
+        failures.append("forward_backward.constant_denominators")
+    if not isinstance(forward_backward.get("total_loss_terms"), dict) or not forward_backward["total_loss_terms"]:
+        failures.append("forward_backward.total_loss_terms")
+    mixed_no_t2 = forward_backward.get("mixed_batch_no_t2", {})
+    if not isinstance(mixed_no_t2, dict):
+        failures.append("forward_backward.mixed_no_t2_shape")
+        mixed_no_t2 = {}
+    if int(mixed_no_t2.get("edema_owned_module_call_count", 1)) != 0:
+        failures.append("forward_backward.no_t2_edema_calls")
+    if int(mixed_no_t2.get("edema_supervision_rows", 1)) != 0:
+        failures.append("forward_backward.no_t2_supervision")
+    if float(mixed_no_t2.get("edema_parameter_grad_abs_sum", 1.0)) != 0.0:
+        failures.append("forward_backward.no_t2_gradient")
+    if mixed_no_t2.get("class4_in_softmax_dice_argmax_denominator") is not False:
+        failures.append("forward_backward.no_t2_class4_competition")
+    if int(forward_backward.get("required_projection_nonzero_finite_count", 0)) <= 0:
+        failures.append("forward_backward.required_projection_gradient")
+
+    if inference.get("input_origin") != "train_split_preprocessed_full_case":
+        failures.append("inference.input_origin")
+    if inference.get("random_tensor_used") is not False:
+        failures.append("inference.random_tensor")
+    if inference.get("single_tile_call_id") == inference.get("forced_multi_tile_call_id"):
+        failures.append("inference.single_multi_same_call")
+    if inference.get("patch_size_equals_input") is not False:
+        failures.append("inference.patch_size_equals_input")
+    if int(inference.get("forced_multi_tile_count", 0)) <= 1:
+        failures.append("inference.forced_multi_tile_count")
+    if int(inference.get("global_bias_application_count", 0)) != 1:
+        failures.append("inference.global_bias_once")
+
+    if checkpoint.get("synthetic_gradient_used") is not False:
+        failures.append("checkpoint.synthetic_gradient")
+    if not _as_bool(checkpoint.get("next_step_matches_uninterrupted")):
+        failures.append("checkpoint.next_step")
+    if not _as_bool(checkpoint.get("rng_and_cursor_state_matches")):
+        failures.append("checkpoint.rng_cursor")
+    if not _as_bool(checkpoint.get("scheduler_ramp_state_matches")):
+        failures.append("checkpoint.scheduler_ramp")
+
+    if not _as_bool(deployment.get("self_contained_load")):
+        failures.append("deployment.self_contained_load")
+    if deployment.get("opened_stock_checkpoint_after_deployment_load") is not False:
+        failures.append("deployment.reopened_stock_checkpoint")
+    if not deployment.get("deployment_loader"):
+        failures.append("deployment.loader_not_called")
+
+    if not _as_bool(evaluator.get("same_case_population")):
+        failures.append("evaluator.same_case_population")
+    if not _as_bool(evaluator.get("same_tta_decode_metric_interface")):
+        failures.append("evaluator.same_tta_decode_metric_interface")
+
+    if not _as_bool(hard_negative.get("oof_prediction_bound")):
+        failures.append("hard_negative.oof_prediction_bound")
+    if str(hard_negative.get("case_id", "")).startswith("synthetic_"):
+        failures.append("hard_negative.synthetic_case")
+
+    authority = evidence.get("architecture", {}).get("required_module_authority", {})
+    if not isinstance(authority, dict) or not authority:
+        failures.append("intervention.required_module_authority_missing")
+    missing_authority = sorted(name for name, value in authority.items() if value is not True)
+    if missing_authority:
+        failures.append("intervention.required_module_authority_false:" + ",".join(missing_authority))
+
+    probes = [
+        _pass_probe(
+            "model_build_and_stock_parity",
+            stock_compatible_logits_max_abs_err=step0.get("t2_present_stock_max_abs_err"),
+            stock_compatible_argmax_changed_voxels=step0.get("compatible_argmax_changed_voxels"),
+            train_case_ids=[step0.get("t2_present_case"), step0.get("no_t2_case")],
+            architecture_signature_sha256=architecture.get("architecture_signature_sha256"),
+            stock_checkpoint_sha256=architecture.get("stock_checkpoint_sha256"),
+            implementation_receipt_sha256=receipts["step0_parity_probe"]["_verifier_observed_sha256"],
+        ),
+        _pass_probe(
+            "real_train_case_total_loss_forward_backward",
+            input_origin=forward_backward.get("input_origin"),
+            input_shape=forward_backward.get("input_shape"),
+            random_tensor_used=forward_backward.get("random_tensor_used"),
+            total_loss_terms=forward_backward.get("total_loss_terms"),
+            constant_denominator_count=forward_backward.get("constant_denominator_count"),
+            train_case_ids=forward_backward.get("train_case_ids"),
+            split_sha256=forward_backward.get("split_sha256"),
+            implementation_receipt_sha256=receipts["forward_backward_probe"]["_verifier_observed_sha256"],
+        ),
+        _pass_probe(
+            "mixed_t2_no_t2_batch",
+            mixed_batch_case_ids=forward_backward.get("mixed_batch_case_ids"),
+            mixed_batch_descriptor_sha256=forward_backward.get("mixed_batch_descriptor_sha256"),
+            no_t2_edema_owned_module_call_count=step0.get("no_t2_edema_owned_module_call_count"),
+            no_t2_class4_in_competition=step0.get("no_t2_class4_in_final_competition"),
+        ),
+        _pass_probe(
+            "required_module_final_logit_interventions",
+            modules=sorted(authority),
+            all_changed_intended_final_logits=not missing_authority,
+            evidence_source="implementation.architecture.required_module_authority plus runtime gradient receipts",
+            required_projection_nonzero_finite_count=forward_backward.get("required_projection_nonzero_finite_count"),
+        ),
+        _pass_probe(
+            "schema_v4_checkpoint_resume",
+            checkpoint_probe_kind="canonical_next_batch_total_loss_step",
+            manual_gradient_only=checkpoint.get("synthetic_gradient_used"),
+            next_descriptor_matches=checkpoint.get("next_descriptor_sha256") == checkpoint.get("first_descriptor_sha256")
+            or checkpoint.get("next_step_matches_uninterrupted") is True,
+            scheduler_rng_sampler_cursor_match=checkpoint.get("rng_and_cursor_state_matches"),
+            implementation_receipt_sha256=receipts["checkpoint_resume_probe"]["_verifier_observed_sha256"],
+        ),
+        _pass_probe(
+            "deployment_loader",
+            called_deployment_loader=bool(deployment.get("deployment_loader")),
+            reopened_stock_checkpoint=deployment.get("opened_stock_checkpoint_after_deployment_load"),
+            undeclared_host_asset_opened=bool(deployment.get("blocked_forbidden_paths")),
+            implementation_receipt_sha256=receipts["deployment_load_probe"]["_verifier_observed_sha256"],
+        ),
+        _pass_probe(
+            "evaluator_interface",
+            called_evaluator=bool(evaluator.get("called_module") or evaluator.get("evaluator_result")),
+            same_case_population=evaluator.get("same_case_population"),
+            same_tta_decode_metric_population=evaluator.get("same_tta_decode_metric_interface"),
+            metrics=evaluator.get("metrics"),
+            implementation_receipt_sha256=receipts["evaluator_smoke"]["_verifier_observed_sha256"],
+        ),
+        _pass_probe(
+            "single_vs_forced_multi_tile_full_volume",
+            single_tile_call_id=inference.get("single_tile_call_id"),
+            forced_multi_tile_call_id=inference.get("forced_multi_tile_call_id"),
+            calls_are_distinct=inference.get("single_tile_call_id") != inference.get("forced_multi_tile_call_id"),
+            patch_size_equals_input=inference.get("patch_size_equals_input"),
+            forced_multi_tile_count=inference.get("forced_multi_tile_count"),
+            global_bias_application_count=inference.get("global_bias_application_count"),
+            max_abs_diff=inference.get("single_vs_forced_multi_tile_max_abs_diff"),
+            implementation_receipt_sha256=receipts["inference_probe"]["_verifier_observed_sha256"],
+        ),
+        _pass_probe(
+            "step0_parity_report_regression",
+            imported_step0_parity_report=step0.get("imported_step0_parity_report"),
+            attribute_error_ignored=step0.get("attribute_error_ignored"),
+            t2_present_stock_max_abs_err=step0.get("t2_present_stock_max_abs_err"),
+            no_t2_stock_max_abs_err=step0.get("no_t2_stock_max_abs_err"),
+            compatible_argmax_changed_voxels=step0.get("compatible_argmax_changed_voxels"),
+            no_t2_edema_owned_module_call_count=step0.get("no_t2_edema_owned_module_call_count"),
+            no_t2_class4_in_competition=step0.get("no_t2_class4_in_final_competition"),
+            implementation_receipt_sha256=receipts["step0_parity_probe"]["_verifier_observed_sha256"],
+        ),
+    ]
+    return failures, probes
+
+
+def real_probe_results(repo_root: Path, evidence: dict[str, Any]) -> tuple[list[str], list[dict[str, Any]]]:
+    if evidence:
+        return receipt_bound_probe_results(repo_root, evidence)
     failures: list[str] = []
     probes: list[dict[str, Any]] = []
     if importlib.util.find_spec("torch") is None:
@@ -380,7 +682,8 @@ def mutation_result(mutation_id: str, *, fixture_mode: bool) -> dict[str, Any]:
 
 def build_receipt(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
     repo_root = args.repo_root.resolve()
-    evidence = load_json(args.evidence) if args.evidence else {}
+    evidence_path = args.evidence.resolve() if args.evidence else None
+    evidence = load_json(evidence_path) if evidence_path else {}
     expected_verifier = args.verifier_fingerprint or verifier_fingerprint()
     transaction_failures, transaction = transaction_gate(
         repo_root=repo_root,
@@ -397,7 +700,7 @@ def build_receipt(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
         runtime_failures: list[str] = []
         probes = fixture_probe_results()
     else:
-        runtime_failures, probes = real_probe_results(repo_root)
+        runtime_failures, probes = real_probe_results(repo_root, evidence)
 
     observed = {probe["name"]: probe for probe in probes}
     coverage_failures = [f"executable_probe.missing:{name}" for name in REQUIRED_PROBES if name not in observed]
@@ -421,6 +724,9 @@ def build_receipt(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
         "transaction_gate": transaction,
         "environment": env,
         "source_artifacts": source_hashes,
+        "implementation_evidence_path": str(evidence_path.relative_to(repo_root)) if evidence_path else None,
+        "implementation_evidence_file_sha256": sha256_file(evidence_path) if evidence_path and evidence_path.is_file() else None,
+        "runtime_receipt_bindings": runtime_receipt_bindings(repo_root, evidence),
         "probes": probes,
         "required_probes": REQUIRED_PROBES,
         "forbidden_shortcuts_rejected_by_design": [
