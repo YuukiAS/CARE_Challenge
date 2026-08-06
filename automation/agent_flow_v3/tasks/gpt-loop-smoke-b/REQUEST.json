@@ -1,0 +1,52 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3",
+  "enabled": true,
+  "task_id": "gpt-loop-smoke-b",
+  "repository": "YuukiAS/CARE_Challenge",
+  "integration_branch": "develop",
+  "frozen_contract_path": "automation/agent_flow_v3/tasks/gpt-loop-smoke-b/CONTRACT.md",
+  "frozen_contract_sha256": "c2c3eca2155fce19af8c335173f313a0f49bec72ef43ce2dcbc7b560afeb2366",
+  "request_nonce": "smoke-b-20260806T062800Z",
+  "planner_reentry_required": true,
+  "critic_freeze_required": true,
+  "controller_executor_separation_required": true,
+  "verifier_executor_separation_required": true,
+  "role_sessions": {
+    "controller": {
+      "thread_id_file": "/users/a/e/aereinh/.agent-flow-v3/gpt-loop-smoke-b/controller_thread_id",
+      "codex_home": "/users/a/e/aereinh/.agent-flow-v3/codex_homes/gpt-loop-smoke-b/CONTROLLER",
+      "worktree": "/users/a/e/aereinh/CARE/.worktrees/gpt-loop-smoke-b/controller",
+      "local_branch": "local/controller/gpt-loop-smoke-b",
+      "may_edit_implementation": false,
+      "may_edit_verification": false
+    },
+    "verifier": {
+      "thread_id_file": "/users/a/e/aereinh/.agent-flow-v3/gpt-loop-smoke-b/verifier_thread_id",
+      "codex_home": "/users/a/e/aereinh/.agent-flow-v3/codex_homes/gpt-loop-smoke-b/VERIFIER",
+      "worktree": "/users/a/e/aereinh/CARE/.worktrees/gpt-loop-smoke-b/verifier",
+      "local_branch": "local/verifier/gpt-loop-smoke-b",
+      "may_edit_implementation": false,
+      "may_edit_verification": true
+    },
+    "executor": {
+      "thread_id_file": "/users/a/e/aereinh/.agent-flow-v3/gpt-loop-smoke-b/executor_thread_id",
+      "codex_home": "/users/a/e/aereinh/.agent-flow-v3/codex_homes/gpt-loop-smoke-b/EXECUTOR",
+      "worktree": "/users/a/e/aereinh/CARE/.worktrees/gpt-loop-smoke-b/executor",
+      "local_branch": "local/executor/gpt-loop-smoke-b",
+      "may_edit_implementation": true,
+      "may_edit_verification": false
+    }
+  },
+  "critical_paths": [
+    "automation/agent_flow_v3/tasks/gpt-loop-smoke-b/**",
+    "automation/agent_flow_v3/smoke_b/**",
+    "tests/automation/test_agent_flow_v3_smoke_b.py",
+    "results/agent_flow_v3/gpt-loop-smoke-b/**"
+  ],
+  "max_repair_rounds": 2,
+  "human_gate_after_planner_pass": true,
+  "training_authorized": false,
+  "outer_access_authorized": false,
+  "deployment_authorized": false,
+  "created_utc": "2026-08-06T06:28:00Z"
+}

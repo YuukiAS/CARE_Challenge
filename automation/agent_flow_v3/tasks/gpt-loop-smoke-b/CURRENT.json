@@ -1,0 +1,13 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3",
+  "task_id": "gpt-loop-smoke-b",
+  "state": "PLAN_FROZEN",
+  "review_round": 0,
+  "request_nonce": "smoke-b-20260806T062800Z",
+  "frozen_contract_sha256": "c2c3eca2155fce19af8c335173f313a0f49bec72ef43ce2dcbc7b560afeb2366",
+  "integration_commit_sha": null,
+  "implementation_fingerprint_sha256": null,
+  "verifier_fingerprint_sha256": null,
+  "next_action": "START_TOY_CONTROLLER_THEN_VERIFIER",
+  "updated_utc": "2026-08-06T06:28:00Z"
+}
