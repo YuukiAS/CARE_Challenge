@@ -1,0 +1,120 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_CRITIC_VISUAL_RECEIPT",
+  "task_id": "care-ase-faithful",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "role": "critic",
+  "actual_visual_access": true,
+  "access_context": "Scheduled ChatGPT Critic independently inspected all 11 SHA-bound architecture figures through the available multimodal file source before final contract audit. Planner prose was not used as a substitute for visual inspection.",
+  "source_manifest_path": "automation/agent_flow_v3/tasks/care-ase-faithful/VISUAL_SOURCES.json",
+  "source_manifest_git_blob_sha": "1387c29faa65fcd9efdfb9d52172b0da8fd2ae14",
+  "planner_draft_commit_sha": "abf549e57452e0047a767332e786ea3a06c214cb",
+  "planner_draft_sha256": "d945b065c656fa26b1b661e135195ac3e5934ff21649ee748cff716260409649",
+  "planner_visual_receipt_commit_sha": "0e4030ed92ea6d72bc3b5e37e9fc97253b690d85",
+  "images": [
+    {
+      "name": "SRR-v2",
+      "repository_path": "docs/architecture/figures/SRR-v2.png",
+      "sha256": "2c77d92eb652e88fdf69d40ee13eeb7a66d37755041bfff2a0c1756f1fa1ac8a",
+      "actual_visual_access": true,
+      "independent_judgment": "Availability-aware shared/private/interaction retrieval feeds pathology-specific proposal and soft-ROI refinement; this is historical evidence, not an allowed CARE-ASE retrieval chain."
+    },
+    {
+      "name": "SRR-v2.5",
+      "repository_path": "docs/architecture/figures/SRR-v2.5.png",
+      "sha256": "674453e11a8d1466038ac4a22ae68332aabf9482f23d3f90e559649def6606f9",
+      "actual_visual_access": true,
+      "independent_judgment": "The diagram visibly separates LGE-led scar evidence from T2-conditioned edema evidence and masks unavailable modalities; it supports asymmetric modality authority."
+    },
+    {
+      "name": "SRR-v3",
+      "repository_path": "docs/architecture/figures/SRR-v3.png",
+      "sha256": "50478ee7c07cedb6a921902aa5daa8f6ecf3b34aa2fc5e97905d60c585ea72b5",
+      "actual_visual_access": true,
+      "independent_judgment": "The visible system is anchor-centred retrieval/prototype/proposal/refiner with bounded residual correction and a Cine lane; all are forbidden as CARE-ASE normal-forward mechanisms."
+    },
+    {
+      "name": "CARE-MMRD",
+      "repository_path": "docs/architecture/figures/CARE-MMRD.png",
+      "sha256": "c90bf7582ff139fe1b785e4dac51c55b4ec0c8f676654dd03c9b17e551489859",
+      "actual_visual_access": true,
+      "independent_judgment": "The figure shows explicit modality availability, reliable-label supervision and no-T2 safety around a mature backbone; these supervision rules remain relevant."
+    },
+    {
+      "name": "CARE-SRR-Cascade",
+      "repository_path": "docs/architecture/figures/CARE-SRR-Cascade.png",
+      "sha256": "3596356c52a01de5cf29bdae6591ce733bc209403f3f6e8429f8a1374e66ef50",
+      "actual_visual_access": true,
+      "independent_judgment": "A frozen anchor, pathology-specific corrections and exact fallback are visible; CARE-ASE may retain audit discipline but not bounded anchor authority."
+    },
+    {
+      "name": "CARE-DG",
+      "repository_path": "docs/architecture/figures/CARE-DG.png",
+      "sha256": "6be1b2cae31d3c4f77576f8fe8eb1df39c6623adf86729910cbd31bcfe12ad00",
+      "actual_visual_access": true,
+      "independent_judgment": "Separate FN/FP gates and pathology-specific safety are visible; OOF error sampling is useful, while gated correction is not the CARE-ASE topology."
+    },
+    {
+      "name": "CARE-ARC",
+      "repository_path": "docs/architecture/figures/CARE-ARC.png",
+      "sha256": "387f77d42dc9c4f802fda1bdee0eb67fec46dabe921dbf971f7cde5bbcf845b8",
+      "actual_visual_access": true,
+      "independent_judgment": "A single shared encoder with direct pathology reconstruction is visible, but decoder reset/shallow heads and fixed scar-priority composition are anti-patterns."
+    },
+    {
+      "name": "CARE-PRISM",
+      "repository_path": "docs/architecture/figures/CARE-PRISM.png",
+      "sha256": "31bb8138bc6291d6e116fc605d7a2060a15ce7c3eca25d5da59e419fc2698135",
+      "actual_visual_access": true,
+      "independent_judgment": "The figure contains modality-private pyramids, soft proposal/retrieval and explicit composition; it reinforces final-logit intervention tests but not retrieval adoption."
+    },
+    {
+      "name": "CARE-MyoWall-IF",
+      "repository_path": "docs/architecture/figures/CARE-MyoWall-IF.png",
+      "sha256": "1dc3ecf58f1fffdeb7c36de948f99743a61e39861c08b57378da8c84d536e914",
+      "actual_visual_access": true,
+      "independent_judgment": "Wall-coordinate transformation, inverse mapping and a geometry reliability gate are visible; CARE-ASE must use only detached soft geometry context."
+    },
+    {
+      "name": "MoSAIC",
+      "repository_path": "docs/architecture/figures/MoSAIC.png",
+      "sha256": "d2ea85c5ba40521dc65a56d85124ecfc9a2e40ac5eff206c10cff8fbf04e09fb",
+      "actual_visual_access": true,
+      "independent_judgment": "The visible architecture is coarse-to-fine with independent pathology experts and a separate ED-anchored Cine workflow; it remains a read-only benchmark."
+    },
+    {
+      "name": "CARE-ASE",
+      "repository_path": "docs/architecture/figures/CARE-ASE.png",
+      "sha256": "af8f47713961c3b6b03dd24283b8f18d51fb5043ab1699997db2713e525710b2",
+      "actual_visual_access": true,
+      "independent_judgment": "One complete stock-compatible trunk, three highest-two-scale anatomy/scar/edema paths, LGE-led scar, T2-led edema, detached soft context, global extent and conditional six/five-class competition are visible."
+    }
+  ],
+  "cross_architecture_judgment": [
+    "CARE-ASE is direct asymmetric reconstruction inside one mature trunk, not a residual-correction, retrieval-memory, cascade, selector or ensemble system.",
+    "Scar and pure edema require distinct evidence ownership, branch topology, sampling and negative spaces; a generic shared pathology head is a downgrade.",
+    "Every proposal, context, extent, injury and boundary tensor must have a testable causal route to its intended final logit rather than existing only as a named auxiliary.",
+    "The no-T2 rule is both computational and semantic: no edema-owned call or gradient and no class-4 participation in the loss/decode denominator.",
+    "Anatomy geometry is detached soft context only; hard wall transforms, crops, clipping and geometry fail-stop are excluded."
+  ],
+  "planner_visual_audit": {
+    "material_errors": [],
+    "deterministic_precision_gaps_repaired_in_frozen_contract": [
+      "row-wise conditional five-class final loss for no-T2 rows",
+      "pure-edema classifier initialization at both high-resolution scales",
+      "exact loss reductions and degenerate boundary semantics",
+      "exact extent statistic, validity, global ramp and single-application rule",
+      "exact stage ranges, learning rates, warmups and step semantics",
+      "deterministic stage/group/pathology/case/coordinate sampling order",
+      "checkpoint schema-v4 and exact-resume bindings"
+    ]
+  },
+  "open_scientific_choices": [],
+  "critic_visual_decision": "PASS",
+  "forbidden_actions_confirmed": [
+    "no implementation or verification source edits",
+    "no Codex role launch",
+    "no training or outer access",
+    "no branch merge, deployment or upload"
+  ],
+  "updated_utc": "2026-08-06T10:44:09Z"
+}
