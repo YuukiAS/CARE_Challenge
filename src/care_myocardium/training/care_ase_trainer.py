@@ -1936,3 +1936,48 @@ def write_json(path: Path, payload: Any) -> None:
     _fsync_file(tmp)
     os.replace(tmp, path)
     _fsync_dir(path.parent)
+
+
+def _care_ase_executor_evidence_builder() -> Any:
+    from importlib import import_module
+
+    return import_module("scripts.training.care_ase.build_care_ase_faithful_implementation_evidence")
+
+
+def verifier_zero_credit_case_probe() -> dict[str, Any]:
+    """Implementation-owned hook for verifier real-case loss and step0 probes."""
+
+    builder = _care_ase_executor_evidence_builder()
+    return {
+        "step0_parity_report_regression": builder.run_step0_parity_probe(),
+        "real_train_case_total_loss_forward_backward": builder.run_forward_backward_probe(),
+    }
+
+
+def verifier_checkpoint_resume_probe() -> dict[str, Any]:
+    """Implementation-owned hook for schema-v4 zero-credit resume verification."""
+
+    return _care_ase_executor_evidence_builder().run_checkpoint_resume_probe()
+
+
+def verifier_deployment_probe() -> dict[str, Any]:
+    """Implementation-owned hook for self-contained deployment-load verification."""
+
+    builder = _care_ase_executor_evidence_builder()
+    model = build_care_ase_for_fold(0, map_location="cpu")
+    manifest = builder.source_manifest()
+    static_checks = builder.static_architecture_checks()
+    architecture = builder.architecture_signature(model, manifest, static_checks)
+    return builder.run_deployment_load_probe(architecture)
+
+
+def verifier_evaluator_probe() -> dict[str, Any]:
+    """Implementation-owned hook for the CARE/baseline evaluator smoke path."""
+
+    return _care_ase_executor_evidence_builder().run_evaluator_smoke_probe()
+
+
+def verifier_single_multi_tile_probe() -> dict[str, Any]:
+    """Implementation-owned hook for canonical single-tile versus forced-tiling inference."""
+
+    return _care_ase_executor_evidence_builder().run_inference_probe()

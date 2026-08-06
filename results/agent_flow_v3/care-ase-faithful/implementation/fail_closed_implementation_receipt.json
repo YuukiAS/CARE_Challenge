@@ -1,12 +1,13 @@
 {
-  "created_utc": "2026-08-06T20:05:48Z",
+  "created_utc": "2026-08-06T20:17:30Z",
   "docker_built_or_uploaded": false,
   "environment": {
     "cuda_visible_devices": "0",
     "gpu_name": "NVIDIA A100-SXM4-80GB",
     "slurm_job_id": "61987724",
     "slurm_partition": "htzhulab",
-    "zero_credit_runtime_log": "results/agent_flow_v3/care-ase-faithful/implementation/runtime_logs/gpu_zero_credit_evidence_61987724_20260806T200201Z.log"
+    "nonfixture_executable_verifier_diagnostic": "/tmp/care_ase_executor_nonfixture_executable_verifier_receipt_after_hooks.json",
+    "zero_credit_runtime_log": "results/agent_flow_v3/care-ase-faithful/implementation/runtime_logs/gpu_zero_credit_evidence_61987724_20260806T201148Z.log"
   },
   "executor_zero_credit_receipts": {
     "checkpoint_resume_probe": {
@@ -49,21 +50,22 @@
     }
   },
   "failures": [
-    "frozen_validator_failed_verifier_owned.executable.not_fixture"
+    "frozen_validator_failed_verifier_owned.executable.not_fixture",
+    "nonfixture_executable_verifier_stops_in_verifier_source_with_runtime.real_hook_execution_not_implemented_in_verifier_without_contract_hook_specs"
   ],
   "formal_training_started": false,
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
   "implementation_complete": false,
   "implementation_evidence_path": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json",
   "implementation_fingerprint_path": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_fingerprint.json",
-  "implementation_fingerprint_sha256": "3eabfb0be9eda776da6dd6fe3068004894ea7a5b4c30966941fc05bdc412e0dc",
+  "implementation_fingerprint_sha256": "d5a3ea027c388d30bdd173e3d10e365c4270c761676abf4c999627db21ebb0cd",
   "no_training_started": true,
   "outer_accessed": false,
-  "reason": "executor runtime evidence regenerated successfully, but the frozen validator still rejects the verifier-owned executable_verifier_receipt.json because it is fixture_mode true and bound to the prior reviewed implementation fingerprint. Executor cannot edit verifier-owned receipts or validator source.",
+  "reason": "executor runtime evidence regenerated successfully and implementation-owned verifier hook wrappers are now present, but the frozen validator still rejects the verifier-owned executable_verifier_receipt.json because it is fixture_mode true and bound to the prior reviewed implementation fingerprint. A non-fixture diagnostic verifier run against this Executor checkout no longer reports missing hooks, but verifier-owned run_executable_verifier.py stops before executing hooks with runtime.real_hook_execution_not_implemented_in_verifier_without_contract_hook_specs. Executor cannot edit verifier-owned receipts or validator source.",
   "request_nonce": "care-ase-20260806T090955Z",
   "schema": "CARE_ASE_FAITHFUL_IMPLEMENTATION_FAIL_CLOSED_RECEIPT_V1",
   "source_manifest_path": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_source_manifest.json",
-  "source_manifest_sha256": "dc102adf2a766d7c60f78b817f0837126318c1e02f7a410da37fddb7f75a2006",
+  "source_manifest_sha256": "dfdfe0d0ff47d9d509d8e8955332ac22aae6f901731bf2ef0dd28a575aa9bf69",
   "status": "FAIL_CLOSED",
   "task_id": "care-ase-faithful",
   "validation_or_challenge_uploaded": false,

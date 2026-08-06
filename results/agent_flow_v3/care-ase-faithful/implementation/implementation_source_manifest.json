@@ -11,15 +11,15 @@
     "src/care_myocardium/training/care_ase_augmentation.py": "85a208a3a886babe0ec2927a1babced2b24ff91188d577585e65d4e38c27b283",
     "src/care_myocardium/training/care_ase_runtime.py": "e4302e55c6b529164ee82418009a9c14bbb52e927275c67b667afbeb0c574b27",
     "src/care_myocardium/training/care_ase_sampler.py": "e8d0b9d10f90d3e70fb9e1a8f4cfff2dd4fbae30d7f73868377350af278f65d9",
-    "src/care_myocardium/training/care_ase_trainer.py": "32fb5fe199bc8f735aa5e33ac5b8c363d7645836f0bf99bae0bac619a178de32"
+    "src/care_myocardium/training/care_ase_trainer.py": "9b1c237f82679e10e9cef750e87ea4495369e051da970e779623e19f49341a26"
   },
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
   "git_branch": "local/executor/care-ase-faithful",
-  "git_head": "17afe5e32ba62b352f381971cb52efc964d1deef",
+  "git_head": "812ae623015d7914c36a70bd494488d7d9bca3a3",
   "missing_files": [],
   "request_nonce": "care-ase-20260806T090955Z",
   "schema": "CARE_ASE_FAITHFUL_IMPLEMENTATION_SOURCE_MANIFEST_V1",
-  "source_manifest_sha256": "dc102adf2a766d7c60f78b817f0837126318c1e02f7a410da37fddb7f75a2006",
+  "source_manifest_sha256": "dfdfe0d0ff47d9d509d8e8955332ac22aae6f901731bf2ef0dd28a575aa9bf69",
   "source_root": ".",
   "task_id": "care-ase-faithful",
   "verifier_fingerprint_sha256": "9fbed451e765fd4b44e759cecee4458b5100eccac59da79bbd9e4c87ebc54243"
