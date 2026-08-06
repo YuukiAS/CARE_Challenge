@@ -9,6 +9,7 @@ import argparse
 import subprocess
 import tempfile
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts" / "automation" / "validate_agent_flow_v3.py"
@@ -440,6 +441,107 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         self.assertIs(armed_visual_sources["ready_for_scheduled_visual_review"], True)
         self.assertEqual(activation_state["status"], "ARMED")
         self.assertIn("no CARE-ASE implementation started by activation", activation_state["forbidden_actions_confirmed"])
+
+    def test_activate_care_ase_after_smoke_b_uses_explicit_parameters(self) -> None:
+        smoke_request = {
+            "task_id": "gpt-loop-smoke-b",
+            "request_nonce": "smoke-b-nonce",
+        }
+        smoke_current = {
+            "task_id": "gpt-loop-smoke-b",
+            "state": "PLANNER_PASS",
+            "request_nonce": "smoke-b-nonce",
+            "review_round": 1,
+            "frozen_contract_sha256": "a" * 64,
+            "integration_commit_sha": "b" * 40,
+            "implementation_fingerprint_sha256": "c" * 64,
+            "verifier_fingerprint_sha256": "d" * 64,
+        }
+        planner_review = {
+            "schema": "CARE_AGENT_FLOW_V3_PLANNER_REVIEW",
+            "task_id": "gpt-loop-smoke-b",
+            "decision": "PLANNER_PASS",
+            "request_nonce": "smoke-b-nonce",
+            "review_round": 1,
+            "frozen_contract_sha256": "a" * 64,
+            "integration_commit_sha": "b" * 40,
+            "implementation_fingerprint_sha256": "c" * 64,
+            "verifier_fingerprint_sha256": "d" * 64,
+            "blocking_findings": [],
+        }
+        care_request = {
+            "task_id": "care-ase-faithful",
+            "enabled": False,
+            "frozen_contract_sha256": None,
+        }
+        care_current = {
+            "task_id": "care-ase-faithful",
+            "state": "PLAN_REQUESTED",
+            "review_round": 0,
+            "request_nonce": "bootstrap",
+            "frozen_contract_sha256": None,
+            "integration_commit_sha": None,
+            "implementation_fingerprint_sha256": None,
+            "verifier_fingerprint_sha256": None,
+            "next_action": "CONFIGURE_VISUAL_SOURCES_AND_SCHEDULED_TASKS_THEN_ENABLE_REQUEST",
+            "updated_utc": "2026-08-05T00:00:00Z",
+        }
+        visual_sources = {
+            "schema": "CARE_VISUAL_SOURCES_V1",
+            "task_id": "care-ase-faithful",
+            "ready_for_scheduled_visual_review": False,
+        }
+        visual_final = {"status": "PASS", "request_nonce": "visual-nonce"}
+        remote_objects = {
+            "automation/agent_flow_v3/tasks/gpt-loop-smoke-b/REQUEST.json": smoke_request,
+            "automation/agent_flow_v3/tasks/gpt-loop-smoke-b/CURRENT.json": smoke_current,
+            "automation/agent_flow_v3/tasks/care-ase-faithful/REQUEST.json": care_request,
+            "automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json": care_current,
+            "automation/agent_flow_v3/tasks/care-ase-faithful/VISUAL_SOURCES.json": visual_sources,
+            "results/agent_flow_v3/care-visual-smoke/visual_smoke_final.json": visual_final,
+        }
+
+        def fake_git_show_json(_repo: Path, _ref: str, rel_path: str) -> dict[str, object]:
+            return remote_objects[rel_path]
+
+        with tempfile.TemporaryDirectory() as tmp, \
+            mock.patch.object(RUNTIME, "git_show_json", side_effect=fake_git_show_json), \
+            mock.patch.object(RUNTIME, "git_show_text_or_none", return_value=json.dumps(planner_review)), \
+            mock.patch.object(RUNTIME, "git", return_value="e" * 40):
+            result = RUNTIME.activate_care_ase_after_smoke_b(
+                repo=Path(tmp),
+                branch="develop",
+                ref="HEAD",
+                activation_nonce="care-ase-test",
+                dry_run=True,
+            )
+
+        self.assertEqual(result["status"], "DRY_RUN")
+        self.assertEqual(result["branch"], "develop")
+        self.assertEqual(result["request_nonce"], "care-ase-test")
+
+    def test_smoke_b_pass_controller_update_commits_activation(self) -> None:
+        activation = {
+            "updated_paths": [
+                "results/agent_flow_v3/gpt-loop-smoke-b/gpt_loop_smoke_final.json",
+                "automation/agent_flow_v3/tasks/care-ase-faithful/REQUEST.json",
+            ],
+            "request_nonce": "care-ase-test",
+        }
+        commit = {"status": "COMMITTED_AND_PUSHED", "commit_sha": "b" * 40, "pushed": True}
+
+        with tempfile.TemporaryDirectory() as tmp, \
+            mock.patch.object(RUNTIME, "ensure_clean_ff_to_remote", return_value="a" * 40) as clean_ff, \
+            mock.patch.object(RUNTIME, "activate_care_ase_after_smoke_b", return_value=activation) as activate, \
+            mock.patch.object(RUNTIME, "commit_and_push", return_value=commit) as commit_push:
+            result = RUNTIME.apply_smoke_b_pass_controller_update(Path(tmp), "develop")
+
+        self.assertEqual(result["status"], "APPLIED")
+        self.assertEqual(result["head_before_update"], "a" * 40)
+        clean_ff.assert_called_once()
+        activate.assert_called_once()
+        commit_push.assert_called_once()
+        self.assertEqual(result["commit"], commit)
 
     def test_watcher_rejects_old_nonce(self) -> None:
         args = argparse.Namespace(

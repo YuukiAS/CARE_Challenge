@@ -81,6 +81,43 @@ def git(repo: Path, *args: str) -> str:
     return subprocess.check_output(["git", *args], cwd=repo, text=True).strip()
 
 
+def git_status_short(repo: Path) -> str:
+    return subprocess.check_output(["git", "status", "--porcelain"], cwd=repo, text=True).strip()
+
+
+def ensure_clean_ff_to_remote(repo: Path, branch: str) -> str:
+    status = git_status_short(repo)
+    if status:
+        raise RuntimeErrorV3("worktree_not_clean_before_stage_update")
+    git(repo, "merge", "--ff-only", f"origin/{branch}")
+    return git(repo, "rev-parse", "HEAD")
+
+
+def commit_and_push(repo: Path, branch: str, paths: list[str], message: str) -> dict[str, Any]:
+    subprocess.check_call(["git", "add", *paths], cwd=repo)
+    diff = subprocess.run(
+        ["git", "diff", "--cached", "--quiet"],
+        cwd=repo,
+        check=False,
+    )
+    if diff.returncode == 0:
+        return {
+            "status": "NO_CHANGES",
+            "branch": branch,
+            "commit_sha": git(repo, "rev-parse", "HEAD"),
+            "pushed": False,
+        }
+    subprocess.check_call(["git", "commit", "-m", message], cwd=repo)
+    commit_sha = git(repo, "rev-parse", "HEAD")
+    subprocess.check_call(["git", "push", "origin", f"HEAD:{branch}"], cwd=repo)
+    return {
+        "status": "COMMITTED_AND_PUSHED",
+        "branch": branch,
+        "commit_sha": commit_sha,
+        "pushed": True,
+    }
+
+
 def git_show_json(repo: Path, ref: str, rel_path: str) -> dict[str, Any]:
     payload = subprocess.check_output(
         ["git", "show", f"{ref}:{rel_path}"],
@@ -999,6 +1036,30 @@ def evaluate_stage_event(
     }
 
 
+def apply_smoke_b_pass_controller_update(repo: Path, branch: str) -> dict[str, Any]:
+    head_before = ensure_clean_ff_to_remote(repo, branch)
+    activation = activate_care_ase_after_smoke_b(
+        repo=repo,
+        branch=branch,
+        ref="HEAD",
+        activation_nonce="care-ase-" + now().replace(":", "").replace("-", ""),
+        dry_run=False,
+    )
+    commit_result = commit_and_push(
+        repo,
+        branch,
+        activation["updated_paths"],
+        "automation: arm care ase after smoke b pass",
+    )
+    return {
+        "status": "APPLIED",
+        "head_before_update": head_before,
+        "activation": activation,
+        "commit": commit_result,
+        "updated_utc": now(),
+    }
+
+
 def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, Any]:
     repo = args.repo_root.resolve()
     git(repo, "fetch", "origin", args.branch, "--prune")
@@ -1035,6 +1096,24 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
         )
         if event["decision"] in {"STAGE_READY", "STOP_AT_HUMAN_GATE"}:
             processed.add(event["event_key"])
+        elif (
+            event["decision"] == "CONTROLLER_UPDATE_REQUIRED"
+            and task_id == "gpt-loop-smoke-b"
+            and event["state"] == "PLANNER_PASS"
+        ):
+            try:
+                event["action_result"] = apply_smoke_b_pass_controller_update(repo, args.branch)
+                event["decision"] = "CONTROLLER_UPDATE_APPLIED"
+                event["action"] = "Smoke B PASS validated and care-ase-faithful armed by Controller automation"
+                processed.add(event["event_key"])
+                event["remote_sha_after_controller_update"] = remote_head(repo, args.branch)
+            except Exception as exc:  # noqa: BLE001 - keep polling; do not mark failed update processed.
+                event["action_result"] = {
+                    "status": "FAILED",
+                    "error": f"{type(exc).__name__}: {exc}",
+                    "updated_utc": now(),
+                }
+                event["failures"] = list(event.get("failures", [])) + ["controller_update_failed"]
         task_events.append(event)
     receipt = {
         "schema": ORCHESTRATOR_RECEIPT_SCHEMA,
@@ -1491,11 +1570,14 @@ def prepare_care_ase_activation_after_smoke_b(
     return armed_request, armed_current, armed_visual_sources, activation_state, failures
 
 
-def cmd_activate_care_ase_after_smoke_b(args: argparse.Namespace) -> int:
-    repo = args.repo_root.resolve()
-    if args.fetch:
-        git(repo, "fetch", "origin", args.branch, "--prune")
-    ref = f"origin/{args.branch}" if args.from_origin else "HEAD"
+def activate_care_ase_after_smoke_b(
+    *,
+    repo: Path,
+    branch: str,
+    ref: str,
+    activation_nonce: str,
+    dry_run: bool,
+) -> dict[str, Any]:
     smoke_request_path = "automation/agent_flow_v3/tasks/gpt-loop-smoke-b/REQUEST.json"
     smoke_current_path = "automation/agent_flow_v3/tasks/gpt-loop-smoke-b/CURRENT.json"
     care_request_path = "automation/agent_flow_v3/tasks/care-ase-faithful/REQUEST.json"
@@ -1536,7 +1618,7 @@ def cmd_activate_care_ase_after_smoke_b(args: argparse.Namespace) -> int:
     if smoke_final["status"] != "PASS":
         raise RuntimeErrorV3("smoke_b_planner_pass_invalid:" + ",".join(smoke_final.get("failures", [])))
 
-    activation_nonce = args.activation_nonce or "care-ase-" + now().replace(":", "").replace("-", "")
+    activation_nonce = activation_nonce or "care-ase-" + now().replace(":", "").replace("-", "")
     frozen_contract_sha256 = care_request.get("frozen_contract_sha256")
     if frozen_contract_sha256 is not None:
         frozen_contract_sha256 = str(frozen_contract_sha256)
@@ -1553,8 +1635,8 @@ def cmd_activate_care_ase_after_smoke_b(args: argparse.Namespace) -> int:
         raise RuntimeErrorV3("care_ase_activation_invalid:" + ",".join(failures))
     result = {
         "schema": "CARE_AGENT_FLOW_V3_CARE_ASE_ACTIVATION_COMMAND",
-        "status": "DRY_RUN" if args.dry_run else "WROTE_FILES",
-        "branch": args.branch,
+        "status": "DRY_RUN" if dry_run else "WROTE_FILES",
+        "branch": branch,
         "source_ref": ref,
         "smoke_final_path": smoke_final_path,
         "activation_state_path": activation_state_path,
@@ -1568,12 +1650,27 @@ def cmd_activate_care_ase_after_smoke_b(args: argparse.Namespace) -> int:
         "request_nonce": activation_nonce,
         "updated_utc": now(),
     }
-    if not args.dry_run:
+    if not dry_run:
         write_json(repo / smoke_final_path, smoke_final)
         write_json(repo / care_visual_sources_path, armed_visual_sources)
         write_json(repo / care_request_path, armed_request)
         write_json(repo / care_current_path, armed_current)
         write_json(repo / activation_state_path, activation_state)
+    return result
+
+
+def cmd_activate_care_ase_after_smoke_b(args: argparse.Namespace) -> int:
+    repo = args.repo_root.resolve()
+    if args.fetch:
+        git(repo, "fetch", "origin", args.branch, "--prune")
+    ref = f"origin/{args.branch}" if args.from_origin else "HEAD"
+    result = activate_care_ase_after_smoke_b(
+        repo=repo,
+        branch=args.branch,
+        ref=ref,
+        activation_nonce=args.activation_nonce,
+        dry_run=args.dry_run,
+    )
     print(json.dumps(result, indent=2, ensure_ascii=False))
     return 0
 
