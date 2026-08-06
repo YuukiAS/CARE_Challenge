@@ -829,11 +829,40 @@ def tmux_pane_pid(session: str, window: str) -> int | None:
         return None
 
 
+def process_has_child(pid: int | None) -> bool:
+    if not pid:
+        return False
+    cp = subprocess.run(
+        ["pgrep", "-P", str(pid)],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    return cp.returncode == 0 and bool(cp.stdout.strip())
+
+
 def care_ase_controller_start_receipt_path(stage_state_root: Path) -> Path:
     return stage_state_root.resolve().parent / "care-ase-faithful" / "controller_start_receipt.json"
 
 
+def care_ase_verifier_launch_receipt_path(stage_state_root: Path) -> Path:
+    return stage_state_root.resolve().parent / "care-ase-faithful" / "verifier_launch_receipt.json"
+
+
 def care_ase_controller_start_satisfied(stage_state_root: Path, current: dict[str, Any]) -> bool:
+    verifier_launch_path = care_ase_verifier_launch_receipt_path(stage_state_root)
+    if verifier_launch_path.is_file():
+        try:
+            verifier_launch = load_json(verifier_launch_path)
+            if (
+                verifier_launch.get("task_id") == "care-ase-faithful"
+                and verifier_launch.get("request_nonce") == current.get("request_nonce")
+                and verifier_launch.get("frozen_contract_sha256") == current.get("frozen_contract_sha256")
+                and verifier_launch.get("status") in {"STARTED", "ALREADY_RUNNING", "VERIFIER_FREEZE_COMPLETE"}
+            ):
+                return True
+        except RuntimeErrorV3:
+            pass
     receipt_path = care_ase_controller_start_receipt_path(stage_state_root)
     if not receipt_path.is_file():
         return False
@@ -849,7 +878,11 @@ def care_ase_controller_start_satisfied(stage_state_root: Path, current: dict[st
         return False
     if receipt.get("frozen_contract_sha256") != current.get("frozen_contract_sha256"):
         return False
-    return receipt.get("status") in {"STARTED", "ALREADY_RUNNING"}
+    if receipt.get("status") not in {"STARTED", "ALREADY_RUNNING"}:
+        return False
+    if not tmux_window_exists("care_agent_flow_v3", "Controller-care-ase-faithful"):
+        return False
+    return process_has_child(tmux_pane_pid("care_agent_flow_v3", "Controller-care-ase-faithful"))
 
 
 def resolve_watcher_paths(args: argparse.Namespace) -> argparse.Namespace:
@@ -1271,7 +1304,18 @@ Current verified state:
 - frozen_contract_sha256: {current.get("frozen_contract_sha256")}
 - critic_decision: {current.get("critic_decision")}
 
-Your role is Controller only. You may coordinate, verify, integrate, commit, and push develop when the protocol authorizes it. You must not directly edit Executor implementation files or Verifier test files. Start the independent Verifier first; after Verifier freezes a real fail-closed contract, start the independent Executor. Preserve exact role separation, use the configured role worktrees and CODEX_HOME values, and record thread IDs, prompts, commits, CI, and state transitions under results/agent_flow_v3/care-ase-faithful/.
+Your role is Controller only. This is an execution turn, not a planning turn. You may coordinate, verify, integrate, commit, and push develop when the protocol authorizes it. You must not directly edit Executor implementation files or Verifier test files.
+
+Required immediate action in this turn:
+1. Verify the same PLAN_FROZEN bindings above from origin/develop.
+2. Start or resume the independent Verifier exact thread from prompts/tasks/20260805_care_ase_develop_faithful_reimplementation_role_plan.json.
+3. Send the Verifier a precise prompt requiring fail-closed tests and a frozen verifier contract before any Executor implementation starts.
+4. Record a durable Verifier launch receipt at /users/a/e/aereinh/.agent-flow-v3/care-ase-faithful/verifier_launch_receipt.json and a lightweight repository receipt under results/agent_flow_v3/care-ase-faithful/.
+5. If the Verifier cannot be started, write a fail-closed receipt with the concrete cause before ending.
+
+After Verifier freezes real tests, start the independent Executor. Preserve exact role separation, use the configured role worktrees and CODEX_HOME values, and record thread IDs, prompts, commits, CI, and state transitions under results/agent_flow_v3/care-ase-faithful/.
+
+Do not end this turn with only "I will" or a plan. Either the Verifier exact thread is started and recorded, or a concrete fail-closed launch receipt exists.
 
 Forbidden for this goal: training, outer access, Docker build/upload, validation/challenge upload, organizer email, develop-to-main merge, hand-written Planner/Critic decisions, fake receipts, --last resume, and TUI key injection.
 
@@ -1347,10 +1391,12 @@ def start_care_ase_controller_from_frozen_contract(
         f"2> {shlex.quote(str(stderr_path))}"
     )
 
-    if tmux_window_exists(args.controller_tmux_session, args.controller_tmux_window):
+    if tmux_window_exists(args.controller_tmux_session, args.controller_tmux_window) and process_has_child(tmux_pane_pid(args.controller_tmux_session, args.controller_tmux_window)):
         pane_pid = tmux_pane_pid(args.controller_tmux_session, args.controller_tmux_window)
         status = "ALREADY_RUNNING"
     else:
+        if tmux_window_exists(args.controller_tmux_session, args.controller_tmux_window):
+            subprocess.run(["tmux", "kill-window", "-t", target], check=False)
         if subprocess.run(["tmux", "has-session", "-t", args.controller_tmux_session], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False).returncode != 0:
             tmux_cmd = ["tmux", "new-session", "-d", "-s", args.controller_tmux_session, "-n", args.controller_tmux_window, shell_command]
         else:
