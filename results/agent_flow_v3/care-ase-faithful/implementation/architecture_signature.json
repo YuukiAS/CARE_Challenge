@@ -1,0 +1,1191 @@
+{
+  "architecture_signature_sha256": "a2f10c967b2857d6ed1f4b7b601f4a8de953c3ee92b7596e3288a14e02943829",
+  "canonical_module": "src.care_myocardium.models.care_ase.core",
+  "canonical_package": "src/care_myocardium/models/care_ase",
+  "contract_summary": {
+    "branch_full_feature_channels": 32,
+    "branch_half_feature_channels": 64,
+    "cloned_stage_indices": [
+      4,
+      5
+    ],
+    "full_projection_channels": 64,
+    "gate_initial_outputs": {
+      "edema_c0_sigmoid": 0.20000000298023224,
+      "edema_lge_tanh": 0.04999999701976776,
+      "scar_c0_sigmoid": 0.20000000298023224
+    },
+    "half_projection_channels": 128,
+    "half_seed_channels": 64,
+    "modality_adapter_conv_init": "kaiming_nonzero_first_and_final_projection",
+    "modality_adapter_final_conv_zero_init": false,
+    "named_evidence_projection_registry": {
+      "duplicate_named_projection_count": 0,
+      "groups": {
+        "edema_full": {
+          "projection_count": 15,
+          "sources": {
+            "edema_boundary_to_full": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            },
+            "edema_c0_to_full": {
+              "bias_norm": 0.0,
+              "input_channels": 64,
+              "weight_norm": 0.0
+            },
+            "edema_context_to_full": {
+              "bias_norm": 0.0,
+              "input_channels": 4,
+              "weight_norm": 0.0
+            },
+            "edema_dilation1_to_full": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            },
+            "edema_dilation2_to_full": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            },
+            "edema_dilation4_to_full": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            },
+            "edema_injury_to_full": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            },
+            "edema_lge_to_full": {
+              "bias_norm": 0.0,
+              "input_channels": 64,
+              "weight_norm": 0.0
+            },
+            "edema_p_lv_to_full": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            },
+            "edema_p_rv_to_full": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            },
+            "edema_p_wall_to_full": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            },
+            "edema_rho_to_full": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            },
+            "edema_signed_endo_to_full": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            },
+            "edema_signed_epi_to_full": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            },
+            "edema_t2_to_full": {
+              "bias_norm": 0.0,
+              "input_channels": 64,
+              "weight_norm": 0.0
+            }
+          }
+        },
+        "edema_half": {
+          "projection_count": 10,
+          "sources": {
+            "edema_c0_to_half": {
+              "bias_norm": 0.0,
+              "input_channels": 128,
+              "weight_norm": 0.0
+            },
+            "edema_context_to_half": {
+              "bias_norm": 0.0,
+              "input_channels": 4,
+              "weight_norm": 0.0
+            },
+            "edema_lge_to_half": {
+              "bias_norm": 0.0,
+              "input_channels": 128,
+              "weight_norm": 0.0
+            },
+            "edema_p_lv_to_half": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            },
+            "edema_p_rv_to_half": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            },
+            "edema_p_wall_to_half": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            },
+            "edema_rho_to_half": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            },
+            "edema_signed_endo_to_half": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            },
+            "edema_signed_epi_to_half": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            },
+            "edema_t2_to_half": {
+              "bias_norm": 0.0,
+              "input_channels": 128,
+              "weight_norm": 0.0
+            }
+          }
+        },
+        "scar_full": {
+          "projection_count": 11,
+          "sources": {
+            "scar_c0_to_full": {
+              "bias_norm": 0.0,
+              "input_channels": 64,
+              "weight_norm": 0.0
+            },
+            "scar_context_to_full": {
+              "bias_norm": 0.0,
+              "input_channels": 4,
+              "weight_norm": 0.0
+            },
+            "scar_half_center_to_full": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            },
+            "scar_half_occupancy_to_full": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            },
+            "scar_lge_to_full": {
+              "bias_norm": 0.0,
+              "input_channels": 64,
+              "weight_norm": 0.0
+            },
+            "scar_p_lv_to_full": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            },
+            "scar_p_rv_to_full": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            },
+            "scar_p_wall_to_full": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            },
+            "scar_rho_to_full": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            },
+            "scar_signed_endo_to_full": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            },
+            "scar_signed_epi_to_full": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            }
+          }
+        },
+        "scar_half": {
+          "projection_count": 11,
+          "sources": {
+            "scar_c0_to_half": {
+              "bias_norm": 0.0,
+              "input_channels": 128,
+              "weight_norm": 0.0
+            },
+            "scar_context_to_half": {
+              "bias_norm": 0.0,
+              "input_channels": 4,
+              "weight_norm": 0.0
+            },
+            "scar_lge_to_half": {
+              "bias_norm": 0.0,
+              "input_channels": 128,
+              "weight_norm": 0.0
+            },
+            "scar_p_lv_to_half": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            },
+            "scar_p_rv_to_half": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            },
+            "scar_p_wall_to_half": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            },
+            "scar_quarter_center_to_half": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            },
+            "scar_quarter_occupancy_to_half": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            },
+            "scar_rho_to_half": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            },
+            "scar_signed_endo_to_half": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            },
+            "scar_signed_epi_to_half": {
+              "bias_norm": 0.0,
+              "input_channels": 1,
+              "weight_norm": 0.0
+            }
+          }
+        }
+      },
+      "missing_named_projection_count": 0,
+      "shared_multi_source_projection_count": 0,
+      "status": "PASS",
+      "total_named_projection_count": 47
+    },
+    "no_hardcoded_quarter_half_or_projection_channels": true,
+    "scale_specific_modality_adapter_out_channels": {
+      "full": 64,
+      "half": 128
+    },
+    "shared_low_mid_stage_indices": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "shared_quarter_channels": 128,
+    "source": "actual_stock_decoder_modules",
+    "stage_kernel_stride": {
+      "stage_0": {
+        "conv_kernel_sizes": [
+          [
+            3,
+            3,
+            3
+          ],
+          [
+            3,
+            3,
+            3
+          ]
+        ],
+        "conv_strides": [
+          [
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1
+          ]
+        ],
+        "transpconv": {
+          "conv_kernel_sizes": [],
+          "conv_strides": [],
+          "transposed_kernel_sizes": [
+            [
+              1,
+              2,
+              2
+            ]
+          ],
+          "transposed_strides": [
+            [
+              1,
+              2,
+              2
+            ]
+          ]
+        },
+        "transposed_kernel_sizes": [],
+        "transposed_strides": []
+      },
+      "stage_1": {
+        "conv_kernel_sizes": [
+          [
+            3,
+            3,
+            3
+          ],
+          [
+            3,
+            3,
+            3
+          ]
+        ],
+        "conv_strides": [
+          [
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1
+          ]
+        ],
+        "transpconv": {
+          "conv_kernel_sizes": [],
+          "conv_strides": [],
+          "transposed_kernel_sizes": [
+            [
+              1,
+              2,
+              2
+            ]
+          ],
+          "transposed_strides": [
+            [
+              1,
+              2,
+              2
+            ]
+          ]
+        },
+        "transposed_kernel_sizes": [],
+        "transposed_strides": []
+      },
+      "stage_2": {
+        "conv_kernel_sizes": [
+          [
+            3,
+            3,
+            3
+          ],
+          [
+            3,
+            3,
+            3
+          ]
+        ],
+        "conv_strides": [
+          [
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1
+          ]
+        ],
+        "transpconv": {
+          "conv_kernel_sizes": [],
+          "conv_strides": [],
+          "transposed_kernel_sizes": [
+            [
+              1,
+              2,
+              2
+            ]
+          ],
+          "transposed_strides": [
+            [
+              1,
+              2,
+              2
+            ]
+          ]
+        },
+        "transposed_kernel_sizes": [],
+        "transposed_strides": []
+      },
+      "stage_3": {
+        "conv_kernel_sizes": [
+          [
+            3,
+            3,
+            3
+          ],
+          [
+            3,
+            3,
+            3
+          ]
+        ],
+        "conv_strides": [
+          [
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1
+          ]
+        ],
+        "transpconv": {
+          "conv_kernel_sizes": [],
+          "conv_strides": [],
+          "transposed_kernel_sizes": [
+            [
+              2,
+              2,
+              2
+            ]
+          ],
+          "transposed_strides": [
+            [
+              2,
+              2,
+              2
+            ]
+          ]
+        },
+        "transposed_kernel_sizes": [],
+        "transposed_strides": []
+      },
+      "stage_4": {
+        "conv_kernel_sizes": [
+          [
+            3,
+            3,
+            3
+          ],
+          [
+            3,
+            3,
+            3
+          ]
+        ],
+        "conv_strides": [
+          [
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1
+          ]
+        ],
+        "transpconv": {
+          "conv_kernel_sizes": [],
+          "conv_strides": [],
+          "transposed_kernel_sizes": [
+            [
+              2,
+              2,
+              2
+            ]
+          ],
+          "transposed_strides": [
+            [
+              2,
+              2,
+              2
+            ]
+          ]
+        },
+        "transposed_kernel_sizes": [],
+        "transposed_strides": []
+      },
+      "stage_5": {
+        "conv_kernel_sizes": [
+          [
+            1,
+            3,
+            3
+          ],
+          [
+            1,
+            3,
+            3
+          ]
+        ],
+        "conv_strides": [
+          [
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1
+          ]
+        ],
+        "transpconv": {
+          "conv_kernel_sizes": [],
+          "conv_strides": [],
+          "transposed_kernel_sizes": [
+            [
+              1,
+              2,
+              2
+            ]
+          ],
+          "transposed_strides": [
+            [
+              1,
+              2,
+              2
+            ]
+          ]
+        },
+        "transposed_kernel_sizes": [],
+        "transposed_strides": []
+      }
+    },
+    "status": "PASS"
+  },
+  "decoder_introspection": {
+    "branch_full_feature_channels": 32,
+    "branch_half_feature_channels": 64,
+    "cloned_stage_indices": [
+      4,
+      5
+    ],
+    "full_projection_channels": 64,
+    "half_projection_channels": 128,
+    "half_seed_channels": 64,
+    "shared_low_mid_stage_indices": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "shared_quarter_channels": 128,
+    "stage_kernel_stride": {
+      "stage_0": {
+        "conv_kernel_sizes": [
+          [
+            3,
+            3,
+            3
+          ],
+          [
+            3,
+            3,
+            3
+          ]
+        ],
+        "conv_strides": [
+          [
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1
+          ]
+        ],
+        "transpconv": {
+          "conv_kernel_sizes": [],
+          "conv_strides": [],
+          "transposed_kernel_sizes": [
+            [
+              1,
+              2,
+              2
+            ]
+          ],
+          "transposed_strides": [
+            [
+              1,
+              2,
+              2
+            ]
+          ]
+        },
+        "transposed_kernel_sizes": [],
+        "transposed_strides": []
+      },
+      "stage_1": {
+        "conv_kernel_sizes": [
+          [
+            3,
+            3,
+            3
+          ],
+          [
+            3,
+            3,
+            3
+          ]
+        ],
+        "conv_strides": [
+          [
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1
+          ]
+        ],
+        "transpconv": {
+          "conv_kernel_sizes": [],
+          "conv_strides": [],
+          "transposed_kernel_sizes": [
+            [
+              1,
+              2,
+              2
+            ]
+          ],
+          "transposed_strides": [
+            [
+              1,
+              2,
+              2
+            ]
+          ]
+        },
+        "transposed_kernel_sizes": [],
+        "transposed_strides": []
+      },
+      "stage_2": {
+        "conv_kernel_sizes": [
+          [
+            3,
+            3,
+            3
+          ],
+          [
+            3,
+            3,
+            3
+          ]
+        ],
+        "conv_strides": [
+          [
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1
+          ]
+        ],
+        "transpconv": {
+          "conv_kernel_sizes": [],
+          "conv_strides": [],
+          "transposed_kernel_sizes": [
+            [
+              1,
+              2,
+              2
+            ]
+          ],
+          "transposed_strides": [
+            [
+              1,
+              2,
+              2
+            ]
+          ]
+        },
+        "transposed_kernel_sizes": [],
+        "transposed_strides": []
+      },
+      "stage_3": {
+        "conv_kernel_sizes": [
+          [
+            3,
+            3,
+            3
+          ],
+          [
+            3,
+            3,
+            3
+          ]
+        ],
+        "conv_strides": [
+          [
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1
+          ]
+        ],
+        "transpconv": {
+          "conv_kernel_sizes": [],
+          "conv_strides": [],
+          "transposed_kernel_sizes": [
+            [
+              2,
+              2,
+              2
+            ]
+          ],
+          "transposed_strides": [
+            [
+              2,
+              2,
+              2
+            ]
+          ]
+        },
+        "transposed_kernel_sizes": [],
+        "transposed_strides": []
+      },
+      "stage_4": {
+        "conv_kernel_sizes": [
+          [
+            3,
+            3,
+            3
+          ],
+          [
+            3,
+            3,
+            3
+          ]
+        ],
+        "conv_strides": [
+          [
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1
+          ]
+        ],
+        "transpconv": {
+          "conv_kernel_sizes": [],
+          "conv_strides": [],
+          "transposed_kernel_sizes": [
+            [
+              2,
+              2,
+              2
+            ]
+          ],
+          "transposed_strides": [
+            [
+              2,
+              2,
+              2
+            ]
+          ]
+        },
+        "transposed_kernel_sizes": [],
+        "transposed_strides": []
+      },
+      "stage_5": {
+        "conv_kernel_sizes": [
+          [
+            1,
+            3,
+            3
+          ],
+          [
+            1,
+            3,
+            3
+          ]
+        ],
+        "conv_strides": [
+          [
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1
+          ]
+        ],
+        "transpconv": {
+          "conv_kernel_sizes": [],
+          "conv_strides": [],
+          "transposed_kernel_sizes": [
+            [
+              1,
+              2,
+              2
+            ]
+          ],
+          "transposed_strides": [
+            [
+              1,
+              2,
+              2
+            ]
+          ]
+        },
+        "transposed_kernel_sizes": [],
+        "transposed_strides": []
+      }
+    }
+  },
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "legacy_module_path_exists": false,
+  "named_evidence_projection_registry": {
+    "duplicate_named_projection_count": 0,
+    "groups": {
+      "edema_full": {
+        "projection_count": 15,
+        "sources": {
+          "edema_boundary_to_full": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          },
+          "edema_c0_to_full": {
+            "bias_norm": 0.0,
+            "input_channels": 64,
+            "weight_norm": 0.0
+          },
+          "edema_context_to_full": {
+            "bias_norm": 0.0,
+            "input_channels": 4,
+            "weight_norm": 0.0
+          },
+          "edema_dilation1_to_full": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          },
+          "edema_dilation2_to_full": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          },
+          "edema_dilation4_to_full": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          },
+          "edema_injury_to_full": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          },
+          "edema_lge_to_full": {
+            "bias_norm": 0.0,
+            "input_channels": 64,
+            "weight_norm": 0.0
+          },
+          "edema_p_lv_to_full": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          },
+          "edema_p_rv_to_full": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          },
+          "edema_p_wall_to_full": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          },
+          "edema_rho_to_full": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          },
+          "edema_signed_endo_to_full": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          },
+          "edema_signed_epi_to_full": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          },
+          "edema_t2_to_full": {
+            "bias_norm": 0.0,
+            "input_channels": 64,
+            "weight_norm": 0.0
+          }
+        }
+      },
+      "edema_half": {
+        "projection_count": 10,
+        "sources": {
+          "edema_c0_to_half": {
+            "bias_norm": 0.0,
+            "input_channels": 128,
+            "weight_norm": 0.0
+          },
+          "edema_context_to_half": {
+            "bias_norm": 0.0,
+            "input_channels": 4,
+            "weight_norm": 0.0
+          },
+          "edema_lge_to_half": {
+            "bias_norm": 0.0,
+            "input_channels": 128,
+            "weight_norm": 0.0
+          },
+          "edema_p_lv_to_half": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          },
+          "edema_p_rv_to_half": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          },
+          "edema_p_wall_to_half": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          },
+          "edema_rho_to_half": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          },
+          "edema_signed_endo_to_half": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          },
+          "edema_signed_epi_to_half": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          },
+          "edema_t2_to_half": {
+            "bias_norm": 0.0,
+            "input_channels": 128,
+            "weight_norm": 0.0
+          }
+        }
+      },
+      "scar_full": {
+        "projection_count": 11,
+        "sources": {
+          "scar_c0_to_full": {
+            "bias_norm": 0.0,
+            "input_channels": 64,
+            "weight_norm": 0.0
+          },
+          "scar_context_to_full": {
+            "bias_norm": 0.0,
+            "input_channels": 4,
+            "weight_norm": 0.0
+          },
+          "scar_half_center_to_full": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          },
+          "scar_half_occupancy_to_full": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          },
+          "scar_lge_to_full": {
+            "bias_norm": 0.0,
+            "input_channels": 64,
+            "weight_norm": 0.0
+          },
+          "scar_p_lv_to_full": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          },
+          "scar_p_rv_to_full": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          },
+          "scar_p_wall_to_full": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          },
+          "scar_rho_to_full": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          },
+          "scar_signed_endo_to_full": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          },
+          "scar_signed_epi_to_full": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          }
+        }
+      },
+      "scar_half": {
+        "projection_count": 11,
+        "sources": {
+          "scar_c0_to_half": {
+            "bias_norm": 0.0,
+            "input_channels": 128,
+            "weight_norm": 0.0
+          },
+          "scar_context_to_half": {
+            "bias_norm": 0.0,
+            "input_channels": 4,
+            "weight_norm": 0.0
+          },
+          "scar_lge_to_half": {
+            "bias_norm": 0.0,
+            "input_channels": 128,
+            "weight_norm": 0.0
+          },
+          "scar_p_lv_to_half": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          },
+          "scar_p_rv_to_half": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          },
+          "scar_p_wall_to_half": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          },
+          "scar_quarter_center_to_half": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          },
+          "scar_quarter_occupancy_to_half": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          },
+          "scar_rho_to_half": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          },
+          "scar_signed_endo_to_half": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          },
+          "scar_signed_epi_to_half": {
+            "bias_norm": 0.0,
+            "input_channels": 1,
+            "weight_norm": 0.0
+          }
+        }
+      }
+    },
+    "missing_named_projection_count": 0,
+    "shared_multi_source_projection_count": 0,
+    "status": "PASS",
+    "total_named_projection_count": 47
+  },
+  "pathology_deep_supervision_weights": {
+    "full": 0.6666666666666666,
+    "half": 0.3333333333333333,
+    "output_index_by_stage": {
+      "0": 5,
+      "1": 4,
+      "2": 3,
+      "3": 2,
+      "4": 1,
+      "5": 0
+    },
+    "raw_selected_weights": {
+      "full": 0.5161290322580645,
+      "half": 0.25806451612903225
+    },
+    "selected_output_order": [
+      "full",
+      "half"
+    ],
+    "selected_stage_indices": {
+      "full": 5,
+      "half": 4
+    },
+    "source": "stock_nnunet_deep_supervision_formula_1_over_2_power_output_order_normalized_over_highest_two_pathology_scales",
+    "source_runtime": "nnUNetTrainer._build_loss().weight_factors",
+    "stock_decoder_seg_layer_count": 6,
+    "stock_raw_weights_by_decoder_stage": {
+      "0": 0.0,
+      "1": 0.03225806451612903,
+      "2": 0.06451612903225806,
+      "3": 0.12903225806451613,
+      "4": 0.25806451612903225,
+      "5": 0.5161290322580645
+    },
+    "stock_runtime_weight_factors": [
+      0.5161290322580645,
+      0.25806451612903225,
+      0.12903225806451613,
+      0.06451612903225806,
+      0.03225806451612903,
+      0.0
+    ]
+  },
+  "request_nonce": "care-ase-20260806T090955Z",
+  "schema": "CARE_ASE_FAITHFUL_ARCHITECTURE_SIGNATURE_V1",
+  "source_manifest_sha256": "734c0707ee07346808c1bcf0e728bcaf4c05f08f4472667eb8e432adbb5d6470",
+  "stock_checkpoint_path": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_final.pth",
+  "stock_checkpoint_sha256": "8bceb20cae8920e87d43b14665a0db9dfd4f1204533d25a3cd6e40ad9de74111",
+  "stock_parameter_byte_coverage": 1.0,
+  "task_id": "care-ase-faithful"
+}
