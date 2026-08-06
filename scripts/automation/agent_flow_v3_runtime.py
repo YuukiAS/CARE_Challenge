@@ -303,6 +303,15 @@ def build_resume_command(codex_bin: str, worktree: Path, thread_id: str) -> list
     return [codex_bin, "exec", "-C", str(worktree), "resume", thread_id, "-"]
 
 
+def resume_command_worktree(command: list[str]) -> Path | None:
+    for flag in ("-C", "--cd"):
+        if flag in command:
+            index = command.index(flag)
+            if index + 1 < len(command):
+                return Path(command[index + 1])
+    return None
+
+
 def is_pid_running(pid: int) -> bool:
     if pid <= 0:
         return False
@@ -408,12 +417,17 @@ def execute_live_resume(
 
     env = os.environ.copy()
     env["CODEX_HOME"] = codex_home
+    env["CODEX_PERSISTENT_HOME"] = codex_home
+    worktree = resume_command_worktree(command)
+    if worktree:
+        env["CODEX_REPO_SLUG"] = worktree.name
     proc = popen_factory(
         command,
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         env=env,
+        cwd=str(worktree) if worktree else None,
     )
     active_record = {
         "schema": RESUME_RECEIPT_SCHEMA,

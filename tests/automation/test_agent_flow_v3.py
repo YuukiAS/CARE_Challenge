@@ -439,9 +439,10 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         class FakePopen:
             calls = []
 
-            def __init__(self, command, stdin, stdout, stderr, env):
+            def __init__(self, command, stdin, stdout, stderr, env, cwd):
                 self.command = command
                 self.env = env
+                self.cwd = cwd
                 self.pid = 4242
                 self.returncode = 0
                 FakePopen.calls.append(self)
@@ -465,6 +466,9 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             )
             self.assertEqual(FakePopen.calls[0].command[5], "thread-1")
             self.assertEqual(FakePopen.calls[0].env["CODEX_HOME"], str(root / "codex-home"))
+            self.assertEqual(FakePopen.calls[0].env["CODEX_PERSISTENT_HOME"], str(root / "codex-home"))
+            self.assertEqual(FakePopen.calls[0].env["CODEX_REPO_SLUG"], "worktree")
+            self.assertEqual(FakePopen.calls[0].cwd, str(root / "worktree"))
             self.assertEqual(FakePopen.calls[0].input, b"exact repair prompt\n")
             self.assertEqual(receipt["exit_code"], 0)
             self.assertEqual(Path(receipt["stdout_log"]).read_bytes(), b"stdout-ok")
