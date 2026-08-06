@@ -1,7 +1,8 @@
 {
-  "failure_count": 1,
+  "failure_count": 2,
   "failures": [
-    "kb04.stock_shortcut"
+    "kb04.stock_shortcut",
+    "artifact_binding.receipt_paths.missing"
   ],
   "known_bad_case_id": "kb04_stock_class_shortcut",
   "passed": false,

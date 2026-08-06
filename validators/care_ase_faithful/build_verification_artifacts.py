@@ -137,7 +137,7 @@ def check_only() -> int:
     _record_error(errors, verification_contract.get("required_metric_interfaces") == reference_evidence()["evaluation_interface"]["metrics"], "verification_contract.required_metric_interfaces")
 
     _record_error(errors, public_reference == reference_evidence(), "public_reference_evidence does not match validator reference")
-    reference_failures = validate_evidence(public_reference, verification_contract)
+    reference_failures = validate_evidence(public_reference, verification_contract, require_artifacts=False)
     _record_error(errors, not reference_failures, f"public reference validation failures: {reference_failures}")
     _record_error(errors, public_result.get("exit_code") == 0, "public_reference_validation_result.exit_code")
 
@@ -215,6 +215,29 @@ def build_artifacts() -> int:
             "may_read_public_manifest": True,
             "must_not_edit": ["tests/**", "validators/**", "automation/agent_flow_v3/schema.json", "prompts/blueprints/**"],
             "must_produce_real_runtime_receipts": True,
+            "public_reference_fixture_bypass_forbidden": True,
+            "strict_artifact_binding_required_for_executor_evidence": True,
+        },
+        "strict_artifact_binding": {
+            "required_receipt_paths": [
+                "source_manifest",
+                "static_architecture_checks",
+                "architecture_signature",
+                "parameter_owner_registry",
+                "forward_backward_probe",
+                "inference_probe",
+                "checkpoint_resume_probe",
+                "deployment_load_probe",
+                "evaluator_smoke",
+                "hard_negative_binding",
+            ],
+            "critical_source_topology_checks": [
+                "distinct Conv1d/GroupNorm scar and edema SliceExtentHead modules",
+                "no scar extent alias to scar proposal occupancy",
+                "edema dilation residual blocks at dilations 1, 2 and 4",
+                "injury classifier initialized from stock class-4/class-5 mean",
+                "real-case total-loss, no-T2, resume, deployment, evaluator and hard-negative receipts",
+            ],
         },
         "created_utc": now,
     }
@@ -229,6 +252,7 @@ def build_artifacts() -> int:
         str((VERIFICATION_DIR / "verification_contract.json").relative_to(ROOT)),
         "--evidence",
         str(public_reference_path.relative_to(ROOT)),
+        "--allow-public-reference-fixture",
     ]
     public_result = run_command(public_command)
     write_json(VERIFICATION_DIR / "public_reference_validation_result.json", public_result)

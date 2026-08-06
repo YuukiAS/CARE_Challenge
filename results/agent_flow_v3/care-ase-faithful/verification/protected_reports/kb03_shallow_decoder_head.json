@@ -1,8 +1,9 @@
 {
-  "failure_count": 2,
+  "failure_count": 3,
   "failures": [
     "kb03.scar_decoder",
-    "kb03.d0_shallow_head_substitute"
+    "kb03.d0_shallow_head_substitute",
+    "artifact_binding.receipt_paths.missing"
   ],
   "known_bad_case_id": "kb03_shallow_decoder_head",
   "passed": false,

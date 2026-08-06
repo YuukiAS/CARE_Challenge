@@ -5,7 +5,8 @@
     "--verification-contract",
     "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
     "--evidence",
-    "results/agent_flow_v3/care-ase-faithful/verification/public_reference_evidence.json"
+    "results/agent_flow_v3/care-ase-faithful/verification/public_reference_evidence.json",
+    "--allow-public-reference-fixture"
   ],
   "exit_code": 0,
   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",

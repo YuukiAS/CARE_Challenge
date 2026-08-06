@@ -1,8 +1,9 @@
 {
-  "failure_count": 2,
+  "failure_count": 3,
   "failures": [
     "kb12.tile_outputs_base_logits_only",
-    "kb12.single_tile_multi_tile_same_path"
+    "kb12.single_tile_multi_tile_same_path",
+    "artifact_binding.receipt_paths.missing"
   ],
   "known_bad_case_id": "kb12_tile_bias_or_path_fork",
   "passed": false,

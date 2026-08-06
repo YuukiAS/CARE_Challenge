@@ -1,8 +1,9 @@
 {
-  "failure_count": 2,
+  "failure_count": 3,
   "failures": [
     "kb19.patch_proxy",
-    "kb19.fair_baseline"
+    "kb19.fair_baseline",
+    "artifact_binding.receipt_paths.missing"
   ],
   "known_bad_case_id": "kb19_patch_proxy_evaluator",
   "passed": false,
