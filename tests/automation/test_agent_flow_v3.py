@@ -283,6 +283,47 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         )
         self.assertEqual(receipt["decision"], "IGNORE_PROCESSED")
 
+    def test_orchestrator_routes_smoke_b_planner_pass_to_care_ase_activation(self) -> None:
+        current = {
+            "request_nonce": "smoke-b-nonce",
+            "review_round": 1,
+            "state": "PLANNER_PASS",
+            "integration_commit_sha": "c" * 40,
+        }
+
+        receipt = RUNTIME.evaluate_stage_event(
+            task_id="gpt-loop-smoke-b",
+            request={"enabled": True},
+            current=current,
+            visual_final=None,
+            remote_sha="d" * 40,
+            processed=set(),
+            default_wait_hours=4,
+        )
+
+        self.assertEqual(receipt["decision"], "CONTROLLER_UPDATE_REQUIRED")
+        self.assertIn("arm care-ase-faithful", receipt["action"])
+
+    def test_orchestrator_keeps_generic_planner_pass_at_human_gate(self) -> None:
+        current = {
+            "request_nonce": "nonce-1",
+            "review_round": 1,
+            "state": "PLANNER_PASS",
+            "integration_commit_sha": "c" * 40,
+        }
+
+        receipt = RUNTIME.evaluate_stage_event(
+            task_id="care-ase-faithful",
+            request={"enabled": True},
+            current=current,
+            visual_final=None,
+            remote_sha="d" * 40,
+            processed=set(),
+            default_wait_hours=4,
+        )
+
+        self.assertEqual(receipt["decision"], "STOP_AT_HUMAN_GATE")
+
     def test_watcher_rejects_old_nonce(self) -> None:
         args = argparse.Namespace(
             task_id="smoke-task",

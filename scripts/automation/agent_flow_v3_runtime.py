@@ -965,6 +965,9 @@ def evaluate_stage_event(
     elif state == "READY_FOR_PLANNER_REVIEW":
         decision = "WAITING_FOR_EXTERNAL_GPT"
         action = "scheduled Planner review"
+    elif task_id == "gpt-loop-smoke-b" and state == "PLANNER_PASS":
+        decision = "CONTROLLER_UPDATE_REQUIRED"
+        action = "validate Smoke B Planner PASS artifact, write gpt_loop_smoke_final PASS, then arm care-ase-faithful"
     elif state in {"PLANNER_PASS", "AWAIT_HUMAN_DECISION"}:
         decision = "STOP_AT_HUMAN_GATE"
         action = "no automatic main merge, training, outer, Docker, upload or organizer email"
