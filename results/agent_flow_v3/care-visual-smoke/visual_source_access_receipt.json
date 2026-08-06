@@ -1,0 +1,57 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_VISUAL_SOURCE_ACCESS_RECEIPT",
+  "task_id": "care-visual-smoke",
+  "source_manifest": "automation/agent_flow_v3/tasks/care-visual-smoke/VISUAL_SOURCES.json",
+  "source_manifest_sha256": "32f2486bf68ac25154f4930fe16bdb2f601dbb5a410fa78f9cb3bec0971a2730",
+  "required_source_count": 3,
+  "checked_source_count": 3,
+  "all_local_sha_match": true,
+  "all_raw_urls_anonymous_and_sha_match": true,
+  "scheduled_planner_critic_visual_smoke": "not_performed_by_this_command",
+  "failures": [],
+  "sources": [
+    {
+      "name": "CARE-ASE",
+      "repository_reference": "docs/architecture/figures/CARE-ASE.png",
+      "local_exists": true,
+      "expected_sha256": "af8f47713961c3b6b03dd24283b8f18d51fb5043ab1699997db2713e525710b2",
+      "local_sha256": "af8f47713961c3b6b03dd24283b8f18d51fb5043ab1699997db2713e525710b2",
+      "local_sha_match": true,
+      "raw_url": "https://raw.githubusercontent.com/YuukiAS/CARE_Challenge/main/docs/architecture/figures/CARE-ASE.png",
+      "raw_http_status": 200,
+      "raw_sha256": "af8f47713961c3b6b03dd24283b8f18d51fb5043ab1699997db2713e525710b2",
+      "raw_sha_match": true,
+      "anonymous_access": true,
+      "error": "python_urlopen_failed_then_curl_passed:<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1010)>"
+    },
+    {
+      "name": "SRR-v3",
+      "repository_reference": "docs/architecture/figures/SRR-v3.png",
+      "local_exists": true,
+      "expected_sha256": "50478ee7c07cedb6a921902aa5daa8f6ecf3b34aa2fc5e97905d60c585ea72b5",
+      "local_sha256": "50478ee7c07cedb6a921902aa5daa8f6ecf3b34aa2fc5e97905d60c585ea72b5",
+      "local_sha_match": true,
+      "raw_url": "https://raw.githubusercontent.com/YuukiAS/CARE_Challenge/main/docs/architecture/figures/SRR-v3.png",
+      "raw_http_status": 200,
+      "raw_sha256": "50478ee7c07cedb6a921902aa5daa8f6ecf3b34aa2fc5e97905d60c585ea72b5",
+      "raw_sha_match": true,
+      "anonymous_access": true,
+      "error": "python_urlopen_failed_then_curl_passed:<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1010)>"
+    },
+    {
+      "name": "MoSAIC",
+      "repository_reference": "docs/architecture/figures/MoSAIC.png",
+      "local_exists": true,
+      "expected_sha256": "d2ea85c5ba40521dc65a56d85124ecfc9a2e40ac5eff206c10cff8fbf04e09fb",
+      "local_sha256": "d2ea85c5ba40521dc65a56d85124ecfc9a2e40ac5eff206c10cff8fbf04e09fb",
+      "local_sha_match": true,
+      "raw_url": "https://raw.githubusercontent.com/YuukiAS/CARE_Challenge/main/docs/architecture/figures/MoSAIC.png",
+      "raw_http_status": 200,
+      "raw_sha256": "d2ea85c5ba40521dc65a56d85124ecfc9a2e40ac5eff206c10cff8fbf04e09fb",
+      "raw_sha_match": true,
+      "anonymous_access": true,
+      "error": "python_urlopen_failed_then_curl_passed:<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1010)>"
+    }
+  ],
+  "updated_utc": "2026-08-06T03:14:58Z"
+}

@@ -55,8 +55,13 @@ No current or historical CARE-ASE training process, checkpoint, permit, Docker a
 ## 2026-08-05 runtime helper status
 
 The tracked runtime helper can audit public visual raw URLs, validate role-session
-receipts, and dry-run exact-session watcher routing. These checks support
-infrastructure activation, but they do not replace the required scheduled GPT
-Planner/Critic visual smoke or the real GPT-to-Codex repair-loop smoke. The
-`care-ase-faithful` request must remain unarmed until those external scheduled
-smokes pass with receipts.
+receipts, dry-run exact-session watcher routing, and run the production watcher
+in `care_agent_flow_v3:Watcher`.
+
+The production watcher polls `origin/develop`, persists processed event keys in
+server-local state, and performs live exact-session resumes with role-specific
+`CODEX_HOME` when a legal Planner revision event is observed. These checks and
+the watcher implementation support infrastructure activation, but they do not
+replace the required scheduled GPT Planner/Critic visual smoke or the real
+GPT-to-Codex repair-loop smoke. The `care-ase-faithful` request must remain
+unarmed until those external scheduled smokes pass with receipts.

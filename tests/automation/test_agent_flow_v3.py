@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import importlib.util
 import json
+import os
 from pathlib import Path
 import argparse
 import tempfile
@@ -321,6 +322,253 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         result = RUNTIME.evaluate_watcher_event(args, request, current, {"processed_events": []})
         self.assertEqual(result["decision"], "INVALID_EVENT")
         self.assertIn("integration_commit_binding", result["failures"])
+
+    def test_live_resume_records_command_env_and_exact_stdin(self) -> None:
+        class FakePopen:
+            calls = []
+
+            def __init__(self, command, stdin, stdout, stderr, env):
+                self.command = command
+                self.env = env
+                self.pid = 4242
+                self.returncode = 0
+                FakePopen.calls.append(self)
+
+            def communicate(self, input):
+                self.input = input
+                return b"stdout-ok", b"stderr-ok"
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            receipt = RUNTIME.execute_live_resume(
+                command=["/opt/codex", "exec", "-C", str(root / "worktree"), "resume", "thread-1", "-"],
+                codex_home=str(root / "codex-home"),
+                role="executor",
+                task_id="smoke-task",
+                state_root=root / "state",
+                log_root=root / "logs",
+                prompt_payload=b"exact repair prompt\n",
+                prompt_path=root / "prompt.md",
+                popen_factory=FakePopen,
+            )
+            self.assertEqual(FakePopen.calls[0].command[5], "thread-1")
+            self.assertEqual(FakePopen.calls[0].env["CODEX_HOME"], str(root / "codex-home"))
+            self.assertEqual(FakePopen.calls[0].input, b"exact repair prompt\n")
+            self.assertEqual(receipt["exit_code"], 0)
+            self.assertEqual(Path(receipt["stdout_log"]).read_bytes(), b"stdout-ok")
+            self.assertEqual(Path(receipt["stderr_log"]).read_bytes(), b"stderr-ok")
+
+    def test_watcher_rejects_stale_review_round(self) -> None:
+        args = argparse.Namespace(
+            task_id="smoke-task",
+            branch="develop",
+            role_plan="/unused",
+            codex_bin="/opt/codex",
+            state_root=Path("/tmp"),
+            session_receipt_root="/tmp/missing_receipts",
+            dry_run=True,
+            thread_id_override="",
+        )
+        request = {
+            "schema": RUNTIME.SCHEMA,
+            "enabled": True,
+            "task_id": "smoke-task",
+            "integration_branch": "develop",
+            "request_nonce": "nonce-1",
+            "frozen_contract_sha256": "b" * 64,
+            "expected_review_round": 3,
+        }
+        current = {
+            "schema": RUNTIME.SCHEMA,
+            "task_id": "smoke-task",
+            "state": "PLANNER_REVISE_EXECUTOR",
+            "review_round": 2,
+            "request_nonce": "nonce-1",
+            "frozen_contract_sha256": "b" * 64,
+            "integration_commit_sha": "c" * 40,
+        }
+        result = RUNTIME.evaluate_watcher_event(args, request, current, {"processed_events": []})
+        self.assertEqual(result["decision"], "INVALID_EVENT")
+        self.assertIn("review_round_binding", result["failures"])
+
+    def test_active_role_process_rejects_concurrent_resume(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            thread_file = root / "executor_thread_id"
+            thread_file.write_text("thread-1\n", encoding="utf-8")
+            role_plan = root / "role_plan.json"
+            role_plan.write_text(
+                json.dumps(
+                    {
+                        "roles": {
+                            "executor": {
+                                "thread_id_file": str(thread_file),
+                                "codex_home": str(root / "home"),
+                                "worktree": str(root / "worktree"),
+                            }
+                        }
+                    }
+                ),
+                encoding="utf-8",
+            )
+            active_path = RUNTIME.active_process_path(root / "state", "smoke-task", "executor")
+            active_path.parent.mkdir(parents=True)
+            active_path.write_text(json.dumps({"pid": os.getpid(), "exit_code": None}), encoding="utf-8")
+            args = argparse.Namespace(
+                task_id="smoke-task",
+                branch="develop",
+                role_plan=str(role_plan),
+                codex_bin="/opt/codex",
+                state_root=root / "state",
+                session_receipt_root=str(root / "missing_receipts"),
+                dry_run=True,
+                thread_id_override="",
+            )
+            request = {
+                "schema": RUNTIME.SCHEMA,
+                "enabled": True,
+                "task_id": "smoke-task",
+                "integration_branch": "develop",
+                "request_nonce": "nonce-1",
+                "frozen_contract_sha256": "b" * 64,
+            }
+            current = {
+                "schema": RUNTIME.SCHEMA,
+                "task_id": "smoke-task",
+                "state": "PLANNER_REVISE_EXECUTOR",
+                "review_round": 1,
+                "request_nonce": "nonce-1",
+                "frozen_contract_sha256": "b" * 64,
+                "integration_commit_sha": "c" * 40,
+            }
+            result = RUNTIME.evaluate_watcher_event(args, request, current, {"processed_events": []})
+            self.assertEqual(result["decision"], "INVALID_EVENT")
+            self.assertIn("executor:active_process", result["failures"])
+
+    def test_watcher_restart_keeps_processed_state(self) -> None:
+        args = argparse.Namespace(
+            task_id="smoke-task",
+            branch="develop",
+            role_plan="/unused",
+            codex_bin="/opt/codex",
+            state_root=Path("/tmp"),
+            session_receipt_root="/tmp/missing_receipts",
+            dry_run=True,
+            thread_id_override="",
+        )
+        receipt = {
+            "task_id": "smoke-task",
+            "decision": "DRY_RUN_RESUME",
+            "event_key": "smoke-task:nonce-1:1:PLANNER_REVISE_EXECUTOR:" + "c" * 40,
+            "updated_utc": "2026-08-05T00:00:00Z",
+        }
+        state = RUNTIME.update_watcher_state({"processed_events": []}, receipt)
+        self.assertIn(receipt["event_key"], state["processed_events"])
+        request = {
+            "schema": RUNTIME.SCHEMA,
+            "enabled": True,
+            "task_id": "smoke-task",
+            "integration_branch": "develop",
+            "request_nonce": "nonce-1",
+            "frozen_contract_sha256": "b" * 64,
+        }
+        current = {
+            "schema": RUNTIME.SCHEMA,
+            "task_id": "smoke-task",
+            "state": "PLANNER_REVISE_EXECUTOR",
+            "review_round": 1,
+            "request_nonce": "nonce-1",
+            "frozen_contract_sha256": "b" * 64,
+            "integration_commit_sha": "c" * 40,
+        }
+        self.assertEqual(RUNTIME.evaluate_watcher_event(args, request, current, state)["decision"], "IGNORE")
+
+    def test_planner_pass_stops_at_human_gate(self) -> None:
+        args = argparse.Namespace(
+            task_id="smoke-task",
+            branch="develop",
+            role_plan="/unused",
+            codex_bin="/opt/codex",
+            state_root=Path("/tmp"),
+            session_receipt_root="/tmp/missing_receipts",
+            dry_run=True,
+            thread_id_override="",
+        )
+        request = {
+            "schema": RUNTIME.SCHEMA,
+            "enabled": True,
+            "task_id": "smoke-task",
+            "integration_branch": "develop",
+            "request_nonce": "nonce-1",
+            "frozen_contract_sha256": "b" * 64,
+        }
+        current = {
+            "schema": RUNTIME.SCHEMA,
+            "task_id": "smoke-task",
+            "state": "PLANNER_PASS",
+            "review_round": 4,
+            "request_nonce": "nonce-1",
+            "frozen_contract_sha256": "b" * 64,
+            "integration_commit_sha": "c" * 40,
+        }
+        result = RUNTIME.evaluate_watcher_event(args, request, current, {"processed_events": []})
+        self.assertEqual(result["decision"], "STOP_AT_HUMAN_GATE")
+
+    def test_illegal_event_is_recorded_without_poisoning_next_event(self) -> None:
+        invalid = {
+            "task_id": "smoke-task",
+            "decision": "INVALID_EVENT",
+            "event_key": "bad-event",
+            "failures": ["nonce_binding"],
+            "updated_utc": "2026-08-05T00:00:00Z",
+        }
+        state = RUNTIME.update_watcher_state({"processed_events": []}, invalid)
+        self.assertEqual(state["processed_events"], [])
+        self.assertEqual(state["invalid_events"][0]["event_key"], "bad-event")
+
+    def test_request_disabled_does_not_trigger_resume(self) -> None:
+        args = argparse.Namespace(
+            task_id="smoke-task",
+            branch="develop",
+            role_plan="/unused",
+            codex_bin="/opt/codex",
+            state_root=Path("/tmp"),
+            session_receipt_root="/tmp/missing_receipts",
+            dry_run=False,
+            thread_id_override="",
+        )
+        request = {
+            "schema": RUNTIME.SCHEMA,
+            "enabled": False,
+            "task_id": "smoke-task",
+            "integration_branch": "develop",
+            "request_nonce": "nonce-1",
+            "frozen_contract_sha256": "b" * 64,
+        }
+        current = {
+            "schema": RUNTIME.SCHEMA,
+            "task_id": "smoke-task",
+            "state": "PLANNER_REVISE_EXECUTOR",
+            "review_round": 1,
+            "request_nonce": "nonce-1",
+            "frozen_contract_sha256": "b" * 64,
+            "integration_commit_sha": "c" * 40,
+        }
+        result = RUNTIME.evaluate_watcher_event(args, request, current, {"processed_events": []})
+        self.assertEqual(result["decision"], "IGNORE_DISABLED")
+        self.assertEqual(result["resume_commands"], [])
+
+    def test_only_controller_is_allowed_to_push_develop(self) -> None:
+        role_plan = {
+            "integration_branch": "develop",
+            "controller_pushes_integration_branch": True,
+            "remote_role_branches_authorized": False,
+            "roles": {"verifier": {}, "executor": {}},
+        }
+        self.assertEqual(RUNTIME.validate_role_plan_push_authority(role_plan), [])
+        bad = copy.deepcopy(role_plan)
+        bad["roles"]["executor"]["pushes_integration_branch"] = True
+        self.assertIn("executor:pushes_integration_branch", RUNTIME.validate_role_plan_push_authority(bad))
 
 
 if __name__ == "__main__":

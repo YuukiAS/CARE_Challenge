@@ -1,0 +1,13 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_SCHEDULED_TASK_OBSERVATION",
+  "task_id": "care-visual-smoke",
+  "request_nonce": "visual-smoke-20260806T031345Z",
+  "request_published_to_develop": false,
+  "scheduled_planner_receipt_observed": false,
+  "scheduled_critic_receipt_observed": false,
+  "codex_scheduled_task_tool_used": false,
+  "minimum_wait_windows_required": 2,
+  "minimum_wait_windows_completed": 0,
+  "status": "READY_TO_PUBLISH_REQUEST",
+  "updated_utc": "2026-08-06T03:14:58Z"
+}

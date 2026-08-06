@@ -37,7 +37,8 @@ Only Controller pushes `develop`. No role merges `develop` to `main` automatical
 - `results/<task_id>/`: role receipts, fingerprints, CI receipts and Planner review artifacts.
 - `scripts/automation/validate_agent_flow_v3.py`: repository-safe deterministic validator.
 - `scripts/automation/agent_flow_v3_runtime.py`: server-local helper for visual URL/SHA audit,
-  role-session receipt validation, and exact-session watcher dry-runs.
+  role-session receipt validation, exact-session watcher checks, and the production
+  watcher process.
 - `.github/workflows/agent-flow-v3-ci.yml`: GitHub-hosted deterministic CI.
 
 ## Required session receipt
@@ -77,6 +78,43 @@ python scripts/automation/agent_flow_v3_runtime.py watcher-once --repo-root . --
 The watcher uses exact thread IDs and must not use `--last`. A dry-run receipt proves
 routing and command construction only; it is not a substitute for a live scheduled
 Planner/Critic decision.
+
+## Production watcher
+
+The production watcher is implemented inside `agent_flow_v3_runtime.py` and does
+not rely on a shell wrapper loop. It polls every 60 seconds by default, fetches
+`origin/develop`, reads `REQUEST.json` and `CURRENT.json` from that remote ref,
+validates nonce/SHA/review-round bindings, persists processed event keys under
+the server-local state root, and resumes only the exact role thread requested by
+the Planner decision.
+
+Start it in the dedicated tmux window:
+
+```bash
+python scripts/automation/agent_flow_v3_runtime.py start-watcher \
+  --repo-root . \
+  --task-id <task_id>
+```
+
+Inspect or stop it:
+
+```bash
+python scripts/automation/agent_flow_v3_runtime.py status-watcher --task-id <task_id>
+python scripts/automation/agent_flow_v3_runtime.py stop-watcher --task-id <task_id>
+```
+
+For live revision events, the watcher runs:
+
+```text
+codex exec -C <role-worktree> resume <exact-thread-id> -
+```
+
+with the role-specific `CODEX_HOME` in the process environment and the exact
+Planner repair artifact on stdin. Each resume writes PID, prompt SHA, exit code,
+stdout/stderr logs, and timing under the server-local state/log roots. Duplicate
+events, stale nonce/SHA/review-round bindings, wrong thread receipts, disabled
+requests, and an already active role process fail closed without stopping the
+long-running watcher.
 
 ## Activation boundary
 

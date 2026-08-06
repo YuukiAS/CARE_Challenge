@@ -1,0 +1,53 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3",
+  "enabled": true,
+  "task_id": "care-visual-smoke",
+  "repository": "YuukiAS/CARE_Challenge",
+  "integration_branch": "develop",
+  "frozen_contract_path": "automation/agent_flow_v3/tasks/care-visual-smoke/CONTRACT.md",
+  "frozen_contract_sha256": "279550638c5b9940567211ea5e05560048acd0150c6f1ac07ede6a258f139afe",
+  "request_nonce": "visual-smoke-20260806T031345Z",
+  "planner_reentry_required": true,
+  "critic_freeze_required": true,
+  "controller_executor_separation_required": true,
+  "verifier_executor_separation_required": true,
+  "role_sessions": {
+    "controller": {
+      "thread_id_file": "${CARE_AGENT_FLOW_STATE_ROOT}/care-visual-smoke/controller_thread_id",
+      "codex_home": "${CARE_CODEX_HOME_ROOT}/CARE_care-visual-smoke_CONTROLLER",
+      "worktree": "${CARE_AGENT_FLOW_WORKTREE_ROOT}/care-visual-smoke/controller",
+      "local_branch": "local/controller/care-visual-smoke",
+      "may_edit_implementation": false,
+      "may_edit_verification": false
+    },
+    "verifier": {
+      "thread_id_file": "${CARE_AGENT_FLOW_STATE_ROOT}/care-visual-smoke/verifier_thread_id",
+      "codex_home": "${CARE_CODEX_HOME_ROOT}/CARE_care-visual-smoke_VERIFIER",
+      "worktree": "${CARE_AGENT_FLOW_WORKTREE_ROOT}/care-visual-smoke/verifier",
+      "local_branch": "local/verifier/care-visual-smoke",
+      "may_edit_implementation": false,
+      "may_edit_verification": true
+    },
+    "executor": {
+      "thread_id_file": "${CARE_AGENT_FLOW_STATE_ROOT}/care-visual-smoke/executor_thread_id",
+      "codex_home": "${CARE_CODEX_HOME_ROOT}/CARE_care-visual-smoke_EXECUTOR",
+      "worktree": "${CARE_AGENT_FLOW_WORKTREE_ROOT}/care-visual-smoke/executor",
+      "local_branch": "local/executor/care-visual-smoke",
+      "may_edit_implementation": true,
+      "may_edit_verification": false
+    }
+  },
+  "critical_paths": [
+    "automation/agent_flow_v3/tasks/care-visual-smoke/**",
+    "docs/architecture/figures/CARE-ASE.png",
+    "docs/architecture/figures/SRR-v3.png",
+    "docs/architecture/figures/MoSAIC.png"
+  ],
+  "visual_sources_path": "automation/agent_flow_v3/tasks/care-visual-smoke/VISUAL_SOURCES.json",
+  "max_repair_rounds": 1,
+  "human_gate_after_planner_pass": true,
+  "training_authorized": false,
+  "outer_access_authorized": false,
+  "deployment_authorized": false,
+  "created_utc": "2026-08-06T03:13:45Z"
+}

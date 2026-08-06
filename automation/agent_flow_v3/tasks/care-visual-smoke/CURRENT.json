@@ -1,0 +1,13 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3",
+  "task_id": "care-visual-smoke",
+  "state": "PLAN_REQUESTED",
+  "review_round": 0,
+  "request_nonce": "visual-smoke-20260806T031345Z",
+  "frozen_contract_sha256": "279550638c5b9940567211ea5e05560048acd0150c6f1ac07ede6a258f139afe",
+  "integration_commit_sha": "24e04f5e61c15ab9256ceaf5c8eebc99f58bad12",
+  "implementation_fingerprint_sha256": null,
+  "verifier_fingerprint_sha256": null,
+  "next_action": "AWAIT_REAL_SCHEDULED_PLANNER_AND_CRITIC_VISUAL_RECEIPTS",
+  "updated_utc": "2026-08-06T03:13:45Z"
+}
