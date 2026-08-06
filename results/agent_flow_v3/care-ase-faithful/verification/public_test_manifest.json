@@ -1,5 +1,5 @@
 {
-  "created_utc": "2026-08-06T14:27:05Z",
+  "created_utc": "2026-08-06T14:37:15Z",
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
   "public_reference_evidence_path": "results/agent_flow_v3/care-ase-faithful/verification/public_reference_evidence.json",
   "public_reference_validation": {
@@ -49,8 +49,8 @@
       ],
       "exit_code": 0,
       "purpose": "verifier unittest package exercises public reference and all protected known-bad categories",
-      "stderr_sha256": "fbb586b251a8e6aa7230d24e4b915d02b4fc9ea3cdedb5e92c283b8bb2b656de",
-      "stderr_tail": "...\n----------------------------------------------------------------------\nRan 3 tests in 1.266s\n\nOK\n",
+      "stderr_sha256": "51b64ec554d6c23ea2df62c454afd4f7534f0c9f528b7c7b4fa2327ce1f2d3b5",
+      "stderr_tail": "...\n----------------------------------------------------------------------\nRan 3 tests in 1.277s\n\nOK\n",
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stdout_tail": ""
     },
