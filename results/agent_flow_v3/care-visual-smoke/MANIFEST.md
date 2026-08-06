@@ -11,6 +11,10 @@ Receipts:
 
 - `visual_source_access_receipt.json`: Codex-side local and anonymous raw URL
   SHA check for CARE-ASE, SRR-v3, and MoSAIC.
+- `ci_receipt.json`: local validator/test receipt plus GitHub Actions run and
+  job success for the published `develop` commit.
+- `production_watcher_receipt.json`: live `care_agent_flow_v3:Watcher` status
+  proving the production watcher is running and polling the visual-smoke state.
 - `scheduled_task_observation.json`: publication and waiting status for the real
   Scheduled Planner/Critic visual smoke.
 

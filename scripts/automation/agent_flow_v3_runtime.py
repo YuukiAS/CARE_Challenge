@@ -763,6 +763,8 @@ def cmd_status_watcher(args: argparse.Namespace) -> int:
     }
     if state_path.is_file():
         status["state"] = load_json(state_path)
+    if getattr(args, "output", None):
+        write_json(args.output, status)
     print(json.dumps(status, indent=2, ensure_ascii=False))
     return 0
 
@@ -869,6 +871,7 @@ def parser() -> argparse.ArgumentParser:
     q.add_argument("--state-root", type=Path, default=Path("/users/a/e/aereinh/.agent-flow-v3"))
     q.add_argument("--tmux-session", default="care_agent_flow_v3")
     q.add_argument("--tmux-window", default="Watcher")
+    q.add_argument("--output", type=Path)
     q.set_defaults(func=cmd_status_watcher)
 
     return p

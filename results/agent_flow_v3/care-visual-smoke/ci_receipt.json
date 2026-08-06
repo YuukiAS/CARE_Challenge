@@ -1,0 +1,19 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_CI_RECEIPT",
+  "task_id": "care-visual-smoke",
+  "develop_commit_sha": "992488ddcb391baea04640abd94310bbd2495051",
+  "workflow_run_id": 31068000228,
+  "workflow_name": "CARE Agent-Flow v3 deterministic CI",
+  "workflow_status": "completed",
+  "workflow_conclusion": "success",
+  "job_id": 92509771201,
+  "job_name": "deterministic-contract-checks",
+  "job_conclusion": "success",
+  "local_validation": {
+    "py_compile": "PASS",
+    "unittest": "PASS_19_TESTS",
+    "agent_flow_v3_validator": "PASS",
+    "diff_check": "PASS"
+  },
+  "updated_utc": "2026-08-06T03:18:40Z"
+}
