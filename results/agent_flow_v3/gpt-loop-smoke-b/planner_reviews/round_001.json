@@ -1,0 +1,79 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_PLANNER_REVIEW",
+  "task_id": "gpt-loop-smoke-b",
+  "request_nonce": "smoke-b-20260806T062800Z",
+  "review_round": 1,
+  "observed_state": "WAITING_FOR_EXTERNAL_GPT",
+  "review_mode": "IMPLEMENTATION_REVIEW",
+  "frozen_contract_path": "automation/agent_flow_v3/tasks/gpt-loop-smoke-b/CONTRACT.md",
+  "frozen_contract_sha256": "c2c3eca2155fce19af8c335173f313a0f49bec72ef43ce2dcbc7b560afeb2366",
+  "integration_commit_sha": "041ac2de61b736fe549c9603fc5e3c7e3d573a03",
+  "implementation_fingerprint_sha256": "fe8d53e708d146f6d01ad4350a02c6148d9b0fbb30e0100d944d1ca7db059bec",
+  "verifier_fingerprint_sha256": "51060f30d0c70187bda0983a689938b4a7bac5d9cda4f386ac3b232b9afe9579",
+  "state_semantics": "WAITING_FOR_EXTERNAL_GPT is accepted here as the orchestrator's explicit Planner-wait state because CURRENT binds review_round=1, the repaired integration SHA, the expected Scheduled Planner decision, and no other role is authorized to decide this review.",
+  "evidence_reviewed": {
+    "contract": [
+      "automation/agent_flow_v3/tasks/gpt-loop-smoke-b/CONTRACT.md"
+    ],
+    "implementation": [
+      "automation/agent_flow_v3/smoke_b/__init__.py",
+      "automation/agent_flow_v3/smoke_b/toy_gate.py",
+      "results/agent_flow_v3/gpt-loop-smoke-b/executor_session_notes.md"
+    ],
+    "verification": [
+      "tests/automation/test_agent_flow_v3_smoke_b.py",
+      "results/agent_flow_v3/gpt-loop-smoke-b/verifier_freeze_receipt.json"
+    ],
+    "integration_and_runtime": [
+      "results/agent_flow_v3/gpt-loop-smoke-b/executor_integration_receipt.json",
+      "results/agent_flow_v3/gpt-loop-smoke-b/exact_resume_history.json",
+      "automation/agent_flow_v3/tasks/gpt-loop-smoke-b/CURRENT.json"
+    ],
+    "prior_review": [
+      "results/agent_flow_v3/gpt-loop-smoke-b/planner_reviews/round_000.json"
+    ],
+    "ci": {
+      "local_unit_tests": "PASS_35_TESTS",
+      "local_agent_flow_validator": "PASS",
+      "git_diff_check": "PASS",
+      "github_combined_status_for_integration_sha": "NO_STATUS_RETURNED"
+    }
+  },
+  "independent_review_summary": {
+    "runtime_behavior": "The exact two-argument evaluate_payload(payload, expected_nonce) path remains fail-closed and satisfies the frozen mapping, exact nonce, safe mode, strict non-bool integer, minimum-value and nonempty-reason requirements.",
+    "verification_adequacy": "The frozen Verifier tests cover acceptance, missing and wrong nonce, unsafe mode, non-integer including bool, values below one, and non-mapping payloads. The Verifier fingerprint is unchanged after the Executor repair.",
+    "role_separation": "The repair reused the exact Executor thread, retained the distinct Verifier thread and fingerprint, changed only Executor-owned provenance artifacts, and did not modify runtime code or Verifier tests.",
+    "repair_loop_proof": "The prior real Scheduled Planner finding was routed through exact-session resume. The repaired receipt now contains the exact required planner_review_gap_marker and binds the repair role commit, prior integration commit and review finding.",
+    "blocking_gap_count": 0
+  },
+  "prior_finding_closure": [
+    {
+      "finding_id": "SMOKE_B_EXECUTOR_PROVENANCE_MARKER_MISSING",
+      "status": "CLOSED",
+      "closure_evidence": [
+        "executor_integration_receipt.json contains planner_review_gap_marker=SMOKE_B_EXECUTOR_REPAIR_COMPLETE",
+        "executor_repair_thread_id equals the originally bound Executor thread ID",
+        "executor_repair_role_commit_sha is 1296aea59231bbc51dbc88ef9683887f398781a4",
+        "integration_commit_sha is 041ac2de61b736fe549c9603fc5e3c7e3d573a03",
+        "verifier_fingerprint_sha256 remains 51060f30d0c70187bda0983a689938b4a7bac5d9cda4f386ac3b232b9afe9579",
+        "tracked local deterministic checks report PASS"
+      ],
+      "forbidden_workarounds_observed": []
+    }
+  ],
+  "decision": "PLANNER_PASS",
+  "blocking_findings": [],
+  "nonblocking_observations": [
+    "GitHub combined status returned no status object for the exact repaired integration SHA. For this isolated orchestration smoke, the exact tracked local test and validator receipts are sufficient; this does not establish a general policy that local receipts may replace required hosted CI for CARE-ASE.",
+    "The toy implementation exposes an optional compatibility parameter in addition to the frozen two-argument interface, but the required interface and fail-closed behavior are unchanged and no contract or safety bypass is created in this smoke task."
+  ],
+  "forbidden_actions_confirmed": [
+    "no CARE-ASE implementation",
+    "no training or outer access",
+    "no develop-to-main merge",
+    "no Docker build or upload",
+    "no organizer email"
+  ],
+  "next_action": "AWAIT_HUMAN_DECISION",
+  "updated_utc": "2026-08-06T09:08:04Z"
+}
