@@ -224,6 +224,30 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         )
         self.assertEqual(resolved.session_receipt_root, "results/agent_flow_v3/gpt-loop-smoke-b")
 
+    def test_orchestrator_stage_key_is_not_remote_sha_scoped(self) -> None:
+        current = {
+            "request_nonce": "nonce-1",
+            "review_round": 0,
+            "state": "PLAN_FROZEN",
+        }
+        first = RUNTIME.stage_event_key("care-ase-faithful", current, "a" * 40)
+        second = RUNTIME.stage_event_key("care-ase-faithful", current, "b" * 40)
+        legacy_processed = {f"{first}:{'a' * 40}"}
+
+        self.assertEqual(first, second)
+        self.assertTrue(RUNTIME.stage_event_was_processed(second, legacy_processed))
+
+        receipt = RUNTIME.evaluate_stage_event(
+            task_id="care-ase-faithful",
+            request={"enabled": True},
+            current=current,
+            visual_final=None,
+            remote_sha="b" * 40,
+            processed=legacy_processed,
+            default_wait_hours=4,
+        )
+        self.assertEqual(receipt["decision"], "IGNORE_PROCESSED")
+
     def test_watcher_rejects_old_nonce(self) -> None:
         args = argparse.Namespace(
             task_id="smoke-task",

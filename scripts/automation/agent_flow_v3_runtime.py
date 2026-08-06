@@ -860,15 +860,19 @@ def update_wait_fields(current: dict[str, Any], *, remote_sha: str, expected: st
 
 
 def stage_event_key(task_id: str, current: dict[str, Any], remote_sha: str) -> str:
+    del remote_sha
     return ":".join(
         [
             task_id,
             str(current.get("request_nonce")),
             str(current.get("review_round")),
             str(current.get("state")),
-            remote_sha,
         ]
     )
+
+
+def stage_event_was_processed(event_key: str, processed: set[str]) -> bool:
+    return event_key in processed or any(old_key.startswith(f"{event_key}:") for old_key in processed)
 
 
 def evaluate_stage_event(
@@ -888,7 +892,7 @@ def evaluate_stage_event(
     failures: list[str] = []
     if request.get("enabled") is not True:
         decision = "IGNORE_DISABLED"
-    elif event_key in processed:
+    elif stage_event_was_processed(event_key, processed):
         decision = "IGNORE_PROCESSED"
     elif state == "WAITING_FOR_EXTERNAL_GPT":
         deadline_raw = current.get("external_wait_deadline_utc")
