@@ -1,0 +1,95 @@
+{
+  "created_utc": "2026-08-06T18:26:16Z",
+  "docker_or_upload": false,
+  "environment": {
+    "cwd": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/verifier",
+    "git_branch": "local/verifier/care-ase-faithful",
+    "git_head": "56daad61a23e65160f987571ff443d223d2de91b",
+    "nnunetv2_available": false,
+    "platform": "Linux-5.14.0-611.16.1.el9_7.x86_64-x86_64-with-glibc2.34",
+    "python_executable": "/usr/bin/python",
+    "python_version": "3.9.25 (main, Nov 10 2025, 00:00:00) \n[GCC 11.5.0 20240719 (Red Hat 11.5.0-11)]",
+    "repo_root": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/verifier",
+    "runtime_env": {
+      "CARE_ROOT": null,
+      "nnUNet_preprocessed": null,
+      "nnUNet_results": null
+    },
+    "torch_available": false
+  },
+  "executable_verifier_receipt_sha256": "14b9900a1cfa3f6e429dd11bb65f0080296b4bd092df38db730417af365d60d5",
+  "failure_count": 11,
+  "failures": [
+    "transaction.integration_sha.git_head_mismatch",
+    "runtime.torch_missing",
+    "executable_probe.missing:model_build_and_stock_parity",
+    "executable_probe.missing:real_train_case_total_loss_forward_backward",
+    "executable_probe.missing:mixed_t2_no_t2_batch",
+    "executable_probe.missing:required_module_final_logit_interventions",
+    "executable_probe.missing:schema_v4_checkpoint_resume",
+    "executable_probe.missing:deployment_loader",
+    "executable_probe.missing:evaluator_interface",
+    "executable_probe.missing:single_vs_forced_multi_tile_full_volume",
+    "executable_probe.missing:step0_parity_report_regression"
+  ],
+  "fixture_mode": false,
+  "forbidden_shortcuts_rejected_by_design": [
+    "torch.randn inputs with asserted real case IDs",
+    "same call reused for single and forced multi tile",
+    "constant global bias or tile counts",
+    "deployment probe without deployment loader call",
+    "evaluator probe without evaluator call",
+    "constant-one loss denominators",
+    "manual-gradient-only checkpoint probe",
+    "cross-fold hard-negative manifest without OOF proof"
+  ],
+  "formal_training_started": false,
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "implementation_fingerprint_sha256": "b0db561e7a40c0e52c8363b8b43e96bc2441184a7ce28bc17681d41bededa1a1",
+  "integration_sha": "885d5db3089e109136e52c9cbde4d349a62c9092",
+  "outer_accessed": false,
+  "passed": false,
+  "planner_review_commit": "38dbbb0e32556e5f12127699c67ff31d45e5e934",
+  "probes": [],
+  "request_nonce": "care-ase-20260806T090955Z",
+  "required_probes": [
+    "model_build_and_stock_parity",
+    "real_train_case_total_loss_forward_backward",
+    "mixed_t2_no_t2_batch",
+    "required_module_final_logit_interventions",
+    "schema_v4_checkpoint_resume",
+    "deployment_loader",
+    "evaluator_interface",
+    "single_vs_forced_multi_tile_full_volume",
+    "step0_parity_report_regression"
+  ],
+  "review_round": 1,
+  "schema": "CARE_ASE_FAITHFUL_EXECUTABLE_VERIFIER_RECEIPT_V1",
+  "source_artifacts": {
+    "file_hashes": {
+      "src/care_myocardium/inference/care_ase_r2_decode.py": "7fea71edba56d259dbbb31c3832b74709bd83d5af1f8b680a85c2e0a41acb05b",
+      "src/care_myocardium/inference/care_ase_r2_full_volume.py": "f9e3c4be321e96f7776444e2486b8e0d00e5f02701814f2625ca370b7c95218f",
+      "src/care_myocardium/training/care_ase_sampler.py": "e8d0b9d10f90d3e70fb9e1a8f4cfff2dd4fbae30d7f73868377350af278f65d9",
+      "src/care_myocardium/training/care_ase_trainer.py": "2054f0f4aedb4b4f4bfb082d8c90ff7fa6970dfac298dbc6b5b0d7a8cf1ca621"
+    },
+    "missing_files": [
+      "src/care_myocardium/models/care_ase/__init__.py",
+      "src/care_myocardium/models/care_ase/core.py"
+    ],
+    "source_manifest_sha256": "d3cff5b0710f4e057231919c7c31c8f74a23b8a3c8d5732e6bc140af6dddbb6c"
+  },
+  "status": "FAIL_CLOSED",
+  "task_id": "care-ase-faithful",
+  "transaction_gate": {
+    "expected_review_round": 1,
+    "fixture_mode": false,
+    "implementation_fingerprint_sha256": "b0db561e7a40c0e52c8363b8b43e96bc2441184a7ce28bc17681d41bededa1a1",
+    "integration_sha": "885d5db3089e109136e52c9cbde4d349a62c9092",
+    "observed_git_head": "56daad61a23e65160f987571ff443d223d2de91b",
+    "planner_review_commit": "38dbbb0e32556e5f12127699c67ff31d45e5e934",
+    "review_round": 1,
+    "verifier_fingerprint_sha256": "5c5dd6f431f2cb0c1d2fe6a7927f3679eea47b8ec7c82e4f2a4227e8ab2c7773"
+  },
+  "verifier_fingerprint_sha256": "5c5dd6f431f2cb0c1d2fe6a7927f3679eea47b8ec7c82e4f2a4227e8ab2c7773",
+  "zero_credit": true
+}

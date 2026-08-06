@@ -1,0 +1,15 @@
+{
+  "created_utc": "2026-08-06T18:26:17Z",
+  "exit_code": 2,
+  "failure_count": 1,
+  "failures": [
+    "kb12.inference.global_bias_once"
+  ],
+  "fixture_mode": true,
+  "mutation_executed": true,
+  "mutation_id": "tile_local_global_bias",
+  "passed": false,
+  "request_nonce": "care-ase-20260806T090955Z",
+  "schema": "CARE_ASE_FAITHFUL_EXECUTABLE_MUTATION_RESULT_V1",
+  "task_id": "care-ase-faithful"
+}
