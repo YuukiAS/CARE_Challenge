@@ -1,17 +1,38 @@
 {
   "case_id": "Case1002",
   "checkpoint_sha256": "8bceb20cae8920e87d43b14665a0db9dfd4f1204533d25a3cd6e40ad9de74111",
-  "coordinate_sha256": "04a7fee009dea78ce67ebdc896de0f698ecd6f6373201ae95b839a1fd4772162",
+  "coordinate_semantic_validation": {
+    "coordinate_bounds_valid": true,
+    "empty_coordinate_claim_allowed": false,
+    "nonempty_required_when_voxel_count_positive": {
+      "edema_oof_fn_or_low_volume": true,
+      "edema_safe_fp": true,
+      "scar_oof_fn": true,
+      "scar_oof_fp": true
+    }
+  },
+  "coordinate_sha256": "b29987221097ddfc7cf997165814bf8d9ca92a29608081d7051f914766f91465",
+  "fallback_reason": "fold0_hard_negative_manifest_absent_but_manifest_row_proves_source_stock_fold0_and_case_not_in_source_fold_train",
+  "fallback_used": true,
   "formal_training_started": false,
   "grid_sha256": "84cd50805fe52513d7c03807b9ccc986c3b38e02c14786b37762f8fe4d63caa7",
-  "manifest_path": "results/20260803_care_ase_r2_last_hotfix_v9/hard_negative_manifest_fold1.json",
+  "manifest_path": "results/20260804_care_ase_r2_emergency_9h_training_docker/hard_negative_manifest_fold1.json",
   "manifest_sha256": "6d793249e3c6fc42aa29ff97f84fa75431cece9c8a4e08d243ed1cf96ce4da21",
-  "mask_sha256": "60c285329432abdf268a9400cdb29f6a25da81df932e0af5baf84431332fdb15",
+  "mask_sha256": "ae094f28901359666eb6373fac480b83985b346ecd166a4961fedcb49ea2a1fd",
   "oof_prediction_bound": true,
   "outer_accessed": false,
   "probe_type": "zero_credit_tracked_oof_hard_negative_binding",
+  "proof_case_not_in_source_fold_train": true,
   "requested_category": "canonical_oof_or_component_hard_negative",
   "requested_resolved_mismatch_recorded": true,
-  "resolved_category": "tracked_manifest_case_binding",
+  "resolved_category": "cross_validation_fold_oof_manifest_case_binding",
+  "source_checkpoint_path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_final.pth",
+  "source_checkpoint_sha256": "8bceb20cae8920e87d43b14665a0db9dfd4f1204533d25a3cd6e40ad9de74111",
+  "source_prediction_exists": true,
+  "source_prediction_path": "/users/a/e/aereinh/.tmp/codex-CARE/20260803_care_ase_r2_final_pretraining_closure_v8/direct_oof_arrays/fold1/Case1002_argmax.npy",
+  "source_prediction_sha256": "60c285329432abdf268a9400cdb29f6a25da81df932e0af5baf84431332fdb15",
+  "source_stock_fold": 0,
+  "source_train_split_fold": 0,
+  "source_validation_fold": 1,
   "status": "PASS"
 }

@@ -1,0 +1,43 @@
+CARE_ASE_ZERO_CREDIT_EVIDENCE_RUN=1
+FORMAL_TRAINING_STARTED=0
+OUTER_ACCESSED=0
+SLURM_JOB_ID=61987724
+SLURM_JOB_PARTITION=htzhulab
+CUDA_VISIBLE_DEVICES=0
+NVIDIA A100-SXM4-80GB, 81920 MiB, 81153 MiB
+torch_cuda_available True
+torch_cuda_device_count 1
+torch_cuda_name NVIDIA A100-SXM4-80GB
+Traceback (most recent call last):
+  File "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor/scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py", line 2239, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor/scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py", line 2235, in main
+    return build_runtime_receipts()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor/scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py", line 1975, in build_runtime_receipts
+    inf_payload = run_inference_probe()
+                  ^^^^^^^^^^^^^^^^^^^^^
+  File "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor/scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py", line 1016, in run_inference_probe
+    full_logits = predict_care_ase_r2_full_volume_logits(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor/src/care_myocardium/inference/care_ase_r2_full_volume.py", line 276, in predict_care_ase_r2_full_volume_logits
+    outputs = _forward_with_mirror_average(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor/src/care_myocardium/inference/care_ase_r2_full_volume.py", line 110, in _forward_with_mirror_average
+    outputs = model(mirrored_patch, availability, global_step=global_step, disable_extent_wall=True)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor/src/care_myocardium/models/care_ase/core.py", line 1051, in forward
+    quarter, low_mid = self._decode_low_mid(skips)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor/src/care_myocardium/models/care_ase/core.py", line 898, in _decode_low_mid
+    x = torch.cat((x, skips[-(stage_index + 2)]), 1)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Sizes of tensors must match except in dimension 1. Expected size 8 but got size 7 for tensor number 1 in the list.
+srun: error: g180702: task 0: Exited with exit code 1

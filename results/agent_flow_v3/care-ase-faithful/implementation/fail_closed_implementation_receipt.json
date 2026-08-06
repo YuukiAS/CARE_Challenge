@@ -1,0 +1,82 @@
+{
+  "created_utc": "2026-08-06T20:05:48Z",
+  "docker_built_or_uploaded": false,
+  "environment": {
+    "cuda_visible_devices": "0",
+    "gpu_name": "NVIDIA A100-SXM4-80GB",
+    "slurm_job_id": "61987724",
+    "slurm_partition": "htzhulab",
+    "zero_credit_runtime_log": "results/agent_flow_v3/care-ase-faithful/implementation/runtime_logs/gpu_zero_credit_evidence_61987724_20260806T200201Z.log"
+  },
+  "executor_zero_credit_receipts": {
+    "checkpoint_resume_probe": {
+      "exit_code": 0,
+      "receipt": "results/agent_flow_v3/care-ase-faithful/implementation/checkpoint_resume_probe_receipt.json",
+      "status": "PASS"
+    },
+    "deployment_load_probe": {
+      "exit_code": 0,
+      "receipt": "results/agent_flow_v3/care-ase-faithful/implementation/deployment_load_probe_receipt.json",
+      "status": "PASS"
+    },
+    "evaluator_smoke": {
+      "exit_code": 0,
+      "receipt": "results/agent_flow_v3/care-ase-faithful/implementation/evaluator_smoke_receipt.json",
+      "status": "PASS"
+    },
+    "forward_backward_probe": {
+      "exit_code": 0,
+      "receipt": "results/agent_flow_v3/care-ase-faithful/implementation/forward_backward_probe_receipt.json",
+      "status": "PASS"
+    },
+    "hard_negative_binding": {
+      "exit_code": 0,
+      "receipt": "results/agent_flow_v3/care-ase-faithful/implementation/hard_negative_binding_receipt.json",
+      "status": "PASS"
+    },
+    "inference_probe": {
+      "exit_code": 0,
+      "forced_multi_tile_count": 2,
+      "global_bias_application_count": 1,
+      "receipt": "results/agent_flow_v3/care-ase-faithful/implementation/inference_probe_receipt.json",
+      "single_vs_forced_multi_tile_max_abs_diff": 4.76837158203125e-07,
+      "status": "PASS"
+    },
+    "step0_parity_probe": {
+      "exit_code": 0,
+      "receipt": "results/agent_flow_v3/care-ase-faithful/implementation/step0_parity_probe_receipt.json",
+      "status": "PASS"
+    }
+  },
+  "failures": [
+    "frozen_validator_failed_verifier_owned.executable.not_fixture"
+  ],
+  "formal_training_started": false,
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "implementation_complete": false,
+  "implementation_evidence_path": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json",
+  "implementation_fingerprint_path": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_fingerprint.json",
+  "implementation_fingerprint_sha256": "3eabfb0be9eda776da6dd6fe3068004894ea7a5b4c30966941fc05bdc412e0dc",
+  "no_training_started": true,
+  "outer_accessed": false,
+  "reason": "executor runtime evidence regenerated successfully, but the frozen validator still rejects the verifier-owned executable_verifier_receipt.json because it is fixture_mode true and bound to the prior reviewed implementation fingerprint. Executor cannot edit verifier-owned receipts or validator source.",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "schema": "CARE_ASE_FAITHFUL_IMPLEMENTATION_FAIL_CLOSED_RECEIPT_V1",
+  "source_manifest_path": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_source_manifest.json",
+  "source_manifest_sha256": "dc102adf2a766d7c60f78b817f0837126318c1e02f7a410da37fddb7f75a2006",
+  "status": "FAIL_CLOSED",
+  "task_id": "care-ase-faithful",
+  "validation_or_challenge_uploaded": false,
+  "validator": {
+    "command_receipt": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_validator_receipt.json",
+    "exit_code": 2,
+    "failure_count": 1,
+    "failures": [
+      "verifier_owned.executable.not_fixture"
+    ],
+    "verifier_owned_executable_fixture_mode": true,
+    "verifier_owned_executable_implementation_fingerprint_sha256": "b0db561e7a40c0e52c8363b8b43e96bc2441184a7ce28bc17681d41bededa1a1"
+  },
+  "verification_contract_path": "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+  "verifier_fingerprint_sha256": "9fbed451e765fd4b44e759cecee4458b5100eccac59da79bbd9e4c87ebc54243"
+}
