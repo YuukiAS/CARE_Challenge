@@ -1,14 +1,16 @@
 {
   "controller_verified_launch_origin_develop_sha": "e628bd14582350b265567ef5ec70b1d74d273b3b",
   "controller_verified_launch_verifier_worktree_head": "e628bd14582350b265567ef5ec70b1d74d273b3b",
-  "created_utc": "2026-08-06T18:26:14Z",
-  "executable_verifier_fixture_selftest_exit_code": 0,
+  "created_utc": "2026-08-06T20:30:11Z",
   "executable_verifier_local_fail_closed_exit_code": 2,
   "executable_verifier_local_fail_closed_receipt": "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_local_fail_closed_receipt.json",
+  "executable_verifier_production_exit_code": 0,
   "executable_verifier_receipt": "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json",
   "executor_may_start_after_controller_freezes_this_commit": true,
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
-  "observed_origin_develop_sha_at_freeze": "90c69713ba91846637e74601a77381da2ed2928d",
+  "integrated_implementation_validation_exit_code": 0,
+  "integrated_implementation_validation_result": "results/agent_flow_v3/care-ase-faithful/verification/integrated_implementation_validation_result.json",
+  "observed_origin_develop_sha_at_freeze": "97a62ecada4a356d7e869a45dfb2ae834f024483",
   "protected_known_bad_all_nonzero": true,
   "protected_known_bad_count": 24,
   "public_reference_exit_code": 0,
@@ -23,7 +25,8 @@
     "executable_verifier_receipt.json",
     "runtime_mutation_manifest.json",
     "transaction_gate_receipt.json",
-    "executable_verifier_local_fail_closed_receipt.json"
+    "executable_verifier_local_fail_closed_receipt.json",
+    "integrated_implementation_validation_result.json"
   ],
   "runtime_mutation_all_nonzero": true,
   "runtime_mutation_count": 11,
@@ -32,6 +35,6 @@
   "state_for_controller": "VERIFIER_FROZEN",
   "task_id": "care-ase-faithful",
   "verifier_branch": "local/verifier/care-ase-faithful",
-  "verifier_fingerprint_sha256": "9fbed451e765fd4b44e759cecee4458b5100eccac59da79bbd9e4c87ebc54243",
-  "verifier_worktree_head_before_freeze_commit": "56daad61a23e65160f987571ff443d223d2de91b"
+  "verifier_fingerprint_sha256": "847263d0afd1f34e81c49a981ea33dae5c12f53114c543d50830d077d9a7e167",
+  "verifier_worktree_head_before_freeze_commit": "302b42f6ed0ddd69ab0b932295a267e3f403bd63"
 }

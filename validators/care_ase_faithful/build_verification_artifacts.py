@@ -35,6 +35,7 @@ VALIDATOR_PATH = ROOT / "validators" / "care_ase_faithful" / "validate_contract_
 BUILDER_PATH = ROOT / "validators" / "care_ase_faithful" / "build_verification_artifacts.py"
 TEST_PATH = ROOT / "tests" / "care_ase_faithful" / "test_verifier_package.py"
 EXECUTABLE_VERIFIER_PATH = ROOT / "validators" / "care_ase_faithful" / "run_executable_verifier.py"
+IMPLEMENTATION_EVIDENCE_PATH = ROOT / "results" / "agent_flow_v3" / TASK_ID / "implementation" / "implementation_evidence.json"
 LAUNCH_ORIGIN_DEVELOP_SHA = "e628bd14582350b265567ef5ec70b1d74d273b3b"
 LAUNCH_VERIFIER_WORKTREE_HEAD = "e628bd14582350b265567ef5ec70b1d74d273b3b"
 REQUIRED_FREEZE_ARTIFACTS = [
@@ -48,6 +49,7 @@ REQUIRED_FREEZE_ARTIFACTS = [
     "runtime_mutation_manifest.json",
     "transaction_gate_receipt.json",
     "executable_verifier_local_fail_closed_receipt.json",
+    "integrated_implementation_validation_result.json",
 ]
 
 EXECUTABLE_MUTATION_IDS = [
@@ -125,6 +127,7 @@ def fingerprint_input_paths() -> list[Path]:
         VERIFICATION_DIR / "transaction_gate_receipt.json",
         VERIFICATION_DIR / "executable_verifier_receipt.json",
         VERIFICATION_DIR / "executable_verifier_local_fail_closed_receipt.json",
+        VERIFICATION_DIR / "integrated_implementation_validation_result.json",
         VERIFICATION_DIR / "public_reference_evidence.json",
         VERIFICATION_DIR / "verifier_local_commands_recorded_in_manifests.json",
     ]
@@ -171,6 +174,7 @@ def check_only() -> int:
     mutation_manifest = load_json(VERIFICATION_DIR / "runtime_mutation_manifest.json")
     executable_receipt = load_json(VERIFICATION_DIR / "executable_verifier_receipt.json")
     local_fail_closed_receipt = load_json(VERIFICATION_DIR / "executable_verifier_local_fail_closed_receipt.json")
+    integrated_validation_result = load_json(VERIFICATION_DIR / "integrated_implementation_validation_result.json")
     transaction_receipt = load_json(VERIFICATION_DIR / "transaction_gate_receipt.json")
     command_log = load_json(VERIFICATION_DIR / "verifier_local_commands_recorded_in_manifests.json")
     fingerprint = load_json(VERIFICATION_DIR / "verifier_fingerprint.json")
@@ -190,7 +194,7 @@ def check_only() -> int:
     _record_error(errors, public_result.get("exit_code") == 0, "public_reference_validation_result.exit_code")
 
     safe_commands = public_manifest.get("repository_safe_commands", [])
-    _record_error(errors, len(safe_commands) == 4, "public_test_manifest.repository_safe_commands_count")
+    _record_error(errors, len(safe_commands) == 5, "public_test_manifest.repository_safe_commands_count")
     for command in safe_commands:
         _record_error(errors, command.get("exit_code") == 0, f"repository_safe_command_failed: {command.get('purpose')}")
     _record_error(errors, command_log.get("repository_safe_commands") == safe_commands, "command_log.repository_safe_commands_mismatch")
@@ -222,8 +226,14 @@ def check_only() -> int:
 
     _record_error(errors, executable_receipt.get("schema") == "CARE_ASE_FAITHFUL_EXECUTABLE_VERIFIER_RECEIPT_V1", "executable_receipt.schema")
     _record_error(errors, executable_receipt.get("review_round") == REVIEW_ROUND, "executable_receipt.review_round")
-    _record_error(errors, executable_receipt.get("fixture_mode") is True, "executable_receipt.fixture_mode_selftest")
-    _record_error(errors, executable_receipt.get("passed") is True, "executable_receipt.selftest_passed")
+    _record_error(errors, executable_receipt.get("fixture_mode") is False, "executable_receipt.production_not_fixture")
+    _record_error(errors, executable_receipt.get("passed") is True, "executable_receipt.production_passed")
+    _record_error(errors, executable_receipt.get("integration_sha") == REVIEWED_INTEGRATION_COMMIT, "executable_receipt.integration_sha")
+    _record_error(
+        errors,
+        executable_receipt.get("implementation_fingerprint_sha256") == REVIEWED_IMPLEMENTATION_FINGERPRINT,
+        "executable_receipt.implementation_fingerprint",
+    )
     _record_error(errors, executable_receipt.get("formal_training_started") is False, "executable_receipt.no_training")
     _record_error(errors, executable_receipt.get("outer_accessed") is False, "executable_receipt.no_outer")
     _record_error(errors, local_fail_closed_receipt.get("schema") == "CARE_ASE_FAITHFUL_EXECUTABLE_VERIFIER_RECEIPT_V1", "local_fail_closed_receipt.schema")
@@ -232,6 +242,9 @@ def check_only() -> int:
     _record_error(errors, local_fail_closed_receipt.get("passed") is False, "local_fail_closed_receipt.not_passed")
     _record_error(errors, local_fail_closed_receipt.get("formal_training_started") is False, "local_fail_closed_receipt.no_training")
     _record_error(errors, local_fail_closed_receipt.get("outer_accessed") is False, "local_fail_closed_receipt.no_outer")
+    _record_error(errors, integrated_validation_result.get("schema") == "CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1", "integrated_validation_result.schema")
+    _record_error(errors, integrated_validation_result.get("passed") is True, "integrated_validation_result.passed")
+    _record_error(errors, integrated_validation_result.get("failure_count") == 0, "integrated_validation_result.failure_count")
 
     mutation_invocations = mutation_manifest.get("mutation_invocations", [])
     _record_error(errors, mutation_manifest.get("schema") == "CARE_ASE_FAITHFUL_RUNTIME_MUTATION_MANIFEST_V1", "mutation_manifest.schema")
@@ -424,7 +437,8 @@ def build_artifacts() -> int:
     executable_command = [
         sys.executable,
         str(EXECUTABLE_VERIFIER_PATH.relative_to(ROOT)),
-        "--fixture-mode",
+        "--evidence",
+        str(IMPLEMENTATION_EVIDENCE_PATH.relative_to(ROOT)),
         "--review-round",
         str(REVIEW_ROUND),
         "--integration-sha",
@@ -452,6 +466,18 @@ def build_artifacts() -> int:
         "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_local_fail_closed_receipt.json",
     ]
     local_fail_closed_result = run_command(local_fail_closed_command)
+    integrated_report_path = VERIFICATION_DIR / "integrated_implementation_validation_result.json"
+    integrated_validation_command = [
+        sys.executable,
+        str(VALIDATOR_PATH.relative_to(ROOT)),
+        "--verification-contract",
+        str((VERIFICATION_DIR / "verification_contract.json").relative_to(ROOT)),
+        "--evidence",
+        str(IMPLEMENTATION_EVIDENCE_PATH.relative_to(ROOT)),
+        "--report-json",
+        str(integrated_report_path.relative_to(ROOT)),
+    ]
+    integrated_validation_result = run_command(integrated_validation_command)
 
     mutation_results = []
     mutation_dir = VERIFICATION_DIR / "runtime_mutation_reports"
@@ -509,8 +535,12 @@ def build_artifacts() -> int:
             **v3_validator_result,
         },
         {
-            "purpose": "verifier-owned executable probe self-test fixture",
+            "purpose": "verifier-owned executable receipt revalidates integrated zero-credit runtime artifacts",
             **executable_result,
+        },
+        {
+            "purpose": "frozen validator accepts integrated implementation evidence with verifier-owned receipt binding",
+            **integrated_validation_result,
         },
     ]
     write_json(VERIFICATION_DIR / "public_test_manifest.json", public_manifest)
@@ -528,6 +558,12 @@ def build_artifacts() -> int:
         "local_fail_closed_executable_probe": {
             "purpose": "verifier-owned real-mode executable probe fails closed in this dependency-incomplete verifier worktree",
             **local_fail_closed_result,
+        },
+        "integrated_implementation_validation": {
+            "purpose": "frozen validator accepts integrated implementation evidence after executable receipt replacement",
+            **integrated_validation_result,
+            "report_path": str(integrated_report_path.relative_to(ROOT)),
+            "report_sha256": sha256_file(integrated_report_path) if integrated_report_path.exists() else None,
         },
     }
     write_json(VERIFICATION_DIR / "verifier_local_commands_recorded_in_manifests.json", command_log)
@@ -580,7 +616,8 @@ def build_artifacts() -> int:
         "protected_known_bad_all_nonzero": all(item["passed_fail_closed"] for item in protected_results),
         "runtime_mutation_count": len(mutation_results),
         "runtime_mutation_all_nonzero": all(item["passed_fail_closed"] for item in mutation_results),
-        "executable_verifier_fixture_selftest_exit_code": executable_result["exit_code"],
+        "executable_verifier_production_exit_code": executable_result["exit_code"],
+        "integrated_implementation_validation_exit_code": integrated_validation_result["exit_code"],
         "created_utc": now,
     }
     write_json(VERIFICATION_DIR / "verifier_fingerprint.json", fingerprint)
@@ -607,7 +644,9 @@ def build_artifacts() -> int:
         "runtime_mutation_count": len(mutation_results),
         "runtime_mutation_all_nonzero": all(item["passed_fail_closed"] for item in mutation_results),
         "executable_verifier_receipt": str((VERIFICATION_DIR / "executable_verifier_receipt.json").relative_to(ROOT)),
-        "executable_verifier_fixture_selftest_exit_code": executable_result["exit_code"],
+        "executable_verifier_production_exit_code": executable_result["exit_code"],
+        "integrated_implementation_validation_result": str((VERIFICATION_DIR / "integrated_implementation_validation_result.json").relative_to(ROOT)),
+        "integrated_implementation_validation_exit_code": integrated_validation_result["exit_code"],
         "executable_verifier_local_fail_closed_receipt": str((VERIFICATION_DIR / "executable_verifier_local_fail_closed_receipt.json").relative_to(ROOT)),
         "executable_verifier_local_fail_closed_exit_code": local_fail_closed_result["exit_code"],
         "executor_may_start_after_controller_freezes_this_commit": True,
@@ -620,6 +659,7 @@ def build_artifacts() -> int:
         and unittest_result["exit_code"] == 0
         and v3_validator_result["exit_code"] == 0
         and executable_result["exit_code"] == 0
+        and integrated_validation_result["exit_code"] == 0
         and local_fail_closed_result["exit_code"] != 0
         and all(item["passed_fail_closed"] for item in protected_results)
         and all(item["passed_fail_closed"] for item in mutation_results)
