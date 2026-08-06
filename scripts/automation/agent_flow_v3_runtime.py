@@ -974,6 +974,58 @@ def process_has_child(pid: int | None) -> bool:
     return cp.returncode == 0 and bool(cp.stdout.strip())
 
 
+def process_child_command_lines(pid: int | None) -> list[str]:
+    if not pid:
+        return []
+    cp = subprocess.run(
+        ["pgrep", "-P", str(pid)],
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    if cp.returncode != 0 or not cp.stdout.strip():
+        return []
+    commands: list[str] = []
+    for child_pid in cp.stdout.split():
+        child = subprocess.run(
+            ["ps", "-p", child_pid, "-o", "args="],
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            check=False,
+        )
+        if child.returncode == 0 and child.stdout.strip():
+            commands.append(child.stdout.strip())
+    return commands
+
+
+def process_command_line(pid: int | None) -> str:
+    if not pid:
+        return ""
+    cp = subprocess.run(
+        ["ps", "-p", str(pid), "-o", "args="],
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    if cp.returncode != 0:
+        return ""
+    return cp.stdout.strip()
+
+
+def tmux_pane_matches_codex_resume(session: str, window: str, worktree: Path, thread_id: str) -> bool:
+    pane_pid = tmux_pane_pid(session, window)
+    expected_worktree = str(worktree)
+    return any(
+        " codex.js exec " in f" {command} "
+        and f" -C {expected_worktree} " in f" {command} "
+        and f" resume {thread_id} " in f" {command} "
+        for command in process_child_command_lines(pane_pid)
+    )
+
+
 def care_ase_controller_start_receipt_path(stage_state_root: Path) -> Path:
     return stage_state_root.resolve().parent / "care-ase-faithful" / "controller_start_receipt.json"
 
@@ -1007,7 +1059,12 @@ def care_ase_role_launch_satisfied(stage_state_root: Path, current: dict[str, An
         return True
     if status in {"STARTED", "ALREADY_RUNNING", "STARTED_RUNNING"}:
         pid = receipt.get("pid") or receipt.get("pane_pid")
-        return isinstance(pid, int) and is_pid_running(pid)
+        if not isinstance(pid, int) or not is_pid_running(pid):
+            return False
+        prompt_path = receipt.get("prompt_path")
+        if status == "ALREADY_RUNNING" and isinstance(prompt_path, str):
+            return prompt_path in process_command_line(pid)
+        return True
     return False
 
 
@@ -2130,10 +2187,18 @@ def start_care_ase_executor_from_verifier_freeze(
         f"2> {shlex.quote(str(stderr_path))}"
     )
 
+    stale_window_recycled = False
+    stale_pane_pid = None
     if tmux_window_exists(args.executor_tmux_session, args.executor_tmux_window) and process_has_child(tmux_pane_pid(args.executor_tmux_session, args.executor_tmux_window)):
         pane_pid = tmux_pane_pid(args.executor_tmux_session, args.executor_tmux_window)
-        status = "ALREADY_RUNNING"
-    else:
+        pane_command = process_command_line(pane_pid)
+        if str(prompt_path) in pane_command and tmux_pane_matches_codex_resume(args.executor_tmux_session, args.executor_tmux_window, worktree, thread_id):
+            status = "ALREADY_RUNNING"
+        else:
+            stale_window_recycled = True
+            stale_pane_pid = pane_pid
+            subprocess.run(["tmux", "kill-window", "-t", target], check=False)
+    if not (tmux_window_exists(args.executor_tmux_session, args.executor_tmux_window) and process_has_child(tmux_pane_pid(args.executor_tmux_session, args.executor_tmux_window))):
         if tmux_window_exists(args.executor_tmux_session, args.executor_tmux_window):
             subprocess.run(["tmux", "kill-window", "-t", target], check=False)
         if subprocess.run(["tmux", "has-session", "-t", args.executor_tmux_session], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False).returncode != 0:
@@ -2165,6 +2230,8 @@ def start_care_ase_executor_from_verifier_freeze(
         "prompt_sha256": prompt_sha,
         "stdout_log": str(stdout_path),
         "stderr_log": str(stderr_path),
+        "stale_window_recycled": stale_window_recycled,
+        "stale_pane_pid": stale_pane_pid,
         "failures": [],
         "forbidden_actions_confirmed": [
             "no Planner/Critic decision generated",

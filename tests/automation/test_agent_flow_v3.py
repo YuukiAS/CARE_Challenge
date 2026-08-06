@@ -1086,6 +1086,33 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             assert receipt is not None
             self.assertEqual(receipt["role"], "verifier")
 
+    def test_stale_already_running_launch_receipt_does_not_satisfy_role_launch(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            receipt_path = RUNTIME.care_ase_role_launch_receipt_path(root / "stage_orchestrator", "executor")
+            receipt_path.parent.mkdir(parents=True)
+            receipt_path.write_text(
+                json.dumps(
+                    {
+                        "task_id": "care-ase-faithful",
+                        "role": "executor",
+                        "request_nonce": "nonce-1",
+                        "frozen_contract_sha256": "a" * 64,
+                        "status": "ALREADY_RUNNING",
+                        "pane_pid": os.getpid(),
+                        "prompt_path": str(root / "current_prompt.md"),
+                    }
+                ),
+                encoding="utf-8",
+            )
+            current = {"request_nonce": "nonce-1", "frozen_contract_sha256": "a" * 64}
+            with mock.patch.object(RUNTIME, "is_pid_running", return_value=True), mock.patch.object(
+                RUNTIME, "process_command_line", return_value=f"bash -c codex < {root / 'old_prompt.md'}"
+            ):
+                self.assertFalse(
+                    RUNTIME.care_ase_role_launch_satisfied(root / "stage_orchestrator", current, "executor")
+                )
+
     def test_watcher_restart_keeps_processed_state(self) -> None:
         args = argparse.Namespace(
             task_id="smoke-task",
