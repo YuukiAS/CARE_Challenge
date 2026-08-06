@@ -1921,8 +1921,18 @@ def validate_care_ase_verifier_freeze(
         for line in git(verifier_worktree, "diff", "--name-only", f"{merge_base}..{verifier_head}").splitlines()
         if line
     ]
+    if merge_base == verifier_head:
+        failures.append("verifier_no_local_repair_commit")
+    if not changed_paths:
+        failures.append("verifier_no_changed_paths")
     failures.extend(validate_role_commit_scope(changed_paths, role_data))
     freeze_rel = care_ase_verifier_freeze_relpath()
+    fingerprint_rel = "results/agent_flow_v3/care-ase-faithful/verification/verifier_fingerprint.json"
+    executable_rel = "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json"
+    required_verifier_outputs = {freeze_rel, fingerprint_rel, executable_rel}
+    missing_required_outputs = sorted(required_verifier_outputs.difference(changed_paths))
+    if missing_required_outputs:
+        failures.append("verifier_required_outputs_not_changed:" + ",".join(missing_required_outputs))
     freeze_raw = git_show_text_or_none(verifier_worktree, verifier_head, freeze_rel)
     if freeze_raw is None:
         failures.append("verifier_freeze_receipt_missing")
@@ -1952,7 +1962,8 @@ def validate_care_ase_verifier_freeze(
             failures.append("verifier_freeze_known_bad_count")
         if freeze.get("protected_known_bad_all_nonzero") is not True:
             failures.append("verifier_freeze_known_bad_nonzero")
-        fingerprint_rel = "results/agent_flow_v3/care-ase-faithful/verification/verifier_fingerprint.json"
+        if freeze.get("verifier_fingerprint_sha256") == current.get("verifier_fingerprint_sha256"):
+            failures.append("verifier_fingerprint_not_new")
         fingerprint_raw = git_show_text_or_none(verifier_worktree, verifier_head, fingerprint_rel)
         if fingerprint_raw is None:
             failures.append("verifier_fingerprint_missing")
@@ -1969,6 +1980,20 @@ def validate_care_ase_verifier_freeze(
                     failures.append("verifier_fingerprint_contract_sha")
             except Exception as exc:  # noqa: BLE001
                 failures.append(f"verifier_fingerprint_unreadable:{type(exc).__name__}:{exc}")
+        executable_raw = git_show_text_or_none(verifier_worktree, verifier_head, executable_rel)
+        if executable_raw is None:
+            failures.append("verifier_executable_receipt_missing")
+        else:
+            try:
+                executable = json.loads(executable_raw)
+                if not isinstance(executable, dict):
+                    raise ValueError("not object")
+                if executable.get("fixture_mode") is True:
+                    failures.append("verifier_executable_receipt_fixture_mode")
+                if executable.get("implementation_fingerprint_sha256") != current.get("implementation_fingerprint_sha256"):
+                    failures.append("verifier_executable_implementation_fingerprint")
+            except Exception as exc:  # noqa: BLE001
+                failures.append(f"verifier_executable_receipt_unreadable:{type(exc).__name__}:{exc}")
     return failures, {
         "verifier_head": verifier_head,
         "merge_base": merge_base,
