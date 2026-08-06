@@ -337,6 +337,7 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
 
     def test_orchestrator_plan_requested_records_external_gpt_wait_metadata(self) -> None:
         current = {
+            "task_id": "care-ase-faithful",
             "request_nonce": "care-ase-nonce",
             "review_round": 0,
             "state": "PLAN_REQUESTED",
@@ -359,6 +360,39 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         started = RUNTIME.parse_utc(receipt["external_wait_started_utc"])
         deadline = RUNTIME.parse_utc(receipt["external_wait_deadline_utc"])
         self.assertGreaterEqual((deadline - started).total_seconds(), 4 * 3600)
+
+    def test_orchestrator_reuses_existing_wait_deadline_for_same_event(self) -> None:
+        current = {
+            "task_id": "care-ase-faithful",
+            "request_nonce": "care-ase-nonce",
+            "review_round": 0,
+            "state": "PLAN_REQUESTED",
+        }
+        previous_wait = {
+            "task_id": "care-ase-faithful",
+            "event_key": "care-ase-faithful:care-ase-nonce:0:PLAN_REQUESTED",
+            "remote_sha": "a" * 40,
+            "external_wait_started_utc": "2026-08-06T09:15:35Z",
+            "external_wait_deadline_utc": "2026-08-06T13:15:35Z",
+            "expected_state_or_artifact": "old expected Planner artifact",
+        }
+
+        merged = RUNTIME.merge_existing_wait_metadata(current, previous_wait)
+        receipt = RUNTIME.evaluate_stage_event(
+            task_id="care-ase-faithful",
+            request={"enabled": True},
+            current=merged,
+            visual_final=None,
+            remote_sha="b" * 40,
+            processed=set(),
+            default_wait_hours=4,
+        )
+
+        self.assertEqual(receipt["decision"], "WAITING_FOR_EXTERNAL_GPT")
+        self.assertEqual(receipt["external_wait_started_utc"], "2026-08-06T09:15:35Z")
+        self.assertEqual(receipt["external_wait_deadline_utc"], "2026-08-06T13:15:35Z")
+        self.assertEqual(receipt["expected_state_or_artifact"], "old expected Planner artifact")
+        self.assertEqual(receipt["last_observed_remote_sha"], "b" * 40)
 
     def test_orchestrator_keeps_generic_planner_pass_at_human_gate(self) -> None:
         current = {

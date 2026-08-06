@@ -966,6 +966,26 @@ def stage_event_was_processed(event_key: str, processed: set[str]) -> bool:
     return event_key in processed or any(old_key.startswith(f"{event_key}:") for old_key in processed)
 
 
+def merge_existing_wait_metadata(current: dict[str, Any], previous_wait: dict[str, Any] | None) -> dict[str, Any]:
+    if not previous_wait:
+        return current
+    if previous_wait.get("event_key") != stage_event_key(
+        str(current.get("task_id") or previous_wait.get("task_id")),
+        current,
+        str(previous_wait.get("remote_sha") or ""),
+    ):
+        return current
+    merged = dict(current)
+    for key in (
+        "external_wait_started_utc",
+        "external_wait_deadline_utc",
+        "expected_state_or_artifact",
+    ):
+        if merged.get(key) is None and previous_wait.get(key) is not None:
+            merged[key] = previous_wait[key]
+    return merged
+
+
 def evaluate_stage_event(
     *,
     task_id: str,
@@ -1105,6 +1125,11 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
         request = git_show_json(repo, ref, request_path)
         current = git_show_json(repo, ref, current_path)
         task_id = str(request.get("task_id") or current.get("task_id") or Path(task_dir).name)
+        current.setdefault("task_id", task_id)
+        current = merge_existing_wait_metadata(
+            current,
+            dict(local_state.get("waits", {})).get(task_id),
+        )
         visual_final = None
         visual_final_path = f"results/agent_flow_v3/{task_id}/visual_smoke_final.json"
         raw_visual_final = git_show_text_or_none(repo, ref, visual_final_path)
