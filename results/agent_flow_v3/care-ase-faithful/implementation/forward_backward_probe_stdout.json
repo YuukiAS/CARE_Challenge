@@ -1,0 +1,26 @@
+{
+  "availability": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "checkpoint_written": false,
+  "first_loss": -5.920772075653076,
+  "fold": 0,
+  "formal_optimizer_step_executed": false,
+  "input_shape": [
+    1,
+    3,
+    8,
+    128,
+    128
+  ],
+  "outer_accessed": false,
+  "probe_type": "synthetic_zero_credit_two_backward",
+  "required_projection_nonzero_finite_count": 94,
+  "required_projection_parameter_count": 94,
+  "second_loss": -5.9209675788879395,
+  "status": "PASS",
+  "upstream_nonzero_finite_count_after_projection_update": 81,
+  "upstream_parameter_count_after_projection_update": 81
+}

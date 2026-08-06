@@ -13,6 +13,7 @@ from copy import deepcopy
 from dataclasses import dataclass
 import hashlib
 import json
+import os
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -26,10 +27,44 @@ from src.care_myocardium.models.care_prism import CAREPRISMConfig, build_source_
 
 
 MODALITY_ORDER = ("LGE", "T2", "C0")
-REPO_ROOT = Path(__file__).resolve().parents[3]
-DEFAULT_PLANS = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans.json"
-DEFAULT_DATASET_JSON = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/dataset.json"
-DEFAULT_STOCK_ROOT = REPO_ROOT / "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres"
+REPO_ROOT = Path(__file__).resolve().parents[4]
+DATASET501_NAME = "Dataset501_CAREMyoPS"
+STOCK_TRAINER_NAME = "nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres"
+
+
+def _runtime_root_from_env(kind: str) -> Path | None:
+    value = os.environ.get(kind)
+    if value:
+        return Path(value)
+    care_root = os.environ.get("CARE_ROOT")
+    if care_root:
+        return Path(care_root) / "data" / "nnUNet" / kind
+    return None
+
+
+def _default_preprocessed_root() -> Path:
+    return _runtime_root_from_env("nnUNet_preprocessed") or (REPO_ROOT / "data" / "nnUNet" / "nnUNet_preprocessed")
+
+
+def _default_results_root() -> Path:
+    return _runtime_root_from_env("nnUNet_results") or (REPO_ROOT / "data" / "nnUNet" / "nnUNet_results")
+
+
+def default_plans_path() -> Path:
+    return _default_preprocessed_root() / DATASET501_NAME / "nnUNetPlans.json"
+
+
+def default_dataset_json_path() -> Path:
+    return _default_preprocessed_root() / DATASET501_NAME / "dataset.json"
+
+
+def default_stock_root() -> Path:
+    return _default_results_root() / DATASET501_NAME / STOCK_TRAINER_NAME
+
+
+DEFAULT_PLANS = default_plans_path()
+DEFAULT_DATASET_JSON = default_dataset_json_path()
+DEFAULT_STOCK_ROOT = default_stock_root()
 
 
 def sha256_file(path: Path) -> str:
@@ -222,15 +257,23 @@ def introspect_stock_decoder(stock_decoder: nn.Module) -> CAREASEDecoderIntrospe
     )
 
 
-def stock_pathology_deep_supervision_weights(stock_decoder: nn.Module, introspection: CAREASEDecoderIntrospection) -> dict[str, Any]:
+def stock_pathology_deep_supervision_weights(
+    stock_decoder: nn.Module,
+    introspection: CAREASEDecoderIntrospection,
+    *,
+    plans_path: Path | str | None = None,
+    dataset_json_path: Path | str | None = None,
+) -> dict[str, Any]:
     """Bind pathology full/half supervision weights to the stock nnU-Net DS formula."""
 
     seg_layer_count = len(stock_decoder.seg_layers)
     if seg_layer_count <= max(introspection.cloned_stage_indices):
         raise ValueError("stock decoder has fewer seg_layers than the CARE-ASE cloned pathology stages")
     half_stage, full_stage = introspection.cloned_stage_indices
-    plans = json.loads(DEFAULT_PLANS.read_text(encoding="utf-8"))
-    dataset_json = json.loads(DEFAULT_DATASET_JSON.read_text(encoding="utf-8"))
+    plans_file = Path(plans_path) if plans_path is not None else default_plans_path()
+    dataset_file = Path(dataset_json_path) if dataset_json_path is not None else default_dataset_json_path()
+    plans = json.loads(plans_file.read_text(encoding="utf-8"))
+    dataset_json = json.loads(dataset_file.read_text(encoding="utf-8"))
     plans_manager = PlansManager(plans)
     trainer = object.__new__(nnUNetTrainer)
     trainer.configuration_manager = plans_manager.get_configuration("3d_fullres")
@@ -292,12 +335,13 @@ class CAREASEConfig:
         cls,
         fold: int,
         *,
-        plans_path: Path | str = DEFAULT_PLANS,
+        plans_path: Path | str | None = None,
         checkpoint_path: Path | str | None = None,
         configuration: str = "3d_fullres",
     ) -> "CAREASEConfig":
-        ckpt = Path(checkpoint_path) if checkpoint_path is not None else DEFAULT_STOCK_ROOT / f"fold_{int(fold)}" / "checkpoint_final.pth"
-        return cls(fold=int(fold), plans_path=str(Path(plans_path)), checkpoint_path=str(ckpt), configuration=configuration)
+        resolved_plans = Path(plans_path) if plans_path is not None else default_plans_path()
+        ckpt = Path(checkpoint_path) if checkpoint_path is not None else default_stock_root() / f"fold_{int(fold)}" / "checkpoint_final.pth"
+        return cls(fold=int(fold), plans_path=str(resolved_plans), checkpoint_path=str(ckpt), configuration=configuration)
 
 
 class ZeroInitEvidenceProjection(nn.Module):
@@ -630,7 +674,11 @@ class CAREASE(nn.Module):
             self.stock_load_unexpected_keys = []
             self.stock_parameter_byte_coverage = 1.0
         self.decoder_introspection = introspect_stock_decoder(stock.decoder)
-        self.pathology_deep_supervision_weights = stock_pathology_deep_supervision_weights(stock.decoder, self.decoder_introspection)
+        self.pathology_deep_supervision_weights = stock_pathology_deep_supervision_weights(
+            stock.decoder,
+            self.decoder_introspection,
+            plans_path=config.plans_path,
+        )
 
         self.encoder = stock.encoder
         self.low_mid_transpconvs = nn.ModuleList([stock.decoder.transpconvs[i] for i in range(4)])

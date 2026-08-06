@@ -1,0 +1,22 @@
+{
+  "command": [
+    "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+    "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor/validators/care_ase_faithful/validate_contract_evidence.py",
+    "--verification-contract",
+    "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor/results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+    "--evidence",
+    "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor/results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json",
+    "--report-json",
+    "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor/results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence_validation_result.json"
+  ],
+  "created_utc": "2026-08-06T15:24:09Z",
+  "exit_code": 0,
+  "report_path": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence_validation_result.json",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "schema": "CARE_ASE_FAITHFUL_IMPLEMENTATION_VALIDATOR_RECEIPT_V1",
+  "stderr": "",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout": "{\n  \"failure_count\": 0,\n  \"failures\": [],\n  \"known_bad_case_id\": null,\n  \"passed\": true,\n  \"schema\": \"CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1\",\n  \"task_id\": \"care-ase-faithful\"\n}\n",
+  "stdout_sha256": "7ca147703ccf89a824fb57c9603d9755ab11f42ec6c000ec130a054de271dec9",
+  "task_id": "care-ase-faithful"
+}

@@ -1,0 +1,62 @@
+{
+  "command": {
+    "entrypoint": "run_inference_probe",
+    "fold": 0,
+    "shape": [
+      1,
+      3,
+      8,
+      128,
+      128
+    ],
+    "zero_credit": true
+  },
+  "command_sha256": "a904254c1e8d8baed9aa5db5e1bdab2ebe52483619f7ee1f0c5a0771a4231f4f",
+  "created_utc": "2026-08-06T15:24:08Z",
+  "docker_or_upload": false,
+  "executed": true,
+  "exit_code": 0,
+  "formal_training_started": false,
+  "outer_accessed": false,
+  "payload": {
+    "canonical_full_volume_finite": true,
+    "canonical_full_volume_logits_shape": [
+      1,
+      6,
+      8,
+      128,
+      128
+    ],
+    "class4_excluded_from_no_t2_decode": true,
+    "class5_decode_remaps_to_official_label5": true,
+    "fold": 0,
+    "formal_training_started": false,
+    "input_shape": [
+      1,
+      3,
+      8,
+      128,
+      128
+    ],
+    "no_t2_edema_graph_excluded": true,
+    "no_t2_final_logits_shape": [
+      1,
+      6,
+      8,
+      128,
+      128
+    ],
+    "outer_accessed": false,
+    "patch_proxy_evaluator": false,
+    "probe_type": "synthetic_zero_credit_forward_and_canonical_inference",
+    "status": "PASS",
+    "t2_present_class4_still_available": true
+  },
+  "probe": "inference_probe",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "schema": "CARE_ASE_FAITHFUL_ZERO_CREDIT_PROBE_RECEIPT_V1",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "e2f6008a069014a9383cd0bdec5a2fe1d1b20d00613ba085b39cc246b9207ce4",
+  "task_id": "care-ase-faithful",
+  "zero_credit": true
+}

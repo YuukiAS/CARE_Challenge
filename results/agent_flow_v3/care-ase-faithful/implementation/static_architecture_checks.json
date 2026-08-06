@@ -1,8 +1,10 @@
 {
   "all_static_tokens_present": true,
-  "canonical_truth_note": "Current executable truth is src/care_myocardium/models/care_ase.py; frozen contract prefers src/care_myocardium/models/care_ase/ package.",
-  "canonical_truth_status": "legacy_monolith_present",
+  "canonical_truth_note": "Canonical executable truth is src/care_myocardium/models/care_ase/core.py; package __init__.py is a thin public export layer.",
+  "canonical_truth_status": "package_single_truth",
+  "legacy_module_exists": false,
   "schema": "CARE_ASE_FAITHFUL_STATIC_ARCHITECTURE_CHECKS_V1",
+  "thin_export_layer": true,
   "tokens": {
     "active_modality_adapter": true,
     "carease_class": true,

@@ -1,0 +1,20 @@
+{
+  "architecture_signature_sha256": "a2f10c967b2857d6ed1f4b7b601f4a8de953c3ee92b7596e3288a14e02943829",
+  "created_utc": "2026-08-06T15:24:08Z",
+  "docker_built_or_uploaded": false,
+  "forward_backward_probe_receipt_sha256": "3ed26da62c28d209107de7adb19f5bf76fcceaff1df80a525157893ca6972e09",
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "implementation_evidence_sha256": "e7a14c11d5cb51616ca2aadb75b34fa0c6367c71c2fa317f05703eefa02e98f0",
+  "implementation_fingerprint_sha256": "000aa0564427d118a4cc361a7a7c09ba4d671851aacd9b3b28e4166c072a0dd5",
+  "inference_probe_receipt_sha256": "f8e708211b10d1c746db34fd899635659fea456ac47d6baab275a07cf605d90f",
+  "no_training_started": true,
+  "outer_accessed": false,
+  "parameter_owner_registry_sha256": "58b95ff01f422ba854a80480ee6a9b640407575c252cc476572aa2642167de2d",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "runtime_asset_manifest_sha256": "cdbbdd3e40d354c8ebcd01c70679d2f6016bf58211c9698396e973b1c5f831fc",
+  "schema": "CARE_ASE_FAITHFUL_IMPLEMENTATION_FINGERPRINT_V1",
+  "source_manifest_sha256": "734c0707ee07346808c1bcf0e728bcaf4c05f08f4472667eb8e432adbb5d6470",
+  "task_id": "care-ase-faithful",
+  "validation_or_challenge_uploaded": false,
+  "verifier_fingerprint_sha256": "b3f1a0f630b346494cbeb7f1ae92764ab993047e373a0a1e23d77c194f8cecdf"
+}

@@ -1,11 +1,12 @@
 {
   "file_hashes": {
-    "scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py": "4f3565908e5cf592dfff5a2b4a606c73ab55b01bde8a3096abf44ef18282232c",
+    "scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py": "cd93bb81f2b006d18bff0a6a96bc9ff9e1ce7121415a71be8b955fc296ad55d3",
     "scripts/training/care_ase/run_care_ase_r2_chunk.py": "078767a5c8c6b8c9fe6135efe2efa6ec49dc6daec7554e2f1a3b3625a338e812",
     "scripts/training/care_ase/run_care_ase_train.py": "d4a613bc6160267538de83b71bf615ea4d87c15c2b06240af126973428e540b6",
     "src/care_myocardium/inference/care_ase_r2_decode.py": "7fea71edba56d259dbbb31c3832b74709bd83d5af1f8b680a85c2e0a41acb05b",
     "src/care_myocardium/inference/care_ase_r2_full_volume.py": "f9e3c4be321e96f7776444e2486b8e0d00e5f02701814f2625ca370b7c95218f",
-    "src/care_myocardium/models/care_ase.py": "290c799618b29133903dfb7ccd78844bf27a4ce70b885ae64483444c922b9e42",
+    "src/care_myocardium/models/care_ase/__init__.py": "d00dac2958deeb915cda37d98cd9835c4d1c3654abe7337724d704690bae0c1a",
+    "src/care_myocardium/models/care_ase/core.py": "f3e7f93c6975cefb3bd25011bb0604d80072bcf1dac0eca94b0f3bb771aabf7e",
     "src/care_myocardium/training/care_ase_augmentation.py": "85a208a3a886babe0ec2927a1babced2b24ff91188d577585e65d4e38c27b283",
     "src/care_myocardium/training/care_ase_runtime.py": "0f3407e39b6cef0ab35f9dd33720f7d73afd67ce8b9251298a6238c4516a1b2a",
     "src/care_myocardium/training/care_ase_sampler.py": "e8d0b9d10f90d3e70fb9e1a8f4cfff2dd4fbae30d7f73868377350af278f65d9",
@@ -13,11 +14,11 @@
   },
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
   "git_branch": "local/executor/care-ase-faithful",
-  "git_head": "fb44bb76100f1cec64af4d95c535ddba912b53d6",
+  "git_head": "8742bd7e9bd212f119cd784306d1b06295584bc4",
   "missing_files": [],
   "request_nonce": "care-ase-20260806T090955Z",
   "schema": "CARE_ASE_FAITHFUL_IMPLEMENTATION_SOURCE_MANIFEST_V1",
-  "source_manifest_sha256": "b28e1552d107e8fffbfea71fedaeb01df27766d36d5a793d277bb9c3d2ee9048",
+  "source_manifest_sha256": "734c0707ee07346808c1bcf0e728bcaf4c05f08f4472667eb8e432adbb5d6470",
   "task_id": "care-ase-faithful",
   "verifier_fingerprint_sha256": "b3f1a0f630b346494cbeb7f1ae92764ab993047e373a0a1e23d77c194f8cecdf"
 }

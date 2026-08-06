@@ -1,0 +1,54 @@
+{
+  "command": {
+    "entrypoint": "run_forward_backward_probe",
+    "fold": 0,
+    "shape": [
+      1,
+      3,
+      8,
+      128,
+      128
+    ],
+    "zero_credit": true
+  },
+  "command_sha256": "273a59fc74b2528ecca0e1ffba85529aa84ccd977340bdff1f8ee41aaec84ecb",
+  "created_utc": "2026-08-06T15:23:59Z",
+  "docker_or_upload": false,
+  "executed": true,
+  "exit_code": 0,
+  "formal_training_started": false,
+  "outer_accessed": false,
+  "payload": {
+    "availability": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "checkpoint_written": false,
+    "first_loss": -5.920772075653076,
+    "fold": 0,
+    "formal_optimizer_step_executed": false,
+    "input_shape": [
+      1,
+      3,
+      8,
+      128,
+      128
+    ],
+    "outer_accessed": false,
+    "probe_type": "synthetic_zero_credit_two_backward",
+    "required_projection_nonzero_finite_count": 94,
+    "required_projection_parameter_count": 94,
+    "second_loss": -5.9209675788879395,
+    "status": "PASS",
+    "upstream_nonzero_finite_count_after_projection_update": 81,
+    "upstream_parameter_count_after_projection_update": 81
+  },
+  "probe": "forward_backward_probe",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "schema": "CARE_ASE_FAITHFUL_ZERO_CREDIT_PROBE_RECEIPT_V1",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "35539c3bd99b68782fb6fa140a70fc0e9928a5ed7b517bd3503c581603eeb6e2",
+  "task_id": "care-ase-faithful",
+  "zero_credit": true
+}
