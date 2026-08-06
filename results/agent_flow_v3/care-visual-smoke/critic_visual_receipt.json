@@ -1,0 +1,120 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_CRITIC_VISUAL_RECEIPT",
+  "task_id": "care-visual-smoke",
+  "request_nonce": "visual-smoke-20260806T031345Z",
+  "role": "critic",
+  "actual_visual_access": true,
+  "access_context": "scheduled ChatGPT Critic independently inspected the corresponding CARE-ASE, SRR-v3 and MoSAIC images through the ChatGPT File Library multimodal image source, with repository path, nonce and SHA bindings checked against VISUAL_SOURCES.json",
+  "source_manifest_path": "automation/agent_flow_v3/tasks/care-visual-smoke/VISUAL_SOURCES.json",
+  "source_manifest_blob_sha": "ae9e0c117d72893a0c9d0403d502bff182abee51",
+  "planner_draft_commit_sha": "75b1cd5752d3b9419e99ec5385e125c6e8c2a446",
+  "planner_visual_receipt_commit_sha": "182dc161fc3c6d39495e2e192c8c8f9137702bba",
+  "images": [
+    {
+      "name": "CARE-ASE",
+      "repository_path": "docs/architecture/figures/CARE-ASE.png",
+      "sha256": "af8f47713961c3b6b03dd24283b8f18d51fb5043ab1699997db2713e525710b2",
+      "main_modules_visible": [
+        "explicit LGE, T2 and C0 inputs with modality-availability semantics",
+        "one stock-compatible full-volume encoder and bottleneck",
+        "shared mature low/mid-resolution decoding path",
+        "separate high-resolution anatomy-preserving path",
+        "LGE-dominant scar proposal/localization and scar reconstruction path",
+        "T2-dominant pure-edema reconstruction path with bounded auxiliary support",
+        "conditional final pathology/anatomy class competition and deployment safeguards"
+      ],
+      "key_dataflow": "Observed sequences enter one mature full-volume backbone. Shared low/mid-resolution decoding retains anatomical capability, while the high-resolution stage assigns asymmetric authority: LGE drives scar localization/reconstruction and T2 drives pure-edema reconstruction. These outputs join the anatomy logits only at the conditional final competition rather than through an external post-hoc correction network.",
+      "missing_modality_and_no_t2_rules": [
+        "missingness is represented explicitly rather than interpreted as an ordinary observed image",
+        "when T2 is absent, edema-owned computation is excluded for that row",
+        "class 4 is excluded from the final no-T2 competition, yielding background/anatomy/scar five-class semantics"
+      ],
+      "explicitly_absent_from_figure": [
+        "Transformer and Mamba blocks",
+        "a second complete U-Net or second full backbone",
+        "SRR-style shared/private/interaction retrieval dictionary",
+        "prototype-memory intervention chain",
+        "nnU-Net-anchor bounded residual arbitration stage",
+        "Cine registration or temporal branch"
+      ],
+      "critic_judgment": "The Planner description is materially faithful. The absence claims are interpreted only as absence from this diagram, not proof that arbitrary hidden implementation code could not exist."
+    },
+    {
+      "name": "SRR-v3",
+      "repository_path": "docs/architecture/figures/SRR-v3.png",
+      "sha256": "50478ee7c07cedb6a921902aa5daa8f6ecf3b34aa2fc5e97905d60c585ea72b5",
+      "main_modules_visible": [
+        "partially observed multi-sequence inputs and availability-aware routing",
+        "nnU-Net anchor/context interface with anatomy, probability, uncertainty and component evidence",
+        "modality-specific shared/private/interaction semantic representation retrieval",
+        "positive, negative and safe-negative prototype or memory evidence",
+        "separate anatomy-guided scar and edema proposal paths",
+        "pathology-specific soft-ROI scar and edema refiners",
+        "bounded baseline-preserving residual correction",
+        "Cine anatomy, registration and temporal retrieval/aggregation lane"
+      ],
+      "key_dataflow": "The available modalities first determine which semantic representation slots may be retrieved. Retrieved evidence and anchor-derived anatomy/probability/uncertainty/component context form distinct scar and edema proposals. Those proposals define pathology-specific soft regions of interest, after which separate refiners produce bounded deltas that are arbitrated around the mature anchor. The Cine lane aligns multi-frame anatomy/features before temporal aggregation.",
+      "missing_modality_and_no_t2_rules": [
+        "private and interaction slots involving unavailable modalities are masked",
+        "no-T2 cases are not used as ordinary edema-negative supervision",
+        "edema correction fails closed when reliable T2 evidence is unavailable"
+      ],
+      "explicitly_absent_from_figure": [
+        "unrestricted replacement of the mature full decoder by one generic pathology head",
+        "a single shared scar/edema proposal-refiner head",
+        "Transformer or Mamba modules",
+        "center-ID-dependent deployment routing"
+      ],
+      "critic_judgment": "The Planner correctly separates evidence selection from lesion formation and final-output authority. This distinction is sufficient for later downgrade detection: a dictionary or memory that exists but does not influence proposal, refiner and bounded final logits is not faithful SRR-v3."
+    },
+    {
+      "name": "MoSAIC",
+      "repository_path": "docs/architecture/figures/MoSAIC.png",
+      "sha256": "d2ea85c5ba40521dc65a56d85124ecfc9a2e40ac5eff206c10cff8fbf04e09fb",
+      "main_modules_visible": [
+        "separate Multi-sequence MyoPS and CineMyoPS workflows",
+        "heterogeneous multi-sequence evidence",
+        "CoarseNet-style coarse localization",
+        "anatomy-conditioned multi-scale fusion",
+        "independent fine pathology experts or FinePathNet paths",
+        "anatomy/pathology output merging",
+        "ED-anchored cine anatomy and motion inference"
+      ],
+      "key_dataflow": "The MyoPS side uses heterogeneous sequences for coarse localization, anatomy-conditioned fusion and independent fine pathology inference before output merging. The Cine side uses an end-diastolic reference together with anatomy and motion evidence to infer across frames. This is a coarse-to-fine expert system rather than an anchor-bounded retrieval-and-correction system.",
+      "missing_modality_and_no_t2_rules": [
+        "the figure indicates heterogeneous-evidence handling but does not expose a row-wise no-T2 five-class exclusion contract",
+        "no explicit safe-negative retrieval memory or availability-slot masking rule is displayed"
+      ],
+      "explicitly_absent_from_figure": [
+        "nnU-Net anchor plus bounded residual correction",
+        "shared/private/interaction representation dictionary",
+        "prototype-memory intervention chain",
+        "explicit no-T2 five-class final competition"
+      ],
+      "critic_judgment": "The Planner correctly treats MoSAIC as a coarse-to-fine benchmark and mechanism comparison, not as a substitute for the CARE-ASE contract."
+    }
+  ],
+  "cross_architecture_judgment": [
+    "CARE-ASE assigns direct asymmetric reconstruction responsibility inside one mature full-volume backbone.",
+    "SRR-v3 selects evidence and forms proposals/refinements around a strong anchor, with every claimed module required to reach bounded final logits.",
+    "MoSAIC uses coarse-to-fine independent experts and a separate ED-anchored cine workflow without SRR retrieval or anchor-bounded arbitration.",
+    "The strongest explicit row-wise no-T2 execution and five-class authority rule is visible in CARE-ASE; SRR-v3 expresses safety through availability/reliable-label/fail-closed correction; MoSAIC does not display the same contract."
+  ],
+  "planner_observation_audit": {
+    "material_errors": [],
+    "deterministic_repairs_required": [],
+    "precision_clarifications": [
+      "All statements about absent components are limited to what is absent from the figure and must not be reinterpreted as a source-code audit.",
+      "CineMA terminology in later implementation contracts must still be bound to exact external assets; this visual smoke only validates the depicted Cine anatomy/registration/temporal lane."
+    ]
+  },
+  "critic_decision": "VISUAL_SMOKE_CRITIC_PASS",
+  "open_scientific_choices": [],
+  "forbidden_actions_confirmed": [
+    "no Controller, Verifier or Executor launch",
+    "no CARE-ASE implementation",
+    "no training or outer access",
+    "no Docker, upload, organizer email or develop-to-main merge"
+  ],
+  "updated_utc": "2026-08-06T05:42:00Z"
+}
