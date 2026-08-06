@@ -730,7 +730,9 @@ def notification_brief_required(config: dict[str, Any], event: NotificationEvent
 
 
 def configured_brief_patterns(config: dict[str, Any], event: NotificationEvent) -> list[str]:
-    patterns = list(route_config(config, event.route).get("notification_brief_paths", []))
+    patterns: list[str] = []
+    if event.source == "manual_controller_completion" and event.source_path:
+        patterns.append(event.source_path)
     for packet_path in event.packet_paths:
         path = Path(packet_path)
         if path.name == "notification_brief.json":

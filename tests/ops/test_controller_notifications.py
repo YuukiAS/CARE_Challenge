@@ -275,7 +275,16 @@ def test_main_complete_requires_terminal_notification_brief(tmp_path):
     assert status["last_email_status"] == "blocked_notification_brief"
     assert status["suppressed_notification_count"] == 1
 
-    write_notification_brief(tmp_path / "repo")
+    stale_brief = write_notification_brief(tmp_path / "repo", task="old_finished_goal")
+    assert notify.run_once(config, state_path=state_path, env={}, sender=sender) == []
+    assert sender.events == []
+    status = json.loads((tmp_path / "repo" / "controller_notifications" / "state" / "notify_goal_watcher_status.json").read_text())
+    assert status["last_email_status"] == "blocked_notification_brief"
+    assert status["suppressed_notification_count"] == 1
+    assert status["suppressed_notifications"][0]["brief_path"] == ""
+    assert "missing" in status["suppressed_notifications"][0]["reason"]
+
+    config["routes"]["main"]["packet_paths"] = [str(stale_brief)]
     events = notify.run_once(config, state_path=state_path, env={}, sender=sender)
     assert len(events) == 1
     assert events[0].route == "main"
@@ -293,6 +302,7 @@ def test_main_rejects_pending_notification_brief(tmp_path):
     write_goal_db(db, "active", updated_at_ms=1)
     notify.run_once(config, state_path=state_path, env={}, sender=sender)
     brief = write_notification_brief(tmp_path / "repo", slurm_status="PENDING_MONITOR")
+    config["routes"]["main"]["packet_paths"] = [str(brief)]
     write_goal_db(db, "complete", updated_at_ms=2)
 
     events = notify.run_once(config, state_path=state_path, env={}, sender=sender)
