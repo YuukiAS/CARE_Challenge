@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import fcntl
+from fnmatch import fnmatch
 import hashlib
 import json
 import os
@@ -878,6 +879,22 @@ def care_ase_role_launch_satisfied(stage_state_root: Path, current: dict[str, An
     return False
 
 
+def path_matches_any(path: str, patterns: list[str]) -> bool:
+    return any(fnmatch(path, pattern) for pattern in patterns)
+
+
+def validate_role_commit_scope(paths: list[str], role_data: dict[str, Any]) -> list[str]:
+    failures: list[str] = []
+    write_scope = [str(item) for item in role_data.get("write_scope", []) if isinstance(item, str)]
+    forbidden_scope = [str(item) for item in role_data.get("forbidden_scope", []) if isinstance(item, str)]
+    for path in paths:
+        if path_matches_any(path, forbidden_scope):
+            failures.append(f"forbidden_path:{path}")
+        elif write_scope and not path_matches_any(path, write_scope):
+            failures.append(f"outside_write_scope:{path}")
+    return failures
+
+
 def care_ase_controller_start_satisfied(stage_state_root: Path, current: dict[str, Any]) -> bool:
     return care_ase_role_launch_satisfied(stage_state_root, current, "verifier")
 
@@ -1150,6 +1167,12 @@ def evaluate_stage_event(
     elif task_id == "care-ase-faithful" and state == "PLAN_FROZEN":
         decision = "STAGE_READY"
         action = "start persistent CARE-ASE Controller only; do not implement in orchestrator"
+    elif task_id == "care-ase-faithful" and state == "VERIFIER_RUNNING":
+        decision = "CONTROLLER_UPDATE_REQUIRED"
+        action = "validate and integrate Verifier freeze commit, then mark VERIFIER_FROZEN"
+    elif task_id == "care-ase-faithful" and state == "VERIFIER_FROZEN":
+        decision = "STAGE_READY"
+        action = "start persistent CARE-ASE Executor exact session after Verifier freeze"
     else:
         decision = "MONITOR_ONLY"
         action = f"observed state {state}"
@@ -1476,6 +1499,11 @@ def previous_role_launch_failed_no_rollout(stage_state_root: Path, role: str) ->
     previous = receipt.get("previous_attempt")
     if isinstance(previous, dict):
         text += " " + str(previous.get("stderr_summary", ""))
+    stderr_log = receipt.get("stderr_log")
+    if isinstance(stderr_log, str) and stderr_log:
+        stderr_path = Path(stderr_log)
+        if stderr_path.is_file():
+            text += " " + stderr_path.read_text(encoding="utf-8", errors="replace")[-1000:]
     return "no rollout found" in text
 
 
@@ -1646,12 +1674,365 @@ def start_care_ase_verifier_from_frozen_contract(
     return receipt
 
 
+def care_ase_verifier_freeze_relpath() -> str:
+    return "results/agent_flow_v3/care-ase-faithful/verification/verifier_freeze_receipt.json"
+
+
+def validate_care_ase_verifier_freeze(
+    *,
+    verifier_worktree: Path,
+    verifier_head: str,
+    request: dict[str, Any],
+    current: dict[str, Any],
+    role_data: dict[str, Any],
+    branch: str,
+) -> tuple[list[str], dict[str, Any]]:
+    failures: list[str] = []
+    if git_status_short(verifier_worktree):
+        failures.append(f"verifier_worktree_dirty:{verifier_worktree}")
+    if not SHA40_RE.fullmatch(verifier_head):
+        failures.append("verifier_head_sha")
+    merge_base = git(verifier_worktree, "merge-base", f"origin/{branch}", verifier_head)
+    changed_paths = [
+        line
+        for line in git(verifier_worktree, "diff", "--name-only", f"{merge_base}..{verifier_head}").splitlines()
+        if line
+    ]
+    failures.extend(validate_role_commit_scope(changed_paths, role_data))
+    freeze_rel = care_ase_verifier_freeze_relpath()
+    freeze_raw = git_show_text_or_none(verifier_worktree, verifier_head, freeze_rel)
+    if freeze_raw is None:
+        failures.append("verifier_freeze_receipt_missing")
+        freeze: dict[str, Any] = {}
+    else:
+        try:
+            freeze = json.loads(freeze_raw)
+            if not isinstance(freeze, dict):
+                raise ValueError("not object")
+        except Exception as exc:  # noqa: BLE001 - receipt must preserve validation problem.
+            freeze = {}
+            failures.append(f"verifier_freeze_receipt_unreadable:{type(exc).__name__}:{exc}")
+    if freeze:
+        if freeze.get("schema") != "CARE_ASE_FAITHFUL_VERIFIER_FREEZE_RECEIPT_V1":
+            failures.append("verifier_freeze_schema")
+        if freeze.get("task_id") != "care-ase-faithful":
+            failures.append("verifier_freeze_task_id")
+        if freeze.get("request_nonce") != request.get("request_nonce") or freeze.get("request_nonce") != current.get("request_nonce"):
+            failures.append("verifier_freeze_nonce")
+        if freeze.get("frozen_contract_sha256") != request.get("frozen_contract_sha256"):
+            failures.append("verifier_freeze_contract_sha")
+        if freeze.get("state_for_controller") != "VERIFIER_FROZEN":
+            failures.append("verifier_freeze_state_for_controller")
+        if freeze.get("executor_may_start_after_controller_freezes_this_commit") is not True:
+            failures.append("verifier_freeze_executor_gate")
+        if freeze.get("protected_known_bad_count") != 24:
+            failures.append("verifier_freeze_known_bad_count")
+        if freeze.get("protected_known_bad_all_nonzero") is not True:
+            failures.append("verifier_freeze_known_bad_nonzero")
+        fingerprint_rel = "results/agent_flow_v3/care-ase-faithful/verification/verifier_fingerprint.json"
+        fingerprint_raw = git_show_text_or_none(verifier_worktree, verifier_head, fingerprint_rel)
+        if fingerprint_raw is None:
+            failures.append("verifier_fingerprint_missing")
+        else:
+            try:
+                fingerprint = json.loads(fingerprint_raw)
+                if not isinstance(fingerprint, dict):
+                    raise ValueError("not object")
+                if fingerprint.get("fingerprint_sha256") != freeze.get("verifier_fingerprint_sha256"):
+                    failures.append("verifier_fingerprint_binding")
+                if fingerprint.get("request_nonce") != request.get("request_nonce"):
+                    failures.append("verifier_fingerprint_nonce")
+                if fingerprint.get("frozen_contract_sha256") != request.get("frozen_contract_sha256"):
+                    failures.append("verifier_fingerprint_contract_sha")
+            except Exception as exc:  # noqa: BLE001
+                failures.append(f"verifier_fingerprint_unreadable:{type(exc).__name__}:{exc}")
+    return failures, {
+        "verifier_head": verifier_head,
+        "merge_base": merge_base,
+        "changed_paths": changed_paths,
+        "freeze": freeze,
+        "freeze_relpath": freeze_rel,
+    }
+
+
+def apply_care_ase_verifier_freeze_controller_update(
+    *,
+    args: argparse.Namespace,
+    repo: Path,
+    request: dict[str, Any],
+    current: dict[str, Any],
+) -> dict[str, Any]:
+    role_plan = load_json((repo / args.controller_role_plan).resolve())
+    verifier = dict(role_plan.get("roles", {}).get("verifier", {}))
+    verifier_worktree = Path(str(verifier.get("worktree", "")))
+    git(verifier_worktree, "fetch", "origin", args.branch, "--prune")
+    verifier_head = git(verifier_worktree, "rev-parse", "HEAD")
+    failures, freeze_status = validate_care_ase_verifier_freeze(
+        verifier_worktree=verifier_worktree,
+        verifier_head=verifier_head,
+        request=request,
+        current=current,
+        role_data=verifier,
+        branch=args.branch,
+    )
+    if failures:
+        raise RuntimeErrorV3("care_ase_verifier_freeze_invalid:" + ",".join(failures))
+
+    head_before = ensure_clean_ff_to_remote(repo, args.branch)
+    subprocess.check_call(
+        ["git", "merge", "--no-ff", "-m", "verification: integrate care ase verifier freeze", verifier_head],
+        cwd=repo,
+    )
+    integration_merge_sha = git(repo, "rev-parse", "HEAD")
+    freeze_rel = str(freeze_status["freeze_relpath"])
+    freeze = dict(freeze_status["freeze"])
+    current_path = repo / "automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json"
+    updated_current = load_json(current_path)
+    updated_current.update(
+        {
+            "state": "VERIFIER_FROZEN",
+            "verifier_fingerprint_sha256": freeze.get("verifier_fingerprint_sha256"),
+            "verifier_freeze_receipt_path": freeze_rel,
+            "verifier_freeze_receipt_sha256": sha_file(repo / freeze_rel),
+            "verifier_freeze_receipt_commit_sha": git(repo, "log", "-1", "--format=%H", "HEAD", "--", freeze_rel),
+            "verifier_branch_head_sha": verifier_head,
+            "verifier_integration_merge_sha": integration_merge_sha,
+            "next_action": "START_EXECUTOR_AFTER_VERIFIER_FREEZE",
+            "updated_utc": now(),
+        }
+    )
+    write_json(current_path, updated_current)
+    integration_receipt_path = repo / "results/agent_flow_v3/care-ase-faithful/verifier_integration_receipt.json"
+    integration_receipt = {
+        "schema": "CARE_AGENT_FLOW_V3_VERIFIER_INTEGRATION_RECEIPT",
+        "task_id": "care-ase-faithful",
+        "request_nonce": current.get("request_nonce"),
+        "frozen_contract_sha256": current.get("frozen_contract_sha256"),
+        "head_before_update": head_before,
+        "verifier_branch_head_sha": verifier_head,
+        "verifier_merge_base": freeze_status.get("merge_base"),
+        "integration_merge_sha": integration_merge_sha,
+        "verifier_fingerprint_sha256": freeze.get("verifier_fingerprint_sha256"),
+        "changed_paths": freeze_status.get("changed_paths"),
+        "state_after_integration": "VERIFIER_FROZEN",
+        "forbidden_actions_confirmed": [
+            "no Planner/Critic decision generated",
+            "no implementation source modified by controller integration",
+            "no training, outer, Docker, upload, organizer email or develop-to-main merge",
+        ],
+        "updated_utc": now(),
+    }
+    write_json(integration_receipt_path, integration_receipt)
+    commit_result = commit_and_push(
+        repo,
+        args.branch,
+        [
+            "automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json",
+            "results/agent_flow_v3/care-ase-faithful/verifier_integration_receipt.json",
+        ],
+        "automation: mark care ase verifier frozen",
+    )
+    return {
+        "status": "APPLIED",
+        "verifier_validation": freeze_status,
+        "integration_receipt_path": str(integration_receipt_path),
+        "commit": commit_result,
+        "updated_utc": now(),
+    }
+
+
+def validate_care_ase_verifier_frozen_for_executor_start(
+    repo: Path,
+    ref: str,
+    request: dict[str, Any],
+    current: dict[str, Any],
+) -> list[str]:
+    failures: list[str] = []
+    if request.get("enabled") is not True:
+        failures.append("request_enabled")
+    if current.get("state") != "VERIFIER_FROZEN":
+        failures.append("current_state")
+    if current.get("request_nonce") != request.get("request_nonce"):
+        failures.append("request_nonce")
+    if current.get("frozen_contract_sha256") != request.get("frozen_contract_sha256"):
+        failures.append("frozen_contract_sha256")
+    freeze_path = str(current.get("verifier_freeze_receipt_path") or care_ase_verifier_freeze_relpath())
+    freeze_raw = git_show_text_or_none(repo, ref, freeze_path)
+    if freeze_raw is None:
+        failures.append("verifier_freeze_receipt_missing")
+        return failures
+    freeze_sha = sha_bytes(freeze_raw.encode("utf-8"))
+    if current.get("verifier_freeze_receipt_sha256") and freeze_sha != current.get("verifier_freeze_receipt_sha256"):
+        failures.append("verifier_freeze_receipt_sha256")
+    try:
+        freeze = json.loads(freeze_raw)
+        if not isinstance(freeze, dict):
+            raise ValueError("not object")
+    except Exception as exc:  # noqa: BLE001
+        failures.append(f"verifier_freeze_receipt_unreadable:{type(exc).__name__}:{exc}")
+        return failures
+    if freeze.get("state_for_controller") != "VERIFIER_FROZEN":
+        failures.append("verifier_freeze_state")
+    if freeze.get("executor_may_start_after_controller_freezes_this_commit") is not True:
+        failures.append("verifier_freeze_executor_gate")
+    if freeze.get("verifier_fingerprint_sha256") != current.get("verifier_fingerprint_sha256"):
+        failures.append("verifier_fingerprint_sha256")
+    return failures
+
+
+def build_care_ase_executor_start_prompt(current: dict[str, Any]) -> bytes:
+    prompt = f"""/goal You are the independent Executor for CARE Agent-Flow v3 task care-ase-faithful.
+
+This is an implementation turn in the isolated Executor worktree. Read and obey:
+- AGENTS.md
+- START_HERE_FOR_GPT.md
+- GPT_PLANNER_CARE_PROTOCOL.md
+- prompts/AGENT_FLOW_V3_PROTOCOL.md
+- prompts/tasks/20260805_care_ase_develop_faithful_reimplementation_role_plan.json
+- automation/agent_flow_v3/tasks/care-ase-faithful/REQUEST.json
+- automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json
+- automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md
+- results/agent_flow_v3/care-ase-faithful/verification/verifier_freeze_receipt.json
+- results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json
+
+Current verified binding:
+- request_nonce: {current.get("request_nonce")}
+- frozen_contract_sha256: {current.get("frozen_contract_sha256")}
+- verifier_fingerprint_sha256: {current.get("verifier_fingerprint_sha256")}
+- CURRENT.state: {current.get("state")}
+
+Implement CARE-ASE faithfully against the frozen contract and the Verifier package. You may edit only the Executor role write scope: src, scripts/training, scripts/inference, jobs, configs, and results/agent_flow_v3/care-ase-faithful/implementation. You must not edit tests, validators, automation schema, blueprints, Planner/Critic artifacts, or the frozen contract.
+
+Do not train, access outer data, build or upload Docker, upload validation/challenge results, send organizer email, hand-write Planner/Critic decisions, use --last, or use TUI key injection. Commit implementation-only changes on the local Executor branch. Do not push develop; Controller owns integration and push.
+
+If implementation cannot proceed under the contract, write a fail-closed implementation receipt with the concrete cause before ending.
+"""
+    return prompt.encode("utf-8")
+
+
+def start_care_ase_executor_from_verifier_freeze(
+    *,
+    args: argparse.Namespace,
+    repo: Path,
+    ref: str,
+    request: dict[str, Any],
+    current: dict[str, Any],
+) -> dict[str, Any]:
+    failures = validate_care_ase_verifier_frozen_for_executor_start(repo, ref, request, current)
+    state_root = args.state_root.resolve().parent
+    receipt_path = care_ase_role_launch_receipt_path(args.state_root, "executor")
+    task_state_dir = state_root / "care-ase-faithful"
+    task_state_dir.mkdir(parents=True, exist_ok=True)
+    target = tmux_target(args.executor_tmux_session, args.executor_tmux_window)
+    if failures:
+        receipt = {
+            "schema": CONTROLLER_START_RECEIPT_SCHEMA,
+            "status": "INVALID_VERIFIER_FROZEN",
+            "task_id": "care-ase-faithful",
+            "role": "executor",
+            "request_nonce": current.get("request_nonce"),
+            "frozen_contract_sha256": current.get("frozen_contract_sha256"),
+            "failures": failures,
+            "target": target,
+            "updated_utc": now(),
+        }
+        write_json(receipt_path, receipt)
+        raise RuntimeErrorV3("care_ase_executor_start_invalid:" + ",".join(failures))
+
+    role_plan = load_json((repo / args.controller_role_plan).resolve())
+    executor = dict(role_plan.get("roles", {}).get("executor", {}))
+    worktree = Path(str(executor.get("worktree", "")))
+    codex_home = str(executor.get("codex_home", ""))
+    thread_file = Path(str(executor.get("thread_id_file", "")))
+    thread_id = thread_file.read_text(encoding="utf-8").strip() if thread_file.is_file() else ""
+    thread_initialization = None
+    if not thread_id or previous_role_launch_failed_no_rollout(args.state_root, "executor"):
+        thread_initialization = create_initial_role_thread(
+            codex_bin=args.codex_bin,
+            worktree=worktree,
+            codex_home=codex_home,
+            role="executor",
+            thread_file=thread_file,
+        )
+        thread_id = str(thread_initialization["thread_id"])
+    command = build_controller_start_command(args.codex_bin, worktree, thread_id)
+    prompt_payload = build_care_ase_executor_start_prompt(current)
+    prompt_sha = sha_bytes(prompt_payload)
+    stamp = now().replace(":", "").replace("-", "")
+    prompt_path = task_state_dir / f"executor_start_prompt_{stamp}.md"
+    stdout_path = task_state_dir / f"executor_start_{stamp}.stdout.log"
+    stderr_path = task_state_dir / f"executor_start_{stamp}.stderr.log"
+    prompt_path.write_bytes(prompt_payload)
+
+    head_after_ff = ensure_role_worktree_current(worktree, args.branch)
+    shell_command = (
+        f"CODEX_HOME={shlex.quote(codex_home)} "
+        f"CODEX_PERSISTENT_HOME={shlex.quote(codex_home)} "
+        f"{shlex.join(command)} "
+        f"< {shlex.quote(str(prompt_path))} "
+        f"> {shlex.quote(str(stdout_path))} "
+        f"2> {shlex.quote(str(stderr_path))}"
+    )
+
+    if tmux_window_exists(args.executor_tmux_session, args.executor_tmux_window) and process_has_child(tmux_pane_pid(args.executor_tmux_session, args.executor_tmux_window)):
+        pane_pid = tmux_pane_pid(args.executor_tmux_session, args.executor_tmux_window)
+        status = "ALREADY_RUNNING"
+    else:
+        if tmux_window_exists(args.executor_tmux_session, args.executor_tmux_window):
+            subprocess.run(["tmux", "kill-window", "-t", target], check=False)
+        if subprocess.run(["tmux", "has-session", "-t", args.executor_tmux_session], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False).returncode != 0:
+            tmux_cmd = ["tmux", "new-session", "-d", "-s", args.executor_tmux_session, "-n", args.executor_tmux_window, shell_command]
+        else:
+            tmux_cmd = ["tmux", "new-window", "-d", "-t", args.executor_tmux_session, "-n", args.executor_tmux_window, shell_command]
+        subprocess.check_call(tmux_cmd)
+        time.sleep(1)
+        pane_pid = tmux_pane_pid(args.executor_tmux_session, args.executor_tmux_window)
+        status = "STARTED"
+
+    receipt = {
+        "schema": CONTROLLER_START_RECEIPT_SCHEMA,
+        "status": status,
+        "task_id": "care-ase-faithful",
+        "role": "executor",
+        "request_nonce": current.get("request_nonce"),
+        "frozen_contract_sha256": current.get("frozen_contract_sha256"),
+        "verifier_fingerprint_sha256": current.get("verifier_fingerprint_sha256"),
+        "target": target,
+        "pane_pid": pane_pid,
+        "thread_id": thread_id,
+        "thread_initialization": thread_initialization,
+        "codex_home": codex_home,
+        "worktree": str(worktree),
+        "worktree_head_after_ff": head_after_ff,
+        "command": shell_command,
+        "prompt_path": str(prompt_path),
+        "prompt_sha256": prompt_sha,
+        "stdout_log": str(stdout_path),
+        "stderr_log": str(stderr_path),
+        "failures": [],
+        "forbidden_actions_confirmed": [
+            "no Planner/Critic decision generated",
+            "no verifier source modified by orchestrator",
+            "no --last resume",
+            "no TUI key injection",
+            "no training, outer, Docker, upload, organizer email or develop-to-main merge",
+        ],
+        "updated_utc": now(),
+    }
+    write_json(receipt_path, receipt)
+    write_json(active_process_path(state_root, "care-ase-faithful", "executor"), {**receipt, "pid": pane_pid, "exit_code": None})
+    return receipt
+
+
 def stage_event_should_mark_processed(event: dict[str, Any]) -> bool:
     if event.get("decision") == "STOP_AT_HUMAN_GATE":
         return True
     if event.get("decision") != "STAGE_READY":
         return False
-    return not (event.get("task_id") == "care-ase-faithful" and event.get("state") == "PLAN_FROZEN")
+    return not (
+        event.get("task_id") == "care-ase-faithful"
+        and event.get("state") in {"PLAN_FROZEN", "VERIFIER_FROZEN"}
+    )
 
 
 def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, Any]:
@@ -1764,6 +2145,53 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
                     "updated_utc": now(),
                 }
                 event["failures"] = list(event.get("failures", [])) + ["controller_update_failed"]
+        elif (
+            event["decision"] == "CONTROLLER_UPDATE_REQUIRED"
+            and task_id == "care-ase-faithful"
+            and event["state"] == "VERIFIER_RUNNING"
+        ):
+            try:
+                event["action_result"] = apply_care_ase_verifier_freeze_controller_update(
+                    args=args,
+                    repo=repo,
+                    request=request,
+                    current=current,
+                )
+                event["decision"] = "CONTROLLER_UPDATE_APPLIED"
+                event["action"] = "Verifier freeze validated, integrated, pushed, and CURRENT moved to VERIFIER_FROZEN"
+                processed.add(event["event_key"])
+                event["remote_sha_after_controller_update"] = remote_head(repo, args.branch)
+            except Exception as exc:  # noqa: BLE001 - keep polling; do not fake verifier freeze.
+                event["action_result"] = {
+                    "status": "FAILED",
+                    "error": f"{type(exc).__name__}: {exc}",
+                    "updated_utc": now(),
+                }
+                event["failures"] = list(event.get("failures", [])) + ["verifier_freeze_integration_failed"]
+        elif (
+            event["decision"] == "STAGE_READY"
+            and task_id == "care-ase-faithful"
+            and event["state"] == "VERIFIER_FROZEN"
+        ):
+            try:
+                event["action_result"] = start_care_ase_executor_from_verifier_freeze(
+                    args=args,
+                    repo=repo,
+                    ref=ref,
+                    request=request,
+                    current=current,
+                )
+            except Exception as exc:  # noqa: BLE001 - keep polling; do not mark failed executor start processed.
+                event["action_result"] = {
+                    "status": "FAILED",
+                    "error": f"{type(exc).__name__}: {exc}",
+                    "updated_utc": now(),
+                }
+                event["failures"] = list(event.get("failures", [])) + ["executor_start_failed"]
+            if care_ase_role_launch_satisfied(args.state_root, current, "executor"):
+                event["decision"] = "EXECUTOR_START_APPLIED"
+                event["action"] = "VERIFIER_FROZEN validated; Executor exact session active"
+                processed.add(event["event_key"])
         task_events.append(event)
     receipt = {
         "schema": ORCHESTRATOR_RECEIPT_SCHEMA,
@@ -2551,6 +2979,8 @@ def parser() -> argparse.ArgumentParser:
         q.add_argument("--controller-tmux-window", default="Controller-care-ase-faithful")
         q.add_argument("--verifier-tmux-session", default="care_agent_flow_v3")
         q.add_argument("--verifier-tmux-window", default="Verifier-care-ase-faithful")
+        q.add_argument("--executor-tmux-session", default="care_agent_flow_v3")
+        q.add_argument("--executor-tmux-window", default="Executor-care-ase-faithful")
 
     q = sub.add_parser("stage-orchestrator-once")
     add_orchestrator_args(q)

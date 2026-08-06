@@ -300,6 +300,55 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         }
         self.assertTrue(RUNTIME.stage_event_should_mark_processed(visual_event))
 
+    def test_care_ase_verifier_running_routes_to_freeze_integration(self) -> None:
+        current = {
+            "task_id": "care-ase-faithful",
+            "request_nonce": "care-ase-nonce",
+            "review_round": 0,
+            "state": "VERIFIER_RUNNING",
+            "frozen_contract_sha256": "a" * 64,
+        }
+
+        receipt = RUNTIME.evaluate_stage_event(
+            task_id="care-ase-faithful",
+            request={"enabled": True, "request_nonce": "care-ase-nonce", "frozen_contract_sha256": "a" * 64},
+            current=current,
+            visual_final=None,
+            remote_sha="b" * 40,
+            processed=set(),
+            default_wait_hours=4,
+        )
+
+        self.assertEqual(receipt["decision"], "CONTROLLER_UPDATE_REQUIRED")
+        self.assertIn("Verifier freeze", receipt["action"])
+
+    def test_care_ase_verifier_frozen_is_not_processed_without_executor_start(self) -> None:
+        event = {
+            "task_id": "care-ase-faithful",
+            "state": "VERIFIER_FROZEN",
+            "decision": "STAGE_READY",
+        }
+
+        self.assertFalse(RUNTIME.stage_event_should_mark_processed(event))
+
+    def test_role_commit_scope_rejects_forbidden_or_outside_paths(self) -> None:
+        role_data = {
+            "write_scope": ["tests/**", "validators/**", "results/agent_flow_v3/care-ase-faithful/verification/**"],
+            "forbidden_scope": ["src/**", "jobs/**"],
+        }
+
+        failures = RUNTIME.validate_role_commit_scope(
+            [
+                "tests/care_ase_faithful/test_verifier_package.py",
+                "src/care_myocardium/model.py",
+                "docs/unowned.md",
+            ],
+            role_data,
+        )
+
+        self.assertIn("forbidden_path:src/care_myocardium/model.py", failures)
+        self.assertIn("outside_write_scope:docs/unowned.md", failures)
+
     def test_controller_start_command_uses_exact_thread_without_last(self) -> None:
         command = RUNTIME.build_controller_start_command(
             "/opt/codex",
