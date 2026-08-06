@@ -32,6 +32,7 @@ VISUAL_RECEIPT_SCHEMA = "CARE_AGENT_FLOW_V3_VISUAL_SOURCE_ACCESS_RECEIPT"
 VISUAL_SMOKE_FINAL_SCHEMA = "CARE_AGENT_FLOW_V3_VISUAL_SMOKE_FINAL"
 ORCHESTRATOR_STATE_SCHEMA = "CARE_AGENT_FLOW_V3_STAGE_ORCHESTRATOR_STATE"
 ORCHESTRATOR_RECEIPT_SCHEMA = "CARE_AGENT_FLOW_V3_STAGE_ORCHESTRATOR_RECEIPT"
+CONTROLLER_START_RECEIPT_SCHEMA = "CARE_AGENT_FLOW_V3_CONTROLLER_START_RECEIPT"
 SHA40_RE = re.compile(r"^[0-9a-f]{40}$")
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 CODEX_ROLES = ("controller", "verifier", "executor")
@@ -338,6 +339,12 @@ def build_resume_command(codex_bin: str, worktree: Path, thread_id: str) -> list
     if not thread_id:
         raise RuntimeErrorV3("missing exact thread id")
     return [codex_bin, "exec", "-C", str(worktree), "resume", "--all", thread_id, "-"]
+
+
+def build_controller_start_command(codex_bin: str, worktree: Path, thread_id: str) -> list[str]:
+    if not thread_id:
+        raise RuntimeErrorV3("missing exact controller thread id")
+    return [codex_bin, "exec", "-C", str(worktree), "resume", thread_id, "-"]
 
 
 def resume_command_worktree(command: list[str]) -> Path | None:
@@ -795,6 +802,56 @@ def tmux_target(session: str, window: str) -> str:
     return f"{session}:{window}"
 
 
+def tmux_window_exists(session: str, window: str) -> bool:
+    existing = subprocess.run(
+        ["tmux", "list-windows", "-t", session, "-F", "#{window_name}"],
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    return existing.returncode == 0 and window in existing.stdout.splitlines()
+
+
+def tmux_pane_pid(session: str, window: str) -> int | None:
+    cp = subprocess.run(
+        ["tmux", "display-message", "-p", "-t", tmux_target(session, window), "#{pane_pid}"],
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    if cp.returncode != 0:
+        return None
+    try:
+        return int(cp.stdout.strip())
+    except ValueError:
+        return None
+
+
+def care_ase_controller_start_receipt_path(stage_state_root: Path) -> Path:
+    return stage_state_root.resolve().parent / "care-ase-faithful" / "controller_start_receipt.json"
+
+
+def care_ase_controller_start_satisfied(stage_state_root: Path, current: dict[str, Any]) -> bool:
+    receipt_path = care_ase_controller_start_receipt_path(stage_state_root)
+    if not receipt_path.is_file():
+        return False
+    try:
+        receipt = load_json(receipt_path)
+    except RuntimeErrorV3:
+        return False
+    if receipt.get("schema") != CONTROLLER_START_RECEIPT_SCHEMA:
+        return False
+    if receipt.get("task_id") != "care-ase-faithful":
+        return False
+    if receipt.get("request_nonce") != current.get("request_nonce"):
+        return False
+    if receipt.get("frozen_contract_sha256") != current.get("frozen_contract_sha256"):
+        return False
+    return receipt.get("status") in {"STARTED", "ALREADY_RUNNING"}
+
+
 def resolve_watcher_paths(args: argparse.Namespace) -> argparse.Namespace:
     task_dir = f"automation/agent_flow_v3/tasks/{args.task_id}"
     if not args.request_path:
@@ -1110,6 +1167,239 @@ def apply_smoke_b_pass_controller_update(repo: Path, branch: str) -> dict[str, A
     }
 
 
+def visual_source_sha_map(visual_sources: dict[str, Any]) -> dict[str, str]:
+    return {
+        str(source["name"]): str(source["sha256"])
+        for source in visual_sources.get("sources", [])
+        if isinstance(source, dict) and isinstance(source.get("name"), str) and isinstance(source.get("sha256"), str)
+    }
+
+
+def validate_care_ase_plan_frozen_for_controller_start(
+    repo: Path,
+    ref: str,
+    request: dict[str, Any],
+    current: dict[str, Any],
+) -> list[str]:
+    failures: list[str] = []
+    if request.get("enabled") is not True:
+        failures.append("request_enabled")
+    if request.get("task_id") != "care-ase-faithful" or current.get("task_id") != "care-ase-faithful":
+        failures.append("task_id")
+    if current.get("state") != "PLAN_FROZEN":
+        failures.append("current_state")
+    if current.get("request_nonce") != request.get("request_nonce"):
+        failures.append("request_nonce")
+    if current.get("critic_decision") != "PLAN_FROZEN":
+        failures.append("critic_decision")
+    frozen_contract_path = str(current.get("frozen_contract_path") or request.get("frozen_contract_path") or "")
+    frozen_contract_sha = str(current.get("frozen_contract_sha256") or "")
+    if not frozen_contract_path:
+        failures.append("frozen_contract_path")
+    if frozen_contract_sha != request.get("frozen_contract_sha256"):
+        failures.append("frozen_contract_request_binding")
+    contract_payload = git_show_bytes_or_none(repo, ref, frozen_contract_path) if frozen_contract_path else None
+    if contract_payload is None:
+        failures.append("frozen_contract_missing")
+    elif sha_bytes(contract_payload) != frozen_contract_sha:
+        failures.append("frozen_contract_sha256")
+
+    visual_sources_path = str(request.get("visual_sources_path") or "automation/agent_flow_v3/tasks/care-ase-faithful/VISUAL_SOURCES.json")
+    try:
+        visual_sources = git_show_json(repo, ref, visual_sources_path)
+        expected_shas = visual_source_sha_map(visual_sources)
+    except Exception as exc:  # noqa: BLE001 - preserve exact validation failure for receipt.
+        expected_shas = {}
+        failures.append(f"visual_sources:{type(exc).__name__}")
+
+    freeze_path = str(current.get("critic_freeze_receipt_path") or "")
+    freeze_raw = git_show_text_or_none(repo, ref, freeze_path) if freeze_path else None
+    if not freeze_path:
+        failures.append("critic_freeze_receipt_path")
+    if freeze_raw is None:
+        failures.append("critic_freeze_receipt_missing")
+    else:
+        freeze_sha = sha_bytes(freeze_raw.encode("utf-8"))
+        if freeze_sha != current.get("critic_freeze_receipt_sha256"):
+            failures.append("critic_freeze_receipt_sha256")
+        try:
+            freeze = json.loads(freeze_raw)
+            if not isinstance(freeze, dict):
+                raise ValueError("not object")
+            failures.extend(
+                "critic_freeze:" + failure
+                for failure in validate_critic_freeze_receipt(
+                    freeze,
+                    expected_task_id="care-ase-faithful",
+                    request_nonce=str(current.get("request_nonce") or ""),
+                    expected_contract_sha=frozen_contract_sha,
+                    expected_visual_receipt_commit_sha=str(current.get("critic_visual_receipt_commit_sha") or ""),
+                    expected_shas=expected_shas,
+                )
+            )
+        except Exception as exc:  # noqa: BLE001 - preserve exact validation failure for receipt.
+            failures.append(f"critic_freeze_unreadable:{type(exc).__name__}:{exc}")
+    return failures
+
+
+def build_care_ase_controller_start_prompt(
+    *,
+    repo: Path,
+    ref: str,
+    request: dict[str, Any],
+    current: dict[str, Any],
+) -> bytes:
+    contract_path = str(current.get("frozen_contract_path") or request.get("frozen_contract_path"))
+    contract_text = git_show_text_or_none(repo, ref, contract_path) or ""
+    prompt = f"""You are the CARE Agent-Flow v3 Controller for care-ase-faithful.
+
+Read and obey the current repository rules and protocol before acting:
+- AGENTS.md
+- START_HERE_FOR_GPT.md
+- GPT_PLANNER_CARE_PROTOCOL.md
+- prompts/AGENT_FLOW_V3_PROTOCOL.md
+- prompts/tasks/20260805_care_ase_develop_faithful_reimplementation_role_plan.json
+- automation/agent_flow_v3/tasks/care-ase-faithful/REQUEST.json
+- automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json
+- automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md
+
+Current verified state:
+- task_id: care-ase-faithful
+- request_nonce: {current.get("request_nonce")}
+- integration_branch: develop
+- CURRENT.state: {current.get("state")}
+- frozen_contract_sha256: {current.get("frozen_contract_sha256")}
+- critic_decision: {current.get("critic_decision")}
+
+Your role is Controller only. You may coordinate, verify, integrate, commit, and push develop when the protocol authorizes it. You must not directly edit Executor implementation files or Verifier test files. Start the independent Verifier first; after Verifier freezes a real fail-closed contract, start the independent Executor. Preserve exact role separation, use the configured role worktrees and CODEX_HOME values, and record thread IDs, prompts, commits, CI, and state transitions under results/agent_flow_v3/care-ase-faithful/.
+
+Forbidden for this goal: training, outer access, Docker build/upload, validation/challenge upload, organizer email, develop-to-main merge, hand-written Planner/Critic decisions, fake receipts, --last resume, and TUI key injection.
+
+Frozen contract follows. Treat it as binding source text, not as optional guidance.
+
+```markdown
+{contract_text}
+```
+"""
+    return prompt.encode("utf-8")
+
+
+def ensure_role_worktree_current(worktree: Path, branch: str) -> str:
+    if not worktree.is_dir():
+        raise RuntimeErrorV3(f"controller_worktree_missing:{worktree}")
+    if git_status_short(worktree):
+        raise RuntimeErrorV3(f"controller_worktree_dirty:{worktree}")
+    git(worktree, "fetch", "origin", branch, "--prune")
+    git(worktree, "merge", "--ff-only", f"origin/{branch}")
+    return git(worktree, "rev-parse", "HEAD")
+
+
+def start_care_ase_controller_from_frozen_contract(
+    *,
+    args: argparse.Namespace,
+    repo: Path,
+    ref: str,
+    request: dict[str, Any],
+    current: dict[str, Any],
+) -> dict[str, Any]:
+    failures = validate_care_ase_plan_frozen_for_controller_start(repo, ref, request, current)
+    state_root = args.state_root.resolve().parent
+    receipt_path = care_ase_controller_start_receipt_path(args.state_root)
+    task_state_dir = state_root / "care-ase-faithful"
+    task_state_dir.mkdir(parents=True, exist_ok=True)
+    target = tmux_target(args.controller_tmux_session, args.controller_tmux_window)
+    if failures:
+        receipt = {
+            "schema": CONTROLLER_START_RECEIPT_SCHEMA,
+            "status": "INVALID_PLAN_FROZEN",
+            "task_id": "care-ase-faithful",
+            "request_nonce": current.get("request_nonce"),
+            "frozen_contract_sha256": current.get("frozen_contract_sha256"),
+            "failures": failures,
+            "target": target,
+            "updated_utc": now(),
+        }
+        write_json(receipt_path, receipt)
+        raise RuntimeErrorV3("care_ase_controller_start_invalid:" + ",".join(failures))
+
+    role_plan = load_json((repo / args.controller_role_plan).resolve())
+    controller = dict(role_plan.get("roles", {}).get("controller", {}))
+    worktree = Path(str(controller.get("worktree", "")))
+    codex_home = str(controller.get("codex_home", ""))
+    thread_file = Path(str(controller.get("thread_id_file", "")))
+    thread_id = thread_file.read_text(encoding="utf-8").strip() if thread_file.is_file() else ""
+    command = build_controller_start_command(args.codex_bin, worktree, thread_id)
+    prompt_payload = build_care_ase_controller_start_prompt(repo=repo, ref=ref, request=request, current=current)
+    prompt_sha = sha_bytes(prompt_payload)
+    stamp = now().replace(":", "").replace("-", "")
+    prompt_path = task_state_dir / f"controller_start_prompt_{stamp}.md"
+    stdout_path = task_state_dir / f"controller_start_{stamp}.stdout.log"
+    stderr_path = task_state_dir / f"controller_start_{stamp}.stderr.log"
+    prompt_path.write_bytes(prompt_payload)
+
+    head_after_ff = ensure_role_worktree_current(worktree, args.branch)
+    shell_command = (
+        f"CODEX_HOME={shlex.quote(codex_home)} "
+        f"CODEX_PERSISTENT_HOME={shlex.quote(codex_home)} "
+        f"{shlex.join(command)} "
+        f"< {shlex.quote(str(prompt_path))} "
+        f"> {shlex.quote(str(stdout_path))} "
+        f"2> {shlex.quote(str(stderr_path))}"
+    )
+
+    if tmux_window_exists(args.controller_tmux_session, args.controller_tmux_window):
+        pane_pid = tmux_pane_pid(args.controller_tmux_session, args.controller_tmux_window)
+        status = "ALREADY_RUNNING"
+    else:
+        if subprocess.run(["tmux", "has-session", "-t", args.controller_tmux_session], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False).returncode != 0:
+            tmux_cmd = ["tmux", "new-session", "-d", "-s", args.controller_tmux_session, "-n", args.controller_tmux_window, shell_command]
+        else:
+            tmux_cmd = ["tmux", "new-window", "-d", "-t", args.controller_tmux_session, "-n", args.controller_tmux_window, shell_command]
+        subprocess.check_call(tmux_cmd)
+        time.sleep(1)
+        pane_pid = tmux_pane_pid(args.controller_tmux_session, args.controller_tmux_window)
+        status = "STARTED"
+
+    receipt = {
+        "schema": CONTROLLER_START_RECEIPT_SCHEMA,
+        "status": status,
+        "task_id": "care-ase-faithful",
+        "request_nonce": current.get("request_nonce"),
+        "frozen_contract_sha256": current.get("frozen_contract_sha256"),
+        "target": target,
+        "pane_pid": pane_pid,
+        "thread_id": thread_id,
+        "codex_home": codex_home,
+        "worktree": str(worktree),
+        "worktree_head_after_ff": head_after_ff,
+        "command": shell_command,
+        "prompt_path": str(prompt_path),
+        "prompt_sha256": prompt_sha,
+        "stdout_log": str(stdout_path),
+        "stderr_log": str(stderr_path),
+        "failures": [],
+        "forbidden_actions_confirmed": [
+            "no Planner/Critic decision generated",
+            "no Verifier/Executor source modified by orchestrator",
+            "no --last resume",
+            "no TUI key injection",
+            "no training, outer, Docker, upload, organizer email or develop-to-main merge",
+        ],
+        "updated_utc": now(),
+    }
+    write_json(receipt_path, receipt)
+    write_json(active_process_path(state_root, "care-ase-faithful", "controller"), {**receipt, "pid": pane_pid, "exit_code": None})
+    return receipt
+
+
+def stage_event_should_mark_processed(event: dict[str, Any]) -> bool:
+    if event.get("decision") == "STOP_AT_HUMAN_GATE":
+        return True
+    if event.get("decision") != "STAGE_READY":
+        return False
+    return not (event.get("task_id") == "care-ase-faithful" and event.get("state") == "PLAN_FROZEN")
+
+
 def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, Any]:
     repo = args.repo_root.resolve()
     git(repo, "fetch", "origin", args.branch, "--prune")
@@ -1130,6 +1420,14 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
             current,
             dict(local_state.get("waits", {})).get(task_id),
         )
+        event_key = stage_event_key(task_id, current, remote_sha)
+        if (
+            task_id == "care-ase-faithful"
+            and current.get("state") == "PLAN_FROZEN"
+            and stage_event_was_processed(event_key, processed)
+            and not care_ase_controller_start_satisfied(args.state_root, current)
+        ):
+            processed = {key for key in processed if not key.startswith(event_key)}
         visual_final = None
         visual_final_path = f"results/agent_flow_v3/{task_id}/visual_smoke_final.json"
         raw_visual_final = git_show_text_or_none(repo, ref, visual_final_path)
@@ -1149,8 +1447,31 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
             processed=processed,
             default_wait_hours=max(4, int(args.default_wait_hours)),
         )
-        if event["decision"] in {"STAGE_READY", "STOP_AT_HUMAN_GATE"}:
+        if stage_event_should_mark_processed(event):
             processed.add(event["event_key"])
+        elif (
+            event["decision"] == "STAGE_READY"
+            and task_id == "care-ase-faithful"
+            and event["state"] == "PLAN_FROZEN"
+        ):
+            try:
+                event["action_result"] = start_care_ase_controller_from_frozen_contract(
+                    args=args,
+                    repo=repo,
+                    ref=ref,
+                    request=request,
+                    current=current,
+                )
+                event["decision"] = "CONTROLLER_START_APPLIED"
+                event["action"] = "PLAN_FROZEN validated and persistent CARE-ASE Controller started"
+                processed.add(event["event_key"])
+            except Exception as exc:  # noqa: BLE001 - keep polling; do not mark failed start processed.
+                event["action_result"] = {
+                    "status": "FAILED",
+                    "error": f"{type(exc).__name__}: {exc}",
+                    "updated_utc": now(),
+                }
+                event["failures"] = list(event.get("failures", [])) + ["controller_start_failed"]
         elif (
             event["decision"] == "CONTROLLER_UPDATE_REQUIRED"
             and task_id == "gpt-loop-smoke-b"
@@ -1947,6 +2268,13 @@ def parser() -> argparse.ArgumentParser:
         q.add_argument("--poll-seconds", type=int, default=60)
         q.add_argument("--default-wait-hours", type=int, default=4)
         q.add_argument("--output", type=Path, default=Path("/users/a/e/aereinh/.agent-flow-v3/stage_orchestrator/stage_orchestrator_receipt.json"))
+        q.add_argument("--codex-bin", default="/users/a/e/aereinh/codex-runtime/bin/codex")
+        q.add_argument(
+            "--controller-role-plan",
+            default="prompts/tasks/20260805_care_ase_develop_faithful_reimplementation_role_plan.json",
+        )
+        q.add_argument("--controller-tmux-session", default="care_agent_flow_v3")
+        q.add_argument("--controller-tmux-window", default="Controller-care-ase-faithful")
 
     q = sub.add_parser("stage-orchestrator-once")
     add_orchestrator_args(q)

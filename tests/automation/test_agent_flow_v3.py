@@ -284,6 +284,35 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         )
         self.assertEqual(receipt["decision"], "IGNORE_PROCESSED")
 
+    def test_care_ase_plan_frozen_is_not_processed_without_controller_start(self) -> None:
+        event = {
+            "task_id": "care-ase-faithful",
+            "state": "PLAN_FROZEN",
+            "decision": "STAGE_READY",
+        }
+
+        self.assertFalse(RUNTIME.stage_event_should_mark_processed(event))
+
+        visual_event = {
+            "task_id": "care-visual-smoke",
+            "state": "PLAN_FROZEN",
+            "decision": "STAGE_READY",
+        }
+        self.assertTrue(RUNTIME.stage_event_should_mark_processed(visual_event))
+
+    def test_controller_start_command_uses_exact_thread_without_last(self) -> None:
+        command = RUNTIME.build_controller_start_command(
+            "/opt/codex",
+            Path("/tmp/controller-worktree"),
+            "thread-123",
+        )
+
+        self.assertEqual(
+            command,
+            ["/opt/codex", "exec", "-C", "/tmp/controller-worktree", "resume", "thread-123", "-"],
+        )
+        self.assertNotIn("--last", command)
+
     def test_orchestrator_routes_smoke_b_planner_pass_to_care_ase_activation(self) -> None:
         current = {
             "request_nonce": "smoke-b-nonce",
