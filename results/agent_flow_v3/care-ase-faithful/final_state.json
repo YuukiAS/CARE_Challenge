@@ -2,19 +2,19 @@
   "schema": "CARE_AGENT_FLOW_V3_FINAL_STATE",
   "task_id": "care-ase-faithful",
   "controller_task": "20260805_care_ase_develop_faithful_reimplementation_controller",
-  "final_status": "blocked",
-  "controller_verification_decision": "OPERATIONALLY_BLOCKED",
-  "blocked_or_failure_reason": "Agent-Flow v3 local infrastructure advanced and deterministic smoke A passed. The real Scheduled Planner visual receipt is valid, but no real Scheduled Critic visual receipt appeared on origin/develop after two complete scheduling windows. Visual smoke therefore did not pass, Smoke B was not authorized to start, and the true CARE-ASE request remains disabled.",
+  "final_status": "superseded_nonterminal",
+  "controller_verification_decision": "SUPERSEDED_BY_LATER_CRITIC_FREEZE",
+  "blocked_or_failure_reason": "The earlier blocked conclusion is superseded. origin/develop now contains a valid Scheduled Critic visual receipt and critic_freeze_receipt bound to the same nonce, image SHAs and frozen contract SHA. Visual smoke is now PASS; Smoke B may proceed, while the true CARE-ASE request remains disabled until Smoke B reaches PLANNER_PASS.",
   "visual_source_access_status": "PASS_11_LOCAL_AND_RAW_SHA_MATCH",
   "independent_visual_observation_status": "PASS_NOT_SCHEDULED_GPT",
-  "scheduled_visual_smoke_status": "PARTIAL_PLANNER_VALID_CRITIC_MISSING_AFTER_TWO_WINDOWS",
+  "scheduled_visual_smoke_status": "PASS_SUPERSEDES_PRIOR_BLOCKED_SNAPSHOT",
   "role_session_smoke_status": "PASS_CLI_THREADS_CREATED_NOT_LIVE_CARE_ASE_ROLES",
   "watcher_smoke_a_status": "PASS_DRY_RUN_EXACT_WAKE_AND_NEGATIVES",
-  "gpt_loop_smoke_b_status": "NOT_RUN_VISUAL_SMOKE_BLOCKED",
+  "gpt_loop_smoke_b_status": "PENDING_AFTER_VISUAL_SMOKE_PASS",
   "care_ase_request_enabled": false,
   "care_ase_current_state": "PLAN_REQUESTED",
   "care_ase_auto_loop_started": false,
-  "develop_push_status": "complete_before_notifier_after_origin_develop_sha_verification",
+  "develop_push_status": "pending_current_goal_resume",
   "main_push_status": "not_applicable_no_main_update",
   "forbidden_actions_observed": {
     "care_ase_implementation_started": false,
@@ -24,5 +24,5 @@
     "develop_to_main_merge_started": false,
     "organizer_email_sent": false
   },
-  "updated_utc": "2026-08-06T05:21:00Z"
+  "updated_utc": "2026-08-06T06:21:00Z"
 }

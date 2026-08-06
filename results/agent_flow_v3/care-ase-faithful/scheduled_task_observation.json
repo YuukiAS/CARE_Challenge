@@ -8,13 +8,15 @@
     "results/agent_flow_v3/care-ase-faithful/visual_smoke/planner_visual_observation_receipt.json",
     "results/agent_flow_v3/care-ase-faithful/visual_smoke/critic_visual_observation_receipt.json"
   ],
-  "scheduled_visual_smoke_status": "PARTIAL_PLANNER_VALID_CRITIC_MISSING_AFTER_TWO_WINDOWS",
+  "scheduled_visual_smoke_status": "PASS_SUPERSEDES_PRIOR_BLOCKED_SNAPSHOT",
   "scheduled_planner_receipt_commit_sha": "182dc161fc3c6d39495e2e192c8c8f9137702bba",
-  "scheduled_critic_receipt_observed": false,
+  "scheduled_critic_receipt_observed": true,
+  "scheduled_critic_receipt_commit_sha": "bc60c4d90d272aa25539fef4263282ceaf40faf4",
+  "scheduled_critic_freeze_receipt_commit_sha": "1f0ad73d685278599764147f0380e4faea813545",
   "visual_smoke_observation_path": "results/agent_flow_v3/care-visual-smoke/visual_smoke_final.json",
   "minimum_wait_windows_required": 2,
   "minimum_wait_windows_completed": 2,
   "care_ase_request_arm_decision": "DO_NOT_ARM",
-  "blocked_or_failure_reason": "The contract requires both real Scheduled Planner and real Scheduled Critic visual receipts. Planner receipt is valid, but no Critic receipt appeared on origin/develop after two complete scheduling windows, so visual smoke did not pass and Smoke B/care-ase arm remain prohibited.",
-  "updated_utc": "2026-08-06T05:21:00Z"
+  "blocked_or_failure_reason": "Superseded: later origin/develop evidence includes valid Scheduled Critic visual and freeze receipts. Visual smoke now passes. care-ase-faithful remains disabled only because Smoke B has not yet reached PLANNER_PASS.",
+  "updated_utc": "2026-08-06T06:21:00Z"
 }

@@ -1,10 +1,10 @@
 {
   "task_name": "20260805_care_ase_develop_faithful_reimplementation_controller",
-  "final_status": "blocked",
-  "commit_status": "complete_before_notifier; develop contains Agent-Flow v3 runtime helper, watcher receipts, two-window visual smoke observation, and validation evidence",
-  "push_status": "complete_before_notifier; origin/develop remote SHA verified after push",
-  "key_conclusion": "Agent-Flow v3 本地基础设施和生产 watcher 已推进，但真实 CARE-ASE 自动闭环没有打开：Scheduled Planner 视觉 receipt 已真实出现并通过校验，Scheduled Critic 两个完整调度窗口后仍没有提交 receipt，所以 visual smoke 未通过，Smoke B 和 care-ase-faithful 武装都被禁止。本轮没有开始 ASE 实现、训练、outer、Docker、上传、组织方邮件或 develop 到 main 合并。",
-  "blocked_or_failure_reason": "The contract requires both real Scheduled Planner and real Scheduled Critic visual receipts before Smoke B. Planner is valid; Critic is missing after two complete scheduling windows, so care-ase-faithful remains REQUEST.enabled=false and CURRENT.state=PLAN_REQUESTED.",
+  "final_status": "superseded_nonterminal",
+  "commit_status": "pending_current_goal_resume; visual smoke PASS and orchestrator changes are being prepared for develop",
+  "push_status": "pending_current_goal_resume",
+  "key_conclusion": "此前 Agent-Flow v3 blocked 通知已被后续远端证据取代：Scheduled Planner 和 Scheduled Critic 视觉 receipt 以及 Critic freeze receipt 都已出现在 origin/develop 并通过本轮校验，visual smoke 现在 PASS。真实 CARE-ASE 自动闭环仍未打开，因为 Smoke B 还没有达到真实 PLANNER_PASS；本轮仍未开始 ASE 实现、训练、outer、Docker、上传、组织方邮件或 develop 到 main 合并。",
+  "blocked_or_failure_reason": "Superseded: the earlier Critic-missing reason is no longer true. This file is retained as historical notification context and must not be treated as a terminal notifier packet for the current resumed goal.",
   "slurm_terminal_status": "not_applicable",
   "evidence_paths": [
     "automation/agent_flow_v3/tasks/care-ase-faithful/REQUEST.json",
@@ -19,5 +19,5 @@
     "results/agent_flow_v3/care-visual-smoke/visual_smoke_final.json",
     "results/agent_flow_v3/care-visual-smoke/scheduled_task_observation.json"
   ],
-  "next_step": "Repair or trigger the existing Scheduled Critic path so it commits a nonce/SHA-bound visual receipt to origin/develop; only then rerun visual smoke validation and proceed to Smoke B."
+  "next_step": "Continue Smoke B via stage orchestrator and existing watcher. Enter WAITING_FOR_EXTERNAL_GPT with a deadline of at least four hours before any external Scheduled Planner wait."
 }

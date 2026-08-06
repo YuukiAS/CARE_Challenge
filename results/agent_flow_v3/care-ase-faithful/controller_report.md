@@ -1,14 +1,14 @@
 # Controller Report: Agent-Flow v3 Infrastructure Activation
 
-本轮把 v3 的本地基础设施往前推进了一步，但仍然必须停在真实 CARE-ASE 自动循环之前。原因很具体：图片文件和 raw URL 已经可验证，三条 Codex 会话隔离和 exact resume 也能跑通；真实 Scheduled Planner 视觉 receipt 已经出现在 `origin/develop` 并通过校验，但 Scheduled Critic 在两个完整调度窗口后仍没有提交 receipt。因此 visual smoke 没有通过，Smoke B 不能启动，真实 `care-ase-faithful` request 必须继续保持关闭。
+此前这份报告中的“Scheduled Critic 缺失”结论已经被后续远端证据取代。当前 `origin/develop` 已包含真实 Scheduled Critic 视觉 receipt 和 `critic_freeze_receipt.json`，并且二者绑定同一 nonce、图片 SHA 和冻结合同 SHA；因此 visual smoke 现在是 PASS。真实 `care-ase-faithful` request 仍保持关闭，但原因已经变为 Smoke B 尚未达到真实 `PLANNER_PASS`，不是视觉 smoke 阻塞。
 
-controller_verification_decision: OPERATIONALLY_BLOCKED
+controller_verification_decision: SUPERSEDED_BY_LATER_CRITIC_FREEZE
 
-operational_completion_status: infrastructure_smoke_partial_blocked_before_request_arm
+operational_completion_status: visual_smoke_pass_smoke_b_pending
 
-contract_compliance_status: PASS_FOR_LOCAL_INFRASTRUCTURE_NO_FOR_SCHEDULED_CRITIC_GATE
+contract_compliance_status: PASS_FOR_VISUAL_SMOKE_DO_NOT_ARM_CARE_ASE_BEFORE_SMOKE_B
 
-required_outputs_complete: partial_with_blocked_scheduled_critic_smoke
+required_outputs_complete: visual_smoke_complete_smoke_b_pending
 
 validators_passed: true
 
@@ -22,7 +22,7 @@ git_push_decision: authorized_develop_only
 
 scientific_resolution_status: NOT_STARTED
 
-next_required_action: Repair or trigger the existing Scheduled Critic path so it commits a nonce/SHA-bound visual receipt to `origin/develop`, then rerun visual smoke validation and only then run Smoke B. Only after both pass may `REQUEST.enabled` be set true.
+next_required_action: Continue Smoke B through the persistent orchestrator and existing watcher. Enter `WAITING_FOR_EXTERNAL_GPT` before any Scheduled Planner wait; do not arm `care-ase-faithful` until Smoke B reaches true `PLANNER_PASS`.
 
 ## Evidence
 
@@ -33,6 +33,7 @@ next_required_action: Repair or trigger the existing Scheduled Critic path so it
 - Watcher positive and negative receipts: `watcher_smoke/wake_smoke_*.json`.
 - Scheduled task observation: `scheduled_task_observation.json`; real visual-smoke observer: `../care-visual-smoke/visual_smoke_final.json`.
 - Smoke B block: `gpt_loop_smoke_receipt.json`.
+ - Superseding Critic evidence: `../care-visual-smoke/critic_visual_receipt.json`, `../care-visual-smoke/critic_freeze_receipt.json`.
 
 ## Forbidden Scope Check
 

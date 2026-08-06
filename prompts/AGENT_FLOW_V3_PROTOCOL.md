@@ -212,6 +212,7 @@ EXECUTOR_RUNNING
 INTEGRATION_RUNNING
 CI_RUNNING
 READY_FOR_PLANNER_REVIEW
+WAITING_FOR_EXTERNAL_GPT
 PLANNER_REVISE_EXECUTOR
 PLANNER_REVISE_VERIFIER
 PLANNER_REVISE_BOTH
@@ -232,6 +233,17 @@ STOPPED_MAX_ROUNDS
 ```
 
 Controller may respond only to the exact current state and nonce. It must not react to generic commits.
+
+`WAITING_FOR_EXTERNAL_GPT` is a non-terminal orchestration state for asynchronous
+GitHub-mediated Scheduled GPT work. It must record
+`external_wait_started_utc`, `external_wait_deadline_utc`,
+`expected_state_or_artifact`, `last_observed_remote_sha`, and `last_poll_utc`.
+The default deadline must be at least four hours after the wait starts. Before
+that deadline, a missing Planner/Critic artifact is not operationally blocked:
+the controller or stage orchestrator must keep fetching `origin/develop` and
+continue as soon as the expected state or artifact appears. Lack of a local
+Scheduled Task connector is not a block reason because v3 handoff can proceed
+asynchronously through GitHub commits.
 
 ## 12. Visual architecture sources
 

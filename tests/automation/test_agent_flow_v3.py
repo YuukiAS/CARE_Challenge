@@ -81,6 +81,35 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             MODULE.validate_current(current, request, self.schema),
         )
 
+    def test_waiting_for_external_gpt_requires_deadline_metadata(self) -> None:
+        request = copy.deepcopy(self.template)
+        request["frozen_contract_sha256"] = "a" * 64
+        current = {
+            "schema": "CARE_AGENT_FLOW_V3",
+            "task_id": request["task_id"],
+            "state": "WAITING_FOR_EXTERNAL_GPT",
+            "review_round": 1,
+            "request_nonce": "nonce",
+            "frozen_contract_sha256": request["frozen_contract_sha256"],
+            "integration_commit_sha": "b" * 40,
+            "implementation_fingerprint_sha256": None,
+            "verifier_fingerprint_sha256": None,
+            "next_action": "KEEP_FETCHING_ORIGIN_DEVELOP_UNTIL_EXPECTED_GPT_STATE_OR_ARTIFACT",
+            "updated_utc": "2026-08-05T00:00:00Z",
+        }
+        failures = MODULE.validate_current(current, request, self.schema)
+        self.assertIn("external_wait_missing:external_wait_started_utc", failures)
+        current.update(
+            {
+                "external_wait_started_utc": "2026-08-05T00:00:00Z",
+                "external_wait_deadline_utc": "2026-08-05T04:00:00Z",
+                "expected_state_or_artifact": "planner review",
+                "last_observed_remote_sha": "c" * 40,
+                "last_poll_utc": "2026-08-05T00:10:00Z",
+            }
+        )
+        self.assertEqual(MODULE.validate_current(current, request, self.schema), [])
+
     def test_role_receipt_thread_overlap_is_rejected(self) -> None:
         base = {
             "schema": RUNTIME.ROLE_RECEIPT_SCHEMA,
@@ -572,8 +601,10 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
 
     def test_visual_smoke_receipt_requires_scheduled_gpt_provenance(self) -> None:
         receipt = {
+            "task_id": "care-visual-smoke",
             "role": "planner_visual_smoke",
             "request_nonce": "nonce-1",
+            "source_manifest_path": "automation/agent_flow_v3/tasks/care-visual-smoke/VISUAL_SOURCES.json",
             "image_sha256": {
                 "CARE-ASE": "a" * 64,
                 "SRR-v3": "b" * 64,
@@ -591,9 +622,11 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         self.assertEqual(
             RUNTIME.validate_visual_smoke_receipt(
                 receipt,
+                expected_task_id="care-visual-smoke",
                 expected_role="planner_visual_smoke",
                 request_nonce="nonce-1",
                 expected_shas={"CARE-ASE": "a" * 64, "SRR-v3": "b" * 64, "MoSAIC": "c" * 64},
+                expected_source_manifest_path="automation/agent_flow_v3/tasks/care-visual-smoke/VISUAL_SOURCES.json",
             ),
             [],
         )
@@ -602,18 +635,22 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             "provenance:scheduled_gpt",
             RUNTIME.validate_visual_smoke_receipt(
                 receipt,
+                expected_task_id="care-visual-smoke",
                 expected_role="planner_visual_smoke",
                 request_nonce="nonce-1",
                 expected_shas={"CARE-ASE": "a" * 64, "SRR-v3": "b" * 64, "MoSAIC": "c" * 64},
+                expected_source_manifest_path="automation/agent_flow_v3/tasks/care-visual-smoke/VISUAL_SOURCES.json",
             ),
         )
 
     def test_visual_smoke_receipt_accepts_scheduled_planner_image_list_schema(self) -> None:
         receipt = {
+            "task_id": "care-visual-smoke",
             "role": "planner",
             "request_nonce": "nonce-1",
             "actual_visual_access": True,
             "access_context": "scheduled ChatGPT Planner visual review",
+            "source_manifest_path": "automation/agent_flow_v3/tasks/care-visual-smoke/VISUAL_SOURCES.json",
             "images": [
                 {
                     "name": "CARE-ASE",
@@ -647,11 +684,100 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         self.assertEqual(
             RUNTIME.validate_visual_smoke_receipt(
                 receipt,
+                expected_task_id="care-visual-smoke",
                 expected_role="planner_visual_smoke",
                 request_nonce="nonce-1",
                 expected_shas={"CARE-ASE": "a" * 64, "SRR-v3": "b" * 64, "MoSAIC": "c" * 64},
+                expected_source_manifest_path="automation/agent_flow_v3/tasks/care-visual-smoke/VISUAL_SOURCES.json",
             ),
             [],
+        )
+
+    def test_visual_smoke_receipt_accepts_scheduled_critic_field_names(self) -> None:
+        receipt = {
+            "task_id": "care-visual-smoke",
+            "role": "critic",
+            "request_nonce": "nonce-1",
+            "actual_visual_access": True,
+            "access_context": "scheduled ChatGPT Critic visual review",
+            "source_manifest_path": "automation/agent_flow_v3/tasks/care-visual-smoke/VISUAL_SOURCES.json",
+            "images": [
+                {
+                    "name": "CARE-ASE",
+                    "sha256": "a" * 64,
+                    "main_modules_visible": ["stock-compatible encoder and pathology branches"],
+                    "key_dataflow": "Modalities enter a shared backbone and then branch into scar and edema routes.",
+                    "missing_modality_and_no_t2_rules": ["No T2 excludes edema from final competition."],
+                    "explicitly_absent_from_figure": ["No Transformer block is shown."],
+                },
+                {
+                    "name": "SRR-v3",
+                    "sha256": "b" * 64,
+                    "main_modules_visible": ["anchor logits and bounded residual correction"],
+                    "key_dataflow": "Modality evidence is retrieved and written back through bounded correction.",
+                    "missing_modality_and_no_t2_rules": ["Unavailable modalities are masked from retrieval."],
+                    "explicitly_absent_from_figure": ["No unrestricted replacement decoder is shown."],
+                },
+                {
+                    "name": "MoSAIC",
+                    "sha256": "c" * 64,
+                    "main_modules_visible": ["coarse localization and independent pathology experts"],
+                    "key_dataflow": "Coarse localization feeds fine pathology experts and output merging.",
+                    "missing_modality_and_no_t2_rules": ["No explicit five-class no-T2 rule is visible."],
+                    "explicitly_absent_from_figure": ["No nnU-Net anchor residual correction is shown."],
+                },
+            ],
+            "cross_architecture_judgment": [
+                "CARE-ASE is single-backbone reconstruction, SRR is anchor-bounded correction, and MoSAIC is coarse-to-fine experts."
+            ],
+        }
+        self.assertEqual(
+            RUNTIME.validate_visual_smoke_receipt(
+                receipt,
+                expected_task_id="care-visual-smoke",
+                expected_role="critic_visual_smoke",
+                request_nonce="nonce-1",
+                expected_shas={"CARE-ASE": "a" * 64, "SRR-v3": "b" * 64, "MoSAIC": "c" * 64},
+                expected_source_manifest_path="automation/agent_flow_v3/tasks/care-visual-smoke/VISUAL_SOURCES.json",
+            ),
+            [],
+        )
+
+    def test_critic_freeze_receipt_binds_visual_receipt_and_sources(self) -> None:
+        receipt = {
+            "task_id": "care-visual-smoke",
+            "request_nonce": "nonce-1",
+            "frozen_contract_sha256": "d" * 64,
+            "critic_visual_receipt_commit_sha": "e" * 40,
+            "critic_decision": "PLAN_FROZEN",
+            "visual_sources_reviewed": [
+                {"name": "CARE-ASE", "sha256": "a" * 64, "actual_visual_access": True},
+                {"name": "SRR-v3", "sha256": "b" * 64, "actual_visual_access": True},
+                {"name": "MoSAIC", "sha256": "c" * 64, "actual_visual_access": True},
+            ],
+        }
+        self.assertEqual(
+            RUNTIME.validate_critic_freeze_receipt(
+                receipt,
+                expected_task_id="care-visual-smoke",
+                request_nonce="nonce-1",
+                expected_contract_sha="d" * 64,
+                expected_visual_receipt_commit_sha="e" * 40,
+                expected_shas={"CARE-ASE": "a" * 64, "SRR-v3": "b" * 64, "MoSAIC": "c" * 64},
+            ),
+            [],
+        )
+        receipt["critic_visual_receipt_commit_sha"] = "f" * 40
+        self.assertIn(
+            "critic_visual_receipt_commit_sha",
+            RUNTIME.validate_critic_freeze_receipt(
+                receipt,
+                expected_task_id="care-visual-smoke",
+                request_nonce="nonce-1",
+                expected_contract_sha="d" * 64,
+                expected_visual_receipt_commit_sha="e" * 40,
+                expected_shas={"CARE-ASE": "a" * 64, "SRR-v3": "b" * 64, "MoSAIC": "c" * 64},
+            ),
         )
 
     def test_visual_smoke_receipt_rejects_wrong_nonce_and_image_sha(self) -> None:
@@ -664,9 +790,11 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         }
         failures = RUNTIME.validate_visual_smoke_receipt(
             receipt,
+            expected_task_id="care-visual-smoke",
             expected_role="critic_visual_smoke",
             request_nonce="new-nonce",
             expected_shas={"CARE-ASE": "a" * 64, "SRR-v3": "b" * 64, "MoSAIC": "c" * 64},
+            expected_source_manifest_path="automation/agent_flow_v3/tasks/care-visual-smoke/VISUAL_SOURCES.json",
         )
         self.assertIn("request_nonce", failures)
         self.assertIn("image_sha256:CARE-ASE", failures)

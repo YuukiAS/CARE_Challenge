@@ -18,7 +18,7 @@ import shlex
 import subprocess
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 from urllib.request import Request, urlopen
@@ -30,6 +30,8 @@ WATCHER_STATE_SCHEMA = "CARE_AGENT_FLOW_V3_WATCHER_STATE"
 RESUME_RECEIPT_SCHEMA = "CARE_AGENT_FLOW_V3_EXACT_RESUME_RECEIPT"
 VISUAL_RECEIPT_SCHEMA = "CARE_AGENT_FLOW_V3_VISUAL_SOURCE_ACCESS_RECEIPT"
 VISUAL_SMOKE_FINAL_SCHEMA = "CARE_AGENT_FLOW_V3_VISUAL_SMOKE_FINAL"
+ORCHESTRATOR_STATE_SCHEMA = "CARE_AGENT_FLOW_V3_STAGE_ORCHESTRATOR_STATE"
+ORCHESTRATOR_RECEIPT_SCHEMA = "CARE_AGENT_FLOW_V3_STAGE_ORCHESTRATOR_RECEIPT"
 SHA40_RE = re.compile(r"^[0-9a-f]{40}$")
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 CODEX_ROLES = ("controller", "verifier", "executor")
@@ -788,19 +790,340 @@ def cmd_status_watcher(args: argparse.Namespace) -> int:
     return 0
 
 
+def remote_head(repo: Path, branch: str) -> str:
+    return git(repo, "rev-parse", f"origin/{branch}")
+
+
+def remote_task_request_paths(repo: Path, ref: str) -> list[str]:
+    listing = subprocess.check_output(
+        ["git", "ls-tree", "-r", "--name-only", ref, "automation/agent_flow_v3/tasks"],
+        cwd=repo,
+        text=True,
+    )
+    return sorted(path for path in listing.splitlines() if path.endswith("/REQUEST.json"))
+
+
+def load_orchestrator_state(path: Path) -> dict[str, Any]:
+    if path.is_file():
+        return load_json(path)
+    return {
+        "schema": ORCHESTRATOR_STATE_SCHEMA,
+        "processed_events": [],
+        "waits": {},
+        "last_receipt": None,
+        "updated_utc": now(),
+    }
+
+
+def wait_deadline(start_utc: str, hours: int) -> str:
+    return (parse_utc(start_utc) + timedelta(hours=hours)).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
+def update_wait_fields(current: dict[str, Any], *, remote_sha: str, expected: str, default_hours: int) -> dict[str, Any]:
+    updated = dict(current)
+    started = str(updated.get("external_wait_started_utc") or now())
+    deadline = str(updated.get("external_wait_deadline_utc") or wait_deadline(started, default_hours))
+    updated.update(
+        {
+            "state": "WAITING_FOR_EXTERNAL_GPT",
+            "external_wait_started_utc": started,
+            "external_wait_deadline_utc": deadline,
+            "expected_state_or_artifact": str(updated.get("expected_state_or_artifact") or expected),
+            "last_observed_remote_sha": remote_sha,
+            "last_poll_utc": now(),
+            "next_action": "KEEP_FETCHING_ORIGIN_DEVELOP_UNTIL_EXPECTED_GPT_STATE_OR_ARTIFACT",
+            "updated_utc": now(),
+        }
+    )
+    return updated
+
+
+def stage_event_key(task_id: str, current: dict[str, Any], remote_sha: str) -> str:
+    return ":".join(
+        [
+            task_id,
+            str(current.get("request_nonce")),
+            str(current.get("review_round")),
+            str(current.get("state")),
+            remote_sha,
+        ]
+    )
+
+
+def evaluate_stage_event(
+    *,
+    task_id: str,
+    request: dict[str, Any],
+    current: dict[str, Any],
+    visual_final: dict[str, Any] | None,
+    remote_sha: str,
+    processed: set[str],
+    default_wait_hours: int,
+) -> dict[str, Any]:
+    state = str(current.get("state"))
+    event_key = stage_event_key(task_id, current, remote_sha)
+    decision = "IGNORE"
+    action = "none"
+    failures: list[str] = []
+    if request.get("enabled") is not True:
+        decision = "IGNORE_DISABLED"
+    elif event_key in processed:
+        decision = "IGNORE_PROCESSED"
+    elif state == "WAITING_FOR_EXTERNAL_GPT":
+        deadline_raw = current.get("external_wait_deadline_utc")
+        if not isinstance(deadline_raw, str):
+            failures.append("external_wait_deadline_utc")
+            decision = "INVALID_EVENT"
+        elif datetime.now(timezone.utc) >= parse_utc(deadline_raw):
+            decision = "STOPPED_DEADLINE"
+            action = "deadline_elapsed_without_expected_external_gpt_state"
+        else:
+            decision = "WAITING_FOR_EXTERNAL_GPT"
+            action = str(current.get("expected_state_or_artifact") or "external GPT artifact")
+    elif state in REVISION_STATES:
+        decision = "HANDOFF_TO_WATCHER"
+        action = "existing watcher resumes exact role sessions"
+    elif state == "READY_FOR_PLANNER_REVIEW":
+        decision = "WAITING_FOR_EXTERNAL_GPT"
+        action = "scheduled Planner review"
+    elif state in {"PLANNER_PASS", "AWAIT_HUMAN_DECISION"}:
+        decision = "STOP_AT_HUMAN_GATE"
+        action = "no automatic main merge, training, outer, Docker, upload or organizer email"
+    elif task_id == "care-visual-smoke" and state == "PLAN_FROZEN":
+        if visual_final and visual_final.get("status") == "PASS" and visual_final.get("supersedes_prior_blocked_status") is True:
+            decision = "STAGE_READY"
+            action = "visual smoke passed; prepare Smoke B"
+        else:
+            decision = "CONTROLLER_UPDATE_REQUIRED"
+            action = "write visual_smoke_final PASS from validated Planner/Critic/freeze receipts"
+    elif task_id == "care-ase-faithful" and state == "PLAN_FROZEN":
+        decision = "STAGE_READY"
+        action = "start persistent CARE-ASE Controller only; do not implement in orchestrator"
+    else:
+        decision = "MONITOR_ONLY"
+        action = f"observed state {state}"
+    return {
+        "task_id": task_id,
+        "state": state,
+        "event_key": event_key,
+        "decision": decision,
+        "action": action,
+        "failures": failures,
+        "request_nonce": current.get("request_nonce"),
+        "review_round": current.get("review_round"),
+        "remote_sha": remote_sha,
+        "updated_utc": now(),
+        "default_external_wait_hours": default_wait_hours,
+    }
+
+
+def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, Any]:
+    repo = args.repo_root.resolve()
+    git(repo, "fetch", "origin", args.branch, "--prune")
+    ref = f"origin/{args.branch}"
+    remote_sha = remote_head(repo, args.branch)
+    state_path = args.state_root.resolve() / "stage_orchestrator_state.json"
+    local_state = load_orchestrator_state(state_path)
+    processed = set(local_state.get("processed_events", []))
+    task_events: list[dict[str, Any]] = []
+    for request_path in remote_task_request_paths(repo, ref):
+        task_dir = str(Path(request_path).parent)
+        current_path = f"{task_dir}/CURRENT.json"
+        request = git_show_json(repo, ref, request_path)
+        current = git_show_json(repo, ref, current_path)
+        task_id = str(request.get("task_id") or current.get("task_id") or Path(task_dir).name)
+        visual_final = None
+        visual_final_path = f"results/agent_flow_v3/{task_id}/visual_smoke_final.json"
+        raw_visual_final = git_show_text_or_none(repo, ref, visual_final_path)
+        if raw_visual_final:
+            try:
+                parsed = json.loads(raw_visual_final)
+                if isinstance(parsed, dict):
+                    visual_final = parsed
+            except json.JSONDecodeError:
+                visual_final = None
+        event = evaluate_stage_event(
+            task_id=task_id,
+            request=request,
+            current=current,
+            visual_final=visual_final,
+            remote_sha=remote_sha,
+            processed=processed,
+            default_wait_hours=max(4, int(args.default_wait_hours)),
+        )
+        if event["decision"] in {"STAGE_READY", "STOP_AT_HUMAN_GATE"}:
+            processed.add(event["event_key"])
+        task_events.append(event)
+    receipt = {
+        "schema": ORCHESTRATOR_RECEIPT_SCHEMA,
+        "branch": args.branch,
+        "remote_sha": remote_sha,
+        "poll_seconds": args.poll_seconds,
+        "task_events": task_events,
+        "forbidden_actions_confirmed": [
+            "no Planner/Critic decision generated",
+            "no Verifier/Executor source modified",
+            "no --last resume",
+            "no TUI key injection",
+            "no training, outer, Docker, upload, organizer email or develop-to-main merge",
+        ],
+        "updated_utc": now(),
+    }
+    new_state = {
+        "schema": ORCHESTRATOR_STATE_SCHEMA,
+        "processed_events": sorted(processed),
+        "waits": dict(local_state.get("waits", {})),
+        "last_receipt": receipt,
+        "updated_utc": now(),
+    }
+    for event in task_events:
+        if event["decision"] == "WAITING_FOR_EXTERNAL_GPT":
+            new_state["waits"][event["task_id"]] = event
+    write_json(state_path, new_state)
+    if args.output:
+        write_json(args.output, receipt)
+    return receipt
+
+
+def cmd_stage_orchestrator_once(args: argparse.Namespace) -> int:
+    lock_path = args.state_root.resolve() / "stage_orchestrator.lock"
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    with lock_path.open("a+") as lock_fh:
+        try:
+            fcntl.flock(lock_fh.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as exc:
+            raise RuntimeErrorV3("stage orchestrator flock is already held") from exc
+        receipt = run_orchestrator_cycle_without_lock(args)
+    print(json.dumps(receipt, indent=2, ensure_ascii=False))
+    return 0
+
+
+def cmd_stage_orchestrator_watch(args: argparse.Namespace) -> int:
+    lock_path = args.state_root.resolve() / "stage_orchestrator.lock"
+    stop_path = args.state_root.resolve() / "stop_stage_orchestrator"
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    cycles = 0
+    with lock_path.open("a+") as lock_fh:
+        try:
+            fcntl.flock(lock_fh.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as exc:
+            raise RuntimeErrorV3("stage orchestrator flock is already held") from exc
+        while True:
+            cycles += 1
+            if stop_path.exists():
+                return 0
+            try:
+                run_orchestrator_cycle_without_lock(args)
+            except Exception as exc:  # noqa: BLE001 - long orchestrator must fail closed and keep polling.
+                write_json(
+                    args.state_root.resolve() / "stage_orchestrator_last_error.json",
+                    {
+                        "schema": ORCHESTRATOR_STATE_SCHEMA,
+                        "error": f"{type(exc).__name__}: {exc}",
+                        "updated_utc": now(),
+                    },
+                )
+            if args.max_cycles and cycles >= args.max_cycles:
+                return 0
+            time.sleep(args.poll_seconds)
+
+
+def cmd_start_stage_orchestrator(args: argparse.Namespace) -> int:
+    stop_path = args.state_root.resolve() / "stop_stage_orchestrator"
+    if stop_path.exists():
+        stop_path.unlink()
+    script = Path(__file__).resolve()
+    command = [
+        sys.executable,
+        str(script),
+        "stage-orchestrator-watch",
+        "--repo-root",
+        str(args.repo_root),
+        "--branch",
+        args.branch,
+        "--state-root",
+        str(args.state_root),
+        "--poll-seconds",
+        str(args.poll_seconds),
+        "--default-wait-hours",
+        str(args.default_wait_hours),
+        "--output",
+        str(args.output),
+    ]
+    shell_command = shlex.join(command)
+    target = tmux_target(args.tmux_session, args.tmux_window)
+    has_session = subprocess.run(
+        ["tmux", "has-session", "-t", args.tmux_session],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    if has_session.returncode != 0:
+        tmux_cmd = ["tmux", "new-session", "-d", "-s", args.tmux_session, "-n", args.tmux_window, shell_command]
+    else:
+        existing = subprocess.run(["tmux", "list-windows", "-t", args.tmux_session, "-F", "#{window_name}"], text=True, stdout=subprocess.PIPE, check=False)
+        if args.tmux_window in existing.stdout.splitlines():
+            print(json.dumps({"status": "already_running_or_window_exists", "target": target}, indent=2))
+            return 0
+        tmux_cmd = ["tmux", "new-window", "-d", "-t", args.tmux_session, "-n", args.tmux_window, shell_command]
+    if args.dry_run:
+        print(json.dumps({"status": "DRY_RUN", "target": target, "command": shell_command}, indent=2))
+        return 0
+    subprocess.check_call(tmux_cmd)
+    print(json.dumps({"status": "STARTED", "target": target, "command": shell_command}, indent=2))
+    return 0
+
+
+def cmd_stop_stage_orchestrator(args: argparse.Namespace) -> int:
+    stop_path = args.state_root.resolve() / "stop_stage_orchestrator"
+    stop_path.parent.mkdir(parents=True, exist_ok=True)
+    stop_path.write_text(now() + "\n", encoding="utf-8")
+    target = tmux_target(args.tmux_session, args.tmux_window)
+    subprocess.run(["tmux", "kill-window", "-t", target], check=False)
+    print(json.dumps({"status": "STOP_REQUESTED", "target": target, "stop_path": str(stop_path)}, indent=2))
+    return 0
+
+
+def cmd_status_stage_orchestrator(args: argparse.Namespace) -> int:
+    target = tmux_target(args.tmux_session, args.tmux_window)
+    tmux = subprocess.run(["tmux", "display-message", "-p", "-t", target, "#{pane_pid}|#{pane_current_command}"], text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+    state_path = args.state_root.resolve() / "stage_orchestrator_state.json"
+    status = {
+        "schema": ORCHESTRATOR_STATE_SCHEMA,
+        "target": target,
+        "tmux_window_found": tmux.returncode == 0,
+        "tmux_detail": tmux.stdout.strip() if tmux.returncode == 0 else tmux.stderr.strip(),
+        "state_path": str(state_path),
+        "state_exists": state_path.is_file(),
+        "updated_utc": now(),
+    }
+    if state_path.is_file():
+        status["state"] = load_json(state_path)
+    if args.output:
+        write_json(args.output, status)
+    print(json.dumps(status, indent=2, ensure_ascii=False))
+    return 0
+
+
 def validate_visual_smoke_receipt(
     receipt: dict[str, Any],
     *,
+    expected_task_id: str,
     expected_role: str,
     request_nonce: str,
     expected_shas: dict[str, str],
+    expected_source_manifest_path: str,
 ) -> list[str]:
     failures: list[str] = []
+    if receipt.get("task_id") != expected_task_id:
+        failures.append("task_id")
     expected_base_role = expected_role.split("_", 1)[0]
     if receipt.get("role") not in {expected_role, expected_base_role}:
         failures.append("role")
     if receipt.get("request_nonce") != request_nonce:
         failures.append("request_nonce")
+    if receipt.get("source_manifest_path") != expected_source_manifest_path:
+        failures.append("source_manifest_path")
 
     image_sha256 = receipt.get("image_sha256")
     if isinstance(image_sha256, dict):
@@ -849,11 +1172,24 @@ def validate_visual_smoke_receipt(
                 if isinstance(image, dict) and isinstance(image.get("missing_modality_and_no_t2_rules"), list)
             )
             answer_values["explicitly_absent_components"] = " ".join(
-                " ".join(str(item) for item in image.get("explicitly_absent_components", []))
+                " ".join(
+                    str(item)
+                    for item in (
+                        image.get("explicitly_absent_components")
+                        if isinstance(image.get("explicitly_absent_components"), list)
+                        else image.get("explicitly_absent_from_figure", [])
+                    )
+                )
                 for image in images
-                if isinstance(image, dict) and isinstance(image.get("explicitly_absent_components"), list)
+                if isinstance(image, dict)
+                and (
+                    isinstance(image.get("explicitly_absent_components"), list)
+                    or isinstance(image.get("explicitly_absent_from_figure"), list)
+                )
             )
         structural = receipt.get("structural_differences")
+        if not isinstance(structural, list):
+            structural = receipt.get("cross_architecture_judgment")
         if isinstance(structural, list):
             answer_values["structural_differences"] = " ".join(str(item) for item in structural)
     if not isinstance(answers, dict) and not answer_values:
@@ -873,6 +1209,47 @@ def validate_visual_smoke_receipt(
         receipt.get("actual_visual_access") is True and scheduled_context
     ):
         failures.append("provenance:scheduled_gpt")
+    return failures
+
+
+def validate_critic_freeze_receipt(
+    receipt: dict[str, Any],
+    *,
+    expected_task_id: str,
+    request_nonce: str,
+    expected_contract_sha: str,
+    expected_visual_receipt_commit_sha: str | None,
+    expected_shas: dict[str, str],
+) -> list[str]:
+    failures: list[str] = []
+    if receipt.get("task_id") != expected_task_id:
+        failures.append("task_id")
+    if receipt.get("request_nonce") != request_nonce:
+        failures.append("request_nonce")
+    if receipt.get("critic_decision") != "PLAN_FROZEN":
+        failures.append("critic_decision")
+    if receipt.get("frozen_contract_sha256") != expected_contract_sha:
+        failures.append("frozen_contract_sha256")
+    if expected_visual_receipt_commit_sha and receipt.get("critic_visual_receipt_commit_sha") != expected_visual_receipt_commit_sha:
+        failures.append("critic_visual_receipt_commit_sha")
+    reviewed = receipt.get("visual_sources_reviewed")
+    if not isinstance(reviewed, list):
+        failures.append("visual_sources_reviewed")
+        return failures
+    observed = {
+        str(item.get("name")): item
+        for item in reviewed
+        if isinstance(item, dict) and isinstance(item.get("name"), str)
+    }
+    for name, digest in expected_shas.items():
+        item = observed.get(name)
+        if not item:
+            failures.append(f"visual_sources_reviewed:{name}:missing")
+            continue
+        if item.get("sha256") != digest:
+            failures.append(f"visual_sources_reviewed:{name}:sha256")
+        if item.get("actual_visual_access") is not True:
+            failures.append(f"visual_sources_reviewed:{name}:actual_visual_access")
     return failures
 
 
@@ -907,9 +1284,11 @@ def cmd_observe_visual_smoke(args: argparse.Namespace) -> int:
                     raise ValueError("not object")
                 failures = validate_visual_smoke_receipt(
                     data,
+                    expected_task_id=args.task_id,
                     expected_role=f"{role}_visual_smoke",
                     request_nonce=request_nonce,
                     expected_shas=expected_shas,
+                    expected_source_manifest_path=args.visual_sources_path,
                 )
                 status["valid"] = not failures
                 status["failures"] = failures
@@ -920,7 +1299,37 @@ def cmd_observe_visual_smoke(args: argparse.Namespace) -> int:
             all_failures.extend(f"{role}:{failure}" for failure in status["failures"] or ["missing"])
         receipt_status[role] = status
 
-    passed = not all_failures and completed_windows >= args.min_windows
+    freeze_rel = current.get("critic_freeze_receipt_path") or f"results/agent_flow_v3/{args.task_id}/critic_freeze_receipt.json"
+    freeze_raw = git_show_text_or_none(repo, ref, str(freeze_rel))
+    freeze_status: dict[str, Any] = {
+        "path": str(freeze_rel),
+        "exists": freeze_raw is not None,
+        "valid": False,
+        "failures": [],
+    }
+    if freeze_raw is not None:
+        try:
+            freeze = json.loads(freeze_raw)
+            if not isinstance(freeze, dict):
+                raise ValueError("not object")
+            freeze_failures = validate_critic_freeze_receipt(
+                freeze,
+                expected_task_id=args.task_id,
+                request_nonce=request_nonce,
+                expected_contract_sha=str(request.get("frozen_contract_sha256") or ""),
+                expected_visual_receipt_commit_sha=receipt_status["critic"].get("commit_sha"),
+                expected_shas=expected_shas,
+            )
+            freeze_status["valid"] = not freeze_failures
+            freeze_status["failures"] = freeze_failures
+            freeze_status["commit_sha"] = git(repo, "log", "-1", "--format=%H", ref, "--", str(freeze_rel))
+            freeze_status["critic_decision"] = freeze.get("critic_decision")
+        except Exception as exc:  # noqa: BLE001 - receipt preserves validation problem.
+            freeze_status["failures"] = [f"unreadable:{type(exc).__name__}:{exc}"]
+    if not freeze_status["valid"]:
+        all_failures.extend(f"critic_freeze:{failure}" for failure in freeze_status["failures"] or ["missing"])
+
+    passed = not all_failures and completed_windows >= args.min_windows and current.get("state") == "PLAN_FROZEN"
     result = {
         "schema": VISUAL_SMOKE_FINAL_SCHEMA,
         "task_id": args.task_id,
@@ -935,6 +1344,10 @@ def cmd_observe_visual_smoke(args: argparse.Namespace) -> int:
         "elapsed_seconds": elapsed_seconds,
         "scheduled_planner_receipt": receipt_status["planner"],
         "scheduled_critic_receipt": receipt_status["critic"],
+        "scheduled_critic_freeze_receipt": freeze_status,
+        "critic_decision": current.get("critic_decision"),
+        "supersedes_prior_blocked_status": passed,
+        "superseded_reason": "real Scheduled Critic visual and freeze receipts appeared on origin/develop after the earlier waiting snapshot" if passed else "",
         "status": "PASS" if passed else "AWAITING_REAL_SCHEDULED_GPT_RECEIPTS",
         "failures": all_failures,
         "updated_utc": now(),
@@ -1049,6 +1462,43 @@ def parser() -> argparse.ArgumentParser:
     q.add_argument("--tmux-window", default="Watcher")
     q.add_argument("--output", type=Path)
     q.set_defaults(func=cmd_status_watcher)
+
+    def add_orchestrator_args(q: argparse.ArgumentParser) -> None:
+        q.add_argument("--repo-root", type=Path, required=True)
+        q.add_argument("--branch", default="develop")
+        q.add_argument("--state-root", type=Path, default=Path("/users/a/e/aereinh/.agent-flow-v3/stage_orchestrator"))
+        q.add_argument("--poll-seconds", type=int, default=60)
+        q.add_argument("--default-wait-hours", type=int, default=4)
+        q.add_argument("--output", type=Path, default=Path("/users/a/e/aereinh/.agent-flow-v3/stage_orchestrator/stage_orchestrator_receipt.json"))
+
+    q = sub.add_parser("stage-orchestrator-once")
+    add_orchestrator_args(q)
+    q.set_defaults(func=cmd_stage_orchestrator_once)
+
+    q = sub.add_parser("stage-orchestrator-watch")
+    add_orchestrator_args(q)
+    q.add_argument("--max-cycles", type=int)
+    q.set_defaults(func=cmd_stage_orchestrator_watch)
+
+    q = sub.add_parser("start-stage-orchestrator")
+    add_orchestrator_args(q)
+    q.add_argument("--tmux-session", default="care_agent_flow_v3")
+    q.add_argument("--tmux-window", default="Orchestrator")
+    q.add_argument("--dry-run", action="store_true")
+    q.set_defaults(func=cmd_start_stage_orchestrator)
+
+    q = sub.add_parser("stop-stage-orchestrator")
+    q.add_argument("--state-root", type=Path, default=Path("/users/a/e/aereinh/.agent-flow-v3/stage_orchestrator"))
+    q.add_argument("--tmux-session", default="care_agent_flow_v3")
+    q.add_argument("--tmux-window", default="Orchestrator")
+    q.set_defaults(func=cmd_stop_stage_orchestrator)
+
+    q = sub.add_parser("status-stage-orchestrator")
+    q.add_argument("--state-root", type=Path, default=Path("/users/a/e/aereinh/.agent-flow-v3/stage_orchestrator"))
+    q.add_argument("--tmux-session", default="care_agent_flow_v3")
+    q.add_argument("--tmux-window", default="Orchestrator")
+    q.add_argument("--output", type=Path)
+    q.set_defaults(func=cmd_status_stage_orchestrator)
 
     q = sub.add_parser("observe-visual-smoke")
     q.add_argument("--repo-root", type=Path, required=True)

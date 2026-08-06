@@ -161,6 +161,20 @@ def validate_current(
         )):
             errors.append("planner_pass_missing_exact_bindings")
 
+    if current.get("state") == "WAITING_FOR_EXTERNAL_GPT":
+        for key in (
+            "external_wait_started_utc",
+            "external_wait_deadline_utc",
+            "expected_state_or_artifact",
+            "last_observed_remote_sha",
+            "last_poll_utc",
+        ):
+            if not isinstance(current.get(key), str) or not str(current.get(key)).strip():
+                errors.append(f"external_wait_missing:{key}")
+        remote_sha = current.get("last_observed_remote_sha")
+        if isinstance(remote_sha, str) and not SHA40_RE.fullmatch(remote_sha):
+            errors.append("last_observed_remote_sha")
+
     return errors
 
 

@@ -1,8 +1,8 @@
 # Agent-Flow v3 基础设施激活结果
 
-本轮实际完成的是 v3 基础设施的本地加固和可恢复性验证，但还不能把真实 CARE-ASE 闭环打开。图片源本身已经可匿名读取并与 SHA 匹配，三条 Codex role 的隔离 worktree、CODEX_HOME 和 exact thread smoke 已跑通，watcher 的确定性唤醒和负例也通过；真实 Scheduled Planner 视觉 receipt 已出现在 `origin/develop` 并通过校验，但 Scheduled Critic 在两个完整调度窗口后仍没有提交 receipt，所以 visual smoke 未通过，真实 GPT 返修闭环和 `care-ase-faithful` 武装都不能继续。
+这份结果里的旧 blocked 判断已经被后续远端证据取代：真实 Scheduled Critic 视觉 receipt 和 freeze receipt 已提交到 `origin/develop`，并通过本轮重新校验。visual smoke 现在 PASS。真实 CARE-ASE 闭环仍不能打开，因为 Smoke B 还没有完成真实 GPT -> Codex -> GPT 的 `PLANNER_PASS`；这不是视觉 smoke 阻塞。
 
-status: blocked
+status: superseded_nonterminal
 
 ## 已完成
 
@@ -18,8 +18,8 @@ status: blocked
 ## 未完成且不能伪造
 
 - Scheduled Planner 视觉 smoke 已真实运行并通过 receipt 校验。
-- Scheduled Critic 视觉 smoke 两个完整调度窗口后仍缺少真实 receipt。
-- Smoke B 的真实 GPT -> Codex 返修闭环未运行。
+- Scheduled Critic 视觉 smoke 已真实运行并通过 receipt/freeze 校验。
+- Smoke B 的真实 GPT -> Codex 返修闭环正在进入后续阶段，等待/推进状态由 stage orchestrator 负责。
 - `care-ase-faithful` 未 armed：`REQUEST.enabled=false`，`CURRENT.state=PLAN_REQUESTED`。
 
 ## 禁止动作核对
