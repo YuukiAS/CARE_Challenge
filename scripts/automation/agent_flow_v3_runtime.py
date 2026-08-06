@@ -1479,6 +1479,75 @@ If you cannot complete the Verifier freeze, write a fail-closed receipt with the
     return prompt.encode("utf-8")
 
 
+def previous_role_launch_failed_no_rollout(stage_state_root: Path, role: str) -> bool:
+    receipt_path = care_ase_role_launch_receipt_path(stage_state_root, role)
+    if not receipt_path.is_file():
+        return False
+    try:
+        receipt = load_json(receipt_path)
+    except RuntimeErrorV3:
+        return False
+    text = " ".join(str(receipt.get(key, "")) for key in ("status", "failure_reason", "stderr_excerpt"))
+    previous = receipt.get("previous_attempt")
+    if isinstance(previous, dict):
+        text += " " + str(previous.get("stderr_summary", ""))
+    return "no rollout found" in text
+
+
+def create_initial_role_thread(
+    *,
+    codex_bin: str,
+    worktree: Path,
+    codex_home: str,
+    role: str,
+    thread_file: Path,
+) -> dict[str, Any]:
+    prompt = (
+        f"Initialize the CARE Agent-Flow v3 {role} session for care-ase-faithful. "
+        "Do not run tools and do not edit files. Reply exactly SESSION_READY."
+    )
+    command = [codex_bin, "exec", "--json", "-C", str(worktree), "-"]
+    env = os.environ.copy()
+    env["CODEX_HOME"] = codex_home
+    env["CODEX_PERSISTENT_HOME"] = codex_home
+    started = now()
+    cp = subprocess.run(
+        command,
+        input=prompt.encode("utf-8"),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        env=env,
+        cwd=str(worktree),
+        check=False,
+        timeout=120,
+    )
+    thread_id = ""
+    for line in cp.stdout.decode("utf-8", "replace").splitlines():
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(event, dict) and event.get("type") == "thread.started" and isinstance(event.get("thread_id"), str):
+            thread_id = event["thread_id"]
+            break
+    if cp.returncode != 0 or not thread_id:
+        raise RuntimeErrorV3(
+            f"{role}:initial_thread_create_failed:{cp.returncode}:"
+            f"{cp.stderr.decode('utf-8', 'replace')[:200]}"
+        )
+    thread_file.parent.mkdir(parents=True, exist_ok=True)
+    thread_file.write_text(thread_id + "\n", encoding="utf-8")
+    return {
+        "status": "CREATED",
+        "role": role,
+        "thread_id": thread_id,
+        "command": shlex.join(command),
+        "prompt_sha256": sha_bytes(prompt.encode("utf-8")),
+        "started_utc": started,
+        "finished_utc": now(),
+    }
+
+
 def start_care_ase_verifier_from_frozen_contract(
     *,
     args: argparse.Namespace,
@@ -1514,6 +1583,16 @@ def start_care_ase_verifier_from_frozen_contract(
     codex_home = str(verifier.get("codex_home", ""))
     thread_file = Path(str(verifier.get("thread_id_file", "")))
     thread_id = thread_file.read_text(encoding="utf-8").strip() if thread_file.is_file() else ""
+    thread_initialization = None
+    if not thread_id or previous_role_launch_failed_no_rollout(args.state_root, "verifier"):
+        thread_initialization = create_initial_role_thread(
+            codex_bin=args.codex_bin,
+            worktree=worktree,
+            codex_home=codex_home,
+            role="verifier",
+            thread_file=thread_file,
+        )
+        thread_id = str(thread_initialization["thread_id"])
     command = build_controller_start_command(args.codex_bin, worktree, thread_id)
     prompt_payload = build_care_ase_verifier_start_prompt(current)
     prompt_sha = sha_bytes(prompt_payload)
@@ -1558,6 +1637,7 @@ def start_care_ase_verifier_from_frozen_contract(
         "target": target,
         "pane_pid": pane_pid,
         "thread_id": thread_id,
+        "thread_initialization": thread_initialization,
         "codex_home": codex_home,
         "worktree": str(worktree),
         "worktree_head_after_ff": head_after_ff,
