@@ -1,40 +1,30 @@
 {
-  "schema": "CARE_ASE_FAITHFUL_CONTROLLER_CI_RECEIPT_V2",
-  "task_id": "care-ase-faithful",
-  "request_nonce": "care-ase-20260806T090955Z",
-  "created_utc": "2026-08-06T17:44:53Z",
-  "checked_commit_sha": "885d5db3089e109136e52c9cbde4d349a62c9092",
-  "local_gates_status": "PASS",
+  "checked_commit_sha": "5b009c91ccd163bb514ba6d677b8c4c4b053ae5b",
+  "created_utc": "2026-08-06T20:38:29Z",
+  "github_actions_status": "PENDING_AFTER_PUSH",
   "local_gates": [
     {
-      "name": "agent_flow_v3_contract_validation",
-      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/automation/validate_agent_flow_v3.py --repo-root .",
       "exit_code": 0,
-      "stdout_tail": "CARE Agent-Flow v3 contract validation: PASS\n",
-      "stderr_tail": ""
-    },
-    {
       "name": "frozen_verifier_validate_implementation_evidence",
-      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python validators/care_ase_faithful/validate_contract_evidence.py --verification-contract results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json --evidence results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json --report-json results/agent_flow_v3/care-ase-faithful/implementation/frozen_verifier_validation_result.json",
-      "exit_code": 0,
-      "stdout_tail": "{\n  \"failure_count\": 0,\n  \"failures\": [],\n  \"known_bad_case_id\": null,\n  \"passed\": true,\n  \"schema\": \"CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1\",\n  \"task_id\": \"care-ase-faithful\"\n}\n",
-      "stderr_tail": ""
+      "report_json": "results/agent_flow_v3/care-ase-faithful/implementation/frozen_verifier_validation_result.json",
+      "status": "PASS"
     },
     {
+      "exit_code": 0,
       "name": "py_compile_integrated_sources",
-      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m py_compile scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py src/care_myocardium/models/care_ase/__init__.py src/care_myocardium/models/care_ase/core.py src/care_myocardium/training/care_ase_runtime.py src/care_myocardium/training/care_ase_trainer.py",
-      "exit_code": 0,
-      "stdout_tail": "",
-      "stderr_tail": ""
+      "status": "PASS"
     },
     {
-      "name": "public_verifier_pytest",
-      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m pytest tests/care_ase_faithful/test_verifier_package.py -q",
       "exit_code": 0,
-      "stdout_tail": "......                                                                   [100%]\n6 passed in 3.06s\n",
-      "stderr_tail": ""
+      "name": "public_verifier_pytest",
+      "status": "PASS",
+      "summary": "9 passed",
+      "test": "tests/care_ase_faithful/test_verifier_package.py"
     }
   ],
-  "github_actions_status": "PENDING_AFTER_PUSH",
+  "local_gates_status": "PASS",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "schema": "CARE_ASE_FAITHFUL_CONTROLLER_CI_RECEIPT_V3",
+  "task_id": "care-ase-faithful",
   "workflow_path": ".github/workflows/agent-flow-v3-ci.yml"
 }
