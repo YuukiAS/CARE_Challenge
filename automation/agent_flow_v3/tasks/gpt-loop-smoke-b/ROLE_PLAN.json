@@ -6,17 +6,17 @@
   "roles": {
     "controller": {
       "thread_id_file": "/users/a/e/aereinh/.agent-flow-v3/gpt-loop-smoke-b/controller_thread_id",
-      "codex_home": "/users/a/e/aereinh/.agent-flow-v3/codex_homes/gpt-loop-smoke-b/CONTROLLER",
+      "codex_home": "/users/a/e/aereinh/.codex-homes/controller",
       "worktree": "/users/a/e/aereinh/CARE/.worktrees/gpt-loop-smoke-b/controller"
     },
     "verifier": {
       "thread_id_file": "/users/a/e/aereinh/.agent-flow-v3/gpt-loop-smoke-b/verifier_thread_id",
-      "codex_home": "/users/a/e/aereinh/.agent-flow-v3/codex_homes/gpt-loop-smoke-b/VERIFIER",
+      "codex_home": "/users/a/e/aereinh/.codex-homes/verifier",
       "worktree": "/users/a/e/aereinh/CARE/.worktrees/gpt-loop-smoke-b/verifier"
     },
     "executor": {
       "thread_id_file": "/users/a/e/aereinh/.agent-flow-v3/gpt-loop-smoke-b/executor_thread_id",
-      "codex_home": "/users/a/e/aereinh/.agent-flow-v3/codex_homes/gpt-loop-smoke-b/EXECUTOR",
+      "codex_home": "/users/a/e/aereinh/.codex-homes/executor",
       "worktree": "/users/a/e/aereinh/CARE/.worktrees/gpt-loop-smoke-b/executor"
     }
   }
