@@ -501,6 +501,8 @@ def role_active_process(state_root: Path, task_id: str, role: str) -> dict[str, 
         data = load_json(path)
     except RuntimeErrorV3:
         return None
+    if data.get("completion_detected_via_rollout") is True and data.get("exit_code") == 0:
+        return None
     pid = data.get("pid")
     if isinstance(pid, int) and is_pid_running(pid) and data.get("exit_code") is None:
         if pid_looks_like_codex(pid) or process_has_child(pid):
@@ -2533,6 +2535,25 @@ def apply_care_ase_executor_completion_controller_update(
         ],
         "automation: integrate care ase executor repair",
     )
+    task_state_root = args.state_root.resolve().parent
+    executor_active = active_process_path(task_state_root, "care-ase-faithful", "executor")
+    if executor_active.is_file():
+        try:
+            active_data = load_json(executor_active)
+            active_data.update(
+                {
+                    "exit_code": 0,
+                    "finished_utc": now(),
+                    "completion_detected_via_rollout": True,
+                    "os_process_still_present_at_completion_receipt_update": True,
+                    "goal_complete_rollout_path": completion.get("goal_complete", {}).get("rollout_path"),
+                    "completed_executor_commit_sha": completion.get("executor_head"),
+                    "controller_integration_commit_sha": commit_result.get("commit_sha"),
+                }
+            )
+            write_json(executor_active, active_data)
+        except RuntimeErrorV3:
+            pass
     return {
         "status": "APPLIED",
         "completion": completion,
