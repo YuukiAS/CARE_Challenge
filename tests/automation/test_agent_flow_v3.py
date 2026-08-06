@@ -62,6 +62,19 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             MODULE.validate_request(request, self.schema),
         )
 
+    def test_codex_resume_command_adds_git_common_dir(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            worktree = root / "worktree"
+            common = root / ".git"
+            worktree.mkdir()
+            common.mkdir()
+            with mock.patch.object(RUNTIME, "git", return_value=str(common)):
+                command = RUNTIME.build_resume_command("/opt/codex", worktree, "thread-1")
+            self.assertIn("--add-dir", command)
+            self.assertIn(str(common), command)
+            self.assertEqual(command[-4:], ["resume", "--all", "thread-1", "-"])
+
     def test_planner_pass_requires_exact_bindings(self) -> None:
         request = copy.deepcopy(self.template)
         request["frozen_contract_sha256"] = "a" * 64

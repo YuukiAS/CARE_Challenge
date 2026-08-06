@@ -427,16 +427,31 @@ def cmd_validate_role_receipts(args: argparse.Namespace) -> int:
     return 0 if not failures else 1
 
 
+def codex_git_add_dir_args(worktree: Path) -> list[str]:
+    if not worktree.is_dir():
+        return []
+    try:
+        common = git(worktree, "rev-parse", "--git-common-dir")
+    except (OSError, RuntimeErrorV3):
+        return []
+    common_path = Path(common)
+    if not common_path.is_absolute():
+        common_path = (worktree / common_path).resolve()
+    if not common_path.exists():
+        return []
+    return ["--add-dir", str(common_path)]
+
+
 def build_resume_command(codex_bin: str, worktree: Path, thread_id: str) -> list[str]:
     if not thread_id:
         raise RuntimeErrorV3("missing exact thread id")
-    return [codex_bin, "exec", "-C", str(worktree), "resume", "--all", thread_id, "-"]
+    return [codex_bin, "exec", "-C", str(worktree), *codex_git_add_dir_args(worktree), "resume", "--all", thread_id, "-"]
 
 
 def build_controller_start_command(codex_bin: str, worktree: Path, thread_id: str) -> list[str]:
     if not thread_id:
         raise RuntimeErrorV3("missing exact controller thread id")
-    return [codex_bin, "exec", "-C", str(worktree), "resume", thread_id, "-"]
+    return [codex_bin, "exec", "-C", str(worktree), *codex_git_add_dir_args(worktree), "resume", thread_id, "-"]
 
 
 def role_codex_env(codex_home: str, worktree: Path | None = None) -> dict[str, str]:
