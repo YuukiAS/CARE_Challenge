@@ -1031,6 +1031,11 @@ def evaluate_stage_event(
         "request_nonce": current.get("request_nonce"),
         "review_round": current.get("review_round"),
         "remote_sha": remote_sha,
+        "external_wait_started_utc": current.get("external_wait_started_utc"),
+        "external_wait_deadline_utc": current.get("external_wait_deadline_utc"),
+        "expected_state_or_artifact": current.get("expected_state_or_artifact"),
+        "last_observed_remote_sha": remote_sha,
+        "last_poll_utc": now(),
         "updated_utc": now(),
         "default_external_wait_hours": default_wait_hours,
     }

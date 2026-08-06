@@ -305,6 +305,36 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         self.assertEqual(receipt["decision"], "CONTROLLER_UPDATE_REQUIRED")
         self.assertIn("arm care-ase-faithful", receipt["action"])
 
+    def test_orchestrator_waiting_event_records_external_gpt_metadata(self) -> None:
+        current = {
+            "request_nonce": "smoke-b-nonce",
+            "review_round": 1,
+            "state": "WAITING_FOR_EXTERNAL_GPT",
+            "integration_commit_sha": "c" * 40,
+            "external_wait_started_utc": "2026-08-06T07:43:52Z",
+            "external_wait_deadline_utc": "2999-08-06T11:43:52Z",
+            "expected_state_or_artifact": "true scheduled Planner round 1 decision",
+            "last_observed_remote_sha": "b" * 40,
+            "last_poll_utc": "2026-08-06T07:43:52Z",
+        }
+
+        receipt = RUNTIME.evaluate_stage_event(
+            task_id="gpt-loop-smoke-b",
+            request={"enabled": True},
+            current=current,
+            visual_final=None,
+            remote_sha="d" * 40,
+            processed=set(),
+            default_wait_hours=4,
+        )
+
+        self.assertEqual(receipt["decision"], "WAITING_FOR_EXTERNAL_GPT")
+        self.assertEqual(receipt["external_wait_started_utc"], "2026-08-06T07:43:52Z")
+        self.assertEqual(receipt["external_wait_deadline_utc"], "2999-08-06T11:43:52Z")
+        self.assertEqual(receipt["expected_state_or_artifact"], "true scheduled Planner round 1 decision")
+        self.assertEqual(receipt["last_observed_remote_sha"], "d" * 40)
+        self.assertRegex(receipt["last_poll_utc"], r"^\d{4}-\d{2}-\d{2}T")
+
     def test_orchestrator_keeps_generic_planner_pass_at_human_gate(self) -> None:
         current = {
             "request_nonce": "nonce-1",
