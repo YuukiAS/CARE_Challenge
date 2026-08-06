@@ -300,7 +300,7 @@ def cmd_validate_role_receipts(args: argparse.Namespace) -> int:
 def build_resume_command(codex_bin: str, worktree: Path, thread_id: str) -> list[str]:
     if not thread_id:
         raise RuntimeErrorV3("missing exact thread id")
-    return [codex_bin, "exec", "-C", str(worktree), "resume", thread_id, "-"]
+    return [codex_bin, "exec", "-C", str(worktree), "resume", "--all", thread_id, "-"]
 
 
 def resume_command_worktree(command: list[str]) -> Path | None:

@@ -198,6 +198,8 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             self.assertEqual(receipt["decision"], "DRY_RUN_RESUME")
             self.assertEqual(receipt["target_roles"], ["executor"])
             self.assertIn("exec-thread-123", receipt["resume_commands"][0]["command"])
+            self.assertIn("--all", receipt["resume_commands"][0]["command"])
+            self.assertNotIn("--last", receipt["resume_commands"][0]["command"])
 
     def test_repair_prompt_can_load_from_git_ref_when_local_checkout_lags(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -454,7 +456,7 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             receipt = RUNTIME.execute_live_resume(
-                command=["/opt/codex", "exec", "-C", str(root / "worktree"), "resume", "thread-1", "-"],
+                command=RUNTIME.build_resume_command("/opt/codex", root / "worktree", "thread-1"),
                 codex_home=str(root / "codex-home"),
                 role="executor",
                 task_id="smoke-task",
@@ -464,7 +466,9 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
                 prompt_path=root / "prompt.md",
                 popen_factory=FakePopen,
             )
-            self.assertEqual(FakePopen.calls[0].command[5], "thread-1")
+            self.assertEqual(FakePopen.calls[0].command[5], "--all")
+            self.assertEqual(FakePopen.calls[0].command[6], "thread-1")
+            self.assertNotIn("--last", FakePopen.calls[0].command)
             self.assertEqual(FakePopen.calls[0].env["CODEX_HOME"], str(root / "codex-home"))
             self.assertEqual(FakePopen.calls[0].env["CODEX_PERSISTENT_HOME"], str(root / "codex-home"))
             self.assertEqual(FakePopen.calls[0].env["CODEX_REPO_SLUG"], "worktree")
