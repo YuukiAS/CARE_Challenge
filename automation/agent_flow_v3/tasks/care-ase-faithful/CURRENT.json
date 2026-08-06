@@ -1,7 +1,7 @@
 {
   "schema": "CARE_AGENT_FLOW_V3",
   "task_id": "care-ase-faithful",
-  "state": "PLAN_FROZEN",
+  "state": "VERIFIER_RUNNING",
   "review_round": 0,
   "request_nonce": "care-ase-20260806T090955Z",
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
@@ -25,6 +25,11 @@
   "request_binding_commit_sha": "9974398cade68b9e0fa8b957c1001ce6d5f6759a",
   "critic_decision": "PLAN_FROZEN",
   "open_scientific_choices": [],
-  "next_action": "ORCHESTRATOR_START_CONTROLLER_FROM_FROZEN_CONTRACT",
-  "updated_utc": "2026-08-06T10:44:09Z"
+  "next_action": "WAIT_FOR_VERIFIER_FREEZE_BEFORE_EXECUTOR_START",
+  "updated_utc": "2026-08-06T14:17:20Z",
+  "verifier_thread_id": "019fd76e-6aa2-7d21-b12d-5bfd9983aed5",
+  "verifier_launch_receipt_path": "results/agent_flow_v3/care-ase-faithful/verifier_launch_receipt.json",
+  "verifier_launch_receipt_sha256": "6236d289678d28085aafd8655b2d7c85d1970515a5963c00975d5f88b234a9dd",
+  "verifier_launch_origin_develop_sha": "e628bd14582350b265567ef5ec70b1d74d273b3b",
+  "verifier_worktree_head_at_launch": "e628bd14582350b265567ef5ec70b1d74d273b3b"
 }
