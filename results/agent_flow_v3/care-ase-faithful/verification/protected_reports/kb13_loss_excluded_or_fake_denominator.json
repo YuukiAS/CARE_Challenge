@@ -1,8 +1,9 @@
 {
-  "failure_count": 2,
+  "failure_count": 3,
   "failures": [
     "kb13.relation_loss.included",
-    "kb13.zero_denominator_claims_coverage"
+    "kb13.zero_denominator_claims_coverage",
+    "artifact_binding.receipt_paths.missing"
   ],
   "known_bad_case_id": "kb13_loss_excluded_or_fake_denominator",
   "passed": false,

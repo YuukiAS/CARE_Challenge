@@ -1,8 +1,9 @@
 {
-  "failure_count": 2,
+  "failure_count": 3,
   "failures": [
     "kb23.monolith_runnable",
-    "kb23.duplicate_runtime_truth"
+    "kb23.duplicate_runtime_truth",
+    "artifact_binding.receipt_paths.missing"
   ],
   "known_bad_case_id": "kb23_dual_truth_implementation",
   "passed": false,

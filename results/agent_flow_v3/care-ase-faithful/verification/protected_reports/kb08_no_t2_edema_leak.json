@@ -1,8 +1,9 @@
 {
-  "failure_count": 2,
+  "failure_count": 3,
   "failures": [
     "kb08.edema_call_count",
-    "kb08.class4_competition"
+    "kb08.class4_competition",
+    "artifact_binding.receipt_paths.missing"
   ],
   "known_bad_case_id": "kb08_no_t2_edema_leak",
   "passed": false,

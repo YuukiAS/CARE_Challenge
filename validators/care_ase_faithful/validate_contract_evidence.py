@@ -3,7 +3,10 @@ from __future__ import annotations
 
 import argparse
 import copy
+import hashlib
 import json
+import math
+import re
 import sys
 from pathlib import Path
 from typing import Any, Callable
@@ -173,6 +176,30 @@ REQUIRED_METRICS = {
     "casewise_help_harm",
     "centerB_centerC_subgroup",
     "sentinel_case",
+}
+
+
+ROOT = Path(__file__).resolve().parents[2]
+REQUIRED_RECEIPT_PATHS = {
+    "source_manifest",
+    "static_architecture_checks",
+    "architecture_signature",
+    "parameter_owner_registry",
+    "forward_backward_probe",
+    "inference_probe",
+    "checkpoint_resume_probe",
+    "deployment_load_probe",
+    "evaluator_smoke",
+    "hard_negative_binding",
+}
+
+CRITICAL_SOURCE_PATHS = {
+    "src/care_myocardium/models/care_ase/__init__.py",
+    "src/care_myocardium/models/care_ase/core.py",
+    "src/care_myocardium/training/care_ase_trainer.py",
+    "src/care_myocardium/training/care_ase_sampler.py",
+    "src/care_myocardium/inference/care_ase_r2_decode.py",
+    "src/care_myocardium/inference/care_ase_r2_full_volume.py",
 }
 
 
@@ -375,7 +402,266 @@ def _is_sha256(value: Any) -> bool:
     return isinstance(value, str) and len(value) == 64 and all(ch in "0123456789abcdef" for ch in value)
 
 
-def validate_evidence(evidence: dict[str, Any], verification_contract: dict[str, Any] | None = None) -> list[str]:
+def _sha256_bytes(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def _sha256_file(path: Path) -> str:
+    return _sha256_bytes(path.read_bytes())
+
+
+def _json_sha(payload: Any) -> str:
+    return _sha256_bytes(json.dumps(payload, sort_keys=True, default=str).encode("utf-8"))
+
+
+def _payload_sha_without_self(payload: dict[str, Any], field: str) -> str:
+    clone = copy.deepcopy(payload)
+    clone.pop(field, None)
+    return _json_sha(clone)
+
+
+def _resolve_artifact(path_value: Any, *, root: Path = ROOT) -> Path | None:
+    if not isinstance(path_value, str) or not path_value:
+        return None
+    path = Path(path_value)
+    if path.is_absolute():
+        return None
+    return root / path
+
+
+def _load_artifact(
+    failures: list[str],
+    receipt_paths: dict[str, Any],
+    name: str,
+    *,
+    root: Path = ROOT,
+) -> tuple[Path | None, dict[str, Any] | None]:
+    path = _resolve_artifact(receipt_paths.get(name), root=root)
+    if path is None:
+        failures.append(f"artifact_binding.{name}.path_not_relative")
+        return None, None
+    if not path.is_file():
+        failures.append(f"artifact_binding.{name}.missing")
+        return path, None
+    try:
+        return path, load_json(path)
+    except Exception as exc:  # pragma: no cover - reported as validation failure.
+        failures.append(f"artifact_binding.{name}.invalid_json:{type(exc).__name__}")
+        return path, None
+
+
+def _source_root(source_manifest: dict[str, Any], source_manifest_path: Path, *, root: Path = ROOT) -> Path:
+    declared = source_manifest.get("source_root")
+    if isinstance(declared, str) and declared:
+        resolved = _resolve_artifact(declared, root=root)
+        if resolved is not None:
+            return resolved
+    if source_manifest_path.is_relative_to(root):
+        return root
+    return source_manifest_path.parent
+
+
+def _class_body(source: str, class_name: str) -> str:
+    match = re.search(rf"^class\s+{re.escape(class_name)}\b.*?(?=^class\s+\w|\Z)", source, flags=re.M | re.S)
+    return match.group(0) if match else ""
+
+
+def _check_source_manifest_and_topology(
+    failures: list[str],
+    source_manifest_path: Path,
+    source_manifest: dict[str, Any],
+    evidence: dict[str, Any],
+    *,
+    root: Path = ROOT,
+) -> None:
+    declared_sha = source_manifest.get("source_manifest_sha256")
+    _require(failures, _is_sha256(declared_sha), "artifact_binding.source_manifest.sha256_shape")
+    if _is_sha256(declared_sha):
+        _require(
+            failures,
+            declared_sha == _payload_sha_without_self(source_manifest, "source_manifest_sha256"),
+            "artifact_binding.source_manifest.sha256_recomputed",
+        )
+        _require(failures, evidence.get("source_manifest_sha256") == declared_sha, "artifact_binding.source_manifest.evidence_sha")
+
+    file_hashes = source_manifest.get("file_hashes", {})
+    _require(failures, isinstance(file_hashes, dict), "artifact_binding.source_manifest.file_hashes_dict")
+    source_root = _source_root(source_manifest, source_manifest_path, root=root)
+    missing_declared = set(source_manifest.get("missing_files", []))
+    for rel in CRITICAL_SOURCE_PATHS:
+        if rel in missing_declared:
+            failures.append(f"artifact_binding.source_manifest.critical_missing:{rel}")
+            continue
+        source_path = source_root / rel
+        if not source_path.is_file():
+            failures.append(f"artifact_binding.source_manifest.critical_file_absent:{rel}")
+            continue
+        _require(failures, file_hashes.get(rel) == _sha256_file(source_path), f"artifact_binding.source_manifest.hash:{rel}")
+
+    core_path = source_root / "src/care_myocardium/models/care_ase/core.py"
+    if not core_path.is_file():
+        failures.append("kb03.source_topology.core_missing")
+        return
+    core = core_path.read_text(encoding="utf-8")
+    slice_head = _class_body(core, "SliceExtentHead")
+    _require(failures, bool(slice_head), "kb11.slice_extent_head.class")
+    _require(failures, slice_head.count("nn.Conv1d(") >= 4, "kb11.slice_extent_head.conv1d_count")
+    _require(failures, "nn.GroupNorm(8, 64)" in slice_head or "nn.GroupNorm(num_groups=8, num_channels=64)" in slice_head, "kb11.slice_extent_head.groupnorm")
+    _require(failures, "masked" in slice_head.lower() and "max" in slice_head.lower(), "kb11.slice_extent_head.masked_avg_max")
+    _require(failures, "self.scar_extent_head = SliceExtentHead" in core, "kb11.scar_extent_head.distinct_module")
+    _require(failures, "self.edema_extent_head = SliceExtentHead" in core, "kb11.edema_extent_head.distinct_module")
+    _require(failures, '"scar_extent_presence": scar_quarter_occupancy' not in core, "kb11.scar_extent_presence_not_occupancy_alias")
+    _require(failures, "self.scar_extent_area = nn.Conv3d" not in core, "kb11.scar_extent_not_conv3d_area_head")
+    _require(failures, "self.edema_extent_presence = nn.Conv3d" not in core, "kb11.edema_extent_not_conv3d_presence_head")
+
+    dilation = _class_body(core, "EdemaDilationContextBlock")
+    _require(failures, bool(dilation), "kb07.edema_dilation.class")
+    _require(failures, "Residual" in dilation or "residual" in dilation.lower(), "kb07.edema_dilation.residual_named")
+    _require(failures, re.search(r"\+\s*(identity|residual|feature|x)\b", dilation) is not None, "kb07.edema_dilation.residual_add")
+    for value in (1, 2, 4):
+        _require(failures, f"dilation={value}" in dilation or f"({value}," in dilation, f"kb07.edema_dilation.{value}")
+
+    injury_tokens = (
+        "initialize_injury_classifier_from_stock_mean",
+        "stock_class4_class5_mean",
+        "class-4/class-5",
+    )
+    _require(failures, any(token in core for token in injury_tokens), "kb07.injury_classifier.stock_mean_initializer")
+    _require(failures, ("class_index=4" in core or "[4]" in core) and ("class_index=5" in core or "[5]" in core), "kb07.injury_classifier.stock_rows_4_5")
+    _require(failures, "mean(" in core, "kb07.injury_classifier.mean_operation")
+
+
+def _check_runtime_receipt_payloads(
+    failures: list[str],
+    receipt_payloads: dict[str, dict[str, Any]],
+    evidence: dict[str, Any],
+) -> None:
+    runtime_receipts = evidence.get("runtime_receipts", {})
+    for name in ("forward_backward_probe", "inference_probe"):
+        receipt = receipt_payloads.get(name, {})
+        declared = runtime_receipts.get(name, {})
+        _require(failures, declared.get("command_sha256") == receipt.get("command_sha256"), f"kb18.{name}.command_sha_bound")
+        _require(failures, declared.get("stdout_sha256") == receipt.get("stdout_sha256"), f"kb18.{name}.stdout_sha_bound")
+        _require(failures, declared.get("stderr_sha256") == receipt.get("stderr_sha256"), f"kb18.{name}.stderr_sha_bound")
+
+    fb_payload = receipt_payloads.get("forward_backward_probe", {}).get("payload", {})
+    _require(failures, fb_payload.get("status") == "PASS", "kb18.forward_backward.payload_status")
+    _require(failures, "synthetic" not in str(fb_payload.get("probe_type", "")).lower(), "kb18.forward_backward.not_synthetic")
+    _require(failures, bool(fb_payload.get("train_case_ids", {}).get("scar")), "kb13.forward_backward.real_scar_case")
+    _require(failures, bool(fb_payload.get("train_case_ids", {}).get("edema_t2_present")), "kb13.forward_backward.real_edema_case")
+    _require(failures, bool(fb_payload.get("mixed_batch_no_t2", {}).get("case_id")), "kb08.forward_backward.no_t2_mixed_case")
+    loss_terms = fb_payload.get("total_loss_terms", {})
+    for name in REQUIRED_LOSSES:
+        term = loss_terms.get(name, {})
+        _require(failures, term.get("included_in_total") is True, f"kb13.runtime_loss.{name}.included")
+        _require(failures, int(term.get("denominator", 0)) > 0 or term.get("correctly_excluded") is True, f"kb13.runtime_loss.{name}.denominator")
+        value = term.get("value")
+        _require(failures, isinstance(value, (int, float)) and math.isfinite(float(value)), f"kb13.runtime_loss.{name}.finite")
+    no_t2 = fb_payload.get("mixed_batch_no_t2", {})
+    _require(failures, int(no_t2.get("edema_owned_module_call_count", -1)) == 0, "kb08.runtime_no_t2.call_count")
+    _require(failures, int(no_t2.get("edema_supervision_rows", -1)) == 0, "kb08.runtime_no_t2.supervision")
+    _require(failures, float(no_t2.get("edema_parameter_grad_abs_sum", 1.0)) == 0.0, "kb08.runtime_no_t2.grad")
+
+    inf_payload = receipt_payloads.get("inference_probe", {}).get("payload", {})
+    _require(failures, inf_payload.get("status") == "PASS", "kb18.inference.payload_status")
+    _require(failures, "synthetic" not in str(inf_payload.get("probe_type", "")).lower(), "kb19.inference.not_synthetic")
+    _require(failures, bool(inf_payload.get("case_id")), "kb19.inference.real_case_id")
+    _require(failures, inf_payload.get("single_tile_path") == inf_payload.get("forced_multi_tile_path"), "kb12.inference.same_canonical_path")
+    _require(failures, float(inf_payload.get("single_vs_forced_multi_tile_max_abs_diff", 1.0)) <= 1e-6, "kb12.inference.single_multi_match")
+    _require(failures, int(inf_payload.get("global_bias_application_count", 0)) == 1, "kb12.inference.global_bias_once")
+
+    checkpoint_payload = receipt_payloads.get("checkpoint_resume_probe", {}).get("payload", {})
+    _require(failures, checkpoint_payload.get("status") == "PASS", "kb16.checkpoint_resume.payload_status")
+    _require(failures, checkpoint_payload.get("schema_version") == 4, "kb16.checkpoint_resume.schema_v4")
+    _require(failures, checkpoint_payload.get("next_step_matches_uninterrupted") is True, "kb16.checkpoint_resume.next_step")
+    _require(failures, checkpoint_payload.get("rng_and_cursor_state_matches") is True, "kb16.checkpoint_resume.rng_cursor")
+
+    deployment_payload = receipt_payloads.get("deployment_load_probe", {}).get("payload", {})
+    _require(failures, deployment_payload.get("status") == "PASS", "kb22.deployment.payload_status")
+    _require(failures, deployment_payload.get("self_contained_load") is True, "kb16.deployment.self_contained")
+    _require(failures, deployment_payload.get("opened_stock_checkpoint_after_deployment_load") is False, "kb16.deployment.no_stock_checkpoint")
+
+    evaluator_payload = receipt_payloads.get("evaluator_smoke", {}).get("payload", {})
+    _require(failures, evaluator_payload.get("status") == "PASS", "kb19.evaluator.payload_status")
+    _require(failures, evaluator_payload.get("same_case_population") is True, "kb19.evaluator.same_cases")
+    _require(failures, evaluator_payload.get("same_tta_decode_metric_interface") is True, "kb19.evaluator.same_tta_decode_metrics")
+    _require(failures, REQUIRED_METRICS.issubset(set(evaluator_payload.get("metrics", []))), "kb24.evaluator.metrics")
+
+    hard_negative_payload = receipt_payloads.get("hard_negative_binding", {}).get("payload", {})
+    _require(failures, hard_negative_payload.get("status") == "PASS", "kb14.hard_negative.payload_status")
+    _require(failures, str(hard_negative_payload.get("case_id", "")).startswith("synthetic_") is False, "kb14.hard_negative.real_case")
+    _require(failures, hard_negative_payload.get("oof_prediction_bound") is True, "kb14.hard_negative.oof_prediction")
+    for field in ("mask_sha256", "coordinate_sha256", "checkpoint_sha256", "grid_sha256"):
+        _require(failures, _is_sha256(hard_negative_payload.get(field)), f"kb14.hard_negative.{field}")
+
+
+def _check_artifact_bindings(
+    failures: list[str],
+    evidence: dict[str, Any],
+    *,
+    root: Path = ROOT,
+    require_artifacts: bool = True,
+) -> None:
+    if not require_artifacts:
+        return
+    receipt_paths = evidence.get("receipt_paths")
+    if not isinstance(receipt_paths, dict):
+        failures.append("artifact_binding.receipt_paths.missing")
+        return
+    for name in sorted(REQUIRED_RECEIPT_PATHS):
+        if name not in receipt_paths:
+            failures.append(f"artifact_binding.receipt_paths.missing:{name}")
+
+    source_manifest_path, source_manifest = _load_artifact(failures, receipt_paths, "source_manifest", root=root)
+    if source_manifest_path is not None and source_manifest is not None:
+        _check_source_manifest_and_topology(failures, source_manifest_path, source_manifest, evidence, root=root)
+
+    receipt_payloads: dict[str, dict[str, Any]] = {}
+    for name in sorted(REQUIRED_RECEIPT_PATHS - {"source_manifest", "static_architecture_checks", "architecture_signature", "parameter_owner_registry"}):
+        path, payload = _load_artifact(failures, receipt_paths, name, root=root)
+        if path is None or payload is None:
+            continue
+        receipt_payloads[name] = payload
+        _require(failures, payload.get("task_id") == TASK_ID, f"artifact_binding.{name}.task_id")
+        _require(failures, payload.get("request_nonce") == REQUEST_NONCE, f"artifact_binding.{name}.request_nonce")
+        _require(failures, payload.get("executed") is True, f"artifact_binding.{name}.executed")
+        _require(failures, payload.get("exit_code") == 0, f"artifact_binding.{name}.exit_code")
+        _require(failures, payload.get("zero_credit") is True, f"artifact_binding.{name}.zero_credit")
+        _require(failures, payload.get("formal_training_started") is False, f"artifact_binding.{name}.no_training")
+        _require(failures, payload.get("outer_accessed") is False, f"artifact_binding.{name}.no_outer")
+        if "command" in payload:
+            _require(failures, payload.get("command_sha256") == _json_sha(payload["command"]), f"artifact_binding.{name}.command_sha")
+        if "payload" in payload:
+            expected_stdout = json.dumps(payload["payload"], indent=2, sort_keys=True, default=str).encode("utf-8")
+            stdout_path = path.with_name(path.name.replace("_receipt.json", "_stdout.json"))
+            if stdout_path.is_file():
+                _require(
+                    failures,
+                    payload.get("stdout_sha256") in {_sha256_file(stdout_path), _sha256_bytes(expected_stdout)},
+                    f"artifact_binding.{name}.stdout_file_sha",
+                )
+            else:
+                _require(failures, payload.get("stdout_sha256") == _sha256_bytes(expected_stdout), f"artifact_binding.{name}.stdout_payload_sha")
+        _require(failures, payload.get("stderr_sha256") == _sha256_bytes(b""), f"artifact_binding.{name}.stderr_empty_sha")
+
+    for name in ("static_architecture_checks", "architecture_signature", "parameter_owner_registry"):
+        path, payload = _load_artifact(failures, receipt_paths, name, root=root)
+        if path is None or payload is None:
+            continue
+        field = f"{name}_sha256"
+        if field in payload:
+            _require(failures, payload[field] == _payload_sha_without_self(payload, field), f"artifact_binding.{name}.sha_recomputed")
+            _require(failures, evidence.get(field) == payload[field], f"artifact_binding.{name}.evidence_sha")
+
+    _check_runtime_receipt_payloads(failures, receipt_payloads, evidence)
+
+
+def validate_evidence(
+    evidence: dict[str, Any],
+    verification_contract: dict[str, Any] | None = None,
+    *,
+    require_artifacts: bool = True,
+) -> list[str]:
     failures: list[str] = []
     _require(failures, evidence.get("task_id") == TASK_ID, "binding.task_id")
     _require(failures, evidence.get("request_nonce") == REQUEST_NONCE, "binding.request_nonce")
@@ -556,6 +842,8 @@ def validate_evidence(evidence: dict[str, Any], verification_contract: dict[str,
     _require(failures, boundary.get("hidden_host_asset_required") is False, "kb22.hidden_host_asset")
     _require(failures, boundary.get("old_wrapper_bypasses_new_implementation") is False, "kb22.old_wrapper_bypass")
 
+    _check_artifact_bindings(failures, evidence, require_artifacts=require_artifacts)
+
     return failures
 
 
@@ -613,6 +901,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--known-bad-id", choices=[item["id"] for item in KNOWN_BAD_CATEGORIES])
     parser.add_argument("--emit-reference", action="store_true")
     parser.add_argument("--list-known-bad", action="store_true")
+    parser.add_argument(
+        "--allow-public-reference-fixture",
+        action="store_true",
+        help="allow the emitted public schema fixture to bypass artifact binding checks; never use for Executor evidence",
+    )
     parser.add_argument("--report-json", type=Path)
     args = parser.parse_args(argv)
 
@@ -628,7 +921,14 @@ def main(argv: list[str] | None = None) -> int:
 
     evidence = load_json(args.evidence) if args.evidence else known_bad_evidence(args.known_bad_id)
     verification_contract = load_json(args.verification_contract) if args.verification_contract else None
-    failures = validate_evidence(evidence, verification_contract)
+    allow_fixture = args.allow_public_reference_fixture and evidence == reference_evidence()
+    failures = validate_evidence(
+        evidence,
+        verification_contract,
+        require_artifacts=not allow_fixture,
+    )
+    if args.allow_public_reference_fixture and not allow_fixture:
+        failures.append("public_reference_fixture.forbidden_for_non_reference_evidence")
     result = {
         "schema": "CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1",
         "task_id": TASK_ID,

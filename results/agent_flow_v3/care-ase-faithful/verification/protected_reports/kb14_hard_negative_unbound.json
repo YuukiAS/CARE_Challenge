@@ -1,7 +1,8 @@
 {
-  "failure_count": 1,
+  "failure_count": 2,
   "failures": [
-    "kb14.checkpoint_sha256"
+    "kb14.checkpoint_sha256",
+    "artifact_binding.receipt_paths.missing"
   ],
   "known_bad_case_id": "kb14_hard_negative_unbound",
   "passed": false,

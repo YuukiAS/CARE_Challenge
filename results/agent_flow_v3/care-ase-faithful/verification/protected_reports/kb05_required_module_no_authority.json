@@ -1,7 +1,8 @@
 {
-  "failure_count": 1,
+  "failure_count": 2,
   "failures": [
-    "kb05.edema_dilation_affects_final_logits"
+    "kb05.edema_dilation_affects_final_logits",
+    "artifact_binding.receipt_paths.missing"
   ],
   "known_bad_case_id": "kb05_required_module_no_authority",
   "passed": false,

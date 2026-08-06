@@ -1,7 +1,8 @@
 {
-  "failure_count": 1,
+  "failure_count": 2,
   "failures": [
-    "kb24.required_metrics"
+    "kb24.required_metrics",
+    "artifact_binding.receipt_paths.missing"
   ],
   "known_bad_case_id": "kb24_metric_interface_missing",
   "passed": false,
