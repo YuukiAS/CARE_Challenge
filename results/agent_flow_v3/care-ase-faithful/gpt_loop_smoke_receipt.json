@@ -1,17 +1,17 @@
 {
   "schema": "CARE_AGENT_FLOW_V3_GPT_LOOP_SMOKE_RECEIPT",
   "task_id": "care-ase-faithful",
-  "smoke_b_status": "NOT_RUN_SCHEDULED_TASK_TOOL_UNAVAILABLE",
+  "smoke_b_status": "NOT_RUN_VISUAL_SMOKE_BLOCKED",
   "toy_implementation_task_created": false,
   "manual_planner_decision_used": false,
   "scheduled_planner_decision_observed": false,
   "scheduled_critic_decision_observed": false,
   "codex_auto_repair_loop_observed": false,
-  "reason": "The contract forbids hand-written Planner decisions for Smoke B. This Codex turn has no callable Scheduled GPT task connector, so a real GPT-to-Codex repair loop cannot be truthfully executed.",
+  "reason": "Smoke B is gated by the independent scheduled visual smoke. The real Scheduled Planner receipt is valid, but the real Scheduled Critic receipt is still missing after two complete scheduling windows, so starting a toy GPT-to-Codex repair loop would violate the contract.",
   "care_ase_implementation_started": false,
   "training_started": false,
   "outer_access_started": false,
   "docker_started": false,
   "main_merge_started": false,
-  "updated_utc": "2026-08-05T17:22:30Z"
+  "updated_utc": "2026-08-06T05:21:00Z"
 }

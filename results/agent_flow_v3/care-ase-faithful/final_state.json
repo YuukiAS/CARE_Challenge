@@ -4,13 +4,13 @@
   "controller_task": "20260805_care_ase_develop_faithful_reimplementation_controller",
   "final_status": "blocked",
   "controller_verification_decision": "OPERATIONALLY_BLOCKED",
-  "blocked_or_failure_reason": "Agent-Flow v3 local infrastructure advanced and deterministic smoke A passed, but the required Scheduled Planner/Critic visual smoke and real GPT repair-loop smoke could not be run from this Codex turn because no callable Scheduled GPT task connector is available. The true CARE-ASE request therefore remains disabled.",
+  "blocked_or_failure_reason": "Agent-Flow v3 local infrastructure advanced and deterministic smoke A passed. The real Scheduled Planner visual receipt is valid, but no real Scheduled Critic visual receipt appeared on origin/develop after two complete scheduling windows. Visual smoke therefore did not pass, Smoke B was not authorized to start, and the true CARE-ASE request remains disabled.",
   "visual_source_access_status": "PASS_11_LOCAL_AND_RAW_SHA_MATCH",
   "independent_visual_observation_status": "PASS_NOT_SCHEDULED_GPT",
-  "scheduled_visual_smoke_status": "NOT_RUN_TOOL_UNAVAILABLE",
+  "scheduled_visual_smoke_status": "PARTIAL_PLANNER_VALID_CRITIC_MISSING_AFTER_TWO_WINDOWS",
   "role_session_smoke_status": "PASS_CLI_THREADS_CREATED_NOT_LIVE_CARE_ASE_ROLES",
   "watcher_smoke_a_status": "PASS_DRY_RUN_EXACT_WAKE_AND_NEGATIVES",
-  "gpt_loop_smoke_b_status": "NOT_RUN_TOOL_UNAVAILABLE",
+  "gpt_loop_smoke_b_status": "NOT_RUN_VISUAL_SMOKE_BLOCKED",
   "care_ase_request_enabled": false,
   "care_ase_current_state": "PLAN_REQUESTED",
   "care_ase_auto_loop_started": false,
@@ -24,5 +24,5 @@
     "develop_to_main_merge_started": false,
     "organizer_email_sent": false
   },
-  "updated_utc": "2026-08-05T17:33:28Z"
+  "updated_utc": "2026-08-06T05:21:00Z"
 }

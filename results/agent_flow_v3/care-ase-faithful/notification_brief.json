@@ -1,10 +1,10 @@
 {
   "task_name": "20260805_care_ase_develop_faithful_reimplementation_controller",
   "final_status": "blocked",
-  "commit_status": "complete_before_notifier; develop commit contains Agent-Flow v3 runtime helper, smoke receipts, and validation evidence",
+  "commit_status": "complete_before_notifier; develop contains Agent-Flow v3 runtime helper, watcher receipts, two-window visual smoke observation, and validation evidence",
   "push_status": "complete_before_notifier; origin/develop remote SHA verified after push",
-  "key_conclusion": "Agent-Flow v3 本地基础设施和确定性唤醒 smoke 已推进，但真实 CARE-ASE 自动闭环没有打开：缺少可调用的 Scheduled Planner/Critic 工具来完成视觉 smoke 和真实 GPT 返修闭环。本轮没有开始 ASE 实现、训练、outer、Docker、上传、组织方邮件或 develop 到 main 合并。",
-  "blocked_or_failure_reason": "Scheduled Planner/Critic visual smoke and real GPT-to-Codex Smoke B could not be truthfully run from this Codex turn; care-ase-faithful remains REQUEST.enabled=false and CURRENT.state=PLAN_REQUESTED.",
+  "key_conclusion": "Agent-Flow v3 本地基础设施和生产 watcher 已推进，但真实 CARE-ASE 自动闭环没有打开：Scheduled Planner 视觉 receipt 已真实出现并通过校验，Scheduled Critic 两个完整调度窗口后仍没有提交 receipt，所以 visual smoke 未通过，Smoke B 和 care-ase-faithful 武装都被禁止。本轮没有开始 ASE 实现、训练、outer、Docker、上传、组织方邮件或 develop 到 main 合并。",
+  "blocked_or_failure_reason": "The contract requires both real Scheduled Planner and real Scheduled Critic visual receipts before Smoke B. Planner is valid; Critic is missing after two complete scheduling windows, so care-ase-faithful remains REQUEST.enabled=false and CURRENT.state=PLAN_REQUESTED.",
   "slurm_terminal_status": "not_applicable",
   "evidence_paths": [
     "automation/agent_flow_v3/tasks/care-ase-faithful/REQUEST.json",
@@ -15,7 +15,9 @@
     "results/agent_flow_v3/care-ase-faithful/executor_session_receipt.json",
     "results/agent_flow_v3/care-ase-faithful/watcher_smoke/wake_smoke_receipt.json",
     "results/agent_flow_v3/care-ase-faithful/gpt_loop_smoke_receipt.json",
-    "results/agent_flow_v3/care-ase-faithful/final_state.json"
+    "results/agent_flow_v3/care-ase-faithful/final_state.json",
+    "results/agent_flow_v3/care-visual-smoke/visual_smoke_final.json",
+    "results/agent_flow_v3/care-visual-smoke/scheduled_task_observation.json"
   ],
-  "next_step": "Connect or expose the existing Scheduled GPT Planner/Critic automation path, then run scheduled visual smoke and real Smoke B before arming care-ase-faithful."
+  "next_step": "Repair or trigger the existing Scheduled Critic path so it commits a nonce/SHA-bound visual receipt to origin/develop; only then rerun visual smoke validation and proceed to Smoke B."
 }

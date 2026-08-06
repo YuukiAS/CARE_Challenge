@@ -4,7 +4,7 @@ source task: `prompts/tasks/20260805_care_ase_develop_faithful_reimplementation_
 
 status: blocked before request arm
 
-This packet records local Agent-Flow v3 infrastructure activation evidence on `develop`. Local visual URL/SHA audit, independent non-scheduled visual observations, role-session isolation smoke, exact resume smoke, and deterministic watcher Smoke A passed. The real scheduled Planner/Critic visual smoke and real GPT-to-Codex Smoke B were not run because this Codex turn has no callable Scheduled GPT task connector.
+This packet records Agent-Flow v3 infrastructure activation evidence on `develop`. Local visual URL/SHA audit, independent non-scheduled visual observations, role-session isolation smoke, exact resume smoke, and deterministic watcher Smoke A passed. The real scheduled Planner visual receipt appeared on `origin/develop` and validated, but the real scheduled Critic receipt was still missing after two complete scheduling windows. Therefore the scheduled visual smoke did not pass and real GPT-to-Codex Smoke B was not started.
 
 ## Files
 
