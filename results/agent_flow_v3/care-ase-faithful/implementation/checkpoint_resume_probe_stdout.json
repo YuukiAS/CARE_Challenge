@@ -1,19 +1,31 @@
 {
-  "checkpoint_written": false,
+  "checkpoint_sha256": "86d067b2ffd283e5773e253064cc9b130dc1466053c85522afcc922bafd05b64",
+  "checkpoint_sidecar_matches": true,
+  "checkpoint_sidecar_sha256": "86d067b2ffd283e5773e253064cc9b130dc1466053c85522afcc922bafd05b64",
+  "checkpoint_storage": "temporary_directory_removed_after_hashing",
+  "checkpoint_written": true,
+  "control_state_digest_sha256": "b2d38ea919e378b211fac32f695eac56dc12c450c6a8355c7691b52bc5aec7d9",
+  "first_synthetic_gradient_sha256": "00b2340ccdf9d20eb6430f01ef8dcb5deaa4a27b68da9a0e718f5088eddf1939",
   "fold": 0,
   "formal_optimizer_step_executed": false,
   "formal_training_started": false,
+  "next_descriptor_sha256": "9d37ba4a5b2a15d239ac55fe6c730e17609f29d4ec6e04e645f949e2cbf162f3",
   "next_step_matches_uninterrupted": true,
   "optimizer_state_matches": true,
   "outer_accessed": false,
-  "probe_type": "zero_credit_schema_v4_resume_descriptor_probe",
+  "probe_parameter": "component_heads.scar_extent_head.presence.weight",
+  "probe_type": "zero_credit_schema_v4_save_reload_next_step_probe",
+  "reload_state_digest_sha256": "b2d38ea919e378b211fac32f695eac56dc12c450c6a8355c7691b52bc5aec7d9",
   "rng_and_cursor_state_matches": true,
   "scheduler_ramp_state_matches": true,
   "schema_version": 4,
+  "second_control_synthetic_gradient_sha256": "11fa6879a0c935b951dccf9caa3b361d24fcf37d41b7119e482d7f9eacfc4d07",
+  "second_reload_synthetic_gradient_sha256": "11fa6879a0c935b951dccf9caa3b361d24fcf37d41b7119e482d7f9eacfc4d07",
   "status": "PASS",
   "train_case_ids": {
     "edema_t2_present": "Case2001",
     "no_t2": "Case1001",
     "scar": "Case1001"
-  }
+  },
+  "zero_credit_synthetic_optimizer_steps": 2
 }

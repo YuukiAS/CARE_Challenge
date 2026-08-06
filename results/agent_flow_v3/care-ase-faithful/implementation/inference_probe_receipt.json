@@ -6,13 +6,13 @@
       1,
       3,
       8,
-      128,
-      128
+      64,
+      64
     ],
     "zero_credit": true
   },
-  "command_sha256": "a904254c1e8d8baed9aa5db5e1bdab2ebe52483619f7ee1f0c5a0771a4231f4f",
-  "created_utc": "2026-08-06T16:58:17Z",
+  "command_sha256": "91c32b44019b3ef599adc21beed86532e3532d3f965a40c8a3aac85cb4f2ee3e",
+  "created_utc": "2026-08-06T17:28:33Z",
   "docker_or_upload": false,
   "executed": true,
   "exit_code": 0,
@@ -24,8 +24,8 @@
       1,
       6,
       8,
-      128,
-      128
+      64,
+      64
     ],
     "case_id": "Case2001",
     "class4_excluded_from_no_t2_decode": true,
@@ -38,16 +38,16 @@
       1,
       3,
       8,
-      128,
-      128
+      64,
+      64
     ],
     "no_t2_edema_graph_excluded": true,
     "no_t2_final_logits_shape": [
       1,
       6,
       8,
-      128,
-      128
+      64,
+      64
     ],
     "outer_accessed": false,
     "patch_proxy_evaluator": false,
@@ -62,7 +62,7 @@
   "request_nonce": "care-ase-20260806T090955Z",
   "schema": "CARE_ASE_FAITHFUL_ZERO_CREDIT_PROBE_RECEIPT_V1",
   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "stdout_sha256": "69be70c9fb53d7b4a0ed44044d39b7d00679c3791fd7e1bb10400259d489d499",
+  "stdout_sha256": "bf4d67874160a9b4db568ced6f674f9efeae282343720b14803573b0a084a9f8",
   "task_id": "care-ase-faithful",
   "zero_credit": true
 }

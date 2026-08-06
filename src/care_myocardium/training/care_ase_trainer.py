@@ -324,6 +324,12 @@ def per_slice_extent_loss(
     size = pred_presence.shape[-1:]
     target_presence_z = _downsample_slice_presence_any(target_presence, int(size[0]))
     target_area_z, target_area_valid_z = _downsample_slice_area_by_physical_bin(target_pathology_voxels, target_wall_voxels, int(size[0]))
+    if target_presence_z.ndim == 2:
+        target_presence_z = target_presence_z.unsqueeze(1)
+    if target_area_z.ndim == 2:
+        target_area_z = target_area_z.unsqueeze(1)
+    if target_area_valid_z.ndim == 2:
+        target_area_valid_z = target_area_valid_z.unsqueeze(1)
     if case_valid is None:
         case_mask = torch.ones_like(target_presence_z)
     else:
