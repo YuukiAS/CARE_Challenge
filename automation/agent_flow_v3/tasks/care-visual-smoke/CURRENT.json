@@ -1,7 +1,7 @@
 {
   "schema": "CARE_AGENT_FLOW_V3",
   "task_id": "care-visual-smoke",
-  "state": "PLAN_READY_FOR_CRITIC",
+  "state": "PLAN_FROZEN",
   "review_round": 0,
   "request_nonce": "visual-smoke-20260806T031345Z",
   "frozen_contract_sha256": "279550638c5b9940567211ea5e05560048acd0150c6f1ac07ede6a258f139afe",
@@ -12,6 +12,11 @@
   "planner_visual_receipt_commit_sha": "182dc161fc3c6d39495e2e192c8c8f9137702bba",
   "planner_draft_path": "automation/agent_flow_v3/tasks/care-visual-smoke/PLANNER_DRAFT.md",
   "planner_draft_commit_sha": "75b1cd5752d3b9419e99ec5385e125c6e8c2a446",
-  "next_action": "CRITIC_INDEPENDENT_VISUAL_REVIEW",
-  "updated_utc": "2026-08-06T04:07:00Z"
+  "critic_visual_receipt_path": "results/agent_flow_v3/care-visual-smoke/critic_visual_receipt.json",
+  "critic_visual_receipt_commit_sha": "bc60c4d90d272aa25539fef4263282ceaf40faf4",
+  "critic_freeze_receipt_path": "results/agent_flow_v3/care-visual-smoke/critic_freeze_receipt.json",
+  "critic_freeze_receipt_commit_sha": "1f0ad73d685278599764147f0380e4faea813545",
+  "critic_decision": "PLAN_FROZEN",
+  "next_action": "VISUAL_SMOKE_FROZEN_RETURN_TO_CONTROLLER",
+  "updated_utc": "2026-08-06T05:45:00Z"
 }
