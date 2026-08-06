@@ -276,7 +276,20 @@ def load_role_receipts(paths: list[Path]) -> dict[str, dict[str, Any]]:
     return receipts
 
 
-def validate_role_receipts(receipts: dict[str, dict[str, Any]]) -> list[str]:
+def role_rollout_paths(codex_home: Path, thread_id: str) -> list[Path]:
+    if not thread_id or not codex_home.is_dir():
+        return []
+    sessions = codex_home / "sessions"
+    if not sessions.is_dir():
+        return []
+    return sorted(sessions.glob(f"**/*{thread_id}*.jsonl"))
+
+
+def role_rollout_exists(codex_home: str, thread_id: str) -> bool:
+    return bool(role_rollout_paths(Path(codex_home), thread_id))
+
+
+def validate_role_receipts(receipts: dict[str, dict[str, Any]], *, require_production: bool = False) -> list[str]:
     failures: list[str] = []
     for role in CODEX_ROLES:
         if role not in receipts:
@@ -314,6 +327,43 @@ def validate_role_receipts(receipts: dict[str, dict[str, Any]]) -> list[str]:
             value = receipt.get(key)
             if not isinstance(value, list) or not all(isinstance(item, str) and item for item in value):
                 failures.append(f"{role}:{key}")
+        if require_production:
+            if receipt.get("production_eligible") is not True:
+                failures.append(f"{role}:production_eligible")
+            if receipt.get("resume_verified") is not True:
+                failures.append(f"{role}:resume_verified")
+            for key in (
+                "launch_command",
+                "launch_prompt_sha256",
+                "launch_exit_code",
+                "launch_started_utc",
+                "launch_finished_utc",
+                "resume_command",
+                "resume_prompt_sha256",
+                "resume_exit_code",
+                "resume_started_utc",
+                "resume_finished_utc",
+            ):
+                if key not in receipt:
+                    failures.append(f"{role}:missing:{key}")
+            if receipt.get("launch_exit_code") != 0:
+                failures.append(f"{role}:launch_exit_code")
+            if receipt.get("resume_exit_code") != 0:
+                failures.append(f"{role}:resume_exit_code")
+            thread_id = str(receipt.get("thread_id", ""))
+            codex_home = str(receipt.get("codex_home", ""))
+            rollout_path = receipt.get("rollout_session_path") or receipt.get("rollout_path")
+            if isinstance(rollout_path, str) and rollout_path:
+                path = Path(rollout_path)
+                if not path.is_file():
+                    failures.append(f"{role}:rollout_missing")
+                else:
+                    try:
+                        path.relative_to(Path(codex_home))
+                    except ValueError:
+                        failures.append(f"{role}:rollout_wrong_codex_home")
+            elif not role_rollout_exists(codex_home, thread_id):
+                failures.append(f"{role}:rollout_missing")
     for field in ("thread_id", "codex_home", "worktree", "local_branch"):
         values = [str(receipts[role].get(field, "")) for role in CODEX_ROLES]
         if len(set(values)) != len(values):
@@ -323,7 +373,7 @@ def validate_role_receipts(receipts: dict[str, dict[str, Any]]) -> list[str]:
 
 def cmd_validate_role_receipts(args: argparse.Namespace) -> int:
     receipts = load_role_receipts([path.resolve() for path in args.receipt])
-    failures = validate_role_receipts(receipts)
+    failures = validate_role_receipts(receipts, require_production=args.require_production)
     result = {
         "schema": "CARE_AGENT_FLOW_V3_ROLE_RECEIPT_VALIDATION",
         "status": "PASS" if not failures else "FAIL",
@@ -348,6 +398,19 @@ def build_controller_start_command(codex_bin: str, worktree: Path, thread_id: st
     return [codex_bin, "exec", "-C", str(worktree), "resume", thread_id, "-"]
 
 
+def role_codex_env(codex_home: str, worktree: Path | None = None) -> dict[str, str]:
+    env = os.environ.copy()
+    env["CODEX_HOME"] = codex_home
+    env["CODEX_PERSISTENT_HOME"] = codex_home
+    env["CODEX_HOME_OVERRIDE"] = codex_home
+    env["CODEX_RESPECT_CODEX_HOME"] = "1"
+    env["CODEX_USE_RUNTIME_HOME"] = "0"
+    if worktree is not None:
+        env["CODEX_REPO_ROOT"] = str(worktree)
+        env["CODEX_RESPECT_REPO_ROOT"] = "1"
+    return env
+
+
 def resume_command_worktree(command: list[str]) -> Path | None:
     for flag in ("-C", "--cd"):
         if flag in command:
@@ -369,6 +432,22 @@ def is_pid_running(pid: int) -> bool:
     return True
 
 
+def pid_command(pid: int) -> str:
+    cp = subprocess.run(
+        ["ps", "-p", str(pid), "-o", "command="],
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    return cp.stdout.strip() if cp.returncode == 0 else ""
+
+
+def pid_looks_like_codex(pid: int) -> bool:
+    command = pid_command(pid)
+    return "codex" in command and (" exec" in command or "codex.js" in command)
+
+
 def active_process_path(state_root: Path, task_id: str, role: str) -> Path:
     return state_root / task_id / f"{role}_active_process.json"
 
@@ -383,7 +462,8 @@ def role_active_process(state_root: Path, task_id: str, role: str) -> dict[str, 
         return None
     pid = data.get("pid")
     if isinstance(pid, int) and is_pid_running(pid) and data.get("exit_code") is None:
-        return data
+        if pid_looks_like_codex(pid) or process_has_child(pid):
+            return data
     return None
 
 
@@ -460,12 +540,8 @@ def execute_live_resume(
     active_path = active_process_path(state_root, task_id, role)
     active_path.parent.mkdir(parents=True, exist_ok=True)
 
-    env = os.environ.copy()
-    env["CODEX_HOME"] = codex_home
-    env["CODEX_PERSISTENT_HOME"] = codex_home
     worktree = resume_command_worktree(command)
-    if worktree:
-        env["CODEX_REPO_SLUG"] = worktree.name
+    env = role_codex_env(codex_home, worktree)
     proc = popen_factory(
         command,
         stdin=subprocess.PIPE,
@@ -1405,6 +1481,11 @@ def start_care_ase_controller_from_frozen_contract(
     shell_command = (
         f"CODEX_HOME={shlex.quote(codex_home)} "
         f"CODEX_PERSISTENT_HOME={shlex.quote(codex_home)} "
+        f"CODEX_HOME_OVERRIDE={shlex.quote(codex_home)} "
+        "CODEX_RESPECT_CODEX_HOME=1 "
+        "CODEX_USE_RUNTIME_HOME=0 "
+        "CODEX_RESPECT_REPO_ROOT=1 "
+        f"CODEX_REPO_ROOT={shlex.quote(str(worktree))} "
         f"{shlex.join(command)} "
         f"< {shlex.quote(str(prompt_path))} "
         f"> {shlex.quote(str(stdout_path))} "
@@ -1520,9 +1601,7 @@ def create_initial_role_thread(
         "Do not run tools and do not edit files. Reply exactly SESSION_READY."
     )
     command = [codex_bin, "exec", "--json", "-C", str(worktree), "-"]
-    env = os.environ.copy()
-    env["CODEX_HOME"] = codex_home
-    env["CODEX_PERSISTENT_HOME"] = codex_home
+    env = role_codex_env(codex_home, worktree)
     started = now()
     cp = subprocess.run(
         command,
@@ -1548,6 +1627,9 @@ def create_initial_role_thread(
             f"{role}:initial_thread_create_failed:{cp.returncode}:"
             f"{cp.stderr.decode('utf-8', 'replace')[:200]}"
         )
+    rollout_paths = role_rollout_paths(Path(codex_home), thread_id)
+    if not rollout_paths:
+        raise RuntimeErrorV3(f"{role}:initial_thread_missing_rollout")
     thread_file.parent.mkdir(parents=True, exist_ok=True)
     thread_file.write_text(thread_id + "\n", encoding="utf-8")
     return {
@@ -1555,6 +1637,9 @@ def create_initial_role_thread(
         "role": role,
         "thread_id": thread_id,
         "command": shlex.join(command),
+        "codex_home": codex_home,
+        "worktree": str(worktree),
+        "rollout_session_path": str(rollout_paths[0]),
         "prompt_sha256": sha_bytes(prompt.encode("utf-8")),
         "started_utc": started,
         "finished_utc": now(),
@@ -1619,6 +1704,11 @@ def start_care_ase_verifier_from_frozen_contract(
     shell_command = (
         f"CODEX_HOME={shlex.quote(codex_home)} "
         f"CODEX_PERSISTENT_HOME={shlex.quote(codex_home)} "
+        f"CODEX_HOME_OVERRIDE={shlex.quote(codex_home)} "
+        "CODEX_RESPECT_CODEX_HOME=1 "
+        "CODEX_USE_RUNTIME_HOME=0 "
+        "CODEX_RESPECT_REPO_ROOT=1 "
+        f"CODEX_REPO_ROOT={shlex.quote(str(worktree))} "
         f"{shlex.join(command)} "
         f"< {shlex.quote(str(prompt_path))} "
         f"> {shlex.quote(str(stdout_path))} "
@@ -1968,6 +2058,11 @@ def start_care_ase_executor_from_verifier_freeze(
     shell_command = (
         f"CODEX_HOME={shlex.quote(codex_home)} "
         f"CODEX_PERSISTENT_HOME={shlex.quote(codex_home)} "
+        f"CODEX_HOME_OVERRIDE={shlex.quote(codex_home)} "
+        "CODEX_RESPECT_CODEX_HOME=1 "
+        "CODEX_USE_RUNTIME_HOME=0 "
+        "CODEX_RESPECT_REPO_ROOT=1 "
+        f"CODEX_REPO_ROOT={shlex.quote(str(worktree))} "
         f"{shlex.join(command)} "
         f"< {shlex.quote(str(prompt_path))} "
         f"> {shlex.quote(str(stdout_path))} "
@@ -2916,6 +3011,7 @@ def parser() -> argparse.ArgumentParser:
 
     q = sub.add_parser("validate-role-receipts")
     q.add_argument("--receipt", type=Path, action="append", required=True)
+    q.add_argument("--require-production", action="store_true")
     q.add_argument("--output", type=Path)
     q.set_defaults(func=cmd_validate_role_receipts)
 
