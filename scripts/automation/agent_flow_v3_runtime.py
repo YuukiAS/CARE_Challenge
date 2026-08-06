@@ -2609,7 +2609,17 @@ def care_ase_verifier_repair_ready_for_controller_update(
     else:
         failures.append("verifier_repair_prompt_missing")
 
-    receipt = completed_role_resume_receipt(args.state_root.resolve(), "care-ase-faithful", "verifier")
+    role_state_roots: list[Path] = []
+    for candidate in [args.state_root.resolve(), args.state_root.resolve().parent]:
+        if candidate not in role_state_roots:
+            role_state_roots.append(candidate)
+    receipt = None
+    receipt_state_root = None
+    for candidate in role_state_roots:
+        receipt = completed_role_resume_receipt(candidate, "care-ase-faithful", "verifier")
+        if receipt is not None:
+            receipt_state_root = candidate
+            break
     if receipt is None:
         failures.append("verifier_resume_not_completed")
     elif verifier_prompt_rel is not None:
@@ -2659,6 +2669,8 @@ def care_ase_verifier_repair_ready_for_controller_update(
         "status": "READY" if not failures else "NOT_READY",
         "failures": failures,
         "verifier_resume_receipt": receipt,
+        "verifier_resume_state_root": str(receipt_state_root) if receipt_state_root is not None else None,
+        "checked_role_state_roots": [str(candidate) for candidate in role_state_roots],
         "verifier_worktree": str(verifier_worktree) if verifier_worktree else None,
         "verifier_head": verifier_head or None,
         "expected_verifier_prompt": str((repo / verifier_prompt_rel).resolve()) if verifier_prompt_rel is not None else None,
