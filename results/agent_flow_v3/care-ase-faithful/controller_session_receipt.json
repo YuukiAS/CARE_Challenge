@@ -1,12 +1,12 @@
 {
   "schema": "CARE_AGENT_FLOW_V3_ROLE_SESSION_RECEIPT",
   "role": "controller",
-  "thread_id": "019fd2ea-8bac-7e22-b699-6c1301ebb863",
-  "codex_home": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_CONTROLLER",
+  "thread_id": "019fd7b1-3b6d-7ed2-bc5f-5610333009af",
+  "codex_home": "/users/a/e/aereinh/.codex-homes/controller",
   "worktree": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/controller",
   "local_branch": "local/controller/care-ase-faithful",
-  "pid_or_process_status": "cli_smoke_exited_0_not_live_controller",
-  "log_path": "/users/a/e/aereinh/.agent-flow-v3/care-ase-faithful/controller_cli_smoke.log",
+  "pid_or_process_status": "replacement_controller_current_thread",
+  "log_path": "/users/a/e/aereinh/.agent-flow-v3/care-ase-faithful/controller_replacement_after_executor_20260806T152903Z.stdout.jsonl",
   "state_path": "/users/a/e/aereinh/.agent-flow-v3/care-ase-faithful/controller_state.json",
   "write_scope": [
     "automation/agent_flow_v3/tasks/care-ase-faithful/**",
@@ -22,7 +22,10 @@
     "tests/**",
     "validators/**"
   ],
-  "last_commit_sha": "65bcb1e164a723c16788ef4267a4dbe99ebd5486",
+  "last_commit_sha": "a1609a08aa2233c5495290554a8ece2852e5e2f8",
   "started_utc": "2026-08-05T17:14:43Z",
-  "updated_utc": "2026-08-05T17:14:43Z"
+  "updated_utc": "2026-08-06T15:34:38Z",
+  "replacement_for_thread_id": "019fd2ea-8bac-7e22-b699-6c1301ebb863",
+  "replacement_reason": "old Controller thread could not be resumed: no rollout found",
+  "role_plan_codex_home": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_CONTROLLER"
 }

@@ -1,15 +1,19 @@
 {
   "schema": "CARE_AGENT_FLOW_V3_RUNTIME_RECEIPT_MANIFEST",
   "task_id": "care-ase-faithful",
-  "status": "infrastructure_smoke_partial_blocked_before_request_arm",
+  "status": "ready_for_planner_review_nonterminal",
   "receipts": [
     "results/agent_flow_v3/care-ase-faithful/activation/controller_activation_receipt.json",
     "results/agent_flow_v3/care-ase-faithful/visual_smoke/visual_source_access_receipt.json",
     "results/agent_flow_v3/care-ase-faithful/visual_smoke/planner_visual_observation_receipt.json",
     "results/agent_flow_v3/care-ase-faithful/visual_smoke/critic_visual_observation_receipt.json",
     "results/agent_flow_v3/care-ase-faithful/controller_session_receipt.json",
+    "results/agent_flow_v3/care-ase-faithful/controller_replacement_receipt.json",
     "results/agent_flow_v3/care-ase-faithful/verifier_session_receipt.json",
     "results/agent_flow_v3/care-ase-faithful/executor_session_receipt.json",
+    "results/agent_flow_v3/care-ase-faithful/controller_integration_receipt.json",
+    "results/agent_flow_v3/care-ase-faithful/controller_ci_receipt.json",
+    "results/agent_flow_v3/care-ase-faithful/planner_review_packet.json",
     "results/agent_flow_v3/care-ase-faithful/session_smoke/role_receipt_validation.json",
     "results/agent_flow_v3/care-ase-faithful/watcher_smoke/exact_resume_receipt.json",
     "results/agent_flow_v3/care-ase-faithful/watcher_smoke/wake_smoke_receipt.json",
@@ -27,6 +31,10 @@
     "verifier": "results/agent_flow_v3/care-ase-faithful/verifier_session_receipt.json",
     "executor": "results/agent_flow_v3/care-ase-faithful/executor_session_receipt.json"
   },
-  "scheduled_receipt_absence_reason": "No callable Scheduled GPT Planner/Critic task connector was available in this Codex turn, so scheduled visual smoke and real GPT repair-loop smoke were not run.",
-  "updated_utc": "2026-08-05T17:22:30Z"
+  "scheduled_receipt_absence_reason": null,
+  "review_round": 0,
+  "external_wait_started_utc": "2026-08-06T15:34:38Z",
+  "external_wait_deadline_utc": "2026-08-06T19:49:37Z",
+  "next_action": "Scheduled Planner reviews round 0; Controller must not mark PLANNER_PASS.",
+  "updated_utc": "2026-08-06T15:34:38Z"
 }
