@@ -1,0 +1,237 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_PLANNER_REVIEW",
+  "task_id": "care-ase-faithful",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "review_round": 0,
+  "observed_state": "READY_FOR_PLANNER_REVIEW",
+  "review_mode": "IMPLEMENTATION_REVIEW",
+  "frozen_contract_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "integration_commit_sha": "f94a663188249612ab783ac3e1da84f04a6383e2",
+  "implementation_code_integration_commit_sha": "9709d972cfb455dc18017895dd3765163d9b45af",
+  "implementation_fingerprint_sha256": "000aa0564427d118a4cc361a7a7c09ba4d671851aacd9b3b28e4166c072a0dd5",
+  "verifier_fingerprint_sha256": "b3f1a0f630b346494cbeb7f1ae92764ab993047e373a0a1e23d77c194f8cecdf",
+  "ci": {
+    "workflow": "CARE Agent-Flow v3 deterministic CI",
+    "run_id": 31116413047,
+    "checked_commit_sha": "f94a663188249612ab783ac3e1da84f04a6383e2",
+    "conclusion": "success",
+    "planner_independent_lookup_note": "GitHub combined-status endpoint returned no legacy status contexts; the tracked Actions receipt is bound to the exact commit and reports success."
+  },
+  "evidence_reviewed": {
+    "contract": [
+      "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md"
+    ],
+    "implementation": [
+      "src/care_myocardium/models/care_ase/core.py",
+      "src/care_myocardium/models/care_ase/__init__.py",
+      "src/care_myocardium/training/care_ase_trainer.py",
+      "src/care_myocardium/training/care_ase_sampler.py",
+      "src/care_myocardium/inference/care_ase_r2_decode.py",
+      "src/care_myocardium/inference/care_ase_r2_full_volume.py",
+      "scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py"
+    ],
+    "verification": [
+      "validators/care_ase_faithful/validate_contract_evidence.py",
+      "tests/care_ase_faithful/test_verifier_package.py",
+      "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/protected_known_bad_manifest.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/verifier_freeze_receipt.json"
+    ],
+    "runtime_and_integration": [
+      "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json",
+      "results/agent_flow_v3/care-ase-faithful/implementation/implementation_fingerprint.json",
+      "results/agent_flow_v3/care-ase-faithful/implementation/forward_backward_probe_receipt.json",
+      "results/agent_flow_v3/care-ase-faithful/implementation/inference_probe_receipt.json",
+      "results/agent_flow_v3/care-ase-faithful/implementation/implementation_source_manifest.json",
+      "results/agent_flow_v3/care-ase-faithful/controller_integration_receipt.json",
+      "results/agent_flow_v3/care-ase-faithful/controller_ci_receipt.json",
+      "results/agent_flow_v3/care-ase-faithful/production_role_session_receipt.json",
+      "results/agent_flow_v3/care-ase-faithful/planner_review_packet.json"
+    ]
+  },
+  "independent_review_summary": {
+    "role_session_status": "The replacement production Controller, Verifier and Executor sessions have distinct CODEX_HOME/worktree/thread bindings and same-home exact-resume receipts. This repairs the earlier rollout-absence problem but does not validate the scientific implementation.",
+    "ci_status": "Repository-safe CI passed for the exact state commit.",
+    "implementation_status": "The candidate contains a real packaged model and executes synthetic forward/backward and inference probes, but it does not satisfy several explicit frozen architecture clauses and its evidence packet overclaims unexecuted properties.",
+    "verification_status": "The frozen Verifier primarily validates self-declared JSON fields and synthetic mutations of that same JSON. It does not independently derive the critical claims from the exact implementation, runtime receipts, or code-level adversarial mutations.",
+    "blocking_gap_count": 5
+  },
+  "decision": "PLANNER_REVISE_BOTH",
+  "blocking_findings": [
+    {
+      "finding_id": "ASE_R0_VERIFIER_DECLARATION_ONLY_GATE",
+      "target_role": "verifier",
+      "severity": "blocking_verification_gap",
+      "affected_files_or_functions": [
+        "validators/care_ase_faithful/validate_contract_evidence.py::reference_evidence",
+        "validators/care_ase_faithful/validate_contract_evidence.py::validate_evidence",
+        "validators/care_ase_faithful/validate_contract_evidence.py::known_bad_evidence",
+        "tests/care_ase_faithful/test_verifier_package.py",
+        "results/agent_flow_v3/care-ase-faithful/verification/protected_known_bad_manifest.json"
+      ],
+      "why_it_matters": "The frozen verifier accepts booleans, numbers and syntactically valid SHA-256 strings supplied by the Executor evidence builder. Its protected cases mutate those same declarations rather than mutating or intercepting the executable CARE-ASE graph, loss, sampler, checkpoint or inference paths. Consequently a canned packet can claim stock parity, module authority, no-T2 safety, exact resume, fair evaluation and hard-negative binding without the verifier recomputing any of them. This directly violates the contract requirement that static or canned receipts must not pass without real execution.",
+      "required_repair": [
+        "Replace declaration-only acceptance for critical categories with independent executable checks bound to the exact integration commit and source manifest.",
+        "Recompute file and receipt hashes from tracked bytes; verify command, stdout and stderr hashes against actual artifacts rather than only checking 64-character syntax.",
+        "Add independent graph/topology checks for the exact SliceExtentHead, edema residual dilation blocks and injury-classifier initialization.",
+        "Add executable intervention tests that disable or perturb each required module and verify the intended final logit changes.",
+        "Add real no-T2 and mixed-batch hook/gradient checks, real loss-path checks, exact checkpoint save/reload/resume checks and single-tile versus forced-multi-tile inference checks.",
+        "Convert protected known-bad fixtures into code/runtime mutations or monkeypatches that would pass if the implementation had the corresponding downgrade; do not merely flip evidence booleans."
+      ],
+      "required_regression_evidence": [
+        "A packet with every declaration set to the passing value but missing underlying receipts must fail.",
+        "A packet whose receipt hash does not match the tracked receipt bytes must fail.",
+        "Replacing the extent implementation with the current Conv3d/alias shortcut must fail an exact topology test.",
+        "Removing residual addition from any edema dilation block must fail.",
+        "Changing the injury classifier initialization away from the stock class-4/class-5 mean must fail.",
+        "At least one protected fixture per critical category must modify executable behavior and be rejected after an actual forward/backward or inference run."
+      ],
+      "forbidden_workarounds": [
+        "Do not add more self-declared booleans or hash-shaped placeholder strings.",
+        "Do not let the Executor regenerate or edit protected verifier fixtures.",
+        "Do not weaken the frozen contract or mark synthetic JSON mutation coverage as executable implementation coverage."
+      ]
+    },
+    {
+      "finding_id": "ASE_R0_SLICE_EXTENT_HEAD_TOPOLOGY_MISMATCH",
+      "target_role": "executor",
+      "severity": "blocking_contract_gap",
+      "affected_files_or_functions": [
+        "src/care_myocardium/models/care_ase/core.py::ComponentHeads",
+        "src/care_myocardium/models/care_ase/core.py::compute_slice_extent_statistics",
+        "src/care_myocardium/models/care_ase/core.py::CAREASE._extent_bias"
+      ],
+      "why_it_matters": "The frozen contract requires two independent quarter-scale SliceExtentHead modules that first compute masked average and masked maximum over H/W and then apply a Conv1d(C,64,3)-GroupNorm-SiLU-Conv1d stack with separate presence and area outputs. The candidate instead uses per-voxel Conv3d heads; scar presence is aliased to scar_quarter_occupancy, and no required Conv1d or GroupNorm extent network exists. This is a direct architecture downgrade, not a naming difference.",
+      "required_repair": [
+        "Implement distinct scar and edema SliceExtentHead modules with the exact frozen Conv1d and GroupNorm topology.",
+        "Feed quarter-scale features through masked H/W average and masked maximum before the 1D sequence network.",
+        "Keep scar extent independent from the scar proposal occupancy head.",
+        "Preserve separate presence and area validity, full-case targets, zero contribution for invalid/padded slices and the single post-aggregation global bias path.",
+        "Update training and inference to call the same canonical extent-statistics and extent-head implementation."
+      ],
+      "required_regression_evidence": [
+        "Module introspection proves two distinct extent heads and the exact Conv1d/GN layer sequence.",
+        "Parameter identity proves scar extent presence is not the scar proposal occupancy parameter.",
+        "Intervention of each extent head changes only its intended pathology final logits after the ramp is active.",
+        "All-invalid and partial-H/W slices produce exactly zero bias, loss and gradient.",
+        "Single-tile and forced-multi-tile full-volume paths match within the frozen tolerance."
+      ],
+      "forbidden_workarounds": [
+        "Do not relabel the existing Conv3d proposal/context heads as SliceExtentHead.",
+        "Do not preserve the scar occupancy alias.",
+        "Do not satisfy the check only through evidence metadata."
+      ]
+    },
+    {
+      "finding_id": "ASE_R0_EDEMA_RESIDUAL_AND_INJURY_INIT_MISMATCH",
+      "target_role": "executor",
+      "severity": "blocking_contract_gap",
+      "affected_files_or_functions": [
+        "src/care_myocardium/models/care_ase/core.py::EdemaDilationContextBlock",
+        "src/care_myocardium/models/care_ase/core.py::ComponentHeads.__init__",
+        "src/care_myocardium/models/care_ase/core.py::CAREASE.__init__"
+      ],
+      "why_it_matters": "The edema dilation paths are sequential convolution blocks whose outputs are projected as evidence; they contain no residual identity/addition despite the frozen requirement for real dilation-1/2/4 residual blocks in the full edema path. In addition, edema_injury is a fresh default-initialized Conv3d and is not initialized from the shape-compatible mean of stock class-4 and class-5 classifier rows. Both are explicit frozen initialization/topology requirements.",
+      "required_repair": [
+        "Implement true residual dilation blocks at dilations 1, 2 and 4 with an explicit identity or shape-compatible projection and residual addition.",
+        "Ensure all three residual outputs causally enter the full-resolution edema reconstruction path.",
+        "Initialize the injury classifier from the shape-compatible mean of stock class-4 and class-5 rows and record exact byte/value comparison evidence.",
+        "Keep the boundary path learnable and independently supervised."
+      ],
+      "required_regression_evidence": [
+        "Topology hooks prove each dilation block executes a residual addition.",
+        "Zeroing or bypassing each dilation residual changes z_pure_edema and the final class competition on a T2-present probe.",
+        "The initialized injury classifier matches the expected stock-row mean before any probe update.",
+        "The two-backward gradient probe reaches dilation upstream parameters after the named projections become nonzero."
+      ],
+      "forbidden_workarounds": [
+        "Do not call a parallel convolution output a residual block without an addition.",
+        "Do not use an arbitrary random injury head and assert initialization through metadata.",
+        "Do not reintroduce a local crop, hard ROI or second complete backbone."
+      ]
+    },
+    {
+      "finding_id": "ASE_R0_RUNTIME_PROBES_DO_NOT_TEST_THE_FROZEN_TRAINING_CONTRACT",
+      "target_role": "executor",
+      "severity": "blocking_runtime_evidence_gap",
+      "affected_files_or_functions": [
+        "scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py::run_forward_backward_probe",
+        "scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py::run_inference_probe",
+        "scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py::implementation_evidence",
+        "results/agent_flow_v3/care-ase-faithful/implementation/forward_backward_probe_receipt.json",
+        "results/agent_flow_v3/care-ase-faithful/implementation/inference_probe_receipt.json",
+        "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json"
+      ],
+      "why_it_matters": "The forward/backward probe uses a random tensor and optimizes mean(z_scar)+mean(z_pure_edema), yielding a negative scalar that is not the frozen CARE-ASE total loss and does not exercise labels, eligibility masks, loss denominators, reliable-edema supervision, mixed-batch no-T2 behavior or sampler outputs. The inference probe also uses random data with a patch equal to the entire volume, so it does not establish real-case preprocessing, forced multi-tile equivalence, global-bias single application or deployment loading. The evidence builder then hardcodes many unexecuted claims as true.",
+      "required_repair": [
+        "Run zero-credit probes on at least one actual train-only Dataset501 case for scar and one eligible T2-present case for edema, plus a mixed batch containing a no-T2 row.",
+        "Invoke the canonical target construction, sampler descriptor and complete frozen total-loss function; report every loss value, eligibility count and denominator.",
+        "Perform the two-backward projection/upstream gradient test using the real total loss rather than a mean-logit surrogate.",
+        "Run actual no-T2 hooks and parameter-gradient accounting in a mixed batch.",
+        "Run canonical full-volume inference on a real case twice: one single-tile configuration and one forced multi-tile configuration, with global bias active and exact comparison.",
+        "Regenerate evidence fields only from machine-derived probe outputs."
+      ],
+      "required_regression_evidence": [
+        "Receipts identify train-only case IDs, split hash, preprocessing grid, availability and target-cache hashes without exposing protected image data.",
+        "All required loss terms are finite, included in the total and report nonzero or correctly excluded denominators.",
+        "No-T2 rows have zero edema calls, supervision, loss denominator contribution and edema parameter gradient in the same mixed-batch run.",
+        "Single-tile and forced-multi-tile outputs agree under the frozen semantics.",
+        "The evidence builder fails closed when any required real-case receipt is absent."
+      ],
+      "forbidden_workarounds": [
+        "Do not count random tensors or a mean-logit surrogate as real training-case loss evidence.",
+        "Do not hardcode passing booleans from source-string presence.",
+        "Do not perform formal optimizer steps or count these probes as training."
+      ]
+    },
+    {
+      "finding_id": "ASE_R0_UNBOUND_HARD_NEGATIVE_RESUME_AND_EVALUATION_CLAIMS",
+      "target_role": "both",
+      "severity": "blocking_provenance_gap",
+      "affected_files_or_functions": [
+        "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json",
+        "results/agent_flow_v3/care-ase-faithful/implementation/implementation_fingerprint.json",
+        "scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py::implementation_evidence",
+        "validators/care_ase_faithful/validate_contract_evidence.py::validate_evidence"
+      ],
+      "why_it_matters": "The hard-negative record names synthetic_zero_credit_no_case_selection and fills the required mask, coordinate, checkpoint and grid fields with hashes of unrelated generated artifacts rather than a canonical OOF prediction bound to a real train case. The evidence packet also claims exact checkpoint/resume continuity, self-contained deployment and fair full-volume evaluation, but its receipt manifest contains only synthetic forward/backward and inference probes and no checkpoint-resume or evaluator receipt. These claims are therefore unbound.",
+      "required_repair": [
+        "Bind at least one real canonical OOF hard-negative example to case ID, split/fold, prediction artifact, actual stock checkpoint SHA, preprocessed grid SHA, mask SHA and coordinate descriptor SHA; record requested and resolved sampler categories.",
+        "Add an exact schema-v4 save/reload/resume probe that compares the next optimizer step, scheduler/ramp, optimizer state and all RNG/cursor states against an uninterrupted control.",
+        "Add deployment-load evidence from tracked code plus explicitly declared relocatable assets.",
+        "Add a fair evaluator smoke receipt proving identical case population, TTA, decode and metric interface for CARE and baseline.",
+        "Have the Verifier independently resolve and hash all referenced artifacts."
+      ],
+      "required_regression_evidence": [
+        "Synthetic or unrelated hashes cannot satisfy the hard-negative validator.",
+        "Cross-fold, contract-drift, missing-asset and altered-RNG resume fixtures fail closed.",
+        "The next-step output/state after reload matches the uninterrupted control.",
+        "Evaluator receipt lists all required metrics and proves shared case/TTA/decode population.",
+        "All new receipts are included in the implementation fingerprint and runtime receipt manifest."
+      ],
+      "forbidden_workarounds": [
+        "Do not use hash-shaped placeholders or hashes of architecture/registry files as OOF bindings.",
+        "Do not assert checkpoint/resume or evaluation properties without executable receipts.",
+        "Do not access outer data or perform model selection."
+      ]
+    }
+  ],
+  "prior_finding_closure": [],
+  "nonblocking_observations": [
+    "The exact GitHub Actions run bound to the state commit completed successfully; this only establishes repository-safe checks.",
+    "The replacement production role sessions now have distinct same-CODEX_HOME exact-resume proof. Their success does not cure the stale historical role IDs embedded in the implementation evidence; regenerated evidence should bind the active production receipts or explicitly distinguish historical implementation provenance from future repair sessions.",
+    "No training, outer access, Docker/upload, organizer email or develop-to-main merge was observed."
+  ],
+  "next_action": "Resume the exact production Verifier first to harden executable verification, freeze a new verifier fingerprint, then resume the exact production Executor to repair implementation and regenerate evidence. Controller must integrate Verifier then Executor, rerun all local/server/hosted checks, increment review_round to 1 and return READY_FOR_PLANNER_REVIEW.",
+  "forbidden_actions_confirmed": [
+    "no formal training",
+    "no outer access",
+    "no develop-to-main merge",
+    "no Docker build or upload",
+    "no validation/challenge upload",
+    "no organizer email",
+    "no Planner implementation edits"
+  ],
+  "updated_utc": "2026-08-06T16:04:00Z"
+}
