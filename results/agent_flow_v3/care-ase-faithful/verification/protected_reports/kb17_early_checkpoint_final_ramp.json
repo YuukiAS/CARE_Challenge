@@ -1,7 +1,8 @@
 {
-  "failure_count": 1,
+  "failure_count": 2,
   "failures": [
-    "kb17.final_step_ramp"
+    "kb17.final_step_ramp",
+    "artifact_binding.receipt_paths.missing"
   ],
   "known_bad_case_id": "kb17_early_checkpoint_final_ramp",
   "passed": false,

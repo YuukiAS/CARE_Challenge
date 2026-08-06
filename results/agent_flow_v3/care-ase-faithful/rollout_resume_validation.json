@@ -1,0 +1,66 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_ROLLOUT_RESUME_VALIDATION_V1",
+  "task_id": "care-ase-faithful",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "review_round": 0,
+  "public_role_receipt_validation": {
+    "command": "${CARE_REPO_ROOT}/envs/env_CARE/bin/python scripts/automation/agent_flow_v3_runtime.py validate-role-receipts --receipt results/agent_flow_v3/care-ase-faithful/controller_session_receipt.json --receipt results/agent_flow_v3/care-ase-faithful/verifier_session_receipt.json --receipt results/agent_flow_v3/care-ase-faithful/executor_session_receipt.json",
+    "expected": "PASS ordinary validation; public placeholders are not production validation source"
+  },
+  "private_role_receipt_validation": {
+    "command": "${CARE_REPO_ROOT}/envs/env_CARE/bin/python scripts/automation/agent_flow_v3_runtime.py validate-role-receipts --require-production --receipt ${CARE_AGENT_FLOW_STATE_ROOT}/care-ase-faithful/private/controller_session_receipt.json --receipt ${CARE_AGENT_FLOW_STATE_ROOT}/care-ase-faithful/private/verifier_session_receipt.json --receipt ${CARE_AGENT_FLOW_STATE_ROOT}/care-ase-faithful/private/executor_session_receipt.json",
+    "expected": "PASS production validation against exact server-local paths"
+  },
+  "roles": {
+    "controller": {
+      "thread_id": "019fd7c0-2979-7061-94d3-99577ba9c834",
+      "codex_home": "${CARE_CODEX_HOME_ROOT}/CARE_care-ase-faithful_CONTROLLER",
+      "worktree": "${CARE_AGENT_FLOW_WORKTREE_ROOT}/care-ase-faithful/controller",
+      "rollout_session_path": "${CARE_CODEX_HOME_ROOT}/CARE_care-ase-faithful_CONTROLLER/sessions/2026/08/06/rollout-2026-08-06T11-45-22-019fd7c0-2979-7061-94d3-99577ba9c834.jsonl",
+      "launch_prompt_sha256": "f4cb95d1f1560fe048f540b40a3149e2f6fc2836f2b82b0dc2187c359ba7c231",
+      "resume_prompt_sha256": "fe3f0a8745a2b27a405fd727818747f12ade17b7c82388f79b760526958fe0a8",
+      "launch_exit_code": 0,
+      "resume_exit_code": 0
+    },
+    "verifier": {
+      "thread_id": "019fd7c1-2d99-74b2-8c95-68ed129613e8",
+      "codex_home": "${CARE_CODEX_HOME_ROOT}/CARE_care-ase-faithful_VERIFIER",
+      "worktree": "${CARE_AGENT_FLOW_WORKTREE_ROOT}/care-ase-faithful/verifier",
+      "rollout_session_path": "${CARE_CODEX_HOME_ROOT}/CARE_care-ase-faithful_VERIFIER/sessions/2026/08/06/rollout-2026-08-06T11-46-29-019fd7c1-2d99-74b2-8c95-68ed129613e8.jsonl",
+      "launch_prompt_sha256": "15e07dc8f64e2d0d3cb18e488536de67fe5927fc096b66ecb04b378fb15c3be7",
+      "resume_prompt_sha256": "bcf06068d6da0183519bf86eb5523827eaa270847ebc3ac21e2f5adc14df446c",
+      "launch_exit_code": 0,
+      "resume_exit_code": 0
+    },
+    "executor": {
+      "thread_id": "019fd7c1-8358-7632-9022-367e62ecfbd1",
+      "codex_home": "${CARE_CODEX_HOME_ROOT}/CARE_care-ase-faithful_EXECUTOR",
+      "worktree": "${CARE_AGENT_FLOW_WORKTREE_ROOT}/care-ase-faithful/executor",
+      "rollout_session_path": "${CARE_CODEX_HOME_ROOT}/CARE_care-ase-faithful_EXECUTOR/sessions/2026/08/06/rollout-2026-08-06T11-46-51-019fd7c1-8358-7632-9022-367e62ecfbd1.jsonl",
+      "launch_prompt_sha256": "e435ff62900dd18eaa583d01bc290edc85353ea222333a1ce0aa42968012fa98",
+      "resume_prompt_sha256": "b1ab9a7014f237bcfc92a9bda296ec091ab71487a8f58655d485ef9bd71dc5d9",
+      "launch_exit_code": 0,
+      "resume_exit_code": 0
+    }
+  },
+  "executor_provenance_note": "Executor production no-op thread is future exact-resume only; implementation provenance remains executor_retry_thread_id 019fd795-7c46-7972-93b9-ff4357f17a06 and commit b7d1a3bb60a47d10ed14f23a868acf427f0f4b6c.",
+  "updated_utc": "2026-08-06T16:08:42Z",
+  "observed_validation_results": {
+    "public_role_receipts": {
+      "status": "PASS",
+      "failures": [],
+      "updated_utc": "2026-08-06T16:08:20Z"
+    },
+    "private_exact_role_receipts_require_production": {
+      "status": "PASS",
+      "failures": [],
+      "updated_utc": "2026-08-06T16:08:27Z"
+    },
+    "requested_checks": {
+      "unittest_tests_automation_test_agent_flow_v3": "PASS",
+      "validate_agent_flow_v3_repo_root": "PASS",
+      "py_compile_agent_flow_v3_runtime_to_tmp": "PASS",
+      "git_diff_check": "PASS"
+    }
+  }
+}

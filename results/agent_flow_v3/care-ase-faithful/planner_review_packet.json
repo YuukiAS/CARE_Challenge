@@ -1,0 +1,33 @@
+{
+  "schema": "CARE_ASE_FAITHFUL_PLANNER_REVIEW_PACKET_V1",
+  "task_id": "care-ase-faithful",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "created_utc": "2026-08-06T15:35:27Z",
+  "decision_requested": "PLANNER_REVIEW",
+  "current_state_after_commit": "READY_FOR_PLANNER_REVIEW",
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "verifier_commit_sha": "dd150398e6c779a8e45b4665361024ec9f0e2ade",
+  "verifier_fingerprint_sha256": "b3f1a0f630b346494cbeb7f1ae92764ab993047e373a0a1e23d77c194f8cecdf",
+  "executor_local_commit_sha": "b7d1a3bb60a47d10ed14f23a868acf427f0f4b6c",
+  "controller_code_integration_commit_sha": "9709d972cfb455dc18017895dd3765163d9b45af",
+  "controller_integration_state_commit_sha": "f94a663188249612ab783ac3e1da84f04a6383e2",
+  "implementation_fingerprint_sha256": "000aa0564427d118a4cc361a7a7c09ba4d671851aacd9b3b28e4166c072a0dd5",
+  "controller_integration_receipt": "results/agent_flow_v3/care-ase-faithful/controller_integration_receipt.json",
+  "controller_ci_receipt": "results/agent_flow_v3/care-ase-faithful/controller_ci_receipt.json",
+  "local_gates": "PASS",
+  "ci_for_integration_state": "PASS",
+  "forbidden_actions": {
+    "formal_training_started": false,
+    "outer_accessed": false,
+    "docker_built_or_uploaded": false,
+    "validation_or_challenge_uploaded": false,
+    "organizer_email_sent": false,
+    "develop_to_main_merge": false
+  },
+  "planner_allowed_decisions": [
+    "PLANNER_REVISE_EXECUTOR",
+    "PLANNER_REVISE_VERIFIER",
+    "PLANNER_REVISE_BOTH",
+    "PLANNER_PASS"
+  ]
+}

@@ -1,8 +1,9 @@
 {
-  "failure_count": 2,
+  "failure_count": 3,
   "failures": [
     "kb06.double_zero",
-    "kb06.second_backward_grad"
+    "kb06.second_backward_grad",
+    "artifact_binding.receipt_paths.missing"
   ],
   "known_bad_case_id": "kb06_dead_gradient_double_zero",
   "passed": false,

@@ -148,6 +148,69 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         }
         self.assertIn("duplicate:thread_id", RUNTIME.validate_role_receipts(receipts))
 
+    def test_production_role_receipt_requires_rollout_in_codex_home(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+
+            def receipt(role: str, idx: int, rollout_home: Path | None = None) -> dict[str, object]:
+                codex_home = root / f"{role}_home"
+                codex_home.mkdir(exist_ok=True)
+                thread_id = f"thread-{idx}"
+                rollout_path = None
+                if rollout_home is not None:
+                    rollout_path = rollout_home / "sessions" / "2026" / "08" / "06" / f"rollout-{thread_id}.jsonl"
+                    rollout_path.parent.mkdir(parents=True, exist_ok=True)
+                    rollout_path.write_text("{}\n", encoding="utf-8")
+                return {
+                    "schema": RUNTIME.ROLE_RECEIPT_SCHEMA,
+                    "role": role,
+                    "thread_id": thread_id,
+                    "codex_home": str(codex_home),
+                    "worktree": str(root / f"{role}_worktree"),
+                    "local_branch": f"local/{role}/test",
+                    "pid_or_process_status": "production_thread_ready",
+                    "log_path": str(root / f"{role}.log"),
+                    "state_path": str(root / f"{role}.json"),
+                    "write_scope": ["results/**"],
+                    "forbidden_scope": ["src/**"],
+                    "last_commit_sha": "a" * 40,
+                    "started_utc": "2026-08-05T00:00:00Z",
+                    "updated_utc": "2026-08-05T00:00:00Z",
+                    "production_eligible": True,
+                    "resume_verified": True,
+                    "launch_command": "codex exec --json -C worktree -",
+                    "launch_prompt_sha256": "b" * 64,
+                    "launch_exit_code": 0,
+                    "launch_started_utc": "2026-08-05T00:00:00Z",
+                    "launch_finished_utc": "2026-08-05T00:00:01Z",
+                    "resume_command": "codex exec -C worktree resume thread -",
+                    "resume_prompt_sha256": "c" * 64,
+                    "resume_exit_code": 0,
+                    "resume_started_utc": "2026-08-05T00:00:02Z",
+                    "resume_finished_utc": "2026-08-05T00:00:03Z",
+                    "rollout_session_path": str(rollout_path) if rollout_path else "",
+                }
+
+            receipts = {
+                role: receipt(role, idx)
+                for idx, role in enumerate(("controller", "verifier", "executor"), start=1)
+            }
+            failures = RUNTIME.validate_role_receipts(receipts, require_production=True)
+            self.assertIn("controller:rollout_missing", failures)
+            self.assertIn("verifier:rollout_missing", failures)
+            self.assertIn("executor:rollout_missing", failures)
+
+            wrong_home = root / "wrong_home"
+            receipts["controller"] = receipt("controller", 1, rollout_home=wrong_home)
+            failures = RUNTIME.validate_role_receipts(receipts, require_production=True)
+            self.assertIn("controller:rollout_wrong_codex_home", failures)
+
+            receipts = {
+                role: receipt(role, idx, rollout_home=root / f"{role}_home")
+                for idx, role in enumerate(("controller", "verifier", "executor"), start=1)
+            }
+            self.assertEqual(RUNTIME.validate_role_receipts(receipts, require_production=True), [])
+
     def test_watcher_routes_executor_revision_to_exact_thread(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -898,7 +961,11 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             self.assertNotIn("--last", FakePopen.calls[0].command)
             self.assertEqual(FakePopen.calls[0].env["CODEX_HOME"], str(root / "codex-home"))
             self.assertEqual(FakePopen.calls[0].env["CODEX_PERSISTENT_HOME"], str(root / "codex-home"))
-            self.assertEqual(FakePopen.calls[0].env["CODEX_REPO_SLUG"], "worktree")
+            self.assertEqual(FakePopen.calls[0].env["CODEX_HOME_OVERRIDE"], str(root / "codex-home"))
+            self.assertEqual(FakePopen.calls[0].env["CODEX_RESPECT_CODEX_HOME"], "1")
+            self.assertEqual(FakePopen.calls[0].env["CODEX_USE_RUNTIME_HOME"], "0")
+            self.assertEqual(FakePopen.calls[0].env["CODEX_REPO_ROOT"], str(root / "worktree"))
+            self.assertEqual(FakePopen.calls[0].env["CODEX_RESPECT_REPO_ROOT"], "1")
             self.assertEqual(FakePopen.calls[0].cwd, str(root / "worktree"))
             self.assertEqual(FakePopen.calls[0].input, b"exact repair prompt\n")
             self.assertEqual(receipt["exit_code"], 0)
@@ -988,9 +1055,21 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
                 "frozen_contract_sha256": "b" * 64,
                 "integration_commit_sha": "c" * 40,
             }
-            result = RUNTIME.evaluate_watcher_event(args, request, current, {"processed_events": []})
+            with mock.patch.object(RUNTIME, "pid_looks_like_codex", return_value=True):
+                result = RUNTIME.evaluate_watcher_event(args, request, current, {"processed_events": []})
             self.assertEqual(result["decision"], "INVALID_EVENT")
             self.assertIn("executor:active_process", result["failures"])
+
+    def test_stale_bash_pane_active_process_does_not_block_resume(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            active_path = RUNTIME.active_process_path(root / "state", "smoke-task", "executor")
+            active_path.parent.mkdir(parents=True)
+            active_path.write_text(json.dumps({"pid": os.getpid(), "exit_code": None}), encoding="utf-8")
+            with mock.patch.object(RUNTIME, "pid_looks_like_codex", return_value=False), mock.patch.object(
+                RUNTIME, "process_has_child", return_value=False
+            ):
+                self.assertIsNone(RUNTIME.role_active_process(root / "state", "smoke-task", "executor"))
 
     def test_watcher_restart_keeps_processed_state(self) -> None:
         args = argparse.Namespace(

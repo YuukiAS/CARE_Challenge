@@ -1,9 +1,10 @@
 {
-  "failure_count": 3,
+  "failure_count": 4,
   "failures": [
     "kb20.completed_optimizer_steps",
     "kb20.visited_stages",
-    "kb20.pending_preempted_counted"
+    "kb20.pending_preempted_counted",
+    "artifact_binding.receipt_paths.missing"
   ],
   "known_bad_case_id": "kb20_incomplete_training_counted",
   "passed": false,

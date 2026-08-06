@@ -1,5 +1,5 @@
 {
-  "created_utc": "2026-08-06T14:37:15Z",
+  "created_utc": "2026-08-06T16:23:01Z",
   "evidence_schema": "CARE_ASE_FAITHFUL_IMPLEMENTATION_EVIDENCE_V1",
   "executor_boundary": {
     "may_read_public_manifest": true,
@@ -9,7 +9,9 @@
       "automation/agent_flow_v3/schema.json",
       "prompts/blueprints/**"
     ],
-    "must_produce_real_runtime_receipts": true
+    "must_produce_real_runtime_receipts": true,
+    "public_reference_fixture_bypass_forbidden": true,
+    "strict_artifact_binding_required_for_executor_evidence": true
   },
   "exit_code_semantics": {
     "0": "all required faithful-implementation evidence is present and internally consistent",
@@ -175,6 +177,27 @@
     "volume_ratio"
   ],
   "schema": "CARE_ASE_FAITHFUL_VERIFICATION_CONTRACT_V1",
+  "strict_artifact_binding": {
+    "critical_source_topology_checks": [
+      "distinct Conv1d/GroupNorm scar and edema SliceExtentHead modules",
+      "no scar extent alias to scar proposal occupancy",
+      "edema dilation residual blocks at dilations 1, 2 and 4",
+      "injury classifier initialized from stock class-4/class-5 mean",
+      "real-case total-loss, no-T2, resume, deployment, evaluator and hard-negative receipts"
+    ],
+    "required_receipt_paths": [
+      "source_manifest",
+      "static_architecture_checks",
+      "architecture_signature",
+      "parameter_owner_registry",
+      "forward_backward_probe",
+      "inference_probe",
+      "checkpoint_resume_probe",
+      "deployment_load_probe",
+      "evaluator_smoke",
+      "hard_negative_binding"
+    ]
+  },
   "task_id": "care-ase-faithful",
   "validator": "validators/care_ase_faithful/validate_contract_evidence.py"
 }

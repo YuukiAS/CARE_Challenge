@@ -1,0 +1,81 @@
+{
+  "schema": "CARE_ASE_FAITHFUL_REPLACEMENT_CONTROLLER_RECEIPT_V1",
+  "task_id": "care-ase-faithful",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "created_utc": "2026-08-06T15:34:38Z",
+  "role": "controller",
+  "replacement_controller_thread_id": "019fd7b1-3b6d-7ed2-bc5f-5610333009af",
+  "old_unresumable_controller_thread_id": "019fd2ea-8bac-7e22-b699-6c1301ebb863",
+  "controller_replacement_reason": "Codex resume failed for the recorded Controller thread: no rollout found",
+  "replacement_executor_thread_id": "019fd7a5-2e7e-75b2-9948-d6aa4cd28397",
+  "previous_unresumable_executor_retry_thread_id": "019fd795-7c46-7972-93b9-ff4357f17a06",
+  "executor_replacement_reason": "Codex resume failed for the previous Executor retry thread: no rollout found",
+  "supervisor_reported_executor_local_commit_sha": "8742bd7e9bd212f119cd784306d1b06295584bc4",
+  "controller_observed_executor_local_commit_sha": "b7d1a3bb60a47d10ed14f23a868acf427f0f4b6c",
+  "controller_integrated_implementation_commit_sha": "9709d972cfb455dc18017895dd3765163d9b45af",
+  "controller_integration_state_commit_sha": "f94a663188249612ab783ac3e1da84f04a6383e2",
+  "ready_for_planner_review_commit_sha": "a1609a08aa2233c5495290554a8ece2852e5e2f8",
+  "origin_develop_observed_sha_before_this_receipt": "a1609a08aa2233c5495290554a8ece2852e5e2f8",
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "implementation_fingerprint_sha256": "000aa0564427d118a4cc361a7a7c09ba4d671851aacd9b3b28e4166c072a0dd5",
+  "verifier_fingerprint_sha256": "b3f1a0f630b346494cbeb7f1ae92764ab993047e373a0a1e23d77c194f8cecdf",
+  "frozen_verifier_validation_result_path": "results/agent_flow_v3/care-ase-faithful/implementation/frozen_verifier_validation_result.json",
+  "frozen_verifier_validation_passed": true,
+  "frozen_verifier_validation_failure_count": 0,
+  "review_round": 0,
+  "state_after_controller_verification": "READY_FOR_PLANNER_REVIEW",
+  "external_wait_started_utc": "2026-08-06T15:34:38Z",
+  "external_wait_deadline_utc": "2026-08-06T19:49:37Z",
+  "validation_commands": [
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python validators/care_ase_faithful/validate_contract_evidence.py --verification-contract results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json --evidence results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json",
+      "exit_code": 0,
+      "summary": "passed true, failure_count 0"
+    },
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m unittest tests.care_ase_faithful.test_verifier_package",
+      "exit_code": 0,
+      "summary": "Ran 3 tests in 2.268s; OK"
+    },
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/automation/validate_agent_flow_v3.py --repo-root .",
+      "exit_code": 0,
+      "summary": "CARE Agent-Flow v3 contract validation: PASS"
+    },
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m py_compile scripts/automation/validate_agent_flow_v3.py scripts/automation/agent_flow_v3_runtime.py validators/care_ase_faithful/validate_contract_evidence.py",
+      "exit_code": 0,
+      "summary": "py_compile completed with no output"
+    },
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m unittest tests.automation.test_agent_flow_v3",
+      "exit_code": 0,
+      "summary": "Ran 43 tests in 0.601s; OK"
+    },
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/automation/agent_flow_v3_runtime.py validate-role-receipts --receipt results/agent_flow_v3/care-ase-faithful/controller_session_receipt.json --receipt results/agent_flow_v3/care-ase-faithful/verifier_session_receipt.json --receipt results/agent_flow_v3/care-ase-faithful/executor_session_receipt.json",
+      "exit_code": 0,
+      "summary": "Controller, Verifier and Executor receipt isolation PASS before replacement receipt update"
+    },
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -c '<recompute implementation/verifier fingerprint hashes>'",
+      "exit_code": 0,
+      "summary": "implementation evidence and implementation fingerprint canonical hashes matched; verifier fingerprint file hashes matched"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "summary": "no whitespace errors"
+    }
+  ],
+  "forbidden_actions_confirmed": {
+    "formal_training_started": false,
+    "outer_accessed": false,
+    "docker_built_or_uploaded": false,
+    "validation_or_challenge_uploaded": false,
+    "organizer_email_sent": false,
+    "develop_to_main_merge": false,
+    "notifier_run": false
+  },
+  "next_action": "Scheduled Planner reviews review_round 0 and returns one allowed Planner decision; Controller must not mark PLANNER_PASS."
+}

@@ -1,0 +1,52 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_RUNTIME_BINDING_RECEIPT_V1",
+  "task_id": "care-ase-faithful",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "private_runtime_binding_path": "${CARE_AGENT_FLOW_STATE_ROOT}/care-ase-faithful/runtime_binding.json",
+  "private_runtime_binding_sha256": "1365a5b9ea6c4f2cb07389c4de8abb1a384fbe082bfa2b07bab3ad98717c2bf3",
+  "public_redaction": "Exact absolute runtime paths are intentionally kept in ignored server-local runtime_binding.json.",
+  "runtime_summary": {
+    "CARE_REPO_ROOT": "${CARE_AGENT_FLOW_WORKTREE_ROOT}/care-ase-faithful/controller",
+    "CARE_RUNTIME_ROOT": "${CARE_RUNTIME_ROOT}",
+    "CARE_PYTHON": "${CARE_RUNTIME_ROOT}/envs/env_CARE/bin/python",
+    "nnUNet_raw": "${CARE_RUNTIME_ROOT}/data/nnUNet/nnUNet_raw",
+    "nnUNet_preprocessed": "${CARE_RUNTIME_ROOT}/data/nnUNet/nnUNet_preprocessed",
+    "nnUNet_results": "${CARE_RUNTIME_ROOT}/data/nnUNet/nnUNet_results",
+    "Dataset501_CAREMyoPS_dataset_json": "${CARE_RUNTIME_ROOT}/data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/dataset.json",
+    "plans_path": "${CARE_RUNTIME_ROOT}/data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans.json",
+    "stock_checkpoint_root": "${CARE_RUNTIME_ROOT}/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres",
+    "fold_checkpoint_boundary": {
+      "fold": 0,
+      "checkpoint_name": "checkpoint_final.pth",
+      "checkpoint_path": "${CARE_RUNTIME_ROOT}/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_final.pth",
+      "formal_training_authorized": false,
+      "zero_credit_probe_only": true
+    },
+    "cuda": {
+      "CUDA_VISIBLE_DEVICES": null,
+      "torch_cuda_available": false,
+      "zero_credit_probes_require_cuda": false
+    }
+  },
+  "preflight_summary": {
+    "CARE_PYTHON": "${CARE_RUNTIME_ROOT}/envs/env_CARE/bin/python",
+    "care_python_is_usr_bin_python": false,
+    "torch_import": "PASS",
+    "nnunetv2_import": "PASS",
+    "cuda_available": false,
+    "cuda_visible_devices": null,
+    "required_paths_exist": {
+      "dataset_json": true,
+      "plans_path": true,
+      "results_plans_path": true,
+      "stock_checkpoint_root": true,
+      "stock_checkpoint_path": true
+    },
+    "no_runtime_asset_copied_to_git": true,
+    "tracked_asset_copy_matches": [],
+    "python": "${CARE_RUNTIME_ROOT}/envs/env_CARE/bin/python",
+    "torch_version": "2.11.0+cu130",
+    "nnunetv2_file": "${CARE_RUNTIME_ROOT}/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/__init__.py"
+  },
+  "updated_utc": "2026-08-06T16:06:25Z"
+}

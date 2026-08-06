@@ -1,8 +1,9 @@
 {
-  "failure_count": 2,
+  "failure_count": 3,
   "failures": [
     "kb02.decoder_byte_coverage",
-    "kb02.trunk_permanently_frozen"
+    "kb02.trunk_permanently_frozen",
+    "artifact_binding.receipt_paths.missing"
   ],
   "known_bad_case_id": "kb02_trunk_inheritance_degraded",
   "passed": false,

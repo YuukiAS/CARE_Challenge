@@ -1,7 +1,8 @@
 {
-  "failure_count": 1,
+  "failure_count": 2,
   "failures": [
-    "kb15.unrecorded_mismatch"
+    "kb15.unrecorded_mismatch",
+    "artifact_binding.receipt_paths.missing"
   ],
   "known_bad_case_id": "kb15_unrecorded_sampler_fallback",
   "passed": false,
