@@ -608,6 +608,52 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             ),
         )
 
+    def test_visual_smoke_receipt_accepts_scheduled_planner_image_list_schema(self) -> None:
+        receipt = {
+            "role": "planner",
+            "request_nonce": "nonce-1",
+            "actual_visual_access": True,
+            "access_context": "scheduled ChatGPT Planner visual review",
+            "images": [
+                {
+                    "name": "CARE-ASE",
+                    "sha256": "a" * 64,
+                    "main_modules_visible": ["stock-compatible encoder and pathology branches"],
+                    "key_dataflow": "Modalities enter a shared backbone and then branch into scar and edema routes.",
+                    "missing_modality_and_no_t2_rules": ["No T2 excludes edema from final competition."],
+                    "explicitly_absent_components": ["No Transformer block is shown."],
+                },
+                {
+                    "name": "SRR-v3",
+                    "sha256": "b" * 64,
+                    "main_modules_visible": ["anchor logits and bounded residual correction"],
+                    "key_dataflow": "Modality evidence is retrieved and written back through bounded correction.",
+                    "missing_modality_and_no_t2_rules": ["Unavailable modalities are masked from retrieval."],
+                    "explicitly_absent_components": ["No unrestricted replacement decoder is shown."],
+                },
+                {
+                    "name": "MoSAIC",
+                    "sha256": "c" * 64,
+                    "main_modules_visible": ["coarse localization and independent pathology experts"],
+                    "key_dataflow": "Coarse localization feeds fine pathology experts and output merging.",
+                    "missing_modality_and_no_t2_rules": ["No explicit five-class no-T2 rule is visible."],
+                    "explicitly_absent_components": ["No nnU-Net anchor residual correction is shown."],
+                },
+            ],
+            "structural_differences": [
+                "CARE-ASE is single-backbone reconstruction, SRR is anchor-bounded correction, and MoSAIC is coarse-to-fine experts."
+            ],
+        }
+        self.assertEqual(
+            RUNTIME.validate_visual_smoke_receipt(
+                receipt,
+                expected_role="planner_visual_smoke",
+                request_nonce="nonce-1",
+                expected_shas={"CARE-ASE": "a" * 64, "SRR-v3": "b" * 64, "MoSAIC": "c" * 64},
+            ),
+            [],
+        )
+
     def test_visual_smoke_receipt_rejects_wrong_nonce_and_image_sha(self) -> None:
         receipt = {
             "role": "critic_visual_smoke",

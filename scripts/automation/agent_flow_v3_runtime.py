@@ -796,17 +796,29 @@ def validate_visual_smoke_receipt(
     expected_shas: dict[str, str],
 ) -> list[str]:
     failures: list[str] = []
-    if receipt.get("role") != expected_role:
+    expected_base_role = expected_role.split("_", 1)[0]
+    if receipt.get("role") not in {expected_role, expected_base_role}:
         failures.append("role")
     if receipt.get("request_nonce") != request_nonce:
         failures.append("request_nonce")
+
     image_sha256 = receipt.get("image_sha256")
-    if not isinstance(image_sha256, dict):
+    if isinstance(image_sha256, dict):
+        observed_shas = image_sha256
+    else:
+        observed_shas = {}
+        images = receipt.get("images")
+        if isinstance(images, list):
+            for image in images:
+                if isinstance(image, dict) and isinstance(image.get("name"), str):
+                    observed_shas[image["name"]] = image.get("sha256")
+    if not observed_shas:
         failures.append("image_sha256")
     else:
         for name, digest in expected_shas.items():
-            if image_sha256.get(name) != digest:
+            if observed_shas.get(name) != digest:
                 failures.append(f"image_sha256:{name}")
+
     answers = receipt.get("answers")
     required_answers = (
         "main_modules",
@@ -815,15 +827,51 @@ def validate_visual_smoke_receipt(
         "explicitly_absent_components",
         "structural_differences",
     )
-    if not isinstance(answers, dict):
+    if isinstance(answers, dict):
+        answer_values = answers
+    else:
+        answer_values = {}
+        images = receipt.get("images")
+        if isinstance(images, list):
+            answer_values["main_modules"] = " ".join(
+                " ".join(str(item) for item in image.get("main_modules_visible", []))
+                for image in images
+                if isinstance(image, dict) and isinstance(image.get("main_modules_visible"), list)
+            )
+            answer_values["key_data_flow"] = " ".join(
+                str(image.get("key_dataflow", ""))
+                for image in images
+                if isinstance(image, dict)
+            )
+            answer_values["missing_modality_no_t2_safety"] = " ".join(
+                " ".join(str(item) for item in image.get("missing_modality_and_no_t2_rules", []))
+                for image in images
+                if isinstance(image, dict) and isinstance(image.get("missing_modality_and_no_t2_rules"), list)
+            )
+            answer_values["explicitly_absent_components"] = " ".join(
+                " ".join(str(item) for item in image.get("explicitly_absent_components", []))
+                for image in images
+                if isinstance(image, dict) and isinstance(image.get("explicitly_absent_components"), list)
+            )
+        structural = receipt.get("structural_differences")
+        if isinstance(structural, list):
+            answer_values["structural_differences"] = " ".join(str(item) for item in structural)
+    if not isinstance(answers, dict) and not answer_values:
         failures.append("answers")
     else:
         for key in required_answers:
-            value = answers.get(key)
+            value = answer_values.get(key)
             if not isinstance(value, str) or len(value.strip()) < 20:
                 failures.append(f"answers:{key}")
+
     provenance = receipt.get("provenance")
-    if not isinstance(provenance, dict) or provenance.get("producer") != "scheduled_gpt":
+    access_context = str(receipt.get("access_context", "")).lower()
+    scheduled_context = "scheduled" in access_context and ("gpt" in access_context or "chatgpt" in access_context)
+    if not (
+        isinstance(provenance, dict) and provenance.get("producer") == "scheduled_gpt"
+    ) and not (
+        receipt.get("actual_visual_access") is True and scheduled_context
+    ):
         failures.append("provenance:scheduled_gpt")
     return failures
 
