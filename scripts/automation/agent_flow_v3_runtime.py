@@ -869,7 +869,13 @@ def care_ase_role_launch_satisfied(stage_state_root: Path, current: dict[str, An
         return False
     if receipt.get("frozen_contract_sha256") != current.get("frozen_contract_sha256"):
         return False
-    return receipt.get("status") in {"STARTED", "ALREADY_RUNNING", "VERIFIER_FREEZE_COMPLETE"}
+    status = receipt.get("status")
+    if status == "VERIFIER_FREEZE_COMPLETE":
+        return True
+    if status in {"STARTED", "ALREADY_RUNNING", "STARTED_RUNNING"}:
+        pid = receipt.get("pid") or receipt.get("pane_pid")
+        return isinstance(pid, int) and is_pid_running(pid)
+    return False
 
 
 def care_ase_controller_start_satisfied(stage_state_root: Path, current: dict[str, Any]) -> bool:
@@ -1702,6 +1708,7 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
             and task_id == "care-ase-faithful"
             and event["state"] == "PLAN_FROZEN"
         ):
+            action_failures: list[str] = []
             try:
                 event["action_result"] = start_care_ase_controller_from_frozen_contract(
                     args=args,
@@ -1710,7 +1717,15 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
                     request=request,
                     current=current,
                 )
-                if not care_ase_role_launch_satisfied(args.state_root, current, "verifier"):
+            except Exception as exc:  # noqa: BLE001 - controller dirtiness must not block Verifier launch.
+                action_failures.append("controller_start_failed")
+                event["action_result"] = {
+                    "status": "FAILED",
+                    "error": f"{type(exc).__name__}: {exc}",
+                    "updated_utc": now(),
+                }
+            if not care_ase_role_launch_satisfied(args.state_root, current, "verifier"):
+                try:
                     event["verifier_action_result"] = start_care_ase_verifier_from_frozen_contract(
                         args=args,
                         repo=repo,
@@ -1718,16 +1733,19 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
                         request=request,
                         current=current,
                     )
+                except Exception as exc:  # noqa: BLE001 - keep polling; do not mark failed start processed.
+                    action_failures.append("verifier_start_failed")
+                    event["verifier_action_result"] = {
+                        "status": "FAILED",
+                        "error": f"{type(exc).__name__}: {exc}",
+                        "updated_utc": now(),
+                    }
+            if care_ase_role_launch_satisfied(args.state_root, current, "verifier"):
                 event["decision"] = "CONTROLLER_START_APPLIED"
-                event["action"] = "PLAN_FROZEN validated; Controller and Verifier exact sessions started"
+                event["action"] = "PLAN_FROZEN validated; Verifier exact session active or frozen"
                 processed.add(event["event_key"])
-            except Exception as exc:  # noqa: BLE001 - keep polling; do not mark failed start processed.
-                event["action_result"] = {
-                    "status": "FAILED",
-                    "error": f"{type(exc).__name__}: {exc}",
-                    "updated_utc": now(),
-                }
-                event["failures"] = list(event.get("failures", [])) + ["controller_start_failed"]
+            else:
+                event["failures"] = list(event.get("failures", [])) + action_failures
         elif (
             event["decision"] == "CONTROLLER_UPDATE_REQUIRED"
             and task_id == "gpt-loop-smoke-b"
