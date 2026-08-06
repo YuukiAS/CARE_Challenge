@@ -635,6 +635,7 @@ def evaluate_watcher_event(
 
 
 def cmd_watch(args: argparse.Namespace) -> int:
+    args = resolve_watcher_paths(args)
     repo = args.repo_root.resolve()
     state_root = args.state_root.resolve()
     task_id = args.task_id
@@ -676,6 +677,7 @@ def cmd_watch(args: argparse.Namespace) -> int:
 
 
 def run_watch_cycle_without_lock(args: argparse.Namespace) -> dict[str, Any]:
+    args = resolve_watcher_paths(args)
     repo = args.repo_root.resolve()
     git(repo, "fetch", "origin", args.branch, "--prune")
     request = git_show_json(repo, f"origin/{args.branch}", args.request_path)
@@ -702,7 +704,26 @@ def tmux_target(session: str, window: str) -> str:
     return f"{session}:{window}"
 
 
+def resolve_watcher_paths(args: argparse.Namespace) -> argparse.Namespace:
+    task_dir = f"automation/agent_flow_v3/tasks/{args.task_id}"
+    if not args.request_path:
+        args.request_path = f"{task_dir}/REQUEST.json"
+    if not args.current_path:
+        args.current_path = f"{task_dir}/CURRENT.json"
+    if not args.role_plan:
+        task_role_plan = f"{task_dir}/ROLE_PLAN.json"
+        legacy_ase_role_plan = "prompts/tasks/20260805_care_ase_develop_faithful_reimplementation_role_plan.json"
+        if args.task_id == "care-ase-faithful" and (args.repo_root / legacy_ase_role_plan).is_file():
+            args.role_plan = legacy_ase_role_plan
+        else:
+            args.role_plan = task_role_plan
+    if not args.session_receipt_root:
+        args.session_receipt_root = f"results/agent_flow_v3/{args.task_id}"
+    return args
+
+
 def cmd_start_watcher(args: argparse.Namespace) -> int:
+    args = resolve_watcher_paths(args)
     stop_path = args.state_root.resolve() / args.task_id / "stop_watcher"
     if stop_path.exists():
         stop_path.unlink()
@@ -1416,10 +1437,10 @@ def parser() -> argparse.ArgumentParser:
         q.add_argument("--repo-root", type=Path, required=True)
         q.add_argument("--task-id", required=True)
         q.add_argument("--branch", default="develop")
-        q.add_argument("--request-path", default="automation/agent_flow_v3/tasks/care-ase-faithful/REQUEST.json")
-        q.add_argument("--current-path", default="automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json")
-        q.add_argument("--role-plan", default="prompts/tasks/20260805_care_ase_develop_faithful_reimplementation_role_plan.json")
-        q.add_argument("--session-receipt-root", default="results/agent_flow_v3/care-ase-faithful")
+        q.add_argument("--request-path")
+        q.add_argument("--current-path")
+        q.add_argument("--role-plan")
+        q.add_argument("--session-receipt-root")
         q.add_argument("--codex-bin", default="/users/a/e/aereinh/codex-runtime/bin/codex")
         q.add_argument("--state-root", type=Path, default=Path("/users/a/e/aereinh/.agent-flow-v3"))
         q.add_argument("--log-root", type=Path, default=Path("/users/a/e/aereinh/.agent-flow-v3/logs"))

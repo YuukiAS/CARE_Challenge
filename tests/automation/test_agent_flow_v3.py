@@ -198,6 +198,32 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             self.assertEqual(receipt["target_roles"], ["executor"])
             self.assertIn("exec-thread-123", receipt["resume_commands"][0]["command"])
 
+    def test_watcher_default_paths_follow_task_id(self) -> None:
+        args = argparse.Namespace(
+            repo_root=ROOT,
+            task_id="gpt-loop-smoke-b",
+            request_path=None,
+            current_path=None,
+            role_plan=None,
+            session_receipt_root=None,
+        )
+
+        resolved = RUNTIME.resolve_watcher_paths(args)
+
+        self.assertEqual(
+            resolved.request_path,
+            "automation/agent_flow_v3/tasks/gpt-loop-smoke-b/REQUEST.json",
+        )
+        self.assertEqual(
+            resolved.current_path,
+            "automation/agent_flow_v3/tasks/gpt-loop-smoke-b/CURRENT.json",
+        )
+        self.assertEqual(
+            resolved.role_plan,
+            "automation/agent_flow_v3/tasks/gpt-loop-smoke-b/ROLE_PLAN.json",
+        )
+        self.assertEqual(resolved.session_receipt_root, "results/agent_flow_v3/gpt-loop-smoke-b")
+
     def test_watcher_rejects_old_nonce(self) -> None:
         args = argparse.Namespace(
             task_id="smoke-task",
