@@ -1,0 +1,49 @@
+{
+  "controller_decision": "RELAUNCH_EXECUTOR_AFTER_RECOVERABLE_ENVIRONMENT_ASSET_BINDING",
+  "controller_head_sha": "55e319e3c25cd5e0d616ae7c371f7c375f48a204",
+  "created_utc": "2026-08-06T14:59:42Z",
+  "executor_codex_home": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_EXECUTOR",
+  "executor_worktree": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor",
+  "new_executor_thread_id": "019fd795-7c46-7972-93b9-ff4357f17a06",
+  "origin_develop_sha": "55e319e3c25cd5e0d616ae7c371f7c375f48a204",
+  "previous_executor_thread_id": "019fd2ea-30f3-7d72-b605-2fc7a2d901ba",
+  "previous_state": "STOPPED_STUCK",
+  "prompt_path": "/users/a/e/aereinh/.agent-flow-v3/care-ase-faithful/executor_retry_prompt_20260806T145800Z.md",
+  "prompt_sha256": "03153e6b449c56f3dd690ae27986e0c6bf0f274d5df3e9eadc4abc09785df0e2",
+  "recovery_basis": {
+    "dataset501_assets_found": true,
+    "nnunet_preprocessed": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_preprocessed",
+    "nnunet_results": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results",
+    "previous_failures": [
+      "torch_available",
+      "nnunet_available",
+      "default_plans_exists",
+      "default_dataset_json_exists",
+      "default_stock_root_exists"
+    ],
+    "python": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+    "runtime_root": "/users/a/e/aereinh/CARE"
+  },
+  "request_nonce": "care-ase-20260806T090955Z",
+  "role_boundary": {
+    "controller_did_not_edit_executor_implementation": true,
+    "controller_did_not_edit_verifier_source": true,
+    "executor_may_edit_only": "src, scripts/training, scripts/inference, jobs, configs, results/agent_flow_v3/care-ase-faithful/implementation",
+    "forbidden_actions_confirmed": [
+      "no training",
+      "no outer access",
+      "no Docker build/upload",
+      "no validation/challenge upload",
+      "no organizer email",
+      "no develop-to-main merge",
+      "no --last",
+      "no TUI key injection"
+    ]
+  },
+  "schema": "CARE_AGENT_FLOW_V3_EXECUTOR_RETRY_LAUNCH_RECEIPT_V1",
+  "stderr_log_path": "/users/a/e/aereinh/.agent-flow-v3/care-ase-faithful/executor_retry_20260806T145800Z.stderr.log",
+  "stderr_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_log_path": "/users/a/e/aereinh/.agent-flow-v3/care-ase-faithful/executor_retry_20260806T145800Z.stdout.jsonl",
+  "stdout_log_sha256": "b1a6ea7925f45939a7620e14879f9851c6f42422b5ccc21d3464eb24cc570c67",
+  "task_id": "care-ase-faithful"
+}

@@ -1,7 +1,7 @@
 {
   "schema": "CARE_AGENT_FLOW_V3",
   "task_id": "care-ase-faithful",
-  "state": "STOPPED_STUCK",
+  "state": "EXECUTOR_RUNNING",
   "review_round": 0,
   "request_nonce": "care-ase-20260806T090955Z",
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
@@ -25,8 +25,8 @@
   "request_binding_commit_sha": "9974398cade68b9e0fa8b957c1001ce6d5f6759a",
   "critic_decision": "PLAN_FROZEN",
   "open_scientific_choices": [],
-  "next_action": "Human or authorized Controller maintenance must provide the missing Executor runtime/assets, then resume or relaunch Executor; no implementation evidence was accepted.",
-  "updated_utc": "2026-08-06T14:50:20Z",
+  "next_action": "Monitor Executor retry thread 019fd795-7c46-7972-93b9-ff4357f17a06; integrate implementation commit or concrete fail-closed receipt when it exits.",
+  "updated_utc": "2026-08-06T14:59:42Z",
   "verifier_thread_id": "019fd76e-6aa2-7d21-b12d-5bfd9983aed5",
   "verifier_launch_receipt_path": "results/agent_flow_v3/care-ase-faithful/verifier_launch_receipt.json",
   "verifier_launch_receipt_sha256": "6236d289678d28085aafd8655b2d7c85d1970515a5963c00975d5f88b234a9dd",
@@ -44,7 +44,7 @@
   "executor_prompt_sha256": "f5ae583c4be2f8885cf97dd2cc511ab0027758fe298b8e4e590a2c5cb27f237b",
   "executor_log_path": "/users/a/e/aereinh/.agent-flow-v3/care-ase-faithful/executor_start_20260806T144001Z.stderr.log",
   "executor_launch_origin_develop_sha": "8358abf03f170a0cf5c82f9bdacf94fe208c52ba",
-  "executor_status": "FAIL_CLOSED",
+  "executor_status": "RETRY_RUNNING",
   "executor_original_commit_sha": "f023d3ed5fe564c334012d30eebc1983157a1d7b",
   "executor_integrated_commit_sha": "7d0fa388a4f55876e9f0d8c15a65dc98882c152b",
   "executor_fail_closed_receipt_path": "results/agent_flow_v3/care-ase-faithful/implementation/fail_closed_implementation_receipt.json",
@@ -58,5 +58,13 @@
     "default_plans_exists",
     "default_dataset_json_exists",
     "default_stock_root_exists"
-  ]
+  ],
+  "executor_retry_thread_id": "019fd795-7c46-7972-93b9-ff4357f17a06",
+  "executor_retry_launch_receipt_path": "results/agent_flow_v3/care-ase-faithful/executor_retry_launch_receipt.json",
+  "executor_retry_launch_receipt_sha256": "2328df1cadd5daa1e4e48b98274a43d4fda06a9bff80a5a57d51a728cb68f13a",
+  "executor_retry_prompt_path": "/users/a/e/aereinh/.agent-flow-v3/care-ase-faithful/executor_retry_prompt_20260806T145800Z.md",
+  "executor_retry_prompt_sha256": "03153e6b449c56f3dd690ae27986e0c6bf0f274d5df3e9eadc4abc09785df0e2",
+  "executor_retry_log_path": "/users/a/e/aereinh/.agent-flow-v3/care-ase-faithful/executor_retry_20260806T145800Z.stdout.jsonl",
+  "executor_recovery_runtime_root": "/users/a/e/aereinh/CARE",
+  "executor_recovery_python": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python"
 }
