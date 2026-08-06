@@ -1,0 +1,42 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_PRODUCTION_SESSION_REPAIR_RECEIPT_V1",
+  "task_id": "care-ase-faithful",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "review_round": 0,
+  "status": "PUBLIC_RECEIPTS_SANITIZED_PRIVATE_EXACT_RECEIPTS_WRITTEN",
+  "origin_main_observed_sha": "29f52e7256216cdcdc470fdf6fc0982b8a8cc422",
+  "origin_develop_observed_sha": "50a06f14ccbe2ca740605d6671daa065c41ed056",
+  "controller_branch": "local/controller/care-ase-faithful",
+  "controller_head_before_repair": "50a06f14ccbe2ca740605d6671daa065c41ed056",
+  "public_receipts": {
+    "controller": "results/agent_flow_v3/care-ase-faithful/controller_session_receipt.json",
+    "verifier": "results/agent_flow_v3/care-ase-faithful/verifier_session_receipt.json",
+    "executor": "results/agent_flow_v3/care-ase-faithful/executor_session_receipt.json"
+  },
+  "private_exact_receipts": {
+    "controller": "${CARE_AGENT_FLOW_STATE_ROOT}/care-ase-faithful/private/controller_session_receipt.json",
+    "verifier": "${CARE_AGENT_FLOW_STATE_ROOT}/care-ase-faithful/private/verifier_session_receipt.json",
+    "executor": "${CARE_AGENT_FLOW_STATE_ROOT}/care-ase-faithful/private/executor_session_receipt.json"
+  },
+  "private_exact_aggregate_receipt": "${CARE_AGENT_FLOW_STATE_ROOT}/care-ase-faithful/private/production_role_session_receipt.json",
+  "path_policy": "Tracked current session receipts use placeholders; exact absolute paths are server-local private receipts only.",
+  "executor_provenance_correction": {
+    "implementation_retry_thread_id": "019fd795-7c46-7972-93b9-ff4357f17a06",
+    "implementation_retry_commit_sha": "b7d1a3bb60a47d10ed14f23a868acf427f0f4b6c",
+    "implementation_retry_log_path": "${CARE_AGENT_FLOW_STATE_ROOT}/care-ase-faithful/executor_retry_20260806T145800Z.stdout.jsonl",
+    "future_exact_resume_executor_thread_id": "019fd7c1-8358-7632-9022-367e62ecfbd1",
+    "correction": "The production no-op Executor session is for future exact resume only and does not replace the integrated implementation provenance."
+  },
+  "forbidden_actions_confirmed": [
+    "no source implementation edits",
+    "no verifier-source edits",
+    "no training",
+    "no outer access",
+    "no Docker build/upload",
+    "no validation/challenge upload",
+    "no organizer email",
+    "no Planner/Critic decision fabricated",
+    "no develop-to-main merge"
+  ],
+  "updated_utc": "2026-08-06T16:06:25Z"
+}

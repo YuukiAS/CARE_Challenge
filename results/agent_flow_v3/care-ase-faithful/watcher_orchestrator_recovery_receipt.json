@@ -1,0 +1,55 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_WATCHER_ORCHESTRATOR_RECOVERY_RECEIPT_V1",
+  "task_id": "care-ase-faithful",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "status": "WAITING_FOR_EXTERNAL_GPT_NOT_BLOCKED",
+  "current_state_after_repair": "WAITING_FOR_EXTERNAL_GPT",
+  "review_round": 0,
+  "external_wait_started_utc": "2026-08-06T15:34:38Z",
+  "external_wait_deadline_utc": "2026-08-06T19:49:37Z",
+  "expected_state_or_artifact": "Scheduled Planner review decision for review_round 0: PLANNER_REVISE_EXECUTOR, PLANNER_REVISE_VERIFIER, PLANNER_REVISE_BOTH, or PLANNER_PASS",
+  "missing_planner_before_deadline_semantics": "waiting_not_blocked",
+  "watcher_state_summary": {
+    "state_path": "${CARE_AGENT_FLOW_STATE_ROOT}/care-ase-faithful/watcher_state.json",
+    "last_decision": "IGNORE",
+    "last_state": "READY_FOR_PLANNER_REVIEW",
+    "last_updated_utc": "2026-08-06T16:06:23Z",
+    "invalid_event_count": 0
+  },
+  "stage_orchestrator_summary": {
+    "state_path": "${CARE_AGENT_FLOW_STATE_ROOT}/stage_orchestrator/stage_orchestrator_state.json",
+    "receipt_path": "${CARE_AGENT_FLOW_STATE_ROOT}/stage_orchestrator/stage_orchestrator_receipt.json",
+    "care_ase_wait": {
+      "task_id": "care-ase-faithful",
+      "state": "READY_FOR_PLANNER_REVIEW",
+      "event_key": "care-ase-faithful:care-ase-20260806T090955Z:0:READY_FOR_PLANNER_REVIEW",
+      "decision": "WAITING_FOR_EXTERNAL_GPT",
+      "action": "scheduled Planner review",
+      "failures": [],
+      "request_nonce": "care-ase-20260806T090955Z",
+      "review_round": 0,
+      "remote_sha": "50a06f14ccbe2ca740605d6671daa065c41ed056",
+      "external_wait_started_utc": "2026-08-06T15:34:38Z",
+      "external_wait_deadline_utc": "2026-08-06T19:49:37Z",
+      "expected_state_or_artifact": "Scheduled Planner review decision for review_round 0: PLANNER_REVISE_EXECUTOR, PLANNER_REVISE_VERIFIER, PLANNER_REVISE_BOTH, or PLANNER_PASS",
+      "last_observed_remote_sha": "50a06f14ccbe2ca740605d6671daa065c41ed056",
+      "last_poll_utc": "2026-08-06T16:06:23Z",
+      "updated_utc": "2026-08-06T16:06:23Z",
+      "default_external_wait_hours": 4
+    },
+    "last_remote_sha": "50a06f14ccbe2ca740605d6671daa065c41ed056",
+    "last_updated_utc": "2026-08-06T16:06:23Z"
+  },
+  "forbidden_actions_confirmed": [
+    "no source implementation edits",
+    "no verifier-source edits",
+    "no training",
+    "no outer access",
+    "no Docker build/upload",
+    "no validation/challenge upload",
+    "no organizer email",
+    "no Planner/Critic decision fabricated",
+    "no develop-to-main merge"
+  ],
+  "updated_utc": "2026-08-06T16:06:25Z"
+}
