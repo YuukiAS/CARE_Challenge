@@ -6,7 +6,7 @@
   "tmux_detail": "2907658|python",
   "state_path": "/users/a/e/aereinh/.agent-flow-v3/care-visual-smoke/watcher_state.json",
   "state_exists": true,
-  "updated_utc": "2026-08-06T03:36:30Z",
+  "updated_utc": "2026-08-06T04:19:06Z",
   "state": {
     "schema": "CARE_AGENT_FLOW_V3_WATCHER_STATE",
     "task_id": "care-visual-smoke",
@@ -17,19 +17,19 @@
       "schema": "CARE_AGENT_FLOW_V3_WATCHER_RECEIPT",
       "task_id": "care-visual-smoke",
       "branch": "develop",
-      "state": "PLAN_REQUESTED",
+      "state": "PLAN_READY_FOR_CRITIC",
       "review_round": 0,
       "request_nonce": "visual-smoke-20260806T031345Z",
-      "integration_commit_sha": "24e04f5e61c15ab9256ceaf5c8eebc99f58bad12",
-      "event_key": "care-visual-smoke:visual-smoke-20260806T031345Z:0:PLAN_REQUESTED:24e04f5e61c15ab9256ceaf5c8eebc99f58bad12",
+      "integration_commit_sha": "75b1cd5752d3b9419e99ec5385e125c6e8c2a446",
+      "event_key": "care-visual-smoke:visual-smoke-20260806T031345Z:0:PLAN_READY_FOR_CRITIC:75b1cd5752d3b9419e99ec5385e125c6e8c2a446",
       "decision": "IGNORE",
       "target_roles": [],
       "resume_commands": [],
       "failures": [],
       "processed_events": [],
       "lock_path": "/users/a/e/aereinh/.agent-flow-v3/care-visual-smoke/watcher.lock",
-      "updated_utc": "2026-08-06T03:35:45Z"
+      "updated_utc": "2026-08-06T04:19:04Z"
     },
-    "updated_utc": "2026-08-06T03:35:45Z"
+    "updated_utc": "2026-08-06T04:19:04Z"
   }
 }

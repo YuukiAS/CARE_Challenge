@@ -6,13 +6,13 @@
   "develop_publish_commit_sha": "992488ddcb391baea04640abd94310bbd2495051",
   "github_actions_run_id": 31068000228,
   "github_actions_status": "success",
-  "scheduled_planner_receipt_observed": false,
+  "scheduled_planner_receipt_observed": true,
   "scheduled_critic_receipt_observed": false,
   "codex_scheduled_task_tool_used": false,
   "minimum_wait_windows_required": 2,
-  "minimum_wait_windows_completed": 0,
-  "last_observed_elapsed_seconds": 1369,
-  "last_observed_develop_sha": "7cb8cb9de1fda2db452332093e8f49959888cd5f",
-  "status": "PUBLISHED_AWAITING_REAL_SCHEDULED_GPT_RECEIPTS",
-  "updated_utc": "2026-08-06T03:36:36Z"
+  "minimum_wait_windows_completed": 1,
+  "last_observed_elapsed_seconds": 3932,
+  "last_observed_develop_sha": "340148024f19a9696b97923eab19e892dc879cbb",
+  "status": "PLANNER_RECEIPT_VALID_AWAITING_REAL_SCHEDULED_CRITIC_RECEIPT",
+  "updated_utc": "2026-08-06T04:19:17Z"
 }

@@ -4,7 +4,7 @@
   "branch": "develop",
   "request_nonce": "visual-smoke-20260806T031345Z",
   "request_enabled": true,
-  "current_state": "PLAN_REQUESTED",
+  "current_state": "PLAN_READY_FOR_CRITIC",
   "expected_image_sha256": {
     "CARE-ASE": "af8f47713961c3b6b03dd24283b8f18d51fb5043ab1699997db2713e525710b2",
     "SRR-v3": "50478ee7c07cedb6a921902aa5daa8f6ecf3b34aa2fc5e97905d60c585ea72b5",
@@ -12,13 +12,14 @@
   },
   "window_seconds": 3600,
   "minimum_wait_windows_required": 2,
-  "minimum_wait_windows_completed": 0,
-  "elapsed_seconds": 1369,
+  "minimum_wait_windows_completed": 1,
+  "elapsed_seconds": 3932,
   "scheduled_planner_receipt": {
     "path": "results/agent_flow_v3/care-visual-smoke/planner_visual_receipt.json",
-    "exists": false,
-    "valid": false,
-    "failures": []
+    "exists": true,
+    "valid": true,
+    "failures": [],
+    "commit_sha": "182dc161fc3c6d39495e2e192c8c8f9137702bba"
   },
   "scheduled_critic_receipt": {
     "path": "results/agent_flow_v3/care-visual-smoke/critic_visual_receipt.json",
@@ -28,8 +29,7 @@
   },
   "status": "AWAITING_REAL_SCHEDULED_GPT_RECEIPTS",
   "failures": [
-    "planner:missing",
     "critic:missing"
   ],
-  "updated_utc": "2026-08-06T03:36:34Z"
+  "updated_utc": "2026-08-06T04:19:17Z"
 }
