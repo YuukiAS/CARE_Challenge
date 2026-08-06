@@ -243,8 +243,8 @@ def _build_strict_fixture(tmp: Path, *, core_source: str | None = None) -> Path:
     _write_json(implementation / "parameter_owner_registry.json", parameter_registry)
 
     loss_terms = {
-        name: {"value": 0.125, "denominator": 1, "included_in_total": True}
-        for name in REQUIRED_LOSSES
+        name: {"value": 0.125, "denominator": 8 + index, "included_in_total": True}
+        for index, name in enumerate(REQUIRED_LOSSES)
     }
     forward_backward = _receipt(
         implementation / "forward_backward_probe_receipt.json",
@@ -252,6 +252,9 @@ def _build_strict_fixture(tmp: Path, *, core_source: str | None = None) -> Path:
         {
             "status": "PASS",
             "probe_type": "real_train_case_total_loss_two_backward",
+            "input_origin": "train_only_dataset501_case_tensor",
+            "random_tensor_used": False,
+            "constant_denominator_count": 0,
             "train_case_ids": {"scar": "Case001", "edema_t2_present": "Case002"},
             "mixed_batch_no_t2": {
                 "case_id": "Case003",
@@ -271,6 +274,10 @@ def _build_strict_fixture(tmp: Path, *, core_source: str | None = None) -> Path:
             "case_id": "Case001",
             "single_tile_path": "canonical_full_volume",
             "forced_multi_tile_path": "canonical_full_volume",
+            "single_tile_call_id": "single",
+            "forced_multi_tile_call_id": "forced_multi",
+            "patch_size_equals_input": False,
+            "forced_multi_tile_count": 8,
             "single_vs_forced_multi_tile_max_abs_diff": 0.0,
             "global_bias_application_count": 1,
         },
@@ -366,11 +373,19 @@ class VerifierPackageTests(unittest.TestCase):
             )
             self.assertEqual(fixture.returncode, 0, fixture.stdout + fixture.stderr)
 
-    def test_strict_artifact_bound_fixture_passes(self) -> None:
+    def test_strict_artifact_bound_fixture_requires_production_verifier_execution(self) -> None:
         with tempfile.TemporaryDirectory(dir=ROOT) as tmp:
             evidence_path = _build_strict_fixture(Path(tmp))
             result = _run_validator("--verification-contract", str(CONTRACT), "--evidence", str(evidence_path.relative_to(ROOT)))
-            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+            failures = set(json.loads(result.stdout)["failures"])
+            self.assertTrue(
+                "verifier_owned.executable_verifier_receipt.missing" in failures
+                or "verifier_owned.runtime_mutation_manifest.missing" in failures
+                or "verifier_owned.transaction_gate_receipt.missing" in failures
+                or "verifier_owned.executable.not_fixture" in failures
+                or "verifier_owned.executable.passed" in failures
+            )
 
     def test_receipt_hash_mismatch_fails_closed(self) -> None:
         with tempfile.TemporaryDirectory(dir=ROOT) as tmp:
@@ -391,6 +406,60 @@ class VerifierPackageTests(unittest.TestCase):
             failures = set(json.loads(result.stdout)["failures"])
             self.assertIn("kb11.slice_extent_head.class", failures)
             self.assertIn("kb11.scar_extent_presence_not_occupancy_alias", failures)
+
+    def test_forged_random_input_and_constant_denominators_fail_closed(self) -> None:
+        with tempfile.TemporaryDirectory(dir=ROOT) as tmp:
+            evidence_path = _build_strict_fixture(Path(tmp))
+            evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
+            fb_path = ROOT / evidence["receipt_paths"]["forward_backward_probe"]
+            fb = json.loads(fb_path.read_text(encoding="utf-8"))
+            fb["payload"]["random_tensor_used"] = True
+            fb["payload"]["input_origin"] = "torch.randn"
+            fb["payload"]["constant_denominator_count"] = len(REQUIRED_LOSSES)
+            for term in fb["payload"]["total_loss_terms"].values():
+                term["denominator"] = 1
+            stdout = json.dumps(fb["payload"], indent=2, sort_keys=True, default=str).encode("utf-8")
+            fb["stdout_sha256"] = _sha256_bytes(stdout)
+            _write_json(fb_path, fb)
+            result = _run_validator("--verification-contract", str(CONTRACT), "--evidence", str(evidence_path.relative_to(ROOT)))
+            self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+            failures = set(json.loads(result.stdout)["failures"])
+            self.assertIn("kb18.forward_backward.no_random_tensor", failures)
+            self.assertIn("kb13.runtime_loss.no_constant_denominator_count", failures)
+
+    def test_reused_single_multi_tile_call_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory(dir=ROOT) as tmp:
+            evidence_path = _build_strict_fixture(Path(tmp))
+            evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
+            inf_path = ROOT / evidence["receipt_paths"]["inference_probe"]
+            inf = json.loads(inf_path.read_text(encoding="utf-8"))
+            inf["payload"]["single_tile_call_id"] = "same"
+            inf["payload"]["forced_multi_tile_call_id"] = "same"
+            inf["payload"]["patch_size_equals_input"] = True
+            inf["payload"]["forced_multi_tile_count"] = 1
+            stdout = json.dumps(inf["payload"], indent=2, sort_keys=True, default=str).encode("utf-8")
+            inf["stdout_sha256"] = _sha256_bytes(stdout)
+            _write_json(inf_path, inf)
+            result = _run_validator("--verification-contract", str(CONTRACT), "--evidence", str(evidence_path.relative_to(ROOT)))
+            self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+            failures = set(json.loads(result.stdout)["failures"])
+            self.assertIn("kb12.inference.distinct_call_ids", failures)
+            self.assertIn("kb12.inference.patch_not_equal_input", failures)
+            self.assertIn("kb12.inference.forced_multi_tile_count", failures)
+
+    def test_executable_mutation_runner_returns_nonzero(self) -> None:
+        runner = ROOT / "validators" / "care_ase_faithful" / "run_executable_verifier.py"
+        result = subprocess.run(
+            [sys.executable, str(runner), "--fixture-mode", "--mutation-id", "artifact_sha_mismatch"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+        payload = json.loads(result.stdout)
+        self.assertEqual(payload["mutation_id"], "artifact_sha_mismatch")
+        self.assertIs(payload["mutation_executed"], True)
 
     def test_all_protected_known_bad_cases_fail_closed(self) -> None:
         listed = _run_validator("--list-known-bad")

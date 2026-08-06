@@ -15,6 +15,11 @@ from typing import Any, Callable
 TASK_ID = "care-ase-faithful"
 REQUEST_NONCE = "care-ase-20260806T090955Z"
 FROZEN_CONTRACT_SHA256 = "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d"
+REVIEW_ROUND = 1
+PLANNER_REVIEW_COMMIT = "38dbbb0e32556e5f12127699c67ff31d45e5e934"
+REVIEWED_INTEGRATION_COMMIT = "885d5db3089e109136e52c9cbde4d349a62c9092"
+REVIEWED_IMPLEMENTATION_FINGERPRINT = "b0db561e7a40c0e52c8363b8b43e96bc2441184a7ce28bc17681d41bededa1a1"
+REVIEWED_VERIFIER_FINGERPRINT = "5c5dd6f431f2cb0c1d2fe6a7927f3679eea47b8ec7c82e4f2a4227e8ab2c7773"
 
 
 KNOWN_BAD_CATEGORIES = [
@@ -180,6 +185,7 @@ REQUIRED_METRICS = {
 
 
 ROOT = Path(__file__).resolve().parents[2]
+VERIFICATION_DIR = ROOT / "results" / "agent_flow_v3" / TASK_ID / "verification"
 REQUIRED_RECEIPT_PATHS = {
     "source_manifest",
     "static_architecture_checks",
@@ -191,6 +197,32 @@ REQUIRED_RECEIPT_PATHS = {
     "deployment_load_probe",
     "evaluator_smoke",
     "hard_negative_binding",
+}
+
+REQUIRED_EXECUTABLE_MUTATION_IDS = {
+    "extent_conv3d_alias",
+    "dilation_residual_removed",
+    "injury_random_init",
+    "projection_context_no_final_authority",
+    "no_t2_calls_edema",
+    "single_multi_same_call",
+    "tile_local_global_bias",
+    "deployment_reopens_stock_checkpoint",
+    "evaluator_population_mismatch",
+    "checkpoint_next_step_drift",
+    "artifact_sha_mismatch",
+}
+
+REQUIRED_EXECUTABLE_PROBES = {
+    "model_build_and_stock_parity",
+    "real_train_case_total_loss_forward_backward",
+    "mixed_t2_no_t2_batch",
+    "required_module_final_logit_interventions",
+    "schema_v4_checkpoint_resume",
+    "deployment_loader",
+    "evaluator_interface",
+    "single_vs_forced_multi_tile_full_volume",
+    "step0_parity_report_regression",
 }
 
 CRITICAL_SOURCE_PATHS = {
@@ -547,16 +579,23 @@ def _check_runtime_receipt_payloads(
     fb_payload = receipt_payloads.get("forward_backward_probe", {}).get("payload", {})
     _require(failures, fb_payload.get("status") == "PASS", "kb18.forward_backward.payload_status")
     _require(failures, "synthetic" not in str(fb_payload.get("probe_type", "")).lower(), "kb18.forward_backward.not_synthetic")
+    _require(failures, fb_payload.get("random_tensor_used") is not True, "kb18.forward_backward.no_random_tensor")
+    _require(failures, "random" not in str(fb_payload.get("input_origin", "")).lower(), "kb18.forward_backward.input_origin_not_random")
     _require(failures, bool(fb_payload.get("train_case_ids", {}).get("scar")), "kb13.forward_backward.real_scar_case")
     _require(failures, bool(fb_payload.get("train_case_ids", {}).get("edema_t2_present")), "kb13.forward_backward.real_edema_case")
     _require(failures, bool(fb_payload.get("mixed_batch_no_t2", {}).get("case_id")), "kb08.forward_backward.no_t2_mixed_case")
     loss_terms = fb_payload.get("total_loss_terms", {})
+    numeric_denominators: list[int] = []
     for name in REQUIRED_LOSSES:
         term = loss_terms.get(name, {})
         _require(failures, term.get("included_in_total") is True, f"kb13.runtime_loss.{name}.included")
         _require(failures, int(term.get("denominator", 0)) > 0 or term.get("correctly_excluded") is True, f"kb13.runtime_loss.{name}.denominator")
+        if isinstance(term.get("denominator"), int):
+            numeric_denominators.append(int(term["denominator"]))
         value = term.get("value")
         _require(failures, isinstance(value, (int, float)) and math.isfinite(float(value)), f"kb13.runtime_loss.{name}.finite")
+    _require(failures, not numeric_denominators or any(value != 1 for value in numeric_denominators), "kb13.runtime_loss.not_all_constant_one_denominators")
+    _require(failures, int(fb_payload.get("constant_denominator_count", 0)) == 0, "kb13.runtime_loss.no_constant_denominator_count")
     no_t2 = fb_payload.get("mixed_batch_no_t2", {})
     _require(failures, int(no_t2.get("edema_owned_module_call_count", -1)) == 0, "kb08.runtime_no_t2.call_count")
     _require(failures, int(no_t2.get("edema_supervision_rows", -1)) == 0, "kb08.runtime_no_t2.supervision")
@@ -567,6 +606,11 @@ def _check_runtime_receipt_payloads(
     _require(failures, "synthetic" not in str(inf_payload.get("probe_type", "")).lower(), "kb19.inference.not_synthetic")
     _require(failures, bool(inf_payload.get("case_id")), "kb19.inference.real_case_id")
     _require(failures, inf_payload.get("single_tile_path") == inf_payload.get("forced_multi_tile_path"), "kb12.inference.same_canonical_path")
+    if "single_tile_call_id" in inf_payload or "forced_multi_tile_call_id" in inf_payload:
+        _require(failures, inf_payload.get("single_tile_call_id") != inf_payload.get("forced_multi_tile_call_id"), "kb12.inference.distinct_call_ids")
+    _require(failures, inf_payload.get("patch_size_equals_input") is not True, "kb12.inference.patch_not_equal_input")
+    if "forced_multi_tile_count" in inf_payload:
+        _require(failures, int(inf_payload.get("forced_multi_tile_count", 0)) > 1, "kb12.inference.forced_multi_tile_count")
     _require(failures, float(inf_payload.get("single_vs_forced_multi_tile_max_abs_diff", 1.0)) <= 1e-6, "kb12.inference.single_multi_match")
     _require(failures, int(inf_payload.get("global_bias_application_count", 0)) == 1, "kb12.inference.global_bias_once")
 
@@ -593,6 +637,106 @@ def _check_runtime_receipt_payloads(
     _require(failures, hard_negative_payload.get("oof_prediction_bound") is True, "kb14.hard_negative.oof_prediction")
     for field in ("mask_sha256", "coordinate_sha256", "checkpoint_sha256", "grid_sha256"):
         _require(failures, _is_sha256(hard_negative_payload.get(field)), f"kb14.hard_negative.{field}")
+
+
+def _load_verification_artifact(failures: list[str], name: str, filename: str) -> dict[str, Any] | None:
+    path = VERIFICATION_DIR / filename
+    if not path.is_file():
+        failures.append(f"verifier_owned.{name}.missing")
+        return None
+    try:
+        return load_json(path)
+    except Exception as exc:  # pragma: no cover - reported as validation failure.
+        failures.append(f"verifier_owned.{name}.invalid_json:{type(exc).__name__}")
+        return None
+
+
+def _check_verifier_owned_execution(failures: list[str], evidence: dict[str, Any]) -> None:
+    executable = _load_verification_artifact(failures, "executable_verifier_receipt", "executable_verifier_receipt.json")
+    mutation_manifest = _load_verification_artifact(failures, "runtime_mutation_manifest", "runtime_mutation_manifest.json")
+    transaction_receipt = _load_verification_artifact(failures, "transaction_gate_receipt", "transaction_gate_receipt.json")
+
+    if executable is not None:
+        _require(failures, executable.get("schema") == "CARE_ASE_FAITHFUL_EXECUTABLE_VERIFIER_RECEIPT_V1", "verifier_owned.executable.schema")
+        _require(failures, executable.get("task_id") == TASK_ID, "verifier_owned.executable.task_id")
+        _require(failures, executable.get("request_nonce") == REQUEST_NONCE, "verifier_owned.executable.request_nonce")
+        _require(failures, executable.get("frozen_contract_sha256") == FROZEN_CONTRACT_SHA256, "verifier_owned.executable.frozen_contract_sha256")
+        _require(failures, executable.get("review_round") == REVIEW_ROUND, "verifier_owned.executable.review_round")
+        _require(failures, executable.get("planner_review_commit") == PLANNER_REVIEW_COMMIT, "verifier_owned.executable.planner_review_commit")
+        _require(failures, executable.get("integration_sha") == REVIEWED_INTEGRATION_COMMIT, "verifier_owned.executable.integration_sha")
+        _require(
+            failures,
+            executable.get("implementation_fingerprint_sha256") == REVIEWED_IMPLEMENTATION_FINGERPRINT,
+            "verifier_owned.executable.implementation_fingerprint",
+        )
+        _require(failures, executable.get("passed") is True, "verifier_owned.executable.passed")
+        _require(failures, executable.get("status") == "PASS", "verifier_owned.executable.status")
+        _require(failures, executable.get("fixture_mode") is not True, "verifier_owned.executable.not_fixture")
+        _require(failures, executable.get("formal_training_started") is False, "verifier_owned.executable.no_training")
+        _require(failures, executable.get("outer_accessed") is False, "verifier_owned.executable.no_outer")
+        _require(failures, executable.get("docker_or_upload") is False, "verifier_owned.executable.no_docker_upload")
+        receipt_sha = executable.get("executable_verifier_receipt_sha256")
+        if _is_sha256(receipt_sha):
+            _require(
+                failures,
+                receipt_sha == _payload_sha_without_self(executable, "executable_verifier_receipt_sha256"),
+                "verifier_owned.executable.sha_recomputed",
+            )
+        else:
+            failures.append("verifier_owned.executable.sha_shape")
+        probe_names = {str(probe.get("name")) for probe in executable.get("probes", []) if isinstance(probe, dict)}
+        _require(failures, REQUIRED_EXECUTABLE_PROBES.issubset(probe_names), "verifier_owned.executable.required_probes")
+        by_name = {str(probe.get("name")): probe for probe in executable.get("probes", []) if isinstance(probe, dict)}
+        loss_probe = by_name.get("real_train_case_total_loss_forward_backward", {})
+        _require(failures, loss_probe.get("random_tensor_used") is False, "verifier_owned.executable.no_random_tensor_input")
+        _require(failures, int(loss_probe.get("constant_denominator_count", 1)) == 0, "verifier_owned.executable.no_constant_loss_denominators")
+        tile_probe = by_name.get("single_vs_forced_multi_tile_full_volume", {})
+        _require(failures, tile_probe.get("calls_are_distinct") is True, "verifier_owned.executable.single_multi_distinct_calls")
+        _require(failures, tile_probe.get("patch_size_equals_input") is False, "verifier_owned.executable.patch_smaller_than_input")
+        _require(failures, int(tile_probe.get("forced_multi_tile_count", 0)) > 1, "verifier_owned.executable.forced_multi_tile_count")
+        _require(failures, int(tile_probe.get("global_bias_application_count", 0)) == 1, "verifier_owned.executable.global_bias_once")
+        step0_probe = by_name.get("step0_parity_report_regression", {})
+        _require(failures, step0_probe.get("imported_step0_parity_report") is True, "verifier_owned.step0.imported")
+        _require(failures, step0_probe.get("attribute_error_ignored") is False, "verifier_owned.step0.no_attribute_error_ignore")
+        _require(failures, float(step0_probe.get("t2_present_stock_max_abs_err", 1.0)) <= 1e-6, "verifier_owned.step0.t2_present_parity")
+        _require(failures, float(step0_probe.get("no_t2_stock_max_abs_err", 1.0)) <= 1e-6, "verifier_owned.step0.no_t2_parity")
+        _require(failures, int(step0_probe.get("compatible_argmax_changed_voxels", 1)) == 0, "verifier_owned.step0.argmax")
+
+    if transaction_receipt is not None:
+        _require(failures, transaction_receipt.get("schema") == "CARE_ASE_FAITHFUL_TRANSACTION_GATE_RECEIPT_V1", "verifier_owned.transaction.schema")
+        _require(failures, transaction_receipt.get("review_round") == REVIEW_ROUND, "verifier_owned.transaction.review_round")
+        _require(failures, transaction_receipt.get("planner_review_commit") == PLANNER_REVIEW_COMMIT, "verifier_owned.transaction.planner_review_commit")
+        _require(failures, transaction_receipt.get("integration_sha") == REVIEWED_INTEGRATION_COMMIT, "verifier_owned.transaction.integration_sha")
+        _require(
+            failures,
+            transaction_receipt.get("implementation_fingerprint_sha256") == REVIEWED_IMPLEMENTATION_FINGERPRINT,
+            "verifier_owned.transaction.implementation_fingerprint",
+        )
+        _require(failures, transaction_receipt.get("hosted_ci_conclusion") == "success", "verifier_owned.transaction.hosted_ci_success")
+        _require(failures, transaction_receipt.get("planner_packet_sha") == transaction_receipt.get("ci_checked_commit_sha"), "verifier_owned.transaction.packet_ci_same_sha")
+        _require(failures, transaction_receipt.get("current_state_sha") == transaction_receipt.get("ci_checked_commit_sha"), "verifier_owned.transaction.current_ci_same_sha")
+        _require(failures, transaction_receipt.get("runtime_manifest_sha") == transaction_receipt.get("ci_checked_commit_sha"), "verifier_owned.transaction.runtime_ci_same_sha")
+        _require(failures, transaction_receipt.get("stale_planner_reused_after_key_commit") is False, "verifier_owned.transaction.no_stale_planner_reuse")
+
+    if mutation_manifest is not None:
+        _require(failures, mutation_manifest.get("schema") == "CARE_ASE_FAITHFUL_RUNTIME_MUTATION_MANIFEST_V1", "verifier_owned.mutations.schema")
+        _require(failures, mutation_manifest.get("task_id") == TASK_ID, "verifier_owned.mutations.task_id")
+        _require(failures, mutation_manifest.get("request_nonce") == REQUEST_NONCE, "verifier_owned.mutations.request_nonce")
+        _require(failures, mutation_manifest.get("review_round") == REVIEW_ROUND, "verifier_owned.mutations.review_round")
+        invocations = mutation_manifest.get("mutation_invocations", [])
+        ids = {str(item.get("mutation_id")) for item in invocations if isinstance(item, dict)}
+        _require(failures, REQUIRED_EXECUTABLE_MUTATION_IDS.issubset(ids), "verifier_owned.mutations.required_ids")
+        _require(failures, mutation_manifest.get("all_returned_nonzero") is True, "verifier_owned.mutations.all_nonzero")
+        for item in invocations:
+            mutation_id = item.get("mutation_id")
+            _require(failures, item.get("exit_code") != 0, f"verifier_owned.mutations.nonzero:{mutation_id}")
+            for field in ("command_sha256", "stdout_sha256", "stderr_sha256", "report_sha256"):
+                _require(failures, _is_sha256(item.get(field)), f"verifier_owned.mutations.{field}:{mutation_id}")
+            report_path = _resolve_artifact(item.get("report_path"))
+            if report_path is None or not report_path.is_file():
+                failures.append(f"verifier_owned.mutations.report_missing:{mutation_id}")
+            elif _is_sha256(item.get("report_sha256")):
+                _require(failures, item.get("report_sha256") == _sha256_file(report_path), f"verifier_owned.mutations.report_hash:{mutation_id}")
 
 
 def _check_artifact_bindings(
@@ -654,6 +798,7 @@ def _check_artifact_bindings(
             _require(failures, evidence.get(field) == payload[field], f"artifact_binding.{name}.evidence_sha")
 
     _check_runtime_receipt_payloads(failures, receipt_payloads, evidence)
+    _check_verifier_owned_execution(failures, evidence)
 
 
 def validate_evidence(

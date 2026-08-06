@@ -1,5 +1,5 @@
 {
-  "created_utc": "2026-08-06T16:23:01Z",
+  "created_utc": "2026-08-06T18:26:14Z",
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
   "public_reference_evidence_path": "results/agent_flow_v3/care-ase-faithful/verification/public_reference_evidence.json",
   "public_reference_validation": {
@@ -51,8 +51,8 @@
       ],
       "exit_code": 0,
       "purpose": "verifier unittest package exercises public reference and all protected known-bad categories",
-      "stderr_sha256": "13ed75eb9a2024aa51ff27ac2cc8925621aa9058be9d1d5ad447cbf3f2432262",
-      "stderr_tail": "......\n----------------------------------------------------------------------\nRan 6 tests in 1.743s\n\nOK\n",
+      "stderr_sha256": "da070a2d1b419aa48db458d3c9f834b6b7b995e2102e16445cdf83bf6b75640c",
+      "stderr_tail": ".........\n----------------------------------------------------------------------\nRan 9 tests in 3.314s\n\nOK\n",
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stdout_tail": ""
     },
@@ -69,6 +69,29 @@
       "stderr_tail": "",
       "stdout_sha256": "d01b6f1fe2a59e7594158769515feccd834e48618ac06c03a990bbe9414d352b",
       "stdout_tail": "CARE Agent-Flow v3 contract validation: PASS\n"
+    },
+    {
+      "command": [
+        "/usr/bin/python",
+        "validators/care_ase_faithful/run_executable_verifier.py",
+        "--fixture-mode",
+        "--review-round",
+        "1",
+        "--integration-sha",
+        "885d5db3089e109136e52c9cbde4d349a62c9092",
+        "--implementation-fingerprint",
+        "b0db561e7a40c0e52c8363b8b43e96bc2441184a7ce28bc17681d41bededa1a1",
+        "--verifier-fingerprint",
+        "5c5dd6f431f2cb0c1d2fe6a7927f3679eea47b8ec7c82e4f2a4227e8ab2c7773",
+        "--receipt",
+        "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json"
+      ],
+      "exit_code": 0,
+      "purpose": "verifier-owned executable probe self-test fixture",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_sha256": "42667e620cfc2743598e77f3c85e154a8b1cb25d45acd0289d0d7835a0f7c27f",
+      "stdout_tail": "once\": \"care-ase-20260806T090955Z\",\n  \"required_probes\": [\n    \"model_build_and_stock_parity\",\n    \"real_train_case_total_loss_forward_backward\",\n    \"mixed_t2_no_t2_batch\",\n    \"required_module_final_logit_interventions\",\n    \"schema_v4_checkpoint_resume\",\n    \"deployment_loader\",\n    \"evaluator_interface\",\n    \"single_vs_forced_multi_tile_full_volume\",\n    \"step0_parity_report_regression\"\n  ],\n  \"review_round\": 1,\n  \"schema\": \"CARE_ASE_FAITHFUL_EXECUTABLE_VERIFIER_RECEIPT_V1\",\n  \"source_artifacts\": {\n    \"file_hashes\": {\n      \"src/care_myocardium/inference/care_ase_r2_decode.py\": \"7fea71edba56d259dbbb31c3832b74709bd83d5af1f8b680a85c2e0a41acb05b\",\n      \"src/care_myocardium/inference/care_ase_r2_full_volume.py\": \"f9e3c4be321e96f7776444e2486b8e0d00e5f02701814f2625ca370b7c95218f\",\n      \"src/care_myocardium/training/care_ase_sampler.py\": \"e8d0b9d10f90d3e70fb9e1a8f4cfff2dd4fbae30d7f73868377350af278f65d9\",\n      \"src/care_myocardium/training/care_ase_trainer.py\": \"2054f0f4aedb4b4f4bfb082d8c90ff7fa6970dfac298dbc6b5b0d7a8cf1ca621\"\n    },\n    \"missing_files\": [\n      \"src/care_myocardium/models/care_ase/__init__.py\",\n      \"src/care_myocardium/models/care_ase/core.py\"\n    ],\n    \"source_manifest_sha256\": \"d3cff5b0710f4e057231919c7c31c8f74a23b8a3c8d5732e6bc140af6dddbb6c\"\n  },\n  \"status\": \"PASS\",\n  \"task_id\": \"care-ase-faithful\",\n  \"transaction_gate\": {\n    \"expected_review_round\": 1,\n    \"fixture_mode\": true,\n    \"implementation_fingerprint_sha256\": \"b0db561e7a40c0e52c8363b8b43e96bc2441184a7ce28bc17681d41bededa1a1\",\n    \"integration_sha\": \"885d5db3089e109136e52c9cbde4d349a62c9092\",\n    \"observed_git_head\": \"56daad61a23e65160f987571ff443d223d2de91b\",\n    \"planner_review_commit\": \"38dbbb0e32556e5f12127699c67ff31d45e5e934\",\n    \"review_round\": 1,\n    \"verifier_fingerprint_sha256\": \"5c5dd6f431f2cb0c1d2fe6a7927f3679eea47b8ec7c82e4f2a4227e8ab2c7773\"\n  },\n  \"verifier_fingerprint_sha256\": \"5c5dd6f431f2cb0c1d2fe6a7927f3679eea47b8ec7c82e4f2a4227e8ab2c7773\",\n  \"zero_credit\": true\n}\n"
     }
   ],
   "request_nonce": "care-ase-20260806T090955Z",

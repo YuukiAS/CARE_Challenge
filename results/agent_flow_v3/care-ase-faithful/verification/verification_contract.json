@@ -1,5 +1,5 @@
 {
-  "created_utc": "2026-08-06T16:23:01Z",
+  "created_utc": "2026-08-06T18:26:14Z",
   "evidence_schema": "CARE_ASE_FAITHFUL_IMPLEMENTATION_EVIDENCE_V1",
   "executor_boundary": {
     "may_read_public_manifest": true,
@@ -199,5 +199,14 @@
     ]
   },
   "task_id": "care-ase-faithful",
-  "validator": "validators/care_ase_faithful/validate_contract_evidence.py"
+  "validator": "validators/care_ase_faithful/validate_contract_evidence.py",
+  "verifier_owned_execution_gate": {
+    "entrypoint": "validators/care_ase_faithful/run_executable_verifier.py",
+    "fixture_mode_allowed_for_verifier_selftest_only": true,
+    "fixture_mode_forbidden_for_implementation_acceptance": true,
+    "must_execute_without_random_tensor_substitution": true,
+    "production_receipt_path": "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json",
+    "runtime_mutation_manifest_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_manifest.json",
+    "transaction_gate_receipt_path": "results/agent_flow_v3/care-ase-faithful/verification/transaction_gate_receipt.json"
+  }
 }
