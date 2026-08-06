@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import argparse
+import subprocess
 import tempfile
 import unittest
 
@@ -197,6 +198,38 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             self.assertEqual(receipt["decision"], "DRY_RUN_RESUME")
             self.assertEqual(receipt["target_roles"], ["executor"])
             self.assertIn("exec-thread-123", receipt["resume_commands"][0]["command"])
+
+    def test_repair_prompt_can_load_from_git_ref_when_local_checkout_lags(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            subprocess.run(["git", "init"], cwd=root, check=True, stdout=subprocess.DEVNULL)
+            subprocess.run(["git", "config", "user.email", "test@example.invalid"], cwd=root, check=True)
+            subprocess.run(["git", "config", "user.name", "Test User"], cwd=root, check=True)
+            prompt_path = root / "results" / "agent_flow_v3" / "smoke-task" / "planner_reviews" / "round_000.json"
+            prompt_path.parent.mkdir(parents=True)
+            prompt_payload = b'{"decision":"PLANNER_REVISE_EXECUTOR","required_repair":["add marker"]}\n'
+            prompt_path.write_bytes(prompt_payload)
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-m", "add prompt"], cwd=root, check=True, stdout=subprocess.DEVNULL)
+            subprocess.run(["git", "branch", "develop"], cwd=root, check=True)
+            prompt_path.unlink()
+
+            payload, path, prompt_sha = RUNTIME.load_exact_repair_prompt(
+                root,
+                "smoke-task",
+                "executor",
+                {
+                    "review_round": 0,
+                    "repair_prompts": {
+                        "executor": "results/agent_flow_v3/smoke-task/planner_reviews/round_000.json",
+                    },
+                },
+                ref="develop",
+            )
+
+            self.assertEqual(payload, prompt_payload)
+            self.assertEqual(path, prompt_path)
+            self.assertEqual(prompt_sha, RUNTIME.sha_bytes(prompt_payload))
 
     def test_watcher_default_paths_follow_task_id(self) -> None:
         args = argparse.Namespace(

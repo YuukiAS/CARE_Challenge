@@ -105,6 +105,17 @@ def git_show_text_or_none(repo: Path, ref: str, rel_path: str) -> str | None:
     return cp.stdout if cp.returncode == 0 else None
 
 
+def git_show_bytes_or_none(repo: Path, ref: str, rel_path: str) -> bytes | None:
+    cp = subprocess.run(
+        ["git", "show", f"{ref}:{rel_path}"],
+        cwd=repo,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    return cp.stdout if cp.returncode == 0 else None
+
+
 def parse_utc(value: str) -> datetime:
     if value.endswith("Z"):
         value = value[:-1] + "+00:00"
@@ -322,27 +333,50 @@ def role_active_process(state_root: Path, task_id: str, role: str) -> dict[str, 
     return None
 
 
-def prompt_candidate_paths(repo: Path, task_id: str, role: str, current: dict[str, Any]) -> list[Path]:
+def prompt_candidate_rel_paths(task_id: str, role: str, current: dict[str, Any]) -> list[Path]:
     candidates: list[Path] = []
     role_prompts = current.get("repair_prompts")
     if isinstance(role_prompts, dict) and isinstance(role_prompts.get(role), str):
-        candidates.append(repo / safe_rel_path(role_prompts[role]))
+        candidates.append(safe_rel_path(role_prompts[role]))
     if isinstance(current.get("repair_prompt_path"), str):
-        candidates.append(repo / safe_rel_path(str(current["repair_prompt_path"])))
+        candidates.append(safe_rel_path(str(current["repair_prompt_path"])))
     if isinstance(current.get("planner_review_artifact"), str):
-        candidates.append(repo / safe_rel_path(str(current["planner_review_artifact"])))
+        candidates.append(safe_rel_path(str(current["planner_review_artifact"])))
     review_round = current.get("review_round")
     if isinstance(review_round, int):
-        candidates.append(repo / "results" / "agent_flow_v3" / task_id / "planner_reviews" / f"round_{review_round:03d}.json")
-        candidates.append(repo / "results" / "agent_flow_v3" / task_id / "planner_reviews" / f"round_{review_round:03d}.md")
-    return candidates
+        candidates.append(Path("results") / "agent_flow_v3" / task_id / "planner_reviews" / f"round_{review_round:03d}.json")
+        candidates.append(Path("results") / "agent_flow_v3" / task_id / "planner_reviews" / f"round_{review_round:03d}.md")
+    unique: list[Path] = []
+    seen: set[str] = set()
+    for candidate in candidates:
+        key = candidate.as_posix()
+        if key not in seen:
+            seen.add(key)
+            unique.append(candidate)
+    return unique
 
 
-def load_exact_repair_prompt(repo: Path, task_id: str, role: str, current: dict[str, Any]) -> tuple[bytes, Path, str]:
-    for path in prompt_candidate_paths(repo, task_id, role, current):
+def prompt_candidate_paths(repo: Path, task_id: str, role: str, current: dict[str, Any]) -> list[Path]:
+    return [repo / rel_path for rel_path in prompt_candidate_rel_paths(task_id, role, current)]
+
+
+def load_exact_repair_prompt(
+    repo: Path,
+    task_id: str,
+    role: str,
+    current: dict[str, Any],
+    *,
+    ref: str | None = None,
+) -> tuple[bytes, Path, str]:
+    for rel_path in prompt_candidate_rel_paths(task_id, role, current):
+        path = repo / rel_path
         if path.is_file():
             payload = path.read_bytes()
             return payload, path, sha_bytes(payload)
+        if ref:
+            payload = git_show_bytes_or_none(repo, ref, rel_path.as_posix())
+            if payload is not None:
+                return payload, path, sha_bytes(payload)
     raise RuntimeErrorV3(f"{role}:repair_prompt_missing")
 
 
@@ -507,7 +541,13 @@ def perform_live_resumes(
     failures = list(receipt.get("failures", []))
     for item in receipt.get("resume_commands", []):
         role = item["role"]
-        prompt_payload, prompt_path, prompt_sha = load_exact_repair_prompt(repo, args.task_id, role, current)
+        prompt_payload, prompt_path, prompt_sha = load_exact_repair_prompt(
+            repo,
+            args.task_id,
+            role,
+            current,
+            ref=f"origin/{args.branch}",
+        )
         item["prompt_path"] = str(prompt_path)
         item["prompt_sha256"] = prompt_sha
         try:
