@@ -1,0 +1,33 @@
+{
+  "controller_decision": "STOPPED_STUCK_EXECUTOR_ENVIRONMENT_ASSETS_MISSING",
+  "controller_head_sha_after_cherrypick": "7d0fa388a4f55876e9f0d8c15a65dc98882c152b",
+  "created_utc": "2026-08-06T14:50:20Z",
+  "executor_integrated_commit_sha": "7d0fa388a4f55876e9f0d8c15a65dc98882c152b",
+  "executor_original_commit_sha": "f023d3ed5fe564c334012d30eebc1983157a1d7b",
+  "executor_status": "FAIL_CLOSED",
+  "executor_thread_id": "019fd2ea-30f3-7d72-b605-2fc7a2d901ba",
+  "fail_closed_implementation_receipt_path": "results/agent_flow_v3/care-ase-faithful/implementation/fail_closed_implementation_receipt.json",
+  "fail_closed_implementation_receipt_sha256": "67d1b12a335b4eaf73d87dad8c03581fec1e26b25fba205a4e2ff1a855ebea4e",
+  "fail_closed_reason": "required runtime environment/assets are unavailable for zero-credit forward/backward and inference probes",
+  "failures": [
+    "torch_available",
+    "nnunet_available",
+    "default_plans_exists",
+    "default_dataset_json_exists",
+    "default_stock_root_exists"
+  ],
+  "forbidden_actions_confirmed": {
+    "develop_to_main_merged": false,
+    "docker_built_or_uploaded": false,
+    "formal_training_started": false,
+    "organizer_email_sent": false,
+    "outer_accessed": false,
+    "validation_or_challenge_uploaded": false
+  },
+  "implementation_result_path": "results/agent_flow_v3/care-ase-faithful/implementation/result.md",
+  "implementation_result_sha256": "a74790ccfc60757594fce75ae02cb8fda465f541481c3612ac2a5a17042a92f2",
+  "origin_develop_sha_before_push": "5baeb9dfd71ada7b65edb81769dca82cc6e90eeb",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "schema": "CARE_AGENT_FLOW_V3_EXECUTOR_FAIL_CLOSED_INTEGRATION_RECEIPT_V1",
+  "task_id": "care-ase-faithful"
+}
