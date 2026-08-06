@@ -1,7 +1,7 @@
 {
   "schema": "CARE_AGENT_FLOW_V3",
   "task_id": "gpt-loop-smoke-b",
-  "state": "WAITING_FOR_EXTERNAL_GPT",
+  "state": "PLANNER_PASS",
   "review_round": 1,
   "request_nonce": "smoke-b-20260806T062800Z",
   "frozen_contract_sha256": "c2c3eca2155fce19af8c335173f313a0f49bec72ef43ce2dcbc7b560afeb2366",
@@ -32,20 +32,15 @@
     "python scripts/automation/validate_agent_flow_v3.py --repo-root .": "PASS",
     "git diff --check": "PASS"
   },
-  "planner_decision": "WAITING_FOR_EXTERNAL_GPT",
-  "planner_review_artifact": "results/agent_flow_v3/gpt-loop-smoke-b/planner_reviews/round_000.json",
-  "planner_review_artifact_commit_sha": "0dac14da69de6dcbdb068b2f2a4453de27e954f0",
-  "planner_review_input_integration_sha": "04ca913deb13ae86810621a021d29f466ea25ce8",
+  "planner_decision": "PLANNER_PASS",
+  "planner_review_artifact": "results/agent_flow_v3/gpt-loop-smoke-b/planner_reviews/round_001.json",
+  "planner_review_artifact_commit_sha": "104529427504e4de6a728e96f6adee373a0cee62",
+  "planner_review_input_integration_sha": "041ac2de61b736fe549c9603fc5e3c7e3d573a03",
+  "previous_planner_review_artifact": "results/agent_flow_v3/gpt-loop-smoke-b/planner_reviews/round_000.json",
+  "previous_planner_review_artifact_commit_sha": "0dac14da69de6dcbdb068b2f2a4453de27e954f0",
   "planner_review_gap_marker": "SMOKE_B_EXECUTOR_REPAIR_COMPLETE",
-  "repair_prompt_path": "results/agent_flow_v3/gpt-loop-smoke-b/planner_reviews/round_000.json",
-  "repair_prompts": {
-    "executor": "results/agent_flow_v3/gpt-loop-smoke-b/planner_reviews/round_000.json"
-  },
   "external_wait_started_utc": "2026-08-06T07:43:52Z",
-  "external_wait_deadline_utc": "2026-08-06T11:43:52Z",
-  "expected_state_or_artifact": "True Scheduled Planner review round 1 returns PLANNER_PASS or a new PLANNER_REVISE_* artifact bound to repaired integration 041ac2de61b736fe549c9603fc5e3c7e3d573a03.",
-  "last_observed_remote_sha": "041ac2de61b736fe549c9603fc5e3c7e3d573a03",
-  "last_poll_utc": "2026-08-06T07:43:52Z",
-  "next_action": "KEEP_FETCHING_ORIGIN_DEVELOP_UNTIL_TRUE_SCHEDULED_PLANNER_ROUND_1_DECISION",
-  "updated_utc": "2026-08-06T07:43:52Z"
+  "external_wait_closed_utc": "2026-08-06T09:08:04Z",
+  "next_action": "AWAIT_HUMAN_DECISION",
+  "updated_utc": "2026-08-06T09:08:04Z"
 }
