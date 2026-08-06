@@ -1,7 +1,7 @@
 {
   "schema": "CARE_AGENT_FLOW_V3",
   "task_id": "gpt-loop-smoke-b",
-  "state": "WAITING_FOR_EXTERNAL_GPT",
+  "state": "PLANNER_REVISE_EXECUTOR",
   "review_round": 0,
   "request_nonce": "smoke-b-20260806T062800Z",
   "frozen_contract_sha256": "c2c3eca2155fce19af8c335173f313a0f49bec72ef43ce2dcbc7b560afeb2366",
@@ -22,11 +22,19 @@
     "python scripts/automation/validate_agent_flow_v3.py --repo-root .": "PASS",
     "git diff --check": "PASS"
   },
+  "planner_decision": "PLANNER_REVISE_EXECUTOR",
+  "planner_review_artifact": "results/agent_flow_v3/gpt-loop-smoke-b/planner_reviews/round_000.json",
+  "planner_review_artifact_commit_sha": "0dac14da69de6dcbdb068b2f2a4453de27e954f0",
+  "planner_review_input_integration_sha": "04ca913deb13ae86810621a021d29f466ea25ce8",
+  "repair_prompt_path": "results/agent_flow_v3/gpt-loop-smoke-b/planner_reviews/round_000.json",
+  "repair_prompts": {
+    "executor": "results/agent_flow_v3/gpt-loop-smoke-b/planner_reviews/round_000.json"
+  },
   "external_wait_started_utc": "2026-08-06T06:47:43Z",
   "external_wait_deadline_utc": "2026-08-06T10:47:43Z",
-  "expected_state_or_artifact": "Scheduled Planner updates CURRENT.state to PLANNER_REVISE_EXECUTOR, PLANNER_REVISE_VERIFIER, PLANNER_REVISE_BOTH, or PLANNER_PASS and commits a matching review artifact under results/agent_flow_v3/gpt-loop-smoke-b/",
-  "last_observed_remote_sha": "f7c2c2ecbe88677f50aa45d87ccb42f5773545c3",
-  "last_poll_utc": "2026-08-06T06:47:43Z",
-  "next_action": "FETCH_ORIGIN_DEVELOP_UNTIL_SCHEDULED_PLANNER_DECISION_OR_DEADLINE",
-  "updated_utc": "2026-08-06T06:47:43Z"
+  "expected_state_or_artifact": "Exact Executor thread resumes from the real Scheduled Planner review and returns a repaired integration with planner_review_gap_marker.",
+  "last_observed_remote_sha": "0dac14da69de6dcbdb068b2f2a4453de27e954f0",
+  "last_poll_utc": "2026-08-06T07:10:00Z",
+  "next_action": "WATCHER_RESUME_EXACT_EXECUTOR_THREAD_FROM_PLANNER_REVIEW_ARTIFACT",
+  "updated_utc": "2026-08-06T07:10:00Z"
 }
