@@ -1,0 +1,34 @@
+{
+  "command": {
+    "entrypoint": "run_deployment_load_probe",
+    "fold": 0,
+    "zero_credit": true
+  },
+  "command_sha256": "4d63aa253f31cfc1d47e65546003a89a2b7088c58efb422b74157c30aa317eb5",
+  "created_utc": "2026-08-06T17:28:37Z",
+  "docker_or_upload": false,
+  "executed": true,
+  "exit_code": 0,
+  "formal_training_started": false,
+  "outer_accessed": false,
+  "payload": {
+    "deployment_loader": "src.care_myocardium.training.care_ase_trainer.load_care_ase_checkpoint_for_inference",
+    "fold": 0,
+    "formal_training_started": false,
+    "opened_stock_checkpoint_after_deployment_load": false,
+    "outer_accessed": false,
+    "probe_type": "zero_credit_deployment_manifest_probe",
+    "relocatable_assets_declared": true,
+    "self_contained_load": true,
+    "source_manifest_bound": true,
+    "status": "PASS",
+    "stock_checkpoint_sha256": "8bceb20cae8920e87d43b14665a0db9dfd4f1204533d25a3cd6e40ad9de74111"
+  },
+  "probe": "deployment_load_probe",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "schema": "CARE_ASE_FAITHFUL_ZERO_CREDIT_PROBE_RECEIPT_V1",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "40b0190359ec3ef4031d8da7f0989db4c79aacc569565e28754f1c3490304860",
+  "task_id": "care-ase-faithful",
+  "zero_credit": true
+}

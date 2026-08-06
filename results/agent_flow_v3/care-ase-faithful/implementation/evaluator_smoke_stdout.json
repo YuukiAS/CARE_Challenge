@@ -1,0 +1,27 @@
+{
+  "canonical_full_volume_only": true,
+  "formal_training_started": false,
+  "metrics": [
+    "blood_pool_adjacent_fp",
+    "casewise_help_harm",
+    "centerB_centerC_subgroup",
+    "component_count",
+    "dice",
+    "exact_hd",
+    "hd95",
+    "lesion_recall",
+    "precision",
+    "remote_fp_count",
+    "remote_fp_volume",
+    "sensitivity",
+    "sentinel_case",
+    "small_lesion_recall",
+    "volume_ratio"
+  ],
+  "outer_accessed": false,
+  "patch_proxy_evaluator": false,
+  "probe_type": "zero_credit_metric_interface_smoke",
+  "same_case_population": true,
+  "same_tta_decode_metric_interface": true,
+  "status": "PASS"
+}

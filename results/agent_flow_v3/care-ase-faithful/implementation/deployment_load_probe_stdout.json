@@ -1,0 +1,13 @@
+{
+  "deployment_loader": "src.care_myocardium.training.care_ase_trainer.load_care_ase_checkpoint_for_inference",
+  "fold": 0,
+  "formal_training_started": false,
+  "opened_stock_checkpoint_after_deployment_load": false,
+  "outer_accessed": false,
+  "probe_type": "zero_credit_deployment_manifest_probe",
+  "relocatable_assets_declared": true,
+  "self_contained_load": true,
+  "source_manifest_bound": true,
+  "status": "PASS",
+  "stock_checkpoint_sha256": "8bceb20cae8920e87d43b14665a0db9dfd4f1204533d25a3cd6e40ad9de74111"
+}

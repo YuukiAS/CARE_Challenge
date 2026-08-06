@@ -76,8 +76,12 @@ from src.care_myocardium.training.care_ase_trainer import (
 )
 
 
-PREPROCESSED = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans_3d_fullres"
-SPLITS = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/splits_final.json"
+_RUNTIME_ROOT = Path(os.environ.get("CARE_ROOT", REPO_ROOT)).resolve()
+_PREPROCESSED_ROOT = Path(
+    os.environ.get("nnUNet_preprocessed", _RUNTIME_ROOT / "data/nnUNet/nnUNet_preprocessed")
+)
+PREPROCESSED = _PREPROCESSED_ROOT / "Dataset501_CAREMyoPS/nnUNetPlans_3d_fullres"
+SPLITS = _PREPROCESSED_ROOT / "Dataset501_CAREMyoPS/splits_final.json"
 TASK_KEY = "20260804_care_ase_r2_emergency_9h_training_docker"
 RESULT_DIR = REPO_ROOT / "results" / TASK_KEY
 STATIC_REVIEW_INPUT_DIR = RESULT_DIR

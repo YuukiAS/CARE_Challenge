@@ -4,16 +4,20 @@
   "canonical_truth_status": "package_single_truth",
   "legacy_module_exists": false,
   "schema": "CARE_ASE_FAITHFUL_STATIC_ARCHITECTURE_CHECKS_V1",
+  "static_architecture_checks_sha256": "7e970f141b72fb660542a52de6e3f1ac3b6ad34112c420ec7c206c1b4bce8acc",
   "thin_export_layer": true,
   "tokens": {
     "active_modality_adapter": true,
     "carease_class": true,
     "class4_no_t2_decode_support": true,
+    "edema_residual_dilation": true,
     "edema_t2_subset_execution": true,
     "highest_two_pathology_branch": true,
+    "injury_stock_mean_initializer": true,
     "named_zero_projections": true,
     "schema_v4_checkpoint": true,
     "shared_extent_statistics": true,
+    "slice_extent_head_topology": true,
     "stock_checkpoint_load": true,
     "tile_bias_after_aggregation": true
   }

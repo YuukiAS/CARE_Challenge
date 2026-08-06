@@ -1,0 +1,52 @@
+{
+  "command": {
+    "entrypoint": "run_checkpoint_resume_probe",
+    "fold": 0,
+    "zero_credit": true
+  },
+  "command_sha256": "fe3ccdb34c1d7ae3527dd96a65a3916a0c0b1bc712c0401d065b6f089096d180",
+  "created_utc": "2026-08-06T17:28:37Z",
+  "docker_or_upload": false,
+  "executed": true,
+  "exit_code": 0,
+  "formal_training_started": false,
+  "outer_accessed": false,
+  "payload": {
+    "checkpoint_sha256": "86d067b2ffd283e5773e253064cc9b130dc1466053c85522afcc922bafd05b64",
+    "checkpoint_sidecar_matches": true,
+    "checkpoint_sidecar_sha256": "86d067b2ffd283e5773e253064cc9b130dc1466053c85522afcc922bafd05b64",
+    "checkpoint_storage": "temporary_directory_removed_after_hashing",
+    "checkpoint_written": true,
+    "control_state_digest_sha256": "b2d38ea919e378b211fac32f695eac56dc12c450c6a8355c7691b52bc5aec7d9",
+    "first_synthetic_gradient_sha256": "00b2340ccdf9d20eb6430f01ef8dcb5deaa4a27b68da9a0e718f5088eddf1939",
+    "fold": 0,
+    "formal_optimizer_step_executed": false,
+    "formal_training_started": false,
+    "next_descriptor_sha256": "9d37ba4a5b2a15d239ac55fe6c730e17609f29d4ec6e04e645f949e2cbf162f3",
+    "next_step_matches_uninterrupted": true,
+    "optimizer_state_matches": true,
+    "outer_accessed": false,
+    "probe_parameter": "component_heads.scar_extent_head.presence.weight",
+    "probe_type": "zero_credit_schema_v4_save_reload_next_step_probe",
+    "reload_state_digest_sha256": "b2d38ea919e378b211fac32f695eac56dc12c450c6a8355c7691b52bc5aec7d9",
+    "rng_and_cursor_state_matches": true,
+    "scheduler_ramp_state_matches": true,
+    "schema_version": 4,
+    "second_control_synthetic_gradient_sha256": "11fa6879a0c935b951dccf9caa3b361d24fcf37d41b7119e482d7f9eacfc4d07",
+    "second_reload_synthetic_gradient_sha256": "11fa6879a0c935b951dccf9caa3b361d24fcf37d41b7119e482d7f9eacfc4d07",
+    "status": "PASS",
+    "train_case_ids": {
+      "edema_t2_present": "Case2001",
+      "no_t2": "Case1001",
+      "scar": "Case1001"
+    },
+    "zero_credit_synthetic_optimizer_steps": 2
+  },
+  "probe": "checkpoint_resume_probe",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "schema": "CARE_ASE_FAITHFUL_ZERO_CREDIT_PROBE_RECEIPT_V1",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "29ffce596a3cf71df508aa491643536f1653cccc75b06733258f9920ba68c523",
+  "task_id": "care-ase-faithful",
+  "zero_credit": true
+}

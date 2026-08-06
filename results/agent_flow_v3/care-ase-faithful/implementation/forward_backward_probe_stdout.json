@@ -1,26 +1,308 @@
 {
   "availability": [
-    1.0,
-    1.0,
-    1.0
+    [
+      1.0,
+      1.0,
+      1.0
+    ],
+    [
+      1.0,
+      0.0,
+      0.0
+    ]
   ],
   "checkpoint_written": false,
-  "first_loss": -5.920772075653076,
+  "first_loss": 11.678964614868164,
   "fold": 0,
   "formal_optimizer_step_executed": false,
   "input_shape": [
-    1,
+    2,
     3,
     8,
-    128,
-    128
+    64,
+    64
+  ],
+  "mixed_batch_case_ids": [
+    "Case2001",
+    "Case1001"
+  ],
+  "mixed_batch_descriptor_sha256": [
+    "795c6d192feebf7e6f790330aff6bfe196d73ecc8cb69005c952d92f5658ba88",
+    "d90b0a97d0c53a6da73f35b727ff8b58912414aa3416dcff7f048c46fb62a7a4"
+  ],
+  "mixed_batch_no_t2": {
+    "case_id": "Case1001",
+    "class4_in_softmax_dice_argmax_denominator": false,
+    "edema_owned_module_call_count": 0,
+    "edema_parameter_grad_abs_sum": 0.0,
+    "edema_supervision_rows": 0,
+    "no_t2_only_loss": 10.585493087768555,
+    "no_t2_only_metrics": {
+      "all_finite": 1.0,
+      "all_nonnegative": 1.0,
+      "anatomy4_deep_supervised": 5.959643363952637,
+      "anatomy_ce": 5.00982666015625,
+      "anatomy_dice": 0.9907661080360413,
+      "anatomy_half_ce": 4.883634090423584,
+      "anatomy_half_dice": 0.9941102862358093,
+      "distance": 0.5452641844749451,
+      "edema_binary_t2_gated": 0.0,
+      "edema_boundary": 0.0,
+      "edema_context": 0.0,
+      "edema_dense": 0.0,
+      "edema_extent": 0.0,
+      "edema_extent_area": 0.0,
+      "edema_extent_presence": 0.0,
+      "five_class_ce_without_class4": 4.729618549346924,
+      "five_class_dice_without_class4": 0.9930384755134583,
+      "injury": 0.0,
+      "loss": 10.585493087768555,
+      "no_t2_edema_exclusive_total_loss": -0.0,
+      "relation": 0.0,
+      "scar_center": 0.20339667797088623,
+      "scar_component": 0.9093414545059204,
+      "scar_context": 1.413370132446289,
+      "scar_dense": 0.9261177778244019,
+      "scar_extent": 0.34502384066581726,
+      "scar_extent_area": 0.0,
+      "scar_extent_presence": 0.6900476813316345,
+      "wall": 1.781177043914795
+    }
+  },
+  "mixed_batch_segmentation_sha256": [
+    "f2c082d359161c08132732c3c1f466267d7763a9bcf45301c3e952cdf0ddc952",
+    "c1fb19a9d833cf7d2e1f5e6b56bce4e729dea53dff2e839646107786a6c5fe51"
   ],
   "outer_accessed": false,
-  "probe_type": "synthetic_zero_credit_two_backward",
+  "probe_type": "train_split_real_case_zero_credit_total_loss_two_backward",
   "required_projection_nonzero_finite_count": 94,
   "required_projection_parameter_count": 94,
-  "second_loss": -5.9209675788879395,
+  "second_loss": 11.589771270751953,
+  "second_total_loss_terms": {
+    "anatomy_deep_supervision_dice_ce": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 5.83768892288208,
+      "weight": 0.5
+    },
+    "conditional_final_dice_ce": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 11.589771270751953,
+      "weight": 1.0
+    },
+    "distance_rho_masked_smooth_l1": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.09958434849977493,
+      "weight": 0.1
+    },
+    "edema_binary_dice_focal": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.4883442223072052,
+      "weight": 1.0
+    },
+    "edema_boundary_smooth_l1": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.30834144353866577,
+      "weight": 0.1
+    },
+    "edema_context_ce": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 1.4338595867156982,
+      "weight": 0.1
+    },
+    "edema_extent_bce_smooth_l1": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.29703289270401,
+      "weight": 0.2
+    },
+    "injury_dice_bce": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.5740239024162292,
+      "weight": 0.4
+    },
+    "relation_loss": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.07185258716344833,
+      "weight": 0.05
+    },
+    "scar_binary_dice_focal": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.9370845556259155,
+      "weight": 1.0
+    },
+    "scar_center_focal_bce": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.1902608573436737,
+      "weight": 0.1
+    },
+    "scar_component_adaptive_tversky": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.9188192486763,
+      "weight": 0.25
+    },
+    "scar_context_ce": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 1.509551763534546,
+      "weight": 0.1
+    },
+    "scar_extent_bce_smooth_l1": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.3442126512527466,
+      "weight": 0.15
+    },
+    "wall_dice_bce": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 2.1440601348876953,
+      "weight": 0.25
+    }
+  },
+  "split_sha256": "9c3e9f3b7e4565a5c3c2589ddbb913c78c0ad423f4265370585841c93c6f880a",
   "status": "PASS",
-  "upstream_nonzero_finite_count_after_projection_update": 81,
-  "upstream_parameter_count_after_projection_update": 81
+  "total_loss_terms": {
+    "anatomy_deep_supervision_dice_ce": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 5.83768892288208,
+      "weight": 0.5
+    },
+    "conditional_final_dice_ce": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 11.678964614868164,
+      "weight": 1.0
+    },
+    "distance_rho_masked_smooth_l1": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.09958434849977493,
+      "weight": 0.1
+    },
+    "edema_binary_dice_focal": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.5306404232978821,
+      "weight": 1.0
+    },
+    "edema_boundary_smooth_l1": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.30919453501701355,
+      "weight": 0.1
+    },
+    "edema_context_ce": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 1.4338595867156982,
+      "weight": 0.1
+    },
+    "edema_extent_bce_smooth_l1": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.29703289270401,
+      "weight": 0.2
+    },
+    "injury_dice_bce": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.606564998626709,
+      "weight": 0.4
+    },
+    "relation_loss": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.07337721437215805,
+      "weight": 0.05
+    },
+    "scar_binary_dice_focal": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.9458863735198975,
+      "weight": 1.0
+    },
+    "scar_center_focal_bce": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.19037240743637085,
+      "weight": 0.1
+    },
+    "scar_component_adaptive_tversky": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.9261618256568909,
+      "weight": 0.25
+    },
+    "scar_context_ce": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 1.509551763534546,
+      "weight": 0.1
+    },
+    "scar_extent_bce_smooth_l1": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 0.3442126512527466,
+      "weight": 0.15
+    },
+    "wall_dice_bce": {
+      "correctly_excluded": false,
+      "denominator": 1,
+      "included_in_total": true,
+      "value": 2.1440601348876953,
+      "weight": 0.25
+    }
+  },
+  "train_case_ids": {
+    "edema_t2_present": "Case2001",
+    "scar": "Case1001"
+  },
+  "upstream_nonzero_finite_count_after_projection_update": 87,
+  "upstream_parameter_count_after_projection_update": 87,
+  "zero_credit_patch_size": [
+    8,
+    64,
+    64
+  ]
 }

@@ -1,5 +1,5 @@
 {
-  "parameter_owner_registry_sha256": "58b95ff01f422ba854a80480ee6a9b640407575c252cc476572aa2642167de2d",
+  "parameter_owner_registry_sha256": "1ff1aa819064919ec17cdd928f86d9c4a413b92862ceae62a0acc1a9eb47a387",
   "registry": {
     "all_parameters_in_optimizer_from_step0": true,
     "allowed_structural_alias_count": 136,
@@ -9,14 +9,14 @@
       "cloned_pathology_blocks": 40,
       "cloned_pathology_classifiers": 8,
       "lower_encoder_bottleneck": 40,
-      "new_modules": 203,
+      "new_modules": 223,
       "shared_low_mid_decoder": 40,
       "upper_two_encoder": 16
     },
     "missing_count": 0,
     "missing_parameter_ids": [],
     "optimizer_created_once_moments_preserved_across_stages": true,
-    "parameter_count": 371,
+    "parameter_count": 391,
     "parameters": [
       {
         "aliases": [
@@ -42,7 +42,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969868928,
+        "parameter_id": 140677558850400,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -73,7 +73,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969868848,
+        "parameter_id": 140677558850320,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -104,7 +104,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140199909091088,
+        "parameter_id": 140677558850480,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -135,7 +135,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969868608,
+        "parameter_id": 140677558850240,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -166,7 +166,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969868528,
+        "parameter_id": 140677558850080,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -197,7 +197,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969868768,
+        "parameter_id": 140677558850000,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -228,7 +228,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140199904062240,
+        "parameter_id": 140677558850160,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -259,7 +259,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969868688,
+        "parameter_id": 140677558849920,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -290,7 +290,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969868368,
+        "parameter_id": 140677558849760,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -321,7 +321,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969868288,
+        "parameter_id": 140677558849680,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -352,7 +352,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969868448,
+        "parameter_id": 140677558849840,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -383,7 +383,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969868208,
+        "parameter_id": 140677558849600,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -414,7 +414,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969868048,
+        "parameter_id": 140677558849440,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -445,7 +445,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969867968,
+        "parameter_id": 140677558849360,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -476,7 +476,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969868128,
+        "parameter_id": 140677558849520,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -507,7 +507,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969867888,
+        "parameter_id": 140677558849280,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -538,7 +538,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969867728,
+        "parameter_id": 140677558849120,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -569,7 +569,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969867648,
+        "parameter_id": 140677558849040,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -600,7 +600,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969867808,
+        "parameter_id": 140677558849200,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -631,7 +631,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969867568,
+        "parameter_id": 140677558848960,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -662,7 +662,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969867408,
+        "parameter_id": 140677558848800,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -693,7 +693,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969867328,
+        "parameter_id": 140677558848720,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -724,7 +724,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969867488,
+        "parameter_id": 140677558848880,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -755,7 +755,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969867248,
+        "parameter_id": 140677558848640,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -786,7 +786,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969867088,
+        "parameter_id": 140677558848480,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -817,7 +817,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969867008,
+        "parameter_id": 140677558848400,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -848,7 +848,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969867168,
+        "parameter_id": 140677558848560,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -879,7 +879,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969866928,
+        "parameter_id": 140677558848320,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -910,7 +910,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969866768,
+        "parameter_id": 140677558848160,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -941,7 +941,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969866688,
+        "parameter_id": 140677558848080,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -972,7 +972,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969866848,
+        "parameter_id": 140677558848240,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -1003,7 +1003,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969866608,
+        "parameter_id": 140677558848000,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -1034,7 +1034,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969866448,
+        "parameter_id": 140677558847840,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -1065,7 +1065,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969866368,
+        "parameter_id": 140677558847600,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -1096,7 +1096,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969866528,
+        "parameter_id": 140677558847920,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -1127,7 +1127,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969866288,
+        "parameter_id": 140677558847520,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -1158,7 +1158,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969866128,
+        "parameter_id": 140677558847680,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -1189,7 +1189,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969866048,
+        "parameter_id": 140677558847440,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -1220,7 +1220,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969866208,
+        "parameter_id": 140677558847760,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -1251,7 +1251,7 @@
         "expected_group": "lower_encoder_bottleneck",
         "group": "lower_encoder_bottleneck",
         "group_matches_expected": true,
-        "parameter_id": 140200969865968,
+        "parameter_id": 140677558847360,
         "requires_grad": {
           "A": false,
           "B": false,
@@ -1282,7 +1282,7 @@
         "expected_group": "upper_two_encoder",
         "group": "upper_two_encoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969865808,
+        "parameter_id": 140677558847200,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -1313,7 +1313,7 @@
         "expected_group": "upper_two_encoder",
         "group": "upper_two_encoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969865728,
+        "parameter_id": 140677558847120,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -1344,7 +1344,7 @@
         "expected_group": "upper_two_encoder",
         "group": "upper_two_encoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969865888,
+        "parameter_id": 140677558847280,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -1375,7 +1375,7 @@
         "expected_group": "upper_two_encoder",
         "group": "upper_two_encoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969865648,
+        "parameter_id": 140677558847040,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -1406,7 +1406,7 @@
         "expected_group": "upper_two_encoder",
         "group": "upper_two_encoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969865328,
+        "parameter_id": 140677558846720,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -1437,7 +1437,7 @@
         "expected_group": "upper_two_encoder",
         "group": "upper_two_encoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969865568,
+        "parameter_id": 140677558846640,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -1468,7 +1468,7 @@
         "expected_group": "upper_two_encoder",
         "group": "upper_two_encoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969865408,
+        "parameter_id": 140677558846800,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -1499,7 +1499,7 @@
         "expected_group": "upper_two_encoder",
         "group": "upper_two_encoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969865488,
+        "parameter_id": 140677558846560,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -1530,7 +1530,7 @@
         "expected_group": "upper_two_encoder",
         "group": "upper_two_encoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969865168,
+        "parameter_id": 140677558846400,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -1561,7 +1561,7 @@
         "expected_group": "upper_two_encoder",
         "group": "upper_two_encoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969865088,
+        "parameter_id": 140677558846320,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -1592,7 +1592,7 @@
         "expected_group": "upper_two_encoder",
         "group": "upper_two_encoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969865248,
+        "parameter_id": 140677558846480,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -1623,7 +1623,7 @@
         "expected_group": "upper_two_encoder",
         "group": "upper_two_encoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969865008,
+        "parameter_id": 140677558846240,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -1654,7 +1654,7 @@
         "expected_group": "upper_two_encoder",
         "group": "upper_two_encoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969864688,
+        "parameter_id": 140677558846080,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -1685,7 +1685,7 @@
         "expected_group": "upper_two_encoder",
         "group": "upper_two_encoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969864608,
+        "parameter_id": 140677558846000,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -1716,7 +1716,7 @@
         "expected_group": "upper_two_encoder",
         "group": "upper_two_encoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969864928,
+        "parameter_id": 140677558846160,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -1747,7 +1747,7 @@
         "expected_group": "upper_two_encoder",
         "group": "upper_two_encoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969864528,
+        "parameter_id": 140677558845920,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -1777,7 +1777,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140199914889024,
+        "parameter_id": 140677558846960,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -1807,7 +1807,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969864448,
+        "parameter_id": 140677558846880,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -1837,7 +1837,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969869248,
+        "parameter_id": 140677558827712,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -1867,7 +1867,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969869168,
+        "parameter_id": 140677558820832,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -1897,7 +1897,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969845280,
+        "parameter_id": 140677558827232,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -1927,7 +1927,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969838720,
+        "parameter_id": 140677558820512,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -1957,7 +1957,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969844960,
+        "parameter_id": 140677558826752,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -1987,7 +1987,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969838400,
+        "parameter_id": 140677558820032,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2018,7 +2018,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969864288,
+        "parameter_id": 140677558851360,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2049,7 +2049,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969864208,
+        "parameter_id": 140677558821392,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2080,7 +2080,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969864368,
+        "parameter_id": 140677558851440,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2111,7 +2111,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969864128,
+        "parameter_id": 140677558821312,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2142,7 +2142,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969863968,
+        "parameter_id": 140677558827952,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2173,7 +2173,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969863888,
+        "parameter_id": 140677558827872,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2204,7 +2204,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969864048,
+        "parameter_id": 140677558821232,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2235,7 +2235,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969863808,
+        "parameter_id": 140677558821152,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2266,7 +2266,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969845760,
+        "parameter_id": 140677558827472,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2297,7 +2297,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969839120,
+        "parameter_id": 140677558827392,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2328,7 +2328,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969845840,
+        "parameter_id": 140677558820752,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2359,7 +2359,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969839280,
+        "parameter_id": 140677558820992,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2390,7 +2390,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969845680,
+        "parameter_id": 140677558827632,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2421,7 +2421,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969845600,
+        "parameter_id": 140677558827552,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2452,7 +2452,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969839200,
+        "parameter_id": 140677558820912,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2483,7 +2483,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969839040,
+        "parameter_id": 140677558820672,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2514,7 +2514,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969845520,
+        "parameter_id": 140677558827152,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2545,7 +2545,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969845440,
+        "parameter_id": 140677558827072,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2576,7 +2576,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969838640,
+        "parameter_id": 140677558820432,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2607,7 +2607,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969838880,
+        "parameter_id": 140677558820352,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2638,7 +2638,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969845200,
+        "parameter_id": 140677558826992,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2669,7 +2669,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969845120,
+        "parameter_id": 140677558826912,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2700,7 +2700,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969838800,
+        "parameter_id": 140677558820272,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2731,7 +2731,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969838560,
+        "parameter_id": 140677558820192,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2762,7 +2762,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969844880,
+        "parameter_id": 140677558826672,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2793,7 +2793,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969844800,
+        "parameter_id": 140677558826592,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2824,7 +2824,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969838320,
+        "parameter_id": 140677558819952,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2855,7 +2855,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969838240,
+        "parameter_id": 140677558819872,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2886,7 +2886,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969844720,
+        "parameter_id": 140677558826512,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2917,7 +2917,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969844640,
+        "parameter_id": 140677558826432,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2948,7 +2948,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969838160,
+        "parameter_id": 140677558819792,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -2979,7 +2979,7 @@
         "expected_group": "shared_low_mid_decoder",
         "group": "shared_low_mid_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969838080,
+        "parameter_id": 140677558819712,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -3009,7 +3009,7 @@
         "expected_group": "anatomy_decoder",
         "group": "anatomy_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969844480,
+        "parameter_id": 140677558826352,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -3039,7 +3039,7 @@
         "expected_group": "anatomy_decoder",
         "group": "anatomy_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969837920,
+        "parameter_id": 140677558826272,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -3069,7 +3069,7 @@
         "expected_group": "anatomy_decoder",
         "group": "anatomy_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969844000,
+        "parameter_id": 140677558825872,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -3099,7 +3099,7 @@
         "expected_group": "anatomy_decoder",
         "group": "anatomy_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969837440,
+        "parameter_id": 140677558825792,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -3130,7 +3130,7 @@
         "expected_group": "anatomy_decoder",
         "group": "anatomy_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969844400,
+        "parameter_id": 140677558819472,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -3161,7 +3161,7 @@
         "expected_group": "anatomy_decoder",
         "group": "anatomy_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969844320,
+        "parameter_id": 140677558826192,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -3192,7 +3192,7 @@
         "expected_group": "anatomy_decoder",
         "group": "anatomy_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969837840,
+        "parameter_id": 140677558819552,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -3223,7 +3223,7 @@
         "expected_group": "anatomy_decoder",
         "group": "anatomy_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969837760,
+        "parameter_id": 140677558826112,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -3254,7 +3254,7 @@
         "expected_group": "anatomy_decoder",
         "group": "anatomy_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969844240,
+        "parameter_id": 140677558819312,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -3285,7 +3285,7 @@
         "expected_group": "anatomy_decoder",
         "group": "anatomy_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969844160,
+        "parameter_id": 140677558826032,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -3316,7 +3316,7 @@
         "expected_group": "anatomy_decoder",
         "group": "anatomy_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969837680,
+        "parameter_id": 140677558819392,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -3347,7 +3347,7 @@
         "expected_group": "anatomy_decoder",
         "group": "anatomy_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969837600,
+        "parameter_id": 140677558825952,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -3378,7 +3378,7 @@
         "expected_group": "anatomy_decoder",
         "group": "anatomy_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969843920,
+        "parameter_id": 140677558818992,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -3409,7 +3409,7 @@
         "expected_group": "anatomy_decoder",
         "group": "anatomy_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969843840,
+        "parameter_id": 140677558825712,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -3440,7 +3440,7 @@
         "expected_group": "anatomy_decoder",
         "group": "anatomy_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969837360,
+        "parameter_id": 140677558819072,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -3471,7 +3471,7 @@
         "expected_group": "anatomy_decoder",
         "group": "anatomy_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969837280,
+        "parameter_id": 140677558825632,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -3502,7 +3502,7 @@
         "expected_group": "anatomy_decoder",
         "group": "anatomy_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969843760,
+        "parameter_id": 140677558818832,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -3533,7 +3533,7 @@
         "expected_group": "anatomy_decoder",
         "group": "anatomy_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969843680,
+        "parameter_id": 140677558825552,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -3564,7 +3564,7 @@
         "expected_group": "anatomy_decoder",
         "group": "anatomy_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969837200,
+        "parameter_id": 140677558818912,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -3595,7 +3595,7 @@
         "expected_group": "anatomy_decoder",
         "group": "anatomy_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140200969837120,
+        "parameter_id": 140677558825472,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -3625,7 +3625,7 @@
         "expected_group": "anatomy_decoder",
         "group": "anatomy_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140199425997184,
+        "parameter_id": 140676407882320,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -3655,7 +3655,7 @@
         "expected_group": "anatomy_decoder",
         "group": "anatomy_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140199425996864,
+        "parameter_id": 140676407882160,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -3685,7 +3685,7 @@
         "expected_group": "anatomy_decoder",
         "group": "anatomy_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140199425996624,
+        "parameter_id": 140676407882240,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -3715,7 +3715,7 @@
         "expected_group": "anatomy_decoder",
         "group": "anatomy_decoder",
         "group_matches_expected": true,
-        "parameter_id": 140199425996704,
+        "parameter_id": 140676407881920,
         "requires_grad": {
           "A": false,
           "B": true,
@@ -3745,7 +3745,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425996224,
+        "parameter_id": 140676407881680,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -3775,7 +3775,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425996304,
+        "parameter_id": 140676407881280,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -3805,7 +3805,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425995904,
+        "parameter_id": 140676407881120,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -3835,7 +3835,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425996464,
+        "parameter_id": 140676407881760,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -3866,7 +3866,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425994864,
+        "parameter_id": 140676407879920,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -3897,7 +3897,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425994624,
+        "parameter_id": 140676407880000,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -3928,7 +3928,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425994464,
+        "parameter_id": 140676407879840,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -3959,7 +3959,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425994784,
+        "parameter_id": 140676407880320,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -3990,7 +3990,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425994384,
+        "parameter_id": 140676407879520,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4021,7 +4021,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425993984,
+        "parameter_id": 140676407879600,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4052,7 +4052,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425993824,
+        "parameter_id": 140676407879440,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4083,7 +4083,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425994544,
+        "parameter_id": 140676407879760,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4114,7 +4114,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425994064,
+        "parameter_id": 140676407879120,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4145,7 +4145,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425993904,
+        "parameter_id": 140676407879040,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4176,7 +4176,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425993664,
+        "parameter_id": 140676407878880,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4207,7 +4207,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425995024,
+        "parameter_id": 140676407879360,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4238,7 +4238,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425993424,
+        "parameter_id": 140676407878480,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4269,7 +4269,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425993504,
+        "parameter_id": 140676407878560,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4300,7 +4300,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425993104,
+        "parameter_id": 140676407878400,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4331,7 +4331,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425993584,
+        "parameter_id": 140676407878960,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4361,7 +4361,7 @@
         "expected_group": "cloned_pathology_classifiers",
         "group": "cloned_pathology_classifiers",
         "group_matches_expected": true,
-        "parameter_id": 140199425996784,
+        "parameter_id": 140676407881840,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4391,7 +4391,7 @@
         "expected_group": "cloned_pathology_classifiers",
         "group": "cloned_pathology_classifiers",
         "group_matches_expected": true,
-        "parameter_id": 140199425996384,
+        "parameter_id": 140676407881360,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4421,7 +4421,7 @@
         "expected_group": "cloned_pathology_classifiers",
         "group": "cloned_pathology_classifiers",
         "group_matches_expected": true,
-        "parameter_id": 140199425995344,
+        "parameter_id": 140676407880720,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4451,7 +4451,7 @@
         "expected_group": "cloned_pathology_classifiers",
         "group": "cloned_pathology_classifiers",
         "group_matches_expected": true,
-        "parameter_id": 140199425994944,
+        "parameter_id": 140676407880480,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4481,7 +4481,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425992544,
+        "parameter_id": 140676407877920,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4511,7 +4511,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425992624,
+        "parameter_id": 140676407878000,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4541,7 +4541,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425992384,
+        "parameter_id": 140676407877760,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4571,7 +4571,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425992464,
+        "parameter_id": 140676407877680,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4601,7 +4601,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425992144,
+        "parameter_id": 140676407877600,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4631,7 +4631,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425992224,
+        "parameter_id": 140676407877520,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4661,7 +4661,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425991984,
+        "parameter_id": 140676407877120,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4691,7 +4691,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425992064,
+        "parameter_id": 140676407877200,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4721,7 +4721,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425991824,
+        "parameter_id": 140676407876960,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4751,7 +4751,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425991744,
+        "parameter_id": 140676407877040,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4781,7 +4781,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425991664,
+        "parameter_id": 140676407876720,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4811,7 +4811,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425991584,
+        "parameter_id": 140676407876800,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4841,7 +4841,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425991184,
+        "parameter_id": 140676407876560,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4871,7 +4871,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425991264,
+        "parameter_id": 140676407876640,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4901,7 +4901,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425991024,
+        "parameter_id": 140676407876320,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4931,7 +4931,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425991104,
+        "parameter_id": 140676407876240,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4961,7 +4961,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425990784,
+        "parameter_id": 140676407876160,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -4991,7 +4991,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425990864,
+        "parameter_id": 140676407876080,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5021,7 +5021,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425990624,
+        "parameter_id": 140676407875680,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5051,7 +5051,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425990704,
+        "parameter_id": 140676407875760,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5081,7 +5081,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425990384,
+        "parameter_id": 140676407875520,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5111,7 +5111,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425990304,
+        "parameter_id": 140676407875600,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5141,7 +5141,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425990224,
+        "parameter_id": 140676407875280,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5171,7 +5171,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425990144,
+        "parameter_id": 140676407875360,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5201,7 +5201,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425989744,
+        "parameter_id": 140676407875120,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5231,7 +5231,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425989824,
+        "parameter_id": 140676407875200,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5261,7 +5261,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425989584,
+        "parameter_id": 140676407874960,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5291,7 +5291,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425989664,
+        "parameter_id": 140676407874880,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5321,7 +5321,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425989344,
+        "parameter_id": 140676407874800,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5351,7 +5351,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425989424,
+        "parameter_id": 140676407874720,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5381,7 +5381,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425989184,
+        "parameter_id": 140676407874320,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5411,7 +5411,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425989264,
+        "parameter_id": 140676407874400,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5441,7 +5441,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425989024,
+        "parameter_id": 140676407874160,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5471,7 +5471,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425988944,
+        "parameter_id": 140676407874240,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5501,7 +5501,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425988864,
+        "parameter_id": 140676407873920,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5531,7 +5531,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425988784,
+        "parameter_id": 140676407874000,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5561,7 +5561,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425988384,
+        "parameter_id": 140676407873760,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5591,7 +5591,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425988464,
+        "parameter_id": 140676407873840,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5621,7 +5621,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425986784,
+        "parameter_id": 140676407885680,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5651,7 +5651,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425988224,
+        "parameter_id": 140676407881520,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5681,7 +5681,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425986544,
+        "parameter_id": 140676407878720,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5711,7 +5711,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425986624,
+        "parameter_id": 140676407885600,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5741,7 +5741,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425986384,
+        "parameter_id": 140676407885760,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5771,7 +5771,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425986464,
+        "parameter_id": 140676407884240,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5801,7 +5801,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425986064,
+        "parameter_id": 140676407885200,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5831,7 +5831,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425985984,
+        "parameter_id": 140676407884800,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5861,7 +5861,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425985504,
+        "parameter_id": 140676407884320,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5891,7 +5891,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425986144,
+        "parameter_id": 140676407875920,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5922,7 +5922,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425984624,
+        "parameter_id": 140676407880240,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5953,7 +5953,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425984544,
+        "parameter_id": 140676407880160,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -5984,7 +5984,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425984224,
+        "parameter_id": 140676407879680,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6015,7 +6015,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425984704,
+        "parameter_id": 140676407880640,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6046,7 +6046,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425983984,
+        "parameter_id": 140676407879280,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6077,7 +6077,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425984064,
+        "parameter_id": 140676407879200,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6108,7 +6108,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425983824,
+        "parameter_id": 140676407877280,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6139,7 +6139,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425984144,
+        "parameter_id": 140676407878640,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6170,7 +6170,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425983584,
+        "parameter_id": 140676407878240,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6201,7 +6201,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425983664,
+        "parameter_id": 140676407877840,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6232,7 +6232,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425983264,
+        "parameter_id": 140676407877360,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6263,7 +6263,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425983744,
+        "parameter_id": 140676407878800,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6294,7 +6294,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425983184,
+        "parameter_id": 140676407875840,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6325,7 +6325,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425983104,
+        "parameter_id": 140676407876880,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6356,7 +6356,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425982784,
+        "parameter_id": 140676407876400,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6387,7 +6387,7 @@
         "expected_group": "cloned_pathology_blocks",
         "group": "cloned_pathology_blocks",
         "group_matches_expected": true,
-        "parameter_id": 140199425983344,
+        "parameter_id": 140676407877440,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6417,7 +6417,7 @@
         "expected_group": "cloned_pathology_classifiers",
         "group": "cloned_pathology_classifiers",
         "group_matches_expected": true,
-        "parameter_id": 140199425992944,
+        "parameter_id": 140676407878160,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6447,7 +6447,7 @@
         "expected_group": "cloned_pathology_classifiers",
         "group": "cloned_pathology_classifiers",
         "group_matches_expected": true,
-        "parameter_id": 140199425985904,
+        "parameter_id": 140676407884400,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6477,7 +6477,7 @@
         "expected_group": "cloned_pathology_classifiers",
         "group": "cloned_pathology_classifiers",
         "group_matches_expected": true,
-        "parameter_id": 140199425985104,
+        "parameter_id": 140676407882000,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6507,7 +6507,7 @@
         "expected_group": "cloned_pathology_classifiers",
         "group": "cloned_pathology_classifiers",
         "group_matches_expected": true,
-        "parameter_id": 140199425985024,
+        "parameter_id": 140676407873440,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6537,7 +6537,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425998464,
+        "parameter_id": 140676407875440,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6567,7 +6567,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425996944,
+        "parameter_id": 140676407875040,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6597,7 +6597,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425992784,
+        "parameter_id": 140676407874640,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6627,7 +6627,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425998304,
+        "parameter_id": 140676407874560,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6657,7 +6657,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425989984,
+        "parameter_id": 140676407873520,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6687,7 +6687,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425998384,
+        "parameter_id": 140676407874080,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6717,7 +6717,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425995584,
+        "parameter_id": 140676407873680,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6747,7 +6747,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425997904,
+        "parameter_id": 140676407873280,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6777,7 +6777,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425997504,
+        "parameter_id": 140676407873600,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6807,7 +6807,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425997104,
+        "parameter_id": 140677558825392,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6837,7 +6837,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425997024,
+        "parameter_id": 140677558816912,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6867,7 +6867,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425995504,
+        "parameter_id": 140677558818432,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6897,7 +6897,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425996544,
+        "parameter_id": 140677558825312,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6927,7 +6927,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425996144,
+        "parameter_id": 140677558825072,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6957,7 +6957,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425996064,
+        "parameter_id": 140676572951440,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -6987,7 +6987,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425995664,
+        "parameter_id": 140676573121264,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7017,7 +7017,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425994144,
+        "parameter_id": 140676573121504,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7047,7 +7047,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425985744,
+        "parameter_id": 140676573036320,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7077,7 +7077,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425995104,
+        "parameter_id": 140676573035520,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7107,7 +7107,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425994704,
+        "parameter_id": 140676573035120,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7137,7 +7137,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425994304,
+        "parameter_id": 140676088709200,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7167,7 +7167,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425994224,
+        "parameter_id": 140676088709280,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7197,7 +7197,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425992704,
+        "parameter_id": 140676088709360,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7227,7 +7227,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425993744,
+        "parameter_id": 140676088709440,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7257,7 +7257,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425993344,
+        "parameter_id": 140676088709520,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7287,7 +7287,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425993264,
+        "parameter_id": 140676088709600,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7317,7 +7317,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425992864,
+        "parameter_id": 140676088709680,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7347,7 +7347,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425991344,
+        "parameter_id": 140676088709760,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7377,7 +7377,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425982944,
+        "parameter_id": 140676088709840,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7407,7 +7407,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425992304,
+        "parameter_id": 140676088709920,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7437,7 +7437,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425991904,
+        "parameter_id": 140676088710000,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7467,7 +7467,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425991504,
+        "parameter_id": 140676088710080,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7497,7 +7497,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425991424,
+        "parameter_id": 140676088710160,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7527,7 +7527,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425989904,
+        "parameter_id": 140676088710240,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7557,7 +7557,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425990944,
+        "parameter_id": 140676088710320,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7587,7 +7587,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425990544,
+        "parameter_id": 140676088710400,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7617,7 +7617,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425990464,
+        "parameter_id": 140676088710480,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7647,7 +7647,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425990064,
+        "parameter_id": 140676088710560,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7677,7 +7677,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425988544,
+        "parameter_id": 140676088710640,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7707,7 +7707,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425989504,
+        "parameter_id": 140676088710720,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7737,7 +7737,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425989104,
+        "parameter_id": 140676088710800,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7767,7 +7767,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425988704,
+        "parameter_id": 140676088710880,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7797,7 +7797,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425988624,
+        "parameter_id": 140676088710960,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7827,7 +7827,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425985664,
+        "parameter_id": 140676088711040,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7857,7 +7857,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425986704,
+        "parameter_id": 140676088711120,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7887,7 +7887,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425986304,
+        "parameter_id": 140676088711200,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7917,7 +7917,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425986224,
+        "parameter_id": 140676088711280,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7947,7 +7947,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425985824,
+        "parameter_id": 140676088711360,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -7977,7 +7977,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425984304,
+        "parameter_id": 140676088711440,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8007,7 +8007,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425985264,
+        "parameter_id": 140676088711520,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8037,7 +8037,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425982624,
+        "parameter_id": 140676407874480,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8067,7 +8067,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425984864,
+        "parameter_id": 140676088711600,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8097,7 +8097,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425984464,
+        "parameter_id": 140676088711680,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8127,7 +8127,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425984384,
+        "parameter_id": 140676088711760,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8157,7 +8157,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425982864,
+        "parameter_id": 140676088711840,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8187,7 +8187,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425983904,
+        "parameter_id": 140676088711920,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8217,7 +8217,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425983504,
+        "parameter_id": 140676088712000,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8247,7 +8247,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425983424,
+        "parameter_id": 140676088712080,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8277,7 +8277,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199425983024,
+        "parameter_id": 140676088712160,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8307,7 +8307,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140200969843200,
+        "parameter_id": 140676088712240,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8337,7 +8337,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140200969836880,
+        "parameter_id": 140676088712320,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8367,7 +8367,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140200969840800,
+        "parameter_id": 140676088712400,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8397,7 +8397,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140200969836960,
+        "parameter_id": 140676088712480,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8427,7 +8427,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199914996592,
+        "parameter_id": 140676088712560,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8457,7 +8457,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744585664,
+        "parameter_id": 140676088712640,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8487,7 +8487,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744585584,
+        "parameter_id": 140676088712720,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8496,14 +8496,14 @@
       },
       {
         "aliases": [
-          "component_heads.scar_extent_area.weight"
+          "component_heads.scar_extent_head.sequence.0.weight"
         ],
         "base_lr": {
           "A": 0.0005,
           "B": 0.0003,
           "C": 0.0001
         },
-        "canonical_name": "component_heads.scar_extent_area.weight",
+        "canonical_name": "component_heads.scar_extent_head.sequence.0.weight",
         "current_lr": {
           "0": 5e-05,
           "10000": 0.0001,
@@ -8517,7 +8517,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744585504,
+        "parameter_id": 140676407882400,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8526,14 +8526,14 @@
       },
       {
         "aliases": [
-          "component_heads.scar_extent_area.bias"
+          "component_heads.scar_extent_head.sequence.0.bias"
         ],
         "base_lr": {
           "A": 0.0005,
           "B": 0.0003,
           "C": 0.0001
         },
-        "canonical_name": "component_heads.scar_extent_area.bias",
+        "canonical_name": "component_heads.scar_extent_head.sequence.0.bias",
         "current_lr": {
           "0": 5e-05,
           "10000": 0.0001,
@@ -8547,7 +8547,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744585424,
+        "parameter_id": 140676088712800,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8556,14 +8556,14 @@
       },
       {
         "aliases": [
-          "component_heads.edema_extent_presence.weight"
+          "component_heads.scar_extent_head.sequence.1.weight"
         ],
         "base_lr": {
           "A": 0.0005,
           "B": 0.0003,
           "C": 0.0001
         },
-        "canonical_name": "component_heads.edema_extent_presence.weight",
+        "canonical_name": "component_heads.scar_extent_head.sequence.1.weight",
         "current_lr": {
           "0": 5e-05,
           "10000": 0.0001,
@@ -8577,7 +8577,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744585024,
+        "parameter_id": 140676088712880,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8586,14 +8586,14 @@
       },
       {
         "aliases": [
-          "component_heads.edema_extent_presence.bias"
+          "component_heads.scar_extent_head.sequence.1.bias"
         ],
         "base_lr": {
           "A": 0.0005,
           "B": 0.0003,
           "C": 0.0001
         },
-        "canonical_name": "component_heads.edema_extent_presence.bias",
+        "canonical_name": "component_heads.scar_extent_head.sequence.1.bias",
         "current_lr": {
           "0": 5e-05,
           "10000": 0.0001,
@@ -8607,7 +8607,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744585104,
+        "parameter_id": 140676088712960,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8616,14 +8616,14 @@
       },
       {
         "aliases": [
-          "component_heads.edema_extent_area.weight"
+          "component_heads.scar_extent_head.sequence.3.weight"
         ],
         "base_lr": {
           "A": 0.0005,
           "B": 0.0003,
           "C": 0.0001
         },
-        "canonical_name": "component_heads.edema_extent_area.weight",
+        "canonical_name": "component_heads.scar_extent_head.sequence.3.weight",
         "current_lr": {
           "0": 5e-05,
           "10000": 0.0001,
@@ -8637,7 +8637,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744584864,
+        "parameter_id": 140676088713040,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8646,14 +8646,14 @@
       },
       {
         "aliases": [
-          "component_heads.edema_extent_area.bias"
+          "component_heads.scar_extent_head.sequence.3.bias"
         ],
         "base_lr": {
           "A": 0.0005,
           "B": 0.0003,
           "C": 0.0001
         },
-        "canonical_name": "component_heads.edema_extent_area.bias",
+        "canonical_name": "component_heads.scar_extent_head.sequence.3.bias",
         "current_lr": {
           "0": 5e-05,
           "10000": 0.0001,
@@ -8667,7 +8667,427 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744584944,
+        "parameter_id": 140676088713120,
+        "requires_grad": {
+          "A": true,
+          "B": true,
+          "C": true
+        }
+      },
+      {
+        "aliases": [
+          "component_heads.scar_extent_head.presence.weight"
+        ],
+        "base_lr": {
+          "A": 0.0005,
+          "B": 0.0003,
+          "C": 0.0001
+        },
+        "canonical_name": "component_heads.scar_extent_head.presence.weight",
+        "current_lr": {
+          "0": 5e-05,
+          "10000": 0.0001,
+          "13999": 1e-06,
+          "199": 0.0005,
+          "1999": 5e-06,
+          "2000": 2.9999999999999997e-05,
+          "2499": 0.0003,
+          "9999": 1e-06
+        },
+        "expected_group": "new_modules",
+        "group": "new_modules",
+        "group_matches_expected": true,
+        "parameter_id": 140676088713200,
+        "requires_grad": {
+          "A": true,
+          "B": true,
+          "C": true
+        }
+      },
+      {
+        "aliases": [
+          "component_heads.scar_extent_head.presence.bias"
+        ],
+        "base_lr": {
+          "A": 0.0005,
+          "B": 0.0003,
+          "C": 0.0001
+        },
+        "canonical_name": "component_heads.scar_extent_head.presence.bias",
+        "current_lr": {
+          "0": 5e-05,
+          "10000": 0.0001,
+          "13999": 1e-06,
+          "199": 0.0005,
+          "1999": 5e-06,
+          "2000": 2.9999999999999997e-05,
+          "2499": 0.0003,
+          "9999": 1e-06
+        },
+        "expected_group": "new_modules",
+        "group": "new_modules",
+        "group_matches_expected": true,
+        "parameter_id": 140676088713280,
+        "requires_grad": {
+          "A": true,
+          "B": true,
+          "C": true
+        }
+      },
+      {
+        "aliases": [
+          "component_heads.scar_extent_head.area.weight"
+        ],
+        "base_lr": {
+          "A": 0.0005,
+          "B": 0.0003,
+          "C": 0.0001
+        },
+        "canonical_name": "component_heads.scar_extent_head.area.weight",
+        "current_lr": {
+          "0": 5e-05,
+          "10000": 0.0001,
+          "13999": 1e-06,
+          "199": 0.0005,
+          "1999": 5e-06,
+          "2000": 2.9999999999999997e-05,
+          "2499": 0.0003,
+          "9999": 1e-06
+        },
+        "expected_group": "new_modules",
+        "group": "new_modules",
+        "group_matches_expected": true,
+        "parameter_id": 140676088713360,
+        "requires_grad": {
+          "A": true,
+          "B": true,
+          "C": true
+        }
+      },
+      {
+        "aliases": [
+          "component_heads.scar_extent_head.area.bias"
+        ],
+        "base_lr": {
+          "A": 0.0005,
+          "B": 0.0003,
+          "C": 0.0001
+        },
+        "canonical_name": "component_heads.scar_extent_head.area.bias",
+        "current_lr": {
+          "0": 5e-05,
+          "10000": 0.0001,
+          "13999": 1e-06,
+          "199": 0.0005,
+          "1999": 5e-06,
+          "2000": 2.9999999999999997e-05,
+          "2499": 0.0003,
+          "9999": 1e-06
+        },
+        "expected_group": "new_modules",
+        "group": "new_modules",
+        "group_matches_expected": true,
+        "parameter_id": 140676088713440,
+        "requires_grad": {
+          "A": true,
+          "B": true,
+          "C": true
+        }
+      },
+      {
+        "aliases": [
+          "component_heads.edema_extent_head.sequence.0.weight"
+        ],
+        "base_lr": {
+          "A": 0.0005,
+          "B": 0.0003,
+          "C": 0.0001
+        },
+        "canonical_name": "component_heads.edema_extent_head.sequence.0.weight",
+        "current_lr": {
+          "0": 5e-05,
+          "10000": 0.0001,
+          "13999": 1e-06,
+          "199": 0.0005,
+          "1999": 5e-06,
+          "2000": 2.9999999999999997e-05,
+          "2499": 0.0003,
+          "9999": 1e-06
+        },
+        "expected_group": "new_modules",
+        "group": "new_modules",
+        "group_matches_expected": true,
+        "parameter_id": 140676088713520,
+        "requires_grad": {
+          "A": true,
+          "B": true,
+          "C": true
+        }
+      },
+      {
+        "aliases": [
+          "component_heads.edema_extent_head.sequence.0.bias"
+        ],
+        "base_lr": {
+          "A": 0.0005,
+          "B": 0.0003,
+          "C": 0.0001
+        },
+        "canonical_name": "component_heads.edema_extent_head.sequence.0.bias",
+        "current_lr": {
+          "0": 5e-05,
+          "10000": 0.0001,
+          "13999": 1e-06,
+          "199": 0.0005,
+          "1999": 5e-06,
+          "2000": 2.9999999999999997e-05,
+          "2499": 0.0003,
+          "9999": 1e-06
+        },
+        "expected_group": "new_modules",
+        "group": "new_modules",
+        "group_matches_expected": true,
+        "parameter_id": 140676088713600,
+        "requires_grad": {
+          "A": true,
+          "B": true,
+          "C": true
+        }
+      },
+      {
+        "aliases": [
+          "component_heads.edema_extent_head.sequence.1.weight"
+        ],
+        "base_lr": {
+          "A": 0.0005,
+          "B": 0.0003,
+          "C": 0.0001
+        },
+        "canonical_name": "component_heads.edema_extent_head.sequence.1.weight",
+        "current_lr": {
+          "0": 5e-05,
+          "10000": 0.0001,
+          "13999": 1e-06,
+          "199": 0.0005,
+          "1999": 5e-06,
+          "2000": 2.9999999999999997e-05,
+          "2499": 0.0003,
+          "9999": 1e-06
+        },
+        "expected_group": "new_modules",
+        "group": "new_modules",
+        "group_matches_expected": true,
+        "parameter_id": 140676088713680,
+        "requires_grad": {
+          "A": true,
+          "B": true,
+          "C": true
+        }
+      },
+      {
+        "aliases": [
+          "component_heads.edema_extent_head.sequence.1.bias"
+        ],
+        "base_lr": {
+          "A": 0.0005,
+          "B": 0.0003,
+          "C": 0.0001
+        },
+        "canonical_name": "component_heads.edema_extent_head.sequence.1.bias",
+        "current_lr": {
+          "0": 5e-05,
+          "10000": 0.0001,
+          "13999": 1e-06,
+          "199": 0.0005,
+          "1999": 5e-06,
+          "2000": 2.9999999999999997e-05,
+          "2499": 0.0003,
+          "9999": 1e-06
+        },
+        "expected_group": "new_modules",
+        "group": "new_modules",
+        "group_matches_expected": true,
+        "parameter_id": 140676088713760,
+        "requires_grad": {
+          "A": true,
+          "B": true,
+          "C": true
+        }
+      },
+      {
+        "aliases": [
+          "component_heads.edema_extent_head.sequence.3.weight"
+        ],
+        "base_lr": {
+          "A": 0.0005,
+          "B": 0.0003,
+          "C": 0.0001
+        },
+        "canonical_name": "component_heads.edema_extent_head.sequence.3.weight",
+        "current_lr": {
+          "0": 5e-05,
+          "10000": 0.0001,
+          "13999": 1e-06,
+          "199": 0.0005,
+          "1999": 5e-06,
+          "2000": 2.9999999999999997e-05,
+          "2499": 0.0003,
+          "9999": 1e-06
+        },
+        "expected_group": "new_modules",
+        "group": "new_modules",
+        "group_matches_expected": true,
+        "parameter_id": 140676088713840,
+        "requires_grad": {
+          "A": true,
+          "B": true,
+          "C": true
+        }
+      },
+      {
+        "aliases": [
+          "component_heads.edema_extent_head.sequence.3.bias"
+        ],
+        "base_lr": {
+          "A": 0.0005,
+          "B": 0.0003,
+          "C": 0.0001
+        },
+        "canonical_name": "component_heads.edema_extent_head.sequence.3.bias",
+        "current_lr": {
+          "0": 5e-05,
+          "10000": 0.0001,
+          "13999": 1e-06,
+          "199": 0.0005,
+          "1999": 5e-06,
+          "2000": 2.9999999999999997e-05,
+          "2499": 0.0003,
+          "9999": 1e-06
+        },
+        "expected_group": "new_modules",
+        "group": "new_modules",
+        "group_matches_expected": true,
+        "parameter_id": 140676088713920,
+        "requires_grad": {
+          "A": true,
+          "B": true,
+          "C": true
+        }
+      },
+      {
+        "aliases": [
+          "component_heads.edema_extent_head.presence.weight"
+        ],
+        "base_lr": {
+          "A": 0.0005,
+          "B": 0.0003,
+          "C": 0.0001
+        },
+        "canonical_name": "component_heads.edema_extent_head.presence.weight",
+        "current_lr": {
+          "0": 5e-05,
+          "10000": 0.0001,
+          "13999": 1e-06,
+          "199": 0.0005,
+          "1999": 5e-06,
+          "2000": 2.9999999999999997e-05,
+          "2499": 0.0003,
+          "9999": 1e-06
+        },
+        "expected_group": "new_modules",
+        "group": "new_modules",
+        "group_matches_expected": true,
+        "parameter_id": 140676088714000,
+        "requires_grad": {
+          "A": true,
+          "B": true,
+          "C": true
+        }
+      },
+      {
+        "aliases": [
+          "component_heads.edema_extent_head.presence.bias"
+        ],
+        "base_lr": {
+          "A": 0.0005,
+          "B": 0.0003,
+          "C": 0.0001
+        },
+        "canonical_name": "component_heads.edema_extent_head.presence.bias",
+        "current_lr": {
+          "0": 5e-05,
+          "10000": 0.0001,
+          "13999": 1e-06,
+          "199": 0.0005,
+          "1999": 5e-06,
+          "2000": 2.9999999999999997e-05,
+          "2499": 0.0003,
+          "9999": 1e-06
+        },
+        "expected_group": "new_modules",
+        "group": "new_modules",
+        "group_matches_expected": true,
+        "parameter_id": 140676088714080,
+        "requires_grad": {
+          "A": true,
+          "B": true,
+          "C": true
+        }
+      },
+      {
+        "aliases": [
+          "component_heads.edema_extent_head.area.weight"
+        ],
+        "base_lr": {
+          "A": 0.0005,
+          "B": 0.0003,
+          "C": 0.0001
+        },
+        "canonical_name": "component_heads.edema_extent_head.area.weight",
+        "current_lr": {
+          "0": 5e-05,
+          "10000": 0.0001,
+          "13999": 1e-06,
+          "199": 0.0005,
+          "1999": 5e-06,
+          "2000": 2.9999999999999997e-05,
+          "2499": 0.0003,
+          "9999": 1e-06
+        },
+        "expected_group": "new_modules",
+        "group": "new_modules",
+        "group_matches_expected": true,
+        "parameter_id": 140676088714160,
+        "requires_grad": {
+          "A": true,
+          "B": true,
+          "C": true
+        }
+      },
+      {
+        "aliases": [
+          "component_heads.edema_extent_head.area.bias"
+        ],
+        "base_lr": {
+          "A": 0.0005,
+          "B": 0.0003,
+          "C": 0.0001
+        },
+        "canonical_name": "component_heads.edema_extent_head.area.bias",
+        "current_lr": {
+          "0": 5e-05,
+          "10000": 0.0001,
+          "13999": 1e-06,
+          "199": 0.0005,
+          "1999": 5e-06,
+          "2000": 2.9999999999999997e-05,
+          "2499": 0.0003,
+          "9999": 1e-06
+        },
+        "expected_group": "new_modules",
+        "group": "new_modules",
+        "group_matches_expected": true,
+        "parameter_id": 140676088714240,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8697,7 +9117,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744584624,
+        "parameter_id": 140676088714400,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8727,7 +9147,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744584704,
+        "parameter_id": 140676088714480,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8757,7 +9177,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744584464,
+        "parameter_id": 140676088714640,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8787,7 +9207,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744584544,
+        "parameter_id": 140676088714720,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8817,7 +9237,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744584224,
+        "parameter_id": 140676088714800,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8847,7 +9267,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744584144,
+        "parameter_id": 140676088714880,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8856,14 +9276,14 @@
       },
       {
         "aliases": [
-          "edema_dilation_context.dilated.1.0.weight"
+          "edema_dilation_context.residual_blocks.1.0.weight"
         ],
         "base_lr": {
           "A": 0.0005,
           "B": 0.0003,
           "C": 0.0001
         },
-        "canonical_name": "edema_dilation_context.dilated.1.0.weight",
+        "canonical_name": "edema_dilation_context.residual_blocks.1.0.weight",
         "current_lr": {
           "0": 5e-05,
           "10000": 0.0001,
@@ -8877,7 +9297,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744584064,
+        "parameter_id": 140676088714960,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8886,14 +9306,14 @@
       },
       {
         "aliases": [
-          "edema_dilation_context.dilated.1.0.bias"
+          "edema_dilation_context.residual_blocks.1.0.bias"
         ],
         "base_lr": {
           "A": 0.0005,
           "B": 0.0003,
           "C": 0.0001
         },
-        "canonical_name": "edema_dilation_context.dilated.1.0.bias",
+        "canonical_name": "edema_dilation_context.residual_blocks.1.0.bias",
         "current_lr": {
           "0": 5e-05,
           "10000": 0.0001,
@@ -8907,7 +9327,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744583984,
+        "parameter_id": 140676088715040,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8916,14 +9336,14 @@
       },
       {
         "aliases": [
-          "edema_dilation_context.dilated.1.1.weight"
+          "edema_dilation_context.residual_blocks.1.1.weight"
         ],
         "base_lr": {
           "A": 0.0005,
           "B": 0.0003,
           "C": 0.0001
         },
-        "canonical_name": "edema_dilation_context.dilated.1.1.weight",
+        "canonical_name": "edema_dilation_context.residual_blocks.1.1.weight",
         "current_lr": {
           "0": 5e-05,
           "10000": 0.0001,
@@ -8937,7 +9357,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744583584,
+        "parameter_id": 140676088715120,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8946,14 +9366,14 @@
       },
       {
         "aliases": [
-          "edema_dilation_context.dilated.1.1.bias"
+          "edema_dilation_context.residual_blocks.1.1.bias"
         ],
         "base_lr": {
           "A": 0.0005,
           "B": 0.0003,
           "C": 0.0001
         },
-        "canonical_name": "edema_dilation_context.dilated.1.1.bias",
+        "canonical_name": "edema_dilation_context.residual_blocks.1.1.bias",
         "current_lr": {
           "0": 5e-05,
           "10000": 0.0001,
@@ -8967,7 +9387,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744583664,
+        "parameter_id": 140676088715200,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -8976,14 +9396,14 @@
       },
       {
         "aliases": [
-          "edema_dilation_context.dilated.1.3.weight"
+          "edema_dilation_context.residual_blocks.1.3.weight"
         ],
         "base_lr": {
           "A": 0.0005,
           "B": 0.0003,
           "C": 0.0001
         },
-        "canonical_name": "edema_dilation_context.dilated.1.3.weight",
+        "canonical_name": "edema_dilation_context.residual_blocks.1.3.weight",
         "current_lr": {
           "0": 5e-05,
           "10000": 0.0001,
@@ -8997,7 +9417,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744583424,
+        "parameter_id": 140676088715280,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9006,14 +9426,14 @@
       },
       {
         "aliases": [
-          "edema_dilation_context.dilated.1.3.bias"
+          "edema_dilation_context.residual_blocks.1.3.bias"
         ],
         "base_lr": {
           "A": 0.0005,
           "B": 0.0003,
           "C": 0.0001
         },
-        "canonical_name": "edema_dilation_context.dilated.1.3.bias",
+        "canonical_name": "edema_dilation_context.residual_blocks.1.3.bias",
         "current_lr": {
           "0": 5e-05,
           "10000": 0.0001,
@@ -9027,7 +9447,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744583504,
+        "parameter_id": 140676088715360,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9036,14 +9456,14 @@
       },
       {
         "aliases": [
-          "edema_dilation_context.dilated.2.0.weight"
+          "edema_dilation_context.residual_blocks.2.0.weight"
         ],
         "base_lr": {
           "A": 0.0005,
           "B": 0.0003,
           "C": 0.0001
         },
-        "canonical_name": "edema_dilation_context.dilated.2.0.weight",
+        "canonical_name": "edema_dilation_context.residual_blocks.2.0.weight",
         "current_lr": {
           "0": 5e-05,
           "10000": 0.0001,
@@ -9057,7 +9477,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744583184,
+        "parameter_id": 140676088715600,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9066,14 +9486,14 @@
       },
       {
         "aliases": [
-          "edema_dilation_context.dilated.2.0.bias"
+          "edema_dilation_context.residual_blocks.2.0.bias"
         ],
         "base_lr": {
           "A": 0.0005,
           "B": 0.0003,
           "C": 0.0001
         },
-        "canonical_name": "edema_dilation_context.dilated.2.0.bias",
+        "canonical_name": "edema_dilation_context.residual_blocks.2.0.bias",
         "current_lr": {
           "0": 5e-05,
           "10000": 0.0001,
@@ -9087,7 +9507,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744583264,
+        "parameter_id": 140676088715680,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9096,14 +9516,14 @@
       },
       {
         "aliases": [
-          "edema_dilation_context.dilated.2.1.weight"
+          "edema_dilation_context.residual_blocks.2.1.weight"
         ],
         "base_lr": {
           "A": 0.0005,
           "B": 0.0003,
           "C": 0.0001
         },
-        "canonical_name": "edema_dilation_context.dilated.2.1.weight",
+        "canonical_name": "edema_dilation_context.residual_blocks.2.1.weight",
         "current_lr": {
           "0": 5e-05,
           "10000": 0.0001,
@@ -9117,7 +9537,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744583024,
+        "parameter_id": 140676088715760,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9126,14 +9546,14 @@
       },
       {
         "aliases": [
-          "edema_dilation_context.dilated.2.1.bias"
+          "edema_dilation_context.residual_blocks.2.1.bias"
         ],
         "base_lr": {
           "A": 0.0005,
           "B": 0.0003,
           "C": 0.0001
         },
-        "canonical_name": "edema_dilation_context.dilated.2.1.bias",
+        "canonical_name": "edema_dilation_context.residual_blocks.2.1.bias",
         "current_lr": {
           "0": 5e-05,
           "10000": 0.0001,
@@ -9147,7 +9567,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744583104,
+        "parameter_id": 140676088715840,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9156,14 +9576,14 @@
       },
       {
         "aliases": [
-          "edema_dilation_context.dilated.2.3.weight"
+          "edema_dilation_context.residual_blocks.2.3.weight"
         ],
         "base_lr": {
           "A": 0.0005,
           "B": 0.0003,
           "C": 0.0001
         },
-        "canonical_name": "edema_dilation_context.dilated.2.3.weight",
+        "canonical_name": "edema_dilation_context.residual_blocks.2.3.weight",
         "current_lr": {
           "0": 5e-05,
           "10000": 0.0001,
@@ -9177,7 +9597,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744582864,
+        "parameter_id": 140676088715920,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9186,14 +9606,14 @@
       },
       {
         "aliases": [
-          "edema_dilation_context.dilated.2.3.bias"
+          "edema_dilation_context.residual_blocks.2.3.bias"
         ],
         "base_lr": {
           "A": 0.0005,
           "B": 0.0003,
           "C": 0.0001
         },
-        "canonical_name": "edema_dilation_context.dilated.2.3.bias",
+        "canonical_name": "edema_dilation_context.residual_blocks.2.3.bias",
         "current_lr": {
           "0": 5e-05,
           "10000": 0.0001,
@@ -9207,7 +9627,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744582784,
+        "parameter_id": 140676088716000,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9216,14 +9636,14 @@
       },
       {
         "aliases": [
-          "edema_dilation_context.dilated.4.0.weight"
+          "edema_dilation_context.residual_blocks.4.0.weight"
         ],
         "base_lr": {
           "A": 0.0005,
           "B": 0.0003,
           "C": 0.0001
         },
-        "canonical_name": "edema_dilation_context.dilated.4.0.weight",
+        "canonical_name": "edema_dilation_context.residual_blocks.4.0.weight",
         "current_lr": {
           "0": 5e-05,
           "10000": 0.0001,
@@ -9237,7 +9657,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744582704,
+        "parameter_id": 140676088716240,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9246,14 +9666,14 @@
       },
       {
         "aliases": [
-          "edema_dilation_context.dilated.4.0.bias"
+          "edema_dilation_context.residual_blocks.4.0.bias"
         ],
         "base_lr": {
           "A": 0.0005,
           "B": 0.0003,
           "C": 0.0001
         },
-        "canonical_name": "edema_dilation_context.dilated.4.0.bias",
+        "canonical_name": "edema_dilation_context.residual_blocks.4.0.bias",
         "current_lr": {
           "0": 5e-05,
           "10000": 0.0001,
@@ -9267,7 +9687,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744582624,
+        "parameter_id": 140676088716320,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9276,14 +9696,14 @@
       },
       {
         "aliases": [
-          "edema_dilation_context.dilated.4.1.weight"
+          "edema_dilation_context.residual_blocks.4.1.weight"
         ],
         "base_lr": {
           "A": 0.0005,
           "B": 0.0003,
           "C": 0.0001
         },
-        "canonical_name": "edema_dilation_context.dilated.4.1.weight",
+        "canonical_name": "edema_dilation_context.residual_blocks.4.1.weight",
         "current_lr": {
           "0": 5e-05,
           "10000": 0.0001,
@@ -9297,7 +9717,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744582224,
+        "parameter_id": 140676088716400,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9306,14 +9726,14 @@
       },
       {
         "aliases": [
-          "edema_dilation_context.dilated.4.1.bias"
+          "edema_dilation_context.residual_blocks.4.1.bias"
         ],
         "base_lr": {
           "A": 0.0005,
           "B": 0.0003,
           "C": 0.0001
         },
-        "canonical_name": "edema_dilation_context.dilated.4.1.bias",
+        "canonical_name": "edema_dilation_context.residual_blocks.4.1.bias",
         "current_lr": {
           "0": 5e-05,
           "10000": 0.0001,
@@ -9327,7 +9747,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744582304,
+        "parameter_id": 140676088716480,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9336,14 +9756,14 @@
       },
       {
         "aliases": [
-          "edema_dilation_context.dilated.4.3.weight"
+          "edema_dilation_context.residual_blocks.4.3.weight"
         ],
         "base_lr": {
           "A": 0.0005,
           "B": 0.0003,
           "C": 0.0001
         },
-        "canonical_name": "edema_dilation_context.dilated.4.3.weight",
+        "canonical_name": "edema_dilation_context.residual_blocks.4.3.weight",
         "current_lr": {
           "0": 5e-05,
           "10000": 0.0001,
@@ -9357,7 +9777,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744582064,
+        "parameter_id": 140676088716560,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9366,14 +9786,14 @@
       },
       {
         "aliases": [
-          "edema_dilation_context.dilated.4.3.bias"
+          "edema_dilation_context.residual_blocks.4.3.bias"
         ],
         "base_lr": {
           "A": 0.0005,
           "B": 0.0003,
           "C": 0.0001
         },
-        "canonical_name": "edema_dilation_context.dilated.4.3.bias",
+        "canonical_name": "edema_dilation_context.residual_blocks.4.3.bias",
         "current_lr": {
           "0": 5e-05,
           "10000": 0.0001,
@@ -9387,7 +9807,187 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744582144,
+        "parameter_id": 140676088716640,
+        "requires_grad": {
+          "A": true,
+          "B": true,
+          "C": true
+        }
+      },
+      {
+        "aliases": [
+          "edema_dilation_context.projections.1.weight"
+        ],
+        "base_lr": {
+          "A": 0.0005,
+          "B": 0.0003,
+          "C": 0.0001
+        },
+        "canonical_name": "edema_dilation_context.projections.1.weight",
+        "current_lr": {
+          "0": 5e-05,
+          "10000": 0.0001,
+          "13999": 1e-06,
+          "199": 0.0005,
+          "1999": 5e-06,
+          "2000": 2.9999999999999997e-05,
+          "2499": 0.0003,
+          "9999": 1e-06
+        },
+        "expected_group": "new_modules",
+        "group": "new_modules",
+        "group_matches_expected": true,
+        "parameter_id": 140676088715440,
+        "requires_grad": {
+          "A": true,
+          "B": true,
+          "C": true
+        }
+      },
+      {
+        "aliases": [
+          "edema_dilation_context.projections.1.bias"
+        ],
+        "base_lr": {
+          "A": 0.0005,
+          "B": 0.0003,
+          "C": 0.0001
+        },
+        "canonical_name": "edema_dilation_context.projections.1.bias",
+        "current_lr": {
+          "0": 5e-05,
+          "10000": 0.0001,
+          "13999": 1e-06,
+          "199": 0.0005,
+          "1999": 5e-06,
+          "2000": 2.9999999999999997e-05,
+          "2499": 0.0003,
+          "9999": 1e-06
+        },
+        "expected_group": "new_modules",
+        "group": "new_modules",
+        "group_matches_expected": true,
+        "parameter_id": 140676088715520,
+        "requires_grad": {
+          "A": true,
+          "B": true,
+          "C": true
+        }
+      },
+      {
+        "aliases": [
+          "edema_dilation_context.projections.2.weight"
+        ],
+        "base_lr": {
+          "A": 0.0005,
+          "B": 0.0003,
+          "C": 0.0001
+        },
+        "canonical_name": "edema_dilation_context.projections.2.weight",
+        "current_lr": {
+          "0": 5e-05,
+          "10000": 0.0001,
+          "13999": 1e-06,
+          "199": 0.0005,
+          "1999": 5e-06,
+          "2000": 2.9999999999999997e-05,
+          "2499": 0.0003,
+          "9999": 1e-06
+        },
+        "expected_group": "new_modules",
+        "group": "new_modules",
+        "group_matches_expected": true,
+        "parameter_id": 140676088716080,
+        "requires_grad": {
+          "A": true,
+          "B": true,
+          "C": true
+        }
+      },
+      {
+        "aliases": [
+          "edema_dilation_context.projections.2.bias"
+        ],
+        "base_lr": {
+          "A": 0.0005,
+          "B": 0.0003,
+          "C": 0.0001
+        },
+        "canonical_name": "edema_dilation_context.projections.2.bias",
+        "current_lr": {
+          "0": 5e-05,
+          "10000": 0.0001,
+          "13999": 1e-06,
+          "199": 0.0005,
+          "1999": 5e-06,
+          "2000": 2.9999999999999997e-05,
+          "2499": 0.0003,
+          "9999": 1e-06
+        },
+        "expected_group": "new_modules",
+        "group": "new_modules",
+        "group_matches_expected": true,
+        "parameter_id": 140676088716160,
+        "requires_grad": {
+          "A": true,
+          "B": true,
+          "C": true
+        }
+      },
+      {
+        "aliases": [
+          "edema_dilation_context.projections.4.weight"
+        ],
+        "base_lr": {
+          "A": 0.0005,
+          "B": 0.0003,
+          "C": 0.0001
+        },
+        "canonical_name": "edema_dilation_context.projections.4.weight",
+        "current_lr": {
+          "0": 5e-05,
+          "10000": 0.0001,
+          "13999": 1e-06,
+          "199": 0.0005,
+          "1999": 5e-06,
+          "2000": 2.9999999999999997e-05,
+          "2499": 0.0003,
+          "9999": 1e-06
+        },
+        "expected_group": "new_modules",
+        "group": "new_modules",
+        "group_matches_expected": true,
+        "parameter_id": 140676088716720,
+        "requires_grad": {
+          "A": true,
+          "B": true,
+          "C": true
+        }
+      },
+      {
+        "aliases": [
+          "edema_dilation_context.projections.4.bias"
+        ],
+        "base_lr": {
+          "A": 0.0005,
+          "B": 0.0003,
+          "C": 0.0001
+        },
+        "canonical_name": "edema_dilation_context.projections.4.bias",
+        "current_lr": {
+          "0": 5e-05,
+          "10000": 0.0001,
+          "13999": 1e-06,
+          "199": 0.0005,
+          "1999": 5e-06,
+          "2000": 2.9999999999999997e-05,
+          "2499": 0.0003,
+          "9999": 1e-06
+        },
+        "expected_group": "new_modules",
+        "group": "new_modules",
+        "group_matches_expected": true,
+        "parameter_id": 140676088716800,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9417,7 +10017,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744581824,
+        "parameter_id": 140676088716880,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9447,7 +10047,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744581904,
+        "parameter_id": 140676088716960,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9477,7 +10077,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744581664,
+        "parameter_id": 140676088717040,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9507,7 +10107,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744581744,
+        "parameter_id": 140676088717120,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9537,7 +10137,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744581024,
+        "parameter_id": 140676088717200,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9567,7 +10167,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744583824,
+        "parameter_id": 140676088717280,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9597,7 +10197,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744581504,
+        "parameter_id": 140676088714560,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9627,7 +10227,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744585184,
+        "parameter_id": 140676088717360,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9657,7 +10257,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744580784,
+        "parameter_id": 140676088717440,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9687,7 +10287,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744585344,
+        "parameter_id": 140676088717520,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9717,7 +10317,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744585264,
+        "parameter_id": 140676088717600,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9747,7 +10347,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744583744,
+        "parameter_id": 140676088717680,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9777,7 +10377,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744584784,
+        "parameter_id": 140676088717760,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9807,7 +10407,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744584384,
+        "parameter_id": 140676088717840,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9837,7 +10437,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744584304,
+        "parameter_id": 140676088717920,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9867,7 +10467,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744583904,
+        "parameter_id": 140676088718000,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9897,7 +10497,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744582384,
+        "parameter_id": 140676088718080,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9927,7 +10527,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744580944,
+        "parameter_id": 140676088718160,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9957,7 +10557,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744583344,
+        "parameter_id": 140676088718240,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -9987,7 +10587,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744582944,
+        "parameter_id": 140676088718320,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10017,7 +10617,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744582544,
+        "parameter_id": 140676088718400,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10047,7 +10647,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744582464,
+        "parameter_id": 140676088718480,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10077,7 +10677,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744581184,
+        "parameter_id": 140676088718560,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10107,7 +10707,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744581984,
+        "parameter_id": 140676088718640,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10137,7 +10737,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744581584,
+        "parameter_id": 140676088718720,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10167,7 +10767,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744581344,
+        "parameter_id": 140676088718800,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10197,7 +10797,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744581264,
+        "parameter_id": 140676088718880,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10227,7 +10827,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744581424,
+        "parameter_id": 140676088718960,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10257,7 +10857,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744581104,
+        "parameter_id": 140676088719040,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10287,7 +10887,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744580464,
+        "parameter_id": 140676088719120,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10317,7 +10917,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744580704,
+        "parameter_id": 140676088719200,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10347,7 +10947,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744580624,
+        "parameter_id": 140676088719280,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10377,7 +10977,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199744580864,
+        "parameter_id": 140676088719360,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10407,7 +11007,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199426179152,
+        "parameter_id": 140676088719440,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10437,7 +11037,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199426179232,
+        "parameter_id": 140676088719520,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10467,7 +11067,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199426179312,
+        "parameter_id": 140676088719600,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10497,7 +11097,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199426179392,
+        "parameter_id": 140676088719680,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10527,7 +11127,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199426179472,
+        "parameter_id": 140676088719760,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10557,7 +11157,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199426179552,
+        "parameter_id": 140676088719840,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10587,7 +11187,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199426179632,
+        "parameter_id": 140676088719920,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10617,7 +11217,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199426179712,
+        "parameter_id": 140676088720000,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10647,7 +11247,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199426179792,
+        "parameter_id": 140676088720080,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10677,7 +11277,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199426179872,
+        "parameter_id": 140676088720160,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10707,7 +11307,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199426179952,
+        "parameter_id": 140676088720240,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10737,7 +11337,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199426180032,
+        "parameter_id": 140676088720320,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10767,7 +11367,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199426180112,
+        "parameter_id": 140676088720400,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10797,7 +11397,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199426180192,
+        "parameter_id": 140676088720480,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10827,7 +11427,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199426180272,
+        "parameter_id": 140676088720560,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10857,7 +11457,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199426180352,
+        "parameter_id": 140676088720640,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10887,7 +11487,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199426180432,
+        "parameter_id": 140676088720720,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10917,7 +11517,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199426180512,
+        "parameter_id": 140676088720800,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10947,7 +11547,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199426180592,
+        "parameter_id": 140676088720880,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -10977,7 +11577,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199426180672,
+        "parameter_id": 140676088720960,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -11007,7 +11607,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199426180752,
+        "parameter_id": 140676088721040,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -11037,7 +11637,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199426180832,
+        "parameter_id": 140676088721120,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -11067,7 +11667,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199426180912,
+        "parameter_id": 140676088721200,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -11097,7 +11697,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199426180992,
+        "parameter_id": 140676088721280,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -11127,7 +11727,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199426181072,
+        "parameter_id": 140676088721360,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -11157,7 +11757,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199426181152,
+        "parameter_id": 140676088721440,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -11187,7 +11787,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199426181232,
+        "parameter_id": 140676088721520,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -11217,7 +11817,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199426181312,
+        "parameter_id": 140676088721600,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -11247,7 +11847,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199426181472,
+        "parameter_id": 140676088721760,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -11277,7 +11877,7 @@
         "expected_group": "new_modules",
         "group": "new_modules",
         "group_matches_expected": true,
-        "parameter_id": 140199426181712,
+        "parameter_id": 140676088722000,
         "requires_grad": {
           "A": true,
           "B": true,
@@ -11285,7 +11885,7 @@
         }
       }
     ],
-    "payload_sha256": "ea5f9dc1d7f4a43f0b94919eae50a855a9823db55cc0a78cc90df0fd804f4cff",
+    "payload_sha256": "13d18d42a4a2390e8c23a2de78f2763c1014d546c97b588ee81f0069bfc7d7d0",
     "status": "PASS",
     "unexpected_alias_count": 0,
     "unexpected_alias_parameter_ids": [],
