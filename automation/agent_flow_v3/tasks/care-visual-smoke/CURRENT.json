@@ -1,13 +1,17 @@
 {
   "schema": "CARE_AGENT_FLOW_V3",
   "task_id": "care-visual-smoke",
-  "state": "PLAN_REQUESTED",
+  "state": "PLAN_READY_FOR_CRITIC",
   "review_round": 0,
   "request_nonce": "visual-smoke-20260806T031345Z",
   "frozen_contract_sha256": "279550638c5b9940567211ea5e05560048acd0150c6f1ac07ede6a258f139afe",
-  "integration_commit_sha": "24e04f5e61c15ab9256ceaf5c8eebc99f58bad12",
+  "integration_commit_sha": "75b1cd5752d3b9419e99ec5385e125c6e8c2a446",
   "implementation_fingerprint_sha256": null,
   "verifier_fingerprint_sha256": null,
-  "next_action": "AWAIT_REAL_SCHEDULED_PLANNER_AND_CRITIC_VISUAL_RECEIPTS",
-  "updated_utc": "2026-08-06T03:13:45Z"
+  "planner_visual_receipt_path": "results/agent_flow_v3/care-visual-smoke/planner_visual_receipt.json",
+  "planner_visual_receipt_commit_sha": "182dc161fc3c6d39495e2e192c8c8f9137702bba",
+  "planner_draft_path": "automation/agent_flow_v3/tasks/care-visual-smoke/PLANNER_DRAFT.md",
+  "planner_draft_commit_sha": "75b1cd5752d3b9419e99ec5385e125c6e8c2a446",
+  "next_action": "CRITIC_INDEPENDENT_VISUAL_REVIEW",
+  "updated_utc": "2026-08-06T04:07:00Z"
 }
