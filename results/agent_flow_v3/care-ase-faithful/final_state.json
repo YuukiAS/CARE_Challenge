@@ -28,5 +28,8 @@
     "notifier_run": false
   },
   "next_action": "Scheduled Planner reviews review_round 0 and returns an allowed Planner decision; no Planner/Critic decision is created by Controller.",
-  "updated_utc": "2026-08-06T15:34:38Z"
+  "updated_utc": "2026-08-06T15:53:45Z",
+  "production_role_sessions_verified": true,
+  "production_role_session_receipt_path": "results/agent_flow_v3/care-ase-faithful/production_role_session_receipt.json",
+  "production_role_session_receipt_sha256": "78842cfafa8b0447b6d58597e71a2011fd0242ceda29b5bb352a6f41fb4e7d09"
 }

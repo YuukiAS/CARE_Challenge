@@ -7,6 +7,7 @@
     "results/agent_flow_v3/care-ase-faithful/visual_smoke/visual_source_access_receipt.json",
     "results/agent_flow_v3/care-ase-faithful/visual_smoke/planner_visual_observation_receipt.json",
     "results/agent_flow_v3/care-ase-faithful/visual_smoke/critic_visual_observation_receipt.json",
+    "results/agent_flow_v3/care-ase-faithful/production_role_session_receipt.json",
     "results/agent_flow_v3/care-ase-faithful/controller_session_receipt.json",
     "results/agent_flow_v3/care-ase-faithful/controller_replacement_receipt.json",
     "results/agent_flow_v3/care-ase-faithful/verifier_session_receipt.json",
@@ -36,5 +37,8 @@
   "external_wait_started_utc": "2026-08-06T15:34:38Z",
   "external_wait_deadline_utc": "2026-08-06T19:49:37Z",
   "next_action": "Scheduled Planner reviews round 0; Controller must not mark PLANNER_PASS.",
-  "updated_utc": "2026-08-06T15:34:38Z"
+  "updated_utc": "2026-08-06T15:53:45Z",
+  "production_role_session_receipt": "results/agent_flow_v3/care-ase-faithful/production_role_session_receipt.json",
+  "production_role_session_receipt_sha256": "78842cfafa8b0447b6d58597e71a2011fd0242ceda29b5bb352a6f41fb4e7d09",
+  "production_role_sessions_verified": true
 }

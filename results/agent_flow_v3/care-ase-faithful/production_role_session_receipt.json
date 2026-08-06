@@ -1,0 +1,67 @@
+{
+  "schema": "CARE_ASE_FAITHFUL_PRODUCTION_ROLE_SESSIONS_V1",
+  "task_id": "care-ase-faithful",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "created_utc": "2026-08-06T15:53:45Z",
+  "purpose": "Bind future Agent-Flow v3 watcher resumes to role-plan configured CODEX_HOME and worktree sessions after replacement-session recovery.",
+  "review_round": 0,
+  "origin_develop_observed_sha": "0d8854a61631b37dbb5011f7593320465afa1a16",
+  "roles": {
+    "controller": {
+      "thread_id": "019fd7c0-2979-7061-94d3-99577ba9c834",
+      "codex_home": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_CONTROLLER",
+      "worktree": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/controller",
+      "rollout_session_path": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_CONTROLLER/sessions/2026/08/06/rollout-2026-08-06T11-45-22-019fd7c0-2979-7061-94d3-99577ba9c834.jsonl",
+      "launch_prompt_sha256": "f4cb95d1f1560fe048f540b40a3149e2f6fc2836f2b82b0dc2187c359ba7c231",
+      "launch_stdout_sha256": "291069d44e4e5fa7ed231df71d7dab1efa1a83d63712f76641b962f9ad00828e",
+      "launch_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "resume_prompt_sha256": "fe3f0a8745a2b27a405fd727818747f12ade17b7c82388f79b760526958fe0a8",
+      "resume_stdout_sha256": "5bc36d7cababcdf8ffbf5424e2050c396b3fee2331ec7957e265e0960feb303f",
+      "resume_stderr_sha256": "717b2dced178f89f362a9907001c1d897ba33c9ad11fd16bfe828234475ef325",
+      "launch_exit_code": 0,
+      "resume_exit_code": 0,
+      "production_eligible": true,
+      "resume_verified": true,
+      "historical_work_thread_id": "019fd7b1-3b6d-7ed2-bc5f-5610333009af"
+    },
+    "verifier": {
+      "thread_id": "019fd7c1-2d99-74b2-8c95-68ed129613e8",
+      "codex_home": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_VERIFIER",
+      "worktree": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/verifier",
+      "rollout_session_path": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_VERIFIER/sessions/2026/08/06/rollout-2026-08-06T11-46-29-019fd7c1-2d99-74b2-8c95-68ed129613e8.jsonl",
+      "launch_prompt_sha256": "15e07dc8f64e2d0d3cb18e488536de67fe5927fc096b66ecb04b378fb15c3be7",
+      "launch_stdout_sha256": "b413a5016f54c624b0a6c8ef5ce2dc5e6f149f1e55c715dfc391f624ffbf4cb2",
+      "launch_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "resume_prompt_sha256": "bcf06068d6da0183519bf86eb5523827eaa270847ebc3ac21e2f5adc14df446c",
+      "resume_stdout_sha256": "903276e04944af269201f55643fa588b83b0738b291341d6ac75ba52a6699aa9",
+      "resume_stderr_sha256": "225392006ada0ec4165e74d8e8d6c7a55da4d83f5118eeb0d687fa8cd2046b31",
+      "launch_exit_code": 0,
+      "resume_exit_code": 0,
+      "production_eligible": true,
+      "resume_verified": true,
+      "historical_work_thread_id": "019fd76e-6aa2-7d21-b12d-5bfd9983aed5"
+    },
+    "executor": {
+      "thread_id": "019fd7c1-8358-7632-9022-367e62ecfbd1",
+      "codex_home": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_EXECUTOR",
+      "worktree": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor",
+      "rollout_session_path": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_EXECUTOR/sessions/2026/08/06/rollout-2026-08-06T11-46-51-019fd7c1-8358-7632-9022-367e62ecfbd1.jsonl",
+      "launch_prompt_sha256": "e435ff62900dd18eaa583d01bc290edc85353ea222333a1ce0aa42968012fa98",
+      "launch_stdout_sha256": "ec3502c3351df889fad85146929100008c8ab999bda600ee8694e2034de8cf12",
+      "launch_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "resume_prompt_sha256": "b1ab9a7014f237bcfc92a9bda296ec091ab71487a8f58655d485ef9bd71dc5d9",
+      "resume_stdout_sha256": "3c57b12d7e0826e70763356dc9952257827dc2402547f1352d60298d2db12dd1",
+      "resume_stderr_sha256": "2d1deff838eb6f2859a909d542eb4e1fde3b896b53a72f5704615d9e72bbc602",
+      "launch_exit_code": 0,
+      "resume_exit_code": 0,
+      "production_eligible": true,
+      "resume_verified": true,
+      "historical_work_thread_id": "019fd7a5-2e7e-75b2-9948-d6aa4cd28397"
+    }
+  },
+  "limitations": [
+    "These production probes prove configured persistent sessions and exact resume viability.",
+    "They do not replace the historical Verifier freeze commit or Executor implementation commit provenance.",
+    "No training, outer access, Docker, upload, organizer email, Planner/Critic decision, implementation edit, or verifier-source edit was performed by these probes."
+  ]
+}
