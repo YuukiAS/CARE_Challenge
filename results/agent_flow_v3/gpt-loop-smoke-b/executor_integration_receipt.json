@@ -6,6 +6,13 @@
   "executor_thread_id": "019fd5cd-5d0e-7ad2-989d-e000849a83e6",
   "executor_role_commit_sha": "8b7e9e7c9bcb0e7e10913e75aa7515c4a55135e6",
   "executor_integration_commit_sha": "04ca913deb13ae86810621a021d29f466ea25ce8",
+  "executor_repair_thread_id": "019fd5cd-5d0e-7ad2-989d-e000849a83e6",
+  "executor_repair_role_commit_sha": "1296aea59231bbc51dbc88ef9683887f398781a4",
+  "executor_repair_review_round": 0,
+  "planner_review_decision": "PLANNER_REVISE_EXECUTOR",
+  "planner_review_finding_id": "SMOKE_B_EXECUTOR_PROVENANCE_MARKER_MISSING",
+  "repaired_from_integration_commit_sha": "04ca913deb13ae86810621a021d29f466ea25ce8",
+  "planner_review_gap_marker": "SMOKE_B_EXECUTOR_REPAIR_COMPLETE",
   "verifier_thread_id": "019fd5c5-ad98-7933-b8c4-107d14a4f416",
   "verifier_role_commit_sha": "e85bc9905ab6e2fbd5cf5e8eb530520f27d4ce30",
   "verifier_integration_commit_sha": "8055aa60650d54fad3e204666c20fb45be799448",
@@ -23,7 +30,7 @@
     },
     {
       "path": "results/agent_flow_v3/gpt-loop-smoke-b/executor_session_notes.md",
-      "sha256": "da0eda48905eda26c8539f1171801fb8648a330f43f8c5066a7ef1da5c22e864",
+      "sha256": "f21923f4027a964c47c014ceac6c62d727abcb2df8c3e8d4f80fd6e03945af7c",
       "role": "executor"
     },
     {
@@ -36,7 +43,7 @@
     {
       "command": "python -m unittest tests.automation.test_agent_flow_v3 tests.automation.test_agent_flow_v3_smoke_b",
       "exit_code": 0,
-      "summary": "32 tests OK"
+      "summary": "35 tests OK"
     },
     {
       "command": "python scripts/automation/validate_agent_flow_v3.py --repo-root .",
@@ -49,8 +56,8 @@
       "summary": "PASS"
     }
   ],
-  "scheduled_planner_expected_decision": "PLANNER_REVISE_EXECUTOR for missing planner_review_gap_marker, or PLANNER_PASS if the Scheduled Planner accepts the provenance-level gap",
+  "scheduled_planner_expected_decision": "PLANNER_PASS if the true Scheduled Planner accepts the repaired exact Executor provenance marker.",
   "planner_decision_fabricated_by_codex": false,
   "forbidden_scope_touched": false,
-  "updated_utc": "2026-08-06T06:45:39Z"
+  "updated_utc": "2026-08-06T07:49:00Z"
 }

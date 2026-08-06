@@ -11,4 +11,11 @@
 - Result shape: returns a mapping with `accepted` and a nonempty `reason`.
 - Test command run: `python -m unittest tests.automation.test_agent_flow_v3_smoke_b`.
 - Test result: passed, 7 tests.
-- Intentional Smoke B Planner revise exercise: the implementation receipt/notes intentionally omit the field named `planner_review_gap_marker`. This is a safe, explicit, automatically repairable Planner-review gap and not a runtime gate weakness.
+- Planner revise repair: after the real Scheduled Planner revision `PLANNER_REVISE_EXECUTOR`, added the requested top-level `planner_review_gap_marker` to `results/agent_flow_v3/gpt-loop-smoke-b/executor_integration_receipt.json` with value `SMOKE_B_EXECUTOR_REPAIR_COMPLETE`.
+- Runtime code change during repair: none.
+- Repair JSON evidence: `python -m json.tool results/agent_flow_v3/gpt-loop-smoke-b/executor_integration_receipt.json` passed.
+- Repair regression command: `python -m unittest tests.automation.test_agent_flow_v3 tests.automation.test_agent_flow_v3_smoke_b`.
+- Repair regression result: passed, 32 tests.
+- Repair validator command: `python scripts/automation/validate_agent_flow_v3.py --repo-root .`.
+- Repair validator result: passed.
+- Frozen verifier fingerprint after repair: `51060f30d0c70187bda0983a689938b4a7bac5d9cda4f386ac3b232b9afe9579`.
