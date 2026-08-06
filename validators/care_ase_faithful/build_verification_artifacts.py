@@ -27,8 +27,8 @@ REQUEST_PATH = ROOT / "automation" / "agent_flow_v3" / "tasks" / TASK_ID / "REQU
 VALIDATOR_PATH = ROOT / "validators" / "care_ase_faithful" / "validate_contract_evidence.py"
 BUILDER_PATH = ROOT / "validators" / "care_ase_faithful" / "build_verification_artifacts.py"
 TEST_PATH = ROOT / "tests" / "care_ase_faithful" / "test_verifier_package.py"
-LAUNCH_ORIGIN_DEVELOP_SHA = "4234dd1f2380563acc27f4af8aff226f4b95431e"
-LAUNCH_VERIFIER_WORKTREE_HEAD = "4234dd1f2380563acc27f4af8aff226f4b95431e"
+LAUNCH_ORIGIN_DEVELOP_SHA = "e628bd14582350b265567ef5ec70b1d74d273b3b"
+LAUNCH_VERIFIER_WORKTREE_HEAD = "e628bd14582350b265567ef5ec70b1d74d273b3b"
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -162,13 +162,32 @@ def main() -> int:
     }
     write_json(VERIFICATION_DIR / "protected_known_bad_manifest.json", protected_manifest)
 
+    unittest_result = run_command([sys.executable, "-m", "unittest", "tests.care_ase_faithful.test_verifier_package"])
+    v3_validator_result = run_command([sys.executable, "scripts/automation/validate_agent_flow_v3.py", "--repo-root", "."])
+    public_manifest["repository_safe_commands"] = [
+        {
+            "purpose": "public reference evidence validates under the frozen contract",
+            **public_result,
+        },
+        {
+            "purpose": "verifier unittest package exercises public reference and all protected known-bad categories",
+            **unittest_result,
+        },
+        {
+            "purpose": "Agent-Flow v3 request/current deterministic state validation",
+            **v3_validator_result,
+        },
+    ]
+    write_json(VERIFICATION_DIR / "public_test_manifest.json", public_manifest)
+
     command_log = {
         "schema": "CARE_ASE_FAITHFUL_VERIFIER_COMMAND_LOG_V1",
         "task_id": TASK_ID,
         "request_nonce": REQUEST_NONCE,
+        "frozen_contract_sha256": FROZEN_CONTRACT_SHA256,
         "created_utc": now,
         "artifact_builder_command": [sys.executable, str(BUILDER_PATH.relative_to(ROOT))],
-        "public_reference_validation": public_result,
+        "repository_safe_commands": public_manifest["repository_safe_commands"],
         "protected_known_bad_invocations": protected_results,
     }
     write_json(VERIFICATION_DIR / "verifier_local_commands_recorded_in_manifests.json", command_log)
@@ -263,7 +282,14 @@ def main() -> int:
         "created_utc": now,
     }
     write_json(VERIFICATION_DIR / "verifier_freeze_receipt.json", freeze_receipt)
-    return 0 if public_result["exit_code"] == 0 and all(item["passed_fail_closed"] for item in protected_results) else 2
+    return (
+        0
+        if public_result["exit_code"] == 0
+        and unittest_result["exit_code"] == 0
+        and v3_validator_result["exit_code"] == 0
+        and all(item["passed_fail_closed"] for item in protected_results)
+        else 2
+    )
 
 
 if __name__ == "__main__":
