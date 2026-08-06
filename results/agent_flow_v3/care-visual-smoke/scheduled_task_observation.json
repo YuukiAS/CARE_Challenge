@@ -10,9 +10,9 @@
   "scheduled_critic_receipt_observed": false,
   "codex_scheduled_task_tool_used": false,
   "minimum_wait_windows_required": 2,
-  "minimum_wait_windows_completed": 1,
-  "last_observed_elapsed_seconds": 3932,
-  "last_observed_develop_sha": "340148024f19a9696b97923eab19e892dc879cbb",
-  "status": "PLANNER_RECEIPT_VALID_AWAITING_REAL_SCHEDULED_CRITIC_RECEIPT",
-  "updated_utc": "2026-08-06T04:19:17Z"
+  "minimum_wait_windows_completed": 2,
+  "last_observed_elapsed_seconds": 7266,
+  "last_observed_develop_sha": "65f3331a3df3bc87cdf447bf2f9e51874bc9cd47",
+  "status": "TWO_WINDOWS_COMPLETE_AWAITING_REAL_SCHEDULED_CRITIC_RECEIPT",
+  "updated_utc": "2026-08-06T05:14:51Z"
 }

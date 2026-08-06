@@ -12,8 +12,8 @@
   },
   "window_seconds": 3600,
   "minimum_wait_windows_required": 2,
-  "minimum_wait_windows_completed": 1,
-  "elapsed_seconds": 3932,
+  "minimum_wait_windows_completed": 2,
+  "elapsed_seconds": 7266,
   "scheduled_planner_receipt": {
     "path": "results/agent_flow_v3/care-visual-smoke/planner_visual_receipt.json",
     "exists": true,
@@ -31,5 +31,5 @@
   "failures": [
     "critic:missing"
   ],
-  "updated_utc": "2026-08-06T04:19:17Z"
+  "updated_utc": "2026-08-06T05:14:51Z"
 }

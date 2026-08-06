@@ -6,7 +6,7 @@
   "tmux_detail": "2907658|python",
   "state_path": "/users/a/e/aereinh/.agent-flow-v3/care-visual-smoke/watcher_state.json",
   "state_exists": true,
-  "updated_utc": "2026-08-06T04:19:06Z",
+  "updated_utc": "2026-08-06T05:14:45Z",
   "state": {
     "schema": "CARE_AGENT_FLOW_V3_WATCHER_STATE",
     "task_id": "care-visual-smoke",
@@ -28,8 +28,8 @@
       "failures": [],
       "processed_events": [],
       "lock_path": "/users/a/e/aereinh/.agent-flow-v3/care-visual-smoke/watcher.lock",
-      "updated_utc": "2026-08-06T04:19:04Z"
+      "updated_utc": "2026-08-06T05:14:28Z"
     },
-    "updated_utc": "2026-08-06T04:19:04Z"
+    "updated_utc": "2026-08-06T05:14:28Z"
   }
 }
