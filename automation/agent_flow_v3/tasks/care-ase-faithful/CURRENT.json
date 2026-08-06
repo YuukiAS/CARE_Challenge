@@ -1,10 +1,10 @@
 {
   "schema": "CARE_AGENT_FLOW_V3",
   "task_id": "care-ase-faithful",
-  "state": "PLAN_READY_FOR_CRITIC",
+  "state": "PLAN_FROZEN",
   "review_round": 0,
   "request_nonce": "care-ase-20260806T090955Z",
-  "frozen_contract_sha256": null,
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
   "integration_commit_sha": "abf549e57452e0047a767332e786ea3a06c214cb",
   "implementation_fingerprint_sha256": null,
   "verifier_fingerprint_sha256": null,
@@ -14,6 +14,17 @@
   "planner_draft_path": "automation/agent_flow_v3/tasks/care-ase-faithful/PLANNER_DRAFT.md",
   "planner_draft_commit_sha": "abf549e57452e0047a767332e786ea3a06c214cb",
   "planner_draft_sha256": "d945b065c656fa26b1b661e135195ac3e5934ff21649ee748cff716260409649",
-  "next_action": "CRITIC_DIRECT_REPAIR_FULL_AUDIT_AND_FREEZE",
-  "updated_utc": "2026-08-06T10:12:26Z"
+  "critic_visual_receipt_path": "results/agent_flow_v3/care-ase-faithful/critic_visual_receipt.json",
+  "critic_visual_receipt_commit_sha": "1d31f51376e565914ed6287e2e588c594fc481fb",
+  "critic_visual_receipt_sha256": "90ab276b0bf6f442289dbc1de19b06bc8bf50c2c25aa696285304b43ed59fcfb",
+  "critic_freeze_receipt_path": "results/agent_flow_v3/care-ase-faithful/critic_freeze_receipt.json",
+  "critic_freeze_receipt_commit_sha": "bfd6289d8778da3d9510922fd448c69237b4cb4f",
+  "critic_freeze_receipt_sha256": "7528e6af36d337711aad8a068b3c7fc4deb23f9ff138472e6dd76870c1af8e85",
+  "frozen_contract_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+  "frozen_contract_commit_sha": "6806b38c215f8b644b86da5275b20832bb9a7d50",
+  "request_binding_commit_sha": "9974398cade68b9e0fa8b957c1001ce6d5f6759a",
+  "critic_decision": "PLAN_FROZEN",
+  "open_scientific_choices": [],
+  "next_action": "ORCHESTRATOR_START_CONTROLLER_FROM_FROZEN_CONTRACT",
+  "updated_utc": "2026-08-06T10:44:09Z"
 }
