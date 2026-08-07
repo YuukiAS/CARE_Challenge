@@ -1,0 +1,64 @@
+{
+  "schema": "CARE_ASE_FAITHFUL_CONTROLLER_EXECUTOR_RECHECK_INTEGRATION_RECEIPT_V1",
+  "task_id": "care-ase-faithful",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "created_utc": "2026-08-07T03:09:04Z",
+  "state_transition": {
+    "from": "VERIFIER_FROZEN",
+    "through": [
+      "INTEGRATION_RUNNING"
+    ],
+    "to": "VERIFIER_RECHECK_REQUIRED"
+  },
+  "origin_develop_before_integration_sha": "49662595fb35996168816e333dcdea8de718d6f7",
+  "last_observed_remote_sha_before_integration": "49662595fb35996168816e333dcdea8de718d6f7",
+  "executor_thread_id": "019fd7c1-8358-7632-9022-367e62ecfbd1",
+  "executor_local_commit_sha": "fd55c9a876defccede2ef2794d0f215e034bfd4e",
+  "executor_local_commit_subject": "Repair CARE-ASE round1 executor evidence",
+  "executor_merge_base": "21df1f47b9435848292449bab1d656ec75acd619",
+  "executor_goal_complete": {
+    "rollout_path": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_EXECUTOR/sessions/2026/08/06/rollout-2026-08-06T11-46-51-019fd7c1-8358-7632-9022-367e62ecfbd1.jsonl",
+    "thread_id": "019fd7c1-8358-7632-9022-367e62ecfbd1",
+    "status": "complete",
+    "tokens_used": 473313,
+    "time_used_seconds": 3252,
+    "updated_at": 1786037419
+  },
+  "integration_merge_sha": "5fd6c265109c19c91108fd3a2fa80a6b7d4092a4",
+  "implementation_fingerprint_sha256": "58a34ffb93346e2a2a0765f2f9a903c9b59919b007a39a02b6f484f1a512f6ec",
+  "implementation_evidence_payload_sha256": "47943bc77483c992642f8d6603a375c0b86d4d1127854db1c22eb9491c8e8608",
+  "verifier_fingerprint_sha256": "8149d75c397904e6db2daa3ab1ba765e5c2c4db4abde607796645c51deb3c4ca",
+  "requires_independent_verifier_recheck": true,
+  "fail_closed_receipt_file_sha256": "abb322429c895fd751c3384bfcac4b345af4f820f1e27d3a8a79e4d594052fe9",
+  "local_controller_gates": [
+    {
+      "name": "agent_flow_v3_contract_validation",
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/automation/validate_agent_flow_v3.py --repo-root .",
+      "exit_code": 0,
+      "stdout_tail": "CARE Agent-Flow v3 contract validation: PASS\n",
+      "stderr_tail": ""
+    },
+    {
+      "name": "py_compile_integrated_sources",
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m py_compile scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py src/care_myocardium/models/care_ase/__init__.py src/care_myocardium/models/care_ase/core.py src/care_myocardium/training/care_ase_runtime.py src/care_myocardium/training/care_ase_trainer.py",
+      "exit_code": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+    },
+    {
+      "name": "public_verifier_pytest",
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m pytest tests/care_ase_faithful/test_verifier_package.py -q",
+      "exit_code": 0,
+      "stdout_tail": ".........                                                                [100%]\n9 passed in 13.22s\n",
+      "stderr_tail": ""
+    }
+  ],
+  "forbidden_actions_confirmed": [
+    "no Planner/Critic decision generated",
+    "no Controller edit to Verifier source or Executor implementation source",
+    "no implementation_complete claim before Verifier recheck",
+    "no training, outer, Docker, upload, organizer email or develop-to-main merge"
+  ],
+  "updated_utc": "2026-08-07T03:09:04Z"
+}
