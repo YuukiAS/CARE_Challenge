@@ -415,6 +415,51 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
 
         self.assertFalse(RUNTIME.stage_event_should_mark_processed(event))
 
+    def test_care_ase_verifier_frozen_scope_complete_routes_to_verifier_recheck(self) -> None:
+        current = {
+            "task_id": "care-ase-faithful",
+            "request_nonce": "care-ase-nonce",
+            "review_round": 1,
+            "state": "VERIFIER_FROZEN",
+            "frozen_contract_sha256": "a" * 64,
+        }
+
+        receipt = RUNTIME.evaluate_stage_event(
+            task_id="care-ase-faithful",
+            request={"enabled": True, "request_nonce": "care-ase-nonce", "frozen_contract_sha256": "a" * 64},
+            current=current,
+            visual_final=None,
+            remote_sha="b" * 40,
+            processed=set(),
+            default_wait_hours=4,
+            care_ase_executor_needs_verifier_recheck=True,
+        )
+
+        self.assertEqual(receipt["decision"], "CONTROLLER_UPDATE_REQUIRED")
+        self.assertIn("Verifier receipt recheck", receipt["action"])
+
+    def test_care_ase_verifier_recheck_required_is_not_processed_before_start(self) -> None:
+        event = {
+            "task_id": "care-ase-faithful",
+            "state": "VERIFIER_RECHECK_REQUIRED",
+            "decision": "STAGE_READY",
+        }
+
+        self.assertFalse(RUNTIME.stage_event_should_mark_processed(event))
+
+        receipt = RUNTIME.evaluate_stage_event(
+            task_id="care-ase-faithful",
+            request={"enabled": True},
+            current={"request_nonce": "nonce", "review_round": 1, "state": "VERIFIER_RECHECK_REQUIRED"},
+            visual_final=None,
+            remote_sha="b" * 40,
+            processed=set(),
+            default_wait_hours=4,
+        )
+
+        self.assertEqual(receipt["decision"], "STAGE_READY")
+        self.assertIn("Verifier recheck", receipt["action"])
+
     def test_role_commit_scope_rejects_forbidden_or_outside_paths(self) -> None:
         role_data = {
             "write_scope": ["tests/**", "validators/**", "results/agent_flow_v3/care-ase-faithful/verification/**"],

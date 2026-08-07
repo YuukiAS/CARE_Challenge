@@ -1489,6 +1489,7 @@ def evaluate_stage_event(
     processed: set[str],
     default_wait_hours: int,
     care_ase_executor_complete: bool = False,
+    care_ase_executor_needs_verifier_recheck: bool = False,
 ) -> dict[str, Any]:
     state = str(current.get("state"))
     event_key = stage_event_key(task_id, current, remote_sha)
@@ -1577,9 +1578,18 @@ def evaluate_stage_event(
         if care_ase_executor_complete:
             decision = "CONTROLLER_UPDATE_REQUIRED"
             action = "validate and integrate Executor implementation commit, then enter WAITING_FOR_EXTERNAL_GPT"
+        elif care_ase_executor_needs_verifier_recheck:
+            decision = "CONTROLLER_UPDATE_REQUIRED"
+            action = "integrate scope-valid Executor commit, then require independent Verifier receipt recheck"
         else:
             decision = "STAGE_READY"
             action = "start persistent CARE-ASE Executor exact session after Verifier freeze"
+    elif task_id == "care-ase-faithful" and state == "VERIFIER_RECHECK_REQUIRED":
+        decision = "STAGE_READY"
+        action = "start persistent CARE-ASE Verifier recheck exact session"
+    elif task_id == "care-ase-faithful" and state == "VERIFIER_RECHECK_RUNNING":
+        decision = "MONITOR_ONLY"
+        action = "wait for independent Verifier receipt recheck commit"
     else:
         decision = "MONITOR_ONLY"
         action = f"observed state {state}"
@@ -1912,6 +1922,38 @@ Write and run deterministic tests/validators that fail on protected known-bad ca
 Forbidden: no CARE-ASE implementation edits, no training, no outer access, no Docker, no upload, no organizer email, no Planner/Critic decision fabrication, no --last, no TUI key injection.
 
 If you cannot complete the Verifier freeze, write a fail-closed receipt with the concrete cause before ending.
+"""
+    return prompt.encode("utf-8")
+
+
+def build_care_ase_verifier_recheck_prompt(current: dict[str, Any]) -> bytes:
+    prompt = f"""/goal You are the independent Verifier for CARE Agent-Flow v3 task care-ase-faithful.
+
+This is an execution turn. Do not stop with a plan.
+
+Read and obey:
+- AGENTS.md
+- prompts/AGENT_FLOW_V3_PROTOCOL.md
+- prompts/tasks/20260805_care_ase_develop_faithful_reimplementation_role_plan.json
+- automation/agent_flow_v3/tasks/care-ase-faithful/REQUEST.json
+- automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json
+- automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md
+
+Current binding:
+- request_nonce: {current.get("request_nonce")}
+- frozen_contract_sha256: {current.get("frozen_contract_sha256")}
+- CURRENT.state: {current.get("state")}
+- integration_commit_sha: {current.get("integration_commit_sha")}
+- implementation_fingerprint_sha256: {current.get("implementation_fingerprint_sha256")}
+- verifier_fingerprint_sha256: {current.get("verifier_fingerprint_sha256")}
+
+Controller has integrated a scope-valid Executor commit whose fail-closed receipt says only Verifier-owned executable or transaction receipts are stale. Your task is to independently rerun the Verifier-owned executable verification and transaction gates against the current integrated implementation, update the verification receipts, and commit verifier-scope changes on the verifier local branch. Keep the verifier fingerprint unchanged if verification source did not change; change it only if a real verifier-source repair is necessary.
+
+You may edit only tests, validators, automation/agent_flow_v3, and results/agent_flow_v3/care-ase-faithful/verification as allowed by the role plan. You must not edit src, scripts/training, scripts/inference, jobs, configs, blueprints, or the frozen contract. Do not push develop; Controller owns integration/push.
+
+Forbidden: no CARE-ASE implementation edits, no training, no outer access, no Docker, no upload, no organizer email, no Planner/Critic decision fabrication, no --last, no TUI key injection.
+
+If the current implementation still fails the Verifier, write fail-closed verifier receipts with the exact failures before ending.
 """
     return prompt.encode("utf-8")
 
@@ -2373,6 +2415,149 @@ If implementation cannot proceed under the contract, write a fail-closed impleme
     return prompt.encode("utf-8")
 
 
+def start_care_ase_verifier_recheck(
+    *,
+    args: argparse.Namespace,
+    repo: Path,
+    ref: str,
+    request: dict[str, Any],
+    current: dict[str, Any],
+) -> dict[str, Any]:
+    del ref
+    failures: list[str] = []
+    if request.get("enabled") is not True:
+        failures.append("request_enabled")
+    if current.get("state") != "VERIFIER_RECHECK_REQUIRED":
+        failures.append("current_state")
+    if current.get("request_nonce") != request.get("request_nonce"):
+        failures.append("request_nonce")
+    if current.get("frozen_contract_sha256") != request.get("frozen_contract_sha256"):
+        failures.append("frozen_contract_sha256")
+    for key in ("integration_commit_sha", "implementation_fingerprint_sha256", "verifier_fingerprint_sha256"):
+        if not isinstance(current.get(key), str) or not current.get(key):
+            failures.append(key)
+    state_root = args.state_root.resolve().parent
+    receipt_path = care_ase_role_launch_receipt_path(args.state_root, "verifier")
+    task_state_dir = state_root / "care-ase-faithful"
+    task_state_dir.mkdir(parents=True, exist_ok=True)
+    target = tmux_target(args.verifier_tmux_session, args.verifier_tmux_window)
+    if failures:
+        receipt = {
+            "schema": CONTROLLER_START_RECEIPT_SCHEMA,
+            "status": "INVALID_VERIFIER_RECHECK_REQUIRED",
+            "task_id": "care-ase-faithful",
+            "role": "verifier",
+            "request_nonce": current.get("request_nonce"),
+            "frozen_contract_sha256": current.get("frozen_contract_sha256"),
+            "failures": failures,
+            "target": target,
+            "updated_utc": now(),
+        }
+        write_json(receipt_path, receipt)
+        raise RuntimeErrorV3("care_ase_verifier_recheck_start_invalid:" + ",".join(failures))
+
+    role_plan = load_json((repo / args.controller_role_plan).resolve())
+    verifier = dict(role_plan.get("roles", {}).get("verifier", {}))
+    worktree = Path(str(verifier.get("worktree", "")))
+    codex_home = str(verifier.get("codex_home", ""))
+    thread_file = Path(str(verifier.get("thread_id_file", "")))
+    thread_id = thread_file.read_text(encoding="utf-8").strip() if thread_file.is_file() else ""
+    thread_initialization = None
+    if not thread_id or previous_role_launch_failed_no_rollout(args.state_root, "verifier"):
+        thread_initialization = create_initial_role_thread(
+            codex_bin=args.codex_bin,
+            worktree=worktree,
+            codex_home=codex_home,
+            role="verifier",
+            thread_file=thread_file,
+        )
+        thread_id = str(thread_initialization["thread_id"])
+    command = build_controller_start_command(args.codex_bin, worktree, thread_id)
+    prompt_payload = build_care_ase_verifier_recheck_prompt(current)
+    prompt_sha = sha_bytes(prompt_payload)
+    stamp = now().replace(":", "").replace("-", "")
+    prompt_path = task_state_dir / f"verifier_recheck_prompt_{stamp}.md"
+    stdout_path = task_state_dir / f"verifier_recheck_{stamp}.stdout.log"
+    stderr_path = task_state_dir / f"verifier_recheck_{stamp}.stderr.log"
+    prompt_path.write_bytes(prompt_payload)
+
+    head_after_ff = ensure_role_worktree_current(worktree, args.branch)
+    shell_command = (
+        f"CODEX_HOME={shlex.quote(codex_home)} "
+        f"CODEX_PERSISTENT_HOME={shlex.quote(codex_home)} "
+        f"CODEX_HOME_OVERRIDE={shlex.quote(codex_home)} "
+        "CODEX_RESPECT_CODEX_HOME=1 "
+        "CODEX_USE_RUNTIME_HOME=0 "
+        "CODEX_RESPECT_REPO_ROOT=1 "
+        f"CODEX_REPO_ROOT={shlex.quote(str(worktree))} "
+        f"{shlex.join(command)} "
+        f"< {shlex.quote(str(prompt_path))} "
+        f"> {shlex.quote(str(stdout_path))} "
+        f"2> {shlex.quote(str(stderr_path))}"
+    )
+
+    stale_window_recycled = False
+    stale_pane_pid = None
+    if tmux_window_exists(args.verifier_tmux_session, args.verifier_tmux_window) and process_has_child(tmux_pane_pid(args.verifier_tmux_session, args.verifier_tmux_window)):
+        pane_pid = tmux_pane_pid(args.verifier_tmux_session, args.verifier_tmux_window)
+        pane_command = process_command_line(pane_pid)
+        if str(prompt_path) in pane_command and tmux_pane_matches_codex_resume(args.verifier_tmux_session, args.verifier_tmux_window, worktree, thread_id):
+            status = "ALREADY_RUNNING"
+        else:
+            stale_window_recycled = True
+            stale_pane_pid = pane_pid
+            subprocess.run(["tmux", "kill-window", "-t", target], check=False)
+    if not (tmux_window_exists(args.verifier_tmux_session, args.verifier_tmux_window) and process_has_child(tmux_pane_pid(args.verifier_tmux_session, args.verifier_tmux_window))):
+        if tmux_window_exists(args.verifier_tmux_session, args.verifier_tmux_window):
+            subprocess.run(["tmux", "kill-window", "-t", target], check=False)
+        if subprocess.run(["tmux", "has-session", "-t", args.verifier_tmux_session], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False).returncode != 0:
+            tmux_cmd = ["tmux", "new-session", "-d", "-s", args.verifier_tmux_session, "-n", args.verifier_tmux_window, shell_command]
+        else:
+            tmux_cmd = ["tmux", "new-window", "-d", "-t", args.verifier_tmux_session, "-n", args.verifier_tmux_window, shell_command]
+        subprocess.check_call(tmux_cmd)
+        time.sleep(1)
+        pane_pid = tmux_pane_pid(args.verifier_tmux_session, args.verifier_tmux_window)
+        status = "STARTED"
+
+    receipt = {
+        "schema": CONTROLLER_START_RECEIPT_SCHEMA,
+        "status": status,
+        "task_id": "care-ase-faithful",
+        "role": "verifier",
+        "request_nonce": current.get("request_nonce"),
+        "frozen_contract_sha256": current.get("frozen_contract_sha256"),
+        "integration_commit_sha": current.get("integration_commit_sha"),
+        "implementation_fingerprint_sha256": current.get("implementation_fingerprint_sha256"),
+        "verifier_fingerprint_sha256": current.get("verifier_fingerprint_sha256"),
+        "target": target,
+        "pane_pid": pane_pid,
+        "thread_id": thread_id,
+        "thread_initialization": thread_initialization,
+        "codex_home": codex_home,
+        "worktree": str(worktree),
+        "worktree_head_after_ff": head_after_ff,
+        "command": shell_command,
+        "prompt_path": str(prompt_path),
+        "prompt_sha256": prompt_sha,
+        "stdout_log": str(stdout_path),
+        "stderr_log": str(stderr_path),
+        "stale_window_recycled": stale_window_recycled,
+        "stale_pane_pid": stale_pane_pid,
+        "failures": [],
+        "forbidden_actions_confirmed": [
+            "no Planner/Critic decision generated",
+            "no implementation source modified by orchestrator",
+            "no --last resume",
+            "no TUI key injection",
+            "no training, outer, Docker, upload, organizer email or develop-to-main merge",
+        ],
+        "updated_utc": now(),
+    }
+    write_json(receipt_path, receipt)
+    write_json(active_process_path(state_root, "care-ase-faithful", "verifier"), {**receipt, "pid": pane_pid, "exit_code": None})
+    return receipt
+
+
 def start_care_ase_executor_from_verifier_freeze(
     *,
     args: argparse.Namespace,
@@ -2566,6 +2751,7 @@ def validate_care_ase_executor_completion(
     args: argparse.Namespace,
     request: dict[str, Any],
     current: dict[str, Any],
+    allow_verifier_recheck: bool = False,
 ) -> dict[str, Any]:
     role_plan, executor, worktree, codex_home, thread_id = load_care_ase_executor_binding(args, current)
     failures = validate_role_plan_push_authority(role_plan)
@@ -2605,8 +2791,27 @@ def validate_care_ase_executor_completion(
     fingerprint = load_json(implementation_dir / "implementation_fingerprint.json")
     evidence = load_json(implementation_dir / "implementation_evidence.json")
     source_manifest = load_json(implementation_dir / "implementation_source_manifest.json")
-    if validation.get("passed") is not True or validation.get("failure_count") != 0:
-        scope_failures.append("implementation_validation_failed")
+    fail_closed_path = implementation_dir / "fail_closed_implementation_receipt.json"
+    fail_closed = load_json(fail_closed_path) if fail_closed_path.is_file() else {}
+    verifier_recheck_required = False
+    validation_passed = validation.get("passed") is True and validation.get("failure_count") == 0
+    if not validation_passed:
+        validation_failures = validation.get("failures") if isinstance(validation.get("failures"), list) else []
+        verifier_recheck_required = bool(
+            allow_verifier_recheck
+            and validation.get("passed") is False
+            and validation_failures == ["implementation_fail_closed_before_validator"]
+            and fail_closed.get("status") == "FAIL_CLOSED"
+            and fail_closed.get("blocking_scope") == "verifier_owned_reexecution_required_after_controller_integration"
+            and fail_closed.get("executor_scope_completed") is True
+            and fail_closed.get("implementation_complete_claimed") is False
+            and fail_closed.get("request_nonce") == current.get("request_nonce")
+            and fail_closed.get("frozen_contract_sha256") == current.get("frozen_contract_sha256")
+            and fail_closed.get("verifier_fingerprint_sha256") == current.get("verifier_fingerprint_sha256")
+            and isinstance(fail_closed.get("implementation_fingerprint_sha256"), str)
+        )
+        if not verifier_recheck_required:
+            scope_failures.append("implementation_validation_failed")
     if fingerprint.get("frozen_contract_sha256") != current.get("frozen_contract_sha256"):
         scope_failures.append("fingerprint_frozen_contract_sha256")
     if fingerprint.get("request_nonce") != current.get("request_nonce"):
@@ -2639,6 +2844,187 @@ def validate_care_ase_executor_completion(
         "implementation_source_manifest_file_sha256": sha_file(implementation_dir / "implementation_source_manifest.json"),
         "runtime_asset_manifest_file_sha256": sha_file(implementation_dir / "runtime_asset_manifest.json"),
         "validation_result_file_sha256": sha_file(implementation_dir / "implementation_evidence_validation_result.json"),
+        "fail_closed_receipt_file_sha256": sha_file(fail_closed_path) if fail_closed_path.is_file() else None,
+        "requires_verifier_recheck": verifier_recheck_required,
+    }
+
+
+def care_ase_executor_scope_complete_pending_verifier_recheck_available(args: argparse.Namespace, current: dict[str, Any]) -> bool:
+    try:
+        completion = validate_care_ase_executor_completion(
+            args=args,
+            request={
+                "enabled": True,
+                "request_nonce": current.get("request_nonce"),
+                "frozen_contract_sha256": current.get("frozen_contract_sha256"),
+            },
+            current=current,
+            allow_verifier_recheck=True,
+        )
+    except RuntimeErrorV3:
+        return False
+    return completion.get("requires_verifier_recheck") is True
+
+
+def apply_care_ase_executor_scope_completion_verifier_recheck_update(
+    *,
+    args: argparse.Namespace,
+    repo: Path,
+    request: dict[str, Any],
+    current: dict[str, Any],
+    remote_sha: str,
+) -> dict[str, Any]:
+    completion = validate_care_ase_executor_completion(
+        args=args,
+        request=request,
+        current=current,
+        allow_verifier_recheck=True,
+    )
+    if completion.get("requires_verifier_recheck") is not True:
+        raise RuntimeErrorV3("care_ase_executor_recheck_not_required")
+    head_before = ensure_clean_ff_to_remote(repo, args.branch)
+    if head_before != remote_sha:
+        raise RuntimeErrorV3("remote_sha_changed_before_executor_recheck_integration")
+    subprocess.check_call(
+        ["git", "merge", "--no-ff", "-m", "implementation: integrate care ase faithful verifier recheck candidate", completion["executor_head"]],
+        cwd=repo,
+    )
+    integration_merge_sha = git(repo, "rev-parse", "HEAD")
+    env = os.environ.copy()
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
+    env["CARE_ROOT"] = str(repo)
+    care_python = "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python"
+    local_gates = [
+        run_controller_gate(
+            "agent_flow_v3_contract_validation",
+            [sys.executable, "scripts/automation/validate_agent_flow_v3.py", "--repo-root", "."],
+            repo=repo,
+            env=env,
+        ),
+        run_controller_gate(
+            "py_compile_integrated_sources",
+            [
+                care_python,
+                "-m",
+                "py_compile",
+                "scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py",
+                "src/care_myocardium/models/care_ase/__init__.py",
+                "src/care_myocardium/models/care_ase/core.py",
+                "src/care_myocardium/training/care_ase_runtime.py",
+                "src/care_myocardium/training/care_ase_trainer.py",
+            ],
+            repo=repo,
+            env=env,
+        ),
+        run_controller_gate(
+            "public_verifier_pytest",
+            [care_python, "-m", "pytest", "tests/care_ase_faithful/test_verifier_package.py", "-q"],
+            repo=repo,
+            env=env,
+        ),
+    ]
+    gate_failures = [gate["name"] for gate in local_gates if gate["exit_code"] != 0]
+    if gate_failures:
+        raise RuntimeErrorV3("care_ase_executor_recheck_local_gates_failed:" + ",".join(gate_failures))
+
+    receipt_path = repo / "results/agent_flow_v3/care-ase-faithful/controller_executor_recheck_integration_receipt.json"
+    receipt = {
+        "schema": "CARE_ASE_FAITHFUL_CONTROLLER_EXECUTOR_RECHECK_INTEGRATION_RECEIPT_V1",
+        "task_id": "care-ase-faithful",
+        "request_nonce": current.get("request_nonce"),
+        "frozen_contract_sha256": current.get("frozen_contract_sha256"),
+        "created_utc": now(),
+        "state_transition": {
+            "from": "VERIFIER_FROZEN",
+            "through": ["INTEGRATION_RUNNING"],
+            "to": "VERIFIER_RECHECK_REQUIRED",
+        },
+        "origin_develop_before_integration_sha": head_before,
+        "last_observed_remote_sha_before_integration": remote_sha,
+        "executor_thread_id": completion.get("thread_id"),
+        "executor_local_commit_sha": completion.get("executor_head"),
+        "executor_local_commit_subject": completion.get("executor_commit_subject"),
+        "executor_merge_base": completion.get("merge_base"),
+        "executor_goal_complete": completion.get("goal_complete"),
+        "integration_merge_sha": integration_merge_sha,
+        "implementation_fingerprint_sha256": completion.get("implementation_fingerprint_sha256"),
+        "implementation_evidence_payload_sha256": completion.get("implementation_evidence_sha256"),
+        "verifier_fingerprint_sha256": current.get("verifier_fingerprint_sha256"),
+        "requires_independent_verifier_recheck": True,
+        "fail_closed_receipt_file_sha256": completion.get("fail_closed_receipt_file_sha256"),
+        "local_controller_gates": local_gates,
+        "forbidden_actions_confirmed": [
+            "no Planner/Critic decision generated",
+            "no Controller edit to Verifier source or Executor implementation source",
+            "no implementation_complete claim before Verifier recheck",
+            "no training, outer, Docker, upload, organizer email or develop-to-main merge",
+        ],
+        "updated_utc": now(),
+    }
+    write_json(receipt_path, receipt)
+    current_path = repo / "automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json"
+    updated_current = load_json(current_path)
+    updated_current.update(
+        {
+            "state": "VERIFIER_RECHECK_REQUIRED",
+            "integration_commit_sha": integration_merge_sha,
+            "executor_thread_id": completion.get("thread_id"),
+            "executor_production_thread_id": completion.get("thread_id"),
+            "executor_local_commit_sha": completion.get("executor_head"),
+            "executor_integration_merge_sha": integration_merge_sha,
+            "implementation_fingerprint_sha256": completion.get("implementation_fingerprint_sha256"),
+            "implementation_evidence_sha256": completion.get("implementation_evidence_sha256"),
+            "implementation_complete": False,
+            "verifier_recheck_required": True,
+            "verifier_recheck_reason": "executor_scope_completed_but_verifier_owned_executable_and_transaction_receipts_need_reexecution",
+            "controller_executor_recheck_integration_receipt_path": str(receipt_path.relative_to(repo)),
+            "controller_executor_recheck_integration_receipt_sha256": sha_file(receipt_path),
+            "controller_local_gates_status": "PASS_FOR_VERIFIER_RECHECK",
+            "ci_status": None,
+            "next_action": "START_INDEPENDENT_VERIFIER_RECHECK_FOR_CURRENT_IMPLEMENTATION_FINGERPRINT",
+            "expected_state_or_artifact": "Independent Verifier production thread commits executable verifier and transaction receipts bound to the current implementation fingerprint.",
+            "last_observed_remote_sha": remote_sha,
+            "last_poll_utc": now(),
+            "updated_utc": now(),
+        }
+    )
+    write_json(current_path, updated_current)
+    commit_result = commit_and_push(
+        repo,
+        args.branch,
+        [
+            "automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json",
+            "results/agent_flow_v3/care-ase-faithful/controller_executor_recheck_integration_receipt.json",
+        ],
+        "automation: integrate care ase executor for verifier recheck",
+    )
+    task_state_root = args.state_root.resolve().parent
+    executor_active = active_process_path(task_state_root, "care-ase-faithful", "executor")
+    if executor_active.is_file():
+        try:
+            active_data = load_json(executor_active)
+            active_data.update(
+                {
+                    "exit_code": 0,
+                    "finished_utc": now(),
+                    "completion_detected_via_rollout": True,
+                    "os_process_still_present_at_completion_receipt_update": False,
+                    "goal_complete_rollout_path": completion.get("goal_complete", {}).get("rollout_path"),
+                    "completed_executor_commit_sha": completion.get("executor_head"),
+                    "controller_integration_commit_sha": commit_result.get("commit_sha"),
+                    "requires_verifier_recheck": True,
+                }
+            )
+            write_json(executor_active, active_data)
+        except RuntimeErrorV3:
+            pass
+    return {
+        "status": "APPLIED",
+        "completion": completion,
+        "integration_receipt_path": str(receipt_path),
+        "commit": commit_result,
+        "state_after": "VERIFIER_RECHECK_REQUIRED",
+        "updated_utc": now(),
     }
 
 
@@ -3103,7 +3489,7 @@ def stage_event_should_mark_processed(event: dict[str, Any]) -> bool:
         return False
     return not (
         event.get("task_id") == "care-ase-faithful"
-        and event.get("state") in {"PLAN_FROZEN", "VERIFIER_FROZEN"}
+        and event.get("state") in {"PLAN_FROZEN", "VERIFIER_FROZEN", "VERIFIER_RECHECK_REQUIRED"}
     )
 
 
@@ -3226,8 +3612,11 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
             current = planner_event
         event_key = stage_event_key(task_id, current, remote_sha)
         care_ase_executor_complete = False
+        care_ase_executor_needs_verifier_recheck = False
         if task_id == "care-ase-faithful" and current.get("state") == "VERIFIER_FROZEN":
             care_ase_executor_complete = care_ase_executor_completion_available(args, current)
+            if not care_ase_executor_complete:
+                care_ase_executor_needs_verifier_recheck = care_ase_executor_scope_complete_pending_verifier_recheck_available(args, current)
         if (
             task_id == "care-ase-faithful"
             and current.get("state") == "PLAN_FROZEN"
@@ -3246,7 +3635,7 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
             task_id == "care-ase-faithful"
             and current.get("state") == "VERIFIER_FROZEN"
             and stage_event_was_processed(event_key, processed)
-            and care_ase_executor_complete
+            and (care_ase_executor_complete or care_ase_executor_needs_verifier_recheck)
         ):
             processed = {key for key in processed if not key.startswith(event_key)}
         if (
@@ -3287,6 +3676,7 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
             processed=processed,
             default_wait_hours=max(4, int(args.default_wait_hours)),
             care_ase_executor_complete=care_ase_executor_complete,
+            care_ase_executor_needs_verifier_recheck=care_ase_executor_needs_verifier_recheck,
         )
         if (
             task_id == "care-ase-faithful"
@@ -3393,6 +3783,31 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
             event["decision"] == "CONTROLLER_UPDATE_REQUIRED"
             and task_id == "care-ase-faithful"
             and event["state"] == "VERIFIER_FROZEN"
+            and care_ase_executor_needs_verifier_recheck
+        ):
+            try:
+                event["action_result"] = apply_care_ase_executor_scope_completion_verifier_recheck_update(
+                    args=args,
+                    repo=repo,
+                    request=request,
+                    current=current,
+                    remote_sha=remote_sha,
+                )
+                event["decision"] = "CONTROLLER_UPDATE_APPLIED"
+                event["action"] = "Executor commit integrated; CURRENT moved to VERIFIER_RECHECK_REQUIRED"
+                processed.add(event["event_key"])
+                event["remote_sha_after_controller_update"] = remote_head(repo, args.branch)
+            except Exception as exc:  # noqa: BLE001 - keep polling; do not fake Verifier recheck.
+                event["action_result"] = {
+                    "status": "FAILED",
+                    "error": f"{type(exc).__name__}: {exc}",
+                    "updated_utc": now(),
+                }
+                event["failures"] = list(event.get("failures", [])) + ["executor_recheck_integration_failed"]
+        elif (
+            event["decision"] == "CONTROLLER_UPDATE_REQUIRED"
+            and task_id == "care-ase-faithful"
+            and event["state"] == "VERIFIER_FROZEN"
         ):
             try:
                 event["action_result"] = apply_care_ase_executor_completion_controller_update(
@@ -3436,6 +3851,30 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
                     "updated_utc": now(),
                 }
                 event["failures"] = list(event.get("failures", [])) + ["ci_pass_wait_transaction_failed"]
+        elif (
+            event["decision"] == "STAGE_READY"
+            and task_id == "care-ase-faithful"
+            and event["state"] == "VERIFIER_RECHECK_REQUIRED"
+        ):
+            try:
+                event["action_result"] = start_care_ase_verifier_recheck(
+                    args=args,
+                    repo=repo,
+                    ref=ref,
+                    request=request,
+                    current=current,
+                )
+            except Exception as exc:  # noqa: BLE001 - keep polling; do not mark failed Verifier recheck start processed.
+                event["action_result"] = {
+                    "status": "FAILED",
+                    "error": f"{type(exc).__name__}: {exc}",
+                    "updated_utc": now(),
+                }
+                event["failures"] = list(event.get("failures", [])) + ["verifier_recheck_start_failed"]
+            if care_ase_role_launch_satisfied(args.state_root, current, "verifier"):
+                event["decision"] = "VERIFIER_RECHECK_START_APPLIED"
+                event["action"] = "VERIFIER_RECHECK_REQUIRED validated; Verifier exact session active"
+                processed.add(event["event_key"])
         elif (
             event["decision"] == "STAGE_READY"
             and task_id == "care-ase-faithful"

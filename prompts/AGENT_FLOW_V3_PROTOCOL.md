@@ -217,6 +217,8 @@ PLAN_FROZEN
 CONTROLLER_INITIALIZING
 VERIFIER_RUNNING
 VERIFIER_FROZEN
+VERIFIER_RECHECK_REQUIRED
+VERIFIER_RECHECK_RUNNING
 EXECUTOR_RUNNING
 INTEGRATION_RUNNING
 CI_RUNNING
@@ -266,6 +268,8 @@ scientific task, `NEEDS_USER_SCIENTIFIC_CHOICE` is reached, or the action would
 start formal training, access outer data, promote `develop` to `main`, build or
 upload Docker/submissions, send organizer email, or make another decision the
 contract reserves for the user.
+
+`VERIFIER_RECHECK_REQUIRED` and `VERIFIER_RECHECK_RUNNING` are Controller-internal states for the case where an Executor commit is clean, scope-valid, and bound to the current frozen contract/nonce, but its fail-closed receipt correctly says only Verifier-owned executable or transaction receipts remain stale. The Controller may integrate that Executor commit, but it must not mark implementation complete or enter Planner wait until the independent Verifier production thread reruns and commits those receipts. This is not a Planner decision, not a human approval point, and not permission for the Controller to edit Verifier source or fabricate Verifier evidence.
 
 `WAITING_FOR_EXTERNAL_GPT` is a non-terminal orchestration state for asynchronous
 GitHub-mediated Scheduled GPT work. It must record
