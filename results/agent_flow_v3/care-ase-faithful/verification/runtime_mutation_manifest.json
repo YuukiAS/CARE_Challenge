@@ -1,195 +1,184 @@
 {
   "all_returned_nonzero": true,
   "count": 11,
-  "created_utc": "2026-08-06T20:30:11Z",
+  "created_utc": "2026-08-07T02:11:24Z",
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
   "mutation_invocations": [
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/run_executable_verifier.py",
-        "--fixture-mode",
         "--mutation-id",
         "extent_conv3d_alias"
       ],
-      "command_sha256": "bb8485378cd37d51a13162bc7eef9fd7dc2729a65e0df57863153eb44f44ddf5",
+      "command_sha256": "adff6f22294d8029603e7854116fe73b645ac0b0e1a56b16f7316601d4a7adf0",
       "exit_code": 2,
       "mutation_id": "extent_conv3d_alias",
       "passed_fail_closed": true,
       "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/extent_conv3d_alias.json",
-      "report_sha256": "09421fd537290c7cd8a8c38c33904bf35b9db89bb66fe218ace0cebdb7d1f54b",
+      "report_sha256": "a75c9870260a09fc381496b8ad43c43a161e894305124be316e629d116b42405",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "09421fd537290c7cd8a8c38c33904bf35b9db89bb66fe218ace0cebdb7d1f54b"
+      "stdout_sha256": "a75c9870260a09fc381496b8ad43c43a161e894305124be316e629d116b42405"
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/run_executable_verifier.py",
-        "--fixture-mode",
         "--mutation-id",
         "dilation_residual_removed"
       ],
-      "command_sha256": "fc66128760fc1635a32e5d6277e1de31d8fca3bdd65063a05cb8ecf11a63c5e7",
+      "command_sha256": "048fa4cae1f12d6f90134c72e362dfc321a6347ba4ec4cd608ce0615602c5466",
       "exit_code": 2,
       "mutation_id": "dilation_residual_removed",
       "passed_fail_closed": true,
       "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/dilation_residual_removed.json",
-      "report_sha256": "e29f6245d213ea6918761e8b1e280c4274c222ae30ee11a89e45ffb8a0892cd4",
+      "report_sha256": "210434b631384ae6509b2a47421de0a89c0ddf3cfd4d56c97708a629f252fb2f",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "e29f6245d213ea6918761e8b1e280c4274c222ae30ee11a89e45ffb8a0892cd4"
+      "stdout_sha256": "210434b631384ae6509b2a47421de0a89c0ddf3cfd4d56c97708a629f252fb2f"
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/run_executable_verifier.py",
-        "--fixture-mode",
         "--mutation-id",
         "injury_random_init"
       ],
-      "command_sha256": "5dc6fc3e220912c63e3e99752b6506146ed31a34bc0edcb9a9172703ff4fc304",
+      "command_sha256": "a98c33fe0cee2f7cd7113eec97350f4c318c23886d94692b459b2755be607bc5",
       "exit_code": 2,
       "mutation_id": "injury_random_init",
       "passed_fail_closed": true,
       "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/injury_random_init.json",
-      "report_sha256": "2c0ba6950ae966b62496dbf0dcb57a49f47c3d0a24b6bc48f4167bf295d5a3b5",
+      "report_sha256": "ed72938b8583196f3b13097e0baa0267d906c1b7940451cfb54d525d22d3d4e9",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "2c0ba6950ae966b62496dbf0dcb57a49f47c3d0a24b6bc48f4167bf295d5a3b5"
+      "stdout_sha256": "ed72938b8583196f3b13097e0baa0267d906c1b7940451cfb54d525d22d3d4e9"
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/run_executable_verifier.py",
-        "--fixture-mode",
         "--mutation-id",
         "projection_context_no_final_authority"
       ],
-      "command_sha256": "51aad7e536d9d8796d58ad9d19eba9b17a99e3ffd7aab1b6777563df6c9b6118",
+      "command_sha256": "054ec495d5f11b8d4fc8caacad0fa95fb95ef461a65ff20d6eb867830f2d3639",
       "exit_code": 2,
       "mutation_id": "projection_context_no_final_authority",
       "passed_fail_closed": true,
       "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/projection_context_no_final_authority.json",
-      "report_sha256": "daacaf07777c756b89f4f60d19cc10af23d7baf0ed0660d0c79b0ff5f8f38b43",
+      "report_sha256": "fd71379d9408b3a8e097b7549d0cb3ef061cb73f7702ce7fa9c90d0b0319cb17",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "daacaf07777c756b89f4f60d19cc10af23d7baf0ed0660d0c79b0ff5f8f38b43"
+      "stdout_sha256": "fd71379d9408b3a8e097b7549d0cb3ef061cb73f7702ce7fa9c90d0b0319cb17"
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/run_executable_verifier.py",
-        "--fixture-mode",
         "--mutation-id",
         "no_t2_calls_edema"
       ],
-      "command_sha256": "e3872ef4e992e13da4e808a42df803e850cb908219b756d4a21716032379654a",
+      "command_sha256": "f264c9a1b0a4c5253059ab6fcb1952a046e9c69dd1432f240dca0558f338ecd3",
       "exit_code": 2,
       "mutation_id": "no_t2_calls_edema",
       "passed_fail_closed": true,
       "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/no_t2_calls_edema.json",
-      "report_sha256": "a631940a51209d834c14fe51bbeafcd05942bc3e25767b485eec86e593b93fb9",
+      "report_sha256": "ceb1d12d95096ca2619c18d91529d58a792c440a4d4befa077b00abf970ae572",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "a631940a51209d834c14fe51bbeafcd05942bc3e25767b485eec86e593b93fb9"
+      "stdout_sha256": "ceb1d12d95096ca2619c18d91529d58a792c440a4d4befa077b00abf970ae572"
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/run_executable_verifier.py",
-        "--fixture-mode",
         "--mutation-id",
         "single_multi_same_call"
       ],
-      "command_sha256": "815b6df8786e01df27f3128e3d961ecad39ea5b046af45cb94a571ded639e84e",
+      "command_sha256": "974f153aca718fcffefeca5dcc84dc5e482e1ca0a849cb657684dd391b282625",
       "exit_code": 2,
       "mutation_id": "single_multi_same_call",
       "passed_fail_closed": true,
       "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/single_multi_same_call.json",
-      "report_sha256": "1c6e312de632d0d2a64ca7b0fe01912f6ca53c47d6d7997288a16932d5c2def2",
+      "report_sha256": "1dcf3aaa893178dc4450b4ec1b94c81465ba473bc437746632bb110152a90a8b",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "1c6e312de632d0d2a64ca7b0fe01912f6ca53c47d6d7997288a16932d5c2def2"
+      "stdout_sha256": "1dcf3aaa893178dc4450b4ec1b94c81465ba473bc437746632bb110152a90a8b"
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/run_executable_verifier.py",
-        "--fixture-mode",
         "--mutation-id",
         "tile_local_global_bias"
       ],
-      "command_sha256": "f36becd501f9b922080d1fec2bae8dbcee3f58e81a640415066803a3a527ae76",
+      "command_sha256": "d30e44342201cb1b8690570501e6c784eb46c39fd66c05ab9c2e74c9ba8736c7",
       "exit_code": 2,
       "mutation_id": "tile_local_global_bias",
       "passed_fail_closed": true,
       "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/tile_local_global_bias.json",
-      "report_sha256": "c398686668e7675285160b1e50d86e73b241c967469e4996edc32b2add488a4e",
+      "report_sha256": "69bbdb3f9a4600b55a173bd041fc34a34a4efb0033bacae6e806d3807190353c",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "c398686668e7675285160b1e50d86e73b241c967469e4996edc32b2add488a4e"
+      "stdout_sha256": "69bbdb3f9a4600b55a173bd041fc34a34a4efb0033bacae6e806d3807190353c"
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/run_executable_verifier.py",
-        "--fixture-mode",
         "--mutation-id",
         "deployment_reopens_stock_checkpoint"
       ],
-      "command_sha256": "4a419d5f972de93cba7f65ac5675bba912deb7035d3aadbb3cb4b55498be2a55",
+      "command_sha256": "630cbe4312ff334b065912c7682f62eb91b91882d718cd23d8f85072fc9a4da7",
       "exit_code": 2,
       "mutation_id": "deployment_reopens_stock_checkpoint",
       "passed_fail_closed": true,
       "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/deployment_reopens_stock_checkpoint.json",
-      "report_sha256": "310708fe5de160eb2b07bcc42d5d17c4c69b19e6b5e1ff83cd7128baf862d22b",
+      "report_sha256": "ff16ee15d98670732f5aefc2cc61c383f2860ece59feee7379e161575feff701",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "310708fe5de160eb2b07bcc42d5d17c4c69b19e6b5e1ff83cd7128baf862d22b"
+      "stdout_sha256": "ff16ee15d98670732f5aefc2cc61c383f2860ece59feee7379e161575feff701"
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/run_executable_verifier.py",
-        "--fixture-mode",
         "--mutation-id",
         "evaluator_population_mismatch"
       ],
-      "command_sha256": "feee67b3e75b5ac459a463f955e5e844d6afe0bdc1751d3430a8e4df952fbe73",
+      "command_sha256": "d0e6eec2bd6bc904909f3d729700de195e2c8492d3b9ab34dac05c60e6d6db5f",
       "exit_code": 2,
       "mutation_id": "evaluator_population_mismatch",
       "passed_fail_closed": true,
       "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/evaluator_population_mismatch.json",
-      "report_sha256": "cb426e0e7ad58a068004aee8450d338759511db5a2b9b3f4f971872bfe6299b0",
+      "report_sha256": "f926e5dbceabd5121d889489629071453a33c550c58af2c8cf6ca018814bb101",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "cb426e0e7ad58a068004aee8450d338759511db5a2b9b3f4f971872bfe6299b0"
+      "stdout_sha256": "f926e5dbceabd5121d889489629071453a33c550c58af2c8cf6ca018814bb101"
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/run_executable_verifier.py",
-        "--fixture-mode",
         "--mutation-id",
         "checkpoint_next_step_drift"
       ],
-      "command_sha256": "d827eeb177367e8aed70c191254de6690e5ffa1b957c0dd07f70b338d821cf92",
+      "command_sha256": "78d5b0b38b70f3b2ae7d5f2f1ac176d9edc1097fae61eb3c541a9fafe9a1ec5b",
       "exit_code": 2,
       "mutation_id": "checkpoint_next_step_drift",
       "passed_fail_closed": true,
       "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/checkpoint_next_step_drift.json",
-      "report_sha256": "74516b3e61f8288db11613df158a82cca6f1d3c735a559ca1695eacd67ca1d4d",
+      "report_sha256": "bdaf1944e1e3d6f07b3e9c0710a43df12007974da8d43526668064bb5800673f",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "74516b3e61f8288db11613df158a82cca6f1d3c735a559ca1695eacd67ca1d4d"
+      "stdout_sha256": "bdaf1944e1e3d6f07b3e9c0710a43df12007974da8d43526668064bb5800673f"
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/run_executable_verifier.py",
-        "--fixture-mode",
         "--mutation-id",
         "artifact_sha_mismatch"
       ],
-      "command_sha256": "8e6b8e6b1e6cede0cc519206160c3c160ca0d723ea0cba824cb2191dac57dfa0",
+      "command_sha256": "153b59c0710638478b313277877bfbde5f61a8ce6eacff2aeb38ac0d2113128c",
       "exit_code": 2,
       "mutation_id": "artifact_sha_mismatch",
       "passed_fail_closed": true,
       "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/artifact_sha_mismatch.json",
-      "report_sha256": "cfde14a44222c4fd819ded46673df376a57603ef65ee5b61a5ccc67e0a03a94d",
+      "report_sha256": "65c5ab48b7e7d864854090fc307e43b818f436e78b15dec8ea0088cf20fc973d",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "cfde14a44222c4fd819ded46673df376a57603ef65ee5b61a5ccc67e0a03a94d"
+      "stdout_sha256": "65c5ab48b7e7d864854090fc307e43b818f436e78b15dec8ea0088cf20fc973d"
     }
   ],
   "request_nonce": "care-ase-20260806T090955Z",

@@ -1,16 +1,17 @@
 {
   "controller_verified_launch_origin_develop_sha": "e628bd14582350b265567ef5ec70b1d74d273b3b",
   "controller_verified_launch_verifier_worktree_head": "e628bd14582350b265567ef5ec70b1d74d273b3b",
-  "created_utc": "2026-08-06T20:30:11Z",
+  "created_utc": "2026-08-07T02:11:24Z",
+  "current_reviewed_implementation_expected_fail_closed": true,
   "executable_verifier_local_fail_closed_exit_code": 2,
   "executable_verifier_local_fail_closed_receipt": "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_local_fail_closed_receipt.json",
-  "executable_verifier_production_exit_code": 0,
+  "executable_verifier_production_exit_code": 2,
   "executable_verifier_receipt": "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json",
   "executor_may_start_after_controller_freezes_this_commit": true,
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
-  "integrated_implementation_validation_exit_code": 0,
+  "integrated_implementation_validation_exit_code": 2,
   "integrated_implementation_validation_result": "results/agent_flow_v3/care-ase-faithful/verification/integrated_implementation_validation_result.json",
-  "observed_origin_develop_sha_at_freeze": "97a62ecada4a356d7e869a45dfb2ae834f024483",
+  "observed_origin_develop_sha_at_freeze": "d33e04d731993d8e6558b5f232e11fc24528192e",
   "protected_known_bad_all_nonzero": true,
   "protected_known_bad_count": 24,
   "public_reference_exit_code": 0,
@@ -35,6 +36,6 @@
   "state_for_controller": "VERIFIER_FROZEN",
   "task_id": "care-ase-faithful",
   "verifier_branch": "local/verifier/care-ase-faithful",
-  "verifier_fingerprint_sha256": "847263d0afd1f34e81c49a981ea33dae5c12f53114c543d50830d077d9a7e167",
-  "verifier_worktree_head_before_freeze_commit": "302b42f6ed0ddd69ab0b932295a267e3f403bd63"
+  "verifier_fingerprint_sha256": "8149d75c397904e6db2daa3ab1ba765e5c2c4db4abde607796645c51deb3c4ca",
+  "verifier_worktree_head_before_freeze_commit": "460576651481b91e2b255ab484ead49dd945c444"
 }

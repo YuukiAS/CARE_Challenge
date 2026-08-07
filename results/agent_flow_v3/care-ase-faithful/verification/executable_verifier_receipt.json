@@ -1,25 +1,30 @@
 {
-  "created_utc": "2026-08-06T20:30:14Z",
+  "created_utc": "2026-08-07T02:12:02Z",
   "docker_or_upload": false,
   "environment": {
     "cwd": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/verifier",
     "git_branch": "local/verifier/care-ase-faithful",
-    "git_head": "302b42f6ed0ddd69ab0b932295a267e3f403bd63",
-    "nnunetv2_available": false,
+    "git_head": "460576651481b91e2b255ab484ead49dd945c444",
+    "nnunetv2_available": true,
     "platform": "Linux-5.14.0-611.16.1.el9_7.x86_64-x86_64-with-glibc2.34",
-    "python_executable": "/usr/bin/python",
-    "python_version": "3.9.25 (main, Nov 10 2025, 00:00:00) \n[GCC 11.5.0 20240719 (Red Hat 11.5.0-11)]",
+    "python_executable": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+    "python_version": "3.12.13 | packaged by conda-forge | (main, Mar  5 2026, 16:50:00) [GCC 14.3.0]",
     "repo_root": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/verifier",
     "runtime_env": {
-      "CARE_ROOT": null,
-      "nnUNet_preprocessed": null,
-      "nnUNet_results": null
+      "CARE_ROOT": "/users/a/e/aereinh/CARE",
+      "nnUNet_preprocessed": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_preprocessed",
+      "nnUNet_results": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results"
     },
-    "torch_available": false
+    "torch_available": true
   },
-  "executable_verifier_receipt_sha256": "87692c5fea000e07577b5ff06f9980e1e52abf9f312f74c5d1f80228bc542606",
-  "failure_count": 0,
-  "failures": [],
+  "executable_verifier_receipt_sha256": "2537b494dde46b682603a761eaa8f8ed7412ba1369984c80f1f42c4d87908c36",
+  "executor_receipts_used_as_runtime_conclusion": false,
+  "failure_count": 3,
+  "failures": [
+    "executable_probe.failed:required_module_final_logit_interventions",
+    "executable_probe.failed:single_vs_forced_multi_tile_full_volume",
+    "executable_probe.failed:partial_hw_extent_zero_contribution"
+  ],
   "fixture_mode": false,
   "forbidden_shortcuts_rejected_by_design": [
     "torch.randn inputs with asserted real case IDs",
@@ -38,93 +43,75 @@
   "implementation_fingerprint_sha256": "3eabfb0be9eda776da6dd6fe3068004894ea7a5b4c30966941fc05bdc412e0dc",
   "integration_sha": "edb4f2e290c72e92e1bcbd74295c525fef924f11",
   "outer_accessed": false,
-  "passed": true,
+  "passed": false,
   "planner_review_commit": "38dbbb0e32556e5f12127699c67ff31d45e5e934",
   "probes": [
     {
-      "architecture_signature_sha256": "4dfaf1b0f6a4319ce3dc301568339ad0201e291f8582440a32addc523c3e7660",
-      "implementation_receipt_sha256": "c0a61cf13c4e2e8915546feae088ed31f4925e18a917bc321e8e39394c5bb7e2",
+      "attribute_error": null,
+      "attribute_error_ignored": false,
+      "compatible_argmax_changed_voxels": 0,
+      "imported_step0_parity_report": true,
       "name": "model_build_and_stock_parity",
+      "no_t2_case": {
+        "array_sha256": "8cfa02ef7503b6eceac81525db865b475f96321709c15325991f3e95e08631e6",
+        "case_id": "Case1001",
+        "geometry_sha256": "b8c502034de1493d494ca43a220795eee9cc19885855a55c87f7ae43ec78b6ad",
+        "image_shape": [
+          3,
+          20,
+          256,
+          256
+        ],
+        "properties_sha256": "4959c949a8b7414436756028ee1ddf4e2a251712bd231a705207310e09f6af05",
+        "segmentation_sha256": "c1fb19a9d833cf7d2e1f5e6b56bce4e729dea53dff2e839646107786a6c5fe51",
+        "segmentation_shape": [
+          20,
+          256,
+          256
+        ],
+        "spacing_zyx": [
+          11.0,
+          1.3672000169754028,
+          1.3672000169754028
+        ]
+      },
+      "no_t2_edema_owned_module_call_count": 0,
+      "no_t2_stock_max_abs_err": 0.0,
       "status": "PASS",
-      "stock_checkpoint_sha256": "8bceb20cae8920e87d43b14665a0db9dfd4f1204533d25a3cd6e40ad9de74111",
-      "stock_compatible_argmax_changed_voxels": 0,
-      "stock_compatible_logits_max_abs_err": 0.0,
-      "train_case_ids": [
-        {
-          "array_sha256": "78d0e980500f4af842a421ab6de5cdab0da77fd4c6cf41ab49bd3945677e1544",
-          "availability": [
-            1.0,
-            1.0,
-            1.0
-          ],
-          "case_id": "Case2003",
-          "center": "CenterB",
-          "geometry_sha256": "ccc1f57a72852cf091037138be52e3cd57893b14fd61381e3ee9e0c0400eac54",
-          "image_shape": [
-            3,
-            10,
-            291,
-            239
-          ],
-          "properties_sha256": "353df97be805c93bc51d4f56066895c4d2ca2c18a26dfe3813f6708c9e33d732",
-          "segmentation_sha256": "e568a2e686d80ead61882ab940f845f7d77718ff85c86b168b5f3524f9129f81",
-          "segmentation_shape": [
-            10,
-            291,
-            239
-          ],
-          "spacing_zyx": [
-            10.0,
-            1.5625,
-            1.5625
-          ]
-        },
-        {
-          "array_sha256": "8cfa02ef7503b6eceac81525db865b475f96321709c15325991f3e95e08631e6",
-          "availability": [
-            1.0,
-            0.0,
-            0.0
-          ],
-          "case_id": "Case1001",
-          "center": "CenterA",
-          "geometry_sha256": "2c96243b3053d2bc473024257656ac05f18f26003b88a611d5dcef385e5e2fb3",
-          "image_shape": [
-            3,
-            20,
-            256,
-            256
-          ],
-          "properties_sha256": "4959c949a8b7414436756028ee1ddf4e2a251712bd231a705207310e09f6af05",
-          "segmentation_sha256": "c1fb19a9d833cf7d2e1f5e6b56bce4e729dea53dff2e839646107786a6c5fe51",
-          "segmentation_shape": [
-            20,
-            256,
-            256
-          ],
-          "spacing_zyx": [
-            11.0,
-            1.3672000169754028,
-            1.3672000169754028
-          ]
-        }
-      ]
+      "t2_case": {
+        "array_sha256": "78d0e980500f4af842a421ab6de5cdab0da77fd4c6cf41ab49bd3945677e1544",
+        "case_id": "Case2003",
+        "geometry_sha256": "3146bc0a058eef78c56117d743b8d59cf7c3bd5a8ad64a043a7a4dd642c091d6",
+        "image_shape": [
+          3,
+          10,
+          291,
+          239
+        ],
+        "properties_sha256": "353df97be805c93bc51d4f56066895c4d2ca2c18a26dfe3813f6708c9e33d732",
+        "segmentation_sha256": "e568a2e686d80ead61882ab940f845f7d77718ff85c86b168b5f3524f9129f81",
+        "segmentation_shape": [
+          10,
+          291,
+          239
+        ],
+        "spacing_zyx": [
+          10.0,
+          1.5625,
+          1.5625
+        ]
+      },
+      "t2_present_stock_max_abs_err": 0.0
     },
     {
+      "batch_sha256": "edca1afae5d9a147135b01afefb83bc1b47777097e3d55c825ba7d12e046b00f",
       "constant_denominator_count": 0,
-      "implementation_receipt_sha256": "3eaf0edbc050f51c58011f4127acbb1a3bfb08da830daa36664c8c5e01ea1046",
-      "input_origin": "train_split_preprocessed_real_case_microbatch",
-      "input_shape": [
-        2,
-        3,
-        8,
-        64,
-        64
-      ],
+      "gradient_max_abs": 3.796072006225586,
+      "input_origin": "verifier_loaded_train_split_preprocessed_case_crop",
       "name": "real_train_case_total_loss_forward_backward",
       "random_tensor_used": false,
-      "split_sha256": "9c3e9f3b7e4565a5c3c2589ddbb913c78c0ad423f4265370585841c93c6f880a",
       "status": "PASS",
+      "total_loss": 11.332353591918945,
       "total_loss_terms": {
         "anatomy_deep_supervision_dice_ce": {
           "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
@@ -134,10 +121,10 @@
           "eligible_voxel_or_count_denominator": 65536,
           "exclusion_reason": null,
           "included_in_total": true,
-          "unweighted_value": 5.83768892288208,
-          "value": 5.83768892288208,
+          "unweighted_value": 5.609646797180176,
+          "value": 5.609646797180176,
           "weight": 0.5,
-          "weighted_contribution": 2.91884446144104
+          "weighted_contribution": 2.804823398590088
         },
         "conditional_final_dice_ce": {
           "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
@@ -147,23 +134,23 @@
           "eligible_voxel_or_count_denominator": 65536,
           "exclusion_reason": null,
           "included_in_total": true,
-          "unweighted_value": 5.787048816680908,
-          "value": 5.787048816680908,
+          "unweighted_value": 5.556319236755371,
+          "value": 5.556319236755371,
           "weight": 1.0,
-          "weighted_contribution": 5.787048816680908
+          "weighted_contribution": 5.556319236755371
         },
         "distance_rho_masked_smooth_l1": {
           "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
           "correctly_excluded": false,
-          "denominator": 8586,
+          "denominator": 8685,
           "eligible_row_count": 2,
-          "eligible_voxel_or_count_denominator": 8586,
+          "eligible_voxel_or_count_denominator": 8685,
           "exclusion_reason": null,
           "included_in_total": true,
-          "unweighted_value": 0.09958434849977493,
-          "value": 0.09958434849977493,
+          "unweighted_value": 0.435943603515625,
+          "value": 0.435943603515625,
           "weight": 0.1,
-          "weighted_contribution": 0.009958434849977493
+          "weighted_contribution": 0.0435943603515625
         },
         "edema_binary_dice_focal": {
           "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
@@ -173,36 +160,36 @@
           "eligible_voxel_or_count_denominator": 32768,
           "exclusion_reason": null,
           "included_in_total": true,
-          "unweighted_value": 0.5306404232978821,
-          "value": 0.5306404232978821,
+          "unweighted_value": 0.47669363021850586,
+          "value": 0.47669363021850586,
           "weight": 1.0,
-          "weighted_contribution": 0.5306404232978821
+          "weighted_contribution": 0.47669363021850586
         },
         "edema_boundary_smooth_l1": {
           "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
           "correctly_excluded": false,
-          "denominator": 11909,
+          "denominator": 8435,
           "eligible_row_count": 1,
-          "eligible_voxel_or_count_denominator": 11909,
+          "eligible_voxel_or_count_denominator": 8435,
           "exclusion_reason": null,
           "included_in_total": true,
-          "unweighted_value": 0.30919450521469116,
-          "value": 0.30919450521469116,
+          "unweighted_value": 0.19395038485527039,
+          "value": 0.19395038485527039,
           "weight": 0.1,
-          "weighted_contribution": 0.03091945052146912
+          "weighted_contribution": 0.01939503848552704
         },
         "edema_context_ce": {
           "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
           "correctly_excluded": false,
-          "denominator": 843,
+          "denominator": 870,
           "eligible_row_count": 1,
-          "eligible_voxel_or_count_denominator": 843,
+          "eligible_voxel_or_count_denominator": 870,
           "exclusion_reason": null,
           "included_in_total": true,
-          "unweighted_value": 1.4338595867156982,
-          "value": 1.4338595867156982,
+          "unweighted_value": 1.3799694776535034,
+          "value": 1.3799694776535034,
           "weight": 0.1,
-          "weighted_contribution": 0.14338595867156984
+          "weighted_contribution": 0.13799694776535035
         },
         "edema_extent_bce_smooth_l1": {
           "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
@@ -212,10 +199,10 @@
           "eligible_voxel_or_count_denominator": 16,
           "exclusion_reason": null,
           "included_in_total": true,
-          "unweighted_value": 0.29703289270401,
-          "value": 0.29703289270401,
+          "unweighted_value": 0.334804505109787,
+          "value": 0.334804505109787,
           "weight": 0.2,
-          "weighted_contribution": 0.059406578540802
+          "weighted_contribution": 0.0669609010219574
         },
         "injury_dice_bce": {
           "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
@@ -225,10 +212,10 @@
           "eligible_voxel_or_count_denominator": 32768,
           "exclusion_reason": null,
           "included_in_total": true,
-          "unweighted_value": 0.606564998626709,
-          "value": 0.606564998626709,
+          "unweighted_value": 0.5927543044090271,
+          "value": 0.5927543044090271,
           "weight": 0.4,
-          "weighted_contribution": 0.2426259994506836
+          "weighted_contribution": 0.23710172176361086
         },
         "relation_loss": {
           "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
@@ -238,10 +225,10 @@
           "eligible_voxel_or_count_denominator": 32768,
           "exclusion_reason": null,
           "included_in_total": true,
-          "unweighted_value": 0.07337722182273865,
-          "value": 0.07337722182273865,
+          "unweighted_value": 0.15543270111083984,
+          "value": 0.15543270111083984,
           "weight": 0.05,
-          "weighted_contribution": 0.0036688610911369325
+          "weighted_contribution": 0.007771635055541993
         },
         "scar_binary_dice_focal": {
           "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
@@ -251,10 +238,10 @@
           "eligible_voxel_or_count_denominator": 65536,
           "exclusion_reason": null,
           "included_in_total": true,
-          "unweighted_value": 0.9458863735198975,
-          "value": 0.9458863735198975,
+          "unweighted_value": 0.973680853843689,
+          "value": 0.973680853843689,
           "weight": 1.0,
-          "weighted_contribution": 0.9458863735198975
+          "weighted_contribution": 0.973680853843689
         },
         "scar_center_focal_bce": {
           "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
@@ -264,10 +251,10 @@
           "eligible_voxel_or_count_denominator": 65536,
           "exclusion_reason": null,
           "included_in_total": true,
-          "unweighted_value": 0.19037240743637085,
-          "value": 0.19037240743637085,
+          "unweighted_value": 0.21876946091651917,
+          "value": 0.21876946091651917,
           "weight": 0.1,
-          "weighted_contribution": 0.019037240743637086
+          "weighted_contribution": 0.021876946091651917
         },
         "scar_component_adaptive_tversky": {
           "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
@@ -277,36 +264,36 @@
           "eligible_voxel_or_count_denominator": 65536,
           "exclusion_reason": null,
           "included_in_total": true,
-          "unweighted_value": 0.995758056640625,
-          "value": 0.995758056640625,
+          "unweighted_value": 0.9896219372749329,
+          "value": 0.9896219372749329,
           "weight": 0.25,
-          "weighted_contribution": 0.24893951416015625
+          "weighted_contribution": 0.24740548431873322
         },
         "scar_context_ce": {
           "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
           "correctly_excluded": false,
-          "denominator": 1597,
+          "denominator": 1656,
           "eligible_row_count": 2,
-          "eligible_voxel_or_count_denominator": 1597,
+          "eligible_voxel_or_count_denominator": 1656,
           "exclusion_reason": null,
           "included_in_total": true,
-          "unweighted_value": 1.509551763534546,
-          "value": 1.509551763534546,
+          "unweighted_value": 1.4210796356201172,
+          "value": 1.4210796356201172,
           "weight": 0.1,
-          "weighted_contribution": 0.1509551763534546
+          "weighted_contribution": 0.14210796356201172
         },
         "scar_extent_bce_smooth_l1": {
           "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
           "correctly_excluded": false,
-          "denominator": 16,
+          "denominator": 32,
           "eligible_row_count": 2,
-          "eligible_voxel_or_count_denominator": 16,
+          "eligible_voxel_or_count_denominator": 32,
           "exclusion_reason": null,
           "included_in_total": true,
-          "unweighted_value": 0.3442126512527466,
-          "value": 0.3442126512527466,
+          "unweighted_value": 0.379143625497818,
+          "value": 0.379143625497818,
           "weight": 0.15,
-          "weighted_contribution": 0.05163189768791199
+          "weighted_contribution": 0.056871543824672695
         },
         "wall_dice_bce": {
           "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
@@ -316,49 +303,71 @@
           "eligible_voxel_or_count_denominator": 65536,
           "exclusion_reason": null,
           "included_in_total": true,
-          "unweighted_value": 2.1440601348876953,
-          "value": 2.1440601348876953,
+          "unweighted_value": 2.159015417098999,
+          "value": 2.159015417098999,
           "weight": 0.25,
-          "weighted_contribution": 0.5360150337219238
+          "weighted_contribution": 0.5397538542747498
         }
-      },
-      "train_case_ids": {
-        "edema_t2_present": "Case2001",
-        "scar": "Case1001"
       }
     },
     {
-      "mixed_batch_case_ids": [
-        "Case2001",
-        "Case1001"
-      ],
-      "mixed_batch_descriptor_sha256": [
-        "795c6d192feebf7e6f790330aff6bfe196d73ecc8cb69005c952d92f5658ba88",
-        "d90b0a97d0c53a6da73f35b727ff8b58912414aa3416dcff7f048c46fb62a7a4"
-      ],
       "name": "mixed_t2_no_t2_batch",
       "no_t2_class4_in_competition": false,
       "no_t2_edema_owned_module_call_count": 0,
+      "no_t2_edema_parameter_grad_abs_sum": 0.0,
+      "no_t2_loss": 10.579890251159668,
+      "no_t2_metrics": {
+        "all_finite": 1.0,
+        "all_nonnegative": 1.0,
+        "anatomy4_deep_supervised": 5.959643363952637,
+        "anatomy_ce": 5.00982666015625,
+        "anatomy_dice": 0.9907661080360413,
+        "anatomy_half_ce": 4.883634090423584,
+        "anatomy_half_dice": 0.9941102862358093,
+        "distance": 0.3495974540710449,
+        "edema_binary_t2_gated": 0.0,
+        "edema_boundary": 0.0,
+        "edema_context": 0.0,
+        "edema_dense": 0.0,
+        "edema_extent": 0.0,
+        "edema_extent_area": 0.0,
+        "edema_extent_presence": 0.0,
+        "final_competition": 5.722827911376953,
+        "five_class_ce_without_class4": 4.729770660400391,
+        "five_class_dice_without_class4": 0.9930574893951416,
+        "injury": 0.0,
+        "loss": 10.579890251159668,
+        "no_t2_edema_exclusive_total_loss": -0.0,
+        "relation": 0.0,
+        "scar_center": 0.17737144231796265,
+        "scar_component": 0.9093414545059204,
+        "scar_component_adaptive_tversky": 1.0190131664276123,
+        "scar_context": 1.461878776550293,
+        "scar_dense": 0.927537202835083,
+        "scar_extent": 0.3384794592857361,
+        "scar_extent_area": 0.00761099299415946,
+        "scar_extent_presence": 0.6693479418754578,
+        "scar_occupancy": 1.1286849975585938,
+        "wall": 1.781177043914795
+      },
       "status": "PASS"
     },
     {
-      "all_changed_intended_final_logits": true,
-      "evidence_source": "implementation.architecture.required_module_authority plus runtime gradient receipts",
-      "modules": [
-        "context_affects_final_logits",
-        "edema_dilation_affects_final_logits",
-        "extent_affects_final_logits",
-        "modality_adapters_affect_final_logits",
-        "scar_proposal_affects_final_logits",
-        "soft_wall_affects_final_logits"
-      ],
+      "all_changed_intended_final_logits": false,
+      "intervention_max_abs_by_module": {
+        "all_named_evidence": 0.0,
+        "edema_boundary": 0.0,
+        "edema_context_and_dilation": 0.0,
+        "edema_injury": 0.0,
+        "extent_wall": 1.9293804168701172,
+        "scar_context": 0.0,
+        "scar_proposal": 0.0
+      },
       "name": "required_module_final_logit_interventions",
-      "required_projection_nonzero_finite_count": 94,
-      "status": "PASS"
+      "status": "FAIL"
     },
     {
-      "checkpoint_probe_kind": "canonical_next_batch_total_loss_step",
-      "implementation_receipt_sha256": "93934cd7a68cbae27ab71ba23d4363349741a8d92cc44f5cee4937304671703e",
+      "checkpoint_probe_kind": "verifier_schema_v4_save_load_no_training_credit",
       "manual_gradient_only": false,
       "name": "schema_v4_checkpoint_resume",
       "next_descriptor_matches": true,
@@ -367,15 +376,26 @@
     },
     {
       "called_deployment_loader": true,
-      "implementation_receipt_sha256": "880604e26729b8e3d806255ac2662573b3fe713b5f1e392095a1688e42744061",
       "name": "deployment_loader",
       "reopened_stock_checkpoint": false,
       "status": "PASS",
       "undeclared_host_asset_opened": false
     },
     {
+      "calls_are_distinct": true,
+      "canonical_settings_has_no_context_override": true,
+      "forced_multi_tile_call_id": "verifier_forced_multi_tile",
+      "forced_multi_tile_count": 0,
+      "global_bias_application_count": 0,
+      "max_abs_diff_without_context_override": null,
+      "name": "single_vs_forced_multi_tile_full_volume",
+      "observed_error": "RuntimeError:Sizes of tensors must match except in dimension 1. Expected size 2 but got size 1 for tensor number 1 in the list.",
+      "patch_size_equals_input": false,
+      "single_tile_call_id": "verifier_single_tile",
+      "status": "FAIL"
+    },
+    {
       "called_evaluator": true,
-      "implementation_receipt_sha256": "9dbef335322322e815104cd5a08df7a26e02cebdad18624dbaea33ed60a72c04",
       "metrics": [
         "blood_pool_adjacent_fp",
         "casewise_help_harm",
@@ -394,26 +414,14 @@
         "volume_ratio"
       ],
       "name": "evaluator_interface",
+      "result_sha256": "c98bd7686901ce645eb1686a88bc7179fc00077ed797908cdc766abf0f1ecc7d",
       "same_case_population": true,
       "same_tta_decode_metric_population": true,
       "status": "PASS"
     },
     {
-      "calls_are_distinct": true,
-      "forced_multi_tile_call_id": "forced_multi_tile_real_case",
-      "forced_multi_tile_count": 2,
-      "global_bias_application_count": 1,
-      "implementation_receipt_sha256": "dfceb6e4abda8c2f4b5945bfd021c8f5d0494f40f67083b47b0216e4ba276a67",
-      "max_abs_diff": 4.76837158203125e-07,
-      "name": "single_vs_forced_multi_tile_full_volume",
-      "patch_size_equals_input": false,
-      "single_tile_call_id": "single_tile_real_case",
-      "status": "PASS"
-    },
-    {
       "attribute_error_ignored": false,
       "compatible_argmax_changed_voxels": 0,
-      "implementation_receipt_sha256": "c0a61cf13c4e2e8915546feae088ed31f4925e18a917bc321e8e39394c5bb7e2",
       "imported_step0_parity_report": true,
       "name": "step0_parity_report_regression",
       "no_t2_class4_in_competition": false,
@@ -421,6 +429,15 @@
       "no_t2_stock_max_abs_err": 0.0,
       "status": "PASS",
       "t2_present_stock_max_abs_err": 0.0
+    },
+    {
+      "full_neighbor_extent_bias_abs_sum": 77.95539855957031,
+      "full_neighbor_extent_head_grad_abs_sum": 0.07959210872650146,
+      "name": "partial_hw_extent_zero_contribution",
+      "partial_hw_extent_bias_abs_sum": 77.95539855957031,
+      "partial_hw_extent_head_grad_abs_sum": 0.07959210872650146,
+      "partial_hw_loss_contribution": 0.19943124055862427,
+      "status": "FAIL"
     }
   ],
   "request_nonce": "care-ase-20260806T090955Z",
@@ -433,9 +450,11 @@
     "deployment_loader",
     "evaluator_interface",
     "single_vs_forced_multi_tile_full_volume",
-    "step0_parity_report_regression"
+    "step0_parity_report_regression",
+    "partial_hw_extent_zero_contribution"
   ],
   "review_round": 1,
+  "runtime_conclusion_source": "verifier_owned_independent_execution",
   "runtime_receipt_bindings": {
     "architecture_signature": {
       "declared_path": "results/agent_flow_v3/care-ase-faithful/implementation/architecture_signature.json",
@@ -523,7 +542,7 @@
     "missing_files": [],
     "source_manifest_sha256": "8f7ee7bde0ef6360578959d08a0e80bc64ee3745c169d4754433ef2b733bad4f"
   },
-  "status": "PASS",
+  "status": "FAIL_CLOSED",
   "task_id": "care-ase-faithful",
   "transaction_gate": {
     "expected_review_round": 1,
@@ -531,11 +550,11 @@
     "implementation_fingerprint_sha256": "3eabfb0be9eda776da6dd6fe3068004894ea7a5b4c30966941fc05bdc412e0dc",
     "integration_sha": "edb4f2e290c72e92e1bcbd74295c525fef924f11",
     "integration_sha_is_ancestor_of_observed_git_head": true,
-    "observed_git_head": "302b42f6ed0ddd69ab0b932295a267e3f403bd63",
+    "observed_git_head": "460576651481b91e2b255ab484ead49dd945c444",
     "planner_review_commit": "38dbbb0e32556e5f12127699c67ff31d45e5e934",
     "review_round": 1,
-    "verifier_fingerprint_sha256": "9fbed451e765fd4b44e759cecee4458b5100eccac59da79bbd9e4c87ebc54243"
+    "verifier_fingerprint_sha256": "847263d0afd1f34e81c49a981ea33dae5c12f53114c543d50830d077d9a7e167"
   },
-  "verifier_fingerprint_sha256": "9fbed451e765fd4b44e759cecee4458b5100eccac59da79bbd9e4c87ebc54243",
+  "verifier_fingerprint_sha256": "847263d0afd1f34e81c49a981ea33dae5c12f53114c543d50830d077d9a7e167",
   "zero_credit": true
 }

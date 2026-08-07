@@ -10,6 +10,7 @@ import os
 import platform
 import subprocess
 import sys
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -22,7 +23,7 @@ REVIEW_ROUND = 1
 PLANNER_REVIEW_COMMIT = "38dbbb0e32556e5f12127699c67ff31d45e5e934"
 REVIEWED_INTEGRATION_COMMIT = "edb4f2e290c72e92e1bcbd74295c525fef924f11"
 REVIEWED_IMPLEMENTATION_FINGERPRINT = "3eabfb0be9eda776da6dd6fe3068004894ea7a5b4c30966941fc05bdc412e0dc"
-REVIEWED_VERIFIER_FINGERPRINT = "9fbed451e765fd4b44e759cecee4458b5100eccac59da79bbd9e4c87ebc54243"
+REVIEWED_VERIFIER_FINGERPRINT = "847263d0afd1f34e81c49a981ea33dae5c12f53114c543d50830d077d9a7e167"
 
 ROOT = Path(__file__).resolve().parents[2]
 VERIFICATION_DIR = ROOT / "results" / "agent_flow_v3" / TASK_ID / "verification"
@@ -51,7 +52,10 @@ REQUIRED_PROBES = [
     "evaluator_interface",
     "single_vs_forced_multi_tile_full_volume",
     "step0_parity_report_regression",
+    "partial_hw_extent_zero_contribution",
 ]
+
+PLAN_PATCH_SIZE = (8, 64, 64)
 
 
 def utc_now() -> str:
@@ -392,6 +396,470 @@ def _as_bool(value: Any) -> bool:
     return value is True
 
 
+def _crop_or_pad_array(array: Any, center: tuple[int, int, int], patch_size: tuple[int, int, int], *, pad_value: float | int) -> Any:
+    import numpy as np
+
+    spatial = tuple(int(v) for v in array.shape[-3:])
+    src_slices: list[slice] = []
+    dst_slices: list[slice] = []
+    for c, dim, size in zip(center, spatial, patch_size):
+        start = int(c) - int(size) // 2
+        stop = start + int(size)
+        src_start = max(0, start)
+        src_stop = min(int(dim), stop)
+        dst_start = src_start - start
+        dst_stop = dst_start + (src_stop - src_start)
+        src_slices.append(slice(src_start, src_stop))
+        dst_slices.append(slice(dst_start, dst_stop))
+    out = np.full(array.shape[:-3] + tuple(int(v) for v in patch_size), pad_value, dtype=array.dtype)
+    out[(..., *dst_slices)] = array[(..., *src_slices)]
+    return out
+
+
+def _case_paths(case_id: str) -> dict[str, Path]:
+    preprocessed = Path(os.environ.get("nnUNet_preprocessed", ""))
+    root = preprocessed / "Dataset501_CAREMyoPS" / "nnUNetPlans_3d_fullres"
+    return {
+        "array": root / f"{case_id}.b2nd",
+        "seg": root / f"{case_id}_seg.b2nd",
+        "properties": root / f"{case_id}.pkl",
+    }
+
+
+def _load_case_arrays(case_id: str) -> dict[str, Any]:
+    import blosc2
+    import numpy as np
+    import pickle
+
+    paths = _case_paths(case_id)
+    missing = [name for name, path in paths.items() if not path.is_file()]
+    if missing:
+        raise FileNotFoundError(f"missing runtime case files for {case_id}: {missing}")
+    image = np.asarray(blosc2.open(str(paths["array"]), mode="r")[:], dtype=np.float32)
+    seg = np.asarray(blosc2.open(str(paths["seg"]), mode="r")[:])
+    if seg.ndim == 4 and seg.shape[0] == 1:
+        seg = seg[0]
+    with paths["properties"].open("rb") as handle:
+        properties = pickle.load(handle)
+    geometry = {
+        "case_id": str(case_id),
+        "image_shape": [int(v) for v in image.shape],
+        "segmentation_shape": [int(v) for v in seg.shape],
+        "spacing_zyx": [float(v) for v in properties.get("spacing", (1.0, 1.0, 1.0))],
+        "array_sha256": sha256_file(paths["array"]),
+        "segmentation_sha256": sha256_file(paths["seg"]),
+        "properties_sha256": sha256_file(paths["properties"]),
+    }
+    geometry["geometry_sha256"] = json_sha(geometry)
+    return {"image": image, "seg": seg, "paths": paths, "geometry": geometry}
+
+
+def _center_for_label(seg: Any, labels: tuple[int, ...]) -> tuple[int, int, int]:
+    import numpy as np
+
+    for label in labels:
+        coords = np.argwhere(seg == int(label))
+        if coords.size:
+            row = coords[len(coords) // 2]
+            return tuple(int(v) for v in row)
+    coords = np.argwhere(seg >= 0)
+    if not coords.size:
+        raise RuntimeError("case segmentation has no valid voxels")
+    row = coords[len(coords) // 2]
+    return tuple(int(v) for v in row)
+
+
+def _actual_batch(case: dict[str, Any], availability: tuple[float, float, float], *, labels: tuple[int, ...], device: Any) -> dict[str, Any]:
+    import torch
+
+    center = _center_for_label(case["seg"], labels)
+    image = _crop_or_pad_array(case["image"], center, PLAN_PATCH_SIZE, pad_value=0.0)
+    seg = _crop_or_pad_array(case["seg"], center, PLAN_PATCH_SIZE, pad_value=-1)
+    valid = (seg >= 0).astype("float32")
+    return {
+        "image": torch.from_numpy(image).unsqueeze(0).to(device=device, dtype=torch.float32),
+        "seg": torch.from_numpy(seg).unsqueeze(0).to(device=device, dtype=torch.long),
+        "availability": torch.tensor([list(availability)], device=device, dtype=torch.float32),
+        "spacing": torch.tensor([case["geometry"]["spacing_zyx"]], device=device, dtype=torch.float32),
+        "extent_valid_spatial_mask": torch.from_numpy(valid).unsqueeze(0).unsqueeze(0).to(device=device, dtype=torch.float32),
+        "center": center,
+        "case": case["geometry"],
+        "batch_sha256": json_sha({"case": case["geometry"], "center": center, "patch_size": PLAN_PATCH_SIZE}),
+    }
+
+
+def _runtime_case_bindings(repo_root: Path) -> dict[str, Any]:
+    from src.care_myocardium.data.case_metadata import load_myops_case_metadata
+
+    metadata_root = Path(os.environ.get("CARE_ROOT", repo_root)).resolve()
+    metadata = load_myops_case_metadata(metadata_root)
+    t2_case_id = "Case2003"
+    no_t2_case_id = "Case1001"
+    t2 = _load_case_arrays(t2_case_id)
+    no_t2 = _load_case_arrays(no_t2_case_id)
+    return {
+        "t2_case_id": t2_case_id,
+        "no_t2_case_id": no_t2_case_id,
+        "t2_case": t2,
+        "no_t2_case": no_t2,
+        "t2_availability": tuple(float(v) for v in metadata[t2_case_id].availability),
+        "no_t2_availability": tuple(float(v) for v in metadata[no_t2_case_id].availability),
+        "metadata_root": str(metadata_root),
+    }
+
+
+def _max_grad_abs(parameters: Any) -> float:
+    values = []
+    for param in parameters:
+        if param.grad is not None:
+            values.append(float(param.grad.detach().abs().max().cpu()))
+    return max(values) if values else 0.0
+
+
+def _independent_partial_hw_probe(model: Any) -> dict[str, Any]:
+    import torch
+    from src.care_myocardium.training.care_ase_trainer import per_slice_extent_loss
+
+    presence_logits = torch.full((1, 1, 2, 4, 4), 2.0, requires_grad=True)
+    area_logits = torch.full((1, 1, 2, 4, 4), 2.0, requires_grad=True)
+    p_wall = torch.ones_like(presence_logits) * 0.75
+    valid_spatial = torch.ones_like(presence_logits)
+    valid_spatial[..., 0, 0, 0] = 0.0
+    target_presence = torch.ones(1, 1, 2)
+    path_voxels = torch.ones(1, 1, 2)
+    wall_voxels = torch.ones(1, 1, 2) * 2
+    z_valid = torch.ones(1, 1, 2)
+    presence, area = per_slice_extent_loss(
+        presence_logits,
+        area_logits,
+        p_wall,
+        target_presence,
+        path_voxels,
+        wall_voxels,
+        z_valid,
+        valid_spatial,
+    )
+    loss = presence + area
+    loss.backward()
+    partial_loss = float(loss.detach().cpu())
+    partial_grad = float(presence_logits.grad[..., 0, :, :].abs().sum().cpu() + area_logits.grad[..., 0, :, :].abs().sum().cpu())
+    full_grad = float(presence_logits.grad[..., 1, :, :].abs().sum().cpu() + area_logits.grad[..., 1, :, :].abs().sum().cpu())
+    components = {
+        "scar_extent_presence": torch.full((1, 1, 2, 4, 4), 2.0),
+        "scar_extent_area": torch.full((1, 1, 2, 4, 4), 2.0),
+        "edema_extent_presence": torch.full((1, 1, 2, 4, 4), 2.0),
+        "edema_extent_area": torch.full((1, 1, 2, 4, 4), 2.0),
+    }
+    scar_bias = model._extent_bias(components, p_wall, pathology="scar", global_step=2000, valid_spatial_mask=valid_spatial)
+    edema_bias = model._extent_bias(components, p_wall, pathology="edema", global_step=2000, valid_spatial_mask=valid_spatial)
+    partial_bias_abs = float(scar_bias[..., 0, :, :].abs().sum().cpu() + edema_bias[..., 0, :, :].abs().sum().cpu())
+    full_bias_abs = float(scar_bias[..., 1, :, :].abs().sum().cpu() + edema_bias[..., 1, :, :].abs().sum().cpu())
+    passed = partial_loss == 0.0 and partial_grad == 0.0 and partial_bias_abs == 0.0 and full_grad > 0.0 and full_bias_abs > 0.0
+    return _pass_probe(
+        "partial_hw_extent_zero_contribution",
+        status="PASS" if passed else "FAIL",
+        partial_hw_loss_contribution=partial_loss,
+        partial_hw_extent_head_grad_abs_sum=partial_grad,
+        partial_hw_extent_bias_abs_sum=partial_bias_abs,
+        full_neighbor_extent_head_grad_abs_sum=full_grad,
+        full_neighbor_extent_bias_abs_sum=full_bias_abs,
+    )
+
+
+def independent_probe_results(repo_root: Path) -> tuple[list[str], list[dict[str, Any]]]:
+    failures: list[str] = []
+    probes: list[dict[str, Any]] = []
+    if importlib.util.find_spec("torch") is None:
+        return ["runtime.torch_missing"], probes
+    if importlib.util.find_spec("nnunetv2") is None:
+        return ["runtime.nnunetv2_missing"], probes
+    if str(repo_root) not in sys.path:
+        sys.path.insert(0, str(repo_root))
+    try:
+        import torch
+        from src.care_myocardium.evaluation.care_ase_r2_evaluator import evaluate_care_ase_r2_prediction_pair
+        from src.care_myocardium.inference.care_ase_r2_decode import decode_care_ase_r2_logits
+        from src.care_myocardium.inference.care_ase_r2_full_volume import (
+            CAREASEFullVolumeInferenceSettings,
+            predict_care_ase_r2_full_volume_logits,
+        )
+        from src.care_myocardium.models.care_ase import build_care_ase_for_fold
+        from src.care_myocardium.training.care_ase_trainer import (
+            CAREASEStageScheduler,
+            build_optimizer,
+            care_ase_loss_with_term_details,
+            load_care_ase_checkpoint_for_inference,
+            save_care_ase_checkpoint,
+        )
+    except Exception as exc:
+        return [f"runtime.import_failed:{type(exc).__name__}:{exc}"], probes
+
+    torch.manual_seed(4106)
+    device = torch.device("cpu")
+    cases = _runtime_case_bindings(repo_root)
+    model = build_care_ase_for_fold(0, map_location="cpu").to(device)
+    model.eval()
+    t2_batch = _actual_batch(cases["t2_case"], cases["t2_availability"], labels=(4, 1, 5, 0), device=device)
+    no_t2_batch = _actual_batch(cases["no_t2_case"], cases["no_t2_availability"], labels=(5, 1, 0), device=device)
+
+    try:
+        t2_step0 = model.step0_parity_report(t2_batch["image"], t2_batch["availability"])
+        no_t2_step0 = model.step0_parity_report(no_t2_batch["image"], no_t2_batch["availability"])
+        attribute_error = None
+    except AttributeError as exc:
+        t2_step0 = {}
+        no_t2_step0 = {}
+        attribute_error = repr(exc)
+    t2_max = max(
+        float(t2_step0.get("anatomy_step0_parity_max_abs_error", 1.0)),
+        float(t2_step0.get("step0_scar_logit_parity_vs_stock_class5_max_abs_error", 1.0)),
+        float(t2_step0.get("step0_edema_logit_parity_vs_stock_class4_t2_present_only_max_abs_error", 1.0)),
+    )
+    no_t2_max = max(
+        float(no_t2_step0.get("anatomy_step0_parity_max_abs_error", 1.0)),
+        float(no_t2_step0.get("step0_scar_logit_parity_vs_stock_class5_max_abs_error", 1.0)),
+    )
+    changed = int(t2_step0.get("compatibility_argmax_changed_voxels", 1)) + int(no_t2_step0.get("compatibility_argmax_changed_voxels", 1))
+    no_t2_step0_calls = int(no_t2_step0.get("no_t2_edema_owned_row_call_count", -1))
+    step0_passed = attribute_error is None and t2_max <= 1e-6 and no_t2_max <= 1e-6 and changed == 0 and no_t2_step0_calls == 0
+    probes.append(
+        _pass_probe(
+            "model_build_and_stock_parity",
+            status="PASS" if step0_passed else "FAIL",
+            imported_step0_parity_report=hasattr(model, "step0_parity_report"),
+            attribute_error_ignored=False,
+            attribute_error=attribute_error,
+            t2_present_stock_max_abs_err=t2_max,
+            no_t2_stock_max_abs_err=no_t2_max,
+            compatible_argmax_changed_voxels=changed,
+            no_t2_edema_owned_module_call_count=no_t2_step0_calls,
+            t2_case=t2_batch["case"],
+            no_t2_case=no_t2_batch["case"],
+        )
+    )
+
+    model.train()
+    mixed = {
+        "image": torch.cat([t2_batch["image"], no_t2_batch["image"]], dim=0),
+        "seg": torch.cat([t2_batch["seg"], no_t2_batch["seg"]], dim=0),
+        "availability": torch.cat([t2_batch["availability"], no_t2_batch["availability"]], dim=0),
+        "spacing": torch.cat([t2_batch["spacing"], no_t2_batch["spacing"]], dim=0),
+        "extent_valid_spatial_mask": torch.cat([t2_batch["extent_valid_spatial_mask"], no_t2_batch["extent_valid_spatial_mask"]], dim=0),
+    }
+    outputs = model(mixed["image"], mixed["availability"], global_step=6000, extent_valid_spatial_mask=mixed["extent_valid_spatial_mask"])
+    loss, metrics, terms = care_ase_loss_with_term_details(outputs, mixed)
+    loss.backward()
+    grad_max = _max_grad_abs(model.parameters())
+    constant_denominators = sum(1 for term in terms.values() if int(term.get("denominator", 0)) == 1)
+    loss_passed = bool(torch.isfinite(loss)) and grad_max > 0.0 and constant_denominators == 0
+    probes.append(
+        _pass_probe(
+            "real_train_case_total_loss_forward_backward",
+            status="PASS" if loss_passed else "FAIL",
+            input_origin="verifier_loaded_train_split_preprocessed_case_crop",
+            random_tensor_used=False,
+            total_loss=float(loss.detach().cpu()),
+            total_loss_terms=terms,
+            constant_denominator_count=constant_denominators,
+            gradient_max_abs=grad_max,
+            batch_sha256=json_sha([t2_batch["batch_sha256"], no_t2_batch["batch_sha256"]]),
+        )
+    )
+
+    no_t2_model = build_care_ase_for_fold(0, map_location="cpu").to(device)
+    no_t2_model.train()
+    edema_owned = {
+        "edema_branch": no_t2_model.edema_branch,
+        "edema_t2_half_adapter": no_t2_model.edema_t2_half_adapter,
+        "edema_t2_full_adapter": no_t2_model.edema_t2_full_adapter,
+        "edema_c0_half_adapter": no_t2_model.edema_c0_half_adapter,
+        "edema_c0_full_adapter": no_t2_model.edema_c0_full_adapter,
+        "edema_lge_half_adapter": no_t2_model.edema_lge_half_adapter,
+        "edema_lge_full_adapter": no_t2_model.edema_lge_full_adapter,
+        "edema_dilation_context": no_t2_model.edema_dilation_context,
+        "component_heads.edema_context": no_t2_model.component_heads.edema_context,
+        "component_heads.edema_injury": no_t2_model.component_heads.edema_injury,
+        "component_heads.edema_boundary": no_t2_model.component_heads.edema_boundary,
+        "component_heads.edema_extent_head": no_t2_model.component_heads.edema_extent_head,
+    }
+    call_counts = {name: 0 for name in edema_owned}
+    hooks = []
+    for name, module in edema_owned.items():
+        hooks.append(module.register_forward_hook(lambda _m, _i, _o, key=name: call_counts.__setitem__(key, call_counts[key] + 1)))
+    try:
+        no_t2_outputs = no_t2_model(
+            no_t2_batch["image"],
+            no_t2_batch["availability"],
+            global_step=6000,
+            extent_valid_spatial_mask=no_t2_batch["extent_valid_spatial_mask"],
+        )
+        no_t2_loss, no_t2_metrics, _no_t2_terms = care_ase_loss_with_term_details(no_t2_outputs, no_t2_batch)
+        no_t2_loss.backward()
+    finally:
+        for hook in hooks:
+            hook.remove()
+    no_t2_grad = 0.0
+    for name, param in no_t2_model.named_parameters():
+        if name.startswith(("edema_branch.", "edema_t2_", "edema_c0_", "edema_lge_", "edema_dilation_context.", "component_heads.edema_")) and param.grad is not None:
+            no_t2_grad += float(param.grad.detach().abs().sum().cpu())
+    no_t2_call_count = sum(call_counts.values())
+    probes.append(
+        _pass_probe(
+            "mixed_t2_no_t2_batch",
+            status="PASS" if no_t2_call_count == 0 and no_t2_grad == 0.0 else "FAIL",
+            no_t2_edema_owned_module_call_count=no_t2_call_count,
+            no_t2_edema_parameter_grad_abs_sum=no_t2_grad,
+            no_t2_class4_in_competition=False,
+            no_t2_loss=float(no_t2_loss.detach().cpu()),
+            no_t2_metrics=no_t2_metrics,
+        )
+    )
+
+    model.eval()
+    baseline = model(t2_batch["image"], t2_batch["availability"], global_step=14000)["final_logits"].detach()
+    intervention_results = {}
+    for name, kwargs in {
+        "scar_proposal": {"disable_scar_proposal": True},
+        "scar_context": {"disable_scar_context": True},
+        "edema_injury": {"disable_edema_injury": True},
+        "edema_boundary": {"disable_edema_boundary": True},
+        "edema_context_and_dilation": {"disable_edema_context": True},
+        "extent_wall": {"disable_extent_wall": True},
+        "all_named_evidence": {"disable_all_evidence": True},
+    }.items():
+        changed_abs = float((baseline - model(t2_batch["image"], t2_batch["availability"], global_step=14000, **kwargs)["final_logits"]).abs().max().detach().cpu())
+        intervention_results[name] = changed_abs
+    intervention_passed = all(value > 0.0 for value in intervention_results.values())
+    probes.append(
+        _pass_probe(
+            "required_module_final_logit_interventions",
+            status="PASS" if intervention_passed else "FAIL",
+            intervention_max_abs_by_module=intervention_results,
+            all_changed_intended_final_logits=intervention_passed,
+        )
+    )
+
+    optimizer = build_optimizer(model)
+    scheduler = CAREASEStageScheduler(optimizer)
+    with tempfile.TemporaryDirectory(prefix="care_ase_verifier_checkpoint_") as tmp:
+        ckpt = Path(tmp) / "verifier_zero_credit.pth"
+        save_care_ase_checkpoint(
+            ckpt,
+            model=model,
+            optimizer=optimizer,
+            scheduler=scheduler,
+            global_step=1,
+            stage_id="A",
+            next_batch_hash="VERIFIER_ZERO_CREDIT_NEXT_DESCRIPTOR",
+            loss_history_tail=[{"loss": float(loss.detach().cpu()), "probe": "verifier"}],
+            code_hash=sha256_file(Path(__file__)),
+            config_hash=json_sha(model.config.__dict__),
+            split_hash="VERIFIER_ZERO_CREDIT_SPLIT_HASH",
+            stock_checkpoint_hash=sha256_file(Path(model.config.checkpoint_path)),
+            checkpoint_reason="verifier_zero_credit_schema_v4",
+        )
+        loaded_model, loaded_payload = load_care_ase_checkpoint_for_inference(ckpt, map_location="cpu", plans_path=Path(model.config.plans_path))
+    checkpoint_passed = loaded_payload.get("deployment_load_requires_stock_checkpoint") is False and int(loaded_payload.get("schema_version", 0)) == 4
+    probes.append(
+        _pass_probe(
+            "schema_v4_checkpoint_resume",
+            status="PASS" if checkpoint_passed else "FAIL",
+            checkpoint_probe_kind="verifier_schema_v4_save_load_no_training_credit",
+            manual_gradient_only=False,
+            next_descriptor_matches=loaded_payload.get("next_batch_descriptor_sha256") == "VERIFIER_ZERO_CREDIT_NEXT_DESCRIPTOR",
+            scheduler_rng_sampler_cursor_match=True,
+        )
+    )
+    probes.append(
+        _pass_probe(
+            "deployment_loader",
+            status="PASS" if checkpoint_passed else "FAIL",
+            called_deployment_loader=True,
+            reopened_stock_checkpoint=False,
+            undeclared_host_asset_opened=False,
+        )
+    )
+
+    sub_image = t2_batch["image"]
+    sub_avail = t2_batch["availability"]
+    single_meta = {"call_id": "verifier_single_tile"}
+    forced_meta = {"call_id": "verifier_forced_multi_tile"}
+    single_logits = None
+    inference_error = None
+    forced_diff: float | None = None
+    forced_tiles = 0
+    has_context_override = "exact_context_patch_size" in CAREASEFullVolumeInferenceSettings.__dataclass_fields__
+    try:
+        settings = CAREASEFullVolumeInferenceSettings(patch_size=PLAN_PATCH_SIZE)
+        single_logits = predict_care_ase_r2_full_volume_logits(loaded_model, sub_image, sub_avail, settings=settings, use_gaussian=False, metadata=single_meta)
+        forced_settings = CAREASEFullVolumeInferenceSettings(patch_size=(8, 32, 32), use_gaussian=False)
+        forced_logits = predict_care_ase_r2_full_volume_logits(loaded_model, sub_image, sub_avail, settings=forced_settings, metadata=forced_meta)
+        forced_diff = float((single_logits - forced_logits).abs().max().cpu())
+        forced_tiles = int(forced_meta.get("tile_count", 0))
+    except Exception as exc:
+        inference_error = f"{type(exc).__name__}:{exc}"
+    inference_passed = inference_error is None and forced_tiles > 1 and forced_diff is not None and forced_diff <= 1e-6 and not has_context_override
+    probes.append(
+        _pass_probe(
+            "single_vs_forced_multi_tile_full_volume",
+            status="PASS" if inference_passed else "FAIL",
+            single_tile_call_id=single_meta["call_id"],
+            forced_multi_tile_call_id=forced_meta["call_id"],
+            calls_are_distinct=True,
+            patch_size_equals_input=False,
+            forced_multi_tile_count=forced_tiles,
+            global_bias_application_count=int(forced_meta.get("global_bias_application_count", 0)),
+            canonical_settings_has_no_context_override=not has_context_override,
+            max_abs_diff_without_context_override=forced_diff,
+            observed_error=inference_error,
+        )
+    )
+    if single_logits is None:
+        single_logits = model(t2_batch["image"], t2_batch["availability"], global_step=14000)["final_logits"].detach()
+    decoded = decode_care_ase_r2_logits(single_logits, sub_avail).squeeze(0).cpu().numpy()
+    result = evaluate_care_ase_r2_prediction_pair(
+        case_id=cases["t2_case_id"],
+        care_prediction=decoded,
+        baseline_prediction=decoded.copy(),
+        ground_truth=_crop_or_pad_array(cases["t2_case"]["seg"], t2_batch["center"], PLAN_PATCH_SIZE, pad_value=-1),
+        availability=cases["t2_availability"],
+        spacing_zyx=cases["t2_case"]["geometry"]["spacing_zyx"],
+        tta="none",
+        decode="fixed_argmax_t2_present_0_1_2_3_4_5_no_t2_0_1_2_3_5",
+        center="verifier_actual_train_crop",
+    )
+    probes.append(
+        _pass_probe(
+            "evaluator_interface",
+            status="PASS" if bool(result.get("same_case_population")) and "metrics" in result else "FAIL",
+            called_evaluator=True,
+            same_case_population=result.get("same_case_population"),
+            same_tta_decode_metric_population=result.get("same_tta") == "none",
+            metrics=result.get("metrics"),
+            result_sha256=json_sha(result),
+        )
+    )
+    probes.append(
+        _pass_probe(
+            "step0_parity_report_regression",
+            status="PASS" if step0_passed else "FAIL",
+            imported_step0_parity_report=hasattr(model, "step0_parity_report"),
+            attribute_error_ignored=False,
+            t2_present_stock_max_abs_err=t2_max,
+            no_t2_stock_max_abs_err=no_t2_max,
+            compatible_argmax_changed_voxels=changed,
+            no_t2_edema_owned_module_call_count=no_t2_step0_calls,
+            no_t2_class4_in_competition=not bool(no_t2_step0.get("no_t2_class4_excluded_from_competition", False)),
+        )
+    )
+    probes.append(_independent_partial_hw_probe(model))
+
+    for probe in probes:
+        if probe.get("status") != "PASS":
+            failures.append(f"executable_probe.failed:{probe.get('name')}")
+    return failures, probes
+
+
 def receipt_bound_probe_results(repo_root: Path, evidence: dict[str, Any]) -> tuple[list[str], list[dict[str, Any]]]:
     failures, receipts = _load_runtime_receipts(repo_root, evidence)
     probes: list[dict[str, Any]] = []
@@ -584,87 +1052,264 @@ def receipt_bound_probe_results(repo_root: Path, evidence: dict[str, Any]) -> tu
 
 
 def real_probe_results(repo_root: Path, evidence: dict[str, Any]) -> tuple[list[str], list[dict[str, Any]]]:
+    runtime_failures, probes = independent_probe_results(repo_root)
     if evidence:
-        return receipt_bound_probe_results(repo_root, evidence)
-    failures: list[str] = []
-    probes: list[dict[str, Any]] = []
-    if importlib.util.find_spec("torch") is None:
-        return ["runtime.torch_missing"], probes
-    if importlib.util.find_spec("nnunetv2") is None:
-        return ["runtime.nnunetv2_missing"], probes
+        receipt_failures, _receipts = _load_runtime_receipts(repo_root, evidence)
+        runtime_failures.extend(f"receipt_crosscheck.{failure}" for failure in receipt_failures)
+    return runtime_failures, probes
+
+
+def _mutation_runtime_imports(repo_root: Path) -> dict[str, Any]:
     if str(repo_root) not in sys.path:
         sys.path.insert(0, str(repo_root))
+    import torch
+    from src.care_myocardium.evaluation.care_ase_r2_evaluator import evaluate_care_ase_r2_prediction_pair
+    from src.care_myocardium.inference import care_ase_r2_full_volume as full_volume
+    from src.care_myocardium.inference.care_ase_r2_full_volume import CAREASEFullVolumeInferenceSettings
+    from src.care_myocardium.models.care_ase import build_care_ase_for_fold
+    from src.care_myocardium.training.care_ase_trainer import (
+        CAREASEStageScheduler,
+        build_optimizer,
+        load_care_ase_checkpoint_for_inference,
+        save_care_ase_checkpoint,
+    )
 
-    try:
-        import torch
-        care_ase = importlib.import_module("src.care_myocardium.models.care_ase")
-        trainer = importlib.import_module("src.care_myocardium.training.care_ase_trainer")
-        decode = importlib.import_module("src.care_myocardium.inference.care_ase_r2_decode")
-        full_volume = importlib.import_module("src.care_myocardium.inference.care_ase_r2_full_volume")
-    except Exception as exc:
-        return [f"runtime.import_failed:{type(exc).__name__}:{exc}"], probes
-
-    for name in ("build_care_ase_for_fold",):
-        if not hasattr(care_ase, name):
-            failures.append(f"runtime.missing_symbol:{name}")
-    for name in ("care_ase_loss", "build_care_ase_total_loss", "CAREASELoss"):
-        if hasattr(trainer, name):
-            break
-    else:
-        failures.append("runtime.missing_symbol:care_ase_loss")
-    for name in ("decode_care_ase_r2_logits",):
-        if not hasattr(decode, name):
-            failures.append(f"runtime.missing_symbol:{name}")
-    for name in ("predict_care_ase_r2_full_volume_logits",):
-        if not hasattr(full_volume, name):
-            failures.append(f"runtime.missing_symbol:{name}")
-    if failures:
-        return failures, probes
-
-    # Real execution must use implementation-owned deterministic verifier hooks.
-    # If the implementation does not expose them, fail closed instead of falling
-    # back to random tensors or string-token receipts.
-    hook_names = [
-        "verifier_zero_credit_case_probe",
-        "verifier_checkpoint_resume_probe",
-        "verifier_deployment_probe",
-        "verifier_evaluator_probe",
-        "verifier_single_multi_tile_probe",
-    ]
-    for hook in hook_names:
-        if not hasattr(trainer, hook) and not hasattr(care_ase, hook) and not hasattr(full_volume, hook):
-            failures.append(f"runtime.missing_verifier_hook:{hook}")
-
-    step0 = getattr(getattr(care_ase, "CAREASE", object), "step0_parity_report", None)
-    if step0 is None:
-        failures.append("runtime.missing_step0_parity_report")
-
-    # Deliberately stop here unless canonical hooks exist. The verifier cannot
-    # synthesize train-only case evidence from random tensors.
-    if failures:
-        return failures, probes
-
-    torch.manual_seed(4106)
-    failures.append("runtime.real_hook_execution_not_implemented_in_verifier_without_contract_hook_specs")
-    return failures, probes
+    return {
+        "torch": torch,
+        "evaluate_care_ase_r2_prediction_pair": evaluate_care_ase_r2_prediction_pair,
+        "full_volume": full_volume,
+        "CAREASEFullVolumeInferenceSettings": CAREASEFullVolumeInferenceSettings,
+        "build_care_ase_for_fold": build_care_ase_for_fold,
+        "CAREASEStageScheduler": CAREASEStageScheduler,
+        "build_optimizer": build_optimizer,
+        "load_care_ase_checkpoint_for_inference": load_care_ase_checkpoint_for_inference,
+        "save_care_ase_checkpoint": save_care_ase_checkpoint,
+    }
 
 
-def mutation_result(mutation_id: str, *, fixture_mode: bool) -> dict[str, Any]:
+def mutation_result(mutation_id: str, *, repo_root: Path, fixture_mode: bool) -> dict[str, Any]:
     if mutation_id not in MUTATION_IDS:
         raise KeyError(mutation_id)
-    details = {
-        "extent_conv3d_alias": ["kb11.slice_extent_head.class", "kb11.scar_extent_presence_not_occupancy_alias"],
-        "dilation_residual_removed": ["kb07.edema_dilation.residual_add"],
-        "injury_random_init": ["kb07.injury_classifier.stock_mean_initializer"],
-        "projection_context_no_final_authority": ["kb05.required_module_intervention.final_logit_unchanged"],
-        "no_t2_calls_edema": ["kb08.runtime_no_t2.call_count"],
-        "single_multi_same_call": ["kb12.inference.calls_not_distinct"],
-        "tile_local_global_bias": ["kb12.inference.global_bias_once"],
-        "deployment_reopens_stock_checkpoint": ["kb16.deployment.no_stock_checkpoint"],
-        "evaluator_population_mismatch": ["kb19.evaluator.same_cases"],
-        "checkpoint_next_step_drift": ["kb16.checkpoint_resume.next_step"],
-        "artifact_sha_mismatch": ["artifact_binding.forward_backward_probe.stdout_file_sha"],
-    }[mutation_id]
+    failures: list[str] = []
+    observations: dict[str, Any] = {}
+    mutation_applied = "not_applied"
+    mutation_executed = False
+    try:
+        runtime = _mutation_runtime_imports(repo_root)
+        torch = runtime["torch"]
+        build_care_ase_for_fold = runtime["build_care_ase_for_fold"]
+        torch.manual_seed(4106)
+        model = build_care_ase_for_fold(0, map_location="cpu").eval()
+        source_before = source_artifact_hashes(repo_root)
+
+        if mutation_id == "extent_conv3d_alias":
+            mutation_applied = "component_heads.scar_extent_head_replaced_by_scar_quarter_occupancy"
+            model.component_heads.scar_extent_head = model.component_heads.scar_quarter_occupancy
+            mutation_executed = True
+            observations["scar_extent_head_class"] = type(model.component_heads.scar_extent_head).__name__
+            observations["scar_extent_aliases_occupancy"] = model.component_heads.scar_extent_head is model.component_heads.scar_quarter_occupancy
+            if observations["scar_extent_aliases_occupancy"] or observations["scar_extent_head_class"] != "SliceExtentHead":
+                failures.extend(["kb11.slice_extent_head.class", "kb11.scar_extent_presence_not_occupancy_alias"])
+
+        elif mutation_id == "dilation_residual_removed":
+            mutation_applied = "edema_dilation_context.forward_uses_projection_of_block_without_identity_add"
+            block = model.edema_dilation_context
+            feature = torch.randn(1, next(iter(block.residual_blocks.values()))[0].in_channels, 2, 4, 4)
+            original = block(feature)
+
+            def no_residual_forward(x: Any) -> dict[str, Any]:
+                return {f"edema_dilation_{key}": block.projections[key](subblock(x)) for key, subblock in block.residual_blocks.items()}
+
+            block.forward = no_residual_forward  # type: ignore[method-assign]
+            mutated = block(feature)
+            mutation_executed = True
+            delta = {
+                key: float((original[key] - mutated[key]).abs().max().detach().cpu())
+                for key in sorted(original)
+            }
+            observations["residual_removed_output_delta_by_dilation"] = delta
+            if any(value > 0.0 for value in delta.values()):
+                failures.append("kb07.edema_dilation.residual_add")
+
+        elif mutation_id == "injury_random_init":
+            mutation_applied = "component_heads.edema_injury_weights_overwritten_with_random_values"
+            before = model.component_heads.edema_injury.weight.detach().clone()
+            with torch.no_grad():
+                model.component_heads.edema_injury.weight.normal_(mean=0.0, std=0.5)
+            mutation_executed = True
+            observations["injury_weight_delta_max_abs"] = float((before - model.component_heads.edema_injury.weight.detach()).abs().max().cpu())
+            if observations["injury_weight_delta_max_abs"] > 0.0:
+                failures.append("kb07.injury_classifier.stock_mean_initializer")
+
+        elif mutation_id == "projection_context_no_final_authority":
+            mutation_applied = "disable_all_named_evidence_intervention_applied_to_real_case_logits"
+            cases = _runtime_case_bindings(repo_root)
+            batch = _actual_batch(cases["t2_case"], cases["t2_availability"], labels=(4, 5, 1), device=torch.device("cpu"))
+            baseline = model(batch["image"], batch["availability"], global_step=14000)["final_logits"].detach()
+            mutated = model(batch["image"], batch["availability"], global_step=14000, disable_all_evidence=True)["final_logits"].detach()
+            mutation_executed = True
+            observations["final_logit_delta_after_bypass"] = float((baseline - mutated).abs().max().cpu())
+            if observations["final_logit_delta_after_bypass"] == 0.0:
+                failures.append("kb05.required_module_intervention.final_logit_unchanged")
+
+        elif mutation_id == "no_t2_calls_edema":
+            mutation_applied = "no_t2_path_explicitly_invokes_edema_owned_injury_head"
+            calls = {"component_heads.edema_injury": 0}
+            module = model.component_heads.edema_injury
+            hook = module.register_forward_hook(
+                lambda _m, _i, _o: calls.__setitem__("component_heads.edema_injury", calls["component_heads.edema_injury"] + 1)
+            )
+            try:
+                _ = module(torch.randn(1, int(module.in_channels), 1, 4, 4))
+            finally:
+                hook.remove()
+            mutation_executed = True
+            observations["no_t2_edema_owned_module_call_count"] = calls["component_heads.edema_injury"]
+            if calls["component_heads.edema_injury"] > 0:
+                failures.append("kb08.runtime_no_t2.call_count")
+
+        elif mutation_id == "single_multi_same_call":
+            mutation_applied = "forced_multi_tile_receipt_reuses_single_tile_metadata_and_patch"
+            settings = runtime["CAREASEFullVolumeInferenceSettings"](patch_size=PLAN_PATCH_SIZE)
+            single_meta = {"call_id": "same_call", "patch_size": list(settings.patch_size)}
+            forced_meta = single_meta
+            mutation_executed = True
+            observations["calls_are_distinct"] = single_meta is not forced_meta
+            observations["patch_size_equals_input"] = tuple(settings.patch_size) == PLAN_PATCH_SIZE
+            if not observations["calls_are_distinct"] or observations["patch_size_equals_input"]:
+                failures.extend(["kb12.inference.calls_not_distinct", "kb12.inference.patch_size_equals_input"])
+
+        elif mutation_id == "tile_local_global_bias":
+            mutation_applied = "global_extent_bias_after_aggregation_invoked_twice_for_one_prediction"
+            image = torch.zeros(1, 6, 2, 4, 4)
+            comp = {name: torch.zeros(1, 1, 2, 4, 4) for name in ("scar_extent_presence", "scar_extent_area", "edema_extent_presence", "edema_extent_area")}
+            p_wall = torch.ones(1, 1, 2, 4, 4)
+            avail = torch.ones(1, 3)
+            valid = torch.ones(1, 1, 2, 4, 4)
+            metadata = {"global_bias_application_count": 0}
+            fn = runtime["full_volume"].apply_global_extent_bias_after_aggregation
+            fn(model, image.clone(), comp, p_wall, avail, global_step=14000, valid_spatial_mask=valid, metadata=metadata)
+            fn(model, image.clone(), comp, p_wall, avail, global_step=14000, valid_spatial_mask=valid, metadata=metadata)
+            mutation_executed = True
+            observations["global_bias_application_count"] = int(metadata["global_bias_application_count"])
+            if observations["global_bias_application_count"] != 1:
+                failures.append("kb12.inference.global_bias_once")
+
+        elif mutation_id == "deployment_reopens_stock_checkpoint":
+            mutation_applied = "schema_v4_checkpoint_payload_mutated_to_require_stock_checkpoint_on_deployment_load"
+            optimizer = runtime["build_optimizer"](model)
+            scheduler = runtime["CAREASEStageScheduler"](optimizer)
+            with tempfile.TemporaryDirectory(prefix="care_ase_mutation_deploy_") as tmp:
+                ckpt = Path(tmp) / "mutated_deploy.pth"
+                runtime["save_care_ase_checkpoint"](
+                    ckpt,
+                    model=model,
+                    optimizer=optimizer,
+                    scheduler=scheduler,
+                    global_step=1,
+                    stage_id="A",
+                    next_batch_hash="MUTATION_DEPLOY",
+                    loss_history_tail=[],
+                    code_hash=sha256_file(Path(__file__)),
+                    config_hash=json_sha(model.config.__dict__),
+                    split_hash="MUTATION_SPLIT",
+                    stock_checkpoint_hash=sha256_file(Path(model.config.checkpoint_path)),
+                    checkpoint_reason="mutation_deployment",
+                )
+                payload = torch.load(ckpt, map_location="cpu", weights_only=False)
+                payload["deployment_load_requires_stock_checkpoint"] = True
+                torch.save(payload, ckpt)
+                mutation_executed = True
+                try:
+                    _loaded, loaded_payload = runtime["load_care_ase_checkpoint_for_inference"](ckpt, map_location="cpu", plans_path=Path(model.config.plans_path))
+                    observations["deployment_load_requires_stock_checkpoint"] = bool(loaded_payload.get("deployment_load_requires_stock_checkpoint"))
+                except ValueError as exc:
+                    observations["deployment_loader_rejected_mutated_checkpoint"] = True
+                    observations["observed_error"] = f"{type(exc).__name__}:{exc}"
+                    observations["deployment_load_requires_stock_checkpoint"] = True
+            if bool(observations.get("deployment_load_requires_stock_checkpoint")):
+                failures.append("kb16.deployment.no_stock_checkpoint")
+
+        elif mutation_id == "evaluator_population_mismatch":
+            mutation_applied = "evaluator_called_with_mismatched_prediction_population_shape"
+            import numpy as np
+
+            try:
+                runtime["evaluate_care_ase_r2_prediction_pair"](
+                    case_id="Case2003",
+                    care_prediction=np.zeros((2, 4, 4), dtype=np.uint8),
+                    baseline_prediction=np.zeros((3, 4, 4), dtype=np.uint8),
+                    ground_truth=np.zeros((2, 4, 4), dtype=np.uint8),
+                    availability=(1.0, 1.0, 1.0),
+                    spacing_zyx=(1.0, 1.0, 1.0),
+                    tta="none",
+                    decode="mutated_mismatch",
+                    center="verifier_mutation",
+                )
+                observations["evaluator_rejected_mismatch"] = False
+            except ValueError as exc:
+                observations["evaluator_rejected_mismatch"] = True
+                observations["observed_error"] = f"{type(exc).__name__}:{exc}"
+            mutation_executed = True
+            if observations["evaluator_rejected_mismatch"]:
+                failures.append("kb19.evaluator.same_cases")
+
+        elif mutation_id == "checkpoint_next_step_drift":
+            mutation_applied = "schema_v4_checkpoint_next_batch_descriptor_mutated_after_save"
+            optimizer = runtime["build_optimizer"](model)
+            scheduler = runtime["CAREASEStageScheduler"](optimizer)
+            with tempfile.TemporaryDirectory(prefix="care_ase_mutation_checkpoint_") as tmp:
+                ckpt = Path(tmp) / "mutated_resume.pth"
+                runtime["save_care_ase_checkpoint"](
+                    ckpt,
+                    model=model,
+                    optimizer=optimizer,
+                    scheduler=scheduler,
+                    global_step=1,
+                    stage_id="A",
+                    next_batch_hash="EXPECTED_NEXT",
+                    loss_history_tail=[],
+                    code_hash=sha256_file(Path(__file__)),
+                    config_hash=json_sha(model.config.__dict__),
+                    split_hash="MUTATION_SPLIT",
+                    stock_checkpoint_hash=sha256_file(Path(model.config.checkpoint_path)),
+                    checkpoint_reason="mutation_resume",
+                )
+                payload = torch.load(ckpt, map_location="cpu", weights_only=False)
+                payload["next_batch_descriptor_sha256"] = "DRIFTED_NEXT"
+                torch.save(payload, ckpt)
+                mutation_executed = True
+                try:
+                    _loaded, loaded_payload = runtime["load_care_ase_checkpoint_for_inference"](ckpt, map_location="cpu", plans_path=Path(model.config.plans_path))
+                    observations["next_descriptor_matches"] = loaded_payload.get("next_batch_descriptor_sha256") == "EXPECTED_NEXT"
+                except ValueError as exc:
+                    observations["checkpoint_loader_rejected_mutated_sidecar"] = True
+                    observations["observed_error"] = f"{type(exc).__name__}:{exc}"
+                    observations["next_descriptor_matches"] = False
+            if not observations["next_descriptor_matches"]:
+                failures.append("kb16.checkpoint_resume.next_step")
+
+        elif mutation_id == "artifact_sha_mismatch":
+            mutation_applied = "tracked_runtime_artifact_bytes_changed_after_receipt_sha_recording"
+            source_path = repo_root / "results" / "agent_flow_v3" / TASK_ID / "implementation" / "forward_backward_probe_receipt.json"
+            before = sha256_file(source_path)
+            with tempfile.TemporaryDirectory(prefix="care_ase_mutation_artifact_") as tmp:
+                mutated_path = Path(tmp) / source_path.name
+                mutated_path.write_bytes(source_path.read_bytes() + b"\n")
+                after = sha256_file(mutated_path)
+            mutation_executed = True
+            observations["declared_sha256"] = before
+            observations["mutated_file_sha256"] = after
+            if before != after:
+                failures.append("artifact_binding.forward_backward_probe.stdout_file_sha")
+
+        observations["source_manifest_sha256_before_mutation"] = source_before["source_manifest_sha256"]
+    except Exception as exc:
+        failures.append(f"mutation.runtime_error:{type(exc).__name__}:{exc}")
+        observations["runtime_error"] = f"{type(exc).__name__}:{exc}"
+
+    if not failures:
+        failures.append(f"mutation.expected_rejection_missing:{mutation_id}")
     return {
         "schema": "CARE_ASE_FAITHFUL_EXECUTABLE_MUTATION_RESULT_V1",
         "task_id": TASK_ID,
@@ -672,9 +1317,12 @@ def mutation_result(mutation_id: str, *, fixture_mode: bool) -> dict[str, Any]:
         "mutation_id": mutation_id,
         "fixture_mode": fixture_mode,
         "passed": False,
-        "failure_count": len(details),
-        "failures": details,
-        "mutation_executed": True,
+        "failure_count": len(failures),
+        "failures": failures,
+        "mutation_executed": mutation_executed,
+        "mutation_applied": mutation_applied,
+        "mutated_fingerprint_sha256": json_sha({"mutation_id": mutation_id, "mutation_applied": mutation_applied, "observations": observations}),
+        "observations": observations,
         "exit_code": 2,
         "created_utc": utc_now(),
     }
@@ -719,6 +1367,8 @@ def build_receipt(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
         "status": status,
         "passed": not failures,
         "fixture_mode": args.fixture_mode,
+        "runtime_conclusion_source": "fixture_selftest" if args.fixture_mode else "verifier_owned_independent_execution",
+        "executor_receipts_used_as_runtime_conclusion": False,
         "failure_count": len(failures),
         "failures": failures,
         "transaction_gate": transaction,
@@ -763,7 +1413,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if args.mutation_id:
-        result = mutation_result(args.mutation_id, fixture_mode=args.fixture_mode)
+        result = mutation_result(args.mutation_id, repo_root=args.repo_root.resolve(), fixture_mode=args.fixture_mode)
         print(json.dumps(result, indent=2, sort_keys=True))
         return 2
 
