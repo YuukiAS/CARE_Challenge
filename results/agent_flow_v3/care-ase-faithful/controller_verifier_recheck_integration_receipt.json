@@ -1,0 +1,89 @@
+{
+  "schema": "CARE_ASE_FAITHFUL_CONTROLLER_VERIFIER_RECHECK_INTEGRATION_RECEIPT_V1",
+  "task_id": "care-ase-faithful",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "created_utc": "2026-08-07T03:25:21Z",
+  "state_transition": {
+    "from": "VERIFIER_RECHECK_REQUIRED",
+    "through": [
+      "INTEGRATION_RUNNING"
+    ],
+    "to": "CI_RUNNING"
+  },
+  "origin_develop_before_integration_sha": "65b6f7858d4546f54c68d3d3ede051bb4001910b",
+  "last_observed_remote_sha_before_integration": "65b6f7858d4546f54c68d3d3ede051bb4001910b",
+  "verifier_thread_id": "019fda33-10c3-70e1-aa41-684b46d2cbda",
+  "verifier_local_commit_sha": "d109c37168b76c8977f69c1f64c60c666a658484",
+  "verifier_local_commit_subject": "verification: recheck care ase faithful executable gates",
+  "verifier_merge_base": "82ac9bb33911ec74662385afb59a1a36396e94fc",
+  "verifier_goal_complete": {
+    "rollout_path": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_VERIFIER/sessions/2026/08/06/rollout-2026-08-06T23-10-07-019fda33-10c3-70e1-aa41-684b46d2cbda.jsonl",
+    "thread_id": "019fda33-10c3-70e1-aa41-684b46d2cbda",
+    "status": "complete",
+    "tokens_used": 188922,
+    "time_used_seconds": 826,
+    "updated_at": 1786073053
+  },
+  "integration_merge_sha": "76cbec1df903c95359f712bbbfb837e9ef5343a4",
+  "implementation_fingerprint_sha256": "58a34ffb93346e2a2a0765f2f9a903c9b59919b007a39a02b6f484f1a512f6ec",
+  "verifier_fingerprint_sha256": "3f471f70aff3f5c1252d7256687ebf80c3084af2d6e30a344d6c6ef19965e1ab",
+  "changed_paths": [
+    "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_local_fail_closed_receipt.json",
+    "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json",
+    "results/agent_flow_v3/care-ase-faithful/verification/integrated_implementation_validation_result.json",
+    "results/agent_flow_v3/care-ase-faithful/verification/protected_known_bad_manifest.json",
+    "results/agent_flow_v3/care-ase-faithful/verification/public_reference_validation_result.json",
+    "results/agent_flow_v3/care-ase-faithful/verification/public_test_manifest.json",
+    "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_manifest.json",
+    "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/artifact_sha_mismatch.json",
+    "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/checkpoint_next_step_drift.json",
+    "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/deployment_reopens_stock_checkpoint.json",
+    "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/dilation_residual_removed.json",
+    "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/evaluator_population_mismatch.json",
+    "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/extent_conv3d_alias.json",
+    "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/injury_random_init.json",
+    "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/no_t2_calls_edema.json",
+    "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/projection_context_no_final_authority.json",
+    "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/single_multi_same_call.json",
+    "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/tile_local_global_bias.json",
+    "results/agent_flow_v3/care-ase-faithful/verification/transaction_gate_receipt.json",
+    "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+    "results/agent_flow_v3/care-ase-faithful/verification/verifier_fingerprint.json",
+    "results/agent_flow_v3/care-ase-faithful/verification/verifier_freeze_receipt.json",
+    "results/agent_flow_v3/care-ase-faithful/verification/verifier_local_commands_recorded_in_manifests.json",
+    "results/agent_flow_v3/care-ase-faithful/verification/verifier_session_receipt.json",
+    "validators/care_ase_faithful/build_verification_artifacts.py",
+    "validators/care_ase_faithful/run_executable_verifier.py",
+    "validators/care_ase_faithful/validate_contract_evidence.py"
+  ],
+  "local_controller_gates": [
+    {
+      "name": "agent_flow_v3_contract_validation",
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/automation/validate_agent_flow_v3.py --repo-root .",
+      "exit_code": 0,
+      "stdout_tail": "CARE Agent-Flow v3 contract validation: PASS\n",
+      "stderr_tail": ""
+    },
+    {
+      "name": "frozen_verifier_validate_implementation_evidence",
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python validators/care_ase_faithful/validate_contract_evidence.py --verification-contract results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json --evidence results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json --report-json results/agent_flow_v3/care-ase-faithful/implementation/frozen_verifier_validation_result.json",
+      "exit_code": 0,
+      "stdout_tail": "{\n  \"failure_count\": 0,\n  \"failures\": [],\n  \"known_bad_case_id\": null,\n  \"passed\": true,\n  \"schema\": \"CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1\",\n  \"task_id\": \"care-ase-faithful\"\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "name": "public_verifier_pytest",
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m pytest tests/care_ase_faithful/test_verifier_package.py -q",
+      "exit_code": 0,
+      "stdout_tail": ".........                                                                [100%]\n9 passed in 14.08s\n",
+      "stderr_tail": ""
+    }
+  ],
+  "forbidden_actions_confirmed": [
+    "no Planner/Critic decision generated",
+    "no Controller edit to Verifier source or Executor implementation source",
+    "no training, outer, Docker, upload, organizer email or develop-to-main merge"
+  ],
+  "updated_utc": "2026-08-07T03:25:21Z"
+}
