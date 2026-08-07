@@ -1,0 +1,38 @@
+{
+  "created_utc": "2026-08-07T04:43:46Z",
+  "exit_code": 2,
+  "failure_count": 1,
+  "failures": [
+    "kb11.partial_hw.straight_through_zero_loss"
+  ],
+  "fixture_mode": false,
+  "mutated_fingerprint_sha256": "b7771cc1a9f6461e84f7a858fec7bf4a474b02b02fc43fde8e607b10847884ca",
+  "mutation_applied": "partial_hw_presence_area_loss_mutated_to_loss_minus_detach",
+  "mutation_executed": true,
+  "mutation_id": "partial_hw_straight_through_zero_loss",
+  "observations": {
+    "partial_hw_reference_probe": {
+      "actual_scalar_loss": 0.0,
+      "disables_all_extent_on_padding": false,
+      "full_neighbor_area_denominator_contribution": 1.0,
+      "full_neighbor_extent_bias_abs_sum": 77.95539855957031,
+      "full_neighbor_extent_head_grad_abs_sum": 0.10524054616689682,
+      "full_neighbor_presence_denominator_contribution": 1.0,
+      "loss_matches_fully_valid_reference": false,
+      "name": "partial_hw_extent_reference_objective",
+      "partial_hw_area_denominator_contribution": 0.0,
+      "partial_hw_extent_bias_abs_sum": 0.0,
+      "partial_hw_extent_head_grad_abs_sum": 0.0,
+      "partial_hw_loss_contribution": 0.0,
+      "partial_hw_presence_denominator_contribution": 0.0,
+      "reference_fully_valid_only_loss": 0.26595064997673035,
+      "status": "FAIL",
+      "straight_through_zero_loss_detected": true
+    },
+    "source_manifest_sha256_before_mutation": "a2a165292590ed700c3534a56b3bae28f9b80120697fad39392d0207f6196d43"
+  },
+  "passed": false,
+  "request_nonce": "care-ase-20260806T090955Z",
+  "schema": "CARE_ASE_FAITHFUL_EXECUTABLE_MUTATION_RESULT_V1",
+  "task_id": "care-ase-faithful"
+}

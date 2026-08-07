@@ -38,8 +38,9 @@ EXECUTABLE_VERIFIER_PATH = ROOT / "validators" / "care_ase_faithful" / "run_exec
 IMPLEMENTATION_EVIDENCE_PATH = ROOT / "results" / "agent_flow_v3" / TASK_ID / "implementation" / "implementation_evidence.json"
 CARE_RUNTIME_ROOT = Path(os.environ.get("CARE_VERIFIER_RUNTIME_CARE_ROOT", "/users/a/e/aereinh/CARE"))
 CARE_RUNTIME_PYTHON = Path(os.environ.get("CARE_VERIFIER_RUNTIME_PYTHON", str(CARE_RUNTIME_ROOT / "envs" / "env_CARE" / "bin" / "python")))
-LAUNCH_ORIGIN_DEVELOP_SHA = "82ac9bb33911ec74662385afb59a1a36396e94fc"
-LAUNCH_VERIFIER_WORKTREE_HEAD = "82ac9bb33911ec74662385afb59a1a36396e94fc"
+LAUNCH_ORIGIN_DEVELOP_SHA = "eee6bc4b37e920d0b3bba893edc8ce3c45b81139"
+LAUNCH_VERIFIER_WORKTREE_HEAD = "eee6bc4b37e920d0b3bba893edc8ce3c45b81139"
+CURRENT_REVIEWED_IMPLEMENTATION_EXPECTED_FAIL_CLOSED = True
 REQUIRED_FREEZE_ARTIFACTS = [
     "verification_contract.json",
     "public_test_manifest.json",
@@ -59,6 +60,11 @@ EXECUTABLE_MUTATION_IDS = [
     "dilation_residual_removed",
     "injury_random_init",
     "projection_context_no_final_authority",
+    "synthetic_intervention_delta",
+    "partial_hw_straight_through_zero_loss",
+    "full_support_pseudo_tiling",
+    "transaction_old_tuple_reused",
+    "forged_executor_pass_receipt",
     "no_t2_calls_edema",
     "single_multi_same_call",
     "tile_local_global_bias",
@@ -157,6 +163,15 @@ def fingerprint_input_paths() -> list[Path]:
     return paths
 
 
+def verifier_source_fingerprint() -> dict[str, Any]:
+    paths = [VALIDATOR_PATH, BUILDER_PATH, TEST_PATH, EXECUTABLE_VERIFIER_PATH]
+    file_hashes = {str(path.relative_to(ROOT)): sha256_file(path) for path in paths if path.is_file()}
+    return {
+        "file_hashes": file_hashes,
+        "verifier_source_fingerprint_sha256": sha256_bytes(json.dumps(file_hashes, sort_keys=True).encode("utf-8")),
+    }
+
+
 def fingerprint_file_hashes(contract_hash: str) -> dict[str, str]:
     file_hashes = {str(path.relative_to(ROOT)): sha256_file(path) for path in fingerprint_input_paths() if path.exists()}
     file_hashes["automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md"] = contract_hash
@@ -244,13 +259,21 @@ def check_only() -> int:
     _record_error(errors, transaction_receipt.get("planner_review_commit") == PLANNER_REVIEW_COMMIT, "transaction_receipt.planner_review_commit")
     _record_error(errors, transaction_receipt.get("integration_sha") == REVIEWED_INTEGRATION_COMMIT, "transaction_receipt.integration_sha")
     _record_error(errors, transaction_receipt.get("implementation_fingerprint_sha256") == REVIEWED_IMPLEMENTATION_FINGERPRINT, "transaction_receipt.implementation_fingerprint")
-    _record_error(errors, transaction_receipt.get("verifier_fingerprint_sha256_at_review_start") == REVIEWED_VERIFIER_FINGERPRINT, "transaction_receipt.reviewed_verifier_fingerprint")
+    _record_error(
+        errors,
+        transaction_receipt.get("reviewed_verifier_fingerprint_sha256_at_repair_start") == REVIEWED_VERIFIER_FINGERPRINT,
+        "transaction_receipt.reviewed_verifier_fingerprint",
+    )
+    _record_error(errors, len(str(transaction_receipt.get("verifier_source_fingerprint_sha256", ""))) == 64, "transaction_receipt.verifier_source_fingerprint")
+    _record_error(errors, len(str(transaction_receipt.get("executable_verifier_receipt_sha256", ""))) == 64, "transaction_receipt.executable_receipt_sha")
+    _record_error(errors, transaction_receipt.get("status") == "FAIL_CLOSED", "transaction_receipt.expected_fail_closed")
+    _record_error(errors, int(transaction_receipt.get("failure_count", 0)) > 0, "transaction_receipt.failure_count")
 
     _record_error(errors, executable_receipt.get("schema") == "CARE_ASE_FAITHFUL_EXECUTABLE_VERIFIER_RECEIPT_V1", "executable_receipt.schema")
     _record_error(errors, executable_receipt.get("review_round") == REVIEW_ROUND, "executable_receipt.review_round")
     _record_error(errors, executable_receipt.get("fixture_mode") is False, "executable_receipt.production_not_fixture")
-    _record_error(errors, executable_receipt.get("passed") is True, "executable_receipt.current_implementation_passed")
-    _record_error(errors, executable_receipt.get("status") == "PASS", "executable_receipt.current_implementation_status")
+    _record_error(errors, executable_receipt.get("passed") is False, "executable_receipt.current_implementation_fail_closed")
+    _record_error(errors, executable_receipt.get("status") == "FAIL_CLOSED", "executable_receipt.current_implementation_status")
     _record_error(errors, executable_receipt.get("integration_sha") == REVIEWED_INTEGRATION_COMMIT, "executable_receipt.integration_sha")
     _record_error(
         errors,
@@ -266,13 +289,13 @@ def check_only() -> int:
     _record_error(errors, isinstance(environment, dict) and environment.get("nnunetv2_available") is True, "executable_receipt.nnunetv2_available")
     _record_error(errors, local_fail_closed_receipt.get("schema") == "CARE_ASE_FAITHFUL_EXECUTABLE_VERIFIER_RECEIPT_V1", "local_fail_closed_receipt.schema")
     _record_error(errors, local_fail_closed_receipt.get("fixture_mode") is False, "local_fail_closed_receipt.not_fixture")
-    _record_error(errors, local_fail_closed_receipt.get("status") == "PASS", "local_fail_closed_receipt.status")
-    _record_error(errors, local_fail_closed_receipt.get("passed") is True, "local_fail_closed_receipt.passed")
+    _record_error(errors, local_fail_closed_receipt.get("status") == "FAIL_CLOSED", "local_fail_closed_receipt.status")
+    _record_error(errors, local_fail_closed_receipt.get("passed") is False, "local_fail_closed_receipt.passed")
     _record_error(errors, local_fail_closed_receipt.get("formal_training_started") is False, "local_fail_closed_receipt.no_training")
     _record_error(errors, local_fail_closed_receipt.get("outer_accessed") is False, "local_fail_closed_receipt.no_outer")
     _record_error(errors, integrated_validation_result.get("schema") == "CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1", "integrated_validation_result.schema")
-    _record_error(errors, integrated_validation_result.get("passed") is True, "integrated_validation_result.current_implementation_passed")
-    _record_error(errors, int(integrated_validation_result.get("failure_count", 1)) == 0, "integrated_validation_result.failure_count")
+    _record_error(errors, integrated_validation_result.get("passed") is False, "integrated_validation_result.current_implementation_fail_closed")
+    _record_error(errors, int(integrated_validation_result.get("failure_count", 0)) > 0, "integrated_validation_result.failure_count")
 
     mutation_invocations = mutation_manifest.get("mutation_invocations", [])
     _record_error(errors, mutation_manifest.get("schema") == "CARE_ASE_FAITHFUL_RUNTIME_MUTATION_MANIFEST_V1", "mutation_manifest.schema")
@@ -303,8 +326,8 @@ def check_only() -> int:
     _record_error(errors, freeze_receipt.get("verifier_fingerprint_sha256") == digest, "freeze_receipt.verifier_fingerprint_sha256")
     _record_error(errors, freeze_receipt.get("protected_known_bad_count") == 24, "freeze_receipt.protected_known_bad_count")
     _record_error(errors, freeze_receipt.get("protected_known_bad_all_nonzero") is True, "freeze_receipt.protected_known_bad_all_nonzero")
-    _record_error(errors, freeze_receipt.get("current_reviewed_implementation_expected_fail_closed") is False, "freeze_receipt.current_expected_passed")
-    _record_error(errors, freeze_receipt.get("controller_may_continue_after_verifier_recheck") is True, "freeze_receipt.controller_continue_gate")
+    _record_error(errors, freeze_receipt.get("current_reviewed_implementation_expected_fail_closed") is True, "freeze_receipt.current_expected_fail_closed")
+    _record_error(errors, freeze_receipt.get("controller_may_continue_after_verifier_recheck") is False, "freeze_receipt.controller_continue_gate")
 
     if errors:
         for error in errors:
@@ -449,25 +472,6 @@ def build_artifacts() -> int:
     }
     write_json(VERIFICATION_DIR / "protected_known_bad_manifest.json", protected_manifest)
 
-    transaction_receipt = {
-        "schema": "CARE_ASE_FAITHFUL_TRANSACTION_GATE_RECEIPT_V1",
-        "task_id": TASK_ID,
-        "request_nonce": REQUEST_NONCE,
-        "review_round": REVIEW_ROUND,
-        "planner_review_commit": PLANNER_REVIEW_COMMIT,
-        "integration_sha": REVIEWED_INTEGRATION_COMMIT,
-        "implementation_fingerprint_sha256": REVIEWED_IMPLEMENTATION_FINGERPRINT,
-        "verifier_fingerprint_sha256_at_review_start": REVIEWED_VERIFIER_FINGERPRINT,
-        "planner_packet_sha": REVIEWED_INTEGRATION_COMMIT,
-        "ci_checked_commit_sha": REVIEWED_INTEGRATION_COMMIT,
-        "current_state_sha": REVIEWED_INTEGRATION_COMMIT,
-        "runtime_manifest_sha": REVIEWED_INTEGRATION_COMMIT,
-        "hosted_ci_conclusion": "success",
-        "stale_planner_reused_after_key_commit": False,
-        "created_utc": now,
-    }
-    write_json(VERIFICATION_DIR / "transaction_gate_receipt.json", transaction_receipt)
-
     executable_command = [
         str(CARE_RUNTIME_PYTHON),
         str(EXECUTABLE_VERIFIER_PATH.relative_to(ROOT)),
@@ -485,6 +489,39 @@ def build_artifacts() -> int:
         "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json",
     ]
     executable_result = run_command(executable_command, env=runtime_env())
+    executable_receipt = load_json(VERIFICATION_DIR / "executable_verifier_receipt.json")
+    transaction_gate = executable_receipt.get("transaction_gate", {})
+    transaction_failures = [failure for failure in executable_receipt.get("failures", []) if str(failure).startswith("transaction.")]
+    source_fp = verifier_source_fingerprint()
+    transaction_receipt = {
+        "schema": "CARE_ASE_FAITHFUL_TRANSACTION_GATE_RECEIPT_V1",
+        "task_id": TASK_ID,
+        "request_nonce": REQUEST_NONCE,
+        "review_round": REVIEW_ROUND,
+        "planner_review_commit": PLANNER_REVIEW_COMMIT,
+        "integration_sha": REVIEWED_INTEGRATION_COMMIT,
+        "implementation_fingerprint_sha256": REVIEWED_IMPLEMENTATION_FINGERPRINT,
+        "reviewed_verifier_fingerprint_sha256_at_repair_start": REVIEWED_VERIFIER_FINGERPRINT,
+        "verifier_source_fingerprint_sha256": source_fp["verifier_source_fingerprint_sha256"],
+        "verifier_source_artifacts": source_fp,
+        "executable_verifier_receipt_sha256": sha256_file(VERIFICATION_DIR / "executable_verifier_receipt.json"),
+        "planner_packet_sha": REVIEWED_INTEGRATION_COMMIT,
+        "ci_checked_commit_sha": REVIEWED_INTEGRATION_COMMIT,
+        "current_state_sha": REVIEWED_INTEGRATION_COMMIT,
+        "runtime_manifest_sha": transaction_gate.get("runtime_manifest_sha256"),
+        "hosted_ci_conclusion": transaction_gate.get("hosted_ci_conclusion"),
+        "hosted_ci_head_sha": transaction_gate.get("hosted_ci_head_sha"),
+        "stale_planner_reused_after_key_commit": bool(transaction_failures),
+        "status": "PASS" if not transaction_failures else "FAIL_CLOSED",
+        "failure_count": len(transaction_failures),
+        "failures": transaction_failures,
+        "transaction_gate": transaction_gate,
+        "created_utc": now,
+    }
+    transaction_receipt["transaction_fingerprint_sha256"] = sha256_bytes(
+        json.dumps(transaction_receipt, sort_keys=True, default=str).encode("utf-8")
+    )
+    write_json(VERIFICATION_DIR / "transaction_gate_receipt.json", transaction_receipt)
     local_fail_closed_command = [
         str(CARE_RUNTIME_PYTHON),
         str(EXECUTABLE_VERIFIER_PATH.relative_to(ROOT)),
@@ -571,13 +608,13 @@ def build_artifacts() -> int:
             **v3_validator_result,
         },
         {
-            "purpose": "verifier-owned executable receipt independently accepts the current integrated implementation",
-            "expected_exit_code": 0,
+            "purpose": "verifier-owned executable receipt independently evaluates the current integrated implementation and fails closed for reentry2 shortcuts",
+            "expected_exit_code": 2 if CURRENT_REVIEWED_IMPLEMENTATION_EXPECTED_FAIL_CLOSED else 0,
             **executable_result,
         },
         {
-            "purpose": "frozen validator accepts integrated implementation evidence with current verifier-owned runtime receipts",
-            "expected_exit_code": 0,
+            "purpose": "frozen validator evaluates integrated implementation evidence and fails closed with current verifier-owned runtime receipts",
+            "expected_exit_code": 2 if CURRENT_REVIEWED_IMPLEMENTATION_EXPECTED_FAIL_CLOSED else 0,
             **integrated_validation_result,
         },
     ]
@@ -643,12 +680,19 @@ def build_artifacts() -> int:
 
     file_hashes = fingerprint_file_hashes(contract_hash)
     digest = sha256_bytes(json.dumps(file_hashes, sort_keys=True).encode("utf-8"))
+    source_fp = verifier_source_fingerprint()
     fingerprint = {
         "schema": "CARE_ASE_FAITHFUL_VERIFIER_FINGERPRINT_V1",
         "task_id": TASK_ID,
         "request_nonce": REQUEST_NONCE,
         "frozen_contract_sha256": FROZEN_CONTRACT_SHA256,
         "fingerprint_sha256": digest,
+        "verifier_source_fingerprint_sha256": source_fp["verifier_source_fingerprint_sha256"],
+        "verifier_source_file_hashes": source_fp["file_hashes"],
+        "transaction_fingerprint_sha256": load_json(VERIFICATION_DIR / "transaction_gate_receipt.json").get("transaction_fingerprint_sha256"),
+        "executable_verifier_receipt_sha256": sha256_file(VERIFICATION_DIR / "executable_verifier_receipt.json"),
+        "integrated_implementation_fingerprint_sha256": REVIEWED_IMPLEMENTATION_FINGERPRINT,
+        "reviewed_integration_sha": REVIEWED_INTEGRATION_COMMIT,
         "file_hashes": file_hashes,
         "protected_known_bad_count": len(protected_results),
         "protected_known_bad_all_nonzero": all(item["passed_fail_closed"] for item in protected_results),
@@ -656,7 +700,7 @@ def build_artifacts() -> int:
         "runtime_mutation_all_nonzero": all(item["passed_fail_closed"] for item in mutation_results),
         "executable_verifier_production_exit_code": executable_result["exit_code"],
         "integrated_implementation_validation_exit_code": integrated_validation_result["exit_code"],
-        "current_reviewed_implementation_expected_fail_closed": False,
+        "current_reviewed_implementation_expected_fail_closed": CURRENT_REVIEWED_IMPLEMENTATION_EXPECTED_FAIL_CLOSED,
         "created_utc": now,
     }
     write_json(VERIFICATION_DIR / "verifier_fingerprint.json", fingerprint)
@@ -686,10 +730,10 @@ def build_artifacts() -> int:
         "executable_verifier_production_exit_code": executable_result["exit_code"],
         "integrated_implementation_validation_result": str((VERIFICATION_DIR / "integrated_implementation_validation_result.json").relative_to(ROOT)),
         "integrated_implementation_validation_exit_code": integrated_validation_result["exit_code"],
-        "current_reviewed_implementation_expected_fail_closed": False,
+        "current_reviewed_implementation_expected_fail_closed": CURRENT_REVIEWED_IMPLEMENTATION_EXPECTED_FAIL_CLOSED,
         "executable_verifier_local_fail_closed_receipt": str((VERIFICATION_DIR / "executable_verifier_local_fail_closed_receipt.json").relative_to(ROOT)),
         "executable_verifier_local_fail_closed_exit_code": local_fail_closed_result["exit_code"],
-        "controller_may_continue_after_verifier_recheck": True,
+        "controller_may_continue_after_verifier_recheck": False,
         "created_utc": now,
     }
     write_json(VERIFICATION_DIR / "verifier_freeze_receipt.json", freeze_receipt)
@@ -698,9 +742,9 @@ def build_artifacts() -> int:
         if public_result["exit_code"] == 0
         and unittest_result["exit_code"] == 0
         and v3_validator_result["exit_code"] == 0
-        and executable_result["exit_code"] == 0
-        and integrated_validation_result["exit_code"] == 0
-        and local_fail_closed_result["exit_code"] == 0
+        and executable_result["exit_code"] == (2 if CURRENT_REVIEWED_IMPLEMENTATION_EXPECTED_FAIL_CLOSED else 0)
+        and integrated_validation_result["exit_code"] == (2 if CURRENT_REVIEWED_IMPLEMENTATION_EXPECTED_FAIL_CLOSED else 0)
+        and local_fail_closed_result["exit_code"] == 2
         and all(item["passed_fail_closed"] for item in protected_results)
         and all(item["passed_fail_closed"] for item in mutation_results)
         else 2

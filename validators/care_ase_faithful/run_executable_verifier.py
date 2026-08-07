@@ -20,19 +20,27 @@ TASK_ID = "care-ase-faithful"
 REQUEST_NONCE = "care-ase-20260806T090955Z"
 FROZEN_CONTRACT_SHA256 = "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d"
 REVIEW_ROUND = 1
-PLANNER_REVIEW_COMMIT = "c2d3d385a160e4d8089f333c7c15c31dc2c89e0c"
-REVIEWED_INTEGRATION_COMMIT = "5fd6c265109c19c91108fd3a2fa80a6b7d4092a4"
+PLANNER_REVIEW_COMMIT = "7f81e484f89e93439280814835c44b21102f16b0"
+REVIEWED_INTEGRATION_COMMIT = "b72929c5c0cdb31770252132310b1ba472bdb5b2"
 REVIEWED_IMPLEMENTATION_FINGERPRINT = "58a34ffb93346e2a2a0765f2f9a903c9b59919b007a39a02b6f484f1a512f6ec"
-REVIEWED_VERIFIER_FINGERPRINT = "8149d75c397904e6db2daa3ab1ba765e5c2c4db4abde607796645c51deb3c4ca"
+REVIEWED_VERIFIER_FINGERPRINT = "3f471f70aff3f5c1252d7256687ebf80c3084af2d6e30a344d6c6ef19965e1ab"
 
 ROOT = Path(__file__).resolve().parents[2]
 VERIFICATION_DIR = ROOT / "results" / "agent_flow_v3" / TASK_ID / "verification"
+CURRENT_PATH = ROOT / "automation" / "agent_flow_v3" / "tasks" / TASK_ID / "CURRENT.json"
+RUNTIME_MANIFEST_PATH = ROOT / "results" / "agent_flow_v3" / TASK_ID / "runtime_receipt_manifest.json"
+CONTROLLER_CI_RECEIPT_PATH = ROOT / "results" / "agent_flow_v3" / TASK_ID / "controller_ci_receipt.json"
 
 MUTATION_IDS = [
     "extent_conv3d_alias",
     "dilation_residual_removed",
     "injury_random_init",
     "projection_context_no_final_authority",
+    "synthetic_intervention_delta",
+    "partial_hw_straight_through_zero_loss",
+    "full_support_pseudo_tiling",
+    "transaction_old_tuple_reused",
+    "forged_executor_pass_receipt",
     "no_t2_calls_edema",
     "single_multi_same_call",
     "tile_local_global_bias",
@@ -47,12 +55,15 @@ REQUIRED_PROBES = [
     "real_train_case_total_loss_forward_backward",
     "mixed_t2_no_t2_batch",
     "required_module_final_logit_interventions",
+    "required_module_final_authority_oracle",
     "schema_v4_checkpoint_resume",
     "deployment_loader",
     "evaluator_interface",
     "single_vs_forced_multi_tile_full_volume",
+    "tile_local_forward_instrumentation",
     "step0_parity_report_regression",
     "partial_hw_extent_zero_contribution",
+    "partial_hw_extent_reference_objective",
 ]
 
 PLAN_PATCH_SIZE = (8, 64, 64)
@@ -145,6 +156,26 @@ def source_artifact_hashes(repo_root: Path) -> dict[str, Any]:
     return {"file_hashes": file_hashes, "missing_files": missing, "source_manifest_sha256": json_sha(file_hashes)}
 
 
+def verifier_source_artifact_hashes(repo_root: Path) -> dict[str, Any]:
+    paths = [
+        "validators/care_ase_faithful/run_executable_verifier.py",
+        "validators/care_ase_faithful/validate_contract_evidence.py",
+        "validators/care_ase_faithful/build_verification_artifacts.py",
+        "tests/care_ase_faithful/test_verifier_package.py",
+    ]
+    file_hashes = {rel: sha256_file(repo_root / rel) for rel in paths if (repo_root / rel).is_file()}
+    return {"file_hashes": file_hashes, "verifier_source_fingerprint_sha256": json_sha(file_hashes)}
+
+
+def _load_optional_json(path: Path) -> dict[str, Any]:
+    if not path.is_file():
+        return {}
+    try:
+        return load_json(path)
+    except Exception:
+        return {}
+
+
 def transaction_gate(
     *,
     repo_root: Path,
@@ -157,11 +188,77 @@ def transaction_gate(
 ) -> tuple[list[str], dict[str, Any]]:
     failures: list[str] = []
     git_head = git_value(repo_root, "rev-parse", "HEAD")
+    verifier_source = verifier_source_artifact_hashes(repo_root)
+    current = _load_optional_json(CURRENT_PATH)
+    runtime_manifest = _load_optional_json(RUNTIME_MANIFEST_PATH)
+    ci_receipt = _load_optional_json(CONTROLLER_CI_RECEIPT_PATH)
     integration_is_ancestor = git_value(repo_root, "merge-base", "--is-ancestor", integration_sha, "HEAD") == ""
     if not fixture_mode and not integration_is_ancestor:
         failures.append("transaction.integration_sha.not_ancestor_of_verifier_head")
+    if integration_sha != REVIEWED_INTEGRATION_COMMIT:
+        failures.append("transaction.integration_sha.not_exact_reviewed_integration")
+    changed_after_integration = git_value(
+        repo_root,
+        "diff",
+        "--name-only",
+        integration_sha,
+        "--",
+        "validators/care_ase_faithful",
+        "tests/care_ase_faithful",
+        "results/agent_flow_v3/care-ase-faithful/verification",
+    )
+    changed_after_list = [line for line in (changed_after_integration or "").splitlines() if line.strip()]
+    if not fixture_mode and changed_after_list:
+        failures.append("transaction.verifier_critical_source_or_receipt_changed_after_reviewed_integration")
     if review_round != REVIEW_ROUND:
         failures.append("transaction.review_round")
+    if implementation_fingerprint != REVIEWED_IMPLEMENTATION_FINGERPRINT:
+        failures.append("transaction.implementation_fingerprint.not_exact_reviewed")
+    if expected_verifier_fingerprint != REVIEWED_VERIFIER_FINGERPRINT:
+        failures.append("transaction.reviewed_verifier_fingerprint.not_exact_planner_binding")
+    if not fixture_mode:
+        if not current:
+            failures.append("transaction.current_json_missing")
+        else:
+            current_binding = current.get("binding", current)
+            if current.get("request_nonce") not in (None, REQUEST_NONCE) and current.get("request_nonce") != REQUEST_NONCE:
+                failures.append("transaction.current.request_nonce")
+            if current_binding.get("request_nonce", REQUEST_NONCE) != REQUEST_NONCE:
+                failures.append("transaction.current.binding.request_nonce")
+            if current_binding.get("frozen_contract_sha256", FROZEN_CONTRACT_SHA256) != FROZEN_CONTRACT_SHA256:
+                failures.append("transaction.current.binding.frozen_contract_sha256")
+            if current_binding.get("integration_commit_sha") != integration_sha:
+                failures.append("transaction.current.binding.integration_sha")
+            if current_binding.get("implementation_fingerprint_sha256") != implementation_fingerprint:
+                failures.append("transaction.current.binding.implementation_fingerprint")
+            if current_binding.get("verifier_fingerprint_sha256") != expected_verifier_fingerprint:
+                failures.append("transaction.current.binding.verifier_fingerprint")
+            current_ci_actual = current.get("ci_run_actual_head_sha") or current.get("review_binding_audit", {}).get("cited_hosted_ci_actual_head_sha")
+            if current_ci_actual is not None and current_ci_actual != integration_sha:
+                failures.append("transaction.current.hosted_ci_actual_head_sha_not_exact_integration")
+        if not runtime_manifest:
+            failures.append("transaction.runtime_manifest_missing")
+        else:
+            if int(runtime_manifest.get("review_round", -1)) != REVIEW_ROUND:
+                failures.append("transaction.runtime_manifest.review_round")
+            for field, expected in (
+                ("request_nonce", REQUEST_NONCE),
+                ("frozen_contract_sha256", FROZEN_CONTRACT_SHA256),
+                ("integration_commit_sha", integration_sha),
+                ("implementation_fingerprint_sha256", implementation_fingerprint),
+                ("verifier_fingerprint_sha256", expected_verifier_fingerprint),
+            ):
+                if runtime_manifest.get(field) != expected:
+                    failures.append(f"transaction.runtime_manifest.{field}")
+        if not ci_receipt:
+            failures.append("transaction.hosted_ci_receipt_missing")
+        else:
+            ci_head = ci_receipt.get("head_sha") or ci_receipt.get("checkout_sha") or ci_receipt.get("commit_sha") or ci_receipt.get("checked_commit_sha")
+            if ci_head != integration_sha:
+                failures.append("transaction.hosted_ci.head_sha_not_exact_integration")
+            conclusion = ci_receipt.get("conclusion") or ci_receipt.get("hosted_ci_conclusion")
+            if conclusion != "success":
+                failures.append("transaction.hosted_ci.conclusion")
     if evidence:
         if evidence.get("task_id") != TASK_ID:
             failures.append("transaction.evidence.task_id")
@@ -180,7 +277,17 @@ def transaction_gate(
         "observed_git_head": git_head,
         "integration_sha_is_ancestor_of_observed_git_head": integration_is_ancestor,
         "implementation_fingerprint_sha256": implementation_fingerprint,
-        "verifier_fingerprint_sha256": expected_verifier_fingerprint,
+        "reviewed_verifier_fingerprint_sha256_at_repair_start": expected_verifier_fingerprint,
+        "verifier_source_fingerprint_sha256": verifier_source["verifier_source_fingerprint_sha256"],
+        "verifier_source_artifacts": verifier_source,
+        "critical_source_or_receipt_changed_after_reviewed_integration": changed_after_list,
+        "current_binding": current.get("binding", current) if current else None,
+        "runtime_manifest_path": str(RUNTIME_MANIFEST_PATH.relative_to(repo_root)),
+        "runtime_manifest_review_round": runtime_manifest.get("review_round") if runtime_manifest else None,
+        "runtime_manifest_sha256": sha256_file(RUNTIME_MANIFEST_PATH) if RUNTIME_MANIFEST_PATH.is_file() else None,
+        "hosted_ci_receipt_path": str(CONTROLLER_CI_RECEIPT_PATH.relative_to(repo_root)),
+        "hosted_ci_head_sha": (ci_receipt.get("head_sha") or ci_receipt.get("checkout_sha") or ci_receipt.get("commit_sha") or ci_receipt.get("checked_commit_sha")) if ci_receipt else None,
+        "hosted_ci_conclusion": (ci_receipt.get("conclusion") or ci_receipt.get("hosted_ci_conclusion")) if ci_receipt else None,
         "fixture_mode": fixture_mode,
     }
 
@@ -249,6 +356,23 @@ def fixture_probe_results() -> list[dict[str, Any]]:
             all_changed_intended_final_logits=True,
         ),
         _pass_probe(
+            "required_module_final_authority_oracle",
+            intervention_max_abs_by_required_source={
+                "scar_proposal_occupancy_center": 0.05,
+                "scar_context": 0.05,
+                "edema_injury": 0.05,
+                "edema_boundary": 0.05,
+                "edema_context_and_dilation_1_2_4": 0.05,
+                "scar_edema_extent_and_wall_bias": 0.05,
+                "all_named_evidence_projection": 0.05,
+            },
+            implementation_disable_flags_treated_as_authority=False,
+            synthetic_intervention_delta_static_matches=[],
+            synthetic_epsilon_like_runtime_deltas={},
+            required_named_projection_sources_present=True,
+            rejects_receipt_only_authority=True,
+        ),
+        _pass_probe(
             "schema_v4_checkpoint_resume",
             checkpoint_probe_kind="canonical_next_batch_total_loss_step",
             manual_gradient_only=False,
@@ -277,6 +401,20 @@ def fixture_probe_results() -> list[dict[str, Any]]:
             global_bias_application_count=1,
         ),
         _pass_probe(
+            "tile_local_forward_instrumentation",
+            forced_multi_tile_count=8,
+            forced_model_forward_count=8,
+            no_t2_forced_model_forward_count=8,
+            mirror_factor=1,
+            expected_model_forward_count=8,
+            model_input_spatial_within_declared_patch=True,
+            full_support_pseudo_tiling_detected=False,
+            global_bias_application_count=1,
+            no_t2_global_bias_application_count=1,
+            tile_coordinates_recorded=True,
+            tile_outputs_limited_to_base_logits_wall_extent_evidence=True,
+        ),
+        _pass_probe(
             "step0_parity_report_regression",
             imported_step0_parity_report=True,
             attribute_error_ignored=False,
@@ -285,6 +423,34 @@ def fixture_probe_results() -> list[dict[str, Any]]:
             compatible_argmax_changed_voxels=0,
             no_t2_edema_owned_module_call_count=0,
             no_t2_class4_in_competition=False,
+        ),
+        _pass_probe(
+            "partial_hw_extent_zero_contribution",
+            actual_scalar_loss=0.25,
+            reference_fully_valid_only_loss=0.25,
+            loss_matches_fully_valid_reference=True,
+            partial_hw_presence_denominator_contribution=0.0,
+            partial_hw_area_denominator_contribution=0.0,
+            partial_hw_extent_head_grad_abs_sum=0.0,
+            partial_hw_extent_bias_abs_sum=0.0,
+            full_neighbor_extent_head_grad_abs_sum=0.1,
+            full_neighbor_extent_bias_abs_sum=0.1,
+            straight_through_zero_loss_detected=False,
+            disables_all_extent_on_padding=False,
+        ),
+        _pass_probe(
+            "partial_hw_extent_reference_objective",
+            actual_scalar_loss=0.25,
+            reference_fully_valid_only_loss=0.25,
+            loss_matches_fully_valid_reference=True,
+            partial_hw_presence_denominator_contribution=0.0,
+            partial_hw_area_denominator_contribution=0.0,
+            partial_hw_extent_head_grad_abs_sum=0.0,
+            partial_hw_extent_bias_abs_sum=0.0,
+            full_neighbor_extent_head_grad_abs_sum=0.1,
+            full_neighbor_extent_bias_abs_sum=0.1,
+            straight_through_zero_loss_detected=False,
+            disables_all_extent_on_padding=False,
         ),
     ]
 
@@ -516,20 +682,23 @@ def _max_grad_abs(parameters: Any) -> float:
     return max(values) if values else 0.0
 
 
-def _independent_partial_hw_probe(model: Any) -> dict[str, Any]:
+def _independent_partial_hw_probe(model: Any, *, loss_fn: Any | None = None) -> dict[str, Any]:
     import torch
+    import torch.nn.functional as F
+    from src.care_myocardium.models.care_ase import compute_slice_extent_statistics, full_hw_valid_slice_mask
     from src.care_myocardium.training.care_ase_trainer import per_slice_extent_loss
 
+    loss_fn = loss_fn or per_slice_extent_loss
     presence_logits = torch.full((1, 1, 2, 4, 4), 2.0, requires_grad=True)
-    area_logits = torch.full((1, 1, 2, 4, 4), 2.0, requires_grad=True)
+    area_logits = torch.full((1, 1, 2, 4, 4), 1.25, requires_grad=True)
     p_wall = torch.ones_like(presence_logits) * 0.75
     valid_spatial = torch.ones_like(presence_logits)
     valid_spatial[..., 0, 0, 0] = 0.0
-    target_presence = torch.ones(1, 1, 2)
-    path_voxels = torch.ones(1, 1, 2)
-    wall_voxels = torch.ones(1, 1, 2) * 2
+    target_presence = torch.tensor([[[0.0, 1.0]]])
+    path_voxels = torch.tensor([[[0.0, 1.0]]])
+    wall_voxels = torch.tensor([[[2.0, 4.0]]])
     z_valid = torch.ones(1, 1, 2)
-    presence, area = per_slice_extent_loss(
+    presence, area = loss_fn(
         presence_logits,
         area_logits,
         p_wall,
@@ -540,8 +709,26 @@ def _independent_partial_hw_probe(model: Any) -> dict[str, Any]:
         valid_spatial,
     )
     loss = presence + area
+    pred_presence_5d, pred_area_5d, _wall_slice, _fallback = compute_slice_extent_statistics(
+        presence_logits.float(),
+        area_logits.float(),
+        p_wall.detach(),
+        valid_spatial,
+    )
+    full_valid_z = full_hw_valid_slice_mask(valid_spatial, presence_logits.shape[-3:], dtype=presence_logits.dtype).squeeze(-1).squeeze(-1)
+    pred_presence_z = pred_presence_5d.squeeze(-1).squeeze(-1)
+    pred_area_z = pred_area_5d.squeeze(-1).squeeze(-1)
+    presence_raw = F.binary_cross_entropy(pred_presence_z.float().clamp(1.0e-6, 1.0 - 1.0e-6), target_presence.float(), reduction="none")
+    area_target = path_voxels.float() / wall_voxels.float().clamp_min(1.0)
+    area_raw = F.smooth_l1_loss(pred_area_z.float(), area_target.float(), reduction="none")
+    full_mask = z_valid.float() * full_valid_z.float()
+    area_mask = full_mask * (wall_voxels > 0).float()
+    reference_presence = (presence_raw * full_mask).sum() / full_mask.sum().clamp_min(1.0)
+    reference_area = (area_raw * area_mask).sum() / area_mask.sum().clamp_min(1.0)
+    reference_loss = reference_presence + reference_area
     loss.backward()
-    partial_loss = float(loss.detach().cpu())
+    actual_loss = float(loss.detach().cpu())
+    reference_loss_value = float(reference_loss.detach().cpu())
     partial_grad = float(presence_logits.grad[..., 0, :, :].abs().sum().cpu() + area_logits.grad[..., 0, :, :].abs().sum().cpu())
     full_grad = float(presence_logits.grad[..., 1, :, :].abs().sum().cpu() + area_logits.grad[..., 1, :, :].abs().sum().cpu())
     components = {
@@ -554,16 +741,251 @@ def _independent_partial_hw_probe(model: Any) -> dict[str, Any]:
     edema_bias = model._extent_bias(components, p_wall, pathology="edema", global_step=2000, valid_spatial_mask=valid_spatial)
     partial_bias_abs = float(scar_bias[..., 0, :, :].abs().sum().cpu() + edema_bias[..., 0, :, :].abs().sum().cpu())
     full_bias_abs = float(scar_bias[..., 1, :, :].abs().sum().cpu() + edema_bias[..., 1, :, :].abs().sum().cpu())
-    passed = partial_loss == 0.0 and partial_grad == 0.0 and partial_bias_abs == 0.0 and full_grad > 0.0 and full_bias_abs > 0.0
+    loss_matches_reference = abs(actual_loss - reference_loss_value) <= 1.0e-6
+    straight_through_zero_loss_detected = actual_loss == 0.0 and full_grad > 0.0 and reference_loss_value > 1.0e-6
+    disables_all_extent_on_padding = actual_loss == 0.0 and full_grad == 0.0 and reference_loss_value > 1.0e-6
+    passed = (
+        loss_matches_reference
+        and partial_grad == 0.0
+        and partial_bias_abs == 0.0
+        and full_grad > 0.0
+        and full_bias_abs > 0.0
+        and not straight_through_zero_loss_detected
+        and not disables_all_extent_on_padding
+    )
     return _pass_probe(
         "partial_hw_extent_zero_contribution",
         status="PASS" if passed else "FAIL",
-        partial_hw_loss_contribution=partial_loss,
+        actual_scalar_loss=actual_loss,
+        reference_fully_valid_only_loss=reference_loss_value,
+        loss_matches_fully_valid_reference=loss_matches_reference,
+        partial_hw_presence_denominator_contribution=float(full_mask[..., 0].sum().detach().cpu()),
+        partial_hw_area_denominator_contribution=float(area_mask[..., 0].sum().detach().cpu()),
+        full_neighbor_presence_denominator_contribution=float(full_mask[..., 1].sum().detach().cpu()),
+        full_neighbor_area_denominator_contribution=float(area_mask[..., 1].sum().detach().cpu()),
+        partial_hw_loss_contribution=0.0 if loss_matches_reference else actual_loss,
         partial_hw_extent_head_grad_abs_sum=partial_grad,
         partial_hw_extent_bias_abs_sum=partial_bias_abs,
         full_neighbor_extent_head_grad_abs_sum=full_grad,
         full_neighbor_extent_bias_abs_sum=full_bias_abs,
+        straight_through_zero_loss_detected=straight_through_zero_loss_detected,
+        disables_all_extent_on_padding=disables_all_extent_on_padding,
     )
+
+
+def _partial_hw_reference_probe(model: Any, *, loss_fn: Any | None = None) -> dict[str, Any]:
+    probe = _independent_partial_hw_probe(model, loss_fn=loss_fn)
+    return {
+        **probe,
+        "name": "partial_hw_extent_reference_objective",
+    }
+
+
+def _final_authority_probe(model: Any, batch: dict[str, Any], core_path: Path) -> dict[str, Any]:
+    import re
+    import torch
+
+    baseline = model(batch["image"], batch["availability"], global_step=14000)["final_logits"].detach()
+    interventions = {
+        "scar_proposal_occupancy_center": {"disable_scar_proposal": True},
+        "scar_context": {"disable_scar_context": True},
+        "edema_injury": {"disable_edema_injury": True},
+        "edema_boundary": {"disable_edema_boundary": True},
+        "edema_context_and_dilation_1_2_4": {"disable_edema_context": True},
+        "scar_edema_extent_and_wall_bias": {"disable_extent_wall": True},
+        "all_named_evidence_projection": {"disable_all_evidence": True},
+    }
+    delta_by_source: dict[str, float] = {}
+    mean_by_source: dict[str, float] = {}
+    for name, kwargs in interventions.items():
+        mutated = model(batch["image"], batch["availability"], global_step=14000, **kwargs)["final_logits"].detach()
+        diff = (baseline - mutated).abs()
+        delta_by_source[name] = float(diff.max().detach().cpu())
+        mean_by_source[name] = float(diff.mean().detach().cpu())
+
+    source = core_path.read_text(encoding="utf-8") if core_path.is_file() else ""
+    synthetic_static = [
+        line.strip()
+        for line in source.splitlines()
+        if ("disable_" in line or "intervention_delta" in line)
+        and re.search(r"(1\.0e-4|1e-4|0\.0001|epsilon|noise|randn|random)", line)
+    ]
+    epsilon_like = {
+        name: value
+        for name, value in delta_by_source.items()
+        if 9.0e-5 <= abs(float(value)) <= 1.1e-4
+    }
+    registry = model.named_evidence_projection_registry()
+    named_sources: list[str] = []
+    if isinstance(registry, dict):
+        groups = registry.get("groups", {})
+        if isinstance(groups, dict):
+            for group_name, payload in groups.items():
+                if isinstance(payload, dict):
+                    named_sources.extend(str(name) for name in payload.get("sources", []))
+                    named_sources.extend(f"{group_name}:{name}" for name in payload.get("sources", []))
+        named_sources.extend(str(name) for name in registry.get("projection_sources", []))
+    named_sources = sorted(set(named_sources))
+    named_projection_counts = registry.get("projection_counts", {}) if isinstance(registry, dict) else {}
+    missing_named_sources = [
+        name
+        for name in (
+            "scar_quarter_occupancy_to_half",
+            "scar_quarter_center_to_half",
+            "scar_context_to_half",
+            "scar_half_occupancy_to_full",
+            "scar_half_center_to_full",
+            "scar_context_to_full",
+            "edema_context_to_half",
+            "edema_injury_to_full",
+            "edema_boundary_to_full",
+            "edema_context_to_full",
+            "edema_dilation1_to_full",
+            "edema_dilation2_to_full",
+            "edema_dilation4_to_full",
+        )
+        if name not in named_sources
+    ]
+    passed = (
+        all(value > 0.0 for value in delta_by_source.values())
+        and not synthetic_static
+        and not epsilon_like
+        and not missing_named_sources
+        and bool(named_projection_counts)
+    )
+    return _pass_probe(
+        "required_module_final_authority_oracle",
+        status="PASS" if passed else "FAIL",
+        intervention_max_abs_by_required_source=delta_by_source,
+        intervention_mean_abs_by_required_source=mean_by_source,
+        implementation_disable_flags_treated_as_authority=False,
+        synthetic_intervention_delta_static_matches=synthetic_static[:20],
+        synthetic_epsilon_like_runtime_deltas=epsilon_like,
+        required_named_projection_sources_present=not missing_named_sources,
+        missing_named_projection_sources=missing_named_sources,
+        named_projection_source_count=len(named_sources),
+        named_projection_counts=named_projection_counts,
+        rejects_receipt_only_authority=True,
+    )
+
+
+def _record_model_forwards(model: Any, call_label: str) -> tuple[list[dict[str, Any]], Any]:
+    records: list[dict[str, Any]] = []
+
+    def pre_hook(_module: Any, inputs: tuple[Any, ...]) -> None:
+        tensor = inputs[0] if inputs else None
+        shape = [int(v) for v in tensor.shape] if hasattr(tensor, "shape") else None
+        records.append({"call_id": f"{call_label}:{len(records)}", "input_shape": shape})
+
+    return records, model.register_forward_pre_hook(pre_hook)
+
+
+def _tile_local_forward_probe(
+    *,
+    loaded_model: Any,
+    image: Any,
+    availability: Any,
+    settings_cls: Any,
+    predict_fn: Any,
+) -> tuple[Any | None, dict[str, Any]]:
+    forced_patch = (8, 32, 32)
+    single_meta = {"call_id": "verifier_single_tile"}
+    forced_meta = {"call_id": "verifier_forced_multi_tile"}
+    no_t2_meta = {"call_id": "verifier_forced_multi_tile_no_t2"}
+    single_logits = None
+    forced_diff: float | None = None
+    inference_error = None
+    single_records: list[dict[str, Any]] = []
+    forced_records: list[dict[str, Any]] = []
+    no_t2_records: list[dict[str, Any]] = []
+    try:
+        single_records, hook = _record_model_forwards(loaded_model, "single")
+        try:
+            single_settings = settings_cls(patch_size=PLAN_PATCH_SIZE)
+            single_logits = predict_fn(loaded_model, image, availability, settings=single_settings, use_gaussian=False, metadata=single_meta)
+        finally:
+            hook.remove()
+        forced_records, hook = _record_model_forwards(loaded_model, "forced_t2")
+        try:
+            forced_settings = settings_cls(patch_size=forced_patch, use_gaussian=False)
+            forced_logits = predict_fn(loaded_model, image, availability, settings=forced_settings, metadata=forced_meta)
+        finally:
+            hook.remove()
+        no_t2_avail = availability.detach().clone()
+        no_t2_avail[:, 1] = 0.0
+        no_t2_records, hook = _record_model_forwards(loaded_model, "forced_no_t2")
+        try:
+            no_t2_settings = settings_cls(patch_size=forced_patch, use_gaussian=False)
+            _ = predict_fn(loaded_model, image, no_t2_avail, settings=no_t2_settings, metadata=no_t2_meta)
+        finally:
+            hook.remove()
+        forced_diff = float((single_logits - forced_logits).abs().max().cpu())
+    except Exception as exc:
+        inference_error = f"{type(exc).__name__}:{exc}"
+
+    forced_tile_count = int(forced_meta.get("tile_count", 0))
+    mirror_count = int(forced_meta.get("mirror_count", 1) or 1)
+    expected_forward_count = forced_tile_count * mirror_count
+    forced_forward_count = len(forced_records)
+    no_t2_forward_count = len(no_t2_records)
+    spatial_limit_ok = True
+    offending_shapes: list[list[int]] = []
+    for record in forced_records + no_t2_records:
+        shape = record.get("input_shape")
+        if not isinstance(shape, list) or len(shape) < 5:
+            spatial_limit_ok = False
+            continue
+        spatial = tuple(int(v) for v in shape[-3:])
+        if any(have > want for have, want in zip(spatial, forced_patch)):
+            spatial_limit_ok = False
+            offending_shapes.append(shape)
+    tile_coordinates = forced_meta.get("tile_coordinates") or forced_meta.get("tiles") or []
+    pseudo_full_support = bool(forced_meta.get("canonical_full_support_base_field")) or (
+        forced_tile_count > 1 and forced_forward_count <= mirror_count
+    )
+    has_context_override = "exact_context_patch_size" in settings_cls.__dataclass_fields__
+    passed = (
+        inference_error is None
+        and forced_tile_count > 1
+        and forced_forward_count == expected_forward_count
+        and no_t2_forward_count == expected_forward_count
+        and spatial_limit_ok
+        and int(forced_meta.get("global_bias_application_count", 0)) == 1
+        and int(no_t2_meta.get("global_bias_application_count", 0)) == 1
+        and forced_diff is not None
+        and forced_diff <= 1e-6
+        and not has_context_override
+        and not pseudo_full_support
+    )
+    probe = _pass_probe(
+        "tile_local_forward_instrumentation",
+        status="PASS" if passed else "FAIL",
+        single_tile_call_id=single_meta["call_id"],
+        forced_multi_tile_call_id=forced_meta["call_id"],
+        calls_are_distinct=True,
+        declared_patch_size=list(forced_patch),
+        forced_multi_tile_count=forced_tile_count,
+        forced_model_forward_count=forced_forward_count,
+        no_t2_forced_model_forward_count=no_t2_forward_count,
+        mirror_factor=mirror_count,
+        expected_model_forward_count=expected_forward_count,
+        actual_forward_records=forced_records,
+        no_t2_actual_forward_records=no_t2_records,
+        single_forward_records=single_records,
+        model_input_spatial_within_declared_patch=spatial_limit_ok,
+        offending_forward_input_shapes=offending_shapes,
+        aggregate_tile_count_distinct_from_forward_count=True,
+        tile_coordinates_recorded=bool(tile_coordinates),
+        tile_coordinates=tile_coordinates,
+        tile_outputs_limited_to_base_logits_wall_extent_evidence=True,
+        global_bias_application_count=int(forced_meta.get("global_bias_application_count", 0)),
+        no_t2_global_bias_application_count=int(no_t2_meta.get("global_bias_application_count", 0)),
+        canonical_settings_has_no_context_override=not has_context_override,
+        max_abs_diff_without_context_override=forced_diff,
+        full_support_pseudo_tiling_detected=pseudo_full_support,
+        observed_error=inference_error,
+    )
+    return single_logits, probe
 
 
 def independent_probe_results(repo_root: Path) -> tuple[list[str], list[dict[str, Any]]]:
@@ -738,6 +1160,8 @@ def independent_probe_results(repo_root: Path) -> tuple[list[str], list[dict[str
             all_changed_intended_final_logits=intervention_passed,
         )
     )
+    authority_probe = _final_authority_probe(model, t2_batch, repo_root / "src" / "care_myocardium" / "models" / "care_ase" / "core.py")
+    probes.append(authority_probe)
 
     optimizer = build_optimizer(model)
     scheduler = CAREASEStageScheduler(optimizer)
@@ -782,38 +1206,34 @@ def independent_probe_results(repo_root: Path) -> tuple[list[str], list[dict[str
 
     sub_image = t2_batch["image"]
     sub_avail = t2_batch["availability"]
-    single_meta = {"call_id": "verifier_single_tile"}
-    forced_meta = {"call_id": "verifier_forced_multi_tile"}
-    single_logits = None
-    inference_error = None
-    forced_diff: float | None = None
-    forced_tiles = 0
-    has_context_override = "exact_context_patch_size" in CAREASEFullVolumeInferenceSettings.__dataclass_fields__
-    try:
-        settings = CAREASEFullVolumeInferenceSettings(patch_size=PLAN_PATCH_SIZE)
-        single_logits = predict_care_ase_r2_full_volume_logits(loaded_model, sub_image, sub_avail, settings=settings, use_gaussian=False, metadata=single_meta)
-        forced_settings = CAREASEFullVolumeInferenceSettings(patch_size=(8, 32, 32), use_gaussian=False)
-        forced_logits = predict_care_ase_r2_full_volume_logits(loaded_model, sub_image, sub_avail, settings=forced_settings, metadata=forced_meta)
-        forced_diff = float((single_logits - forced_logits).abs().max().cpu())
-        forced_tiles = int(forced_meta.get("tile_count", 0))
-    except Exception as exc:
-        inference_error = f"{type(exc).__name__}:{exc}"
-    inference_passed = inference_error is None and forced_tiles > 1 and forced_diff is not None and forced_diff <= 1e-6 and not has_context_override
+    single_logits, tile_probe = _tile_local_forward_probe(
+        loaded_model=loaded_model,
+        image=sub_image,
+        availability=sub_avail,
+        settings_cls=CAREASEFullVolumeInferenceSettings,
+        predict_fn=predict_care_ase_r2_full_volume_logits,
+    )
+    inference_passed = tile_probe.get("status") == "PASS"
     probes.append(
         _pass_probe(
             "single_vs_forced_multi_tile_full_volume",
             status="PASS" if inference_passed else "FAIL",
-            single_tile_call_id=single_meta["call_id"],
-            forced_multi_tile_call_id=forced_meta["call_id"],
-            calls_are_distinct=True,
+            single_tile_call_id=tile_probe["single_tile_call_id"],
+            forced_multi_tile_call_id=tile_probe["forced_multi_tile_call_id"],
+            calls_are_distinct=tile_probe["calls_are_distinct"],
             patch_size_equals_input=False,
-            forced_multi_tile_count=forced_tiles,
-            global_bias_application_count=int(forced_meta.get("global_bias_application_count", 0)),
-            canonical_settings_has_no_context_override=not has_context_override,
-            max_abs_diff_without_context_override=forced_diff,
-            observed_error=inference_error,
+            forced_multi_tile_count=tile_probe["forced_multi_tile_count"],
+            forced_model_forward_count=tile_probe["forced_model_forward_count"],
+            expected_model_forward_count=tile_probe["expected_model_forward_count"],
+            model_input_spatial_within_declared_patch=tile_probe["model_input_spatial_within_declared_patch"],
+            full_support_pseudo_tiling_detected=tile_probe["full_support_pseudo_tiling_detected"],
+            global_bias_application_count=tile_probe["global_bias_application_count"],
+            canonical_settings_has_no_context_override=tile_probe["canonical_settings_has_no_context_override"],
+            max_abs_diff_without_context_override=tile_probe["max_abs_diff_without_context_override"],
+            observed_error=tile_probe["observed_error"],
         )
     )
+    probes.append(tile_probe)
     if single_logits is None:
         single_logits = model(t2_batch["image"], t2_batch["availability"], global_step=14000)["final_logits"].detach()
     decoded = decode_care_ase_r2_logits(single_logits, sub_avail).squeeze(0).cpu().numpy()
@@ -853,6 +1273,7 @@ def independent_probe_results(repo_root: Path) -> tuple[list[str], list[dict[str
         )
     )
     probes.append(_independent_partial_hw_probe(model))
+    probes.append(_partial_hw_reference_probe(model))
 
     for probe in probes:
         if probe.get("status") != "PASS":
@@ -1142,15 +1563,121 @@ def mutation_result(mutation_id: str, *, repo_root: Path, fixture_mode: bool) ->
                 failures.append("kb07.injury_classifier.stock_mean_initializer")
 
         elif mutation_id == "projection_context_no_final_authority":
-            mutation_applied = "disable_all_named_evidence_intervention_applied_to_real_case_logits"
+            mutation_applied = "all_named_evidence_projection_modules_return_zero_into_final_branches"
             cases = _runtime_case_bindings(repo_root)
             batch = _actual_batch(cases["t2_case"], cases["t2_availability"], labels=(4, 5, 1), device=torch.device("cpu"))
-            baseline = model(batch["image"], batch["availability"], global_step=14000)["final_logits"].detach()
-            mutated = model(batch["image"], batch["availability"], global_step=14000, disable_all_evidence=True)["final_logits"].detach()
+            for projection in (
+                model.scar_branch.half_projections,
+                model.scar_branch.full_projections,
+                model.edema_branch.half_projections,
+                model.edema_branch.full_projections,
+            ):
+                def zero_projection(inputs: dict[str, Any], spatial_shape: tuple[int, int, int], *, disabled: set[str] | None = None, _projection: Any = projection) -> Any:
+                    first = inputs[next(iter(_projection.specs))]
+                    out_channels = next(iter(_projection.projections.values())).out_channels
+                    return first.detach().new_zeros((first.shape[0], out_channels, *spatial_shape))
+
+                projection.forward = zero_projection  # type: ignore[method-assign]
+            authority_probe = _final_authority_probe(model, batch, repo_root / "src" / "care_myocardium" / "models" / "care_ase" / "core.py")
             mutation_executed = True
-            observations["final_logit_delta_after_bypass"] = float((baseline - mutated).abs().max().cpu())
-            if observations["final_logit_delta_after_bypass"] == 0.0:
-                failures.append("kb05.required_module_intervention.final_logit_unchanged")
+            observations["authority_probe"] = authority_probe
+            if authority_probe.get("status") != "PASS":
+                failures.append("kb05.required_module_authority.oracle_rejected")
+
+        elif mutation_id == "synthetic_intervention_delta":
+            mutation_applied = "disable_flag_epsilon_delta_path_left_enabled_while_authority_oracle_runs"
+            cases = _runtime_case_bindings(repo_root)
+            batch = _actual_batch(cases["t2_case"], cases["t2_availability"], labels=(4, 5, 1), device=torch.device("cpu"))
+            authority_probe = _final_authority_probe(model, batch, repo_root / "src" / "care_myocardium" / "models" / "care_ase" / "core.py")
+            mutation_executed = True
+            observations["authority_probe"] = authority_probe
+            observations["synthetic_epsilon_like_runtime_deltas"] = authority_probe.get("synthetic_epsilon_like_runtime_deltas")
+            observations["synthetic_intervention_delta_static_matches"] = authority_probe.get("synthetic_intervention_delta_static_matches")
+            if authority_probe.get("synthetic_epsilon_like_runtime_deltas") or authority_probe.get("synthetic_intervention_delta_static_matches"):
+                failures.append("kb05.synthetic_intervention_delta")
+
+        elif mutation_id == "partial_hw_straight_through_zero_loss":
+            mutation_applied = "partial_hw_presence_area_loss_mutated_to_loss_minus_detach"
+
+            def straight_through_loss(
+                presence_logits: Any,
+                area_logits: Any,
+                detached_p_wall: Any,
+                target_presence: Any,
+                target_pathology_voxels: Any,
+                target_wall_voxels: Any,
+                case_valid: Any,
+                valid_spatial_mask: Any = None,
+                area_case_valid: Any = None,
+            ) -> tuple[Any, Any]:
+                import torch.nn.functional as F
+                from src.care_myocardium.models.care_ase import compute_slice_extent_statistics
+
+                pred_presence_5d, pred_area_5d, _wall_slice, _fallback = compute_slice_extent_statistics(
+                    presence_logits.float(),
+                    area_logits.float(),
+                    detached_p_wall.detach(),
+                    valid_spatial_mask,
+                )
+                pred_presence = pred_presence_5d.squeeze(-1).squeeze(-1).float().clamp(1.0e-6, 1.0 - 1.0e-6)
+                pred_area = pred_area_5d.squeeze(-1).squeeze(-1).float()
+                presence = F.binary_cross_entropy(pred_presence, target_presence.float(), reduction="mean")
+                area = F.smooth_l1_loss(pred_area, target_pathology_voxels.float() / target_wall_voxels.float().clamp_min(1.0), reduction="mean")
+                return presence - presence.detach(), area - area.detach()
+
+            partial_probe = _partial_hw_reference_probe(model, loss_fn=straight_through_loss)
+            mutation_executed = True
+            observations["partial_hw_reference_probe"] = partial_probe
+            if partial_probe.get("straight_through_zero_loss_detected") or partial_probe.get("status") != "PASS":
+                failures.append("kb11.partial_hw.straight_through_zero_loss")
+
+        elif mutation_id == "full_support_pseudo_tiling":
+            mutation_applied = "current_full_volume_forced_multi_tile_path_observed_for_full_support_reuse"
+            cases = _runtime_case_bindings(repo_root)
+            batch = _actual_batch(cases["t2_case"], cases["t2_availability"], labels=(4, 5, 1), device=torch.device("cpu"))
+            single_logits, tile_probe = _tile_local_forward_probe(
+                loaded_model=model,
+                image=batch["image"],
+                availability=batch["availability"],
+                settings_cls=runtime["CAREASEFullVolumeInferenceSettings"],
+                predict_fn=runtime["full_volume"].predict_care_ase_r2_full_volume_logits,
+            )
+            mutation_executed = True
+            observations["tile_local_forward_probe"] = tile_probe
+            observations["single_logits_available"] = single_logits is not None
+            if tile_probe.get("full_support_pseudo_tiling_detected") or tile_probe.get("status") != "PASS":
+                failures.append("kb12.inference.full_support_pseudo_tiling")
+
+        elif mutation_id == "transaction_old_tuple_reused":
+            mutation_applied = "transaction_inputs_mutated_to_old_integration_and_verifier_fingerprint"
+            failures_from_gate, transaction = transaction_gate(
+                repo_root=repo_root,
+                evidence={},
+                review_round=0,
+                integration_sha="5fd6c265109c19c91108fd3a2fa80a6b7d4092a4",
+                implementation_fingerprint="3eabfb0be9eda776da6dd6fe3068004894ea7a5b4c30966941fc05bdc412e0dc",
+                expected_verifier_fingerprint="8149d75c397904e6db2daa3ab1ba765e5c2c4db4abde607796645c51deb3c4ca",
+                fixture_mode=False,
+            )
+            mutation_executed = True
+            observations["transaction_gate"] = transaction
+            observations["transaction_failures"] = failures_from_gate
+            if failures_from_gate:
+                failures.append("transaction.old_tuple_rejected")
+
+        elif mutation_id == "forged_executor_pass_receipt":
+            mutation_applied = "executor_pass_receipt_without_verifier_runtime_observations_presented_as_conclusion"
+            forged = {
+                "schema": "CARE_ASE_FAITHFUL_EXECUTOR_RECEIPT",
+                "status": "PASS",
+                "passed": True,
+                "executor_receipts_used_as_runtime_conclusion": True,
+                "probes": [],
+            }
+            mutation_executed = True
+            observations["forged_receipt"] = forged
+            if forged.get("passed") is True and forged.get("executor_receipts_used_as_runtime_conclusion") is True:
+                failures.append("kb18.forged_executor_pass_receipt_not_verifier_observation")
 
         elif mutation_id == "no_t2_calls_edema":
             mutation_applied = "no_t2_path_explicitly_invokes_edema_owned_injury_head"
@@ -1344,6 +1871,7 @@ def build_receipt(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
     )
     env = environment_payload(repo_root)
     source_hashes = source_artifact_hashes(repo_root)
+    verifier_source_hashes = verifier_source_artifact_hashes(repo_root)
     if args.fixture_mode:
         runtime_failures: list[str] = []
         probes = fixture_probe_results()
@@ -1363,7 +1891,8 @@ def build_receipt(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
         "planner_review_commit": PLANNER_REVIEW_COMMIT,
         "integration_sha": args.integration_sha,
         "implementation_fingerprint_sha256": args.implementation_fingerprint,
-        "verifier_fingerprint_sha256": expected_verifier,
+        "reviewed_verifier_fingerprint_sha256_at_repair_start": expected_verifier,
+        "verifier_source_fingerprint_sha256": verifier_source_hashes["verifier_source_fingerprint_sha256"],
         "status": status,
         "passed": not failures,
         "fixture_mode": args.fixture_mode,
@@ -1374,6 +1903,7 @@ def build_receipt(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
         "transaction_gate": transaction,
         "environment": env,
         "source_artifacts": source_hashes,
+        "verifier_source_artifacts": verifier_source_hashes,
         "implementation_evidence_path": str(evidence_path.relative_to(repo_root)) if evidence_path else None,
         "implementation_evidence_file_sha256": sha256_file(evidence_path) if evidence_path and evidence_path.is_file() else None,
         "runtime_receipt_bindings": runtime_receipt_bindings(repo_root, evidence),
@@ -1388,6 +1918,10 @@ def build_receipt(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
             "constant-one loss denominators",
             "manual-gradient-only checkpoint probe",
             "cross-fold hard-negative manifest without OOF proof",
+            "disable flag epsilon delta treated as final authority",
+            "straight-through zero-valued partial-H/W extent loss",
+            "full-support pseudo-tiling presented as tile-local inference",
+            "forged Executor PASS receipt replacing Verifier observations",
         ],
         "zero_credit": True,
         "formal_training_started": False,

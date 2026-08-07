@@ -16,10 +16,10 @@ TASK_ID = "care-ase-faithful"
 REQUEST_NONCE = "care-ase-20260806T090955Z"
 FROZEN_CONTRACT_SHA256 = "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d"
 REVIEW_ROUND = 1
-PLANNER_REVIEW_COMMIT = "c2d3d385a160e4d8089f333c7c15c31dc2c89e0c"
-REVIEWED_INTEGRATION_COMMIT = "5fd6c265109c19c91108fd3a2fa80a6b7d4092a4"
+PLANNER_REVIEW_COMMIT = "7f81e484f89e93439280814835c44b21102f16b0"
+REVIEWED_INTEGRATION_COMMIT = "b72929c5c0cdb31770252132310b1ba472bdb5b2"
 REVIEWED_IMPLEMENTATION_FINGERPRINT = "58a34ffb93346e2a2a0765f2f9a903c9b59919b007a39a02b6f484f1a512f6ec"
-REVIEWED_VERIFIER_FINGERPRINT = "8149d75c397904e6db2daa3ab1ba765e5c2c4db4abde607796645c51deb3c4ca"
+REVIEWED_VERIFIER_FINGERPRINT = "3f471f70aff3f5c1252d7256687ebf80c3084af2d6e30a344d6c6ef19965e1ab"
 
 
 KNOWN_BAD_CATEGORIES = [
@@ -204,6 +204,11 @@ REQUIRED_EXECUTABLE_MUTATION_IDS = {
     "dilation_residual_removed",
     "injury_random_init",
     "projection_context_no_final_authority",
+    "synthetic_intervention_delta",
+    "partial_hw_straight_through_zero_loss",
+    "full_support_pseudo_tiling",
+    "transaction_old_tuple_reused",
+    "forged_executor_pass_receipt",
     "no_t2_calls_edema",
     "single_multi_same_call",
     "tile_local_global_bias",
@@ -218,12 +223,15 @@ REQUIRED_EXECUTABLE_PROBES = {
     "real_train_case_total_loss_forward_backward",
     "mixed_t2_no_t2_batch",
     "required_module_final_logit_interventions",
+    "required_module_final_authority_oracle",
     "schema_v4_checkpoint_resume",
     "deployment_loader",
     "evaluator_interface",
     "single_vs_forced_multi_tile_full_volume",
+    "tile_local_forward_instrumentation",
     "step0_parity_report_regression",
     "partial_hw_extent_zero_contribution",
+    "partial_hw_extent_reference_objective",
 }
 
 CRITICAL_SOURCE_PATHS = {
@@ -670,6 +678,12 @@ def _check_verifier_owned_execution(failures: list[str], evidence: dict[str, Any
             executable.get("implementation_fingerprint_sha256") == REVIEWED_IMPLEMENTATION_FINGERPRINT,
             "verifier_owned.executable.implementation_fingerprint",
         )
+        _require(
+            failures,
+            executable.get("reviewed_verifier_fingerprint_sha256_at_repair_start") == REVIEWED_VERIFIER_FINGERPRINT,
+            "verifier_owned.executable.reviewed_verifier_fingerprint",
+        )
+        _require(failures, _is_sha256(executable.get("verifier_source_fingerprint_sha256")), "verifier_owned.executable.verifier_source_fingerprint")
         _require(failures, executable.get("passed") is True, "verifier_owned.executable.passed")
         _require(failures, executable.get("status") == "PASS", "verifier_owned.executable.status")
         _require(failures, executable.get("fixture_mode") is not True, "verifier_owned.executable.not_fixture")
@@ -726,9 +740,39 @@ def _check_verifier_owned_execution(failures: list[str], evidence: dict[str, Any
         _require(failures, tile_probe.get("calls_are_distinct") is True, "verifier_owned.executable.single_multi_distinct_calls")
         _require(failures, tile_probe.get("patch_size_equals_input") is False, "verifier_owned.executable.patch_smaller_than_input")
         _require(failures, int(tile_probe.get("forced_multi_tile_count", 0)) > 1, "verifier_owned.executable.forced_multi_tile_count")
+        _require(
+            failures,
+            int(tile_probe.get("forced_model_forward_count", 0)) == int(tile_probe.get("expected_model_forward_count", -1)),
+            "verifier_owned.executable.tile_forward_count",
+        )
+        _require(failures, tile_probe.get("model_input_spatial_within_declared_patch") is True, "verifier_owned.executable.tile_forward_patch_limited")
+        _require(failures, tile_probe.get("full_support_pseudo_tiling_detected") is False, "verifier_owned.executable.no_full_support_pseudo_tiling")
         _require(failures, int(tile_probe.get("global_bias_application_count", 0)) == 1, "verifier_owned.executable.global_bias_once")
         _require(failures, tile_probe.get("canonical_settings_has_no_context_override") is True, "verifier_owned.executable.no_probe_only_context_override")
         _require(failures, tile_probe.get("observed_error") in (None, ""), "verifier_owned.executable.no_multitile_runtime_error")
+        tile_instrumentation = by_name.get("tile_local_forward_instrumentation", {})
+        _require(failures, int(tile_instrumentation.get("forced_multi_tile_count", 0)) > 1, "verifier_owned.executable.instrumented_tile_count")
+        _require(
+            failures,
+            int(tile_instrumentation.get("forced_model_forward_count", 0)) == int(tile_instrumentation.get("expected_model_forward_count", -1)),
+            "verifier_owned.executable.instrumented_forward_count",
+        )
+        _require(
+            failures,
+            int(tile_instrumentation.get("no_t2_forced_model_forward_count", 0)) == int(tile_instrumentation.get("expected_model_forward_count", -1)),
+            "verifier_owned.executable.instrumented_no_t2_forward_count",
+        )
+        _require(failures, tile_instrumentation.get("model_input_spatial_within_declared_patch") is True, "verifier_owned.executable.instrumented_patch_limit")
+        _require(failures, tile_instrumentation.get("full_support_pseudo_tiling_detected") is False, "verifier_owned.executable.instrumented_no_full_support")
+        _require(failures, int(tile_instrumentation.get("global_bias_application_count", 0)) == 1, "verifier_owned.executable.instrumented_global_bias_once")
+        _require(failures, int(tile_instrumentation.get("no_t2_global_bias_application_count", 0)) == 1, "verifier_owned.executable.instrumented_no_t2_global_bias_once")
+        _require(failures, tile_instrumentation.get("tile_outputs_limited_to_base_logits_wall_extent_evidence") is True, "verifier_owned.executable.instrumented_tile_output_scope")
+        authority_probe = by_name.get("required_module_final_authority_oracle", {})
+        _require(failures, authority_probe.get("implementation_disable_flags_treated_as_authority") is False, "verifier_owned.authority.no_disable_flag_authority")
+        _require(failures, not authority_probe.get("synthetic_intervention_delta_static_matches"), "verifier_owned.authority.no_static_synthetic_delta")
+        _require(failures, not authority_probe.get("synthetic_epsilon_like_runtime_deltas"), "verifier_owned.authority.no_epsilon_delta")
+        _require(failures, authority_probe.get("required_named_projection_sources_present") is True, "verifier_owned.authority.named_sources_present")
+        _require(failures, authority_probe.get("rejects_receipt_only_authority") is True, "verifier_owned.authority.rejects_receipt_only")
         step0_probe = by_name.get("step0_parity_report_regression", {})
         _require(failures, step0_probe.get("imported_step0_parity_report") is True, "verifier_owned.step0.imported")
         _require(failures, step0_probe.get("attribute_error_ignored") is False, "verifier_owned.step0.no_attribute_error_ignore")
@@ -738,11 +782,19 @@ def _check_verifier_owned_execution(failures: list[str], evidence: dict[str, Any
         _require(failures, int(step0_probe.get("no_t2_edema_owned_module_call_count", 1)) == 0, "verifier_owned.step0.no_t2_edema_calls")
         _require(failures, step0_probe.get("no_t2_class4_in_competition") is False, "verifier_owned.step0.no_t2_class4_excluded")
         partial_probe = by_name.get("partial_hw_extent_zero_contribution", {})
-        _require(failures, float(partial_probe.get("partial_hw_loss_contribution", 1.0)) == 0.0, "verifier_owned.partial_hw.loss_zero")
+        _require(failures, partial_probe.get("loss_matches_fully_valid_reference") is True, "verifier_owned.partial_hw.scalar_matches_reference")
+        _require(failures, float(partial_probe.get("actual_scalar_loss", 0.0)) > 0.0, "verifier_owned.partial_hw.actual_scalar_nonzero")
+        _require(failures, float(partial_probe.get("reference_fully_valid_only_loss", 0.0)) > 0.0, "verifier_owned.partial_hw.reference_nonzero")
+        _require(failures, float(partial_probe.get("partial_hw_presence_denominator_contribution", 1.0)) == 0.0, "verifier_owned.partial_hw.presence_denominator_zero")
+        _require(failures, float(partial_probe.get("partial_hw_area_denominator_contribution", 1.0)) == 0.0, "verifier_owned.partial_hw.area_denominator_zero")
         _require(failures, float(partial_probe.get("partial_hw_extent_head_grad_abs_sum", 1.0)) == 0.0, "verifier_owned.partial_hw.grad_zero")
         _require(failures, float(partial_probe.get("partial_hw_extent_bias_abs_sum", 1.0)) == 0.0, "verifier_owned.partial_hw.bias_zero")
         _require(failures, float(partial_probe.get("full_neighbor_extent_head_grad_abs_sum", 0.0)) > 0.0, "verifier_owned.partial_hw.full_neighbor_grad_active")
         _require(failures, float(partial_probe.get("full_neighbor_extent_bias_abs_sum", 0.0)) > 0.0, "verifier_owned.partial_hw.full_neighbor_bias_active")
+        _require(failures, partial_probe.get("straight_through_zero_loss_detected") is False, "verifier_owned.partial_hw.no_straight_through_zero")
+        reference_probe = by_name.get("partial_hw_extent_reference_objective", {})
+        _require(failures, reference_probe.get("loss_matches_fully_valid_reference") is True, "verifier_owned.partial_hw.reference_probe_matches")
+        _require(failures, float(reference_probe.get("full_neighbor_extent_head_grad_abs_sum", 0.0)) > 0.0, "verifier_owned.partial_hw.reference_probe_full_grad")
 
     if transaction_receipt is not None:
         _require(failures, transaction_receipt.get("schema") == "CARE_ASE_FAITHFUL_TRANSACTION_GATE_RECEIPT_V1", "verifier_owned.transaction.schema")
@@ -754,6 +806,15 @@ def _check_verifier_owned_execution(failures: list[str], evidence: dict[str, Any
             transaction_receipt.get("implementation_fingerprint_sha256") == REVIEWED_IMPLEMENTATION_FINGERPRINT,
             "verifier_owned.transaction.implementation_fingerprint",
         )
+        _require(
+            failures,
+            transaction_receipt.get("reviewed_verifier_fingerprint_sha256_at_repair_start") == REVIEWED_VERIFIER_FINGERPRINT,
+            "verifier_owned.transaction.reviewed_verifier_fingerprint",
+        )
+        _require(failures, _is_sha256(transaction_receipt.get("verifier_source_fingerprint_sha256")), "verifier_owned.transaction.verifier_source_fingerprint")
+        _require(failures, _is_sha256(transaction_receipt.get("executable_verifier_receipt_sha256")), "verifier_owned.transaction.executable_receipt_sha")
+        _require(failures, transaction_receipt.get("status") == "PASS", "verifier_owned.transaction.status")
+        _require(failures, not transaction_receipt.get("failures"), "verifier_owned.transaction.no_failures")
         _require(failures, transaction_receipt.get("hosted_ci_conclusion") == "success", "verifier_owned.transaction.hosted_ci_success")
         _require(failures, transaction_receipt.get("planner_packet_sha") == transaction_receipt.get("ci_checked_commit_sha"), "verifier_owned.transaction.packet_ci_same_sha")
         _require(failures, transaction_receipt.get("current_state_sha") == transaction_receipt.get("ci_checked_commit_sha"), "verifier_owned.transaction.current_ci_same_sha")
