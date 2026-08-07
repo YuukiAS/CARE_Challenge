@@ -1528,6 +1528,7 @@ def evaluate_stage_event(
     default_wait_hours: int,
     care_ase_executor_complete: bool = False,
     care_ase_executor_needs_verifier_recheck: bool = False,
+    care_ase_executor_needs_user_scientific_choice: bool = False,
     care_ase_verifier_recheck_complete: bool = False,
 ) -> dict[str, Any]:
     state = str(current.get("state"))
@@ -1620,6 +1621,9 @@ def evaluate_stage_event(
         elif care_ase_executor_needs_verifier_recheck:
             decision = "CONTROLLER_UPDATE_REQUIRED"
             action = "integrate scope-valid Executor commit, then require independent Verifier receipt recheck"
+        elif care_ase_executor_needs_user_scientific_choice:
+            decision = "CONTROLLER_UPDATE_REQUIRED"
+            action = "record Executor fail-closed scientific-choice boundary; do not restart Executor"
         else:
             decision = "STAGE_READY"
             action = "start persistent CARE-ASE Executor exact session after Verifier freeze"
@@ -2928,6 +2932,198 @@ def care_ase_executor_scope_complete_pending_verifier_recheck_available(args: ar
     return completion.get("requires_verifier_recheck") is True
 
 
+def care_ase_fail_closed_requires_user_scientific_choice(
+    fail_closed: dict[str, Any],
+    current: dict[str, Any],
+) -> bool:
+    diagnostic = fail_closed.get("diagnostic_executable_verifier")
+    if not isinstance(diagnostic, dict):
+        return False
+    remaining = diagnostic.get("remaining_executor_relevant_failures")
+    if not isinstance(remaining, list):
+        remaining = []
+    reason = str(fail_closed.get("reason") or "")
+    return bool(
+        fail_closed.get("status") == "FAIL_CLOSED"
+        and fail_closed.get("implementation_complete") is False
+        and fail_closed.get("request_nonce") == current.get("request_nonce")
+        and fail_closed.get("frozen_contract_sha256") == current.get("frozen_contract_sha256")
+        and fail_closed.get("verifier_fingerprint_sha256") == current.get("verifier_fingerprint_sha256")
+        and diagnostic.get("exit_code") != 0
+        and diagnostic.get("verifier_fingerprint_sha256") == current.get("verifier_fingerprint_sha256")
+        and diagnostic.get("full_support_pseudo_tiling_detected") is False
+        and "single_vs_forced_multi_tile_full_volume" in remaining
+        and "full-support pseudo-tiling" in reason
+    )
+
+
+def validate_care_ase_executor_fail_closed_user_choice(
+    *,
+    args: argparse.Namespace,
+    request: dict[str, Any],
+    current: dict[str, Any],
+) -> dict[str, Any]:
+    _role_plan, executor, worktree, codex_home, thread_id = load_care_ase_executor_binding(args, current)
+    failures: list[str] = []
+    if request.get("enabled") is not True:
+        failures.append("request_enabled")
+    if current.get("state") != "VERIFIER_FROZEN":
+        failures.append("current_state")
+    if current.get("request_nonce") != request.get("request_nonce"):
+        failures.append("request_nonce")
+    if current.get("frozen_contract_sha256") != request.get("frozen_contract_sha256"):
+        failures.append("frozen_contract_sha256")
+    if not worktree.is_dir():
+        failures.append("executor_worktree_missing")
+    if not thread_id:
+        failures.append("executor_thread_id")
+    if failures:
+        raise RuntimeErrorV3("care_ase_executor_user_choice_invalid:" + ",".join(failures))
+
+    git(worktree, "fetch", "origin", args.branch, "--prune")
+    executor_head = git(worktree, "rev-parse", "HEAD")
+    origin_ref = f"origin/{args.branch}"
+    merge_base = git(worktree, "merge-base", origin_ref, executor_head)
+    changed_paths = git(worktree, "diff", "--name-only", f"{merge_base}..{executor_head}").splitlines()
+    scope_failures = validate_role_commit_scope(changed_paths, executor)
+    status = git_status_short(worktree)
+    if status:
+        scope_failures.append("executor_worktree_dirty")
+    if merge_base == executor_head:
+        scope_failures.append("executor_no_local_commit")
+    goal_complete = role_rollout_goal_complete(codex_home, thread_id)
+    if goal_complete is None:
+        scope_failures.append("executor_goal_not_complete")
+
+    implementation_dir = worktree / "results/agent_flow_v3/care-ase-faithful/implementation"
+    validation = load_json(implementation_dir / "implementation_evidence_validation_result.json")
+    fail_closed_path = implementation_dir / "fail_closed_implementation_receipt.json"
+    fail_closed = load_json(fail_closed_path)
+    validation_failures = validation.get("failures") if isinstance(validation.get("failures"), list) else []
+    if not (
+        validation.get("passed") is False
+        and validation_failures == ["implementation_fail_closed_before_validator"]
+        and care_ase_fail_closed_requires_user_scientific_choice(fail_closed, current)
+    ):
+        scope_failures.append("executor_fail_closed_not_user_scientific_choice")
+    if scope_failures:
+        raise RuntimeErrorV3("care_ase_executor_user_choice_invalid:" + ",".join(scope_failures))
+    return {
+        "executor_head": executor_head,
+        "executor_commit_subject": git_commit_subject(worktree, executor_head),
+        "merge_base": merge_base,
+        "changed_paths": changed_paths,
+        "thread_id": thread_id,
+        "codex_home": codex_home,
+        "worktree": str(worktree),
+        "goal_complete": goal_complete,
+        "validation_result_file_sha256": sha_file(implementation_dir / "implementation_evidence_validation_result.json"),
+        "fail_closed_receipt_file_sha256": sha_file(fail_closed_path),
+        "fail_closed_reason": fail_closed.get("reason"),
+        "diagnostic_executable_verifier": fail_closed.get("diagnostic_executable_verifier"),
+    }
+
+
+def care_ase_executor_fail_closed_user_choice_available(args: argparse.Namespace, current: dict[str, Any]) -> bool:
+    try:
+        validate_care_ase_executor_fail_closed_user_choice(
+            args=args,
+            request={
+                "enabled": True,
+                "request_nonce": current.get("request_nonce"),
+                "frozen_contract_sha256": current.get("frozen_contract_sha256"),
+            },
+            current=current,
+        )
+    except RuntimeErrorV3:
+        return False
+    return True
+
+
+def apply_care_ase_executor_fail_closed_user_choice_update(
+    *,
+    args: argparse.Namespace,
+    repo: Path,
+    request: dict[str, Any],
+    current: dict[str, Any],
+    remote_sha: str,
+) -> dict[str, Any]:
+    completion = validate_care_ase_executor_fail_closed_user_choice(args=args, request=request, current=current)
+    head_before = ensure_clean_ff_to_remote(repo, args.branch)
+    if head_before != remote_sha:
+        raise RuntimeErrorV3("remote_sha_changed_before_executor_user_choice_update")
+
+    receipt_path = repo / "results/agent_flow_v3/care-ase-faithful/controller_executor_needs_user_choice_receipt.json"
+    receipt = {
+        "schema": "CARE_ASE_FAITHFUL_CONTROLLER_EXECUTOR_NEEDS_USER_CHOICE_RECEIPT_V1",
+        "task_id": "care-ase-faithful",
+        "request_nonce": current.get("request_nonce"),
+        "frozen_contract_sha256": current.get("frozen_contract_sha256"),
+        "verifier_fingerprint_sha256": current.get("verifier_fingerprint_sha256"),
+        "created_utc": now(),
+        "state_transition": {
+            "from": "VERIFIER_FROZEN",
+            "to": "NEEDS_USER_SCIENTIFIC_CHOICE",
+        },
+        "origin_develop_before_update_sha": head_before,
+        "last_observed_remote_sha_before_update": remote_sha,
+        "executor_thread_id": completion.get("thread_id"),
+        "executor_local_commit_sha": completion.get("executor_head"),
+        "executor_local_commit_subject": completion.get("executor_commit_subject"),
+        "executor_local_commit_integrated_to_develop": False,
+        "executor_merge_base": completion.get("merge_base"),
+        "executor_goal_complete": completion.get("goal_complete"),
+        "changed_paths": completion.get("changed_paths"),
+        "validation_result_file_sha256": completion.get("validation_result_file_sha256"),
+        "fail_closed_receipt_file_sha256": completion.get("fail_closed_receipt_file_sha256"),
+        "fail_closed_reason": completion.get("fail_closed_reason"),
+        "diagnostic_executable_verifier": completion.get("diagnostic_executable_verifier"),
+        "scientific_choice_required": (
+            "Frozen contract requires true tile-local inference to match the single full-context path, "
+            "while the current Verifier also rejects hidden full-support pseudo-tiling. Executor recorded "
+            "a fail-closed implementation boundary rather than reintroducing the forbidden shortcut."
+        ),
+        "forbidden_actions_confirmed": [
+            "no Planner/Critic decision generated",
+            "no Executor fail-closed commit merged to develop as an implementation PASS",
+            "no repeat Executor resume for the same fail-closed boundary",
+            "no training, outer, Docker, upload, organizer email or develop-to-main merge",
+        ],
+        "updated_utc": now(),
+    }
+    write_json(receipt_path, receipt)
+    current_path = repo / "automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json"
+    updated_current = load_json(current_path)
+    updated_current.update(
+        {
+            "state": "NEEDS_USER_SCIENTIFIC_CHOICE",
+            "implementation_complete": False,
+            "executor_thread_id": completion.get("thread_id"),
+            "executor_production_thread_id": completion.get("thread_id"),
+            "executor_local_commit_sha": completion.get("executor_head"),
+            "executor_status": "FAIL_CLOSED_NEEDS_USER_SCIENTIFIC_CHOICE",
+            "executor_fail_closed_receipt_path": "results/agent_flow_v3/care-ase-faithful/implementation/fail_closed_implementation_receipt.json",
+            "executor_fail_closed_receipt_sha256": completion.get("fail_closed_receipt_file_sha256"),
+            "controller_executor_needs_user_choice_receipt_path": str(receipt_path.relative_to(repo)),
+            "controller_executor_needs_user_choice_receipt_sha256": sha_file(receipt_path),
+            "scientific_choice_required": receipt["scientific_choice_required"],
+            "next_action": "AWAIT_HUMAN_DECISION_ON_TILE_LOCAL_EXACTNESS_CONTRACT",
+            "expected_state_or_artifact": "Human decides whether to revise the frozen true tile-local exactness contract, relax tolerance/context semantics, or stop CARE-ASE.",
+            "last_observed_remote_sha": remote_sha,
+            "last_poll_utc": now(),
+            "updated_utc": now(),
+        }
+    )
+    write_json(current_path, updated_current)
+    git(repo, "add", str(receipt_path.relative_to(repo)), str(current_path.relative_to(repo)))
+    git(repo, "commit", "-m", "automation: record CARE-ASE executor scientific-choice boundary")
+    git(repo, "push", "origin", f"HEAD:{args.branch}")
+    pushed_sha = git(repo, "rev-parse", "HEAD")
+    receipt["current_commit_sha"] = pushed_sha
+    receipt["remote_sha_after_push"] = remote_head(repo, args.branch)
+    return receipt
+
+
 def apply_care_ase_executor_scope_completion_verifier_recheck_update(
     *,
     args: argparse.Namespace,
@@ -3936,11 +4132,14 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
         event_key = stage_event_key(task_id, current, remote_sha)
         care_ase_executor_complete = False
         care_ase_executor_needs_verifier_recheck = False
+        care_ase_executor_needs_user_scientific_choice = False
         care_ase_verifier_recheck_complete = False
         if task_id == "care-ase-faithful" and current.get("state") == "VERIFIER_FROZEN":
             care_ase_executor_complete = care_ase_executor_completion_available(args, current)
             if not care_ase_executor_complete:
                 care_ase_executor_needs_verifier_recheck = care_ase_executor_scope_complete_pending_verifier_recheck_available(args, current)
+            if not care_ase_executor_complete and not care_ase_executor_needs_verifier_recheck:
+                care_ase_executor_needs_user_scientific_choice = care_ase_executor_fail_closed_user_choice_available(args, current)
         if task_id == "care-ase-faithful" and current.get("state") in {"VERIFIER_RECHECK_REQUIRED", "VERIFIER_RECHECK_RUNNING"}:
             care_ase_verifier_recheck_complete = care_ase_verifier_recheck_completion_available(args, request, current)
         if (
@@ -3961,7 +4160,11 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
             task_id == "care-ase-faithful"
             and current.get("state") == "VERIFIER_FROZEN"
             and stage_event_was_processed(event_key, processed)
-            and (care_ase_executor_complete or care_ase_executor_needs_verifier_recheck)
+            and (
+                care_ase_executor_complete
+                or care_ase_executor_needs_verifier_recheck
+                or care_ase_executor_needs_user_scientific_choice
+            )
         ):
             processed = {key for key in processed if not key.startswith(event_key)}
         if (
@@ -4010,6 +4213,7 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
             default_wait_hours=max(4, int(args.default_wait_hours)),
             care_ase_executor_complete=care_ase_executor_complete,
             care_ase_executor_needs_verifier_recheck=care_ase_executor_needs_verifier_recheck,
+            care_ase_executor_needs_user_scientific_choice=care_ase_executor_needs_user_scientific_choice,
             care_ase_verifier_recheck_complete=care_ase_verifier_recheck_complete,
         )
         if (
@@ -4138,6 +4342,31 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
                     "updated_utc": now(),
                 }
                 event["failures"] = list(event.get("failures", [])) + ["executor_recheck_integration_failed"]
+        elif (
+            event["decision"] == "CONTROLLER_UPDATE_REQUIRED"
+            and task_id == "care-ase-faithful"
+            and event["state"] == "VERIFIER_FROZEN"
+            and care_ase_executor_needs_user_scientific_choice
+        ):
+            try:
+                event["action_result"] = apply_care_ase_executor_fail_closed_user_choice_update(
+                    args=args,
+                    repo=repo,
+                    request=request,
+                    current=current,
+                    remote_sha=remote_sha,
+                )
+                event["decision"] = "CONTROLLER_UPDATE_APPLIED"
+                event["action"] = "Executor fail-closed boundary recorded; CURRENT moved to NEEDS_USER_SCIENTIFIC_CHOICE"
+                processed.add(event["event_key"])
+                event["remote_sha_after_controller_update"] = remote_head(repo, args.branch)
+            except Exception as exc:  # noqa: BLE001 - keep polling; do not restart Executor for this boundary.
+                event["action_result"] = {
+                    "status": "FAILED",
+                    "error": f"{type(exc).__name__}: {exc}",
+                    "updated_utc": now(),
+                }
+                event["failures"] = list(event.get("failures", [])) + ["executor_user_choice_update_failed"]
         elif (
             event["decision"] == "CONTROLLER_UPDATE_REQUIRED"
             and task_id == "care-ase-faithful"

@@ -438,6 +438,50 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         self.assertEqual(receipt["decision"], "CONTROLLER_UPDATE_REQUIRED")
         self.assertIn("Verifier receipt recheck", receipt["action"])
 
+    def test_care_ase_fail_closed_tile_local_routes_to_user_choice(self) -> None:
+        current = {
+            "task_id": "care-ase-faithful",
+            "request_nonce": "care-ase-nonce",
+            "review_round": 1,
+            "state": "VERIFIER_FROZEN",
+            "frozen_contract_sha256": "a" * 64,
+            "verifier_fingerprint_sha256": "b" * 64,
+        }
+        fail_closed = {
+            "status": "FAIL_CLOSED",
+            "implementation_complete": False,
+            "request_nonce": "care-ase-nonce",
+            "frozen_contract_sha256": "a" * 64,
+            "verifier_fingerprint_sha256": "b" * 64,
+            "reason": "true tile-local forwards do not match; reintroducing full-support pseudo-tiling is forbidden",
+            "diagnostic_executable_verifier": {
+                "exit_code": 2,
+                "verifier_fingerprint_sha256": "b" * 64,
+                "full_support_pseudo_tiling_detected": False,
+                "remaining_executor_relevant_failures": [
+                    "single_vs_forced_multi_tile_full_volume",
+                    "tile_local_forward_instrumentation",
+                ],
+            },
+        }
+
+        self.assertTrue(RUNTIME.care_ase_fail_closed_requires_user_scientific_choice(fail_closed, current))
+
+        receipt = RUNTIME.evaluate_stage_event(
+            task_id="care-ase-faithful",
+            request={"enabled": True, "request_nonce": "care-ase-nonce", "frozen_contract_sha256": "a" * 64},
+            current=current,
+            visual_final=None,
+            remote_sha="c" * 40,
+            processed=set(),
+            default_wait_hours=4,
+            care_ase_executor_needs_user_scientific_choice=True,
+        )
+
+        self.assertEqual(receipt["decision"], "CONTROLLER_UPDATE_REQUIRED")
+        self.assertIn("scientific-choice boundary", receipt["action"])
+        self.assertNotEqual(receipt["decision"], "STAGE_READY")
+
     def test_care_ase_verifier_recheck_required_is_not_processed_before_start(self) -> None:
         event = {
             "task_id": "care-ase-faithful",
