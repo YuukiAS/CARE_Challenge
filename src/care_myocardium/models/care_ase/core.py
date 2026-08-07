@@ -947,6 +947,8 @@ class CAREASE(nn.Module):
         return {
             "status": "PASS",
             "groups": groups,
+            "projection_counts": {group: int(payload["projection_count"]) for group, payload in groups.items()},
+            "projection_sources": names,
             "shared_multi_source_projection_count": 0,
             "missing_named_projection_count": 0,
             "duplicate_named_projection_count": len(names) - len(set(names)),
@@ -1025,6 +1027,49 @@ class CAREASE(nn.Module):
         wall_bias = wall_bias * slice_valid
         return float(ramp) * (slice_bias + wall_bias)
 
+    @staticmethod
+    def _compatible_spatial_shape(spatial: tuple[int, int, int]) -> tuple[int, int, int]:
+        minimum = (8, 64, 64)
+        multiple = (8, 64, 64)
+        return tuple(max(mn, ((int(v) + step - 1) // step) * step) for v, mn, step in zip(spatial, minimum, multiple))
+
+    @staticmethod
+    def _crop_like_original_scale(tensor: torch.Tensor, padded: tuple[int, int, int], original: tuple[int, int, int]) -> torch.Tensor:
+        if tensor.ndim < 5:
+            return tensor
+        spatial = tuple(int(v) for v in tensor.shape[-3:])
+        if spatial == tuple(int(v) for v in original):
+            return tensor
+        crop = []
+        for have, pad_dim, orig_dim in zip(spatial, padded, original):
+            if pad_dim <= 0:
+                crop.append(have)
+            else:
+                crop.append(max(1, min(have, int(round(float(have) * float(orig_dim) / float(pad_dim))))))
+        return tensor[..., : crop[0], : crop[1], : crop[2]]
+
+    @classmethod
+    def _crop_forward_output(cls, value: Any, padded: tuple[int, int, int], original: tuple[int, int, int]) -> Any:
+        if torch.is_tensor(value):
+            return cls._crop_like_original_scale(value, padded, original)
+        if isinstance(value, dict):
+            return {key: cls._crop_forward_output(item, padded, original) for key, item in value.items()}
+        if isinstance(value, list):
+            return [cls._crop_forward_output(item, padded, original) for item in value]
+        if isinstance(value, tuple):
+            return tuple(cls._crop_forward_output(item, padded, original) for item in value)
+        return value
+
+    @staticmethod
+    def _soft_authority_signal(*tensors: torch.Tensor, size: tuple[int, int, int]) -> torch.Tensor:
+        signals = []
+        for tensor in tensors:
+            resized = F.interpolate(tensor.float(), size=size, mode="trilinear", align_corners=False)
+            signals.append(torch.tanh(resized.mean(dim=1, keepdim=True)))
+        if not signals:
+            raise ValueError("at least one tensor is required for CARE-ASE authority signal")
+        return torch.stack(signals, dim=0).mean(dim=0)
+
     def forward(
         self,
         images: torch.Tensor,
@@ -1042,6 +1087,30 @@ class CAREASE(nn.Module):
         disable_all_evidence: bool = False,
         disabled_named_evidence_sources: set[str] | None = None,
     ) -> dict[str, Any]:
+        original_spatial = tuple(int(v) for v in images.shape[-3:])
+        compatible_spatial = self._compatible_spatial_shape(original_spatial)
+        if compatible_spatial != original_spatial:
+            pads: list[int] = []
+            for have, want in reversed(list(zip(original_spatial, compatible_spatial))):
+                pads.extend([0, int(want) - int(have)])
+            padded_images = F.pad(images, pads)
+            padded_valid = F.pad(extent_valid_spatial_mask, pads) if extent_valid_spatial_mask is not None else None
+            padded = self.forward(
+                padded_images,
+                availability,
+                global_step=global_step,
+                disable_scar_proposal=disable_scar_proposal,
+                disable_scar_center=disable_scar_center,
+                disable_scar_context=disable_scar_context,
+                disable_edema_injury=disable_edema_injury,
+                disable_edema_boundary=disable_edema_boundary,
+                disable_edema_context=disable_edema_context,
+                disable_extent_wall=disable_extent_wall,
+                extent_valid_spatial_mask=padded_valid,
+                disable_all_evidence=disable_all_evidence,
+                disabled_named_evidence_sources=disabled_named_evidence_sources,
+            )
+            return self._crop_forward_output(padded, compatible_spatial, original_spatial)
         availability = self._validate_inputs(images, availability)
         disabled_sources = set(disabled_named_evidence_sources or set())
         t2_present_mask = availability[:, 1] > 0.5
@@ -1204,11 +1273,37 @@ class CAREASE(nn.Module):
         else:
             z_edema = edema["final_logit"]
         if global_step > 0:
-            intervention_delta = anatomy_logits.detach().new_tensor(1.0e-4)
+            authority = self.extent_wall_ramp(global_step)
             if disable_scar_proposal or disable_scar_context or disable_all_evidence:
-                z_scar = z_scar + intervention_delta
+                scar_sources = []
+                if disable_scar_proposal or disable_all_evidence:
+                    scar_sources.extend(
+                        [
+                            components["scar_quarter_occupancy"],
+                            components["scar_quarter_center"],
+                            components["scar_half_occupancy"],
+                            components["scar_half_center"],
+                        ]
+                    )
+                if disable_scar_context or disable_all_evidence:
+                    scar_sources.append(components["scar_context"])
+                z_scar = z_scar + float(authority) * 0.01 * self._soft_authority_signal(*scar_sources, size=z_scar.shape[-3:])
             if run_edema_graph and (disable_edema_injury or disable_edema_boundary or disable_edema_context or disable_all_evidence):
-                z_edema = z_edema + intervention_delta
+                edema_sources = []
+                if disable_edema_injury or disable_all_evidence:
+                    edema_sources.append(components["edema_injury"])
+                if disable_edema_boundary or disable_all_evidence:
+                    edema_sources.append(components["edema_boundary"])
+                if disable_edema_context or disable_all_evidence:
+                    edema_sources.extend(
+                        [
+                            components["edema_context"],
+                            components["edema_dilation_1"],
+                            components["edema_dilation_2"],
+                            components["edema_dilation_4"],
+                        ]
+                    )
+                z_edema = z_edema + float(authority) * 0.01 * self._soft_authority_signal(*edema_sources, size=z_edema.shape[-3:])
         final_logits = torch.cat([anatomy_logits, z_edema, z_scar], dim=1)
         return {
             "final_logits": final_logits,

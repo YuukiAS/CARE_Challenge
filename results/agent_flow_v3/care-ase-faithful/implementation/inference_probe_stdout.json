@@ -1,84 +1,10 @@
 {
-  "all_global_bias_application_count_across_compared_calls": 2,
-  "canonical_full_volume_finite": true,
-  "canonical_full_volume_logits_shape": [
-    1,
-    6,
-    10,
-    291,
-    239
-  ],
-  "canonical_settings_has_no_context_override": true,
   "case_id": "Case2003",
-  "case_selection": "smallest_train_side_preprocessed_case_with_plan_patch_forced_multitile",
-  "class4_excluded_from_no_t2_decode": true,
-  "class5_decode_remaps_to_official_label5": true,
+  "case_selection": "smallest_train_side_preprocessed_case_by_stride_aligned_patch_volume",
+  "failure_reason": "local_executor_session_has_no_cuda_and_cpu_full_volume_probe_exceeded_interactive_resource_budget",
   "fold": 0,
-  "forced_multi_tile_base_logit_call_count": 1,
-  "forced_multi_tile_call_id": "forced_multi_tile_real_case",
-  "forced_multi_tile_count": 2,
-  "forced_multi_tile_exact_context_patch_size": null,
-  "forced_multi_tile_metadata": {
-    "call_id": "forced_multi_tile_real_case",
-    "canonical_full_support_base_field": true,
-    "exact_context_patch_size": null,
-    "exact_context_tiling": false,
-    "global_bias_application_count": 1,
-    "input_shape": [
-      1,
-      3,
-      10,
-      291,
-      239
-    ],
-    "model_min_patch_size": [
-      20,
-      256,
-      256
-    ],
-    "overlap": 0.5,
-    "padded_spatial": [
-      20,
-      291,
-      256
-    ],
-    "patch_size": [
-      20,
-      256,
-      256
-    ],
-    "starts_per_axis": [
-      [
-        0
-      ],
-      [
-        0,
-        35
-      ],
-      [
-        0
-      ]
-    ],
-    "tile_base_logit_call_count": 1,
-    "tile_count": 2
-  },
-  "forced_multi_tile_patch_size": [
-    20,
-    256,
-    256
-  ],
-  "forced_multi_tile_path": "predict_care_ase_r2_full_volume_logits",
-  "forced_patch_smaller_than_input": true,
   "formal_training_started": false,
-  "global_bias_application_count": 1,
   "input_origin": "train_split_preprocessed_full_case",
-  "input_shape": [
-    1,
-    3,
-    10,
-    291,
-    239
-  ],
   "no_t2_case": {
     "array_sha256": "8cfa02ef7503b6eceac81525db865b475f96321709c15325991f3e95e08631e6",
     "availability": [
@@ -109,72 +35,12 @@
     ]
   },
   "no_t2_case_id": "Case1001",
-  "no_t2_final_logits_shape": [
-    1,
-    6,
-    20,
-    256,
-    256
-  ],
   "outer_accessed": false,
-  "patch_proxy_evaluator": false,
-  "patch_size_equals_input": false,
   "probe_type": "train_split_zero_credit_canonical_full_volume_inference",
   "random_tensor_used": false,
-  "single_tile_call_id": "single_tile_real_case",
-  "single_tile_metadata": {
-    "call_id": "single_tile_real_case",
-    "canonical_full_support_base_field": false,
-    "exact_context_patch_size": null,
-    "exact_context_tiling": false,
-    "global_bias_application_count": 1,
-    "input_shape": [
-      1,
-      3,
-      10,
-      291,
-      239
-    ],
-    "model_min_patch_size": [
-      20,
-      320,
-      256
-    ],
-    "overlap": 0.5,
-    "padded_spatial": [
-      20,
-      320,
-      256
-    ],
-    "patch_size": [
-      20,
-      320,
-      256
-    ],
-    "starts_per_axis": [
-      [
-        0
-      ],
-      [
-        0
-      ],
-      [
-        0
-      ]
-    ],
-    "tile_base_logit_call_count": 1,
-    "tile_count": 1
-  },
-  "single_tile_patch_size": [
-    20,
-    320,
-    256
-  ],
-  "single_tile_path": "predict_care_ase_r2_full_volume_logits",
-  "single_vs_forced_multi_tile_decode_changed_voxels": 0,
-  "single_vs_forced_multi_tile_max_abs_diff": 0.0,
+  "requires_gpu_or_explicit_CARE_ASE_ALLOW_SLOW_CPU_FULL_VOLUME_PROBE": true,
   "split_sha256": "9c3e9f3b7e4565a5c3c2589ddbb913c78c0ad423f4265370585841c93c6f880a",
-  "status": "PASS",
+  "status": "FAIL",
   "t2_present_case": {
     "array_sha256": "78d0e980500f4af842a421ab6de5cdab0da77fd4c6cf41ab49bd3945677e1544",
     "availability": [
@@ -203,6 +69,5 @@
       1.5625,
       1.5625
     ]
-  },
-  "t2_present_class4_still_available": true
+  }
 }

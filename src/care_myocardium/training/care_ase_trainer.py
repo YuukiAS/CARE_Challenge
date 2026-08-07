@@ -404,18 +404,6 @@ def per_slice_extent_loss(
         area_mask = area_case_mask.float() * target_area_valid_z.float()
         area_raw = F.smooth_l1_loss(pred_area.float(), target_area_z.float(), reduction="none")
         area = (area_raw * area_mask).sum() / area_mask.sum().clamp_min(1.0)
-        if valid_spatial_mask is not None:
-            interp_valid = F.interpolate(
-                valid_spatial_mask.detach().float(),
-                size=presence_logits.shape[-3:],
-                mode="nearest",
-            ).clamp(0.0, 1.0)
-            valid_sum = interp_valid.sum(dim=(-2, -1))
-            full_hw = float(int(interp_valid.shape[-2]) * int(interp_valid.shape[-1]))
-            has_partial_slice = bool(((valid_sum > 0.0) & (valid_sum < full_hw)).detach().any().cpu())
-            if has_partial_slice:
-                presence = presence - presence.detach()
-                area = area - area.detach()
     return presence, area
 
 
