@@ -696,7 +696,16 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
                     / "results/agent_flow_v3/care-ase-faithful/controller_ready_for_planner_review_receipt.json"
                 ).read_text(encoding="utf-8")
             )
+            planner_packet = json.loads(
+                (
+                    repo
+                    / "results/agent_flow_v3/care-ase-faithful/planner_review_packet.json"
+                ).read_text(encoding="utf-8")
+            )
             self.assertEqual(updated["state"], "WAITING_FOR_EXTERNAL_GPT")
+            self.assertEqual(updated["integration_commit_sha"], "e" * 40)
+            self.assertEqual(planner_packet["integration_commit_sha"], "e" * 40)
+            self.assertEqual(planner_packet["ci_checked_commit_sha"], "e" * 40)
             self.assertIsNone(updated["planner_decision"])
             self.assertIsNone(updated["planner_review_artifact"])
             self.assertIsNone(updated["planner_review_artifact_commit_sha"])

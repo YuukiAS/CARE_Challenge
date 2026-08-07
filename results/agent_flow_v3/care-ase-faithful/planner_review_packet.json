@@ -8,6 +8,7 @@
   "ready_state_reached_before_wait": "READY_FOR_PLANNER_REVIEW",
   "review_round": 1,
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "integration_commit_sha": "b72929c5c0cdb31770252132310b1ba472bdb5b2",
   "verifier_fingerprint_sha256": "3f471f70aff3f5c1252d7256687ebf80c3084af2d6e30a344d6c6ef19965e1ab",
   "implementation_fingerprint_sha256": "58a34ffb93346e2a2a0765f2f9a903c9b59919b007a39a02b6f484f1a512f6ec",
   "executor_thread_id": "019fd7c1-8358-7632-9022-367e62ecfbd1",
