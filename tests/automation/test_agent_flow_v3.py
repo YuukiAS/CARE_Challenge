@@ -38,6 +38,14 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
     def test_template_is_valid(self) -> None:
         self.assertEqual(MODULE.validate_request(self.template, self.schema), [])
 
+    def test_scheduled_planner_prompt_reviews_waiting_for_external_gpt(self) -> None:
+        prompt = (ROOT / "automation" / "agent_flow_v3" / "planner_scheduled_task_prompt.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("WAITING_FOR_EXTERNAL_GPT", prompt)
+        self.assertIn("planner_review_packet_path", prompt)
+        self.assertIn("implementation/integration SHA", prompt)
+
     def test_duplicate_worktree_is_rejected(self) -> None:
         request = copy.deepcopy(self.template)
         request["role_sessions"]["executor"]["worktree"] = request["role_sessions"]["verifier"]["worktree"]
