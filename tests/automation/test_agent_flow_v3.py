@@ -1235,6 +1235,88 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             self.assertEqual(receipt["deferred_target_roles"], ["executor"])
             self.assertEqual([item["role"] for item in receipt["resume_commands"]], ["verifier"])
 
+    def test_watcher_allows_verified_thread_file_supersession_of_stale_receipt(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            state_root = root / "state"
+            task_state = state_root / "care-ase-faithful"
+            task_state.mkdir(parents=True)
+            thread_file = task_state / "verifier_thread_id"
+            thread_file.write_text("new-verifier-thread\n", encoding="utf-8")
+            codex_home = root / "verifier_home"
+            rollout_dir = codex_home / "sessions" / "2026" / "08" / "07"
+            rollout_dir.mkdir(parents=True)
+            (rollout_dir / "rollout-2026-08-07T00-00-00-new-verifier-thread.jsonl").write_text(
+                "{}\n",
+                encoding="utf-8",
+            )
+            worktree = root / "verifier_worktree"
+            worktree.mkdir()
+            subprocess.check_call(["git", "init"], cwd=worktree, stdout=subprocess.DEVNULL)
+            (task_state / "verifier_launch_receipt.json").write_text(
+                json.dumps(
+                    {
+                        "role": "verifier",
+                        "thread_id": "new-verifier-thread",
+                        "codex_home": str(codex_home),
+                        "worktree": str(worktree),
+                    }
+                ),
+                encoding="utf-8",
+            )
+            receipt_root = root / "receipts"
+            receipt_root.mkdir()
+            (receipt_root / "verifier_session_receipt.json").write_text(
+                json.dumps({"role": "verifier", "thread_id": "old-verifier-thread"}),
+                encoding="utf-8",
+            )
+            role_plan = root / "role_plan.json"
+            role_plan.write_text(
+                json.dumps(
+                    {
+                        "roles": {
+                            "verifier": {
+                                "thread_id_file": str(thread_file),
+                                "codex_home": str(codex_home),
+                                "worktree": str(worktree),
+                            }
+                        }
+                    }
+                ),
+                encoding="utf-8",
+            )
+            args = argparse.Namespace(
+                task_id="care-ase-faithful",
+                branch="develop",
+                role_plan=str(role_plan),
+                codex_bin="/opt/codex",
+                state_root=state_root,
+                session_receipt_root=str(receipt_root),
+                dry_run=True,
+                thread_id_override="",
+            )
+            request = {
+                "schema": RUNTIME.SCHEMA,
+                "enabled": True,
+                "task_id": "care-ase-faithful",
+                "integration_branch": "develop",
+                "request_nonce": "nonce-1",
+                "frozen_contract_sha256": "a" * 64,
+            }
+            current = {
+                "schema": RUNTIME.SCHEMA,
+                "task_id": "care-ase-faithful",
+                "state": "PLANNER_REVISE_VERIFIER",
+                "review_round": 1,
+                "request_nonce": "nonce-1",
+                "frozen_contract_sha256": "a" * 64,
+                "integration_commit_sha": "b" * 40,
+            }
+            receipt = RUNTIME.evaluate_watcher_event(args, request, current, {"processed_events": []})
+            self.assertEqual(receipt["decision"], "DRY_RUN_RESUME")
+            self.assertEqual(receipt["failures"], [])
+            self.assertTrue(receipt["resume_commands"][0]["session_receipt_superseded_by_thread_file"])
+
     def test_watcher_ignores_duplicate_event(self) -> None:
         args = argparse.Namespace(
             task_id="smoke-task",

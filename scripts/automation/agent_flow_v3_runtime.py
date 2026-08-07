@@ -307,6 +307,34 @@ def role_rollout_exists(codex_home: str, thread_id: str) -> bool:
     return bool(role_rollout_paths(Path(codex_home), thread_id))
 
 
+def role_thread_supersession_verified(
+    *,
+    state_root: Path,
+    task_id: str,
+    role: str,
+    role_data: dict[str, Any],
+    thread_id: str,
+) -> bool:
+    """Allow a newer production thread only when durable launch evidence exists."""
+    launch_receipt_path = state_root / task_id / f"{role}_launch_receipt.json"
+    if not thread_id or not launch_receipt_path.is_file():
+        return False
+    launch_receipt = load_json(launch_receipt_path)
+    codex_home = str(role_data.get("codex_home", ""))
+    worktree = str(role_data.get("worktree", ""))
+    if launch_receipt.get("role") != role:
+        return False
+    if launch_receipt.get("thread_id") != thread_id:
+        return False
+    if str(launch_receipt.get("codex_home", "")) != codex_home:
+        return False
+    if str(launch_receipt.get("worktree", "")) != worktree:
+        return False
+    if not role_rollout_exists(codex_home, thread_id):
+        return False
+    return True
+
+
 def role_rollout_goal_complete(codex_home: str, thread_id: str) -> dict[str, Any] | None:
     latest: dict[str, Any] | None = None
     for rollout in role_rollout_paths(Path(codex_home), thread_id):
@@ -958,11 +986,20 @@ def evaluate_watcher_event(
             thread_file = Path(str(role_data.get("thread_id_file", "")))
             thread_id = args.thread_id_override or (thread_file.read_text(encoding="utf-8").strip() if thread_file.is_file() else "")
             receipt_path = Path(args.session_receipt_root) / f"{role}_session_receipt.json"
+            receipt_superseded_by_thread_file = False
             if receipt_path.is_file():
                 role_receipt = load_json(receipt_path)
                 if role_receipt.get("thread_id") != thread_id:
-                    failures.append(f"{role}:thread_id_receipt_mismatch")
-                    continue
+                    receipt_superseded_by_thread_file = role_thread_supersession_verified(
+                        state_root=args.state_root.resolve(),
+                        task_id=args.task_id,
+                        role=role,
+                        role_data=role_data,
+                        thread_id=thread_id,
+                    )
+                    if not receipt_superseded_by_thread_file:
+                        failures.append(f"{role}:thread_id_receipt_mismatch")
+                        continue
             if role_active_process(args.state_root.resolve(), args.task_id, role):
                 failures.append(f"{role}:active_process")
                 continue
@@ -979,6 +1016,7 @@ def evaluate_watcher_event(
                     "worktree": str(role_data.get("worktree", "")),
                     "command": shlex.join(command),
                     "command_argv": command,
+                    "session_receipt_superseded_by_thread_file": receipt_superseded_by_thread_file,
                 }
             )
         if failures:
