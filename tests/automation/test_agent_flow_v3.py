@@ -460,6 +460,21 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         self.assertEqual(receipt["decision"], "STAGE_READY")
         self.assertIn("Verifier recheck", receipt["action"])
 
+    def test_care_ase_verifier_recheck_complete_routes_to_controller_update(self) -> None:
+        receipt = RUNTIME.evaluate_stage_event(
+            task_id="care-ase-faithful",
+            request={"enabled": True},
+            current={"request_nonce": "nonce", "review_round": 1, "state": "VERIFIER_RECHECK_REQUIRED"},
+            visual_final=None,
+            remote_sha="b" * 40,
+            processed=set(),
+            default_wait_hours=4,
+            care_ase_verifier_recheck_complete=True,
+        )
+
+        self.assertEqual(receipt["decision"], "CONTROLLER_UPDATE_REQUIRED")
+        self.assertIn("Verifier recheck receipts", receipt["action"])
+
     def test_role_commit_scope_rejects_forbidden_or_outside_paths(self) -> None:
         role_data = {
             "write_scope": ["tests/**", "validators/**", "results/agent_flow_v3/care-ase-faithful/verification/**"],
