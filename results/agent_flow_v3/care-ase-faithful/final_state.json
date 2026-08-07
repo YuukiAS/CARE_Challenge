@@ -36,6 +36,9 @@
   "base_develop_github_actions_status": "success",
   "github_actions_run_id": 31150262892,
   "github_actions_run_url": "https://github.com/YuukiAS/CARE_Challenge/actions/runs/31150262892",
+  "notifier_status": "sent",
+  "notifier_sent_at_utc": "2026-08-07T05:30:19.692774+00:00",
+  "notifier_source_path": "results/agent_flow_v3/care-ase-faithful/notification_brief.json",
   "forbidden_actions_observed": {
     "formal_training_started": false,
     "outer_access_started": false,

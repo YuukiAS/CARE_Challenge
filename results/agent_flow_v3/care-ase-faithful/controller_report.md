@@ -20,6 +20,8 @@ git_commit_decision: authorized_develop_only
 
 git_push_decision: pushed_develop
 
+notifier_status: sent
+
 scientific_resolution_status: HUMAN_DECISION_REQUIRED
 
 next_required_action: Decide whether to revise the frozen tile-local exactness contract, relax tolerance/context semantics, or stop CARE-ASE. Automation must not continue the Executor loop until that decision is recorded.
