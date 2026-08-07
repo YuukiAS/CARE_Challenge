@@ -1,0 +1,25 @@
+{
+  "controller_decision": "DO_NOT_ENTER_PLANNER_WAIT_UNTIL_STATE_COMMIT_CI_PASS",
+  "created_utc": "2026-08-06T21:05:10Z",
+  "current_state": "CI_RUNNING",
+  "forbidden_actions_confirmed": [
+    "no Planner/Critic decision generated",
+    "no Verifier/Executor source modified",
+    "no formal training",
+    "no outer access",
+    "no Docker build/upload",
+    "no validation/challenge upload",
+    "no organizer email",
+    "no develop-to-main merge"
+  ],
+  "implementation_complete": false,
+  "reason": "Avoid requesting Scheduled Planner review from a state/receipt commit that has not itself passed deterministic CI.",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "required_next_step": "Commit and push this CI evidence, run CI for the new state-evidence SHA, then only after that pass write WAITING_FOR_EXTERNAL_GPT/READY_FOR_PLANNER_REVIEW.",
+  "schema": "CARE_ASE_FAITHFUL_CI_SUCCESS_PENDING_STATE_TRANSITION_V1",
+  "task_id": "care-ase-faithful",
+  "validated_previous_ci_conclusion": "success",
+  "validated_previous_ci_run_id": 31127920423,
+  "validated_previous_ci_url": "https://github.com/YuukiAS/CARE_Challenge/actions/runs/31127920423",
+  "validated_previous_remote_sha": "a6edd4ca10d357c0207f6812d4051989dbae7cb1"
+}

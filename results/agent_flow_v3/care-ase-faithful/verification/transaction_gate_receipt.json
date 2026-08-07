@@ -1,17 +1,17 @@
 {
-  "ci_checked_commit_sha": "885d5db3089e109136e52c9cbde4d349a62c9092",
-  "created_utc": "2026-08-06T18:26:14Z",
-  "current_state_sha": "885d5db3089e109136e52c9cbde4d349a62c9092",
+  "ci_checked_commit_sha": "edb4f2e290c72e92e1bcbd74295c525fef924f11",
+  "created_utc": "2026-08-07T02:11:24Z",
+  "current_state_sha": "edb4f2e290c72e92e1bcbd74295c525fef924f11",
   "hosted_ci_conclusion": "success",
-  "implementation_fingerprint_sha256": "b0db561e7a40c0e52c8363b8b43e96bc2441184a7ce28bc17681d41bededa1a1",
-  "integration_sha": "885d5db3089e109136e52c9cbde4d349a62c9092",
-  "planner_packet_sha": "885d5db3089e109136e52c9cbde4d349a62c9092",
+  "implementation_fingerprint_sha256": "3eabfb0be9eda776da6dd6fe3068004894ea7a5b4c30966941fc05bdc412e0dc",
+  "integration_sha": "edb4f2e290c72e92e1bcbd74295c525fef924f11",
+  "planner_packet_sha": "edb4f2e290c72e92e1bcbd74295c525fef924f11",
   "planner_review_commit": "38dbbb0e32556e5f12127699c67ff31d45e5e934",
   "request_nonce": "care-ase-20260806T090955Z",
   "review_round": 1,
-  "runtime_manifest_sha": "885d5db3089e109136e52c9cbde4d349a62c9092",
+  "runtime_manifest_sha": "edb4f2e290c72e92e1bcbd74295c525fef924f11",
   "schema": "CARE_ASE_FAITHFUL_TRANSACTION_GATE_RECEIPT_V1",
   "stale_planner_reused_after_key_commit": false,
   "task_id": "care-ase-faithful",
-  "verifier_fingerprint_sha256_at_review_start": "5c5dd6f431f2cb0c1d2fe6a7927f3679eea47b8ec7c82e4f2a4227e8ab2c7773"
+  "verifier_fingerprint_sha256_at_review_start": "847263d0afd1f34e81c49a981ea33dae5c12f53114c543d50830d077d9a7e167"
 }

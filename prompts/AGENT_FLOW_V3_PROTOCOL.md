@@ -99,7 +99,16 @@ Concrete server values belong in ignored local config or shell environment, not 
 7. Executor implements the architecture without editing verification source, then returns an implementation commit.
 8. Controller integrates Verifier and Executor commits into `develop` and pushes the exact integration SHA.
 9. GitHub Actions performs deterministic tracked checks. Server-local validation performs tests requiring private data, GPU, Slurm or hidden fixtures.
-10. When deterministic checks pass, the state becomes `READY_FOR_PLANNER_REVIEW`.
+10. When deterministic checks pass, the Controller may publish a
+    `READY_FOR_PLANNER_REVIEW` / `WAITING_FOR_EXTERNAL_GPT` transaction for the
+    current frozen contract and request nonce. This transaction is an internal
+    v3 repair-loop state update, not a human approval point. The Scheduled
+    Planner review is bound to the implementation/integration SHA and CI
+    evidence that already passed; the state-update commit may itself trigger
+    deterministic CI after the Planner wait starts. If that later state-update
+    CI fails, the Controller must discard or repair the review transaction and
+    republish it rather than treating pre-wait CI on the status commit as a
+    blocker.
 11. Planner reviews the exact frozen contract SHA, integration SHA, implementation fingerprint, verifier fingerprint, complete diff, CI evidence and required runtime receipts.
 12. Planner returns exactly one of:
    - `PLANNER_REVISE_EXECUTOR`;
@@ -234,6 +243,30 @@ STOPPED_MAX_ROUNDS
 
 Controller may respond only to the exact current state and nonce. It must not react to generic commits.
 
+For an already-authorized loop under the same frozen contract SHA and request
+nonce, the following transitions are Controller-internal operations and must
+not require another human approval:
+
+```text
+CI PASS
+-> WAITING_FOR_EXTERNAL_GPT
+-> Planner review
+-> PLANNER_REVISE_*
+-> exact production thread repair
+-> integration
+-> CI
+-> WAITING_FOR_EXTERNAL_GPT
+```
+
+Ordinary CI, state migration, Planner trigger, Verifier/Executor repair,
+production thread rebuild and runtime-binding repair are not human approval
+points. Human approval is required only when the frozen scientific contract
+must change, the request nonce must be rebuilt in a way that changes the
+scientific task, `NEEDS_USER_SCIENTIFIC_CHOICE` is reached, or the action would
+start formal training, access outer data, promote `develop` to `main`, build or
+upload Docker/submissions, send organizer email, or make another decision the
+contract reserves for the user.
+
 `WAITING_FOR_EXTERNAL_GPT` is a non-terminal orchestration state for asynchronous
 GitHub-mediated Scheduled GPT work. It must record
 `external_wait_started_utc`, `external_wait_deadline_utc`,
@@ -244,6 +277,12 @@ the controller or stage orchestrator must keep fetching `origin/develop` and
 continue as soon as the expected state or artifact appears. Lack of a local
 Scheduled Task connector is not a block reason because v3 handoff can proceed
 asynchronously through GitHub commits.
+
+When entering `WAITING_FOR_EXTERNAL_GPT` for a new review transaction, `CURRENT`
+must clear stale prior-round Planner decision, Planner artifact, review-input
+fingerprint and repair-prompt fields. If those fields are useful provenance,
+move them under an explicit superseded-prior-review object instead of leaving
+them as active routing inputs.
 
 ## 12. Visual architecture sources
 

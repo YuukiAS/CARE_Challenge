@@ -1,0 +1,36 @@
+{
+  "corrected_state": "VERIFIER_RUNNING",
+  "created_utc": "2026-08-06T20:17:53Z",
+  "expected_state_or_artifact": "Verifier production thread must create a real non-fixture executable verifier receipt and verifier_freeze_receipt bound to implementation_fingerprint_sha256 3eabfb0be9eda776da6dd6fe3068004894ea7a5b4c30966941fc05bdc412e0dc.",
+  "false_positive_commit_sha": "ba7f3414316cf90fe5461269474df5206a1e00df",
+  "false_positive_commit_subject": "automation: mark care ase verifier frozen",
+  "forbidden_actions_confirmed": {
+    "develop_to_main_merge": false,
+    "docker_built_or_uploaded": false,
+    "formal_training_started": false,
+    "organizer_email_sent": false,
+    "outer_accessed": false,
+    "planner_or_critic_decision_generated": false,
+    "validation_or_challenge_uploaded": false
+  },
+  "orchestrator_code_repair": {
+    "checks_added": [
+      "verifier_no_local_repair_commit",
+      "verifier_no_changed_paths",
+      "verifier_required_outputs_not_changed",
+      "verifier_fingerprint_not_new",
+      "verifier_executable_receipt_fixture_mode",
+      "verifier_executable_implementation_fingerprint"
+    ],
+    "file": "scripts/automation/agent_flow_v3_runtime.py"
+  },
+  "request_nonce": "care-ase-20260806T090955Z",
+  "runtime_repair_routing_receipt": "results/agent_flow_v3/care-ase-faithful/controller_runtime_repair_routing_receipt.json",
+  "runtime_repair_routing_receipt_sha256": "e337847d3f0e3e87e6424163fcf3ef4f07b271b08cb3c75749457fdfd8e149fa",
+  "schema": "CARE_ASE_FAITHFUL_ORCHESTRATOR_FALSE_POSITIVE_REPAIR_RECEIPT_V1",
+  "superseded": true,
+  "supersession_reason": "Verifier worktree fast-forward to origin/develop was incorrectly accepted as a new Verifier repair/freeze. No new non-fixture executable verifier receipt or new verifier fingerprint was produced.",
+  "task_id": "care-ase-faithful",
+  "verifier_repair_prompt_path": "automation/agent_flow_v3/tasks/care-ase-faithful/repairs/round_001_verifier_operational_runtime_receipt.md",
+  "verifier_repair_prompt_sha256": "f5b75dd1f471545d35511785980eb29e79b1a418c74a6f74e22b65c7e10b089a"
+}

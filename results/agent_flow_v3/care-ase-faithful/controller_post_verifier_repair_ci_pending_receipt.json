@@ -1,0 +1,57 @@
+{
+  "checked_head_before_ci_commit": "5b009c91ccd163bb514ba6d677b8c4c4b053ae5b",
+  "created_utc": "2026-08-06T20:38:29Z",
+  "critic_decision_generated": false,
+  "executable_verifier_receipt_sha256": "cf09543e1963cfde03764847d0dbf8e0a66fde667a0df4b4b0aca6b3a48886d2",
+  "executor_integration_merge_sha": "edb4f2e290c72e92e1bcbd74295c525fef924f11",
+  "executor_local_commit_sha": "812ae623015d7914c36a70bd494488d7d9bca3a3",
+  "forbidden_actions_confirmed": {
+    "develop_to_main_merge": false,
+    "docker_built_or_uploaded": false,
+    "formal_training_started": false,
+    "organizer_email_sent": false,
+    "outer_accessed": false,
+    "planner_or_critic_decision_generated": false,
+    "validation_or_challenge_uploaded": false
+  },
+  "frozen_verifier_validation_passed": true,
+  "frozen_verifier_validation_result_sha256": "7ca147703ccf89a824fb57c9603d9755ab11f42ec6c000ec130a054de271dec9",
+  "hosted_ci_status": "PENDING_AFTER_PUSH",
+  "implementation_evidence_sha256": "735726e05eab9de3fa4d4b791db94cccfe204fbe5612061e9cbb8f3a7cfc45b8",
+  "implementation_fingerprint_sha256": "3eabfb0be9eda776da6dd6fe3068004894ea7a5b4c30966941fc05bdc412e0dc",
+  "local_controller_gates": [
+    {
+      "exit_code": 0,
+      "name": "frozen_verifier_validate_implementation_evidence",
+      "report_json": "results/agent_flow_v3/care-ase-faithful/implementation/frozen_verifier_validation_result.json",
+      "status": "PASS"
+    },
+    {
+      "exit_code": 0,
+      "name": "py_compile_integrated_sources",
+      "status": "PASS"
+    },
+    {
+      "exit_code": 0,
+      "name": "public_verifier_pytest",
+      "status": "PASS",
+      "summary": "9 passed",
+      "test": "tests/care_ase_faithful/test_verifier_package.py"
+    }
+  ],
+  "local_controller_gates_status": "PASS",
+  "origin_develop_before_ci_commit": "5b009c91ccd163bb514ba6d677b8c4c4b053ae5b",
+  "planner_decision_generated": false,
+  "ready_for_planner_review": false,
+  "request_nonce": "care-ase-20260806T090955Z",
+  "schema": "CARE_ASE_FAITHFUL_CONTROLLER_POST_VERIFIER_REPAIR_CI_PENDING_RECEIPT_V1",
+  "state_transition": {
+    "from": "VERIFIER_FROZEN",
+    "to": "CI_RUNNING"
+  },
+  "task_id": "care-ase-faithful",
+  "verifier_fingerprint_sha256": "847263d0afd1f34e81c49a981ea33dae5c12f53114c543d50830d077d9a7e167",
+  "verifier_freeze_receipt_sha256": "3a481a2a81cda8bc8f2b87dfd77d87ac3718f90b68050144f137425208b3be67",
+  "verifier_integration_merge_sha": "94b728aaa9c8ffb28a94d2b3ddc0f2b74ac5e469",
+  "verifier_local_commit_sha": "460576651481b91e2b255ab484ead49dd945c444"
+}

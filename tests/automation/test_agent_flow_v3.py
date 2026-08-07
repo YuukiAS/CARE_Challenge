@@ -38,6 +38,14 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
     def test_template_is_valid(self) -> None:
         self.assertEqual(MODULE.validate_request(self.template, self.schema), [])
 
+    def test_scheduled_planner_prompt_reviews_waiting_for_external_gpt(self) -> None:
+        prompt = (ROOT / "automation" / "agent_flow_v3" / "planner_scheduled_task_prompt.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("WAITING_FOR_EXTERNAL_GPT", prompt)
+        self.assertIn("planner_review_packet_path", prompt)
+        self.assertIn("implementation/integration SHA", prompt)
+
     def test_duplicate_worktree_is_rejected(self) -> None:
         request = copy.deepcopy(self.template)
         request["role_sessions"]["executor"]["worktree"] = request["role_sessions"]["verifier"]["worktree"]
@@ -61,6 +69,19 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             "executor:may_edit_verification",
             MODULE.validate_request(request, self.schema),
         )
+
+    def test_codex_resume_command_adds_git_common_dir(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            worktree = root / "worktree"
+            common = root / ".git"
+            worktree.mkdir()
+            common.mkdir()
+            with mock.patch.object(RUNTIME, "git", return_value=str(common)):
+                command = RUNTIME.build_resume_command("/opt/codex", worktree, "thread-1")
+            self.assertIn("--add-dir", command)
+            self.assertIn(str(common), command)
+            self.assertEqual(command[-4:], ["resume", "--all", "thread-1", "-"])
 
     def test_planner_pass_requires_exact_bindings(self) -> None:
         request = copy.deepcopy(self.template)
@@ -457,6 +478,7 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             "expected_state_or_artifact": "true scheduled Planner round 1 decision",
             "last_observed_remote_sha": "b" * 40,
             "last_poll_utc": "2026-08-06T07:43:52Z",
+            "updated_utc": "2026-08-06T07:43:52Z",
         }
 
         receipt = RUNTIME.evaluate_stage_event(
@@ -475,6 +497,8 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         self.assertEqual(receipt["expected_state_or_artifact"], "true scheduled Planner round 1 decision")
         self.assertEqual(receipt["last_observed_remote_sha"], "d" * 40)
         self.assertRegex(receipt["last_poll_utc"], r"^\d{4}-\d{2}-\d{2}T")
+        self.assertNotEqual(receipt["last_poll_utc"], "2026-08-06T07:43:52Z")
+        self.assertNotEqual(receipt["updated_utc"], "2026-08-06T07:43:52Z")
 
     def test_orchestrator_plan_requested_records_external_gpt_wait_metadata(self) -> None:
         current = {
@@ -501,6 +525,141 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         started = RUNTIME.parse_utc(receipt["external_wait_started_utc"])
         deadline = RUNTIME.parse_utc(receipt["external_wait_deadline_utc"])
         self.assertGreaterEqual((deadline - started).total_seconds(), 4 * 3600)
+
+    def test_care_ase_ci_pass_routes_to_authorized_wait_transaction(self) -> None:
+        current = {
+            "task_id": "care-ase-faithful",
+            "request_nonce": "care-ase-nonce",
+            "review_round": 1,
+            "state": "CI_RUNNING",
+            "ci_status": "PASS",
+            "ci_checked_commit_sha": "e" * 40,
+            "frozen_contract_sha256": "a" * 64,
+            "implementation_fingerprint_sha256": "b" * 64,
+            "verifier_fingerprint_sha256": "c" * 64,
+            "executor_integration_merge_sha": "d" * 40,
+        }
+
+        receipt = RUNTIME.evaluate_stage_event(
+            task_id="care-ase-faithful",
+            request={"enabled": True},
+            current=current,
+            visual_final=None,
+            remote_sha="e" * 40,
+            processed=set(),
+            default_wait_hours=4,
+        )
+
+        self.assertEqual(receipt["decision"], "CONTROLLER_UPDATE_REQUIRED")
+        self.assertIn("CI_PASS", receipt["action"])
+
+    def test_care_ase_stale_ci_pass_keeps_waiting_for_ci(self) -> None:
+        current = {
+            "task_id": "care-ase-faithful",
+            "request_nonce": "care-ase-nonce",
+            "review_round": 1,
+            "state": "CI_RUNNING",
+            "ci_status": "PASS",
+            "ci_checked_commit_sha": "d" * 40,
+            "frozen_contract_sha256": "a" * 64,
+            "implementation_fingerprint_sha256": "b" * 64,
+            "verifier_fingerprint_sha256": "c" * 64,
+            "executor_integration_merge_sha": "d" * 40,
+        }
+
+        receipt = RUNTIME.evaluate_stage_event(
+            task_id="care-ase-faithful",
+            request={"enabled": True},
+            current=current,
+            visual_final=None,
+            remote_sha="e" * 40,
+            processed=set(),
+            default_wait_hours=4,
+        )
+
+        self.assertEqual(receipt["decision"], "WAITING_FOR_CI")
+
+    def test_care_ase_wait_transaction_clears_stale_planner_review_fields(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            current_path = repo / "automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json"
+            ci_receipt_path = repo / "results/agent_flow_v3/care-ase-faithful/controller_ci_receipt.json"
+            current_path.parent.mkdir(parents=True)
+            ci_receipt_path.parent.mkdir(parents=True)
+            current = {
+                "schema": RUNTIME.SCHEMA,
+                "task_id": "care-ase-faithful",
+                "request_nonce": "care-ase-nonce",
+                "review_round": 1,
+                "state": "CI_RUNNING",
+                "ci_status": "PASS",
+                "ci_checked_commit_sha": "e" * 40,
+                "frozen_contract_sha256": "a" * 64,
+                "implementation_fingerprint_sha256": "b" * 64,
+                "verifier_fingerprint_sha256": "c" * 64,
+                "executor_integration_merge_sha": "d" * 40,
+                "executor_local_commit_sha": "1" * 40,
+                "verifier_integration_merge_sha": "2" * 40,
+                "verifier_freeze_receipt_commit_sha": "3" * 40,
+                "planner_decision": "PLANNER_REVISE_BOTH",
+                "planner_review_artifact": "results/agent_flow_v3/care-ase-faithful/planner_reviews/round_001.json",
+                "planner_review_artifact_commit_sha": "4" * 40,
+                "planner_review_input_integration_sha": "5" * 40,
+                "planner_review_input_implementation_fingerprint_sha256": "6" * 64,
+                "planner_review_input_verifier_fingerprint_sha256": "7" * 64,
+                "repair_prompt_path": "automation/agent_flow_v3/tasks/care-ase-faithful/repairs/round_001_executor.md",
+                "repair_prompt_sha256": "8" * 64,
+                "repair_prompts": {"executor": "automation/agent_flow_v3/tasks/care-ase-faithful/repairs/round_001_executor.md"},
+                "external_wait_closed_utc": "2026-08-06T18:05:32Z",
+            }
+            current_path.write_text(json.dumps(current), encoding="utf-8")
+            ci_receipt_path.write_text(json.dumps({"schema": "old", "task_id": "care-ase-faithful"}), encoding="utf-8")
+            args = argparse.Namespace(branch="develop", default_wait_hours=4)
+
+            with mock.patch.object(RUNTIME, "ensure_clean_ff_to_remote", return_value="e" * 40), mock.patch.object(
+                RUNTIME,
+                "commit_and_push",
+                return_value={"commit_sha": "f" * 40},
+            ):
+                RUNTIME.apply_care_ase_ci_pass_planner_wait_update(
+                    args=args,
+                    repo=repo,
+                    current=current,
+                    remote_sha="e" * 40,
+                )
+
+            updated = json.loads(current_path.read_text(encoding="utf-8"))
+            ci_receipt = json.loads(ci_receipt_path.read_text(encoding="utf-8"))
+            ready_receipt = json.loads(
+                (
+                    repo
+                    / "results/agent_flow_v3/care-ase-faithful/controller_ready_for_planner_review_receipt.json"
+                ).read_text(encoding="utf-8")
+            )
+            self.assertEqual(updated["state"], "WAITING_FOR_EXTERNAL_GPT")
+            self.assertIsNone(updated["planner_decision"])
+            self.assertIsNone(updated["planner_review_artifact"])
+            self.assertIsNone(updated["planner_review_artifact_commit_sha"])
+            self.assertIsNone(updated["planner_review_input_integration_sha"])
+            self.assertIsNone(updated["repair_prompt_sha256"])
+            self.assertEqual(updated["repair_prompts"], {})
+            self.assertIsNone(updated["external_wait_closed_utc"])
+            superseded = updated["superseded_planner_review_before_current_wait"]
+            self.assertEqual(superseded["planner_decision"], "PLANNER_REVISE_BOTH")
+            self.assertEqual(
+                superseded["planner_review_artifact"],
+                "results/agent_flow_v3/care-ase-faithful/planner_reviews/round_001.json",
+            )
+            self.assertFalse(ci_receipt["human_approval_required_for_wait_transaction"])
+            self.assertEqual(
+                ci_receipt["approval_scope"],
+                "current_frozen_contract_and_request_nonce_ci_pass_to_planner_wait_loop",
+            )
+            self.assertTrue(ready_receipt["wait_transaction_ci_policy"]["status_commit_may_trigger_ci_after_wait_starts"])
+            self.assertEqual(
+                ready_receipt["wait_transaction_ci_policy"]["planner_review_binding"],
+                "implementation_and_integration_sha_that_already_passed_ci",
+            )
 
     def test_orchestrator_reuses_existing_wait_deadline_for_same_event(self) -> None:
         current = {
@@ -534,6 +693,27 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         self.assertEqual(receipt["external_wait_deadline_utc"], "2026-08-06T13:15:35Z")
         self.assertEqual(receipt["expected_state_or_artifact"], "old expected Planner artifact")
         self.assertEqual(receipt["last_observed_remote_sha"], "b" * 40)
+
+    def test_orchestrator_processed_key_accepts_new_artifact_suffix(self) -> None:
+        processed = {
+            "gpt-loop-smoke-b:smoke-b-nonce:1:PLANNER_PASS",
+        }
+        event_key = (
+            "gpt-loop-smoke-b:smoke-b-nonce:1:PLANNER_PASS:"
+            "results/agent_flow_v3/gpt-loop-smoke-b/planner_reviews/round_001.json"
+        )
+        self.assertTrue(RUNTIME.stage_event_was_processed(event_key, processed))
+
+    def test_orchestrator_remove_processed_key_accepts_artifact_suffix(self) -> None:
+        processed = {
+            "care-ase-faithful:nonce:1:PLANNER_REVISE_BOTH",
+            "other:event",
+        }
+        event_key = (
+            "care-ase-faithful:nonce:1:PLANNER_REVISE_BOTH:"
+            "results/agent_flow_v3/care-ase-faithful/planner_reviews/round_001_reentry_001.json"
+        )
+        self.assertEqual(RUNTIME.remove_stage_processed_event(event_key, processed), {"other:event"})
 
     def test_orchestrator_keeps_generic_planner_pass_at_human_gate(self) -> None:
         current = {
@@ -805,6 +985,187 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         self.assertEqual(receipt["decision"], "INVALID_EVENT")
         self.assertIn("nonce_binding", receipt["failures"])
 
+    def test_waiting_watcher_uses_bound_planner_review_artifact_event(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            repo = root / "repo"
+            repo.mkdir()
+            subprocess.check_call(["git", "init"], cwd=repo, stdout=subprocess.DEVNULL)
+            subprocess.check_call(["git", "config", "user.email", "test@example.invalid"], cwd=repo)
+            subprocess.check_call(["git", "config", "user.name", "Agent Flow Test"], cwd=repo)
+            task_dir = repo / "automation/agent_flow_v3/tasks/care-ase-faithful"
+            review_dir = repo / "results/agent_flow_v3/care-ase-faithful/planner_reviews"
+            repair_dir = task_dir / "repairs"
+            review_dir.mkdir(parents=True)
+            repair_dir.mkdir(parents=True)
+            verifier_prompt = repair_dir / "round_001_reentry_001_verifier.md"
+            executor_prompt = repair_dir / "round_001_reentry_001_executor.md"
+            verifier_prompt.write_text("verifier repair\n", encoding="utf-8")
+            executor_prompt.write_text("executor repair\n", encoding="utf-8")
+            review_path = review_dir / "round_001_reentry_001.json"
+            review_path.write_text(
+                json.dumps(
+                    {
+                        "schema": "CARE_AGENT_FLOW_V3_PLANNER_REVIEW",
+                        "task_id": "care-ase-faithful",
+                        "request_nonce": "nonce-1",
+                        "review_round": 1,
+                        "review_reentry": "round_001_reentry_001",
+                        "decision": "PLANNER_REVISE_BOTH",
+                        "frozen_contract_sha256": "a" * 64,
+                        "integration_commit_sha": "b" * 40,
+                        "implementation_fingerprint_sha256": "c" * 64,
+                        "verifier_fingerprint_sha256": "d" * 64,
+                        "created_utc": "2026-08-07T01:26:00Z",
+                    }
+                ),
+                encoding="utf-8",
+            )
+            subprocess.check_call(["git", "add", "."], cwd=repo)
+            subprocess.check_call(["git", "commit", "-m", "planner review"], cwd=repo, stdout=subprocess.DEVNULL)
+            request = {
+                "schema": RUNTIME.SCHEMA,
+                "enabled": True,
+                "task_id": "care-ase-faithful",
+                "integration_branch": "develop",
+                "request_nonce": "nonce-1",
+                "frozen_contract_sha256": "a" * 64,
+            }
+            current = {
+                "schema": RUNTIME.SCHEMA,
+                "task_id": "care-ase-faithful",
+                "state": "WAITING_FOR_EXTERNAL_GPT",
+                "review_round": 1,
+                "request_nonce": "nonce-1",
+                "frozen_contract_sha256": "a" * 64,
+                "integration_commit_sha": "b" * 40,
+                "implementation_fingerprint_sha256": "c" * 64,
+                "verifier_fingerprint_sha256": "d" * 64,
+            }
+            overlay = RUNTIME.planner_review_artifact_event(
+                repo=repo,
+                ref="HEAD",
+                task_id="care-ase-faithful",
+                request=request,
+                current=current,
+                remote_sha="e" * 40,
+            )
+            self.assertIsNotNone(overlay)
+            assert overlay is not None
+            self.assertEqual(overlay["state"], "PLANNER_REVISE_BOTH")
+            self.assertEqual(
+                overlay["planner_review_artifact"],
+                "results/agent_flow_v3/care-ase-faithful/planner_reviews/round_001_reentry_001.json",
+            )
+            self.assertEqual(overlay["watcher_target_roles_override"], ["verifier"])
+            self.assertEqual(overlay["watcher_deferred_target_roles"], ["executor"])
+            self.assertEqual(
+                overlay["repair_prompts"]["verifier"],
+                "automation/agent_flow_v3/tasks/care-ase-faithful/repairs/round_001_reentry_001_verifier.md",
+            )
+
+            thread_file = root / "verifier_thread_id"
+            thread_file.write_text("verifier-thread\n", encoding="utf-8")
+            role_plan = root / "role_plan.json"
+            role_plan.write_text(
+                json.dumps(
+                    {
+                        "roles": {
+                            "verifier": {
+                                "thread_id_file": str(thread_file),
+                                "codex_home": str(root / "verifier_home"),
+                                "worktree": str(root / "verifier_worktree"),
+                            },
+                            "executor": {
+                                "thread_id_file": str(root / "executor_thread_id"),
+                                "codex_home": str(root / "executor_home"),
+                                "worktree": str(root / "executor_worktree"),
+                            },
+                        }
+                    }
+                ),
+                encoding="utf-8",
+            )
+            args = argparse.Namespace(
+                task_id="care-ase-faithful",
+                branch="develop",
+                role_plan=str(role_plan),
+                codex_bin="/opt/codex",
+                state_root=root / "state",
+                session_receipt_root=str(root / "missing_receipts"),
+                dry_run=True,
+                thread_id_override="",
+            )
+            receipt = RUNTIME.evaluate_watcher_event(args, request, overlay, {"processed_events": []})
+            self.assertEqual(receipt["decision"], "DRY_RUN_RESUME")
+            self.assertEqual(receipt["target_roles"], ["verifier"])
+            self.assertEqual(receipt["deferred_target_roles"], ["executor"])
+            self.assertEqual(receipt["resume_commands"][0]["role"], "verifier")
+            self.assertIn("round_001_reentry_001.json", receipt["event_key"])
+
+    def test_care_ase_reentry_current_routes_verifier_before_executor(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            thread_file = root / "verifier_thread_id"
+            thread_file.write_text("verifier-thread\n", encoding="utf-8")
+            role_plan = root / "role_plan.json"
+            role_plan.write_text(
+                json.dumps(
+                    {
+                        "roles": {
+                            "verifier": {
+                                "thread_id_file": str(thread_file),
+                                "codex_home": str(root / "verifier_home"),
+                                "worktree": str(root / "verifier_worktree"),
+                            },
+                            "executor": {
+                                "thread_id_file": str(root / "executor_thread_id"),
+                                "codex_home": str(root / "executor_home"),
+                                "worktree": str(root / "executor_worktree"),
+                            },
+                        }
+                    }
+                ),
+                encoding="utf-8",
+            )
+            args = argparse.Namespace(
+                task_id="care-ase-faithful",
+                branch="develop",
+                role_plan=str(role_plan),
+                codex_bin="/opt/codex",
+                state_root=root / "state",
+                session_receipt_root=str(root / "missing_receipts"),
+                dry_run=True,
+                thread_id_override="",
+            )
+            request = {
+                "schema": RUNTIME.SCHEMA,
+                "enabled": True,
+                "task_id": "care-ase-faithful",
+                "integration_branch": "develop",
+                "request_nonce": "nonce-1",
+                "frozen_contract_sha256": "a" * 64,
+            }
+            current = {
+                "schema": RUNTIME.SCHEMA,
+                "task_id": "care-ase-faithful",
+                "state": "PLANNER_REVISE_BOTH",
+                "review_round": 1,
+                "request_nonce": "nonce-1",
+                "frozen_contract_sha256": "a" * 64,
+                "integration_commit_sha": "b" * 40,
+                "planner_review_artifact": "results/agent_flow_v3/care-ase-faithful/planner_reviews/round_001_reentry_001.json",
+                "repair_prompts": {
+                    "verifier": "automation/agent_flow_v3/tasks/care-ase-faithful/repairs/round_001_reentry_001_verifier.md",
+                    "executor": "automation/agent_flow_v3/tasks/care-ase-faithful/repairs/round_001_reentry_001_executor.md",
+                },
+            }
+            receipt = RUNTIME.evaluate_watcher_event(args, request, current, {"processed_events": []})
+            self.assertEqual(receipt["decision"], "DRY_RUN_RESUME")
+            self.assertEqual(receipt["target_roles"], ["verifier"])
+            self.assertEqual(receipt["deferred_target_roles"], ["executor"])
+            self.assertEqual([item["role"] for item in receipt["resume_commands"]], ["verifier"])
+
     def test_watcher_ignores_duplicate_event(self) -> None:
         args = argparse.Namespace(
             task_id="smoke-task",
@@ -1070,6 +1431,32 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
                 RUNTIME, "process_has_child", return_value=False
             ):
                 self.assertIsNone(RUNTIME.role_active_process(root / "state", "smoke-task", "executor"))
+
+    def test_role_worktree_current_allows_clean_local_branch_containing_remote(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            remote = root / "remote.git"
+            seed = root / "seed"
+            worktree = root / "worktree"
+            subprocess.check_call(["git", "init", "--bare", str(remote)], stdout=subprocess.DEVNULL)
+            subprocess.check_call(["git", "clone", str(remote), str(seed)], stdout=subprocess.DEVNULL)
+            subprocess.check_call(["git", "config", "user.email", "test@example.com"], cwd=seed)
+            subprocess.check_call(["git", "config", "user.name", "Test"], cwd=seed)
+            (seed / "README.md").write_text("base\n", encoding="utf-8")
+            subprocess.check_call(["git", "add", "README.md"], cwd=seed)
+            subprocess.check_call(["git", "commit", "-m", "base"], cwd=seed, stdout=subprocess.DEVNULL)
+            subprocess.check_call(["git", "branch", "-M", "develop"], cwd=seed)
+            subprocess.check_call(["git", "push", "origin", "develop"], cwd=seed, stdout=subprocess.DEVNULL)
+            subprocess.check_call(["git", "clone", "-b", "develop", str(remote), str(worktree)], stdout=subprocess.DEVNULL)
+            subprocess.check_call(["git", "config", "user.email", "test@example.com"], cwd=worktree)
+            subprocess.check_call(["git", "config", "user.name", "Test"], cwd=worktree)
+            (worktree / "local.txt").write_text("local\n", encoding="utf-8")
+            subprocess.check_call(["git", "add", "local.txt"], cwd=worktree)
+            subprocess.check_call(["git", "commit", "-m", "local"], cwd=worktree, stdout=subprocess.DEVNULL)
+
+            head = RUNTIME.ensure_role_worktree_current(worktree, "develop")
+
+            self.assertEqual(head, RUNTIME.git(worktree, "rev-parse", "HEAD"))
 
     def test_completed_resume_receipt_is_detected_but_not_active(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

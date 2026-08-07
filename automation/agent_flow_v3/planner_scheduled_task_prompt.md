@@ -22,7 +22,8 @@ Do not implement code, submit jobs or authorize training.
 
 ## 3. Implementation review mode
 
-When state is `READY_FOR_PLANNER_REVIEW`:
+When state is `READY_FOR_PLANNER_REVIEW` or `WAITING_FOR_EXTERNAL_GPT` with a
+current `planner_review_packet_path`:
 
 1. verify the exact request nonce, frozen contract SHA, integration commit SHA, implementation fingerprint, verifier fingerprint, CI status and runtime receipt manifest;
 2. read the full current implementation and verification system before reading prior findings;
@@ -35,6 +36,14 @@ When state is `READY_FOR_PLANNER_REVIEW`:
    - `PLANNER_PASS`.
 
 Each blocking finding must identify target role, affected files/functions, why it matters, required repair, required regression evidence and forbidden workaround.
+
+`WAITING_FOR_EXTERNAL_GPT` is the normal asynchronous GitHub handoff state after
+Controller has already observed deterministic CI PASS for the bound
+implementation/integration SHA. Do not ignore the task merely because it is in
+`WAITING_FOR_EXTERNAL_GPT`, and do not require the state-update commit itself to
+pass CI before beginning the review. If a later state-update CI fails, the
+Controller repairs or republishes that transaction; the Planner review remains
+bound to the review packet's checked implementation SHA and CI evidence.
 
 ## 4. Transaction rule
 

@@ -159,6 +159,20 @@ def git_show_bytes_or_none(repo: Path, ref: str, rel_path: str) -> bytes | None:
     return cp.stdout if cp.returncode == 0 else None
 
 
+def git_ls_tree_files(repo: Path, ref: str, rel_path: str) -> list[str]:
+    cp = subprocess.run(
+        ["git", "ls-tree", "-r", "--name-only", ref, rel_path],
+        cwd=repo,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    if cp.returncode != 0:
+        return []
+    return sorted(path for path in cp.stdout.splitlines() if path)
+
+
 def parse_utc(value: str) -> datetime:
     if value.endswith("Z"):
         value = value[:-1] + "+00:00"
@@ -427,16 +441,31 @@ def cmd_validate_role_receipts(args: argparse.Namespace) -> int:
     return 0 if not failures else 1
 
 
+def codex_git_add_dir_args(worktree: Path) -> list[str]:
+    if not worktree.is_dir():
+        return []
+    try:
+        common = git(worktree, "rev-parse", "--git-common-dir")
+    except (OSError, RuntimeErrorV3):
+        return []
+    common_path = Path(common)
+    if not common_path.is_absolute():
+        common_path = (worktree / common_path).resolve()
+    if not common_path.exists():
+        return []
+    return ["--add-dir", str(common_path)]
+
+
 def build_resume_command(codex_bin: str, worktree: Path, thread_id: str) -> list[str]:
     if not thread_id:
         raise RuntimeErrorV3("missing exact thread id")
-    return [codex_bin, "exec", "-C", str(worktree), "resume", "--all", thread_id, "-"]
+    return [codex_bin, "exec", "-C", str(worktree), *codex_git_add_dir_args(worktree), "resume", "--all", thread_id, "-"]
 
 
 def build_controller_start_command(codex_bin: str, worktree: Path, thread_id: str) -> list[str]:
     if not thread_id:
         raise RuntimeErrorV3("missing exact controller thread id")
-    return [codex_bin, "exec", "-C", str(worktree), "resume", thread_id, "-"]
+    return [codex_bin, "exec", "-C", str(worktree), *codex_git_add_dir_args(worktree), "resume", thread_id, "-"]
 
 
 def role_codex_env(codex_home: str, worktree: Path | None = None) -> dict[str, str]:
@@ -548,6 +577,94 @@ def prompt_candidate_rel_paths(task_id: str, role: str, current: dict[str, Any])
 
 def prompt_candidate_paths(repo: Path, task_id: str, role: str, current: dict[str, Any]) -> list[Path]:
     return [repo / rel_path for rel_path in prompt_candidate_rel_paths(task_id, role, current)]
+
+
+def planner_review_artifact_event(
+    *,
+    repo: Path,
+    ref: str,
+    task_id: str,
+    request: dict[str, Any],
+    current: dict[str, Any],
+    remote_sha: str,
+) -> dict[str, Any] | None:
+    if current.get("state") != "WAITING_FOR_EXTERNAL_GPT":
+        return None
+    review_dir = f"results/agent_flow_v3/{task_id}/planner_reviews"
+    candidates: list[tuple[str, str, dict[str, Any]]] = []
+    for rel_path in git_ls_tree_files(repo, ref, review_dir):
+        if not rel_path.endswith(".json"):
+            continue
+        raw = git_show_text_or_none(repo, ref, rel_path)
+        if raw is None:
+            continue
+        try:
+            review = json.loads(raw)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(review, dict):
+            continue
+        if review.get("schema") != "CARE_AGENT_FLOW_V3_PLANNER_REVIEW":
+            continue
+        if review.get("task_id") != task_id:
+            continue
+        if review.get("request_nonce") != current.get("request_nonce") or review.get("request_nonce") != request.get("request_nonce"):
+            continue
+        if review.get("review_round") != current.get("review_round"):
+            continue
+        if review.get("frozen_contract_sha256") != current.get("frozen_contract_sha256"):
+            continue
+        if review.get("frozen_contract_sha256") != request.get("frozen_contract_sha256"):
+            continue
+        for key in (
+            "integration_commit_sha",
+            "implementation_fingerprint_sha256",
+            "verifier_fingerprint_sha256",
+        ):
+            if current.get(key) is not None and review.get(key) != current.get(key):
+                break
+        else:
+            decision = review.get("decision")
+            if decision not in {*REVISION_STATES.keys(), "PLANNER_PASS"}:
+                continue
+            candidates.append((str(review.get("created_utc") or ""), rel_path, review))
+    if not candidates:
+        return None
+    _, review_path, review = sorted(candidates, key=lambda item: (item[0], item[1]))[-1]
+    decision = str(review["decision"])
+    overlay = dict(current)
+    overlay.update(
+        {
+            "state": decision,
+            "planner_decision": decision,
+            "planner_review_artifact": review_path,
+            "planner_review_artifact_commit_sha": remote_sha,
+            "planner_review_input_integration_sha": review.get("integration_commit_sha"),
+            "planner_review_input_implementation_fingerprint_sha256": review.get("implementation_fingerprint_sha256"),
+            "planner_review_input_verifier_fingerprint_sha256": review.get("verifier_fingerprint_sha256"),
+            "integration_commit_sha": review.get("integration_commit_sha"),
+            "implementation_fingerprint_sha256": review.get("implementation_fingerprint_sha256"),
+            "verifier_fingerprint_sha256": review.get("verifier_fingerprint_sha256"),
+            "external_wait_closed_utc": now(),
+        }
+    )
+    if decision in REVISION_STATES:
+        review_reentry = review.get("review_reentry")
+        repair_prompts: dict[str, str] = {}
+        for role in REVISION_STATES[decision]:
+            prompt_candidates: list[str] = []
+            if isinstance(review_reentry, str) and review_reentry:
+                prompt_candidates.append(f"automation/agent_flow_v3/tasks/{task_id}/repairs/{review_reentry}_{role}.md")
+            prompt_candidates.append(f"automation/agent_flow_v3/tasks/{task_id}/repairs/round_{int(review.get('review_round')):03d}_{role}.md")
+            for prompt in prompt_candidates:
+                if git_show_bytes_or_none(repo, ref, prompt) is not None:
+                    repair_prompts[role] = prompt
+                    break
+        overlay["repair_prompts"] = repair_prompts
+        if task_id == "care-ase-faithful" and decision == "PLANNER_REVISE_BOTH" and isinstance(review_reentry, str):
+            overlay["watcher_target_roles_override"] = ["verifier"]
+            overlay["watcher_deferred_target_roles"] = ["executor"]
+    return overlay
 
 
 def load_exact_repair_prompt(
@@ -670,8 +787,19 @@ def cmd_watcher_once(args: argparse.Namespace) -> int:
             git(repo, "fetch", "origin", args.branch, "--prune")
         if args.from_origin:
             ref = f"origin/{args.branch}"
+            remote_sha = remote_head(repo, args.branch)
             request = git_show_json(repo, ref, args.request_path)
             current = git_show_json(repo, ref, args.current_path)
+            planner_event = planner_review_artifact_event(
+                repo=repo,
+                ref=ref,
+                task_id=args.task_id,
+                request=request,
+                current=current,
+                remote_sha=remote_sha,
+            )
+            if planner_event is not None:
+                current = planner_event
         else:
             request = load_json(repo / args.request_path)
             current = load_json(repo / args.current_path)
@@ -793,9 +921,22 @@ def evaluate_watcher_event(
     if not isinstance(current.get("review_round"), int) or current.get("review_round") < 0:
         failures.append("review_round")
     state = current.get("state")
-    event_key = f"{args.task_id}:{current.get('request_nonce')}:{current.get('review_round')}:{state}:{integration_sha}"
+    event_binding = current.get("planner_review_artifact") or integration_sha
+    event_key = f"{args.task_id}:{current.get('request_nonce')}:{current.get('review_round')}:{state}:{event_binding}"
     processed = set(local_state.get("processed_events", []))
-    target_roles = REVISION_STATES.get(str(state), ())
+    target_override = current.get("watcher_target_roles_override")
+    if isinstance(target_override, list) and all(role in REVISION_STATES.get(str(state), ()) for role in target_override):
+        target_roles = tuple(str(role) for role in target_override)
+    elif (
+        args.task_id == "care-ase-faithful"
+        and state == "PLANNER_REVISE_BOTH"
+        and isinstance(current.get("planner_review_artifact"), str)
+        and "_reentry_" in str(current.get("planner_review_artifact"))
+    ):
+        target_roles = ("verifier",)
+        current = {**current, "watcher_deferred_target_roles": ["executor"]}
+    else:
+        target_roles = REVISION_STATES.get(str(state), ())
     decision = "IGNORE"
     commands: list[dict[str, str]] = []
 
@@ -857,6 +998,9 @@ def evaluate_watcher_event(
         "event_key": event_key,
         "decision": decision,
         "target_roles": list(target_roles),
+        "deferred_target_roles": current.get("watcher_deferred_target_roles", []),
+        "planner_review_artifact": current.get("planner_review_artifact"),
+        "planner_review_artifact_commit_sha": current.get("planner_review_artifact_commit_sha"),
         "resume_commands": commands,
         "failures": failures,
         "processed_events": sorted(processed),
@@ -911,8 +1055,20 @@ def run_watch_cycle_without_lock(args: argparse.Namespace) -> dict[str, Any]:
     args = resolve_watcher_paths(args)
     repo = args.repo_root.resolve()
     git(repo, "fetch", "origin", args.branch, "--prune")
-    request = git_show_json(repo, f"origin/{args.branch}", args.request_path)
-    current = git_show_json(repo, f"origin/{args.branch}", args.current_path)
+    ref = f"origin/{args.branch}"
+    remote_sha = remote_head(repo, args.branch)
+    request = git_show_json(repo, ref, args.request_path)
+    current = git_show_json(repo, ref, args.current_path)
+    planner_event = planner_review_artifact_event(
+        repo=repo,
+        ref=ref,
+        task_id=args.task_id,
+        request=request,
+        current=current,
+        remote_sha=remote_sha,
+    )
+    if planner_event is not None:
+        current = planner_event
     state_path = args.state_root.resolve() / args.task_id / "watcher_state.json"
     local_state = load_json(state_path) if state_path.is_file() else {
         "schema": WATCHER_STATE_SCHEMA,
@@ -1243,20 +1399,64 @@ def update_wait_fields(current: dict[str, Any], *, remote_sha: str, expected: st
     return updated
 
 
+def ci_pass_allows_planner_wait_transaction(current: dict[str, Any], remote_sha: str) -> bool:
+    """Return true when CI_RUNNING may advance to a Planner wait transaction.
+
+    This is an internal Controller transaction for an already-authorized v3 loop:
+    CI is bound to the implementation/integration SHA under the current frozen
+    contract and nonce. The WAITING_FOR_EXTERNAL_GPT state commit itself may
+    trigger another deterministic CI run, but that run is not a human approval
+    gate before entering the asynchronous Planner wait.
+    """
+    if current.get("state") != "CI_RUNNING":
+        return False
+    if not str(current.get("ci_status") or "").startswith("PASS"):
+        return False
+    checked = current.get("ci_checked_commit_sha") or current.get("last_observed_remote_sha")
+    if checked != remote_sha:
+        return False
+    required = (
+        "request_nonce",
+        "frozen_contract_sha256",
+        "implementation_fingerprint_sha256",
+        "verifier_fingerprint_sha256",
+        "executor_integration_merge_sha",
+    )
+    return all(isinstance(current.get(key), str) and bool(current.get(key)) for key in required)
+
+
 def stage_event_key(task_id: str, current: dict[str, Any], remote_sha: str) -> str:
     del remote_sha
-    return ":".join(
-        [
-            task_id,
-            str(current.get("request_nonce")),
-            str(current.get("review_round")),
-            str(current.get("state")),
-        ]
-    )
+    parts = [
+        task_id,
+        str(current.get("request_nonce")),
+        str(current.get("review_round")),
+        str(current.get("state")),
+    ]
+    planner_artifact = current.get("planner_review_artifact")
+    if isinstance(planner_artifact, str) and planner_artifact:
+        parts.append(planner_artifact)
+    return ":".join(parts)
 
 
 def stage_event_was_processed(event_key: str, processed: set[str]) -> bool:
-    return event_key in processed or any(old_key.startswith(f"{event_key}:") for old_key in processed)
+    return (
+        event_key in processed
+        or any(old_key.startswith(f"{event_key}:") for old_key in processed)
+        or any(event_key.startswith(f"{old_key}:") for old_key in processed)
+    )
+
+
+def remove_stage_processed_event(event_key: str, processed: set[str]) -> set[str]:
+    return {
+        old_key
+        for old_key in processed
+        if not (
+            old_key == event_key
+            or old_key.startswith(f"{event_key}:")
+            or event_key.startswith(f"{old_key}:")
+        )
+    }
 
 
 def merge_existing_wait_metadata(current: dict[str, Any], previous_wait: dict[str, Any] | None) -> dict[str, Any]:
@@ -1329,9 +1529,22 @@ def evaluate_stage_event(
         else:
             decision = "WAITING_FOR_EXTERNAL_GPT"
             action = str(current.get("expected_state_or_artifact") or "external GPT artifact")
+            wait_current = update_wait_fields(
+                current,
+                remote_sha=remote_sha,
+                expected=action,
+                default_hours=default_wait_hours,
+            )
     elif state in REVISION_STATES:
         decision = "HANDOFF_TO_WATCHER"
         action = "existing watcher resumes exact role sessions"
+    elif state == "CI_RUNNING":
+        if task_id == "care-ase-faithful" and ci_pass_allows_planner_wait_transaction(current, remote_sha):
+            decision = "CONTROLLER_UPDATE_REQUIRED"
+            action = "authorized CI_PASS -> WAITING_FOR_EXTERNAL_GPT Planner review transaction"
+        else:
+            decision = "WAITING_FOR_CI"
+            action = str(current.get("expected_state_or_artifact") or "hosted CI result")
     elif state == "READY_FOR_PLANNER_REVIEW":
         decision = "WAITING_FOR_EXTERNAL_GPT"
         action = "scheduled Planner review"
@@ -1548,7 +1761,24 @@ def ensure_role_worktree_current(worktree: Path, branch: str) -> str:
     if git_status_short(worktree):
         raise RuntimeErrorV3(f"controller_worktree_dirty:{worktree}")
     git(worktree, "fetch", "origin", branch, "--prune")
-    git(worktree, "merge", "--ff-only", f"origin/{branch}")
+    remote = git(worktree, "rev-parse", f"origin/{branch}")
+    head = git(worktree, "rev-parse", "HEAD")
+    if head == remote:
+        return head
+    contains_remote = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", f"origin/{branch}", "HEAD"],
+        cwd=worktree,
+        check=False,
+    )
+    if contains_remote.returncode == 0:
+        return head
+    try:
+        git(worktree, "merge", "--ff-only", f"origin/{branch}")
+    except subprocess.CalledProcessError as exc:
+        merge_base = git(worktree, "merge-base", "HEAD", f"origin/{branch}")
+        raise RuntimeErrorV3(
+            f"role_worktree_not_ff:{worktree}:head={head}:remote={remote}:merge_base={merge_base}"
+        ) from exc
     return git(worktree, "rev-parse", "HEAD")
 
 
@@ -1906,8 +2136,18 @@ def validate_care_ase_verifier_freeze(
         for line in git(verifier_worktree, "diff", "--name-only", f"{merge_base}..{verifier_head}").splitlines()
         if line
     ]
+    if merge_base == verifier_head:
+        failures.append("verifier_no_local_repair_commit")
+    if not changed_paths:
+        failures.append("verifier_no_changed_paths")
     failures.extend(validate_role_commit_scope(changed_paths, role_data))
     freeze_rel = care_ase_verifier_freeze_relpath()
+    fingerprint_rel = "results/agent_flow_v3/care-ase-faithful/verification/verifier_fingerprint.json"
+    executable_rel = "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json"
+    required_verifier_outputs = {freeze_rel, fingerprint_rel, executable_rel}
+    missing_required_outputs = sorted(required_verifier_outputs.difference(changed_paths))
+    if missing_required_outputs:
+        failures.append("verifier_required_outputs_not_changed:" + ",".join(missing_required_outputs))
     freeze_raw = git_show_text_or_none(verifier_worktree, verifier_head, freeze_rel)
     if freeze_raw is None:
         failures.append("verifier_freeze_receipt_missing")
@@ -1937,7 +2177,8 @@ def validate_care_ase_verifier_freeze(
             failures.append("verifier_freeze_known_bad_count")
         if freeze.get("protected_known_bad_all_nonzero") is not True:
             failures.append("verifier_freeze_known_bad_nonzero")
-        fingerprint_rel = "results/agent_flow_v3/care-ase-faithful/verification/verifier_fingerprint.json"
+        if freeze.get("verifier_fingerprint_sha256") == current.get("verifier_fingerprint_sha256"):
+            failures.append("verifier_fingerprint_not_new")
         fingerprint_raw = git_show_text_or_none(verifier_worktree, verifier_head, fingerprint_rel)
         if fingerprint_raw is None:
             failures.append("verifier_fingerprint_missing")
@@ -1954,6 +2195,20 @@ def validate_care_ase_verifier_freeze(
                     failures.append("verifier_fingerprint_contract_sha")
             except Exception as exc:  # noqa: BLE001
                 failures.append(f"verifier_fingerprint_unreadable:{type(exc).__name__}:{exc}")
+        executable_raw = git_show_text_or_none(verifier_worktree, verifier_head, executable_rel)
+        if executable_raw is None:
+            failures.append("verifier_executable_receipt_missing")
+        else:
+            try:
+                executable = json.loads(executable_raw)
+                if not isinstance(executable, dict):
+                    raise ValueError("not object")
+                if executable.get("fixture_mode") is True:
+                    failures.append("verifier_executable_receipt_fixture_mode")
+                if executable.get("implementation_fingerprint_sha256") != current.get("implementation_fingerprint_sha256"):
+                    failures.append("verifier_executable_implementation_fingerprint")
+            except Exception as exc:  # noqa: BLE001
+                failures.append(f"verifier_executable_receipt_unreadable:{type(exc).__name__}:{exc}")
     return failures, {
         "verifier_head": verifier_head,
         "merge_base": merge_base,
@@ -2647,6 +2902,200 @@ def apply_care_ase_executor_completion_controller_update(
     }
 
 
+def apply_care_ase_ci_pass_planner_wait_update(
+    *,
+    args: argparse.Namespace,
+    repo: Path,
+    current: dict[str, Any],
+    remote_sha: str,
+) -> dict[str, Any]:
+    if not ci_pass_allows_planner_wait_transaction(current, remote_sha):
+        raise RuntimeErrorV3("care_ase_ci_pass_wait_not_authorized")
+    head_before = ensure_clean_ff_to_remote(repo, args.branch)
+    if head_before != remote_sha:
+        raise RuntimeErrorV3("remote_sha_changed_before_wait_transaction")
+
+    current_path = repo / "automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json"
+    ci_receipt_path = repo / "results/agent_flow_v3/care-ase-faithful/controller_ci_receipt.json"
+    ready_receipt_path = repo / "results/agent_flow_v3/care-ase-faithful/controller_ready_for_planner_review_receipt.json"
+    planner_packet_path = repo / "results/agent_flow_v3/care-ase-faithful/planner_review_packet.json"
+    wait_started = now()
+    wait_deadline_value = wait_deadline(wait_started, max(4, int(args.default_wait_hours)))
+    stale_planner_review = {
+        key: current.get(key)
+        for key in (
+            "planner_decision",
+            "planner_review_artifact",
+            "planner_review_artifact_commit_sha",
+            "planner_review_input_integration_sha",
+            "planner_review_input_implementation_fingerprint_sha256",
+            "planner_review_input_verifier_fingerprint_sha256",
+            "repair_prompt_path",
+            "repair_prompt_sha256",
+            "repair_prompts",
+            "external_wait_closed_utc",
+        )
+        if current.get(key) not in (None, {}, [])
+    }
+
+    ci_receipt = load_json(ci_receipt_path)
+    ci_receipt.update(
+        {
+            "schema": "CARE_ASE_FAITHFUL_CONTROLLER_CI_RECEIPT_V5",
+            "created_utc": wait_started,
+            "checked_commit_sha": remote_sha,
+            "github_actions_status": "PASS",
+            "state_transition_after_ci": "READY_FOR_PLANNER_REVIEW_TO_WAITING_FOR_EXTERNAL_GPT",
+            "human_approval_required_for_wait_transaction": False,
+            "approval_scope": "current_frozen_contract_and_request_nonce_ci_pass_to_planner_wait_loop",
+        }
+    )
+    write_json(ci_receipt_path, ci_receipt)
+
+    ready_receipt = {
+        "schema": "CARE_ASE_FAITHFUL_CONTROLLER_READY_FOR_PLANNER_REVIEW_RECEIPT_V2",
+        "task_id": "care-ase-faithful",
+        "request_nonce": current.get("request_nonce"),
+        "created_utc": wait_started,
+        "controller_decision": "ENTER_WAITING_FOR_EXTERNAL_GPT_AFTER_AUTHORIZED_CI_PASS",
+        "state_before": "CI_RUNNING",
+        "ready_state_reached_before_wait": "READY_FOR_PLANNER_REVIEW",
+        "state_after": "WAITING_FOR_EXTERNAL_GPT",
+        "review_round": current.get("review_round"),
+        "checked_remote_develop_sha": remote_sha,
+        "ci_receipt": str(ci_receipt_path.relative_to(repo)),
+        "ci_receipt_sha256": sha_file(ci_receipt_path),
+        "frozen_contract_sha256": current.get("frozen_contract_sha256"),
+        "implementation_fingerprint_sha256": current.get("implementation_fingerprint_sha256"),
+        "verifier_fingerprint_sha256": current.get("verifier_fingerprint_sha256"),
+        "executor_local_commit_sha": current.get("executor_local_commit_sha"),
+        "executor_integration_merge_sha": current.get("executor_integration_merge_sha"),
+        "verifier_freeze_receipt_commit_sha": current.get("verifier_freeze_receipt_commit_sha"),
+        "verifier_integration_merge_sha": current.get("verifier_integration_merge_sha"),
+        "planner_expected_artifact": "Scheduled Planner returns PLANNER_PASS or a bound PLANNER_REVISE_* artifact for current review inputs.",
+        "wait_transaction_ci_policy": {
+            "status_commit_may_trigger_ci_after_wait_starts": True,
+            "planner_review_binding": "implementation_and_integration_sha_that_already_passed_ci",
+            "if_status_commit_ci_fails": "discard_or_repair_review_transaction_and_republish",
+        },
+        "forbidden_actions_confirmed": [
+            "no Planner/Critic decision generated by Codex",
+            "no Controller edit to src scripts/training scripts/inference jobs configs tests validators",
+            "no formal training",
+            "no outer access",
+            "no Docker build/upload",
+            "no validation/challenge upload",
+            "no organizer email",
+            "no develop-to-main merge",
+        ],
+    }
+    write_json(ready_receipt_path, ready_receipt)
+
+    planner_packet = {
+        "schema": "CARE_ASE_FAITHFUL_PLANNER_REVIEW_PACKET_V4",
+        "task_id": "care-ase-faithful",
+        "request_nonce": current.get("request_nonce"),
+        "created_utc": wait_started,
+        "decision_requested": "PLANNER_REVIEW",
+        "current_state_after_commit": "WAITING_FOR_EXTERNAL_GPT",
+        "ready_state_reached_before_wait": "READY_FOR_PLANNER_REVIEW",
+        "review_round": current.get("review_round"),
+        "frozen_contract_sha256": current.get("frozen_contract_sha256"),
+        "verifier_fingerprint_sha256": current.get("verifier_fingerprint_sha256"),
+        "implementation_fingerprint_sha256": current.get("implementation_fingerprint_sha256"),
+        "executor_thread_id": current.get("executor_thread_id"),
+        "verifier_thread_id": current.get("verifier_thread_id"),
+        "controller_thread_id": current.get("controller_thread_id"),
+        "executor_local_commit_sha": current.get("executor_local_commit_sha"),
+        "executor_integration_merge_sha": current.get("executor_integration_merge_sha"),
+        "verifier_freeze_receipt_commit_sha": current.get("verifier_freeze_receipt_commit_sha"),
+        "verifier_integration_merge_sha": current.get("verifier_integration_merge_sha"),
+        "controller_checked_remote_develop_sha": remote_sha,
+        "controller_ci_receipt": str(ci_receipt_path.relative_to(repo)),
+        "controller_ci_receipt_sha256": sha_file(ci_receipt_path),
+        "controller_ready_for_planner_review_receipt": str(ready_receipt_path.relative_to(repo)),
+        "controller_ready_for_planner_review_receipt_sha256": sha_file(ready_receipt_path),
+        "controller_integration_receipt": "results/agent_flow_v3/care-ase-faithful/controller_integration_receipt.json",
+        "runtime_receipts": {
+            "runtime_binding_receipt": "results/agent_flow_v3/care-ase-faithful/runtime_binding_receipt.json",
+            "implementation_evidence": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json",
+            "executable_verifier_receipt": "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json",
+            "frozen_verifier_validation_result": "results/agent_flow_v3/care-ase-faithful/implementation/frozen_verifier_validation_result.json",
+        },
+        "local_gates": "PASS",
+        "ci_for_review_inputs": "PASS",
+        "ci_checked_commit_sha": remote_sha,
+        "planner_allowed_decisions": sorted({"PLANNER_REVISE_EXECUTOR", "PLANNER_REVISE_VERIFIER", "PLANNER_REVISE_BOTH", "PLANNER_PASS"}),
+    }
+    write_json(planner_packet_path, planner_packet)
+
+    updated_current = load_json(current_path)
+    updated_current.update(
+        {
+            "state": "WAITING_FOR_EXTERNAL_GPT",
+            "ready_state_reached_before_wait": "READY_FOR_PLANNER_REVIEW",
+            "implementation_complete": True,
+            "controller_local_gates_status": "PASS",
+            "ci_status": "PASS",
+            "ci_checked_commit_sha": remote_sha,
+            "planner_decision": None,
+            "planner_review_artifact": None,
+            "planner_review_artifact_commit_sha": None,
+            "planner_review_input_integration_sha": None,
+            "planner_review_input_implementation_fingerprint_sha256": None,
+            "planner_review_input_verifier_fingerprint_sha256": None,
+            "repair_prompt_path": None,
+            "repair_prompt_sha256": None,
+            "repair_prompts": {},
+            "external_wait_closed_utc": None,
+            "superseded_planner_review_before_current_wait": stale_planner_review,
+            "controller_ci_receipt_path": str(ci_receipt_path.relative_to(repo)),
+            "controller_ci_receipt_sha256": sha_file(ci_receipt_path),
+            "controller_ready_for_planner_review_receipt_path": str(ready_receipt_path.relative_to(repo)),
+            "controller_ready_for_planner_review_receipt_sha256": sha_file(ready_receipt_path),
+            "planner_review_packet_path": str(planner_packet_path.relative_to(repo)),
+            "planner_review_packet_sha256": sha_file(planner_packet_path),
+            "expected_state_or_artifact": "Scheduled Planner returns PLANNER_PASS or a bound PLANNER_REVISE_* artifact for the current frozen contract, implementation fingerprint, verifier fingerprint, integration SHA and CI evidence.",
+            "external_wait_started_utc": wait_started,
+            "external_wait_deadline_utc": wait_deadline_value,
+            "last_observed_remote_sha": remote_sha,
+            "last_poll_utc": now(),
+            "next_action": "WAIT_FOR_SCHEDULED_PLANNER_REVIEW_ON_ORIGIN_DEVELOP",
+            "blocked_failures": [],
+            "blocked_or_failure_reason": None,
+            "review_binding_audit": {
+                "exact_integration_ci_status": "PASS",
+                "checked_commit_sha": remote_sha,
+                "tracked_ci_receipt_is_stale": False,
+                "tracked_planner_review_packet_is_stale": False,
+                "tracked_runtime_receipt_manifest_is_stale": False,
+                "wait_transaction_status_commit_ci_policy": "post_wait_ci_failure_repairs_transaction_not_pre_wait_block",
+            },
+            "updated_utc": now(),
+        }
+    )
+    write_json(current_path, updated_current)
+    commit_result = commit_and_push(
+        repo,
+        args.branch,
+        [
+            "automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json",
+            "results/agent_flow_v3/care-ase-faithful/controller_ci_receipt.json",
+            "results/agent_flow_v3/care-ase-faithful/controller_ready_for_planner_review_receipt.json",
+            "results/agent_flow_v3/care-ase-faithful/planner_review_packet.json",
+        ],
+        "automation: request care ase planner review",
+    )
+    return {
+        "status": "APPLIED",
+        "commit": commit_result,
+        "ci_checked_commit_sha": remote_sha,
+        "external_wait_started_utc": wait_started,
+        "external_wait_deadline_utc": wait_deadline_value,
+        "updated_utc": now(),
+    }
+
+
 def stage_event_should_mark_processed(event: dict[str, Any]) -> bool:
     if event.get("decision") == "STOP_AT_HUMAN_GATE":
         return True
@@ -2765,6 +3214,16 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
             current,
             dict(local_state.get("waits", {})).get(task_id),
         )
+        planner_event = planner_review_artifact_event(
+            repo=repo,
+            ref=ref,
+            task_id=task_id,
+            request=request,
+            current=current,
+            remote_sha=remote_sha,
+        )
+        if planner_event is not None:
+            current = planner_event
         event_key = stage_event_key(task_id, current, remote_sha)
         care_ase_executor_complete = False
         if task_id == "care-ase-faithful" and current.get("state") == "VERIFIER_FROZEN":
@@ -2790,6 +3249,25 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
             and care_ase_executor_complete
         ):
             processed = {key for key in processed if not key.startswith(event_key)}
+        if (
+            task_id == "care-ase-faithful"
+            and current.get("state") == "VERIFIER_RUNNING"
+            and stage_event_was_processed(event_key, processed)
+        ):
+            processed = {key for key in processed if not key.startswith(event_key)}
+        if (
+            task_id == "care-ase-faithful"
+            and current.get("state") in {"PLANNER_REVISE_VERIFIER", "PLANNER_REVISE_BOTH"}
+            and stage_event_was_processed(event_key, processed)
+        ):
+            ready, _readiness = care_ase_verifier_repair_ready_for_controller_update(
+                args=args,
+                repo=repo,
+                request=request,
+                current=current,
+            )
+            if ready:
+                processed = remove_stage_processed_event(event_key, processed)
         visual_final = None
         visual_final_path = f"results/agent_flow_v3/{task_id}/visual_smoke_final.json"
         raw_visual_final = git_show_text_or_none(repo, ref, visual_final_path)
@@ -2935,6 +3413,29 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
                     "updated_utc": now(),
                 }
                 event["failures"] = list(event.get("failures", [])) + ["executor_integration_failed"]
+        elif (
+            event["decision"] == "CONTROLLER_UPDATE_REQUIRED"
+            and task_id == "care-ase-faithful"
+            and event["state"] == "CI_RUNNING"
+        ):
+            try:
+                event["action_result"] = apply_care_ase_ci_pass_planner_wait_update(
+                    args=args,
+                    repo=repo,
+                    current=current,
+                    remote_sha=remote_sha,
+                )
+                event["decision"] = "CONTROLLER_UPDATE_APPLIED"
+                event["action"] = "Authorized CI PASS recorded; CURRENT moved to WAITING_FOR_EXTERNAL_GPT"
+                processed.add(event["event_key"])
+                event["remote_sha_after_controller_update"] = remote_head(repo, args.branch)
+            except Exception as exc:  # noqa: BLE001 - keep polling; do not fake Planner wait.
+                event["action_result"] = {
+                    "status": "FAILED",
+                    "error": f"{type(exc).__name__}: {exc}",
+                    "updated_utc": now(),
+                }
+                event["failures"] = list(event.get("failures", [])) + ["ci_pass_wait_transaction_failed"]
         elif (
             event["decision"] == "STAGE_READY"
             and task_id == "care-ase-faithful"

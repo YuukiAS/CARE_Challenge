@@ -71,3 +71,18 @@ The helper also includes `observe-visual-smoke`, a read-only remote observer for
 receipts exist on `origin/develop`, validates nonce and image SHA bindings, and
 counts scheduling windows. It must not be used to synthesize or substitute the
 required visual receipts.
+
+## 2026-08-07 repair-loop wait authorization
+
+For the active frozen contract SHA and request nonce, deterministic CI success
+authorizes the Controller to advance `CI_RUNNING` to
+`WAITING_FOR_EXTERNAL_GPT` without another human prompt. This transaction only
+updates state, review binding and receipts; it does not generate a Planner
+decision, call a Scheduled Task connector, start training, access outer data,
+build Docker, upload submissions, send organizer email or merge `develop` to
+`main`.
+
+The review is bound to the implementation/integration SHA and CI evidence that
+already passed. CI for the later status commit may run after Planner wait begins;
+if that status-commit CI fails, the Controller must repair or republish the
+transaction instead of blocking before the asynchronous Planner wait.
