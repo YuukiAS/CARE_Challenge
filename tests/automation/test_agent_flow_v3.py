@@ -677,6 +677,16 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         self.assertEqual(receipt["expected_state_or_artifact"], "old expected Planner artifact")
         self.assertEqual(receipt["last_observed_remote_sha"], "b" * 40)
 
+    def test_orchestrator_processed_key_accepts_new_artifact_suffix(self) -> None:
+        processed = {
+            "gpt-loop-smoke-b:smoke-b-nonce:1:PLANNER_PASS",
+        }
+        event_key = (
+            "gpt-loop-smoke-b:smoke-b-nonce:1:PLANNER_PASS:"
+            "results/agent_flow_v3/gpt-loop-smoke-b/planner_reviews/round_001.json"
+        )
+        self.assertTrue(RUNTIME.stage_event_was_processed(event_key, processed))
+
     def test_orchestrator_keeps_generic_planner_pass_at_human_gate(self) -> None:
         current = {
             "request_nonce": "nonce-1",

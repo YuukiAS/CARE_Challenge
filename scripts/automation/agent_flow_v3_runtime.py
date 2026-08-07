@@ -1440,7 +1440,11 @@ def stage_event_key(task_id: str, current: dict[str, Any], remote_sha: str) -> s
 
 
 def stage_event_was_processed(event_key: str, processed: set[str]) -> bool:
-    return event_key in processed or any(old_key.startswith(f"{event_key}:") for old_key in processed)
+    return (
+        event_key in processed
+        or any(old_key.startswith(f"{event_key}:") for old_key in processed)
+        or any(event_key.startswith(f"{old_key}:") for old_key in processed)
+    )
 
 
 def merge_existing_wait_metadata(current: dict[str, Any], previous_wait: dict[str, Any] | None) -> dict[str, Any]:
