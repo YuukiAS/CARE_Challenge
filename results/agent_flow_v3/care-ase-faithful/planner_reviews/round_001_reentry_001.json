@@ -1,0 +1,232 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_PLANNER_REVIEW",
+  "task_id": "care-ase-faithful",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "review_round": 1,
+  "review_reentry": "round_001_reentry_001",
+  "observed_state": "WAITING_FOR_EXTERNAL_GPT",
+  "ready_state_reached_before_wait": "READY_FOR_PLANNER_REVIEW",
+  "review_mode": "IMPLEMENTATION_REVIEW",
+  "frozen_contract_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "integration_commit_sha": "edb4f2e290c72e92e1bcbd74295c525fef924f11",
+  "implementation_fingerprint_sha256": "3eabfb0be9eda776da6dd6fe3068004894ea7a5b4c30966941fc05bdc412e0dc",
+  "verifier_fingerprint_sha256": "847263d0afd1f34e81c49a981ea33dae5c12f53114c543d50830d077d9a7e167",
+  "ci_binding": {
+    "status": "PASS",
+    "run_id": 31127920423,
+    "hosted_run_head_sha": "a6edd4ca10d357c0207f6812d4051989dbae7cb1",
+    "controller_checked_commit_sha": "ed35126f03833c4c8309817d988f206142bc59d1",
+    "interpretation": "Hosted deterministic CI is available for a develop descendant containing the implementation and verifier repairs. The later state/protocol commit is not itself a pre-review human gate."
+  },
+  "binding_audit": {
+    "request_nonce_matches": true,
+    "frozen_contract_matches": true,
+    "planner_packet_implementation_fingerprint_matches_current": true,
+    "planner_packet_verifier_fingerprint_matches_current": true,
+    "planner_packet_integration_sha_matches_current": true,
+    "hosted_ci_present": true,
+    "runtime_receipt_manifest_current_review_round": false,
+    "implementation_fingerprint_embeds_current_verifier_fingerprint": false,
+    "current_verifier_source_is_contained_in_declared_integration_sha": false,
+    "binding_status": "FAIL_CLOSED_NEEDS_REBIND_AFTER_REPAIR"
+  },
+  "evidence_reviewed": {
+    "contract_and_state": [
+      "automation/agent_flow_v3/planner_scheduled_task_prompt.md",
+      "automation/agent_flow_v3/schema.json",
+      "automation/agent_flow_v3/tasks/care-ase-faithful/REQUEST.json",
+      "automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json",
+      "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+      "results/agent_flow_v3/care-ase-faithful/planner_review_packet.json",
+      "results/agent_flow_v3/care-ase-faithful/runtime_receipt_manifest.json",
+      "results/agent_flow_v3/care-ase-faithful/controller_ci_receipt.json"
+    ],
+    "implementation": [
+      "src/care_myocardium/models/care_ase/core.py",
+      "src/care_myocardium/training/care_ase_trainer.py",
+      "src/care_myocardium/training/care_ase_runtime.py",
+      "src/care_myocardium/inference/care_ase_r2_full_volume.py",
+      "scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py",
+      "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json",
+      "results/agent_flow_v3/care-ase-faithful/implementation/implementation_fingerprint.json",
+      "results/agent_flow_v3/care-ase-faithful/implementation/inference_probe_receipt.json",
+      "results/agent_flow_v3/care-ase-faithful/implementation/checkpoint_resume_probe_receipt.json",
+      "results/agent_flow_v3/care-ase-faithful/implementation/deployment_load_probe_receipt.json",
+      "results/agent_flow_v3/care-ase-faithful/implementation/evaluator_smoke_receipt.json",
+      "results/agent_flow_v3/care-ase-faithful/implementation/hard_negative_binding_receipt.json",
+      "results/agent_flow_v3/care-ase-faithful/implementation/step0_parity_probe_receipt.json"
+    ],
+    "verification": [
+      "validators/care_ase_faithful/run_executable_verifier.py",
+      "validators/care_ase_faithful/validate_contract_evidence.py",
+      "tests/care_ase_faithful/test_verifier_package.py",
+      "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/verifier_fingerprint.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_manifest.json"
+    ],
+    "prior_review": [
+      "results/agent_flow_v3/care-ase-faithful/planner_reviews/round_001.json"
+    ]
+  },
+  "independent_review_summary": {
+    "implementation_progress": "The prior step-0 stale-hook bug is repaired; real train-case loss, checkpoint/resume, deployment loader, evaluator interface and OOF hard-negative evidence are materially stronger. SliceExtentHead topology, edema residual dilation and stock-mean injury initialization remain present.",
+    "remaining_implementation_gap": "The frozen partial-H/W validity rule is not implemented: both extent loss and post-aggregation extent bias treat any slice with at least one valid H/W voxel as valid, so partial padding can contribute bias, loss and gradients. The single-versus-multi-tile proof also uses a probe-only full-context override rather than the declared canonical deployment settings.",
+    "verification_gap": "The current Verifier still does not independently execute the model/runtime. Its own recorded environment has neither torch nor nnunetv2; it converts Executor-authored receipts into PASS probes. Runtime mutation results are predetermined failure payloads rather than mutations executed against the exact integrated runtime.",
+    "binding_gap": "The implementation fingerprint embeds verifier fingerprint 9fbed451..., while the current frozen verifier fingerprint is 847263d0.... The runtime receipt manifest still records review_round 0. Verifier source changed after the declared integration SHA, so the current verifier fingerprint is not reproduced by the declared integration commit.",
+    "blocking_gap_count": 4
+  },
+  "prior_finding_closure": {
+    "ASE_R1_VERIFIER_RUNTIME_INDEPENDENCE_INCOMPLETE": "NOT_CLOSED",
+    "ASE_R1_INFERENCE_PROBE_IS_RANDOM_AND_NOT_FORCED_MULTI_TILE": "PARTIALLY_CLOSED_REAL_CASE_AND_TRUE_MULTITILE_NOW_PRESENT_BUT_CANONICAL_EQUIVALENCE_PROOF_USES_FULL_CONTEXT_OVERRIDE",
+    "ASE_R1_RUNTIME_AND_PROVENANCE_CLAIMS_REMAIN_PARTLY_SYNTHETIC": "SUBSTANTIALLY_CLOSED_AT_EXECUTOR_PROBE_LEVEL_BUT_NOT_INDEPENDENTLY_REEXECUTED_AND_BINDINGS_ARE_STALE",
+    "ASE_R1_STEP0_PARITY_REPORT_IS_BROKEN_AND_UNEXECUTED": "CLOSED_AT_EXECUTOR_PROBE_LEVEL",
+    "ASE_R1_CURRENT_INTEGRATION_AND_CI_BINDING_INCOMPLETE": "PARTIALLY_CLOSED_HOSTED_CI_PRESENT_BUT_RUNTIME_MANIFEST_AND_FINGERPRINT_INTEGRATION_BINDINGS_REMAIN_INCOHERENT"
+  },
+  "decision": "PLANNER_REVISE_BOTH",
+  "blocking_findings": [
+    {
+      "finding_id": "ASE_R1_REENTRY_VERIFIER_IS_STILL_RECEIPT_REPLAY_NOT_INDEPENDENT_EXECUTION",
+      "target_role": "verifier",
+      "severity": "blocking_verification_gap",
+      "affected_files_or_functions": [
+        "validators/care_ase_faithful/run_executable_verifier.py::receipt_bound_probe_results",
+        "validators/care_ase_faithful/run_executable_verifier.py::real_probe_results",
+        "validators/care_ase_faithful/run_executable_verifier.py::mutation_result",
+        "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json",
+        "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_manifest.json"
+      ],
+      "finding": "The Verifier still cannot independently establish the runtime claims it marks PASS. In the current receipt its own environment has torch_available=false and nnunetv2_available=false, yet it reports model-build, real-loss, checkpoint, deployment, evaluator and full-volume probes as PASS by reading Executor-authored receipts. mutation_result constructs fixed nonzero failure payloads without mutating and executing the exact model/runtime.",
+      "why_it_matters": "The central anti-downgrade guarantee requires an independently owned executable oracle. A defective or self-consistent Executor receipt can currently satisfy the Verifier without the Verifier observing the claimed behavior, so Planner cannot treat verifier PASS as independent evidence.",
+      "required_repair": [
+        "Run the verifier-owned executable runner in an isolated verifier runtime that actually has torch, nnunetv2 and the declared train-only assets, against the exact integrated source/fingerprint.",
+        "Independently execute model construction/step0 parity, canonical total loss and gradients, mixed T2/no-T2 hooks, required final-logit interventions, checkpoint exact-resume, canonical full-volume inference, deployment load and evaluator interface instead of translating Executor JSON into PASS probes.",
+        "Implement each protected runtime mutation by actually changing or intercepting the relevant executable behavior and proving the verifier returns nonzero; do not synthesize a failure JSON from the mutation ID.",
+        "Add explicit independent tests for partial-H/W extent invalidity and for noncanonical inference context overrides.",
+        "Freeze a new verifier fingerprint only after those executable runs pass and bind it to the exact integrated source SHA."
+      ],
+      "required_regression_evidence": [
+        "Verifier receipt records a runtime with torch_available=true and nnunetv2_available=true, exact integration SHA, commands, observed case hashes and independently generated outputs.",
+        "A forged Executor PASS receipt with an unchanged defective runtime fails because verifier execution disagrees.",
+        "Each runtime mutation report includes the mutation applied, command, exact mutated source/runtime fingerprint and observed nonzero verifier exit.",
+        "Removing the partial-H/W invalid-slice mask or reintroducing receipt-only replay causes verifier failure."
+      ],
+      "forbidden_workarounds": [
+        "Do not treat receipt hash verification as independent runtime verification.",
+        "Do not copy Executor payload fields into verifier PASS probes.",
+        "Do not predeclare mutation failures without executing the mutation.",
+        "Do not weaken protected tests or move verifier-owned logic into Executor scope."
+      ]
+    },
+    {
+      "finding_id": "ASE_R1_REENTRY_PARTIAL_HW_EXTENT_MASKING_VIOLATES_FROZEN_CONTRACT",
+      "target_role": "executor",
+      "severity": "blocking_scientific_fidelity_gap",
+      "affected_files_or_functions": [
+        "src/care_myocardium/models/care_ase/core.py::SliceExtentHead.forward",
+        "src/care_myocardium/models/care_ase/core.py::compute_slice_extent_statistics",
+        "src/care_myocardium/models/care_ase/core.py::CAREASE._extent_bias",
+        "src/care_myocardium/training/care_ase_trainer.py::per_slice_extent_loss",
+        "src/care_myocardium/inference/care_ase_r2_full_volume.py::global_extent_bias"
+      ],
+      "finding": "The frozen contract requires padding, all-invalid slices and partial-H/W slices to contribute zero extent bias, loss and gradient. Current code only rejects all-invalid slices. Both training and inference use a condition equivalent to valid_HxW_sum > 0, so a partially padded slice remains eligible; low wall support can also fall back to statistics over the remaining valid pixels.",
+      "why_it_matters": "This changes the learned slice-extent objective and deployment bias at crop/padding boundaries. It can create patch-geometry-dependent gradients and final logits, directly violating the full-case extent semantics the architecture was frozen to preserve.",
+      "required_repair": [
+        "Define one shared full-H/W-valid slice mask from the valid-spatial support and use it consistently in SliceExtentHead statistics, per-slice extent loss and post-aggregation global bias.",
+        "For every partial-H/W or all-invalid output slice, force presence/area contribution, bias, supervision denominator and gradient contribution to zero.",
+        "Preserve full-case target construction and physical-bin downsampling; do not solve this by discarding valid full slices or changing target definitions.",
+        "Expose observed valid/partial/invalid slice counts and zero-contribution checks in runtime evidence."
+      ],
+      "required_regression_evidence": [
+        "A deliberately partially padded H/W slice produces exactly zero scar and edema extent bias.",
+        "The same slice contributes zero to presence/area loss denominators and yields zero gradient to both extent heads.",
+        "A fully valid neighboring slice remains supervised and can affect final logits.",
+        "Verifier independently reproduces these assertions on actual model code."
+      ],
+      "forbidden_workarounds": [
+        "Do not redefine partial-H/W as valid merely because one voxel is valid.",
+        "Do not mask only the final reported metric while allowing gradients or bias through.",
+        "Do not remove extent supervision or the global extent mechanism."
+      ]
+    },
+    {
+      "finding_id": "ASE_R1_REENTRY_MULTITILE_EQUIVALENCE_PROOF_USES_NONCANONICAL_CONTEXT_OVERRIDE",
+      "target_role": "executor",
+      "severity": "blocking_inference_evidence_gap",
+      "affected_files_or_functions": [
+        "src/care_myocardium/inference/care_ase_r2_full_volume.py::predict_care_ase_r2_full_volume_logits",
+        "scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py::run_inference_probe",
+        "results/agent_flow_v3/care-ase-faithful/implementation/inference_probe_receipt.json"
+      ],
+      "finding": "The new probe correctly uses a real train-side case and observes two output tiles, but the forced multi-tile call passes exact_context_patch_size equal to the single-window full-cover patch. Thus each tile is inferred with the full single-window context while only its output crop is aggregated. exact_context_patch_size is not part of CAREASEFullVolumeInferenceSettings and the default canonical deployment call does not use this override.",
+      "why_it_matters": "The near-zero single-versus-multi difference therefore proves an alternate probe path, not the declared deployment sliding-window semantics. It can hide tile-context dependence while satisfying the equality check.",
+      "required_repair": [
+        "Run the forced multi-tile comparison through the same declared CAREASEFullVolumeInferenceSettings and default deployment call path used outside the probe, with a genuinely smaller patch and no hidden larger-context override.",
+        "If a larger context window is scientifically required for canonical inference, it must already be explicitly frozen in the contract/settings and used identically by deployment; do not introduce it only inside evidence generation.",
+        "Record actual patch/context settings, tile count, model forward count, aggregation path, one-time global-bias count, final-logit tolerance and decoded-label equality."
+      ],
+      "required_regression_evidence": [
+        "The verifier can reproduce the comparison without supplying exact_context_patch_size or another probe-only parameter.",
+        "Changing the canonical tile patch/context behavior causes a detectable verifier failure rather than being hidden by full-volume context.",
+        "T2-present and no-T2 cases both use the same canonical settings and decoder rules."
+      ],
+      "forbidden_workarounds": [
+        "Do not use full-volume context for every tile solely to force equality.",
+        "Do not add an evidence-only inference mode that differs from deployment.",
+        "Do not relax the frozen tolerance or compare only decoded labels when logits are required."
+      ]
+    },
+    {
+      "finding_id": "ASE_R1_REENTRY_REVIEW_BINDINGS_ARE_NOT_SINGLE_IMMUTABLE_TRANSACTION",
+      "target_role": "both",
+      "severity": "blocking_provenance_and_transaction_gap",
+      "affected_files_or_functions": [
+        "results/agent_flow_v3/care-ase-faithful/implementation/implementation_fingerprint.json",
+        "scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py",
+        "results/agent_flow_v3/care-ase-faithful/verification/verifier_fingerprint.json",
+        "results/agent_flow_v3/care-ase-faithful/runtime_receipt_manifest.json",
+        "results/agent_flow_v3/care-ase-faithful/planner_review_packet.json",
+        "automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json"
+      ],
+      "finding": "The active packet binds verifier fingerprint 847263d0..., but the implementation fingerprint still embeds the superseded verifier fingerprint 9fbed451.... The runtime receipt manifest still says review_round 0. Verifier source was modified on develop after the declared integration commit edb4f2..., so the active verifier fingerprint is not reproducible from that declared integration SHA.",
+      "why_it_matters": "Planner PASS must describe one immutable implementation+verification transaction. Mixing a newer verifier, older implementation-verifier binding and round-0 runtime manifest means a PASS cannot be replayed from the advertised SHA tuple.",
+      "required_repair": [
+        "After Verifier repair/freeze, integrate that exact verifier commit and the Executor repair in declared Verifier-then-Executor order and publish a new integration SHA containing both.",
+        "Regenerate Executor evidence and implementation fingerprint against the newly frozen verifier fingerprint; remove hardcoded superseded verifier fingerprints.",
+        "Regenerate runtime receipt manifest, CI receipt and Planner packet for the next review round and exact integrated SHA. The runtime manifest review_round must match the packet/CURRENT.",
+        "Ensure all active fingerprints and receipt hashes are reproducible from the declared integration transaction; move old values only into explicit superseded provenance."
+      ],
+      "required_regression_evidence": [
+        "implementation_fingerprint.verifier_fingerprint_sha256 equals CURRENT and planner packet verifier fingerprint.",
+        "runtime_receipt_manifest.review_round equals the new Planner review round and references current runtime receipts.",
+        "Checking out the declared integration SHA reproduces the verifier and implementation source hashes used by both fingerprints.",
+        "Hosted CI is bound to a descendant containing that exact integrated transaction with no later critical-source drift."
+      ],
+      "forbidden_workarounds": [
+        "Do not overwrite old receipts to make hashes appear current.",
+        "Do not claim current verifier evidence against a commit that predates its source changes.",
+        "Do not leave stale round-0 manifests active while setting CURRENT audit flags to false."
+      ]
+    }
+  ],
+  "nonblocking_findings": [
+    {
+      "finding_id": "ASE_R1_REENTRY_PRIOR_RUNTIME_PROBES_MATERIALLY_IMPROVED",
+      "note": "Executor-side step0, real total-loss denominators, canonical next-step checkpoint/resume, deployment loader, evaluator interface and OOF hard-negative receipts now contain materially stronger executed evidence. These are not re-opened as independent Executor blockers unless the repaired independent Verifier disproves them."
+    },
+    {
+      "finding_id": "ASE_R1_REENTRY_REVIEW_ROUND_COUNTER_NOT_INCREMENTED",
+      "note": "The prior Planner routing explicitly requested review_round 2 after repair, but the current packet still uses review_round 1. Preserve this re-entry artifact separately and increment the next published review transaction after the current repair so artifacts are not overwritten."
+    }
+  ],
+  "required_next_order": [
+    "Resume the exact production Verifier first and repair independent executable verification plus real mutations.",
+    "Freeze the repaired Verifier and integrate it.",
+    "Resume the exact production Executor and repair partial-H/W extent validity, canonical multi-tile evidence and verifier-fingerprint binding.",
+    "Integrate Verifier then Executor into a new exact integration SHA.",
+    "Regenerate current runtime manifest and fingerprints, run server-local verification and hosted deterministic CI.",
+    "Increment review_round to 2 and publish a new READY_FOR_PLANNER_REVIEW / WAITING_FOR_EXTERNAL_GPT packet.",
+    "Do not train, access outer data, merge develop to main, deploy or upload."
+  ],
+  "created_utc": "2026-08-07T01:26:00Z"
+}
