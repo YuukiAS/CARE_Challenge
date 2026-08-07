@@ -19,7 +19,7 @@ REVIEW_ROUND = 1
 PLANNER_REVIEW_COMMIT = "38dbbb0e32556e5f12127699c67ff31d45e5e934"
 REVIEWED_INTEGRATION_COMMIT = "edb4f2e290c72e92e1bcbd74295c525fef924f11"
 REVIEWED_IMPLEMENTATION_FINGERPRINT = "3eabfb0be9eda776da6dd6fe3068004894ea7a5b4c30966941fc05bdc412e0dc"
-REVIEWED_VERIFIER_FINGERPRINT = "9fbed451e765fd4b44e759cecee4458b5100eccac59da79bbd9e4c87ebc54243"
+REVIEWED_VERIFIER_FINGERPRINT = "847263d0afd1f34e81c49a981ea33dae5c12f53114c543d50830d077d9a7e167"
 
 
 KNOWN_BAD_CATEGORIES = [
@@ -223,6 +223,7 @@ REQUIRED_EXECUTABLE_PROBES = {
     "evaluator_interface",
     "single_vs_forced_multi_tile_full_volume",
     "step0_parity_report_regression",
+    "partial_hw_extent_zero_contribution",
 }
 
 CRITICAL_SOURCE_PATHS = {
@@ -672,9 +673,18 @@ def _check_verifier_owned_execution(failures: list[str], evidence: dict[str, Any
         _require(failures, executable.get("passed") is True, "verifier_owned.executable.passed")
         _require(failures, executable.get("status") == "PASS", "verifier_owned.executable.status")
         _require(failures, executable.get("fixture_mode") is not True, "verifier_owned.executable.not_fixture")
+        _require(failures, executable.get("runtime_conclusion_source") == "verifier_owned_independent_execution", "verifier_owned.executable.conclusion_source")
+        _require(failures, executable.get("executor_receipts_used_as_runtime_conclusion") is False, "verifier_owned.executable.no_receipt_replay")
         _require(failures, executable.get("formal_training_started") is False, "verifier_owned.executable.no_training")
         _require(failures, executable.get("outer_accessed") is False, "verifier_owned.executable.no_outer")
         _require(failures, executable.get("docker_or_upload") is False, "verifier_owned.executable.no_docker_upload")
+        environment = executable.get("environment", {})
+        if isinstance(environment, dict):
+            _require(failures, environment.get("torch_available") is True, "verifier_owned.executable.torch_available")
+            _require(failures, environment.get("nnunetv2_available") is True, "verifier_owned.executable.nnunetv2_available")
+            _require(failures, str(environment.get("python_executable", "")).endswith("/envs/env_CARE/bin/python"), "verifier_owned.executable.care_runtime_python")
+        else:
+            failures.append("verifier_owned.executable.environment")
         receipt_sha = executable.get("executable_verifier_receipt_sha256")
         if _is_sha256(receipt_sha):
             _require(
@@ -717,12 +727,22 @@ def _check_verifier_owned_execution(failures: list[str], evidence: dict[str, Any
         _require(failures, tile_probe.get("patch_size_equals_input") is False, "verifier_owned.executable.patch_smaller_than_input")
         _require(failures, int(tile_probe.get("forced_multi_tile_count", 0)) > 1, "verifier_owned.executable.forced_multi_tile_count")
         _require(failures, int(tile_probe.get("global_bias_application_count", 0)) == 1, "verifier_owned.executable.global_bias_once")
+        _require(failures, tile_probe.get("canonical_settings_has_no_context_override") is True, "verifier_owned.executable.no_probe_only_context_override")
+        _require(failures, tile_probe.get("observed_error") in (None, ""), "verifier_owned.executable.no_multitile_runtime_error")
         step0_probe = by_name.get("step0_parity_report_regression", {})
         _require(failures, step0_probe.get("imported_step0_parity_report") is True, "verifier_owned.step0.imported")
         _require(failures, step0_probe.get("attribute_error_ignored") is False, "verifier_owned.step0.no_attribute_error_ignore")
         _require(failures, float(step0_probe.get("t2_present_stock_max_abs_err", 1.0)) <= 1e-6, "verifier_owned.step0.t2_present_parity")
         _require(failures, float(step0_probe.get("no_t2_stock_max_abs_err", 1.0)) <= 1e-6, "verifier_owned.step0.no_t2_parity")
         _require(failures, int(step0_probe.get("compatible_argmax_changed_voxels", 1)) == 0, "verifier_owned.step0.argmax")
+        _require(failures, int(step0_probe.get("no_t2_edema_owned_module_call_count", 1)) == 0, "verifier_owned.step0.no_t2_edema_calls")
+        _require(failures, step0_probe.get("no_t2_class4_in_competition") is False, "verifier_owned.step0.no_t2_class4_excluded")
+        partial_probe = by_name.get("partial_hw_extent_zero_contribution", {})
+        _require(failures, float(partial_probe.get("partial_hw_loss_contribution", 1.0)) == 0.0, "verifier_owned.partial_hw.loss_zero")
+        _require(failures, float(partial_probe.get("partial_hw_extent_head_grad_abs_sum", 1.0)) == 0.0, "verifier_owned.partial_hw.grad_zero")
+        _require(failures, float(partial_probe.get("partial_hw_extent_bias_abs_sum", 1.0)) == 0.0, "verifier_owned.partial_hw.bias_zero")
+        _require(failures, float(partial_probe.get("full_neighbor_extent_head_grad_abs_sum", 0.0)) > 0.0, "verifier_owned.partial_hw.full_neighbor_grad_active")
+        _require(failures, float(partial_probe.get("full_neighbor_extent_bias_abs_sum", 0.0)) > 0.0, "verifier_owned.partial_hw.full_neighbor_bias_active")
 
     if transaction_receipt is not None:
         _require(failures, transaction_receipt.get("schema") == "CARE_ASE_FAITHFUL_TRANSACTION_GATE_RECEIPT_V1", "verifier_owned.transaction.schema")
@@ -759,6 +779,12 @@ def _check_verifier_owned_execution(failures: list[str], evidence: dict[str, Any
                 failures.append(f"verifier_owned.mutations.report_missing:{mutation_id}")
             elif _is_sha256(item.get("report_sha256")):
                 _require(failures, item.get("report_sha256") == _sha256_file(report_path), f"verifier_owned.mutations.report_hash:{mutation_id}")
+                report = load_json(report_path)
+                _require(failures, report.get("fixture_mode") is False, f"verifier_owned.mutations.not_fixture:{mutation_id}")
+                _require(failures, report.get("mutation_executed") is True, f"verifier_owned.mutations.executed:{mutation_id}")
+                _require(failures, isinstance(report.get("mutation_applied"), str) and report.get("mutation_applied"), f"verifier_owned.mutations.applied:{mutation_id}")
+                _require(failures, _is_sha256(report.get("mutated_fingerprint_sha256")), f"verifier_owned.mutations.mutated_fingerprint:{mutation_id}")
+                _require(failures, int(report.get("failure_count", 0)) > 0, f"verifier_owned.mutations.failure_count:{mutation_id}")
 
 
 def _check_artifact_bindings(

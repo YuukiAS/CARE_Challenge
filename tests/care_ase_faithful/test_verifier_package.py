@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -451,17 +452,31 @@ class VerifierPackageTests(unittest.TestCase):
 
     def test_executable_mutation_runner_returns_nonzero(self) -> None:
         runner = ROOT / "validators" / "care_ase_faithful" / "run_executable_verifier.py"
+        care_root = Path(os.environ.get("CARE_VERIFIER_RUNTIME_CARE_ROOT", "/users/a/e/aereinh/CARE"))
+        runtime_python = Path(os.environ.get("CARE_VERIFIER_RUNTIME_PYTHON", str(care_root / "envs" / "env_CARE" / "bin" / "python")))
+        if not runtime_python.is_file():
+            self.skipTest(f"CARE runtime python not available: {runtime_python}")
+        env = dict(os.environ)
+        env.setdefault("CARE_ROOT", str(care_root))
+        env.setdefault("nnUNet_raw", str(care_root / "data" / "nnUNet" / "nnUNet_raw"))
+        env.setdefault("nnUNet_preprocessed", str(care_root / "data" / "nnUNet" / "nnUNet_preprocessed"))
+        env.setdefault("nnUNet_results", str(care_root / "data" / "nnUNet" / "nnUNet_results"))
+        env.setdefault("MPLCONFIGDIR", "/users/a/e/aereinh/.tmp/codex-verifier/matplotlib")
         result = subprocess.run(
-            [sys.executable, str(runner), "--fixture-mode", "--mutation-id", "artifact_sha_mismatch"],
+            [str(runtime_python), str(runner), "--mutation-id", "artifact_sha_mismatch"],
             cwd=ROOT,
             text=True,
             capture_output=True,
             check=False,
+            env=env,
         )
         self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
         payload = json.loads(result.stdout)
         self.assertEqual(payload["mutation_id"], "artifact_sha_mismatch")
+        self.assertIs(payload["fixture_mode"], False)
         self.assertIs(payload["mutation_executed"], True)
+        self.assertEqual(payload["mutation_applied"], "tracked_runtime_artifact_bytes_changed_after_receipt_sha_recording")
+        self.assertEqual(len(payload["mutated_fingerprint_sha256"]), 64)
 
     def test_all_protected_known_bad_cases_fail_closed(self) -> None:
         listed = _run_validator("--list-known-bad")

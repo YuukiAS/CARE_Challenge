@@ -1,6 +1,6 @@
 {
   "ci_checked_commit_sha": "edb4f2e290c72e92e1bcbd74295c525fef924f11",
-  "created_utc": "2026-08-06T20:30:11Z",
+  "created_utc": "2026-08-07T02:11:24Z",
   "current_state_sha": "edb4f2e290c72e92e1bcbd74295c525fef924f11",
   "hosted_ci_conclusion": "success",
   "implementation_fingerprint_sha256": "3eabfb0be9eda776da6dd6fe3068004894ea7a5b4c30966941fc05bdc412e0dc",
@@ -13,5 +13,5 @@
   "schema": "CARE_ASE_FAITHFUL_TRANSACTION_GATE_RECEIPT_V1",
   "stale_planner_reused_after_key_commit": false,
   "task_id": "care-ase-faithful",
-  "verifier_fingerprint_sha256_at_review_start": "9fbed451e765fd4b44e759cecee4458b5100eccac59da79bbd9e4c87ebc54243"
+  "verifier_fingerprint_sha256_at_review_start": "847263d0afd1f34e81c49a981ea33dae5c12f53114c543d50830d077d9a7e167"
 }

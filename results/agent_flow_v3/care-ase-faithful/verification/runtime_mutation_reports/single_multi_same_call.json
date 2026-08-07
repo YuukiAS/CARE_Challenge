@@ -1,13 +1,21 @@
 {
-  "created_utc": "2026-08-06T20:30:14Z",
+  "created_utc": "2026-08-07T02:13:35Z",
   "exit_code": 2,
-  "failure_count": 1,
+  "failure_count": 2,
   "failures": [
-    "kb12.inference.calls_not_distinct"
+    "kb12.inference.calls_not_distinct",
+    "kb12.inference.patch_size_equals_input"
   ],
-  "fixture_mode": true,
+  "fixture_mode": false,
+  "mutated_fingerprint_sha256": "0b68842df3c5e0a248197c9161931b6c72d2827886ee74b8e3cf90033c9834bc",
+  "mutation_applied": "forced_multi_tile_receipt_reuses_single_tile_metadata_and_patch",
   "mutation_executed": true,
   "mutation_id": "single_multi_same_call",
+  "observations": {
+    "calls_are_distinct": false,
+    "patch_size_equals_input": true,
+    "source_manifest_sha256_before_mutation": "8f7ee7bde0ef6360578959d08a0e80bc64ee3745c169d4754433ef2b733bad4f"
+  },
   "passed": false,
   "request_nonce": "care-ase-20260806T090955Z",
   "schema": "CARE_ASE_FAITHFUL_EXECUTABLE_MUTATION_RESULT_V1",
