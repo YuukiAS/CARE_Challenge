@@ -1,15 +1,30 @@
 {
   "schema": "CARE_AGENT_FLOW_V3_CARE_ASE_ACTIVATION_STATE",
   "task_id": "care-ase-faithful",
-  "status": "ARMED",
+  "status": "ARMED_STOPPED_AT_HUMAN_SCIENTIFIC_CHOICE",
   "request_nonce": "care-ase-20260806T090955Z",
-  "frozen_contract_sha256": null,
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "current_state": "NEEDS_USER_SCIENTIFIC_CHOICE",
   "visual_smoke_final_status": "PASS",
   "gpt_loop_smoke_final_status": "PASS",
+  "planner_and_critic_freeze_status": "PLAN_FROZEN",
+  "production_role_sessions_verified": true,
+  "controller_thread_id": "019fd7c0-2979-7061-94d3-99577ba9c834",
+  "verifier_thread_id": "019fda33-10c3-70e1-aa41-684b46d2cbda",
+  "executor_thread_id": "019fd7c1-8358-7632-9022-367e62ecfbd1",
+  "executor_local_commit_sha": "df526fde93bf3d4fa53ae8d86079a724a1142bb7",
+  "executor_local_commit_integrated_to_develop": false,
+  "stop_reason": "Human scientific choice is required before the Executor loop can continue under the frozen tile-local exactness contract.",
   "failures": [],
   "forbidden_actions_confirmed": [
-    "no CARE-ASE implementation started by activation",
-    "no training, outer, Docker, upload, organizer email or develop-to-main merge"
+    "no formal training",
+    "no outer access",
+    "no Docker build/upload",
+    "no validation/challenge upload",
+    "no organizer email",
+    "no fake Planner/Critic decision",
+    "no develop-to-main merge",
+    "no Executor fail-closed commit merged as an implementation pass"
   ],
-  "updated_utc": "2026-08-06T09:09:55Z"
+  "updated_utc": "2026-08-07T05:24:18Z"
 }
