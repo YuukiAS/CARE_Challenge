@@ -2739,6 +2739,22 @@ def apply_care_ase_ci_pass_planner_wait_update(
     planner_packet_path = repo / "results/agent_flow_v3/care-ase-faithful/planner_review_packet.json"
     wait_started = now()
     wait_deadline_value = wait_deadline(wait_started, max(4, int(args.default_wait_hours)))
+    stale_planner_review = {
+        key: current.get(key)
+        for key in (
+            "planner_decision",
+            "planner_review_artifact",
+            "planner_review_artifact_commit_sha",
+            "planner_review_input_integration_sha",
+            "planner_review_input_implementation_fingerprint_sha256",
+            "planner_review_input_verifier_fingerprint_sha256",
+            "repair_prompt_path",
+            "repair_prompt_sha256",
+            "repair_prompts",
+            "external_wait_closed_utc",
+        )
+        if current.get(key) not in (None, {}, [])
+    }
 
     ci_receipt = load_json(ci_receipt_path)
     ci_receipt.update(
@@ -2840,6 +2856,17 @@ def apply_care_ase_ci_pass_planner_wait_update(
             "controller_local_gates_status": "PASS",
             "ci_status": "PASS",
             "ci_checked_commit_sha": remote_sha,
+            "planner_decision": None,
+            "planner_review_artifact": None,
+            "planner_review_artifact_commit_sha": None,
+            "planner_review_input_integration_sha": None,
+            "planner_review_input_implementation_fingerprint_sha256": None,
+            "planner_review_input_verifier_fingerprint_sha256": None,
+            "repair_prompt_path": None,
+            "repair_prompt_sha256": None,
+            "repair_prompts": {},
+            "external_wait_closed_utc": None,
+            "superseded_planner_review_before_current_wait": stale_planner_review,
             "controller_ci_receipt_path": str(ci_receipt_path.relative_to(repo)),
             "controller_ci_receipt_sha256": sha_file(ci_receipt_path),
             "controller_ready_for_planner_review_receipt_path": str(ready_receipt_path.relative_to(repo)),

@@ -568,6 +568,71 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
 
         self.assertEqual(receipt["decision"], "WAITING_FOR_CI")
 
+    def test_care_ase_wait_transaction_clears_stale_planner_review_fields(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            current_path = repo / "automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json"
+            ci_receipt_path = repo / "results/agent_flow_v3/care-ase-faithful/controller_ci_receipt.json"
+            current_path.parent.mkdir(parents=True)
+            ci_receipt_path.parent.mkdir(parents=True)
+            current = {
+                "schema": RUNTIME.SCHEMA,
+                "task_id": "care-ase-faithful",
+                "request_nonce": "care-ase-nonce",
+                "review_round": 1,
+                "state": "CI_RUNNING",
+                "ci_status": "PASS",
+                "ci_checked_commit_sha": "e" * 40,
+                "frozen_contract_sha256": "a" * 64,
+                "implementation_fingerprint_sha256": "b" * 64,
+                "verifier_fingerprint_sha256": "c" * 64,
+                "executor_integration_merge_sha": "d" * 40,
+                "executor_local_commit_sha": "1" * 40,
+                "verifier_integration_merge_sha": "2" * 40,
+                "verifier_freeze_receipt_commit_sha": "3" * 40,
+                "planner_decision": "PLANNER_REVISE_BOTH",
+                "planner_review_artifact": "results/agent_flow_v3/care-ase-faithful/planner_reviews/round_001.json",
+                "planner_review_artifact_commit_sha": "4" * 40,
+                "planner_review_input_integration_sha": "5" * 40,
+                "planner_review_input_implementation_fingerprint_sha256": "6" * 64,
+                "planner_review_input_verifier_fingerprint_sha256": "7" * 64,
+                "repair_prompt_path": "automation/agent_flow_v3/tasks/care-ase-faithful/repairs/round_001_executor.md",
+                "repair_prompt_sha256": "8" * 64,
+                "repair_prompts": {"executor": "automation/agent_flow_v3/tasks/care-ase-faithful/repairs/round_001_executor.md"},
+                "external_wait_closed_utc": "2026-08-06T18:05:32Z",
+            }
+            current_path.write_text(json.dumps(current), encoding="utf-8")
+            ci_receipt_path.write_text(json.dumps({"schema": "old", "task_id": "care-ase-faithful"}), encoding="utf-8")
+            args = argparse.Namespace(branch="develop", default_wait_hours=4)
+
+            with mock.patch.object(RUNTIME, "ensure_clean_ff_to_remote", return_value="e" * 40), mock.patch.object(
+                RUNTIME,
+                "commit_and_push",
+                return_value={"commit_sha": "f" * 40},
+            ):
+                RUNTIME.apply_care_ase_ci_pass_planner_wait_update(
+                    args=args,
+                    repo=repo,
+                    current=current,
+                    remote_sha="e" * 40,
+                )
+
+            updated = json.loads(current_path.read_text(encoding="utf-8"))
+            self.assertEqual(updated["state"], "WAITING_FOR_EXTERNAL_GPT")
+            self.assertIsNone(updated["planner_decision"])
+            self.assertIsNone(updated["planner_review_artifact"])
+            self.assertIsNone(updated["planner_review_artifact_commit_sha"])
+            self.assertIsNone(updated["planner_review_input_integration_sha"])
+            self.assertIsNone(updated["repair_prompt_sha256"])
+            self.assertEqual(updated["repair_prompts"], {})
+            self.assertIsNone(updated["external_wait_closed_utc"])
+            superseded = updated["superseded_planner_review_before_current_wait"]
+            self.assertEqual(superseded["planner_decision"], "PLANNER_REVISE_BOTH")
+            self.assertEqual(
+                superseded["planner_review_artifact"],
+                "results/agent_flow_v3/care-ase-faithful/planner_reviews/round_001.json",
+            )
+
     def test_orchestrator_reuses_existing_wait_deadline_for_same_event(self) -> None:
         current = {
             "task_id": "care-ase-faithful",

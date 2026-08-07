@@ -278,6 +278,12 @@ continue as soon as the expected state or artifact appears. Lack of a local
 Scheduled Task connector is not a block reason because v3 handoff can proceed
 asynchronously through GitHub commits.
 
+When entering `WAITING_FOR_EXTERNAL_GPT` for a new review transaction, `CURRENT`
+must clear stale prior-round Planner decision, Planner artifact, review-input
+fingerprint and repair-prompt fields. If those fields are useful provenance,
+move them under an explicit superseded-prior-review object instead of leaving
+them as active routing inputs.
+
 ## 12. Visual architecture sources
 
 For architecture-sensitive work, Planner and Critic must visually inspect the required diagrams. Chat memory, filenames, repository metadata and text summaries do not substitute for visual inspection.
