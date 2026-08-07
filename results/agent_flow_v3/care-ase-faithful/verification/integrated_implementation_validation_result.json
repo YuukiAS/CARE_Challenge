@@ -1,17 +1,8 @@
 {
-  "failure_count": 8,
-  "failures": [
-    "verifier_owned.executable.passed",
-    "verifier_owned.executable.status",
-    "verifier_owned.executable.forced_multi_tile_count",
-    "verifier_owned.executable.global_bias_once",
-    "verifier_owned.executable.no_multitile_runtime_error",
-    "verifier_owned.partial_hw.loss_zero",
-    "verifier_owned.partial_hw.grad_zero",
-    "verifier_owned.partial_hw.bias_zero"
-  ],
+  "failure_count": 0,
+  "failures": [],
   "known_bad_case_id": null,
-  "passed": false,
+  "passed": true,
   "schema": "CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1",
   "task_id": "care-ase-faithful"
 }

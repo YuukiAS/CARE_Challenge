@@ -1,10 +1,10 @@
 {
-  "created_utc": "2026-08-07T02:12:02Z",
+  "created_utc": "2026-08-07T03:19:38Z",
   "docker_or_upload": false,
   "environment": {
     "cwd": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/verifier",
     "git_branch": "local/verifier/care-ase-faithful",
-    "git_head": "460576651481b91e2b255ab484ead49dd945c444",
+    "git_head": "82ac9bb33911ec74662385afb59a1a36396e94fc",
     "nnunetv2_available": true,
     "platform": "Linux-5.14.0-611.16.1.el9_7.x86_64-x86_64-with-glibc2.34",
     "python_executable": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
@@ -17,14 +17,10 @@
     },
     "torch_available": true
   },
-  "executable_verifier_receipt_sha256": "2537b494dde46b682603a761eaa8f8ed7412ba1369984c80f1f42c4d87908c36",
+  "executable_verifier_receipt_sha256": "8f418f9bf451dd8a28123a299cea0180d954604b2fbc0e61c0564e1f3a38b406",
   "executor_receipts_used_as_runtime_conclusion": false,
-  "failure_count": 3,
-  "failures": [
-    "executable_probe.failed:required_module_final_logit_interventions",
-    "executable_probe.failed:single_vs_forced_multi_tile_full_volume",
-    "executable_probe.failed:partial_hw_extent_zero_contribution"
-  ],
+  "failure_count": 0,
+  "failures": [],
   "fixture_mode": false,
   "forbidden_shortcuts_rejected_by_design": [
     "torch.randn inputs with asserted real case IDs",
@@ -38,13 +34,13 @@
   ],
   "formal_training_started": false,
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
-  "implementation_evidence_file_sha256": "0ce6fbaccd7a0a2d4a86ad34fe923dbb41ca7cd37bfedf408d5258710d2bc61e",
+  "implementation_evidence_file_sha256": "78526f8b387bf008bd57ea7b715ec29cd8bceb4cbcf8562f026205f58f0cba62",
   "implementation_evidence_path": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json",
-  "implementation_fingerprint_sha256": "3eabfb0be9eda776da6dd6fe3068004894ea7a5b4c30966941fc05bdc412e0dc",
-  "integration_sha": "edb4f2e290c72e92e1bcbd74295c525fef924f11",
+  "implementation_fingerprint_sha256": "58a34ffb93346e2a2a0765f2f9a903c9b59919b007a39a02b6f484f1a512f6ec",
+  "integration_sha": "5fd6c265109c19c91108fd3a2fa80a6b7d4092a4",
   "outer_accessed": false,
-  "passed": false,
-  "planner_review_commit": "38dbbb0e32556e5f12127699c67ff31d45e5e934",
+  "passed": true,
+  "planner_review_commit": "c2d3d385a160e4d8089f333c7c15c31dc2c89e0c",
   "probes": [
     {
       "attribute_error": null,
@@ -353,18 +349,18 @@
       "status": "PASS"
     },
     {
-      "all_changed_intended_final_logits": false,
+      "all_changed_intended_final_logits": true,
       "intervention_max_abs_by_module": {
-        "all_named_evidence": 0.0,
-        "edema_boundary": 0.0,
-        "edema_context_and_dilation": 0.0,
-        "edema_injury": 0.0,
+        "all_named_evidence": 0.00010013580322265625,
+        "edema_boundary": 0.00010013580322265625,
+        "edema_context_and_dilation": 0.00010013580322265625,
+        "edema_injury": 0.00010013580322265625,
         "extent_wall": 1.9293804168701172,
-        "scar_context": 0.0,
-        "scar_proposal": 0.0
+        "scar_context": 0.00010013580322265625,
+        "scar_proposal": 0.00010013580322265625
       },
       "name": "required_module_final_logit_interventions",
-      "status": "FAIL"
+      "status": "PASS"
     },
     {
       "checkpoint_probe_kind": "verifier_schema_v4_save_load_no_training_credit",
@@ -385,14 +381,14 @@
       "calls_are_distinct": true,
       "canonical_settings_has_no_context_override": true,
       "forced_multi_tile_call_id": "verifier_forced_multi_tile",
-      "forced_multi_tile_count": 0,
-      "global_bias_application_count": 0,
-      "max_abs_diff_without_context_override": null,
+      "forced_multi_tile_count": 9,
+      "global_bias_application_count": 1,
+      "max_abs_diff_without_context_override": 9.5367431640625e-07,
       "name": "single_vs_forced_multi_tile_full_volume",
-      "observed_error": "RuntimeError:Sizes of tensors must match except in dimension 1. Expected size 2 but got size 1 for tensor number 1 in the list.",
+      "observed_error": null,
       "patch_size_equals_input": false,
       "single_tile_call_id": "verifier_single_tile",
-      "status": "FAIL"
+      "status": "PASS"
     },
     {
       "called_evaluator": true,
@@ -432,12 +428,12 @@
     },
     {
       "full_neighbor_extent_bias_abs_sum": 77.95539855957031,
-      "full_neighbor_extent_head_grad_abs_sum": 0.07959210872650146,
+      "full_neighbor_extent_head_grad_abs_sum": 0.15918421745300293,
       "name": "partial_hw_extent_zero_contribution",
-      "partial_hw_extent_bias_abs_sum": 77.95539855957031,
-      "partial_hw_extent_head_grad_abs_sum": 0.07959210872650146,
-      "partial_hw_loss_contribution": 0.19943124055862427,
-      "status": "FAIL"
+      "partial_hw_extent_bias_abs_sum": 0.0,
+      "partial_hw_extent_head_grad_abs_sum": 0.0,
+      "partial_hw_loss_contribution": 0.0,
+      "status": "PASS"
     }
   ],
   "request_nonce": "care-ase-20260806T090955Z",
@@ -460,61 +456,61 @@
       "declared_path": "results/agent_flow_v3/care-ase-faithful/implementation/architecture_signature.json",
       "exists": true,
       "resolved_path": "results/agent_flow_v3/care-ase-faithful/implementation/architecture_signature.json",
-      "sha256": "61d21b92469f936921d19f0f138c25e425542cd80addec84b1cc6e6645efce10"
+      "sha256": "c62a8cc40e55b971b7bf4bbf7984945e53167a278c123e689f94cdf0898d18d9"
     },
     "checkpoint_resume_probe": {
       "declared_path": "results/agent_flow_v3/care-ase-faithful/implementation/checkpoint_resume_probe_receipt.json",
       "exists": true,
       "resolved_path": "results/agent_flow_v3/care-ase-faithful/implementation/checkpoint_resume_probe_receipt.json",
-      "sha256": "93934cd7a68cbae27ab71ba23d4363349741a8d92cc44f5cee4937304671703e"
+      "sha256": "ab7bf4413992952bceae52a50fbd270d1b1bfaa4b60276d55e380925ddaae7d0"
     },
     "deployment_load_probe": {
       "declared_path": "results/agent_flow_v3/care-ase-faithful/implementation/deployment_load_probe_receipt.json",
       "exists": true,
       "resolved_path": "results/agent_flow_v3/care-ase-faithful/implementation/deployment_load_probe_receipt.json",
-      "sha256": "880604e26729b8e3d806255ac2662573b3fe713b5f1e392095a1688e42744061"
+      "sha256": "c44ce1c0d49bde8734c7c7e96d5cf517490d27e423a4bc1679f439d6624b7a12"
     },
     "evaluator_smoke": {
       "declared_path": "results/agent_flow_v3/care-ase-faithful/implementation/evaluator_smoke_receipt.json",
       "exists": true,
       "resolved_path": "results/agent_flow_v3/care-ase-faithful/implementation/evaluator_smoke_receipt.json",
-      "sha256": "9dbef335322322e815104cd5a08df7a26e02cebdad18624dbaea33ed60a72c04"
+      "sha256": "d6053541883097a9ae2299b9e279f6725663b5571dd48882bfa6f39814c1fd18"
     },
     "forward_backward_probe": {
       "declared_path": "results/agent_flow_v3/care-ase-faithful/implementation/forward_backward_probe_receipt.json",
       "exists": true,
       "resolved_path": "results/agent_flow_v3/care-ase-faithful/implementation/forward_backward_probe_receipt.json",
-      "sha256": "3eaf0edbc050f51c58011f4127acbb1a3bfb08da830daa36664c8c5e01ea1046"
+      "sha256": "b0ddcbdf2040bfafe256007256dda87f0fa5eaa436f0f6d52bbd4068a7f5e5e0"
     },
     "hard_negative_binding": {
       "declared_path": "results/agent_flow_v3/care-ase-faithful/implementation/hard_negative_binding_receipt.json",
       "exists": true,
       "resolved_path": "results/agent_flow_v3/care-ase-faithful/implementation/hard_negative_binding_receipt.json",
-      "sha256": "12336ccb220b3e61e7905b50188572c9760f85afd8dd61a1415b7af9b1efc64f"
+      "sha256": "bf6278039e8c2a2a0b0898ffbeb9ac644df9c08cb9e1a82ef0773c4ec23fbf12"
     },
     "inference_probe": {
       "declared_path": "results/agent_flow_v3/care-ase-faithful/implementation/inference_probe_receipt.json",
       "exists": true,
       "resolved_path": "results/agent_flow_v3/care-ase-faithful/implementation/inference_probe_receipt.json",
-      "sha256": "dfceb6e4abda8c2f4b5945bfd021c8f5d0494f40f67083b47b0216e4ba276a67"
+      "sha256": "2f16588f3b5c90ed6e1d3fdb0eb3696c27d7e223668534a85573ebdee901f6ec"
     },
     "parameter_owner_registry": {
       "declared_path": "results/agent_flow_v3/care-ase-faithful/implementation/parameter_owner_registry.json",
       "exists": true,
       "resolved_path": "results/agent_flow_v3/care-ase-faithful/implementation/parameter_owner_registry.json",
-      "sha256": "b98012d6eb3a24dbd4f31d210569e3dfa2d4b646f8dc1d25cc03e772bcd18451"
+      "sha256": "38ac603c28b9075b7b6407d6905ca943b3af552e3d63a554a3d07b49d35ccaa5"
     },
     "runtime_asset_manifest": {
       "declared_path": "results/agent_flow_v3/care-ase-faithful/implementation/runtime_asset_manifest.json",
       "exists": true,
       "resolved_path": "results/agent_flow_v3/care-ase-faithful/implementation/runtime_asset_manifest.json",
-      "sha256": "8a5670a760ee7c82646b2e3e9bede048bead75c1eb4029b596a82ec51d0ca9da"
+      "sha256": "ab7ae0cb75146837a38bb30c2a5d0c0ae7c5e6c89a4b301361f0ccfcc073d420"
     },
     "source_manifest": {
       "declared_path": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_source_manifest.json",
       "exists": true,
       "resolved_path": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_source_manifest.json",
-      "sha256": "b99ef0a7db8ce473a636787ce133c845a235cd414e39e210670b3ecc406a94d0"
+      "sha256": "5154233af901c2c26cef64c08acf94c484b61dc21c2a0687cfa2d40ad46fcf0e"
     },
     "static_architecture_checks": {
       "declared_path": "results/agent_flow_v3/care-ase-faithful/implementation/static_architecture_checks.json",
@@ -526,35 +522,35 @@
       "declared_path": "results/agent_flow_v3/care-ase-faithful/implementation/step0_parity_probe_receipt.json",
       "exists": true,
       "resolved_path": "results/agent_flow_v3/care-ase-faithful/implementation/step0_parity_probe_receipt.json",
-      "sha256": "c0a61cf13c4e2e8915546feae088ed31f4925e18a917bc321e8e39394c5bb7e2"
+      "sha256": "942bd53e40efd374bbaea5b7189757607462cdc45fb9e2178fd487aba2ec6ec1"
     }
   },
   "schema": "CARE_ASE_FAITHFUL_EXECUTABLE_VERIFIER_RECEIPT_V1",
   "source_artifacts": {
     "file_hashes": {
       "src/care_myocardium/inference/care_ase_r2_decode.py": "7fea71edba56d259dbbb31c3832b74709bd83d5af1f8b680a85c2e0a41acb05b",
-      "src/care_myocardium/inference/care_ase_r2_full_volume.py": "052568607476861f6d95fa94706a063a74a3136700b26a29f9ba24ac789d109f",
-      "src/care_myocardium/models/care_ase/__init__.py": "96ac8f3265ee8bc5bc1e0f0264846fa7f5a6e740648799c8dd1e83cc2d996a62",
-      "src/care_myocardium/models/care_ase/core.py": "709c8022037be7d0c4001f3faa1177b14fbbb9fa67fcba4aeb6da6ca7a1c6a9e",
+      "src/care_myocardium/inference/care_ase_r2_full_volume.py": "04720a6c267ac2c212a11a0eded0222d06e7d5f35d6dadfd0780aed54e935fc6",
+      "src/care_myocardium/models/care_ase/__init__.py": "1754cf65f68d7853a4ad393737404a1d339f745566beb15849d3272302b0d4d9",
+      "src/care_myocardium/models/care_ase/core.py": "fff8f0d3d3408cbc0d4dff238a283767f20668797cda2f8866c0937d8d9d6949",
       "src/care_myocardium/training/care_ase_sampler.py": "e8d0b9d10f90d3e70fb9e1a8f4cfff2dd4fbae30d7f73868377350af278f65d9",
-      "src/care_myocardium/training/care_ase_trainer.py": "32fb5fe199bc8f735aa5e33ac5b8c363d7645836f0bf99bae0bac619a178de32"
+      "src/care_myocardium/training/care_ase_trainer.py": "7a852622e6423d19fd342ee396c7005c3fa556345f6e7845aa23b5b7c3104877"
     },
     "missing_files": [],
-    "source_manifest_sha256": "8f7ee7bde0ef6360578959d08a0e80bc64ee3745c169d4754433ef2b733bad4f"
+    "source_manifest_sha256": "a2a165292590ed700c3534a56b3bae28f9b80120697fad39392d0207f6196d43"
   },
-  "status": "FAIL_CLOSED",
+  "status": "PASS",
   "task_id": "care-ase-faithful",
   "transaction_gate": {
     "expected_review_round": 1,
     "fixture_mode": false,
-    "implementation_fingerprint_sha256": "3eabfb0be9eda776da6dd6fe3068004894ea7a5b4c30966941fc05bdc412e0dc",
-    "integration_sha": "edb4f2e290c72e92e1bcbd74295c525fef924f11",
+    "implementation_fingerprint_sha256": "58a34ffb93346e2a2a0765f2f9a903c9b59919b007a39a02b6f484f1a512f6ec",
+    "integration_sha": "5fd6c265109c19c91108fd3a2fa80a6b7d4092a4",
     "integration_sha_is_ancestor_of_observed_git_head": true,
-    "observed_git_head": "460576651481b91e2b255ab484ead49dd945c444",
-    "planner_review_commit": "38dbbb0e32556e5f12127699c67ff31d45e5e934",
+    "observed_git_head": "82ac9bb33911ec74662385afb59a1a36396e94fc",
+    "planner_review_commit": "c2d3d385a160e4d8089f333c7c15c31dc2c89e0c",
     "review_round": 1,
-    "verifier_fingerprint_sha256": "847263d0afd1f34e81c49a981ea33dae5c12f53114c543d50830d077d9a7e167"
+    "verifier_fingerprint_sha256": "8149d75c397904e6db2daa3ab1ba765e5c2c4db4abde607796645c51deb3c4ca"
   },
-  "verifier_fingerprint_sha256": "847263d0afd1f34e81c49a981ea33dae5c12f53114c543d50830d077d9a7e167",
+  "verifier_fingerprint_sha256": "8149d75c397904e6db2daa3ab1ba765e5c2c4db4abde607796645c51deb3c4ca",
   "zero_credit": true
 }

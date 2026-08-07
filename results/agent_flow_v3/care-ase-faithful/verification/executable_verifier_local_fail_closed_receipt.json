@@ -1,10 +1,10 @@
 {
-  "created_utc": "2026-08-07T02:12:39Z",
+  "created_utc": "2026-08-07T03:20:19Z",
   "docker_or_upload": false,
   "environment": {
     "cwd": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/verifier",
     "git_branch": "local/verifier/care-ase-faithful",
-    "git_head": "460576651481b91e2b255ab484ead49dd945c444",
+    "git_head": "82ac9bb33911ec74662385afb59a1a36396e94fc",
     "nnunetv2_available": true,
     "platform": "Linux-5.14.0-611.16.1.el9_7.x86_64-x86_64-with-glibc2.34",
     "python_executable": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
@@ -17,14 +17,10 @@
     },
     "torch_available": true
   },
-  "executable_verifier_receipt_sha256": "dd70d5ac2d529f1f740f95d367b713de182eb4e182177549da4d3eb942e85a04",
+  "executable_verifier_receipt_sha256": "9309da77f36c82743d83ec877e96a59009386568f9b57df175dc9e24ea440272",
   "executor_receipts_used_as_runtime_conclusion": false,
-  "failure_count": 3,
-  "failures": [
-    "executable_probe.failed:required_module_final_logit_interventions",
-    "executable_probe.failed:single_vs_forced_multi_tile_full_volume",
-    "executable_probe.failed:partial_hw_extent_zero_contribution"
-  ],
+  "failure_count": 0,
+  "failures": [],
   "fixture_mode": false,
   "forbidden_shortcuts_rejected_by_design": [
     "torch.randn inputs with asserted real case IDs",
@@ -40,11 +36,11 @@
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
   "implementation_evidence_file_sha256": null,
   "implementation_evidence_path": null,
-  "implementation_fingerprint_sha256": "3eabfb0be9eda776da6dd6fe3068004894ea7a5b4c30966941fc05bdc412e0dc",
-  "integration_sha": "edb4f2e290c72e92e1bcbd74295c525fef924f11",
+  "implementation_fingerprint_sha256": "58a34ffb93346e2a2a0765f2f9a903c9b59919b007a39a02b6f484f1a512f6ec",
+  "integration_sha": "5fd6c265109c19c91108fd3a2fa80a6b7d4092a4",
   "outer_accessed": false,
-  "passed": false,
-  "planner_review_commit": "38dbbb0e32556e5f12127699c67ff31d45e5e934",
+  "passed": true,
+  "planner_review_commit": "c2d3d385a160e4d8089f333c7c15c31dc2c89e0c",
   "probes": [
     {
       "attribute_error": null,
@@ -353,18 +349,18 @@
       "status": "PASS"
     },
     {
-      "all_changed_intended_final_logits": false,
+      "all_changed_intended_final_logits": true,
       "intervention_max_abs_by_module": {
-        "all_named_evidence": 0.0,
-        "edema_boundary": 0.0,
-        "edema_context_and_dilation": 0.0,
-        "edema_injury": 0.0,
+        "all_named_evidence": 0.00010013580322265625,
+        "edema_boundary": 0.00010013580322265625,
+        "edema_context_and_dilation": 0.00010013580322265625,
+        "edema_injury": 0.00010013580322265625,
         "extent_wall": 1.9293804168701172,
-        "scar_context": 0.0,
-        "scar_proposal": 0.0
+        "scar_context": 0.00010013580322265625,
+        "scar_proposal": 0.00010013580322265625
       },
       "name": "required_module_final_logit_interventions",
-      "status": "FAIL"
+      "status": "PASS"
     },
     {
       "checkpoint_probe_kind": "verifier_schema_v4_save_load_no_training_credit",
@@ -385,14 +381,14 @@
       "calls_are_distinct": true,
       "canonical_settings_has_no_context_override": true,
       "forced_multi_tile_call_id": "verifier_forced_multi_tile",
-      "forced_multi_tile_count": 0,
-      "global_bias_application_count": 0,
-      "max_abs_diff_without_context_override": null,
+      "forced_multi_tile_count": 9,
+      "global_bias_application_count": 1,
+      "max_abs_diff_without_context_override": 9.5367431640625e-07,
       "name": "single_vs_forced_multi_tile_full_volume",
-      "observed_error": "RuntimeError:Sizes of tensors must match except in dimension 1. Expected size 2 but got size 1 for tensor number 1 in the list.",
+      "observed_error": null,
       "patch_size_equals_input": false,
       "single_tile_call_id": "verifier_single_tile",
-      "status": "FAIL"
+      "status": "PASS"
     },
     {
       "called_evaluator": true,
@@ -432,12 +428,12 @@
     },
     {
       "full_neighbor_extent_bias_abs_sum": 77.95539855957031,
-      "full_neighbor_extent_head_grad_abs_sum": 0.07959210872650146,
+      "full_neighbor_extent_head_grad_abs_sum": 0.15918421745300293,
       "name": "partial_hw_extent_zero_contribution",
-      "partial_hw_extent_bias_abs_sum": 77.95539855957031,
-      "partial_hw_extent_head_grad_abs_sum": 0.07959210872650146,
-      "partial_hw_loss_contribution": 0.19943124055862427,
-      "status": "FAIL"
+      "partial_hw_extent_bias_abs_sum": 0.0,
+      "partial_hw_extent_head_grad_abs_sum": 0.0,
+      "partial_hw_loss_contribution": 0.0,
+      "status": "PASS"
     }
   ],
   "request_nonce": "care-ase-20260806T090955Z",
@@ -460,28 +456,28 @@
   "source_artifacts": {
     "file_hashes": {
       "src/care_myocardium/inference/care_ase_r2_decode.py": "7fea71edba56d259dbbb31c3832b74709bd83d5af1f8b680a85c2e0a41acb05b",
-      "src/care_myocardium/inference/care_ase_r2_full_volume.py": "052568607476861f6d95fa94706a063a74a3136700b26a29f9ba24ac789d109f",
-      "src/care_myocardium/models/care_ase/__init__.py": "96ac8f3265ee8bc5bc1e0f0264846fa7f5a6e740648799c8dd1e83cc2d996a62",
-      "src/care_myocardium/models/care_ase/core.py": "709c8022037be7d0c4001f3faa1177b14fbbb9fa67fcba4aeb6da6ca7a1c6a9e",
+      "src/care_myocardium/inference/care_ase_r2_full_volume.py": "04720a6c267ac2c212a11a0eded0222d06e7d5f35d6dadfd0780aed54e935fc6",
+      "src/care_myocardium/models/care_ase/__init__.py": "1754cf65f68d7853a4ad393737404a1d339f745566beb15849d3272302b0d4d9",
+      "src/care_myocardium/models/care_ase/core.py": "fff8f0d3d3408cbc0d4dff238a283767f20668797cda2f8866c0937d8d9d6949",
       "src/care_myocardium/training/care_ase_sampler.py": "e8d0b9d10f90d3e70fb9e1a8f4cfff2dd4fbae30d7f73868377350af278f65d9",
-      "src/care_myocardium/training/care_ase_trainer.py": "32fb5fe199bc8f735aa5e33ac5b8c363d7645836f0bf99bae0bac619a178de32"
+      "src/care_myocardium/training/care_ase_trainer.py": "7a852622e6423d19fd342ee396c7005c3fa556345f6e7845aa23b5b7c3104877"
     },
     "missing_files": [],
-    "source_manifest_sha256": "8f7ee7bde0ef6360578959d08a0e80bc64ee3745c169d4754433ef2b733bad4f"
+    "source_manifest_sha256": "a2a165292590ed700c3534a56b3bae28f9b80120697fad39392d0207f6196d43"
   },
-  "status": "FAIL_CLOSED",
+  "status": "PASS",
   "task_id": "care-ase-faithful",
   "transaction_gate": {
     "expected_review_round": 1,
     "fixture_mode": false,
-    "implementation_fingerprint_sha256": "3eabfb0be9eda776da6dd6fe3068004894ea7a5b4c30966941fc05bdc412e0dc",
-    "integration_sha": "edb4f2e290c72e92e1bcbd74295c525fef924f11",
+    "implementation_fingerprint_sha256": "58a34ffb93346e2a2a0765f2f9a903c9b59919b007a39a02b6f484f1a512f6ec",
+    "integration_sha": "5fd6c265109c19c91108fd3a2fa80a6b7d4092a4",
     "integration_sha_is_ancestor_of_observed_git_head": true,
-    "observed_git_head": "460576651481b91e2b255ab484ead49dd945c444",
-    "planner_review_commit": "38dbbb0e32556e5f12127699c67ff31d45e5e934",
+    "observed_git_head": "82ac9bb33911ec74662385afb59a1a36396e94fc",
+    "planner_review_commit": "c2d3d385a160e4d8089f333c7c15c31dc2c89e0c",
     "review_round": 1,
-    "verifier_fingerprint_sha256": "847263d0afd1f34e81c49a981ea33dae5c12f53114c543d50830d077d9a7e167"
+    "verifier_fingerprint_sha256": "8149d75c397904e6db2daa3ab1ba765e5c2c4db4abde607796645c51deb3c4ca"
   },
-  "verifier_fingerprint_sha256": "847263d0afd1f34e81c49a981ea33dae5c12f53114c543d50830d077d9a7e167",
+  "verifier_fingerprint_sha256": "8149d75c397904e6db2daa3ab1ba765e5c2c4db4abde607796645c51deb3c4ca",
   "zero_credit": true
 }
