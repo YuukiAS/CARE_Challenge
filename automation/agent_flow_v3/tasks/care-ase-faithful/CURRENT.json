@@ -1,7 +1,7 @@
 {
   "schema": "CARE_AGENT_FLOW_V3",
   "task_id": "care-ase-faithful",
-  "state": "VERIFIER_FROZEN",
+  "state": "NEEDS_USER_SCIENTIFIC_CHOICE",
   "review_round": 1,
   "request_nonce": "care-ase-20260806T090955Z",
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
@@ -30,14 +30,14 @@
     "verifier": "c157696c408a1c98ae0f30e96a403a2b17cb7df2",
     "executor": "de2fdc141691b8c5e9ca5186c4a97cbef8e666d2"
   },
-  "next_action": "START_EXECUTOR_AFTER_VERIFIER_FREEZE",
-  "expected_state_or_artifact": "Verifier first closes causal-authority, extent-loss, true tile-local inference and exact transaction-oracle gaps; Executor then removes implementation shortcuts; Controller reintegrates, regenerates exact fingerprints/runtime manifest, obtains hosted CI on the exact integration SHA, and republishes READY_FOR_PLANNER_REVIEW/WAITING_FOR_EXTERNAL_GPT.",
+  "next_action": "AWAIT_HUMAN_DECISION_ON_TILE_LOCAL_EXACTNESS_CONTRACT",
+  "expected_state_or_artifact": "Human decides whether to revise the frozen true tile-local exactness contract, relax tolerance/context semantics, or stop CARE-ASE.",
   "external_wait_started_utc": "2026-08-07T03:28:06Z",
   "external_wait_deadline_utc": "2026-08-07T07:28:06Z",
   "external_wait_closed_utc": "2026-08-07T04:05:37Z",
-  "last_observed_remote_sha": "b72929c5c0cdb31770252132310b1ba472bdb5b2",
-  "last_poll_utc": "2026-08-07T03:28:06Z",
-  "updated_utc": "2026-08-07T04:53:13Z",
+  "last_observed_remote_sha": "40bb5bb80f6c5dba4f9e8adae160afbca96a8c0e",
+  "last_poll_utc": "2026-08-07T05:16:22Z",
+  "updated_utc": "2026-08-07T05:16:22Z",
   "ready_state_reached_before_wait": "READY_FOR_PLANNER_REVIEW",
   "review_binding_audit": {
     "exact_integration_ci_status": "FAIL_CITED_RUN_HEAD_MISMATCH",
@@ -75,8 +75,8 @@
   "verifier_integration_merge_sha": "17828cb0dd6ae6700b0e1a3e7b7eb5314c71b6ec",
   "executor_thread_id": "019fd7c1-8358-7632-9022-367e62ecfbd1",
   "executor_production_thread_id": "019fd7c1-8358-7632-9022-367e62ecfbd1",
-  "executor_status": "REPAIR_REQUESTED_AFTER_VERIFIER_ROUND_1_REENTRY_002",
-  "executor_local_commit_sha": "fd55c9a876defccede2ef2794d0f215e034bfd4e",
+  "executor_status": "FAIL_CLOSED_NEEDS_USER_SCIENTIFIC_CHOICE",
+  "executor_local_commit_sha": "df526fde93bf3d4fa53ae8d86079a724a1142bb7",
   "executor_integration_merge_sha": "5fd6c265109c19c91108fd3a2fa80a6b7d4092a4",
   "executor_historical_thread_id": "019fd2ea-30f3-7d72-b605-2fc7a2d901ba",
   "request_binding_commit_sha": "9974398cade68b9e0fa8b957c1001ce6d5f6759a",
@@ -115,5 +115,10 @@
   "controller_ci_receipt_sha256": "e10f499b4e9f2715048d9df678c58d2f29914e376b4117e31e6b1f0f7eb4b683",
   "controller_ready_for_planner_review_receipt_path": "results/agent_flow_v3/care-ase-faithful/controller_ready_for_planner_review_receipt.json",
   "controller_ready_for_planner_review_receipt_sha256": "96feff81ebca24fa7070dbf2ce5951d05e42dc313f53abc5930033ef22eb97bf",
-  "planner_review_packet_sha256": "61d1b95edef6aa6eeb1260850f7956fd241e639b243d9e607427e0c0995cbe4a"
+  "planner_review_packet_sha256": "61d1b95edef6aa6eeb1260850f7956fd241e639b243d9e607427e0c0995cbe4a",
+  "executor_fail_closed_receipt_path": "results/agent_flow_v3/care-ase-faithful/implementation/fail_closed_implementation_receipt.json",
+  "executor_fail_closed_receipt_sha256": "045f635fa93f5f7dbb7dc585bc380764853b611afe0c1be255456e805a92fe45",
+  "controller_executor_needs_user_choice_receipt_path": "results/agent_flow_v3/care-ase-faithful/controller_executor_needs_user_choice_receipt.json",
+  "controller_executor_needs_user_choice_receipt_sha256": "77026c66c0efc16b5fcb946075c726a1d81cb57164f6d74a03b4d1c2071bdad4",
+  "scientific_choice_required": "Frozen contract requires true tile-local inference to match the single full-context path, while the current Verifier also rejects hidden full-support pseudo-tiling. Executor recorded a fail-closed implementation boundary rather than reintroducing the forbidden shortcut."
 }
