@@ -1761,7 +1761,24 @@ def ensure_role_worktree_current(worktree: Path, branch: str) -> str:
     if git_status_short(worktree):
         raise RuntimeErrorV3(f"controller_worktree_dirty:{worktree}")
     git(worktree, "fetch", "origin", branch, "--prune")
-    git(worktree, "merge", "--ff-only", f"origin/{branch}")
+    remote = git(worktree, "rev-parse", f"origin/{branch}")
+    head = git(worktree, "rev-parse", "HEAD")
+    if head == remote:
+        return head
+    contains_remote = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", f"origin/{branch}", "HEAD"],
+        cwd=worktree,
+        check=False,
+    )
+    if contains_remote.returncode == 0:
+        return head
+    try:
+        git(worktree, "merge", "--ff-only", f"origin/{branch}")
+    except subprocess.CalledProcessError as exc:
+        merge_base = git(worktree, "merge-base", "HEAD", f"origin/{branch}")
+        raise RuntimeErrorV3(
+            f"role_worktree_not_ff:{worktree}:head={head}:remote={remote}:merge_base={merge_base}"
+        ) from exc
     return git(worktree, "rev-parse", "HEAD")
 
 

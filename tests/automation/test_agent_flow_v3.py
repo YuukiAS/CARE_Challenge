@@ -1432,6 +1432,32 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             ):
                 self.assertIsNone(RUNTIME.role_active_process(root / "state", "smoke-task", "executor"))
 
+    def test_role_worktree_current_allows_clean_local_branch_containing_remote(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            remote = root / "remote.git"
+            seed = root / "seed"
+            worktree = root / "worktree"
+            subprocess.check_call(["git", "init", "--bare", str(remote)], stdout=subprocess.DEVNULL)
+            subprocess.check_call(["git", "clone", str(remote), str(seed)], stdout=subprocess.DEVNULL)
+            subprocess.check_call(["git", "config", "user.email", "test@example.com"], cwd=seed)
+            subprocess.check_call(["git", "config", "user.name", "Test"], cwd=seed)
+            (seed / "README.md").write_text("base\n", encoding="utf-8")
+            subprocess.check_call(["git", "add", "README.md"], cwd=seed)
+            subprocess.check_call(["git", "commit", "-m", "base"], cwd=seed, stdout=subprocess.DEVNULL)
+            subprocess.check_call(["git", "branch", "-M", "develop"], cwd=seed)
+            subprocess.check_call(["git", "push", "origin", "develop"], cwd=seed, stdout=subprocess.DEVNULL)
+            subprocess.check_call(["git", "clone", "-b", "develop", str(remote), str(worktree)], stdout=subprocess.DEVNULL)
+            subprocess.check_call(["git", "config", "user.email", "test@example.com"], cwd=worktree)
+            subprocess.check_call(["git", "config", "user.name", "Test"], cwd=worktree)
+            (worktree / "local.txt").write_text("local\n", encoding="utf-8")
+            subprocess.check_call(["git", "add", "local.txt"], cwd=worktree)
+            subprocess.check_call(["git", "commit", "-m", "local"], cwd=worktree, stdout=subprocess.DEVNULL)
+
+            head = RUNTIME.ensure_role_worktree_current(worktree, "develop")
+
+            self.assertEqual(head, RUNTIME.git(worktree, "rev-parse", "HEAD"))
+
     def test_completed_resume_receipt_is_detected_but_not_active(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
