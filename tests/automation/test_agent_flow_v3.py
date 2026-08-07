@@ -104,6 +104,24 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             MODULE.validate_current(current, request, self.schema),
         )
 
+    def test_needs_user_scientific_choice_is_valid_exception_state(self) -> None:
+        request = copy.deepcopy(self.template)
+        request["frozen_contract_sha256"] = "a" * 64
+        current = {
+            "schema": "CARE_AGENT_FLOW_V3",
+            "task_id": request["task_id"],
+            "state": "NEEDS_USER_SCIENTIFIC_CHOICE",
+            "review_round": 1,
+            "request_nonce": "nonce",
+            "frozen_contract_sha256": request["frozen_contract_sha256"],
+            "integration_commit_sha": "b" * 40,
+            "implementation_fingerprint_sha256": "c" * 64,
+            "verifier_fingerprint_sha256": "d" * 64,
+            "next_action": "AWAIT_HUMAN_DECISION_ON_TILE_LOCAL_EXACTNESS_CONTRACT",
+            "updated_utc": "2026-08-05T00:00:00Z",
+        }
+        self.assertEqual(MODULE.validate_current(current, request, self.schema), [])
+
     def test_waiting_for_external_gpt_requires_deadline_metadata(self) -> None:
         request = copy.deepcopy(self.template)
         request["frozen_contract_sha256"] = "a" * 64
