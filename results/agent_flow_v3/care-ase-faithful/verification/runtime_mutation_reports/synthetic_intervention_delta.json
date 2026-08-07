@@ -1,15 +1,15 @@
 {
-  "created_utc": "2026-08-07T04:43:13Z",
+  "created_utc": "2026-08-07T04:43:36Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
-    "kb05.required_module_authority.oracle_rejected"
+    "kb05.synthetic_intervention_delta"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "4d7ed5b5bdfebc07af1216fd034a23d6cd3cd8849576ba46e7136986b7b6f37e",
-  "mutation_applied": "all_named_evidence_projection_modules_return_zero_into_final_branches",
+  "mutated_fingerprint_sha256": "f1f5028b66e367c68eda87f79c5efc0b75098a3c66651b018e2c3df98f67d675",
+  "mutation_applied": "disable_flag_epsilon_delta_path_left_enabled_while_authority_oracle_runs",
   "mutation_executed": true,
-  "mutation_id": "projection_context_no_final_authority",
+  "mutation_id": "synthetic_intervention_delta",
   "observations": {
     "authority_probe": {
       "implementation_disable_flags_treated_as_authority": false,
@@ -50,7 +50,18 @@
         "intervention_delta = anatomy_logits.detach().new_tensor(1.0e-4)"
       ]
     },
-    "source_manifest_sha256_before_mutation": "a2a165292590ed700c3534a56b3bae28f9b80120697fad39392d0207f6196d43"
+    "source_manifest_sha256_before_mutation": "a2a165292590ed700c3534a56b3bae28f9b80120697fad39392d0207f6196d43",
+    "synthetic_epsilon_like_runtime_deltas": {
+      "all_named_evidence_projection": 0.00010013580322265625,
+      "edema_boundary": 0.00010013580322265625,
+      "edema_context_and_dilation_1_2_4": 0.00010013580322265625,
+      "edema_injury": 0.00010013580322265625,
+      "scar_context": 0.00010013580322265625,
+      "scar_proposal_occupancy_center": 0.00010013580322265625
+    },
+    "synthetic_intervention_delta_static_matches": [
+      "intervention_delta = anatomy_logits.detach().new_tensor(1.0e-4)"
+    ]
   },
   "passed": false,
   "request_nonce": "care-ase-20260806T090955Z",

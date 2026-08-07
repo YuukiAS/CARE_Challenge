@@ -1,7 +1,7 @@
 {
   "codex_home": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_VERIFIER",
-  "controller_verified_launch_origin_develop_sha": "82ac9bb33911ec74662385afb59a1a36396e94fc",
-  "controller_verified_launch_verifier_worktree_head": "82ac9bb33911ec74662385afb59a1a36396e94fc",
+  "controller_verified_launch_origin_develop_sha": "eee6bc4b37e920d0b3bba893edc8ce3c45b81139",
+  "controller_verified_launch_verifier_worktree_head": "eee6bc4b37e920d0b3bba893edc8ce3c45b81139",
   "forbidden_scope": [
     "src/**",
     "scripts/training/**",
@@ -12,18 +12,18 @@
     "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md"
   ],
   "invalid_prior_thread_id": "019fd2ea-92b5-7601-a323-9ac3d87d4a2d",
-  "last_commit_sha": "82ac9bb33911ec74662385afb59a1a36396e94fc",
+  "last_commit_sha": "eee6bc4b37e920d0b3bba893edc8ce3c45b81139",
   "local_branch": "local/verifier/care-ase-faithful",
   "log_path": "results/agent_flow_v3/care-ase-faithful/verification/verifier_local_commands_recorded_in_manifests.json",
-  "observed_origin_develop_sha_at_artifact_build": "65b6f7858d4546f54c68d3d3ede051bb4001910b",
+  "observed_origin_develop_sha_at_artifact_build": "eee6bc4b37e920d0b3bba893edc8ce3c45b81139",
   "pid_or_process_status": "artifact_builder_pid:2",
   "python_executable": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
   "role": "verifier",
   "schema": "CARE_AGENT_FLOW_V3_ROLE_RECEIPT",
-  "started_utc": "2026-08-07T03:18:56Z",
+  "started_utc": "2026-08-07T04:40:38Z",
   "state_path": "automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json",
   "thread_id": "019fda33-10c3-70e1-aa41-684b46d2cbda",
-  "updated_utc": "2026-08-07T03:18:56Z",
+  "updated_utc": "2026-08-07T04:40:38Z",
   "worktree": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/verifier",
   "write_scope": [
     "tests/**",

@@ -1,0 +1,101 @@
+{
+  "created_utc": "2026-08-07T04:43:59Z",
+  "exit_code": 2,
+  "failure_count": 1,
+  "failures": [
+    "kb12.inference.full_support_pseudo_tiling"
+  ],
+  "fixture_mode": false,
+  "mutated_fingerprint_sha256": "d0a2dc7da59405f7246102e4659d6a3e2b8b7f6d084b374b4c8f60e624104015",
+  "mutation_applied": "current_full_volume_forced_multi_tile_path_observed_for_full_support_reuse",
+  "mutation_executed": true,
+  "mutation_id": "full_support_pseudo_tiling",
+  "observations": {
+    "single_logits_available": true,
+    "source_manifest_sha256_before_mutation": "a2a165292590ed700c3534a56b3bae28f9b80120697fad39392d0207f6196d43",
+    "tile_local_forward_probe": {
+      "actual_forward_records": [
+        {
+          "call_id": "forced_t2:0",
+          "input_shape": [
+            1,
+            3,
+            8,
+            64,
+            64
+          ]
+        }
+      ],
+      "aggregate_tile_count_distinct_from_forward_count": true,
+      "calls_are_distinct": true,
+      "canonical_settings_has_no_context_override": true,
+      "declared_patch_size": [
+        8,
+        32,
+        32
+      ],
+      "expected_model_forward_count": 9,
+      "forced_model_forward_count": 1,
+      "forced_multi_tile_call_id": "verifier_forced_multi_tile",
+      "forced_multi_tile_count": 9,
+      "full_support_pseudo_tiling_detected": true,
+      "global_bias_application_count": 1,
+      "max_abs_diff_without_context_override": 9.5367431640625e-07,
+      "mirror_factor": 1,
+      "model_input_spatial_within_declared_patch": false,
+      "name": "tile_local_forward_instrumentation",
+      "no_t2_actual_forward_records": [
+        {
+          "call_id": "forced_no_t2:0",
+          "input_shape": [
+            1,
+            3,
+            8,
+            64,
+            64
+          ]
+        }
+      ],
+      "no_t2_forced_model_forward_count": 1,
+      "no_t2_global_bias_application_count": 1,
+      "observed_error": null,
+      "offending_forward_input_shapes": [
+        [
+          1,
+          3,
+          8,
+          64,
+          64
+        ],
+        [
+          1,
+          3,
+          8,
+          64,
+          64
+        ]
+      ],
+      "single_forward_records": [
+        {
+          "call_id": "single:0",
+          "input_shape": [
+            1,
+            3,
+            8,
+            64,
+            64
+          ]
+        }
+      ],
+      "single_tile_call_id": "verifier_single_tile",
+      "status": "FAIL",
+      "tile_coordinates": [],
+      "tile_coordinates_recorded": false,
+      "tile_outputs_limited_to_base_logits_wall_extent_evidence": true
+    }
+  },
+  "passed": false,
+  "request_nonce": "care-ase-20260806T090955Z",
+  "schema": "CARE_ASE_FAITHFUL_EXECUTABLE_MUTATION_RESULT_V1",
+  "task_id": "care-ase-faithful"
+}
