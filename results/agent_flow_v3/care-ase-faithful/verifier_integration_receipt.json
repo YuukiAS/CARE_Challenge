@@ -3,11 +3,11 @@
   "task_id": "care-ase-faithful",
   "request_nonce": "care-ase-20260806T090955Z",
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
-  "head_before_update": "97a62ecada4a356d7e869a45dfb2ae834f024483",
-  "verifier_branch_head_sha": "460576651481b91e2b255ab484ead49dd945c444",
-  "verifier_merge_base": "302b42f6ed0ddd69ab0b932295a267e3f403bd63",
-  "integration_merge_sha": "94b728aaa9c8ffb28a94d2b3ddc0f2b74ac5e469",
-  "verifier_fingerprint_sha256": "847263d0afd1f34e81c49a981ea33dae5c12f53114c543d50830d077d9a7e167",
+  "head_before_update": "d33e04d731993d8e6558b5f232e11fc24528192e",
+  "verifier_branch_head_sha": "b7ef00302f0670d9f4c094500b2b94823ff347a3",
+  "verifier_merge_base": "460576651481b91e2b255ab484ead49dd945c444",
+  "integration_merge_sha": "22b897b7e270d33ec9c1a4d3955324c36028216b",
+  "verifier_fingerprint_sha256": "8149d75c397904e6db2daa3ab1ba765e5c2c4db4abde607796645c51deb3c4ca",
   "changed_paths": [
     "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_local_fail_closed_receipt.json",
     "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json",
@@ -43,5 +43,5 @@
     "no implementation source modified by controller integration",
     "no training, outer, Docker, upload, organizer email or develop-to-main merge"
   ],
-  "updated_utc": "2026-08-06T20:31:29Z"
+  "updated_utc": "2026-08-07T02:17:04Z"
 }
