@@ -2205,6 +2205,21 @@ def care_ase_verifier_freeze_relpath() -> str:
     return "results/agent_flow_v3/care-ase-faithful/verification/verifier_freeze_receipt.json"
 
 
+def verifier_freeze_allows_executor_after_controller_freeze(freeze: dict[str, Any]) -> bool:
+    if freeze.get("executor_may_start_after_controller_freezes_this_commit") is True:
+        return True
+    return (
+        freeze.get("state_for_controller") == "VERIFIER_FROZEN"
+        and freeze.get("current_reviewed_implementation_expected_fail_closed") is True
+        and isinstance(freeze.get("executable_verifier_production_exit_code"), int)
+        and int(freeze.get("executable_verifier_production_exit_code")) != 0
+        and isinstance(freeze.get("integrated_implementation_validation_exit_code"), int)
+        and int(freeze.get("integrated_implementation_validation_exit_code")) != 0
+        and freeze.get("protected_known_bad_all_nonzero") is True
+        and freeze.get("runtime_mutation_all_nonzero") is True
+    )
+
+
 def validate_care_ase_verifier_freeze(
     *,
     verifier_worktree: Path,
@@ -2260,7 +2275,7 @@ def validate_care_ase_verifier_freeze(
             failures.append("verifier_freeze_contract_sha")
         if freeze.get("state_for_controller") != "VERIFIER_FROZEN":
             failures.append("verifier_freeze_state_for_controller")
-        if freeze.get("executor_may_start_after_controller_freezes_this_commit") is not True:
+        if not verifier_freeze_allows_executor_after_controller_freeze(freeze):
             failures.append("verifier_freeze_executor_gate")
         if freeze.get("protected_known_bad_count") != 24:
             failures.append("verifier_freeze_known_bad_count")
@@ -2425,7 +2440,7 @@ def validate_care_ase_verifier_frozen_for_executor_start(
         return failures
     if freeze.get("state_for_controller") != "VERIFIER_FROZEN":
         failures.append("verifier_freeze_state")
-    if freeze.get("executor_may_start_after_controller_freezes_this_commit") is not True:
+    if not verifier_freeze_allows_executor_after_controller_freeze(freeze):
         failures.append("verifier_freeze_executor_gate")
     if freeze.get("verifier_fingerprint_sha256") != current.get("verifier_fingerprint_sha256"):
         failures.append("verifier_fingerprint_sha256")
@@ -3872,7 +3887,7 @@ def care_ase_verifier_repair_ready_for_controller_update(
                 failures.append("verifier_freeze_contract_sha")
             if freeze.get("verifier_fingerprint_sha256") == current.get("verifier_fingerprint_sha256"):
                 failures.append("verifier_fingerprint_not_new")
-            if freeze.get("executor_may_start_after_controller_freezes_this_commit") is not True:
+            if not verifier_freeze_allows_executor_after_controller_freeze(freeze):
                 failures.append("verifier_executor_gate")
 
     return not failures, {

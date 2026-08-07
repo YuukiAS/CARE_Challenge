@@ -613,6 +613,35 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         self.assertEqual(receipt["decision"], "CONTROLLER_UPDATE_REQUIRED")
         self.assertIn("CI_PASS", receipt["action"])
 
+    def test_ci_pass_wait_transaction_is_not_human_approval_gate(self) -> None:
+        current = {
+            "task_id": "care-ase-faithful",
+            "request_nonce": "care-ase-nonce",
+            "review_round": 2,
+            "state": "CI_RUNNING",
+            "ci_status": "PASS",
+            "ci_checked_commit_sha": "e" * 40,
+            "frozen_contract_sha256": "a" * 64,
+            "implementation_fingerprint_sha256": "b" * 64,
+            "verifier_fingerprint_sha256": "c" * 64,
+            "executor_integration_merge_sha": "d" * 40,
+        }
+
+        receipt = RUNTIME.evaluate_stage_event(
+            task_id="care-ase-faithful",
+            request={"enabled": True},
+            current=current,
+            visual_final=None,
+            remote_sha="e" * 40,
+            processed=set(),
+            default_wait_hours=4,
+        )
+
+        self.assertEqual(receipt["decision"], "CONTROLLER_UPDATE_REQUIRED")
+        self.assertIn("authorized", receipt["action"])
+        self.assertNotEqual(receipt["decision"], "OPERATIONALLY_BLOCKED")
+        self.assertNotIn("human", receipt["action"].lower())
+
     def test_care_ase_stale_ci_pass_keeps_waiting_for_ci(self) -> None:
         current = {
             "task_id": "care-ase-faithful",
@@ -638,6 +667,30 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         )
 
         self.assertEqual(receipt["decision"], "WAITING_FOR_CI")
+
+    def test_fail_closed_verifier_freeze_allows_executor_repair_start(self) -> None:
+        freeze = {
+            "state_for_controller": "VERIFIER_FROZEN",
+            "current_reviewed_implementation_expected_fail_closed": True,
+            "executable_verifier_production_exit_code": 2,
+            "integrated_implementation_validation_exit_code": 2,
+            "protected_known_bad_all_nonzero": True,
+            "runtime_mutation_all_nonzero": True,
+        }
+
+        self.assertTrue(RUNTIME.verifier_freeze_allows_executor_after_controller_freeze(freeze))
+
+    def test_incomplete_fail_closed_verifier_freeze_does_not_allow_executor(self) -> None:
+        freeze = {
+            "state_for_controller": "VERIFIER_FROZEN",
+            "current_reviewed_implementation_expected_fail_closed": True,
+            "executable_verifier_production_exit_code": 2,
+            "integrated_implementation_validation_exit_code": 2,
+            "protected_known_bad_all_nonzero": True,
+            "runtime_mutation_all_nonzero": False,
+        }
+
+        self.assertFalse(RUNTIME.verifier_freeze_allows_executor_after_controller_freeze(freeze))
 
     def test_care_ase_wait_transaction_clears_stale_planner_review_fields(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
