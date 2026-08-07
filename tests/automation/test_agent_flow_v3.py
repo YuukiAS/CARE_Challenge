@@ -687,6 +687,17 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         )
         self.assertTrue(RUNTIME.stage_event_was_processed(event_key, processed))
 
+    def test_orchestrator_remove_processed_key_accepts_artifact_suffix(self) -> None:
+        processed = {
+            "care-ase-faithful:nonce:1:PLANNER_REVISE_BOTH",
+            "other:event",
+        }
+        event_key = (
+            "care-ase-faithful:nonce:1:PLANNER_REVISE_BOTH:"
+            "results/agent_flow_v3/care-ase-faithful/planner_reviews/round_001_reentry_001.json"
+        )
+        self.assertEqual(RUNTIME.remove_stage_processed_event(event_key, processed), {"other:event"})
+
     def test_orchestrator_keeps_generic_planner_pass_at_human_gate(self) -> None:
         current = {
             "request_nonce": "nonce-1",

@@ -1447,6 +1447,18 @@ def stage_event_was_processed(event_key: str, processed: set[str]) -> bool:
     )
 
 
+def remove_stage_processed_event(event_key: str, processed: set[str]) -> set[str]:
+    return {
+        old_key
+        for old_key in processed
+        if not (
+            old_key == event_key
+            or old_key.startswith(f"{event_key}:")
+            or event_key.startswith(f"{old_key}:")
+        )
+    }
+
+
 def merge_existing_wait_metadata(current: dict[str, Any], previous_wait: dict[str, Any] | None) -> dict[str, Any]:
     if not previous_wait:
         return current
@@ -3226,6 +3238,19 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
             and stage_event_was_processed(event_key, processed)
         ):
             processed = {key for key in processed if not key.startswith(event_key)}
+        if (
+            task_id == "care-ase-faithful"
+            and current.get("state") in {"PLANNER_REVISE_VERIFIER", "PLANNER_REVISE_BOTH"}
+            and stage_event_was_processed(event_key, processed)
+        ):
+            ready, _readiness = care_ase_verifier_repair_ready_for_controller_update(
+                args=args,
+                repo=repo,
+                request=request,
+                current=current,
+            )
+            if ready:
+                processed = remove_stage_processed_event(event_key, processed)
         visual_final = None
         visual_final_path = f"results/agent_flow_v3/{task_id}/visual_smoke_final.json"
         raw_visual_final = git_show_text_or_none(repo, ref, visual_final_path)
