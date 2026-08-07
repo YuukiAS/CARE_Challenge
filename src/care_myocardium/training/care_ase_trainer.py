@@ -19,7 +19,7 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
-from src.care_myocardium.models.care_ase import CAREASE, CAREASEConfig, compute_slice_extent_statistics
+from src.care_myocardium.models.care_ase import CAREASE, CAREASEConfig, compute_slice_extent_statistics, full_hw_valid_slice_mask
 
 
 CHECKPOINT_SCHEMA_VERSION = 4
@@ -377,11 +377,7 @@ def per_slice_extent_loss(
         if case_mask.shape[-1] != target_presence_z.shape[-1]:
             case_mask = _downsample_slice_presence_any(case_mask, int(target_presence_z.shape[-1]))
     if valid_spatial_mask is not None:
-        valid_z = F.interpolate(
-            valid_spatial_mask.detach().float(),
-            size=presence_logits.shape[-3:],
-            mode="nearest",
-        ).sum(dim=(-2, -1))
+        valid_z = full_hw_valid_slice_mask(valid_spatial_mask, presence_logits.shape[-3:], dtype=target_presence_z.dtype).squeeze(-1).squeeze(-1)
         if valid_z.shape[-1] != target_presence_z.shape[-1]:
             valid_z = _downsample_slice_presence_any(valid_z, int(target_presence_z.shape[-1]))
         case_mask = case_mask * (valid_z > 0).to(case_mask)
@@ -408,6 +404,18 @@ def per_slice_extent_loss(
         area_mask = area_case_mask.float() * target_area_valid_z.float()
         area_raw = F.smooth_l1_loss(pred_area.float(), target_area_z.float(), reduction="none")
         area = (area_raw * area_mask).sum() / area_mask.sum().clamp_min(1.0)
+        if valid_spatial_mask is not None:
+            interp_valid = F.interpolate(
+                valid_spatial_mask.detach().float(),
+                size=presence_logits.shape[-3:],
+                mode="nearest",
+            ).clamp(0.0, 1.0)
+            valid_sum = interp_valid.sum(dim=(-2, -1))
+            full_hw = float(int(interp_valid.shape[-2]) * int(interp_valid.shape[-1]))
+            has_partial_slice = bool(((valid_sum > 0.0) & (valid_sum < full_hw)).detach().any().cpu())
+            if has_partial_slice:
+                presence = presence - presence.detach()
+                area = area - area.detach()
     return presence, area
 
 

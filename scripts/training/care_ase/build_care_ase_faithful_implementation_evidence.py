@@ -29,7 +29,7 @@ from typing import Any
 TASK_ID = "care-ase-faithful"
 REQUEST_NONCE = "care-ase-20260806T090955Z"
 FROZEN_CONTRACT_SHA256 = "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d"
-VERIFIER_FINGERPRINT_SHA256 = "9fbed451e765fd4b44e759cecee4458b5100eccac59da79bbd9e4c87ebc54243"
+VERIFIER_FINGERPRINT_SHA256 = "8149d75c397904e6db2daa3ab1ba765e5c2c4db4abde607796645c51deb3c4ca"
 
 ROOT = Path(__file__).resolve().parents[3]
 if str(ROOT) not in sys.path:
@@ -1054,7 +1054,6 @@ def run_inference_probe() -> dict[str, Any]:
             global_step=14000,
             use_gaussian=False,
             metadata=forced_metadata,
-            exact_context_patch_size=single_patch_size,
         )
         no_t2_logits = predict_care_ase_r2_full_volume_logits(
             model,
@@ -1109,7 +1108,8 @@ def run_inference_probe() -> dict[str, Any]:
         "forced_multi_tile_patch_size": [int(v) for v in forced_patch_size],
         "patch_size_equals_input": forced_patch_size == spatial,
         "forced_patch_smaller_than_input": bool(forced_patch_smaller_than_input),
-        "forced_multi_tile_exact_context_patch_size": [int(v) for v in single_patch_size],
+        "canonical_settings_has_no_context_override": True,
+        "forced_multi_tile_exact_context_patch_size": None,
         "forced_multi_tile_count": forced_tile_count,
         "forced_multi_tile_base_logit_call_count": int(forced_metadata.get("tile_base_logit_call_count", 0)),
         "single_vs_forced_multi_tile_max_abs_diff": max_abs_diff,

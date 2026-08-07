@@ -1,84 +1,95 @@
 {
-  "created_utc": "2026-08-06T20:17:30Z",
+  "schema": "CARE_ASE_FAITHFUL_IMPLEMENTATION_FAIL_CLOSED_RECEIPT_V1",
+  "task_id": "care-ase-faithful",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "verifier_fingerprint_sha256": "8149d75c397904e6db2daa3ab1ba765e5c2c4db4abde607796645c51deb3c4ca",
+  "implementation_fingerprint_sha256": "58a34ffb93346e2a2a0765f2f9a903c9b59919b007a39a02b6f484f1a512f6ec",
+  "status": "FAIL_CLOSED",
+  "created_utc": "2026-08-07T02:50:00Z",
+  "reason": "Executor runtime receipts were regenerated and pass, but the tracked verifier-owned executable and transaction receipts still bind stale runtime artifacts and remain outside the Executor write scope.",
+  "blocking_scope": "verifier_owned_reexecution_required_after_controller_integration",
+  "executor_scope_completed": true,
+  "implementation_complete_claimed": false,
+  "formal_training_started": false,
+  "outer_accessed": false,
   "docker_built_or_uploaded": false,
-  "environment": {
-    "cuda_visible_devices": "0",
-    "gpu_name": "NVIDIA A100-SXM4-80GB",
-    "slurm_job_id": "61987724",
-    "slurm_partition": "htzhulab",
-    "nonfixture_executable_verifier_diagnostic": "/tmp/care_ase_executor_nonfixture_executable_verifier_receipt_after_hooks.json",
-    "zero_credit_runtime_log": "results/agent_flow_v3/care-ase-faithful/implementation/runtime_logs/gpu_zero_credit_evidence_61987724_20260806T201148Z.log"
-  },
-  "executor_zero_credit_receipts": {
-    "checkpoint_resume_probe": {
-      "exit_code": 0,
-      "receipt": "results/agent_flow_v3/care-ase-faithful/implementation/checkpoint_resume_probe_receipt.json",
-      "status": "PASS"
+  "validation_or_challenge_uploaded": false,
+  "slurm_zero_credit_runs": [
+    {
+      "job_id": "62414832",
+      "partition": "htzhulab",
+      "cuda_visible_devices": "0",
+      "exit_code": 1,
+      "result": "failed_before_receipt_regeneration",
+      "failure": "full-support forced multi-tile path used a non-compatible 291-wide execution shape"
     },
-    "deployment_load_probe": {
-      "exit_code": 0,
-      "receipt": "results/agent_flow_v3/care-ase-faithful/implementation/deployment_load_probe_receipt.json",
-      "status": "PASS"
+    {
+      "job_id": "62415164",
+      "partition": "htzhulab",
+      "cuda_visible_devices": "0",
+      "exit_code": 2,
+      "result": "fail_closed",
+      "failure": "inference receipt still failed before symmetric full-support padding alignment"
     },
-    "evaluator_smoke": {
-      "exit_code": 0,
-      "receipt": "results/agent_flow_v3/care-ase-faithful/implementation/evaluator_smoke_receipt.json",
+    {
+      "job_id": "62415735",
+      "partition": "htzhulab",
+      "cuda_visible_devices": "0",
+      "exit_code": 2,
+      "result": "executor_receipts_pass_validator_recheck_blocked_by_stale_verifier_owned_receipts",
+      "failure": "validators reported only verifier_owned executable/runtime-binding failures"
+    }
+  ],
+  "executor_runtime_receipts": {
+    "step0_parity_probe": {
+      "path": "results/agent_flow_v3/care-ase-faithful/implementation/step0_parity_probe_receipt.json",
       "status": "PASS"
     },
     "forward_backward_probe": {
-      "exit_code": 0,
-      "receipt": "results/agent_flow_v3/care-ase-faithful/implementation/forward_backward_probe_receipt.json",
-      "status": "PASS"
-    },
-    "hard_negative_binding": {
-      "exit_code": 0,
-      "receipt": "results/agent_flow_v3/care-ase-faithful/implementation/hard_negative_binding_receipt.json",
+      "path": "results/agent_flow_v3/care-ase-faithful/implementation/forward_backward_probe_receipt.json",
       "status": "PASS"
     },
     "inference_probe": {
-      "exit_code": 0,
+      "path": "results/agent_flow_v3/care-ase-faithful/implementation/inference_probe_receipt.json",
+      "status": "PASS",
+      "case_id": "Case2003",
+      "no_t2_case_id": "Case1001",
       "forced_multi_tile_count": 2,
       "global_bias_application_count": 1,
-      "receipt": "results/agent_flow_v3/care-ase-faithful/implementation/inference_probe_receipt.json",
-      "single_vs_forced_multi_tile_max_abs_diff": 4.76837158203125e-07,
+      "single_vs_forced_multi_tile_max_abs_diff": 0.0,
+      "single_vs_forced_multi_tile_decode_changed_voxels": 0,
+      "canonical_settings_has_no_context_override": true
+    },
+    "checkpoint_resume_probe": {
+      "path": "results/agent_flow_v3/care-ase-faithful/implementation/checkpoint_resume_probe_receipt.json",
       "status": "PASS"
     },
-    "step0_parity_probe": {
-      "exit_code": 0,
-      "receipt": "results/agent_flow_v3/care-ase-faithful/implementation/step0_parity_probe_receipt.json",
+    "deployment_load_probe": {
+      "path": "results/agent_flow_v3/care-ase-faithful/implementation/deployment_load_probe_receipt.json",
+      "status": "PASS"
+    },
+    "evaluator_smoke": {
+      "path": "results/agent_flow_v3/care-ase-faithful/implementation/evaluator_smoke_receipt.json",
+      "status": "PASS"
+    },
+    "hard_negative_binding": {
+      "path": "results/agent_flow_v3/care-ase-faithful/implementation/hard_negative_binding_receipt.json",
       "status": "PASS"
     }
   },
-  "failures": [
-    "frozen_validator_failed_verifier_owned.executable.not_fixture",
-    "nonfixture_executable_verifier_stops_in_verifier_source_with_runtime.real_hook_execution_not_implemented_in_verifier_without_contract_hook_specs"
-  ],
-  "formal_training_started": false,
-  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
-  "implementation_complete": false,
-  "implementation_evidence_path": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json",
-  "implementation_fingerprint_path": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_fingerprint.json",
-  "implementation_fingerprint_sha256": "d5a3ea027c388d30bdd173e3d10e365c4270c761676abf4c999627db21ebb0cd",
-  "no_training_started": true,
-  "outer_accessed": false,
-  "reason": "executor runtime evidence regenerated successfully and implementation-owned verifier hook wrappers are now present, but the frozen validator still rejects the verifier-owned executable_verifier_receipt.json because it is fixture_mode true and bound to the prior reviewed implementation fingerprint. A non-fixture diagnostic verifier run against this Executor checkout no longer reports missing hooks, but verifier-owned run_executable_verifier.py stops before executing hooks with runtime.real_hook_execution_not_implemented_in_verifier_without_contract_hook_specs. Executor cannot edit verifier-owned receipts or validator source.",
-  "request_nonce": "care-ase-20260806T090955Z",
-  "schema": "CARE_ASE_FAITHFUL_IMPLEMENTATION_FAIL_CLOSED_RECEIPT_V1",
-  "source_manifest_path": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_source_manifest.json",
-  "source_manifest_sha256": "dfdfe0d0ff47d9d509d8e8955332ac22aae6f901731bf2ef0dd28a575aa9bf69",
-  "status": "FAIL_CLOSED",
-  "task_id": "care-ase-faithful",
-  "validation_or_challenge_uploaded": false,
-  "validator": {
-    "command_receipt": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_validator_receipt.json",
-    "exit_code": 2,
-    "failure_count": 1,
-    "failures": [
-      "verifier_owned.executable.not_fixture"
-    ],
-    "verifier_owned_executable_fixture_mode": true,
-    "verifier_owned_executable_implementation_fingerprint_sha256": "b0db561e7a40c0e52c8363b8b43e96bc2441184a7ce28bc17681d41bededa1a1"
+  "diagnostic_executable_verifier": {
+    "receipt_path": "/tmp/care_ase_exec_verifier_after_fullsupport.json",
+    "exit_code": 0,
+    "status": "PASS",
+    "partial_hw_extent_zero_contribution": "PASS",
+    "single_vs_forced_multi_tile_full_volume": "PASS"
   },
-  "verification_contract_path": "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
-  "verifier_fingerprint_sha256": "9fbed451e765fd4b44e759cecee4458b5100eccac59da79bbd9e4c87ebc54243"
+  "validator_result": {
+    "path": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence_validation_result.json",
+    "exit_code": 2,
+    "failure_count": 19,
+    "failure_prefix": "verifier_owned"
+  },
+  "next_required_action": "Controller must integrate this Executor commit, then the independent Verifier must rerun executable verification and transaction receipts against the new implementation fingerprint."
 }

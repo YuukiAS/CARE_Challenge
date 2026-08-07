@@ -1,7 +1,7 @@
 {
-  "checkpoint_sha256": "7538942d8090011aa010550b0122fabd164aa961f5d3a4c05a1d7c3edab56e5a",
+  "checkpoint_sha256": "b198cf4b1b897094bdafc5e52abf964f67ca90246f89e851854a85ab354a9f2b",
   "checkpoint_sidecar_matches": true,
-  "checkpoint_sidecar_sha256": "7538942d8090011aa010550b0122fabd164aa961f5d3a4c05a1d7c3edab56e5a",
+  "checkpoint_sidecar_sha256": "b198cf4b1b897094bdafc5e52abf964f67ca90246f89e851854a85ab354a9f2b",
   "checkpoint_storage": "temporary_directory_removed_after_hashing",
   "checkpoint_written": true,
   "control_next_step": {

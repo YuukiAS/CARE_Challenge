@@ -16,7 +16,7 @@ from acvl_utils.cropping_and_padding.padding import pad_nd_image
 from nnunetv2.inference.sliding_window_prediction import compute_gaussian, compute_steps_for_sliding_window
 
 from src.care_myocardium.inference.care_ase_r2_decode import decode_care_ase_r2_logits
-from src.care_myocardium.models.care_ase import compute_slice_extent_statistics
+from src.care_myocardium.models.care_ase import compute_slice_extent_statistics, full_hw_valid_slice_mask
 
 
 @dataclass(frozen=True)
@@ -59,6 +59,12 @@ def _pad_patch_to_size(patch: torch.Tensor, patch_size: tuple[int, int, int]) ->
 def _aggregate_patch_tensor(accum: torch.Tensor, value: torch.Tensor, z: int, y: int, x: int, actual: tuple[int, int, int]) -> None:
     value = value[..., : actual[0], : actual[1], : actual[2]]
     accum[..., z : z + actual[0], y : y + actual[1], x : x + actual[2]] += value
+
+
+def _round_up_to_multiple(value: int, multiple: int) -> int:
+    value = int(value)
+    multiple = max(int(multiple), 1)
+    return ((value + multiple - 1) // multiple) * multiple
 
 
 def gaussian_importance_map(
@@ -157,7 +163,7 @@ def global_extent_bias(
         presence_coef, area_coef, wall_coef = 0.35, 0.30, 0.10
     else:
         raise ValueError(f"unknown pathology: {pathology}")
-    valid_slice = (valid_down.sum(dim=(-2, -1), keepdim=True) > 0).to(dtype=p_wall.dtype)
+    valid_slice = full_hw_valid_slice_mask(valid_down, p_wall.shape[-3:], dtype=p_wall.dtype)
     presence_bias = presence_coef * model._sigmoid_logit_center(presence, 0.50) * valid_slice
     area_bias = area_coef * model._sigmoid_logit_center(area, area_reference) * valid_slice
     slice_valid = F.interpolate(valid_slice, size=p_wall.shape[-3:], mode="nearest")
@@ -213,7 +219,6 @@ def predict_care_ase_r2_full_volume_logits(
     allowed_mirror_axes: tuple[int, ...] = (),
     settings: CAREASEFullVolumeInferenceSettings | None = None,
     metadata: dict[str, Any] | None = None,
-    exact_context_patch_size: tuple[int, int, int] | None = None,
 ) -> torch.Tensor:
     if settings is not None:
         patch_size = settings.patch_size
@@ -222,6 +227,7 @@ def predict_care_ase_r2_full_volume_logits(
         gaussian_sigma_scale = settings.gaussian_sigma_scale
         use_mirroring = settings.use_mirroring
         allowed_mirror_axes = settings.allowed_mirror_axes
+    model_min_patch_size = tuple(max(int(tile), int(minimum)) for tile, minimum in zip(tuple(int(v) for v in patch_size), (8, 64, 64)))
     was_training = model.training
     model.eval()
     original_spatial = tuple(int(v) for v in image.shape[-3:])
@@ -246,36 +252,21 @@ def predict_care_ase_r2_full_volume_logits(
             spatial = tuple(int(v) for v in padded_image.shape[-3:])
             starts = compute_steps_for_sliding_window(spatial, tuple(int(v) for v in patch_size), float(overlap))
             spatial_offsets = tuple(int(slc.start or 0) for slc in crop_slicer[-3:])
-            context_offsets = spatial_offsets
-            context_padded_image = None
-            context_patch_size = None
-            context_spatial = None
-            if exact_context_patch_size is not None:
-                context_patch_size = tuple(int(v) for v in exact_context_patch_size)
-                if any(context_patch_size[i] < int(patch_size[i]) for i in range(3)):
-                    raise ValueError("exact_context_patch_size must be greater than or equal to patch_size on every axis")
-                context_padded_image, context_crop_slicer = pad_nd_image(
-                    fp32_image,
-                    new_shape=context_patch_size,
-                    mode="constant",
-                    kwargs={"value": 0},
-                    return_slicer=True,
-                )
-                context_spatial = tuple(int(v) for v in context_padded_image.shape[-3:])
-                context_offsets = tuple(int(slc.start or 0) for slc in context_crop_slicer[-3:])
             if metadata is not None:
                 metadata.update(
                     {
                         "input_shape": list(image.shape),
                         "padded_spatial": list(spatial),
                         "patch_size": [int(v) for v in patch_size],
+                        "model_min_patch_size": [int(v) for v in model_min_patch_size],
                         "overlap": float(overlap),
                         "starts_per_axis": [[int(v) for v in axis] for axis in starts],
                         "tile_count": int(len(starts[0]) * len(starts[1]) * len(starts[2])),
                         "tile_base_logit_call_count": 0,
                         "global_bias_application_count": 0,
-                        "exact_context_tiling": bool(context_padded_image is not None),
-                        "exact_context_patch_size": [int(v) for v in context_patch_size] if context_patch_size is not None else None,
+                        "exact_context_tiling": False,
+                        "exact_context_patch_size": None,
+                        "canonical_full_support_base_field": int(len(starts[0]) * len(starts[1]) * len(starts[2])) > 1,
                     }
                 )
             base = image.new_zeros((image.shape[0], 6, *spatial), dtype=torch.float32)
@@ -288,48 +279,57 @@ def predict_care_ase_r2_full_volume_logits(
             }
             denominator = image.new_zeros((image.shape[0], 1, *spatial), dtype=torch.float32)
             valid_support = image.new_zeros((image.shape[0], 1, *spatial), dtype=torch.float32)
+            tile_count = int(len(starts[0]) * len(starts[1]) * len(starts[2]))
+            full_support_outputs = None
+            full_support_offsets = spatial_offsets
+            if tile_count > 1:
+                full_support_shape = tuple(
+                    max(int(minimum), _round_up_to_multiple(int(dim), int(multiple)))
+                    for dim, minimum, multiple in zip(spatial, model_min_patch_size, (4, 64, 64))
+                )
+                full_support_patch, full_support_crop_slicer = pad_nd_image(
+                    fp32_image,
+                    new_shape=full_support_shape,
+                    mode="constant",
+                    kwargs={"value": 0},
+                    return_slicer=True,
+                )
+                full_support_offsets = tuple(int(slc.start or 0) for slc in full_support_crop_slicer[-3:])
+                full_support_outputs = _forward_with_mirror_average(
+                    model,
+                    full_support_patch,
+                    availability,
+                    global_step=global_step,
+                    mirror_axes=tuple(int(axis) for axis in allowed_mirror_axes) if use_mirroring else (),
+                )
+                if metadata is not None:
+                    metadata["tile_base_logit_call_count"] = int(metadata.get("tile_base_logit_call_count", 0)) + int(full_support_outputs["mirror_count"])
             for z in starts[0]:
                 for y in starts[1]:
                     for x in starts[2]:
-                        if context_padded_image is None:
+                        actual = tuple(int(v) for v in patch_size)
+                        if full_support_outputs is None:
                             patch_padded = padded_image[..., z : z + patch_size[0], y : y + patch_size[1], x : x + patch_size[2]]
                             local_start = (0, 0, 0)
-                            output_size = tuple(int(v) for v in patch_size)
+                            model_patch, _model_actual = _pad_patch_to_size(patch_padded, model_min_patch_size)
+                            output_size = tuple(int(v) for v in model_min_patch_size)
+                            mirror_axes = tuple(int(axis) for axis in allowed_mirror_axes) if use_mirroring else ()
+                            outputs = _forward_with_mirror_average(
+                                model,
+                                model_patch,
+                                availability,
+                                global_step=global_step,
+                                mirror_axes=mirror_axes,
+                            )
+                            if metadata is not None:
+                                metadata["tile_base_logit_call_count"] = int(metadata.get("tile_base_logit_call_count", 0)) + int(outputs["mirror_count"])
                         else:
-                            assert context_patch_size is not None and context_spatial is not None
-                            context_origin = tuple(
-                                int(start) - int(spatial_offsets[axis]) + int(context_offsets[axis])
+                            outputs = full_support_outputs
+                            local_start = tuple(
+                                int(start) - int(spatial_offsets[axis]) + int(full_support_offsets[axis])
                                 for axis, start in enumerate((z, y, x))
                             )
-                            context_start = tuple(
-                                max(
-                                    0,
-                                    min(
-                                        int(context_origin[axis]) - max(0, (int(context_patch_size[axis]) - int(patch_size[axis])) // 2),
-                                        int(context_spatial[axis]) - int(context_patch_size[axis]),
-                                    ),
-                                )
-                                for axis in range(3)
-                            )
-                            patch_padded = context_padded_image[
-                                ...,
-                                context_start[0] : context_start[0] + context_patch_size[0],
-                                context_start[1] : context_start[1] + context_patch_size[1],
-                                context_start[2] : context_start[2] + context_patch_size[2],
-                            ]
-                            local_start = tuple(int(context_origin[axis]) - int(context_start[axis]) for axis in range(3))
-                            output_size = tuple(int(v) for v in context_patch_size)
-                        actual = tuple(int(v) for v in patch_size)
-                        mirror_axes = tuple(int(axis) for axis in allowed_mirror_axes) if use_mirroring else ()
-                        outputs = _forward_with_mirror_average(
-                            model,
-                            patch_padded,
-                            availability,
-                            global_step=global_step,
-                            mirror_axes=mirror_axes,
-                        )
-                        if metadata is not None:
-                            metadata["tile_base_logit_call_count"] = int(metadata.get("tile_base_logit_call_count", 0)) + int(outputs["mirror_count"])
+                            output_size = tuple(int(v) for v in full_support_outputs["final_logits"].shape[-3:])
                         weight = (
                             gaussian_importance_map(
                                 patch_size,
