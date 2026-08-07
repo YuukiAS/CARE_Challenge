@@ -515,6 +515,59 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         deadline = RUNTIME.parse_utc(receipt["external_wait_deadline_utc"])
         self.assertGreaterEqual((deadline - started).total_seconds(), 4 * 3600)
 
+    def test_care_ase_ci_pass_routes_to_authorized_wait_transaction(self) -> None:
+        current = {
+            "task_id": "care-ase-faithful",
+            "request_nonce": "care-ase-nonce",
+            "review_round": 1,
+            "state": "CI_RUNNING",
+            "ci_status": "PASS",
+            "ci_checked_commit_sha": "e" * 40,
+            "frozen_contract_sha256": "a" * 64,
+            "implementation_fingerprint_sha256": "b" * 64,
+            "verifier_fingerprint_sha256": "c" * 64,
+            "executor_integration_merge_sha": "d" * 40,
+        }
+
+        receipt = RUNTIME.evaluate_stage_event(
+            task_id="care-ase-faithful",
+            request={"enabled": True},
+            current=current,
+            visual_final=None,
+            remote_sha="e" * 40,
+            processed=set(),
+            default_wait_hours=4,
+        )
+
+        self.assertEqual(receipt["decision"], "CONTROLLER_UPDATE_REQUIRED")
+        self.assertIn("CI_PASS", receipt["action"])
+
+    def test_care_ase_stale_ci_pass_keeps_waiting_for_ci(self) -> None:
+        current = {
+            "task_id": "care-ase-faithful",
+            "request_nonce": "care-ase-nonce",
+            "review_round": 1,
+            "state": "CI_RUNNING",
+            "ci_status": "PASS",
+            "ci_checked_commit_sha": "d" * 40,
+            "frozen_contract_sha256": "a" * 64,
+            "implementation_fingerprint_sha256": "b" * 64,
+            "verifier_fingerprint_sha256": "c" * 64,
+            "executor_integration_merge_sha": "d" * 40,
+        }
+
+        receipt = RUNTIME.evaluate_stage_event(
+            task_id="care-ase-faithful",
+            request={"enabled": True},
+            current=current,
+            visual_final=None,
+            remote_sha="e" * 40,
+            processed=set(),
+            default_wait_hours=4,
+        )
+
+        self.assertEqual(receipt["decision"], "WAITING_FOR_CI")
+
     def test_orchestrator_reuses_existing_wait_deadline_for_same_event(self) -> None:
         current = {
             "task_id": "care-ase-faithful",

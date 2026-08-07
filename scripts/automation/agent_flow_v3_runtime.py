@@ -1258,6 +1258,32 @@ def update_wait_fields(current: dict[str, Any], *, remote_sha: str, expected: st
     return updated
 
 
+def ci_pass_allows_planner_wait_transaction(current: dict[str, Any], remote_sha: str) -> bool:
+    """Return true when CI_RUNNING may advance to a Planner wait transaction.
+
+    This is an internal Controller transaction for an already-authorized v3 loop:
+    CI is bound to the implementation/integration SHA under the current frozen
+    contract and nonce. The WAITING_FOR_EXTERNAL_GPT state commit itself may
+    trigger another deterministic CI run, but that run is not a human approval
+    gate before entering the asynchronous Planner wait.
+    """
+    if current.get("state") != "CI_RUNNING":
+        return False
+    if not str(current.get("ci_status") or "").startswith("PASS"):
+        return False
+    checked = current.get("ci_checked_commit_sha") or current.get("last_observed_remote_sha")
+    if checked != remote_sha:
+        return False
+    required = (
+        "request_nonce",
+        "frozen_contract_sha256",
+        "implementation_fingerprint_sha256",
+        "verifier_fingerprint_sha256",
+        "executor_integration_merge_sha",
+    )
+    return all(isinstance(current.get(key), str) and bool(current.get(key)) for key in required)
+
+
 def stage_event_key(task_id: str, current: dict[str, Any], remote_sha: str) -> str:
     del remote_sha
     return ":".join(
@@ -1348,8 +1374,12 @@ def evaluate_stage_event(
         decision = "HANDOFF_TO_WATCHER"
         action = "existing watcher resumes exact role sessions"
     elif state == "CI_RUNNING":
-        decision = "WAITING_FOR_CI"
-        action = str(current.get("expected_state_or_artifact") or "hosted CI result")
+        if task_id == "care-ase-faithful" and ci_pass_allows_planner_wait_transaction(current, remote_sha):
+            decision = "CONTROLLER_UPDATE_REQUIRED"
+            action = "authorized CI_PASS -> WAITING_FOR_EXTERNAL_GPT Planner review transaction"
+        else:
+            decision = "WAITING_FOR_CI"
+            action = str(current.get("expected_state_or_artifact") or "hosted CI result")
     elif state == "READY_FOR_PLANNER_REVIEW":
         decision = "WAITING_FOR_EXTERNAL_GPT"
         action = "scheduled Planner review"
@@ -2690,6 +2720,173 @@ def apply_care_ase_executor_completion_controller_update(
     }
 
 
+def apply_care_ase_ci_pass_planner_wait_update(
+    *,
+    args: argparse.Namespace,
+    repo: Path,
+    current: dict[str, Any],
+    remote_sha: str,
+) -> dict[str, Any]:
+    if not ci_pass_allows_planner_wait_transaction(current, remote_sha):
+        raise RuntimeErrorV3("care_ase_ci_pass_wait_not_authorized")
+    head_before = ensure_clean_ff_to_remote(repo, args.branch)
+    if head_before != remote_sha:
+        raise RuntimeErrorV3("remote_sha_changed_before_wait_transaction")
+
+    current_path = repo / "automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json"
+    ci_receipt_path = repo / "results/agent_flow_v3/care-ase-faithful/controller_ci_receipt.json"
+    ready_receipt_path = repo / "results/agent_flow_v3/care-ase-faithful/controller_ready_for_planner_review_receipt.json"
+    planner_packet_path = repo / "results/agent_flow_v3/care-ase-faithful/planner_review_packet.json"
+    wait_started = now()
+    wait_deadline_value = wait_deadline(wait_started, max(4, int(args.default_wait_hours)))
+
+    ci_receipt = load_json(ci_receipt_path)
+    ci_receipt.update(
+        {
+            "schema": "CARE_ASE_FAITHFUL_CONTROLLER_CI_RECEIPT_V5",
+            "created_utc": wait_started,
+            "checked_commit_sha": remote_sha,
+            "github_actions_status": "PASS",
+            "state_transition_after_ci": "READY_FOR_PLANNER_REVIEW_TO_WAITING_FOR_EXTERNAL_GPT",
+            "human_approval_required_for_wait_transaction": False,
+            "approval_scope": "current_frozen_contract_and_request_nonce_ci_pass_to_planner_wait_loop",
+        }
+    )
+    write_json(ci_receipt_path, ci_receipt)
+
+    ready_receipt = {
+        "schema": "CARE_ASE_FAITHFUL_CONTROLLER_READY_FOR_PLANNER_REVIEW_RECEIPT_V2",
+        "task_id": "care-ase-faithful",
+        "request_nonce": current.get("request_nonce"),
+        "created_utc": wait_started,
+        "controller_decision": "ENTER_WAITING_FOR_EXTERNAL_GPT_AFTER_AUTHORIZED_CI_PASS",
+        "state_before": "CI_RUNNING",
+        "ready_state_reached_before_wait": "READY_FOR_PLANNER_REVIEW",
+        "state_after": "WAITING_FOR_EXTERNAL_GPT",
+        "review_round": current.get("review_round"),
+        "checked_remote_develop_sha": remote_sha,
+        "ci_receipt": str(ci_receipt_path.relative_to(repo)),
+        "ci_receipt_sha256": sha_file(ci_receipt_path),
+        "frozen_contract_sha256": current.get("frozen_contract_sha256"),
+        "implementation_fingerprint_sha256": current.get("implementation_fingerprint_sha256"),
+        "verifier_fingerprint_sha256": current.get("verifier_fingerprint_sha256"),
+        "executor_local_commit_sha": current.get("executor_local_commit_sha"),
+        "executor_integration_merge_sha": current.get("executor_integration_merge_sha"),
+        "verifier_freeze_receipt_commit_sha": current.get("verifier_freeze_receipt_commit_sha"),
+        "verifier_integration_merge_sha": current.get("verifier_integration_merge_sha"),
+        "planner_expected_artifact": "Scheduled Planner returns PLANNER_PASS or a bound PLANNER_REVISE_* artifact for current review inputs.",
+        "wait_transaction_ci_policy": {
+            "status_commit_may_trigger_ci_after_wait_starts": True,
+            "planner_review_binding": "implementation_and_integration_sha_that_already_passed_ci",
+            "if_status_commit_ci_fails": "discard_or_repair_review_transaction_and_republish",
+        },
+        "forbidden_actions_confirmed": [
+            "no Planner/Critic decision generated by Codex",
+            "no Controller edit to src scripts/training scripts/inference jobs configs tests validators",
+            "no formal training",
+            "no outer access",
+            "no Docker build/upload",
+            "no validation/challenge upload",
+            "no organizer email",
+            "no develop-to-main merge",
+        ],
+    }
+    write_json(ready_receipt_path, ready_receipt)
+
+    planner_packet = {
+        "schema": "CARE_ASE_FAITHFUL_PLANNER_REVIEW_PACKET_V4",
+        "task_id": "care-ase-faithful",
+        "request_nonce": current.get("request_nonce"),
+        "created_utc": wait_started,
+        "decision_requested": "PLANNER_REVIEW",
+        "current_state_after_commit": "WAITING_FOR_EXTERNAL_GPT",
+        "ready_state_reached_before_wait": "READY_FOR_PLANNER_REVIEW",
+        "review_round": current.get("review_round"),
+        "frozen_contract_sha256": current.get("frozen_contract_sha256"),
+        "verifier_fingerprint_sha256": current.get("verifier_fingerprint_sha256"),
+        "implementation_fingerprint_sha256": current.get("implementation_fingerprint_sha256"),
+        "executor_thread_id": current.get("executor_thread_id"),
+        "verifier_thread_id": current.get("verifier_thread_id"),
+        "controller_thread_id": current.get("controller_thread_id"),
+        "executor_local_commit_sha": current.get("executor_local_commit_sha"),
+        "executor_integration_merge_sha": current.get("executor_integration_merge_sha"),
+        "verifier_freeze_receipt_commit_sha": current.get("verifier_freeze_receipt_commit_sha"),
+        "verifier_integration_merge_sha": current.get("verifier_integration_merge_sha"),
+        "controller_checked_remote_develop_sha": remote_sha,
+        "controller_ci_receipt": str(ci_receipt_path.relative_to(repo)),
+        "controller_ci_receipt_sha256": sha_file(ci_receipt_path),
+        "controller_ready_for_planner_review_receipt": str(ready_receipt_path.relative_to(repo)),
+        "controller_ready_for_planner_review_receipt_sha256": sha_file(ready_receipt_path),
+        "controller_integration_receipt": "results/agent_flow_v3/care-ase-faithful/controller_integration_receipt.json",
+        "runtime_receipts": {
+            "runtime_binding_receipt": "results/agent_flow_v3/care-ase-faithful/runtime_binding_receipt.json",
+            "implementation_evidence": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json",
+            "executable_verifier_receipt": "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json",
+            "frozen_verifier_validation_result": "results/agent_flow_v3/care-ase-faithful/implementation/frozen_verifier_validation_result.json",
+        },
+        "local_gates": "PASS",
+        "ci_for_review_inputs": "PASS",
+        "ci_checked_commit_sha": remote_sha,
+        "planner_allowed_decisions": sorted({"PLANNER_REVISE_EXECUTOR", "PLANNER_REVISE_VERIFIER", "PLANNER_REVISE_BOTH", "PLANNER_PASS"}),
+    }
+    write_json(planner_packet_path, planner_packet)
+
+    updated_current = load_json(current_path)
+    updated_current.update(
+        {
+            "state": "WAITING_FOR_EXTERNAL_GPT",
+            "ready_state_reached_before_wait": "READY_FOR_PLANNER_REVIEW",
+            "implementation_complete": True,
+            "controller_local_gates_status": "PASS",
+            "ci_status": "PASS",
+            "ci_checked_commit_sha": remote_sha,
+            "controller_ci_receipt_path": str(ci_receipt_path.relative_to(repo)),
+            "controller_ci_receipt_sha256": sha_file(ci_receipt_path),
+            "controller_ready_for_planner_review_receipt_path": str(ready_receipt_path.relative_to(repo)),
+            "controller_ready_for_planner_review_receipt_sha256": sha_file(ready_receipt_path),
+            "planner_review_packet_path": str(planner_packet_path.relative_to(repo)),
+            "planner_review_packet_sha256": sha_file(planner_packet_path),
+            "expected_state_or_artifact": "Scheduled Planner returns PLANNER_PASS or a bound PLANNER_REVISE_* artifact for the current frozen contract, implementation fingerprint, verifier fingerprint, integration SHA and CI evidence.",
+            "external_wait_started_utc": wait_started,
+            "external_wait_deadline_utc": wait_deadline_value,
+            "last_observed_remote_sha": remote_sha,
+            "last_poll_utc": now(),
+            "next_action": "WAIT_FOR_SCHEDULED_PLANNER_REVIEW_ON_ORIGIN_DEVELOP",
+            "blocked_failures": [],
+            "blocked_or_failure_reason": None,
+            "review_binding_audit": {
+                "exact_integration_ci_status": "PASS",
+                "checked_commit_sha": remote_sha,
+                "tracked_ci_receipt_is_stale": False,
+                "tracked_planner_review_packet_is_stale": False,
+                "tracked_runtime_receipt_manifest_is_stale": False,
+                "wait_transaction_status_commit_ci_policy": "post_wait_ci_failure_repairs_transaction_not_pre_wait_block",
+            },
+            "updated_utc": now(),
+        }
+    )
+    write_json(current_path, updated_current)
+    commit_result = commit_and_push(
+        repo,
+        args.branch,
+        [
+            "automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json",
+            "results/agent_flow_v3/care-ase-faithful/controller_ci_receipt.json",
+            "results/agent_flow_v3/care-ase-faithful/controller_ready_for_planner_review_receipt.json",
+            "results/agent_flow_v3/care-ase-faithful/planner_review_packet.json",
+        ],
+        "automation: request care ase planner review",
+    )
+    return {
+        "status": "APPLIED",
+        "commit": commit_result,
+        "ci_checked_commit_sha": remote_sha,
+        "external_wait_started_utc": wait_started,
+        "external_wait_deadline_utc": wait_deadline_value,
+        "updated_utc": now(),
+    }
+
+
 def stage_event_should_mark_processed(event: dict[str, Any]) -> bool:
     if event.get("decision") == "STOP_AT_HUMAN_GATE":
         return True
@@ -2984,6 +3181,29 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
                     "updated_utc": now(),
                 }
                 event["failures"] = list(event.get("failures", [])) + ["executor_integration_failed"]
+        elif (
+            event["decision"] == "CONTROLLER_UPDATE_REQUIRED"
+            and task_id == "care-ase-faithful"
+            and event["state"] == "CI_RUNNING"
+        ):
+            try:
+                event["action_result"] = apply_care_ase_ci_pass_planner_wait_update(
+                    args=args,
+                    repo=repo,
+                    current=current,
+                    remote_sha=remote_sha,
+                )
+                event["decision"] = "CONTROLLER_UPDATE_APPLIED"
+                event["action"] = "Authorized CI PASS recorded; CURRENT moved to WAITING_FOR_EXTERNAL_GPT"
+                processed.add(event["event_key"])
+                event["remote_sha_after_controller_update"] = remote_head(repo, args.branch)
+            except Exception as exc:  # noqa: BLE001 - keep polling; do not fake Planner wait.
+                event["action_result"] = {
+                    "status": "FAILED",
+                    "error": f"{type(exc).__name__}: {exc}",
+                    "updated_utc": now(),
+                }
+                event["failures"] = list(event.get("failures", [])) + ["ci_pass_wait_transaction_failed"]
         elif (
             event["decision"] == "STAGE_READY"
             and task_id == "care-ase-faithful"
