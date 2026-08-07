@@ -8,27 +8,21 @@
     291,
     239
   ],
+  "canonical_settings_has_no_context_override": true,
   "case_id": "Case2003",
   "case_selection": "smallest_train_side_preprocessed_case_with_plan_patch_forced_multitile",
   "class4_excluded_from_no_t2_decode": true,
   "class5_decode_remaps_to_official_label5": true,
   "fold": 0,
-  "forced_multi_tile_base_logit_call_count": 2,
+  "forced_multi_tile_base_logit_call_count": 1,
   "forced_multi_tile_call_id": "forced_multi_tile_real_case",
   "forced_multi_tile_count": 2,
-  "forced_multi_tile_exact_context_patch_size": [
-    20,
-    320,
-    256
-  ],
+  "forced_multi_tile_exact_context_patch_size": null,
   "forced_multi_tile_metadata": {
     "call_id": "forced_multi_tile_real_case",
-    "exact_context_patch_size": [
-      20,
-      320,
-      256
-    ],
-    "exact_context_tiling": true,
+    "canonical_full_support_base_field": true,
+    "exact_context_patch_size": null,
+    "exact_context_tiling": false,
     "global_bias_application_count": 1,
     "input_shape": [
       1,
@@ -36,6 +30,11 @@
       10,
       291,
       239
+    ],
+    "model_min_patch_size": [
+      20,
+      256,
+      256
     ],
     "overlap": 0.5,
     "padded_spatial": [
@@ -60,7 +59,7 @@
         0
       ]
     ],
-    "tile_base_logit_call_count": 2,
+    "tile_base_logit_call_count": 1,
     "tile_count": 2
   },
   "forced_multi_tile_patch_size": [
@@ -125,6 +124,7 @@
   "single_tile_call_id": "single_tile_real_case",
   "single_tile_metadata": {
     "call_id": "single_tile_real_case",
+    "canonical_full_support_base_field": false,
     "exact_context_patch_size": null,
     "exact_context_tiling": false,
     "global_bias_application_count": 1,
@@ -134,6 +134,11 @@
       10,
       291,
       239
+    ],
+    "model_min_patch_size": [
+      20,
+      320,
+      256
     ],
     "overlap": 0.5,
     "padded_spatial": [
@@ -167,7 +172,7 @@
   ],
   "single_tile_path": "predict_care_ase_r2_full_volume_logits",
   "single_vs_forced_multi_tile_decode_changed_voxels": 0,
-  "single_vs_forced_multi_tile_max_abs_diff": 4.76837158203125e-07,
+  "single_vs_forced_multi_tile_max_abs_diff": 0.0,
   "split_sha256": "9c3e9f3b7e4565a5c3c2589ddbb913c78c0ad423f4265370585841c93c6f880a",
   "status": "PASS",
   "t2_present_case": {

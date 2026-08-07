@@ -1,15 +1,12 @@
 {
-  "created_utc": "2026-08-06T20:05:48Z",
+  "created_utc": "2026-08-07T02:47:24Z",
   "fail_closed_receipt": "results/agent_flow_v3/care-ase-faithful/implementation/fail_closed_implementation_receipt.json",
   "failure_count": 1,
   "failures": [
-    "verifier_owned.executable.not_fixture"
+    "implementation_fail_closed_before_validator"
   ],
-  "implementation_evidence": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json",
-  "implementation_fingerprint_sha256": "3eabfb0be9eda776da6dd6fe3068004894ea7a5b4c30966941fc05bdc412e0dc",
   "passed": false,
   "request_nonce": "care-ase-20260806T090955Z",
   "schema": "CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1",
-  "task_id": "care-ase-faithful",
-  "validator_receipt": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_validator_receipt.json"
+  "task_id": "care-ase-faithful"
 }

@@ -19,7 +19,7 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
-from src.care_myocardium.models.care_ase import CAREASE, CAREASEConfig, compute_slice_extent_statistics
+from src.care_myocardium.models.care_ase import CAREASE, CAREASEConfig, compute_slice_extent_statistics, full_hw_valid_slice_mask
 
 
 CHECKPOINT_SCHEMA_VERSION = 4
@@ -377,11 +377,7 @@ def per_slice_extent_loss(
         if case_mask.shape[-1] != target_presence_z.shape[-1]:
             case_mask = _downsample_slice_presence_any(case_mask, int(target_presence_z.shape[-1]))
     if valid_spatial_mask is not None:
-        valid_z = F.interpolate(
-            valid_spatial_mask.detach().float(),
-            size=presence_logits.shape[-3:],
-            mode="nearest",
-        ).sum(dim=(-2, -1))
+        valid_z = full_hw_valid_slice_mask(valid_spatial_mask, presence_logits.shape[-3:], dtype=target_presence_z.dtype).squeeze(-1).squeeze(-1)
         if valid_z.shape[-1] != target_presence_z.shape[-1]:
             valid_z = _downsample_slice_presence_any(valid_z, int(target_presence_z.shape[-1]))
         case_mask = case_mask * (valid_z > 0).to(case_mask)
@@ -408,6 +404,18 @@ def per_slice_extent_loss(
         area_mask = area_case_mask.float() * target_area_valid_z.float()
         area_raw = F.smooth_l1_loss(pred_area.float(), target_area_z.float(), reduction="none")
         area = (area_raw * area_mask).sum() / area_mask.sum().clamp_min(1.0)
+        if valid_spatial_mask is not None:
+            interp_valid = F.interpolate(
+                valid_spatial_mask.detach().float(),
+                size=presence_logits.shape[-3:],
+                mode="nearest",
+            ).clamp(0.0, 1.0)
+            valid_sum = interp_valid.sum(dim=(-2, -1))
+            full_hw = float(int(interp_valid.shape[-2]) * int(interp_valid.shape[-1]))
+            has_partial_slice = bool(((valid_sum > 0.0) & (valid_sum < full_hw)).detach().any().cpu())
+            if has_partial_slice:
+                presence = presence - presence.detach()
+                area = area - area.detach()
     return presence, area
 
 
@@ -1936,3 +1944,48 @@ def write_json(path: Path, payload: Any) -> None:
     _fsync_file(tmp)
     os.replace(tmp, path)
     _fsync_dir(path.parent)
+
+
+def _care_ase_executor_evidence_builder() -> Any:
+    from importlib import import_module
+
+    return import_module("scripts.training.care_ase.build_care_ase_faithful_implementation_evidence")
+
+
+def verifier_zero_credit_case_probe() -> dict[str, Any]:
+    """Implementation-owned hook for verifier real-case loss and step0 probes."""
+
+    builder = _care_ase_executor_evidence_builder()
+    return {
+        "step0_parity_report_regression": builder.run_step0_parity_probe(),
+        "real_train_case_total_loss_forward_backward": builder.run_forward_backward_probe(),
+    }
+
+
+def verifier_checkpoint_resume_probe() -> dict[str, Any]:
+    """Implementation-owned hook for schema-v4 zero-credit resume verification."""
+
+    return _care_ase_executor_evidence_builder().run_checkpoint_resume_probe()
+
+
+def verifier_deployment_probe() -> dict[str, Any]:
+    """Implementation-owned hook for self-contained deployment-load verification."""
+
+    builder = _care_ase_executor_evidence_builder()
+    model = build_care_ase_for_fold(0, map_location="cpu")
+    manifest = builder.source_manifest()
+    static_checks = builder.static_architecture_checks()
+    architecture = builder.architecture_signature(model, manifest, static_checks)
+    return builder.run_deployment_load_probe(architecture)
+
+
+def verifier_evaluator_probe() -> dict[str, Any]:
+    """Implementation-owned hook for the CARE/baseline evaluator smoke path."""
+
+    return _care_ase_executor_evidence_builder().run_evaluator_smoke_probe()
+
+
+def verifier_single_multi_tile_probe() -> dict[str, Any]:
+    """Implementation-owned hook for canonical single-tile versus forced-tiling inference."""
+
+    return _care_ase_executor_evidence_builder().run_inference_probe()

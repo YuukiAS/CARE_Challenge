@@ -9,14 +9,14 @@
     "--report-json",
     "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor/results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence_validation_result.json"
   ],
-  "created_utc": "2026-08-06T20:04:08Z",
+  "created_utc": "2026-08-07T02:47:24Z",
   "exit_code": 2,
   "report_path": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence_validation_result.json",
   "request_nonce": "care-ase-20260806T090955Z",
   "schema": "CARE_ASE_FAITHFUL_IMPLEMENTATION_VALIDATOR_RECEIPT_V1",
   "stderr": "",
   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "stdout": "{\n  \"failure_count\": 1,\n  \"failures\": [\n    \"verifier_owned.executable.not_fixture\"\n  ],\n  \"known_bad_case_id\": null,\n  \"passed\": false,\n  \"schema\": \"CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1\",\n  \"task_id\": \"care-ase-faithful\"\n}\n",
-  "stdout_sha256": "db999b8f300c0d9561b42fa899541d5c5918e23a3c4b3054ba29e3ce4cae4377",
+  "stdout": "{\n  \"failure_count\": 19,\n  \"failures\": [\n    \"verifier_owned.executable.passed\",\n    \"verifier_owned.executable.status\",\n    \"verifier_owned.executable.runtime_binding_sha:architecture_signature\",\n    \"verifier_owned.executable.runtime_binding_sha:checkpoint_resume_probe\",\n    \"verifier_owned.executable.runtime_binding_sha:deployment_load_probe\",\n    \"verifier_owned.executable.runtime_binding_sha:evaluator_smoke\",\n    \"verifier_owned.executable.runtime_binding_sha:forward_backward_probe\",\n    \"verifier_owned.executable.runtime_binding_sha:hard_negative_binding\",\n    \"verifier_owned.executable.runtime_binding_sha:inference_probe\",\n    \"verifier_owned.executable.runtime_binding_sha:parameter_owner_registry\",\n    \"verifier_owned.executable.runtime_binding_sha:runtime_asset_manifest\",\n    \"verifier_owned.executable.runtime_binding_sha:source_manifest\",\n    \"verifier_owned.executable.runtime_binding_sha:step0_parity_probe\",\n    \"verifier_owned.executable.forced_multi_tile_count\",\n    \"verifier_owned.executable.global_bias_once\",\n    \"verifier_owned.executable.no_multitile_runtime_error\",\n    \"verifier_owned.partial_hw.loss_zero\",\n    \"verifier_owned.partial_hw.grad_zero\",\n    \"verifier_owned.partial_hw.bias_zero\"\n  ],\n  \"known_bad_case_id\": null,\n  \"passed\": false,\n  \"schema\": \"CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1\",\n  \"task_id\": \"care-ase-faithful\"\n}\n",
+  "stdout_sha256": "0462802d3d5d5073f958ac6440cbb93a16f1885bba5aa97f78480bd81f7a3667",
   "task_id": "care-ase-faithful"
 }

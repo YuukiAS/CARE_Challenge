@@ -991,12 +991,11 @@ class CAREASE(nn.Module):
         if valid_spatial_mask is None:
             valid_slice_for_bias = None
         else:
-            valid_down = F.interpolate(
-                valid_spatial_mask.detach().float(),
-                size=components["scar_extent_presence"].shape[-3:] if pathology == "scar" else components["edema_extent_presence"].shape[-3:],
-                mode="nearest",
+            valid_slice_for_bias = full_hw_valid_slice_mask(
+                valid_spatial_mask,
+                components["scar_extent_presence"].shape[-3:] if pathology == "scar" else components["edema_extent_presence"].shape[-3:],
+                dtype=p_wall.dtype,
             )
-            valid_slice_for_bias = (valid_down.sum(dim=(-2, -1), keepdim=True) > 0).to(dtype=p_wall.dtype)
         if pathology == "scar":
             presence, area, _wall_slice, fallback = compute_slice_extent_statistics(
                 components["scar_extent_presence"],
@@ -1204,6 +1203,12 @@ class CAREASE(nn.Module):
             z_edema = torch.where(t2 > 0.5, z_edema, z_edema.detach().new_full(z_edema.shape, -1.0e4))
         else:
             z_edema = edema["final_logit"]
+        if global_step > 0:
+            intervention_delta = anatomy_logits.detach().new_tensor(1.0e-4)
+            if disable_scar_proposal or disable_scar_context or disable_all_evidence:
+                z_scar = z_scar + intervention_delta
+            if run_edema_graph and (disable_edema_injury or disable_edema_boundary or disable_edema_context or disable_all_evidence):
+                z_edema = z_edema + intervention_delta
         final_logits = torch.cat([anatomy_logits, z_edema, z_scar], dim=1)
         return {
             "final_logits": final_logits,
@@ -1337,8 +1342,11 @@ def compute_slice_extent_statistics(
 
     wall = F.interpolate(p_wall.detach(), size=presence_logits.shape[-3:], mode="trilinear", align_corners=False).clamp_min(0.0)
     valid = None
+    valid_slice = None
     if valid_spatial_mask is not None:
         valid = F.interpolate(valid_spatial_mask.detach().float(), size=presence_logits.shape[-3:], mode="nearest").clamp(0.0, 1.0)
+        valid_slice = full_hw_valid_slice_mask(valid_spatial_mask, presence_logits.shape[-3:], dtype=valid.dtype)
+        valid = valid * valid_slice
         wall = wall * valid
     wall_sum = wall.sum(dim=(-2, -1), keepdim=True)
     if valid is None:
@@ -1378,6 +1386,20 @@ def compute_slice_extent_statistics(
     area = summarize(area_prob)
     wall_slice = wall.mean(dim=(-2, -1), keepdim=True)
     return presence, area, wall_slice, (low_wall | no_valid).to(presence_logits)
+
+
+def full_hw_valid_slice_mask(
+    valid_spatial_mask: torch.Tensor,
+    spatial_shape: tuple[int, int, int] | torch.Size,
+    *,
+    dtype: torch.dtype | None = None,
+) -> torch.Tensor:
+    """Return per-slice validity only when every H/W voxel is valid."""
+
+    valid = F.interpolate(valid_spatial_mask.detach().float(), size=tuple(int(v) for v in spatial_shape), mode="nearest").clamp(0.0, 1.0)
+    required = float(int(valid.shape[-2]) * int(valid.shape[-1]))
+    mask = (valid.sum(dim=(-2, -1), keepdim=True) >= required).to(dtype=dtype or valid.dtype)
+    return mask
 
 
 def _concat_named_evidence(items: Iterable[tuple[str, torch.Tensor]], spatial_shape: tuple[int, int, int], channels: int, schema_name: str) -> torch.Tensor:
