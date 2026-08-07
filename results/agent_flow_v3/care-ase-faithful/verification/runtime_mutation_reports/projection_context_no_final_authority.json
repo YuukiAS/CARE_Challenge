@@ -1,18 +1,18 @@
 {
-  "created_utc": "2026-08-07T02:13:18Z",
+  "created_utc": "2026-08-07T03:20:58Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
-    "kb05.required_module_intervention.final_logit_unchanged"
+    "mutation.expected_rejection_missing:projection_context_no_final_authority"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "3ee317b25b863a5bd0ec775988d8007305ee21bcc695948d33b66a1e6f602722",
+  "mutated_fingerprint_sha256": "d58c34351ce1f53f1ba40d8c94aa6624904a82d8b7b6cd176a9fa600a825b8a9",
   "mutation_applied": "disable_all_named_evidence_intervention_applied_to_real_case_logits",
   "mutation_executed": true,
   "mutation_id": "projection_context_no_final_authority",
   "observations": {
-    "final_logit_delta_after_bypass": 0.0,
-    "source_manifest_sha256_before_mutation": "8f7ee7bde0ef6360578959d08a0e80bc64ee3745c169d4754433ef2b733bad4f"
+    "final_logit_delta_after_bypass": 0.00010013580322265625,
+    "source_manifest_sha256_before_mutation": "a2a165292590ed700c3534a56b3bae28f9b80120697fad39392d0207f6196d43"
   },
   "passed": false,
   "request_nonce": "care-ase-20260806T090955Z",

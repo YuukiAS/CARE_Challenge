@@ -1,12 +1,12 @@
 {
   "all_returned_nonzero": true,
   "count": 24,
-  "created_utc": "2026-08-07T02:11:24Z",
+  "created_utc": "2026-08-07T03:18:56Z",
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
   "known_bad_invocations": [
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/validate_contract_evidence.py",
         "--verification-contract",
         "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
@@ -27,7 +27,7 @@
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/validate_contract_evidence.py",
         "--verification-contract",
         "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
@@ -48,7 +48,7 @@
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/validate_contract_evidence.py",
         "--verification-contract",
         "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
@@ -69,7 +69,7 @@
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/validate_contract_evidence.py",
         "--verification-contract",
         "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
@@ -90,7 +90,7 @@
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/validate_contract_evidence.py",
         "--verification-contract",
         "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
@@ -111,7 +111,7 @@
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/validate_contract_evidence.py",
         "--verification-contract",
         "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
@@ -132,7 +132,7 @@
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/validate_contract_evidence.py",
         "--verification-contract",
         "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
@@ -153,7 +153,7 @@
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/validate_contract_evidence.py",
         "--verification-contract",
         "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
@@ -174,7 +174,7 @@
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/validate_contract_evidence.py",
         "--verification-contract",
         "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
@@ -195,7 +195,7 @@
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/validate_contract_evidence.py",
         "--verification-contract",
         "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
@@ -216,7 +216,7 @@
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/validate_contract_evidence.py",
         "--verification-contract",
         "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
@@ -237,7 +237,7 @@
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/validate_contract_evidence.py",
         "--verification-contract",
         "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
@@ -258,7 +258,7 @@
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/validate_contract_evidence.py",
         "--verification-contract",
         "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
@@ -279,7 +279,7 @@
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/validate_contract_evidence.py",
         "--verification-contract",
         "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
@@ -300,7 +300,7 @@
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/validate_contract_evidence.py",
         "--verification-contract",
         "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
@@ -321,7 +321,7 @@
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/validate_contract_evidence.py",
         "--verification-contract",
         "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
@@ -342,7 +342,7 @@
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/validate_contract_evidence.py",
         "--verification-contract",
         "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
@@ -363,7 +363,7 @@
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/validate_contract_evidence.py",
         "--verification-contract",
         "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
@@ -384,7 +384,7 @@
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/validate_contract_evidence.py",
         "--verification-contract",
         "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
@@ -405,7 +405,7 @@
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/validate_contract_evidence.py",
         "--verification-contract",
         "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
@@ -426,7 +426,7 @@
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/validate_contract_evidence.py",
         "--verification-contract",
         "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
@@ -447,7 +447,7 @@
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/validate_contract_evidence.py",
         "--verification-contract",
         "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
@@ -468,7 +468,7 @@
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/validate_contract_evidence.py",
         "--verification-contract",
         "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
@@ -489,7 +489,7 @@
     },
     {
       "command": [
-        "/usr/bin/python",
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "validators/care_ase_faithful/validate_contract_evidence.py",
         "--verification-contract",
         "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",

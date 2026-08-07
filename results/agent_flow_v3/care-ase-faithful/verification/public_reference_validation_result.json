@@ -1,6 +1,6 @@
 {
   "command": [
-    "/usr/bin/python",
+    "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
     "validators/care_ase_faithful/validate_contract_evidence.py",
     "--verification-contract",
     "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
