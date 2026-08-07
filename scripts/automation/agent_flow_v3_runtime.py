@@ -159,6 +159,20 @@ def git_show_bytes_or_none(repo: Path, ref: str, rel_path: str) -> bytes | None:
     return cp.stdout if cp.returncode == 0 else None
 
 
+def git_ls_tree_files(repo: Path, ref: str, rel_path: str) -> list[str]:
+    cp = subprocess.run(
+        ["git", "ls-tree", "-r", "--name-only", ref, rel_path],
+        cwd=repo,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    if cp.returncode != 0:
+        return []
+    return sorted(path for path in cp.stdout.splitlines() if path)
+
+
 def parse_utc(value: str) -> datetime:
     if value.endswith("Z"):
         value = value[:-1] + "+00:00"
@@ -565,6 +579,94 @@ def prompt_candidate_paths(repo: Path, task_id: str, role: str, current: dict[st
     return [repo / rel_path for rel_path in prompt_candidate_rel_paths(task_id, role, current)]
 
 
+def planner_review_artifact_event(
+    *,
+    repo: Path,
+    ref: str,
+    task_id: str,
+    request: dict[str, Any],
+    current: dict[str, Any],
+    remote_sha: str,
+) -> dict[str, Any] | None:
+    if current.get("state") != "WAITING_FOR_EXTERNAL_GPT":
+        return None
+    review_dir = f"results/agent_flow_v3/{task_id}/planner_reviews"
+    candidates: list[tuple[str, str, dict[str, Any]]] = []
+    for rel_path in git_ls_tree_files(repo, ref, review_dir):
+        if not rel_path.endswith(".json"):
+            continue
+        raw = git_show_text_or_none(repo, ref, rel_path)
+        if raw is None:
+            continue
+        try:
+            review = json.loads(raw)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(review, dict):
+            continue
+        if review.get("schema") != "CARE_AGENT_FLOW_V3_PLANNER_REVIEW":
+            continue
+        if review.get("task_id") != task_id:
+            continue
+        if review.get("request_nonce") != current.get("request_nonce") or review.get("request_nonce") != request.get("request_nonce"):
+            continue
+        if review.get("review_round") != current.get("review_round"):
+            continue
+        if review.get("frozen_contract_sha256") != current.get("frozen_contract_sha256"):
+            continue
+        if review.get("frozen_contract_sha256") != request.get("frozen_contract_sha256"):
+            continue
+        for key in (
+            "integration_commit_sha",
+            "implementation_fingerprint_sha256",
+            "verifier_fingerprint_sha256",
+        ):
+            if current.get(key) is not None and review.get(key) != current.get(key):
+                break
+        else:
+            decision = review.get("decision")
+            if decision not in {*REVISION_STATES.keys(), "PLANNER_PASS"}:
+                continue
+            candidates.append((str(review.get("created_utc") or ""), rel_path, review))
+    if not candidates:
+        return None
+    _, review_path, review = sorted(candidates, key=lambda item: (item[0], item[1]))[-1]
+    decision = str(review["decision"])
+    overlay = dict(current)
+    overlay.update(
+        {
+            "state": decision,
+            "planner_decision": decision,
+            "planner_review_artifact": review_path,
+            "planner_review_artifact_commit_sha": remote_sha,
+            "planner_review_input_integration_sha": review.get("integration_commit_sha"),
+            "planner_review_input_implementation_fingerprint_sha256": review.get("implementation_fingerprint_sha256"),
+            "planner_review_input_verifier_fingerprint_sha256": review.get("verifier_fingerprint_sha256"),
+            "integration_commit_sha": review.get("integration_commit_sha"),
+            "implementation_fingerprint_sha256": review.get("implementation_fingerprint_sha256"),
+            "verifier_fingerprint_sha256": review.get("verifier_fingerprint_sha256"),
+            "external_wait_closed_utc": now(),
+        }
+    )
+    if decision in REVISION_STATES:
+        review_reentry = review.get("review_reentry")
+        repair_prompts: dict[str, str] = {}
+        for role in REVISION_STATES[decision]:
+            prompt_candidates: list[str] = []
+            if isinstance(review_reentry, str) and review_reentry:
+                prompt_candidates.append(f"automation/agent_flow_v3/tasks/{task_id}/repairs/{review_reentry}_{role}.md")
+            prompt_candidates.append(f"automation/agent_flow_v3/tasks/{task_id}/repairs/round_{int(review.get('review_round')):03d}_{role}.md")
+            for prompt in prompt_candidates:
+                if git_show_bytes_or_none(repo, ref, prompt) is not None:
+                    repair_prompts[role] = prompt
+                    break
+        overlay["repair_prompts"] = repair_prompts
+        if task_id == "care-ase-faithful" and decision == "PLANNER_REVISE_BOTH" and isinstance(review_reentry, str):
+            overlay["watcher_target_roles_override"] = ["verifier"]
+            overlay["watcher_deferred_target_roles"] = ["executor"]
+    return overlay
+
+
 def load_exact_repair_prompt(
     repo: Path,
     task_id: str,
@@ -685,8 +787,19 @@ def cmd_watcher_once(args: argparse.Namespace) -> int:
             git(repo, "fetch", "origin", args.branch, "--prune")
         if args.from_origin:
             ref = f"origin/{args.branch}"
+            remote_sha = remote_head(repo, args.branch)
             request = git_show_json(repo, ref, args.request_path)
             current = git_show_json(repo, ref, args.current_path)
+            planner_event = planner_review_artifact_event(
+                repo=repo,
+                ref=ref,
+                task_id=args.task_id,
+                request=request,
+                current=current,
+                remote_sha=remote_sha,
+            )
+            if planner_event is not None:
+                current = planner_event
         else:
             request = load_json(repo / args.request_path)
             current = load_json(repo / args.current_path)
@@ -808,9 +921,22 @@ def evaluate_watcher_event(
     if not isinstance(current.get("review_round"), int) or current.get("review_round") < 0:
         failures.append("review_round")
     state = current.get("state")
-    event_key = f"{args.task_id}:{current.get('request_nonce')}:{current.get('review_round')}:{state}:{integration_sha}"
+    event_binding = current.get("planner_review_artifact") or integration_sha
+    event_key = f"{args.task_id}:{current.get('request_nonce')}:{current.get('review_round')}:{state}:{event_binding}"
     processed = set(local_state.get("processed_events", []))
-    target_roles = REVISION_STATES.get(str(state), ())
+    target_override = current.get("watcher_target_roles_override")
+    if isinstance(target_override, list) and all(role in REVISION_STATES.get(str(state), ()) for role in target_override):
+        target_roles = tuple(str(role) for role in target_override)
+    elif (
+        args.task_id == "care-ase-faithful"
+        and state == "PLANNER_REVISE_BOTH"
+        and isinstance(current.get("planner_review_artifact"), str)
+        and "_reentry_" in str(current.get("planner_review_artifact"))
+    ):
+        target_roles = ("verifier",)
+        current = {**current, "watcher_deferred_target_roles": ["executor"]}
+    else:
+        target_roles = REVISION_STATES.get(str(state), ())
     decision = "IGNORE"
     commands: list[dict[str, str]] = []
 
@@ -872,6 +998,9 @@ def evaluate_watcher_event(
         "event_key": event_key,
         "decision": decision,
         "target_roles": list(target_roles),
+        "deferred_target_roles": current.get("watcher_deferred_target_roles", []),
+        "planner_review_artifact": current.get("planner_review_artifact"),
+        "planner_review_artifact_commit_sha": current.get("planner_review_artifact_commit_sha"),
         "resume_commands": commands,
         "failures": failures,
         "processed_events": sorted(processed),
@@ -926,8 +1055,20 @@ def run_watch_cycle_without_lock(args: argparse.Namespace) -> dict[str, Any]:
     args = resolve_watcher_paths(args)
     repo = args.repo_root.resolve()
     git(repo, "fetch", "origin", args.branch, "--prune")
-    request = git_show_json(repo, f"origin/{args.branch}", args.request_path)
-    current = git_show_json(repo, f"origin/{args.branch}", args.current_path)
+    ref = f"origin/{args.branch}"
+    remote_sha = remote_head(repo, args.branch)
+    request = git_show_json(repo, ref, args.request_path)
+    current = git_show_json(repo, ref, args.current_path)
+    planner_event = planner_review_artifact_event(
+        repo=repo,
+        ref=ref,
+        task_id=args.task_id,
+        request=request,
+        current=current,
+        remote_sha=remote_sha,
+    )
+    if planner_event is not None:
+        current = planner_event
     state_path = args.state_root.resolve() / args.task_id / "watcher_state.json"
     local_state = load_json(state_path) if state_path.is_file() else {
         "schema": WATCHER_STATE_SCHEMA,
@@ -1286,14 +1427,16 @@ def ci_pass_allows_planner_wait_transaction(current: dict[str, Any], remote_sha:
 
 def stage_event_key(task_id: str, current: dict[str, Any], remote_sha: str) -> str:
     del remote_sha
-    return ":".join(
-        [
-            task_id,
-            str(current.get("request_nonce")),
-            str(current.get("review_round")),
-            str(current.get("state")),
-        ]
-    )
+    parts = [
+        task_id,
+        str(current.get("request_nonce")),
+        str(current.get("review_round")),
+        str(current.get("state")),
+    ]
+    planner_artifact = current.get("planner_review_artifact")
+    if isinstance(planner_artifact, str) and planner_artifact:
+        parts.append(planner_artifact)
+    return ":".join(parts)
 
 
 def stage_event_was_processed(event_key: str, processed: set[str]) -> bool:
@@ -3038,6 +3181,16 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
             current,
             dict(local_state.get("waits", {})).get(task_id),
         )
+        planner_event = planner_review_artifact_event(
+            repo=repo,
+            ref=ref,
+            task_id=task_id,
+            request=request,
+            current=current,
+            remote_sha=remote_sha,
+        )
+        if planner_event is not None:
+            current = planner_event
         event_key = stage_event_key(task_id, current, remote_sha)
         care_ase_executor_complete = False
         if task_id == "care-ase-faithful" and current.get("state") == "VERIFIER_FROZEN":

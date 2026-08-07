@@ -947,6 +947,187 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         self.assertEqual(receipt["decision"], "INVALID_EVENT")
         self.assertIn("nonce_binding", receipt["failures"])
 
+    def test_waiting_watcher_uses_bound_planner_review_artifact_event(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            repo = root / "repo"
+            repo.mkdir()
+            subprocess.check_call(["git", "init"], cwd=repo, stdout=subprocess.DEVNULL)
+            subprocess.check_call(["git", "config", "user.email", "test@example.invalid"], cwd=repo)
+            subprocess.check_call(["git", "config", "user.name", "Agent Flow Test"], cwd=repo)
+            task_dir = repo / "automation/agent_flow_v3/tasks/care-ase-faithful"
+            review_dir = repo / "results/agent_flow_v3/care-ase-faithful/planner_reviews"
+            repair_dir = task_dir / "repairs"
+            review_dir.mkdir(parents=True)
+            repair_dir.mkdir(parents=True)
+            verifier_prompt = repair_dir / "round_001_reentry_001_verifier.md"
+            executor_prompt = repair_dir / "round_001_reentry_001_executor.md"
+            verifier_prompt.write_text("verifier repair\n", encoding="utf-8")
+            executor_prompt.write_text("executor repair\n", encoding="utf-8")
+            review_path = review_dir / "round_001_reentry_001.json"
+            review_path.write_text(
+                json.dumps(
+                    {
+                        "schema": "CARE_AGENT_FLOW_V3_PLANNER_REVIEW",
+                        "task_id": "care-ase-faithful",
+                        "request_nonce": "nonce-1",
+                        "review_round": 1,
+                        "review_reentry": "round_001_reentry_001",
+                        "decision": "PLANNER_REVISE_BOTH",
+                        "frozen_contract_sha256": "a" * 64,
+                        "integration_commit_sha": "b" * 40,
+                        "implementation_fingerprint_sha256": "c" * 64,
+                        "verifier_fingerprint_sha256": "d" * 64,
+                        "created_utc": "2026-08-07T01:26:00Z",
+                    }
+                ),
+                encoding="utf-8",
+            )
+            subprocess.check_call(["git", "add", "."], cwd=repo)
+            subprocess.check_call(["git", "commit", "-m", "planner review"], cwd=repo, stdout=subprocess.DEVNULL)
+            request = {
+                "schema": RUNTIME.SCHEMA,
+                "enabled": True,
+                "task_id": "care-ase-faithful",
+                "integration_branch": "develop",
+                "request_nonce": "nonce-1",
+                "frozen_contract_sha256": "a" * 64,
+            }
+            current = {
+                "schema": RUNTIME.SCHEMA,
+                "task_id": "care-ase-faithful",
+                "state": "WAITING_FOR_EXTERNAL_GPT",
+                "review_round": 1,
+                "request_nonce": "nonce-1",
+                "frozen_contract_sha256": "a" * 64,
+                "integration_commit_sha": "b" * 40,
+                "implementation_fingerprint_sha256": "c" * 64,
+                "verifier_fingerprint_sha256": "d" * 64,
+            }
+            overlay = RUNTIME.planner_review_artifact_event(
+                repo=repo,
+                ref="HEAD",
+                task_id="care-ase-faithful",
+                request=request,
+                current=current,
+                remote_sha="e" * 40,
+            )
+            self.assertIsNotNone(overlay)
+            assert overlay is not None
+            self.assertEqual(overlay["state"], "PLANNER_REVISE_BOTH")
+            self.assertEqual(
+                overlay["planner_review_artifact"],
+                "results/agent_flow_v3/care-ase-faithful/planner_reviews/round_001_reentry_001.json",
+            )
+            self.assertEqual(overlay["watcher_target_roles_override"], ["verifier"])
+            self.assertEqual(overlay["watcher_deferred_target_roles"], ["executor"])
+            self.assertEqual(
+                overlay["repair_prompts"]["verifier"],
+                "automation/agent_flow_v3/tasks/care-ase-faithful/repairs/round_001_reentry_001_verifier.md",
+            )
+
+            thread_file = root / "verifier_thread_id"
+            thread_file.write_text("verifier-thread\n", encoding="utf-8")
+            role_plan = root / "role_plan.json"
+            role_plan.write_text(
+                json.dumps(
+                    {
+                        "roles": {
+                            "verifier": {
+                                "thread_id_file": str(thread_file),
+                                "codex_home": str(root / "verifier_home"),
+                                "worktree": str(root / "verifier_worktree"),
+                            },
+                            "executor": {
+                                "thread_id_file": str(root / "executor_thread_id"),
+                                "codex_home": str(root / "executor_home"),
+                                "worktree": str(root / "executor_worktree"),
+                            },
+                        }
+                    }
+                ),
+                encoding="utf-8",
+            )
+            args = argparse.Namespace(
+                task_id="care-ase-faithful",
+                branch="develop",
+                role_plan=str(role_plan),
+                codex_bin="/opt/codex",
+                state_root=root / "state",
+                session_receipt_root=str(root / "missing_receipts"),
+                dry_run=True,
+                thread_id_override="",
+            )
+            receipt = RUNTIME.evaluate_watcher_event(args, request, overlay, {"processed_events": []})
+            self.assertEqual(receipt["decision"], "DRY_RUN_RESUME")
+            self.assertEqual(receipt["target_roles"], ["verifier"])
+            self.assertEqual(receipt["deferred_target_roles"], ["executor"])
+            self.assertEqual(receipt["resume_commands"][0]["role"], "verifier")
+            self.assertIn("round_001_reentry_001.json", receipt["event_key"])
+
+    def test_care_ase_reentry_current_routes_verifier_before_executor(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            thread_file = root / "verifier_thread_id"
+            thread_file.write_text("verifier-thread\n", encoding="utf-8")
+            role_plan = root / "role_plan.json"
+            role_plan.write_text(
+                json.dumps(
+                    {
+                        "roles": {
+                            "verifier": {
+                                "thread_id_file": str(thread_file),
+                                "codex_home": str(root / "verifier_home"),
+                                "worktree": str(root / "verifier_worktree"),
+                            },
+                            "executor": {
+                                "thread_id_file": str(root / "executor_thread_id"),
+                                "codex_home": str(root / "executor_home"),
+                                "worktree": str(root / "executor_worktree"),
+                            },
+                        }
+                    }
+                ),
+                encoding="utf-8",
+            )
+            args = argparse.Namespace(
+                task_id="care-ase-faithful",
+                branch="develop",
+                role_plan=str(role_plan),
+                codex_bin="/opt/codex",
+                state_root=root / "state",
+                session_receipt_root=str(root / "missing_receipts"),
+                dry_run=True,
+                thread_id_override="",
+            )
+            request = {
+                "schema": RUNTIME.SCHEMA,
+                "enabled": True,
+                "task_id": "care-ase-faithful",
+                "integration_branch": "develop",
+                "request_nonce": "nonce-1",
+                "frozen_contract_sha256": "a" * 64,
+            }
+            current = {
+                "schema": RUNTIME.SCHEMA,
+                "task_id": "care-ase-faithful",
+                "state": "PLANNER_REVISE_BOTH",
+                "review_round": 1,
+                "request_nonce": "nonce-1",
+                "frozen_contract_sha256": "a" * 64,
+                "integration_commit_sha": "b" * 40,
+                "planner_review_artifact": "results/agent_flow_v3/care-ase-faithful/planner_reviews/round_001_reentry_001.json",
+                "repair_prompts": {
+                    "verifier": "automation/agent_flow_v3/tasks/care-ase-faithful/repairs/round_001_reentry_001_verifier.md",
+                    "executor": "automation/agent_flow_v3/tasks/care-ase-faithful/repairs/round_001_reentry_001_executor.md",
+                },
+            }
+            receipt = RUNTIME.evaluate_watcher_event(args, request, current, {"processed_events": []})
+            self.assertEqual(receipt["decision"], "DRY_RUN_RESUME")
+            self.assertEqual(receipt["target_roles"], ["verifier"])
+            self.assertEqual(receipt["deferred_target_roles"], ["executor"])
+            self.assertEqual([item["role"] for item in receipt["resume_commands"]], ["verifier"])
+
     def test_watcher_ignores_duplicate_event(self) -> None:
         args = argparse.Namespace(
             task_id="smoke-task",
