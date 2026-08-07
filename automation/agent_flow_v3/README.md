@@ -116,6 +116,23 @@ events, stale nonce/SHA/review-round bindings, wrong thread receipts, disabled
 requests, and an already active role process fail closed without stopping the
 long-running watcher.
 
+## Authorized Planner wait transaction
+
+For a task that is already inside the same frozen contract SHA and request
+nonce, the Controller may automatically publish the review-state transaction:
+
+```text
+CI PASS -> WAITING_FOR_EXTERNAL_GPT
+```
+
+This is an internal Agent-Flow v3 repair-loop step, not a human approval point
+and not a local Scheduled Task connector call. The Planner review binds to the
+implementation/integration SHA and CI evidence that already passed. The
+`WAITING_FOR_EXTERNAL_GPT` status commit may trigger its own deterministic CI
+after the wait starts; if that status-commit CI fails, the Controller repairs or
+republishes the review transaction instead of treating the pre-wait status commit
+as a blocker.
+
 For the isolated visual smoke, use the observer below to poll `origin/develop`
 without invoking any Scheduled Task connector:
 

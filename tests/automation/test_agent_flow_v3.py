@@ -629,6 +629,13 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
                 )
 
             updated = json.loads(current_path.read_text(encoding="utf-8"))
+            ci_receipt = json.loads(ci_receipt_path.read_text(encoding="utf-8"))
+            ready_receipt = json.loads(
+                (
+                    repo
+                    / "results/agent_flow_v3/care-ase-faithful/controller_ready_for_planner_review_receipt.json"
+                ).read_text(encoding="utf-8")
+            )
             self.assertEqual(updated["state"], "WAITING_FOR_EXTERNAL_GPT")
             self.assertIsNone(updated["planner_decision"])
             self.assertIsNone(updated["planner_review_artifact"])
@@ -642,6 +649,16 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             self.assertEqual(
                 superseded["planner_review_artifact"],
                 "results/agent_flow_v3/care-ase-faithful/planner_reviews/round_001.json",
+            )
+            self.assertFalse(ci_receipt["human_approval_required_for_wait_transaction"])
+            self.assertEqual(
+                ci_receipt["approval_scope"],
+                "current_frozen_contract_and_request_nonce_ci_pass_to_planner_wait_loop",
+            )
+            self.assertTrue(ready_receipt["wait_transaction_ci_policy"]["status_commit_may_trigger_ci_after_wait_starts"])
+            self.assertEqual(
+                ready_receipt["wait_transaction_ci_policy"]["planner_review_binding"],
+                "implementation_and_integration_sha_that_already_passed_ci",
             )
 
     def test_orchestrator_reuses_existing_wait_deadline_for_same_event(self) -> None:
