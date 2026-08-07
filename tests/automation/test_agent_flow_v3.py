@@ -478,6 +478,7 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             "expected_state_or_artifact": "true scheduled Planner round 1 decision",
             "last_observed_remote_sha": "b" * 40,
             "last_poll_utc": "2026-08-06T07:43:52Z",
+            "updated_utc": "2026-08-06T07:43:52Z",
         }
 
         receipt = RUNTIME.evaluate_stage_event(
@@ -496,6 +497,8 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         self.assertEqual(receipt["expected_state_or_artifact"], "true scheduled Planner round 1 decision")
         self.assertEqual(receipt["last_observed_remote_sha"], "d" * 40)
         self.assertRegex(receipt["last_poll_utc"], r"^\d{4}-\d{2}-\d{2}T")
+        self.assertNotEqual(receipt["last_poll_utc"], "2026-08-06T07:43:52Z")
+        self.assertNotEqual(receipt["updated_utc"], "2026-08-06T07:43:52Z")
 
     def test_orchestrator_plan_requested_records_external_gpt_wait_metadata(self) -> None:
         current = {

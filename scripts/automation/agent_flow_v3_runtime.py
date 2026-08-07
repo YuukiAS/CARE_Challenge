@@ -1370,6 +1370,12 @@ def evaluate_stage_event(
         else:
             decision = "WAITING_FOR_EXTERNAL_GPT"
             action = str(current.get("expected_state_or_artifact") or "external GPT artifact")
+            wait_current = update_wait_fields(
+                current,
+                remote_sha=remote_sha,
+                expected=action,
+                default_hours=default_wait_hours,
+            )
     elif state in REVISION_STATES:
         decision = "HANDOFF_TO_WATCHER"
         action = "existing watcher resumes exact role sessions"
