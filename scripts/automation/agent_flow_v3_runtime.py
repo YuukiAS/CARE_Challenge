@@ -3198,9 +3198,13 @@ def care_ase_validation_failures_require_verifier_recheck(validation: dict[str, 
     if not isinstance(failures, list) or not failures:
         return False
     allowed_exact = {
+        "verifier_owned.executable.reviewed_verifier_fingerprint",
         "verifier_owned.executable.passed",
         "verifier_owned.executable.status",
         "verifier_owned.loss_semantic.status",
+        "verifier_owned.partial_hw.cross_z_partial_feature_grad_zero",
+        "verifier_owned.partial_hw.cross_z_partial_feature_grad_abs_zero",
+        "verifier_owned.transaction.reviewed_verifier_fingerprint",
         "verifier_owned.transaction.status",
         "verifier_owned.transaction.no_failures",
         "verifier_owned.transaction.hosted_ci_success",

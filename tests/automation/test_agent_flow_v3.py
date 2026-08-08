@@ -575,6 +575,33 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             ):
                 self.assertFalse(RUNTIME.care_ase_executor_scope_complete_pending_verifier_recheck_available(args, current))
 
+    def test_care_ase_stale_verifier_receipt_failures_route_to_recheck_not_executor_restart(self) -> None:
+        failures = [
+            "verifier_owned.executable.reviewed_verifier_fingerprint",
+            "verifier_owned.executable.passed",
+            "verifier_owned.executable.status",
+            "verifier_owned.executable.runtime_binding_sha:architecture_signature",
+            "verifier_owned.executable.runtime_binding_sha:checkpoint_resume_probe",
+            "verifier_owned.partial_hw.cross_z_partial_feature_grad_zero",
+            "verifier_owned.partial_hw.cross_z_partial_feature_grad_abs_zero",
+            "verifier_owned.transaction.reviewed_verifier_fingerprint",
+            "verifier_owned.transaction.status",
+            "verifier_owned.transaction.no_failures",
+            "verifier_owned.transaction.hosted_ci_success",
+            "verifier_owned.transaction.no_stale_planner_reuse",
+        ]
+
+        self.assertTrue(
+            RUNTIME.care_ase_validation_failures_require_verifier_recheck(
+                {"passed": False, "failure_count": len(failures), "failures": failures}
+            )
+        )
+        self.assertFalse(
+            RUNTIME.care_ase_validation_failures_require_verifier_recheck(
+                {"passed": False, "failure_count": len(failures) + 1, "failures": failures + ["implementation.loss_formula.contract_violation"]}
+            )
+        )
+
     def test_care_ase_fail_closed_uncited_tile_local_threshold_does_not_route_to_user_choice(self) -> None:
         current = {
             "task_id": "care-ase-faithful",
