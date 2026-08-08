@@ -77,6 +77,12 @@ EXECUTABLE_MUTATION_IDS = [
     "evaluator_population_mismatch",
     "checkpoint_next_step_drift",
     "checkpoint_current_contract_provenance_drift",
+    "runtime_manifest_stale_round0",
+    "runtime_manifest_missing_nonce",
+    "runtime_manifest_missing_contract",
+    "runtime_manifest_old_integration",
+    "runtime_manifest_old_implementation_fingerprint",
+    "runtime_manifest_old_verifier_fingerprint",
     "artifact_sha_mismatch",
 ]
 
@@ -327,13 +333,13 @@ def check_only() -> int:
     digest = sha256_bytes(json.dumps(file_hashes, sort_keys=True).encode("utf-8"))
     _record_error(errors, fingerprint.get("file_hashes") == file_hashes, "verifier_fingerprint.file_hashes")
     _record_error(errors, fingerprint.get("fingerprint_sha256") == digest, "verifier_fingerprint.fingerprint_sha256")
-    _record_error(errors, fingerprint.get("protected_known_bad_count") == 24, "verifier_fingerprint.protected_known_bad_count")
+    _record_error(errors, fingerprint.get("protected_known_bad_count") == len(KNOWN_BAD_CATEGORIES), "verifier_fingerprint.protected_known_bad_count")
     _record_error(errors, fingerprint.get("protected_known_bad_all_nonzero") is True, "verifier_fingerprint.protected_known_bad_all_nonzero")
 
     _record_error(errors, freeze_receipt.get("state_for_controller") == "VERIFIER_FROZEN", "freeze_receipt.state_for_controller")
     _record_error(errors, freeze_receipt.get("required_artifacts") == REQUIRED_FREEZE_ARTIFACTS, "freeze_receipt.required_artifacts")
     _record_error(errors, freeze_receipt.get("verifier_fingerprint_sha256") == digest, "freeze_receipt.verifier_fingerprint_sha256")
-    _record_error(errors, freeze_receipt.get("protected_known_bad_count") == 24, "freeze_receipt.protected_known_bad_count")
+    _record_error(errors, freeze_receipt.get("protected_known_bad_count") == len(KNOWN_BAD_CATEGORIES), "freeze_receipt.protected_known_bad_count")
     _record_error(errors, freeze_receipt.get("protected_known_bad_all_nonzero") is True, "freeze_receipt.protected_known_bad_all_nonzero")
     _record_error(
         errors,

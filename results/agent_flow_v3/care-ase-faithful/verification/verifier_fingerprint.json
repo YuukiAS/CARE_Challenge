@@ -1,5 +1,5 @@
 {
-  "created_utc": "2026-08-08T12:04:38Z",
+  "created_utc": "2026-08-08T13:27:34Z",
   "current_reviewed_implementation_expected_fail_closed": true,
   "excluded_runtime_evidence": [
     "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json",
@@ -12,16 +12,16 @@
     "results/agent_flow_v3/care-ase-faithful/verification/verifier_local_commands_recorded_in_manifests.json"
   ],
   "executable_verifier_production_exit_code": 2,
-  "executable_verifier_receipt_sha256": "50a16e8c7f0a61c9f9e436dee9980153e1b84478f57db93bb542a54ed2bedc9d",
+  "executable_verifier_receipt_sha256": "7b3e383c585869d06a1acbd2cbe95081781fa68b2f6620120a11296112218fb6",
   "file_hashes": {
     "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
-    "tests/care_ase_faithful/test_verifier_package.py": "7328cd6f1478e3051323387f4d977e2815ab56986c63d9552b533d3599fc39f1",
-    "validators/care_ase_faithful/build_verification_artifacts.py": "c4de1c0276b8a86a1fc2b37ada0b50ab90ce3d40b176c1361e14ee836f80505f",
-    "validators/care_ase_faithful/run_executable_verifier.py": "fe02d9b5181156124a20c5626341fe146d663e6d07c95ecc8bc3867052510272",
-    "validators/care_ase_faithful/validate_contract_evidence.py": "62d2e90fecb4e324486b942e9ecb1af01c9bdee523a1600b63f3bf61951edc12"
+    "tests/care_ase_faithful/test_verifier_package.py": "51835ad06f24eac2ed93bcafe9fa24c43f270c40a87d2b3dcd82d3a677f6bcf6",
+    "validators/care_ase_faithful/build_verification_artifacts.py": "32a21a666961fd7ef10dddfc7abedb188ba40c10fbf983e01d1ef3932edd6556",
+    "validators/care_ase_faithful/run_executable_verifier.py": "0abb9de0a6780c86e97b8971f5dd67b74dec55e1fc95db6e1008d85ec3069302",
+    "validators/care_ase_faithful/validate_contract_evidence.py": "df6fdeac9f0a513f4f977436e8b767f1e0f64f4f0bb32d9c727a3ec7eeab0afa"
   },
   "fingerprint_scope": "pre_executor_immutable_frozen_contract_hash_and_verifier_source_test_definitions_only",
-  "fingerprint_sha256": "6acc8fdc640df9be54848dfc676da45257d887c0f4be5ce71efa6230114a4a17",
+  "fingerprint_sha256": "5e9c96b705b1a2f42c24ade2913317c715bbb063ec3932dcb88fecd5c27a3de0",
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
   "integrated_implementation_fingerprint_sha256": "e7a6bfe00336354da7debf7321966c8a72c7ce43ee0bb00c316387c72659b7e3",
   "integrated_implementation_validation_exit_code": 2,
@@ -29,7 +29,7 @@
   "protected_known_bad_count": 24,
   "reexecution_stability_oracle": {
     "alternate_runtime_tuple_distinct_from_reviewed": true,
-    "alternate_runtime_tuple_fingerprint_sha256": "6acc8fdc640df9be54848dfc676da45257d887c0f4be5ce71efa6230114a4a17",
+    "alternate_runtime_tuple_fingerprint_sha256": "5e9c96b705b1a2f42c24ade2913317c715bbb063ec3932dcb88fecd5c27a3de0",
     "distinct_runtime_tuple": {
       "ci_head_sha": "0000000000000000000000000000000000000000",
       "executable_verifier_receipt_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
@@ -43,15 +43,15 @@
   "reviewed_integration_sha": "afcf93cf0be4581630fb283f8beaa53bddd1130e",
   "runtime_evidence_excluded_from_fingerprint": true,
   "runtime_mutation_all_nonzero": true,
-  "runtime_mutation_count": 22,
+  "runtime_mutation_count": 28,
   "schema": "CARE_ASE_FAITHFUL_VERIFIER_FINGERPRINT_V1",
   "task_id": "care-ase-faithful",
-  "transaction_fingerprint_sha256": "2d5dea3f834fef1efacf2cfbf56bd41d9702ad018a0e7b1a07fd37092c12f5ff",
+  "transaction_fingerprint_sha256": "66c6a22ed6faba90803d2d848dc8cc9a59f2c5082949c30d48fee170388d0954",
   "verifier_source_file_hashes": {
-    "tests/care_ase_faithful/test_verifier_package.py": "7328cd6f1478e3051323387f4d977e2815ab56986c63d9552b533d3599fc39f1",
-    "validators/care_ase_faithful/build_verification_artifacts.py": "c4de1c0276b8a86a1fc2b37ada0b50ab90ce3d40b176c1361e14ee836f80505f",
-    "validators/care_ase_faithful/run_executable_verifier.py": "fe02d9b5181156124a20c5626341fe146d663e6d07c95ecc8bc3867052510272",
-    "validators/care_ase_faithful/validate_contract_evidence.py": "62d2e90fecb4e324486b942e9ecb1af01c9bdee523a1600b63f3bf61951edc12"
+    "tests/care_ase_faithful/test_verifier_package.py": "51835ad06f24eac2ed93bcafe9fa24c43f270c40a87d2b3dcd82d3a677f6bcf6",
+    "validators/care_ase_faithful/build_verification_artifacts.py": "32a21a666961fd7ef10dddfc7abedb188ba40c10fbf983e01d1ef3932edd6556",
+    "validators/care_ase_faithful/run_executable_verifier.py": "0abb9de0a6780c86e97b8971f5dd67b74dec55e1fc95db6e1008d85ec3069302",
+    "validators/care_ase_faithful/validate_contract_evidence.py": "df6fdeac9f0a513f4f977436e8b767f1e0f64f4f0bb32d9c727a3ec7eeab0afa"
   },
-  "verifier_source_fingerprint_sha256": "62e2915dc872844a7f30f283def43f4abdde6c8995387e890873c6f6a91acba1"
+  "verifier_source_fingerprint_sha256": "c9f4acd43de88ed4e83ede2a2c6d93dbeb71da6e907933685cbb8fa80d11fbc6"
 }

@@ -1,19 +1,19 @@
 {
-  "created_utc": "2026-08-08T12:12:58Z",
+  "created_utc": "2026-08-08T13:35:44Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
     "kb16.checkpoint_resume.next_step"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "0e7745fe368b2201441b13c102cf5abf0dd2c7a949f9121bf332f86a5f01ac24",
+  "mutated_fingerprint_sha256": "13448fc91f3712a7b4653f7b4eb1278bf04f78f046475ceb32fab78011c1b1cf",
   "mutation_applied": "schema_v4_checkpoint_next_batch_descriptor_mutated_after_save",
   "mutation_executed": true,
   "mutation_id": "checkpoint_next_step_drift",
   "observations": {
     "checkpoint_loader_rejected_mutated_sidecar": true,
     "next_descriptor_matches": false,
-    "observed_error": "ValueError:CARE-ASE checkpoint sidecar SHA mismatch: expected 7dfdc8599c6c54d529ca830ea5223aafbb9f80755bfaa6ff02c29bdaa2e89b2b observed 1cc5d888d091855be0ed65a7906ead381b86ae655a888d7394255696466dd303",
+    "observed_error": "ValueError:CARE-ASE checkpoint sidecar SHA mismatch: expected 88901b84c2495d0fa2682235b9157fbbe71987f44ccfe6434d0d6f228d8ac296 observed 0566b34a830441e4cc709c38d232a37915b7d8d3ae61c6822aa17cc99b79509d",
     "source_manifest_sha256_before_mutation": "ecf1a7378b64e5d870c79cefa1ed075dd7556e2c1f02752e635648955fd51a6a"
   },
   "passed": false,

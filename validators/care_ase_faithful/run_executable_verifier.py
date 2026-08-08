@@ -78,8 +78,34 @@ MUTATION_IDS = [
     "evaluator_population_mismatch",
     "checkpoint_next_step_drift",
     "checkpoint_current_contract_provenance_drift",
+    "runtime_manifest_stale_round0",
+    "runtime_manifest_missing_nonce",
+    "runtime_manifest_missing_contract",
+    "runtime_manifest_old_integration",
+    "runtime_manifest_old_implementation_fingerprint",
+    "runtime_manifest_old_verifier_fingerprint",
     "artifact_sha_mismatch",
 ]
+
+RUNTIME_MANIFEST_MUTATION_IDS = {
+    "runtime_manifest_stale_round0",
+    "runtime_manifest_missing_nonce",
+    "runtime_manifest_missing_contract",
+    "runtime_manifest_old_integration",
+    "runtime_manifest_old_implementation_fingerprint",
+    "runtime_manifest_old_verifier_fingerprint",
+}
+
+REQUIRED_RUNTIME_MANIFEST_ARTIFACTS = {
+    "implementation_evidence": f"results/agent_flow_v3/{TASK_ID}/implementation/implementation_evidence.json",
+    "executable_verifier": f"results/agent_flow_v3/{TASK_ID}/verification/executable_verifier_receipt.json",
+    "transaction_gate": f"results/agent_flow_v3/{TASK_ID}/verification/transaction_gate_receipt.json",
+    "checkpoint_resume": f"results/agent_flow_v3/{TASK_ID}/implementation/checkpoint_resume_probe_receipt.json",
+    "inference": f"results/agent_flow_v3/{TASK_ID}/implementation/inference_probe_receipt.json",
+    "deployment_load": f"results/agent_flow_v3/{TASK_ID}/implementation/deployment_load_probe_receipt.json",
+    "evaluator_smoke": f"results/agent_flow_v3/{TASK_ID}/implementation/evaluator_smoke_receipt.json",
+    "hosted_ci": f"results/agent_flow_v3/{TASK_ID}/controller_ci_receipt.json",
+}
 
 REQUIRED_PROBES = [
     "model_build_and_stock_parity",
@@ -281,6 +307,264 @@ def _load_optional_json(path: Path) -> dict[str, Any]:
         return {}
 
 
+def _runtime_manifest_value(manifest: dict[str, Any], *keys: str) -> Any:
+    for key in keys:
+        value = manifest.get(key)
+        if value is not None:
+            return value
+    binding = manifest.get("binding")
+    if isinstance(binding, dict):
+        for key in keys:
+            value = binding.get(key)
+            if value is not None:
+                return value
+    return None
+
+
+def _collect_path_strings(value: Any) -> set[str]:
+    paths: set[str] = set()
+    if isinstance(value, str):
+        if "/" in value or value.endswith(".json"):
+            paths.add(value)
+    elif isinstance(value, list):
+        for item in value:
+            paths.update(_collect_path_strings(item))
+    elif isinstance(value, dict):
+        for item in value.values():
+            paths.update(_collect_path_strings(item))
+    return paths
+
+
+def _collect_sha_bindings(value: Any) -> dict[str, str]:
+    bindings: dict[str, str] = {}
+    if isinstance(value, list):
+        for item in value:
+            bindings.update(_collect_sha_bindings(item))
+    elif isinstance(value, dict):
+        for map_key in ("receipt_sha256s", "receipt_hashes", "artifact_sha256s", "artifact_hashes", "file_sha256s"):
+            mapping = value.get(map_key)
+            if isinstance(mapping, dict):
+                for key, sha in mapping.items():
+                    if isinstance(key, str) and isinstance(sha, str):
+                        bindings[key] = sha
+        path_value = None
+        for path_key in ("path", "receipt_path", "artifact_path", "file_path"):
+            if isinstance(value.get(path_key), str):
+                path_value = value[path_key]
+                break
+        if path_value:
+            for sha_key in ("sha256", "receipt_sha256", "artifact_sha256", "file_sha256"):
+                if isinstance(value.get(sha_key), str):
+                    bindings[path_value] = value[sha_key]
+                    break
+        for key, item in value.items():
+            if isinstance(item, str) and (key.endswith("_sha256") or key.endswith("_sha")):
+                stem = key.removesuffix("_sha256").removesuffix("_sha")
+                bindings[stem] = item
+            elif isinstance(item, str) and (key.endswith("_path") or key.endswith("_receipt")):
+                stem = key.removesuffix("_path").removesuffix("_receipt")
+                sha = value.get(f"{stem}_sha256") or value.get(f"{stem}_sha")
+                if isinstance(sha, str):
+                    bindings[item] = sha
+                    bindings[stem] = sha
+            elif isinstance(item, (dict, list)):
+                bindings.update(_collect_sha_bindings(item))
+    return bindings
+
+
+def _runtime_manifest_failures(
+    *,
+    repo_root: Path,
+    runtime_manifest: dict[str, Any],
+    review_round: int,
+    integration_sha: str,
+    implementation_fingerprint: str,
+    expected_verifier_fingerprint: str,
+) -> tuple[list[str], dict[str, Any]]:
+    failures: list[str] = []
+    observed = {
+        "task_id": _runtime_manifest_value(runtime_manifest, "task_id"),
+        "request_nonce": _runtime_manifest_value(runtime_manifest, "request_nonce"),
+        "frozen_contract_sha256": _runtime_manifest_value(runtime_manifest, "frozen_contract_sha256", "contract_sha256"),
+        "review_round": _runtime_manifest_value(runtime_manifest, "review_round"),
+        "integration_commit_sha": _runtime_manifest_value(runtime_manifest, "integration_commit_sha", "integration_sha"),
+        "implementation_fingerprint_sha256": _runtime_manifest_value(runtime_manifest, "implementation_fingerprint_sha256"),
+        "verifier_fingerprint_sha256": _runtime_manifest_value(runtime_manifest, "verifier_fingerprint_sha256"),
+    }
+    expected = {
+        "task_id": TASK_ID,
+        "request_nonce": REQUEST_NONCE,
+        "frozen_contract_sha256": FROZEN_CONTRACT_SHA256,
+        "review_round": review_round,
+        "integration_commit_sha": integration_sha,
+        "implementation_fingerprint_sha256": implementation_fingerprint,
+        "verifier_fingerprint_sha256": expected_verifier_fingerprint,
+    }
+    for field, expected_value in expected.items():
+        if observed.get(field) != expected_value:
+            failures.append(f"transaction.runtime_manifest.{field}")
+
+    path_strings = _collect_path_strings(runtime_manifest)
+    sha_bindings = _collect_sha_bindings(runtime_manifest)
+    artifact_observations: dict[str, dict[str, Any]] = {}
+    for name, rel_path in REQUIRED_RUNTIME_MANIFEST_ARTIFACTS.items():
+        artifact_path = repo_root / rel_path
+        expected_sha = sha256_file(artifact_path) if artifact_path.is_file() else None
+        declared_sha = (
+            sha_bindings.get(rel_path)
+            or sha_bindings.get(name)
+            or sha_bindings.get(f"{name}_receipt")
+            or sha_bindings.get(f"{name}_path")
+        )
+        listed = rel_path in path_strings or name in path_strings
+        artifact_observations[name] = {
+            "path": rel_path,
+            "listed": listed,
+            "file_exists": artifact_path.is_file(),
+            "expected_sha256": expected_sha,
+            "declared_sha256": declared_sha,
+        }
+        if not listed:
+            failures.append(f"transaction.runtime_manifest.artifact_missing:{name}")
+        if expected_sha is None:
+            failures.append(f"transaction.runtime_manifest.artifact_file_missing:{name}")
+        elif declared_sha != expected_sha:
+            failures.append(f"transaction.runtime_manifest.artifact_sha256:{name}")
+    return failures, {
+        "observed_fields": observed,
+        "expected_fields": expected,
+        "required_artifacts": artifact_observations,
+    }
+
+
+def _valid_runtime_manifest_payload(repo_root: Path) -> dict[str, Any]:
+    artifact_sha256s = {
+        rel_path: sha256_file(repo_root / rel_path)
+        for rel_path in REQUIRED_RUNTIME_MANIFEST_ARTIFACTS.values()
+        if (repo_root / rel_path).is_file()
+    }
+    return {
+        "schema": "CARE_AGENT_FLOW_V3_RUNTIME_RECEIPT_MANIFEST",
+        "task_id": TASK_ID,
+        "request_nonce": REQUEST_NONCE,
+        "frozen_contract_sha256": FROZEN_CONTRACT_SHA256,
+        "review_round": REVIEW_ROUND,
+        "integration_commit_sha": REVIEWED_INTEGRATION_COMMIT,
+        "implementation_fingerprint_sha256": REVIEWED_IMPLEMENTATION_FINGERPRINT,
+        "verifier_fingerprint_sha256": REVIEWED_VERIFIER_FINGERPRINT,
+        "receipts": list(REQUIRED_RUNTIME_MANIFEST_ARTIFACTS.values()),
+        "receipt_sha256s": artifact_sha256s,
+    }
+
+
+def _runtime_manifest_mutation_result(mutation_id: str, *, repo_root: Path, fixture_mode: bool) -> dict[str, Any]:
+    expected_failure = {
+        "runtime_manifest_stale_round0": "transaction.runtime_manifest.review_round",
+        "runtime_manifest_missing_nonce": "transaction.runtime_manifest.request_nonce",
+        "runtime_manifest_missing_contract": "transaction.runtime_manifest.frozen_contract_sha256",
+        "runtime_manifest_old_integration": "transaction.runtime_manifest.integration_commit_sha",
+        "runtime_manifest_old_implementation_fingerprint": "transaction.runtime_manifest.implementation_fingerprint_sha256",
+        "runtime_manifest_old_verifier_fingerprint": "transaction.runtime_manifest.verifier_fingerprint_sha256",
+    }[mutation_id]
+    runtime_manifest = _valid_runtime_manifest_payload(repo_root)
+    mutation_applied = mutation_id
+    if mutation_id == "runtime_manifest_stale_round0":
+        runtime_manifest["review_round"] = 0
+        mutation_applied = "runtime_manifest_review_round_mutated_to_stale_round0"
+    elif mutation_id == "runtime_manifest_missing_nonce":
+        runtime_manifest.pop("request_nonce", None)
+        mutation_applied = "runtime_manifest_request_nonce_removed"
+    elif mutation_id == "runtime_manifest_missing_contract":
+        runtime_manifest.pop("frozen_contract_sha256", None)
+        mutation_applied = "runtime_manifest_frozen_contract_sha256_removed"
+    elif mutation_id == "runtime_manifest_old_integration":
+        runtime_manifest["integration_commit_sha"] = "0" * 40
+        mutation_applied = "runtime_manifest_integration_commit_sha_mutated_to_old_value"
+    elif mutation_id == "runtime_manifest_old_implementation_fingerprint":
+        runtime_manifest["implementation_fingerprint_sha256"] = "1" * 64
+        mutation_applied = "runtime_manifest_implementation_fingerprint_mutated_to_old_value"
+    elif mutation_id == "runtime_manifest_old_verifier_fingerprint":
+        runtime_manifest["verifier_fingerprint_sha256"] = "2" * 64
+        mutation_applied = "runtime_manifest_verifier_fingerprint_mutated_to_old_value"
+
+    current = {
+        "task_id": TASK_ID,
+        "request_nonce": REQUEST_NONCE,
+        "frozen_contract_sha256": FROZEN_CONTRACT_SHA256,
+        "review_round": REVIEW_ROUND,
+        "integration_commit_sha": REVIEWED_INTEGRATION_COMMIT,
+        "implementation_fingerprint_sha256": REVIEWED_IMPLEMENTATION_FINGERPRINT,
+        "verifier_fingerprint_sha256": REVIEWED_VERIFIER_FINGERPRINT,
+        "ci_checked_commit_sha": REVIEWED_INTEGRATION_COMMIT,
+        "ci_run_actual_head_sha": REVIEWED_INTEGRATION_COMMIT,
+    }
+    ci_receipt = {
+        "checked_commit_sha": REVIEWED_INTEGRATION_COMMIT,
+        "github_actions_head_sha": REVIEWED_INTEGRATION_COMMIT,
+        "github_actions_conclusion": "success",
+    }
+    evidence = {
+        "task_id": TASK_ID,
+        "request_nonce": REQUEST_NONCE,
+        "frozen_contract_sha256": FROZEN_CONTRACT_SHA256,
+        "implementation_fingerprint_sha256": REVIEWED_IMPLEMENTATION_FINGERPRINT,
+    }
+    failures: list[str] = []
+    observations: dict[str, Any] = {}
+    with tempfile.TemporaryDirectory(prefix="care_ase_mutation_runtime_manifest_", dir=repo_root) as tmp:
+        tmp_path = Path(tmp)
+        current_path = tmp_path / "CURRENT.json"
+        manifest_path = tmp_path / "runtime_receipt_manifest.json"
+        ci_path = tmp_path / "controller_ci_receipt.json"
+        current_path.write_text(json.dumps(current, indent=2, sort_keys=True), encoding="utf-8")
+        manifest_path.write_text(json.dumps(runtime_manifest, indent=2, sort_keys=True), encoding="utf-8")
+        ci_path.write_text(json.dumps(ci_receipt, indent=2, sort_keys=True), encoding="utf-8")
+        original_current = CURRENT_PATH
+        original_manifest = RUNTIME_MANIFEST_PATH
+        original_ci = CONTROLLER_CI_RECEIPT_PATH
+        try:
+            globals()["CURRENT_PATH"] = current_path
+            globals()["RUNTIME_MANIFEST_PATH"] = manifest_path
+            globals()["CONTROLLER_CI_RECEIPT_PATH"] = ci_path
+            gate_failures, transaction = transaction_gate(
+                repo_root=repo_root,
+                evidence=evidence,
+                review_round=REVIEW_ROUND,
+                integration_sha=REVIEWED_INTEGRATION_COMMIT,
+                implementation_fingerprint=REVIEWED_IMPLEMENTATION_FINGERPRINT,
+                expected_verifier_fingerprint=REVIEWED_VERIFIER_FINGERPRINT,
+                fixture_mode=fixture_mode,
+            )
+        finally:
+            globals()["CURRENT_PATH"] = original_current
+            globals()["RUNTIME_MANIFEST_PATH"] = original_manifest
+            globals()["CONTROLLER_CI_RECEIPT_PATH"] = original_ci
+    observations["expected_failure"] = expected_failure
+    observations["transaction_failures"] = gate_failures
+    observations["transaction_gate"] = transaction
+    observations["mutated_manifest"] = runtime_manifest
+    if expected_failure in gate_failures:
+        failures.append(f"{expected_failure}.rejected")
+    if not failures:
+        failures.append(f"mutation.expected_rejection_missing:{mutation_id}")
+    return {
+        "schema": "CARE_ASE_FAITHFUL_EXECUTABLE_MUTATION_RESULT_V1",
+        "task_id": TASK_ID,
+        "request_nonce": REQUEST_NONCE,
+        "mutation_id": mutation_id,
+        "fixture_mode": fixture_mode,
+        "passed": False,
+        "failure_count": len(failures),
+        "failures": failures,
+        "mutation_executed": True,
+        "mutation_applied": mutation_applied,
+        "mutated_fingerprint_sha256": json_sha({"mutation_id": mutation_id, "mutation_applied": mutation_applied, "observations": observations}),
+        "observations": observations,
+        "exit_code": 2,
+        "created_utc": utc_now(),
+    }
+
+
 def transaction_gate(
     *,
     repo_root: Path,
@@ -297,6 +581,7 @@ def transaction_gate(
     current = _load_optional_json(CURRENT_PATH)
     runtime_manifest = _load_optional_json(RUNTIME_MANIFEST_PATH)
     ci_receipt = _load_optional_json(CONTROLLER_CI_RECEIPT_PATH)
+    manifest_observations: dict[str, Any] | None = None
     integration_is_ancestor = git_value(repo_root, "merge-base", "--is-ancestor", integration_sha, "HEAD") == ""
     if not fixture_mode and not integration_is_ancestor:
         failures.append("transaction.integration_sha.not_ancestor_of_verifier_head")
@@ -350,12 +635,15 @@ def transaction_gate(
         if not runtime_manifest:
             failures.append("transaction.runtime_manifest_missing")
         else:
-            if runtime_manifest.get("task_id") not in (None, TASK_ID):
-                failures.append("transaction.runtime_manifest.task_id")
-            if runtime_manifest.get("request_nonce") not in (None, REQUEST_NONCE):
-                failures.append("transaction.runtime_manifest.request_nonce")
-            if runtime_manifest.get("frozen_contract_sha256") not in (None, FROZEN_CONTRACT_SHA256):
-                failures.append("transaction.runtime_manifest.frozen_contract_sha256")
+            manifest_failures, manifest_observations = _runtime_manifest_failures(
+                repo_root=repo_root,
+                runtime_manifest=runtime_manifest,
+                review_round=review_round,
+                integration_sha=integration_sha,
+                implementation_fingerprint=implementation_fingerprint,
+                expected_verifier_fingerprint=expected_verifier_fingerprint,
+            )
+            failures.extend(manifest_failures)
         if not ci_receipt:
             failures.append("transaction.hosted_ci_receipt_missing")
         else:
@@ -403,6 +691,9 @@ def transaction_gate(
         "runtime_manifest_path": str(RUNTIME_MANIFEST_PATH.relative_to(repo_root)),
         "runtime_manifest_review_round": runtime_manifest.get("review_round") if runtime_manifest else None,
         "runtime_manifest_sha256": sha256_file(RUNTIME_MANIFEST_PATH) if RUNTIME_MANIFEST_PATH.is_file() else None,
+        "runtime_manifest_strict_binding": (
+            manifest_observations if runtime_manifest and not fixture_mode else None
+        ),
         "hosted_ci_receipt_path": str(CONTROLLER_CI_RECEIPT_PATH.relative_to(repo_root)),
         "hosted_ci_head_sha": (
             ci_receipt.get("github_actions_head_sha")
@@ -2407,6 +2698,8 @@ def _loss_semantic_mutation_probe(repo_root: Path, mutation_id: str) -> tuple[di
 def mutation_result(mutation_id: str, *, repo_root: Path, fixture_mode: bool) -> dict[str, Any]:
     if mutation_id not in MUTATION_IDS:
         raise KeyError(mutation_id)
+    if mutation_id in RUNTIME_MANIFEST_MUTATION_IDS:
+        return _runtime_manifest_mutation_result(mutation_id, repo_root=repo_root, fixture_mode=fixture_mode)
     failures: list[str] = []
     observations: dict[str, Any] = {}
     mutation_applied = "not_applied"

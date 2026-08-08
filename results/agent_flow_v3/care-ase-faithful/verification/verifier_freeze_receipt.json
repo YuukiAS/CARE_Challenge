@@ -2,7 +2,7 @@
   "controller_may_continue_after_verifier_recheck": true,
   "controller_verified_launch_origin_develop_sha": "eee6bc4b37e920d0b3bba893edc8ce3c45b81139",
   "controller_verified_launch_verifier_worktree_head": "eee6bc4b37e920d0b3bba893edc8ce3c45b81139",
-  "created_utc": "2026-08-08T12:04:38Z",
+  "created_utc": "2026-08-08T13:27:34Z",
   "current_reviewed_implementation_expected_fail_closed": true,
   "executable_verifier_local_fail_closed_exit_code": 2,
   "executable_verifier_local_fail_closed_receipt": "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_local_fail_closed_receipt.json",
@@ -11,7 +11,7 @@
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
   "integrated_implementation_validation_exit_code": 2,
   "integrated_implementation_validation_result": "results/agent_flow_v3/care-ase-faithful/verification/integrated_implementation_validation_result.json",
-  "observed_origin_develop_sha_at_freeze": "07469d4933b269a3a3ed3bbe1990ed2a894106d7",
+  "observed_origin_develop_sha_at_freeze": "123691c5c20439d5cbfbccc2bc7bb6f629891d07",
   "protected_known_bad_all_nonzero": true,
   "protected_known_bad_count": 24,
   "public_reference_exit_code": 0,
@@ -30,12 +30,12 @@
     "integrated_implementation_validation_result.json"
   ],
   "runtime_mutation_all_nonzero": true,
-  "runtime_mutation_count": 22,
+  "runtime_mutation_count": 28,
   "runtime_mutation_manifest": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_manifest.json",
   "schema": "CARE_ASE_FAITHFUL_VERIFIER_FREEZE_RECEIPT_V1",
   "state_for_controller": "VERIFIER_FROZEN",
   "task_id": "care-ase-faithful",
   "verifier_branch": "local/verifier/care-ase-faithful",
-  "verifier_fingerprint_sha256": "6acc8fdc640df9be54848dfc676da45257d887c0f4be5ce71efa6230114a4a17",
-  "verifier_worktree_head_before_freeze_commit": "424e29702cdb58fe11667fa60269ced366ee7b5e"
+  "verifier_fingerprint_sha256": "5e9c96b705b1a2f42c24ade2913317c715bbb063ec3932dcb88fecd5c27a3de0",
+  "verifier_worktree_head_before_freeze_commit": "c502509d1eb082a6a63f99de262f825651c0e789"
 }
