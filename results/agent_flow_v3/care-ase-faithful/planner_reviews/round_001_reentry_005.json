@@ -1,0 +1,207 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_PLANNER_REVIEW",
+  "task_id": "care-ase-faithful",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "review_round": 1,
+  "review_reentry": "round_001_reentry_005",
+  "observed_state": "WAITING_FOR_EXTERNAL_GPT",
+  "ready_state_reached_before_wait": "READY_FOR_PLANNER_REVIEW",
+  "review_mode": "IMPLEMENTATION_REVIEW",
+  "frozen_contract_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "integration_commit_sha": "d643c80ce15aa77a28ffb0bec6661afac5be3237",
+  "implementation_fingerprint_sha256": "dd5593f869823de7fe0b76f953c3ea1ade6d0c1426a7e26a39a4ae1aea6fa692",
+  "verifier_fingerprint_sha256": "7bdf871a1bd13c7f3faf30350b0c73797dd5818a90622be892917ebe875803ad",
+  "independent_review_order": "CURRENT_IMPLEMENTATION_AND_VERIFIER_REVIEWED_BEFORE_PRIOR_FINDINGS",
+  "decision": "PLANNER_REVISE_BOTH",
+  "created_utc": "2026-08-08T10:06:19Z",
+  "binding_audit": {
+    "request_nonce_matches": true,
+    "frozen_contract_matches": true,
+    "planner_packet_integration_sha_matches_current": true,
+    "planner_packet_implementation_fingerprint_matches_current": true,
+    "planner_packet_verifier_fingerprint_matches_current": true,
+    "hosted_ci_run_id": 31251920402,
+    "hosted_ci_job_id": 93089469386,
+    "hosted_ci_job_conclusion": "success",
+    "hosted_ci_exact_integration_sha_verified_from_job_log": true,
+    "hosted_ci_checked_out_sha": "d643c80ce15aa77a28ffb0bec6661afac5be3237",
+    "implementation_fingerprint_embeds_current_verifier_fingerprint": false,
+    "implementation_fingerprint_embedded_verifier_fingerprint": "3dcacfe7ae41e164435278c0da4557fc61b384ef6eeb09860badb353b375dca6",
+    "current_verifier_fingerprint": "7bdf871a1bd13c7f3faf30350b0c73797dd5818a90622be892917ebe875803ad",
+    "runtime_receipt_manifest_review_round": 0,
+    "current_review_round": 1,
+    "frozen_verifier_validation_passed": false,
+    "frozen_verifier_validation_failure_count": 7,
+    "executable_verifier_receipt_passed": false,
+    "executable_verifier_receipt_integration_sha": "a60ba7a68f07dbade0ab400e9e859352ca7d1b9a",
+    "verifier_fingerprint_includes_post_freeze_runtime_artifacts": true,
+    "binding_status": "FAIL_CLOSED_REQUIRES_VERIFIER_ARCHITECTURE_REPAIR_EXECUTOR_REPAIR_AND_FRESH_TRANSACTION"
+  },
+  "evidence_reviewed": {
+    "protocol_and_state": [
+      "automation/agent_flow_v3/planner_scheduled_task_prompt.md",
+      "automation/agent_flow_v3/schema.json",
+      "automation/agent_flow_v3/tasks/care-ase-faithful/REQUEST.json",
+      "automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json",
+      "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+      "results/agent_flow_v3/care-ase-faithful/planner_review_packet.json",
+      "results/agent_flow_v3/care-ase-faithful/runtime_receipt_manifest.json",
+      "results/agent_flow_v3/care-ase-faithful/runtime_binding_receipt.json",
+      "results/agent_flow_v3/care-ase-faithful/controller_ci_receipt.json",
+      "results/agent_flow_v3/care-ase-faithful/controller_verifier_recheck_integration_receipt.json",
+      "results/agent_flow_v3/care-ase-faithful/controller_ready_for_planner_review_receipt.json"
+    ],
+    "implementation": [
+      "src/care_myocardium/models/care_ase/__init__.py",
+      "src/care_myocardium/models/care_ase/core.py",
+      "src/care_myocardium/training/care_ase_trainer.py",
+      "src/care_myocardium/training/care_ase_runtime.py",
+      "src/care_myocardium/training/care_ase_sampler.py",
+      "src/care_myocardium/inference/care_ase_r2_decode.py",
+      "src/care_myocardium/inference/care_ase_r2_full_volume.py",
+      "src/care_myocardium/evaluation/care_ase_r2_evaluator.py",
+      "scripts/training/care_ase/run_care_ase_r2_chunk.py",
+      "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json",
+      "results/agent_flow_v3/care-ase-faithful/implementation/implementation_fingerprint.json",
+      "results/agent_flow_v3/care-ase-faithful/implementation/implementation_source_manifest.json"
+    ],
+    "verification": [
+      "validators/care_ase_faithful/run_executable_verifier.py",
+      "results/agent_flow_v3/care-ase-faithful/verification/verifier_fingerprint.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json",
+      "results/agent_flow_v3/care-ase-faithful/implementation/frozen_verifier_validation_result.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/injury_dice_bce_replaced_by_focal.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/scar_component_tversky_plus_occupancy_lambda025.json"
+    ],
+    "prior_review_read_after_independent_review": [
+      "results/agent_flow_v3/care-ase-faithful/planner_reviews/round_001_reentry_004.json"
+    ]
+  },
+  "independent_review_summary": {
+    "closed_or_materially_improved": [
+      "上一轮两个 loss 公式漂移已经在当前实现中关闭：injury 现为 Dice+BCE，scar 0.25 component 项现为纯 component-adaptive Tversky，不再混入 occupancy 辅助目标。",
+      "当前 Verifier 已建立独立 loss semantic oracle，并真实执行 injury BCE->focal 与 scar Tversky+occupancy 两类 known-bad；两者均以非零退出被捕获。",
+      "真实 tile-local full-volume inference、聚合后仅一次 global extent/wall bias、no-T2 五类竞争与 edema 子图隔离仍保持。",
+      "GitHub Actions run 31251920402 的 hosted job 实际 checkout 并成功验证精确 integration d643c80ce15aa77a28ffb0bec6661afac5be3237；本轮 hosted CI SHA 与结论本身有效。"
+    ],
+    "remaining_or_new_blockers": [
+      "SliceExtentHead 对 partial-H/W slice 只在 H/W pooling 时逐像素 mask，但没有在进入两层 kernel=3 Conv1d 序列前把整张 partial slice 置为无效。由于 z 方向卷积会跨相邻切片传播，partial slice 的 sequence_input 仍可影响 fully-valid 邻片的 extent prediction，并从邻片 loss 获得梯度，违反合同要求 partial-H/W slice 的 bias、loss 与 gradient 均为零。",
+      "当前 Verifier 的 partial-H/W probe 直接构造 presence_logits/area_logits 并对这些张量求梯度，没有真实经过 SliceExtentHead 的 masked pooling + Conv1d 序列，因此会把上述跨 z 泄漏误判为安全。",
+      "checkpoint/formal runtime 仍继承历史 R2 绑定：schema v4 formal fields 要求 effective_contract_sha256、origin_main_sha、external_review_permit_sha256 等历史字段，却没有把当前 request_nonce 和本冻结合同 SHA 作为必需 checkpoint provenance；runtime 仍定义历史 TASK_KEY/RESULT_DIR/EFFECTIVE_CONTRACT，sampler 默认 hard-negative manifest 也硬编码旧 results/20260804... 路径。这与冻结合同要求当前 develop、当前 nonce、当前冻结合同与提交绑定以及旧 main/结果目录/permit 路径参数化不一致。",
+      "当前 Verifier 的 checkpoint probe 仍可在缺少当前 frozen_contract_sha256/request_nonce 绑定的实现上判 PASS，因此没有覆盖本冻结合同第 13 节的当前事务 provenance。",
+      "Verifier fingerprint 的定义本身存在结构性循环：它把 executable_verifier_receipt、integrated validation、protected/runtime mutation report 等实现后运行产物的 hash 纳入 fingerprint；这些产物在 Executor、integration 或 CI 后必然变化，因此所谓 pre-Executor frozen verifier fingerprint 无法保持不变。当前 fingerprint 文件仍记录旧 executable receipt hash，而实际 receipt 已被后续 rerun 改写。",
+      "当前审阅事务仍未闭合：implementation fingerprint/source manifest 嵌入 verifier 3dcacf...，而 Planner packet/CURRENT 绑定 verifier 7bdf87...；runtime_receipt_manifest 仍为 review_round 0；frozen_verifier_validation_result 明确 passed=false；executable verifier receipt 绑定 a60ba7... 而非最终 d643c8...。Controller 的 hosted CI 虽然精确成功，但不能替代这些缺失的 post-CI verifier/runtime 绑定。"
+    ]
+  },
+  "prior_finding_closure": {
+    "ASE_R1_REENTRY4_EXECUTOR_LOSS_FORMULA_CONTRACT_DRIFT": "CLOSED_IN_CURRENT_SOURCE",
+    "ASE_R1_REENTRY4_VERIFIER_CHECKS_LOSS_LABELS_NOT_LOSS_SEMANTICS": "CLOSED_WITH_INDEPENDENT_SEMANTIC_ORACLE_AND_EXECUTED_MUTATIONS",
+    "ASE_R1_REENTRY4_REVIEW_TRANSACTION_STILL_MIXES_OLD_AND_NEW_VERIFIER": "NOT_CLOSED_ROOT_CAUSE_NOW_IDENTIFIED_AS_VERIFIER_FINGERPRINT_INCLUDING_MUTABLE_POST_FREEZE_RUNTIME_ARTIFACTS_PLUS_STALE_EXECUTOR_BINDING"
+  },
+  "blocking_findings": [
+    {
+      "finding_id": "ASE_R1_REENTRY5_EXECUTOR_PARTIAL_HW_CROSS_Z_EXTENT_LEAK",
+      "target_role": "executor",
+      "severity": "blocking_scientific_fidelity_gap",
+      "affected_files_or_functions": [
+        "src/care_myocardium/models/care_ase/core.py::SliceExtentHead.forward",
+        "src/care_myocardium/models/care_ase/core.py::compute_slice_extent_statistics",
+        "src/care_myocardium/training/care_ase_trainer.py::per_slice_extent_loss"
+      ],
+      "finding": "partial-H/W slice 当前仍生成非零 sequence_input，并进入 kernel=3 Conv1d 序列。后续 full-valid 邻片 loss 可通过 z 卷积反向传播到该 partial slice 的 pooled feature；最终输出再 mask 并不能撤销这个上游跨 z 梯度路径。",
+      "why_it_matters": "冻结合同明确把 partial-H/W slice 定义为 extent-invalid，并要求其 bias、loss、gradient 为零。当前实现虽然令该 slice 自身 loss/bias 为零，却仍允许它成为相邻有效切片预测的输入证据，属于更深一层的 padding 信息泄漏。",
+      "required_repair": [
+        "在 SliceExtentHead 进入 Conv1d 序列前计算 full-H/W-valid 的 per-z mask，并让 partial/all-invalid slice 的 sequence input 对后续序列严格为零；实现必须保证邻片 loss 对 partial slice feature 的梯度严格为零。",
+        "保持 fully-valid 邻片仍有非零 extent supervision/gradient，不能通过检测到任一 padding 后关闭整个 extent head。",
+        "presence/area 输出和 global bias 继续按相同 full-slice validity 语义处理，训练与推理仍共用 compute_slice_extent_statistics。"
+      ],
+      "forbidden_workarounds": [
+        "不得只在 loss scalar 或 final bias 上再次乘 mask。",
+        "不得用 detach/straight-through 伪造零 loss 数值同时保留 partial-slice 证据路径。",
+        "不得对整个 volume 的 extent 头一刀切禁用。"
+      ]
+    },
+    {
+      "finding_id": "ASE_R1_REENTRY5_EXECUTOR_CURRENT_CONTRACT_CHECKPOINT_RUNTIME_BINDING_MISSING",
+      "target_role": "executor",
+      "severity": "blocking_reproducibility_and_execution_boundary_gap",
+      "affected_files_or_functions": [
+        "src/care_myocardium/training/care_ase_trainer.py::save_care_ase_checkpoint",
+        "src/care_myocardium/training/care_ase_trainer.py::load_care_ase_checkpoint_for_training_resume",
+        "src/care_myocardium/training/care_ase_runtime.py",
+        "src/care_myocardium/training/care_ase_sampler.py"
+      ],
+      "finding": "formal checkpoint/runtime provenance 仍以历史 effective v9 contract、origin_main、旧 task/result/permit 语义为中心，未把当前 request_nonce 与冻结合同 SHA a4758f... 设为 schema-v4 必需并在 resume 时 fail closed；sampler 还默认读取旧 results/20260804... hard-negative manifest。",
+      "why_it_matters": "即便模型数值实现正确，未来人工授权训练时也可能从旧任务合同、旧结果目录或旧 permit provenance 恢复，无法证明 checkpoint 属于当前冻结的 CARE-Agent-Flow v3 事务。",
+      "required_repair": [
+        "schema v4 formal checkpoint 增加并强制验证 current request_nonce、frozen_contract_sha256、当前 integration/source binding；effective v8/v9 hash 可作为次级 runtime provenance，但不能替代本冻结合同。",
+        "formal runtime 与 hard-negative manifest 路径改为当前任务/输入 bundle 参数化，禁止活动默认值硬编码旧 main、旧 task result root 或旧 permit 语义。",
+        "resume、deployment 和 runtime receipt 明确记录并验证当前 nonce、冻结合同 SHA、critical source manifest、environment manifest 与实际 checkpoint/source SHA。"
+      ]
+    },
+    {
+      "finding_id": "ASE_R1_REENTRY5_VERIFIER_MISSES_CROSS_Z_PARTIAL_HW_AND_CURRENT_CONTRACT_PROVENANCE",
+      "target_role": "verifier",
+      "severity": "blocking_verification_gap",
+      "affected_files_or_functions": [
+        "validators/care_ase_faithful/run_executable_verifier.py::_independent_partial_hw_probe",
+        "validators/care_ase_faithful/run_executable_verifier.py checkpoint/resume probes",
+        "tests/care_ase_faithful/test_verifier_package.py"
+      ],
+      "finding": "partial-H/W oracle 目前绕过真实 SliceExtentHead，只对直接构造的 presence/area logits 求梯度；checkpoint oracle 又允许缺少当前 frozen contract/nonce provenance 的历史 schema-v4 实现通过。因此两类真实降级都未被独立 Verifier 覆盖。",
+      "required_repair": [
+        "新增真实 SliceExtentHead 跨 z 梯度 oracle：构造一个 partial-H/W slice 邻接 fully-valid slice，只对 fully-valid 邻片目标反传，要求 partial slice 输入 feature 的梯度严格为零且邻片梯度非零。",
+        "新增受保护 mutation，去掉 full-slice pre-sequence mask 或恢复当前逐像素-only pooling 语义时必须非零退出。",
+        "checkpoint/resume oracle 必须独立验证当前 request_nonce、frozen_contract_sha256 与当前 source/integration provenance；仅有 effective_contract_sha256、origin_main 或旧 permit 字段不得通过。",
+        "增加 missing/wrong frozen-contract SHA、wrong nonce、hardcoded old active result/permit binding 的 known-bad，并实际执行 fail-closed。"
+      ]
+    },
+    {
+      "finding_id": "ASE_R1_REENTRY5_VERIFIER_FINGERPRINT_NOT_IMMUTABLE_PRE_EXECUTOR",
+      "target_role": "verifier",
+      "severity": "blocking_transaction_architecture_gap",
+      "affected_files_or_functions": [
+        "validators/care_ase_faithful/build_verification_artifacts.py",
+        "results/agent_flow_v3/care-ase-faithful/verification/verifier_fingerprint.json",
+        "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json"
+      ],
+      "finding": "verifier_fingerprint 当前把 implementation-dependent executable receipt、integrated validation 和 runtime mutation report hash 纳入 fingerprint。这样 Verifier 在 Executor 前冻结后，只要对新 implementation 重新执行验证，fingerprint 自身就会漂移，导致 Executor fingerprint 永远绑定上一代 Verifier。当前文件已经出现这种自证：fingerprint 内记录 executable receipt SHA 32d589...，而仓库当前 executable receipt 已是后续重跑版本。",
+      "why_it_matters": "这违反冻结合同的 Verifier-first 顺序，也解释了连续多次 review transaction 无法闭合。Verifier identity 必须描述不可变的验证代码/合同/测试定义，而 implementation-specific runtime result 必须是独立、后生成、绑定 frozen verifier fingerprint 的 receipt。",
+      "required_repair": [
+        "重新定义 verifier_fingerprint：只哈希冻结合同、Verifier 源码、public/protected test definition、mutation definition/manifest 等 pre-Executor immutable inputs；不得包含 implementation-specific PASS/FAIL receipt、CI result 或 integration-specific runtime report。",
+        "将 executable_verifier_receipt、integrated validation、mutation execution outputs 单独作为 runtime evidence；它们必须反向声明 frozen verifier fingerprint、implementation fingerprint、integration SHA、nonce、contract SHA 和 review round，但不得改变 frozen verifier fingerprint。",
+        "用 mutation 验证旧 transaction tuple 和伪造 receipt 仍会失败，并证明对两个不同 implementation 重跑 verifier 后 frozen verifier fingerprint 完全相同。"
+      ]
+    },
+    {
+      "finding_id": "ASE_R1_REENTRY5_TRANSACTION_NOT_REPLAYABLE",
+      "target_role": "both",
+      "severity": "blocking_transaction_binding_gap",
+      "finding": "Hosted CI 对 d643c8... 是真实成功的，但其余 review tuple 不一致：implementation fingerprint 嵌入 verifier 3dcacf... 而当前绑定为 7bdf87...；runtime receipt manifest 仍是 review_round 0；frozen verifier validation 明确失败；executable verifier receipt 仍绑定 a60ba7...。因此当前 nonce+contract+integration+implementation+verifier+runtime 不能作为单一可重放事务通过。",
+      "required_repair": [
+        "先由原 Verifier 线程完成 immutable fingerprint 架构和新增 oracle，冻结新的 verifier fingerprint。",
+        "再由原 Executor 线程修正 implementation，并基于该精确 frozen verifier fingerprint 重建 source manifest、implementation fingerprint 与 runtime evidence。",
+        "Controller 重新集成后运行 verifier；push 精确 integration 并等待 Hosted CI；CI 成功后必须再次生成/验证 final post-CI transaction receipt，使 executable verifier result 真正 passed=true 且绑定最终 integration。",
+        "runtime_receipt_manifest 必须更新为当前 review_round=1，并绑定当前 nonce、frozen contract、integration、implementation/verifier fingerprints 与最终 CI；不得把 pre-CI expected failure 当成 Planner-ready PASS。"
+      ]
+    }
+  ],
+  "required_role_order": [
+    "VERIFIER_FIRST_FREEZE_NEW_IMMUTABLE_FINGERPRINT_AND_ORACLES",
+    "EXECUTOR_SECOND_REPAIR_IMPLEMENTATION_AND_REBIND_TO_EXACT_VERIFIER",
+    "CONTROLLER_REINTEGRATE_RUN_FULL_GATES_PUSH_EXACT_DEVELOP_WAIT_CI_AND_POST_CI_REBIND",
+    "RETURN_TO_PLANNER_WITH_FRESH_REPLAYABLE_TUPLE"
+  ],
+  "forbidden_actions_confirmed": [
+    "no implementation code edited by Planner",
+    "no verifier code edited by Planner",
+    "no training",
+    "no outer access",
+    "no develop-to-main merge",
+    "no Docker build/upload",
+    "no validation/challenge upload",
+    "no deployment",
+    "no organizer email"
+  ]
+}
