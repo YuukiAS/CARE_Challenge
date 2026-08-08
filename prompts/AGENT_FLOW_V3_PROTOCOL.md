@@ -15,6 +15,11 @@ verifier_executor_separation_required: true
 
 The first authorized use is the CARE-ASE faithful reimplementation experiment on the remote `develop` branch. `main` remains the stable evidence and policy branch. Existing CARE-ASE training, checkpoints, permits, Docker artifacts and current-state history must not be rewritten by this experiment.
 
+The project-agnostic role authority source is
+`automation/agent_flow_v3/ROLE_AUTHORITY_POLICY.md`. Project contracts may add
+scientific content, runtime bindings and verifier probes, but they may not
+weaken or redefine Planner, Critic, Controller, Verifier or Executor authority.
+
 ## 2. Active roles
 
 Agent-Flow v3 uses exactly five LLM roles.
@@ -28,6 +33,19 @@ Agent-Flow v3 uses exactly five LLM roles.
 There is no separate Reviewer role in v3. After deterministic CI passes, the Planner performs the implementation review and drives the repair loop. The only human action required during the loop is resolving an explicitly blocked scientific choice; otherwise the first normal human gate is after `PLANNER_PASS`.
 
 Deterministic `validator` and `finalizer` scripts remain tools, not additional LLM roles.
+
+Role isolation includes authority, not only filesystem write scope:
+
+```text
+Planner    = scientific/task intent owner and contract adjudicator
+Critic     = frozen-contract completeness and ambiguity auditor
+Controller = orchestration and transaction owner
+Verifier   = contract-conformance oracle builder
+Executor   = implementation owner
+```
+
+No role may acquire another role's authority through prompt text, receipt text
+or state-machine shortcuts.
 
 ## 3. Hard separation rule
 
@@ -122,6 +140,23 @@ Concrete server values belong in ignored local config or shell environment, not 
 
 The Critic is not a slow relay that always sends work back to the Planner. It must directly repair the staged contract when the repair is logically determined by the Planner objective, repository evidence and existing policy. It returns `NEEDS_USER_SCIENTIFIC_CHOICE` only when two or more scientifically meaningful alternatives remain and choosing among them changes the hypothesis, model, data, loss, evaluation or resource budget.
 
+Critic freeze must also publish a machine-readable frozen requirement ledger:
+
+```text
+automation/agent_flow_v3/tasks/<task_id>/REQUIREMENT_LEDGER.json
+```
+
+Every blocking requirement must have a unique `requirement_id`, source path and
+clause/field, type, owner role, verification authorization, numeric-threshold
+source, scientific rationale, derived invariants and contract-revision rule.
+Allowed requirement types are `SCIENTIFIC`, `IMPLEMENTATION`, `RUNTIME`,
+`INFERENCE`, `EVALUATION`, `PROVENANCE`, `PROCESS` and `DIAGNOSTIC`.
+
+Blocking numeric thresholds are invalid unless their source is cited from the
+frozen contract, requirement ledger or a derived invariant that does not change
+scientific semantics. Verifier-added thresholds without that source are
+diagnostic observations or Planner interpretation questions, not hard gates.
+
 For CARE-ASE verifier and Planner review, `single_tile_and_tiled_use_same_path`
 means the same public canonical inference API/settings, genuine tile-local model
 forwards, and one post-aggregation global bias application. It does not imply
@@ -187,6 +222,24 @@ model configs or scientific contracts
 
 The verification package must include public tests and protected adversarial tests. Executor may read public tests and failure identifiers, but protected fixture details should not be copied into the Executor prompt. This is process isolation, not a security claim; the hard guarantee is separate write scopes and independent Planner review.
 
+Every blocking Verifier finding must cite:
+
+```text
+requirement_id
+contract_source_path
+contract_clause_or_field
+observed_violation
+verification_method
+why_this_test_is_logically_implied_by_requirement
+```
+
+If no frozen `requirement_id` binds, Verifier must not output a contract
+violation. It may report `DIAGNOSTIC_ANOMALY` or request Planner contract
+interpretation. Derived invariants may block only when they list parent
+requirement IDs, logical derivation, necessity, and whether the derivation
+changes scientific semantics. A derivation that adds a scientific assumption or
+new numeric tolerance cannot block until Planner adjudicates it.
+
 ## 8. Executor boundary
 
 The Executor owns implementation code only. Its write scope normally includes:
@@ -207,7 +260,13 @@ The Executor must not:
 - change the frozen scientific contract;
 - remove architecture components to make tests pass;
 - shorten required runs or replace real evidence with static receipts;
+- detect verifier/test mode, known-bad IDs, mutation names or protected fixture
+  details to alter normal semantics;
 - start training, outer evaluation, Docker publication or upload unless separately authorized after Planner PASS.
+
+Executor PASS requires exercising the normal public implementation path. Test
+hooks may observe or interrupt real computation, but they must not provide
+alternate business logic or outputs.
 
 ## 9. GitHub Actions boundary
 
@@ -235,6 +294,21 @@ request_nonce
 Any new critical implementation or verifier commit invalidates the previous Planner decision. Planner must review the current full implementation before reading previous findings, then use previous findings only to verify closure.
 
 Planner PASS means the implementation is sufficiently faithful to the frozen contract to return to the user. It does not prove scientific superiority and does not authorize training or protected evaluation.
+
+Planner is also the contract adjudicator when Verifier and Executor disagree
+about whether a Verifier oracle is implied by the frozen contract. Controller
+must route such disputes to `CONTRACT_INTERPRETATION_REVIEW`; Controller must
+not decide the semantics. Planner must read the frozen contract, requirement
+ledger, Verifier finding, Executor evidence and relevant implementation before
+returning one of:
+
+```text
+CONFIRM_CONTRACT_VIOLATION
+VERIFIER_CONTRACT_DRIFT
+DIAGNOSTIC_ONLY
+CONTRACT_AMBIGUITY_REQUIRES_CRITIC
+SCIENTIFIC_CHOICE_REQUIRED
+```
 
 ## 11. State machine
 
@@ -275,6 +349,39 @@ STOPPED_MAX_ROUNDS
 ```
 
 Controller may respond only to the exact current state and nonce. It must not react to generic commits.
+
+Findings must use a typed classification:
+
+```text
+IMPLEMENTATION_BUG
+VERIFIER_BUG
+VERIFIER_CONTRACT_DRIFT
+EVIDENCE_GAP
+PROVENANCE_BINDING_GAP
+OPERATIONAL_FAILURE
+RUNTIME_ENVIRONMENT_FAILURE
+CONTRACT_AMBIGUITY
+CONTRACT_CONTRADICTION
+DIAGNOSTIC_ANOMALY
+SCIENTIFIC_CHOICE_REQUIRED
+```
+
+Controller routing is fixed by classification. It must not parse free text or a
+generic `BLOCKED` token to choose a route:
+
+```text
+IMPLEMENTATION_BUG -> Executor
+VERIFIER_BUG -> Verifier
+VERIFIER_CONTRACT_DRIFT -> Verifier plus Planner adjudication
+EVIDENCE_GAP -> owning role
+PROVENANCE_BINDING_GAP -> Controller
+OPERATIONAL_FAILURE -> Controller same-scope recovery
+RUNTIME_ENVIRONMENT_FAILURE -> Controller/runtime repair
+CONTRACT_AMBIGUITY -> Planner
+CONTRACT_CONTRADICTION -> Planner then Critic
+DIAGNOSTIC_ANOMALY -> Planner diagnostic review
+SCIENTIFIC_CHOICE_REQUIRED -> user
+```
 
 For an already-authorized loop under the same frozen contract SHA and request
 nonce, the following transitions are Controller-internal operations and must
@@ -318,6 +425,35 @@ must clear stale prior-round Planner decision, Planner artifact, review-input
 fingerprint and repair-prompt fields. If those fields are useful provenance,
 move them under an explicit superseded-prior-review object instead of leaving
 them as active routing inputs.
+
+Review transactions are immutable and must bind one exact set:
+
+```text
+request_nonce
+frozen_contract_sha
+requirement_ledger_sha
+integration_sha
+implementation_fingerprint
+verifier_source_fingerprint
+verifier_runtime_fingerprint
+runtime_receipt_manifest_sha
+CI exact head SHA
+review_round
+```
+
+Stale CI/fingerprint/receipt bindings are `PROVENANCE_BINDING_GAP` routed to
+Controller repair. They are not scientific choices.
+
+Agent-Flow v3 has only three stop categories:
+
+```text
+RECOVERABLE_TASK_LOCAL_FAILURE
+CONTRACT_REVIEW_REQUIRED
+HUMAN_SCIENTIFIC_DECISION_REQUIRED
+```
+
+Fail-closed means the role must not falsely claim PASS. It does not mean the
+whole goal stops when same-scope repair is authorized.
 
 ## 12. Visual architecture sources
 

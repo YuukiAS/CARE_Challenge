@@ -1,0 +1,181 @@
+{
+  "schema": "AGENT_FLOW_V3_REQUIREMENT_LEDGER",
+  "task_id": "care-ase-faithful",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "requirements": [
+    {
+      "requirement_id": "REQ_PROCESS_001",
+      "source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+      "source_clause_or_field": "section 0 machine binding and execution boundary",
+      "requirement_text": "The task is limited to develop-branch faithful implementation, verification and Planner review; no formal training, outer access, Docker, upload, organizer email or develop-to-main merge is authorized.",
+      "requirement_type": "PROCESS",
+      "blocking": true,
+      "owner_role": "controller",
+      "verification_allowed": true,
+      "numeric_threshold": null,
+      "threshold_source": null,
+      "scientific_rationale": "This preserves the user's experimental authorization boundary.",
+      "derived_invariants": [],
+      "change_requires_contract_revision": true
+    },
+    {
+      "requirement_id": "REQ_ARCH_001",
+      "source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+      "source_clause_or_field": "section 3 unique trunk and three high-resolution paths",
+      "requirement_text": "Implementation must provide one stock-compatible 3D nnU-Net trunk with independent anatomy, scar and edema high-resolution paths; old entries may only thin-forward to the canonical implementation.",
+      "requirement_type": "IMPLEMENTATION",
+      "blocking": true,
+      "owner_role": "executor",
+      "verification_allowed": true,
+      "numeric_threshold": {
+        "parameter_byte_coverage_min": 0.99
+      },
+      "threshold_source": "section 3 parameter byte coverage at least 0.99",
+      "scientific_rationale": "Faithful reimplementation requires real stock trunk inheritance and independent pathology branches.",
+      "derived_invariants": [],
+      "change_requires_contract_revision": true
+    },
+    {
+      "requirement_id": "REQ_PARITY_001",
+      "source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+      "source_clause_or_field": "section 3 stock-compatible logits parity when new evidence is disabled",
+      "requirement_text": "With new evidence disabled, stock-compatible logits must match FP32 stock logits within the specified tolerance and argmax changed voxels must be zero.",
+      "requirement_type": "IMPLEMENTATION",
+      "blocking": true,
+      "owner_role": "executor",
+      "verification_allowed": true,
+      "numeric_threshold": {
+        "stock_compatible_logits_max_abs_diff": 0.000001,
+        "argmax_changed_voxels": 0
+      },
+      "threshold_source": "section 3 explicitly states max absolute error <= 1e-6 and argmax changed voxels 0 for stock-compatible parity",
+      "scientific_rationale": "Stock compatibility is a stated initialization/parity requirement, not a tiled-context equality requirement.",
+      "derived_invariants": [],
+      "change_requires_contract_revision": true
+    },
+    {
+      "requirement_id": "REQ_MODALITY_001",
+      "source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+      "source_clause_or_field": "sections 4 and 9 modality roles and no-T2",
+      "requirement_text": "Scar, edema and no-T2 modality ownership must follow the frozen branch rules; no-T2 rows must not execute edema-owned subgraphs and class 4 must be excluded from loss/decode competition.",
+      "requirement_type": "SCIENTIFIC",
+      "blocking": true,
+      "owner_role": "executor",
+      "verification_allowed": true,
+      "numeric_threshold": {
+        "no_t2_edema_owned_module_calls": 0,
+        "no_t2_edema_exclusive_gradient": 0
+      },
+      "threshold_source": "section 9 explicitly requires zero edema-owned calls, losses and gradients on no-T2 rows",
+      "scientific_rationale": "Missing T2 must not be treated as negative edema evidence.",
+      "derived_invariants": [],
+      "change_requires_contract_revision": true
+    },
+    {
+      "requirement_id": "REQ_INFERENCE_001",
+      "source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+      "source_clause_or_field": "sections 8 and 14 canonical full-volume inference",
+      "requirement_text": "Single-tile and sliding-window inference must use the same public canonical inference path/settings; multi-tile inference must use genuine tile-local model forwards; tiles may emit only base logits, wall evidence and extent evidence; global extent/wall bias is applied exactly once after aggregation.",
+      "requirement_type": "INFERENCE",
+      "blocking": true,
+      "owner_role": "executor",
+      "verification_allowed": true,
+      "numeric_threshold": {
+        "global_bias_application_count": 1,
+        "forced_multi_tile_count_min": 2
+      },
+      "threshold_source": "sections 8 and 14 state one post-aggregation bias application and genuine sliding-window path; the tile-count minimum is the mechanical definition of a multi-tile probe",
+      "scientific_rationale": "Inference must preserve the architecture's full-volume semantics without hidden full-support pseudo-tiling.",
+      "derived_invariants": [
+        {
+          "invariant_id": "REQ_INFERENCE_001_DERIVED_NO_FULL_SUPPORT_PSEUDO_TILING",
+          "parent_requirement_ids": [
+            "REQ_INFERENCE_001"
+          ],
+          "logical_derivation": "A genuine tile-local sliding-window path cannot secretly expand each tile input to full-volume support.",
+          "why_necessary": "Otherwise the implementation would not test or run the contracted tiled inference path.",
+          "whether_it_changes_scientific_semantics": false,
+          "blocking": true
+        }
+      ],
+      "change_requires_contract_revision": true
+    },
+    {
+      "requirement_id": "REQ_LOSS_001",
+      "source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+      "source_clause_or_field": "section 10 losses and forbidden losses",
+      "requirement_text": "The total loss must include the declared terms with eligible-row normalization and finite gradients; forbidden losses and detached straight-through loss substitutions are not allowed.",
+      "requirement_type": "SCIENTIFIC",
+      "blocking": true,
+      "owner_role": "executor",
+      "verification_allowed": true,
+      "numeric_threshold": null,
+      "threshold_source": null,
+      "scientific_rationale": "Loss semantics define the faithful training objective even though formal training is not authorized.",
+      "derived_invariants": [
+        {
+          "invariant_id": "REQ_LOSS_001_DERIVED_TOTAL_LOSS_GRADIENT",
+          "parent_requirement_ids": [
+            "REQ_LOSS_001"
+          ],
+          "logical_derivation": "A declared loss that enters total loss must provide finite nonzero direct gradients to its target module on eligible data.",
+          "why_necessary": "Otherwise the declared objective is not actually optimized.",
+          "whether_it_changes_scientific_semantics": false,
+          "blocking": true
+        }
+      ],
+      "change_requires_contract_revision": true
+    },
+    {
+      "requirement_id": "REQ_RUNTIME_001",
+      "source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+      "source_clause_or_field": "sections 0 and 13 runtime/checkpoint boundary",
+      "requirement_text": "Runtime evidence must be zero-credit and finite; checkpoints must bind the fold, stock checkpoint, schedule and exact resume state without starting formal training.",
+      "requirement_type": "RUNTIME",
+      "blocking": true,
+      "owner_role": "controller",
+      "verification_allowed": true,
+      "numeric_threshold": null,
+      "threshold_source": null,
+      "scientific_rationale": "Runtime probes prove executable behavior without authorizing training evidence.",
+      "derived_invariants": [
+        {
+          "invariant_id": "REQ_RUNTIME_001_DERIVED_EXACT_RESUME_STATE",
+          "parent_requirement_ids": [
+            "REQ_RUNTIME_001"
+          ],
+          "logical_derivation": "A checkpoint that claims exact resume must restore optimizer, scheduler, RNG and next-step descriptors consistently.",
+          "why_necessary": "Otherwise exact resume is not true.",
+          "whether_it_changes_scientific_semantics": false,
+          "blocking": true
+        }
+      ],
+      "change_requires_contract_revision": true
+    },
+    {
+      "requirement_id": "REQ_VERIFIER_001",
+      "source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+      "source_clause_or_field": "section 16 Verifier/Executor/Controller roles",
+      "requirement_text": "Verifier, Executor and Controller must keep separate authority: Verifier builds contract-conformance oracles, Executor implements, Controller routes and integrates.",
+      "requirement_type": "PROCESS",
+      "blocking": true,
+      "owner_role": "controller",
+      "verification_allowed": true,
+      "numeric_threshold": null,
+      "threshold_source": null,
+      "scientific_rationale": "Role separation prevents self-verifying implementation and contract drift.",
+      "derived_invariants": [],
+      "change_requires_contract_revision": false
+    }
+  ],
+  "diagnostic_observations": [
+    {
+      "diagnostic_id": "DIAG_INFERENCE_CONTEXT_DIFF",
+      "description": "Real CNN one-tile and forced multi-tile logits may differ because receptive-field context differs; max/mean differences and changed voxels are recorded for Planner review but are not a blocking threshold without a ledger-backed requirement."
+    }
+  ],
+  "open_scientific_choices": [],
+  "critic_freeze_commit_sha": "bfd6289d8778da3d9510922fd448c69237b4cb4f",
+  "updated_utc": "2026-08-08T10:20:00Z"
+}

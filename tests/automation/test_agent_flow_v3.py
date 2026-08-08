@@ -2618,6 +2618,316 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         self.assertIn("image_sha256:CARE-ASE", failures)
         self.assertIn("answers:main_modules", failures)
 
+    def _generic_requirement_ledger(self) -> dict[str, object]:
+        return {
+            "schema": "AGENT_FLOW_V3_REQUIREMENT_LEDGER",
+            "task_id": "portable-task",
+            "request_nonce": "nonce-1",
+            "frozen_contract_sha256": "a" * 64,
+            "requirements": [
+                {
+                    "requirement_id": "REQ_RUNTIME_001",
+                    "source_path": "contracts/frozen.md",
+                    "source_clause_or_field": "runtime exact resume",
+                    "requirement_text": "Checkpoint resume must be exact.",
+                    "requirement_type": "RUNTIME",
+                    "blocking": True,
+                    "owner_role": "executor",
+                    "verification_allowed": True,
+                    "numeric_threshold": None,
+                    "threshold_source": None,
+                    "scientific_rationale": "Resume fidelity is required by the task.",
+                    "derived_invariants": [
+                        {
+                            "parent_requirement_ids": ["REQ_RUNTIME_001"],
+                            "logical_derivation": "Exact resume requires optimizer, scheduler and RNG continuity.",
+                            "why_necessary": "Otherwise the next step is not a resume.",
+                            "whether_it_changes_scientific_semantics": False,
+                            "blocking": True,
+                        }
+                    ],
+                    "change_requires_contract_revision": True,
+                },
+                {
+                    "requirement_id": "REQ_INFERENCE_001",
+                    "source_path": "contracts/frozen.md",
+                    "source_clause_or_field": "canonical inference path",
+                    "requirement_text": "Public inference must use the canonical path.",
+                    "requirement_type": "INFERENCE",
+                    "blocking": True,
+                    "owner_role": "executor",
+                    "verification_allowed": True,
+                    "numeric_threshold": {"application_count": 1},
+                    "threshold_source": "contract states exactly one application",
+                    "scientific_rationale": "Canonical inference defines deployment behavior.",
+                    "derived_invariants": [],
+                    "change_requires_contract_revision": True,
+                },
+                {
+                    "requirement_id": "REQ_SCIENCE_001",
+                    "source_path": "contracts/frozen.md",
+                    "source_clause_or_field": "mutually exclusive method choice",
+                    "requirement_text": "The frozen task cannot choose between two valid scientific alternatives.",
+                    "requirement_type": "SCIENTIFIC",
+                    "blocking": True,
+                    "owner_role": "planner",
+                    "verification_allowed": False,
+                    "numeric_threshold": None,
+                    "threshold_source": None,
+                    "scientific_rationale": "This represents a real user-owned science decision.",
+                    "derived_invariants": [],
+                    "change_requires_contract_revision": True,
+                },
+            ],
+            "open_scientific_choices": [],
+        }
+
+    def test_role_authority_policy_and_templates_exist(self) -> None:
+        for rel in (
+            "automation/agent_flow_v3/ROLE_AUTHORITY_POLICY.md",
+            "automation/agent_flow_v3/templates/role_authority_policy.md",
+            "automation/agent_flow_v3/templates/requirement_ledger.template.json",
+            "automation/agent_flow_v3/templates/task_profile.template.json",
+            "automation/agent_flow_v3/templates/routing_policy.template.json",
+        ):
+            self.assertTrue((ROOT / rel).is_file(), rel)
+
+    def test_requirement_ledger_template_and_care_ledger_are_valid(self) -> None:
+        template = json.loads(
+            (ROOT / "automation/agent_flow_v3/templates/requirement_ledger.template.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        care_ledger = json.loads(
+            (ROOT / "automation/agent_flow_v3/tasks/care-ase-faithful/REQUIREMENT_LEDGER.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(MODULE.validate_requirement_ledger(template, self.schema), [])
+        self.assertEqual(MODULE.validate_requirement_ledger(care_ledger, self.schema), [])
+
+    def test_generic_verifier_invents_uncited_numeric_threshold_is_rejected(self) -> None:
+        finding = {
+            "classification": "IMPLEMENTATION_BUG",
+            "blocking": True,
+            "observed_violation": "two runtime contexts differ by more than an invented epsilon",
+            "verification_method": "numeric comparison",
+            "numeric_threshold": 0.000001,
+        }
+        failures = MODULE.validate_verifier_finding(finding, self._generic_requirement_ledger(), self.schema)
+        self.assertIn("verifier_blocking_finding_missing:requirement_id", failures)
+        self.assertIn("verifier_blocking_numeric_threshold_missing_source", failures)
+
+    def test_generic_verifier_diagnostic_cannot_be_blocking_without_requirement_id(self) -> None:
+        finding = {
+            "classification": "DIAGNOSTIC_ANOMALY",
+            "blocking": True,
+            "observed_violation": "diagnostic drift",
+            "verification_method": "probe",
+        }
+        failures = MODULE.validate_verifier_finding(finding, self._generic_requirement_ledger(), self.schema)
+        self.assertIn("verifier_diagnostic_must_not_block", failures)
+        self.assertIn("verifier_blocking_finding_missing:requirement_id", failures)
+
+    def test_generic_derived_invariant_without_logical_derivation_is_rejected(self) -> None:
+        ledger = self._generic_requirement_ledger()
+        requirements = ledger["requirements"]
+        assert isinstance(requirements, list)
+        first = requirements[0]
+        assert isinstance(first, dict)
+        first["derived_invariants"] = [
+            {
+                "parent_requirement_ids": ["REQ_RUNTIME_001"],
+                "why_necessary": "missing derivation",
+                "whether_it_changes_scientific_semantics": False,
+            }
+        ]
+        self.assertIn(
+            "requirement[0]:derived[0]:missing:logical_derivation",
+            MODULE.validate_requirement_ledger(ledger, self.schema),
+        )
+
+    def test_generic_controller_cannot_map_verifier_fail_to_human_choice(self) -> None:
+        decision = {
+            "classification": "VERIFIER_CONTRACT_DRIFT",
+            "route": "user",
+            "target_role_or_state": "NEEDS_USER_SCIENTIFIC_CHOICE",
+            "planner_adjudication": {"classification": "VERIFIER_CONTRACT_DRIFT"},
+            "scientific_contract_fields_requiring_change": ["contract.method"],
+            "scientific_alternatives": ["A", "B"],
+            "requirement_ids": ["REQ_INFERENCE_001"],
+            "same_scope_repairs_exhausted": {
+                "executor_repair": True,
+                "verifier_repair": True,
+                "runtime_repair": True,
+                "transaction_rebind": True,
+            },
+            "caused_by_verifier_added_requirement": True,
+        }
+        failures = MODULE.validate_controller_routing_decision(
+            decision, self._generic_requirement_ledger(), self.schema
+        )
+        self.assertIn("routing:route", failures)
+        self.assertIn("human_gate_requires_scientific_choice_classification", failures)
+        self.assertIn("human_gate_requires_planner_scientific_choice", failures)
+        self.assertIn("human_gate_cannot_use_verifier_added_requirement", failures)
+
+    def test_generic_controller_cannot_map_runtime_failure_to_human_choice(self) -> None:
+        decision = {
+            "classification": "RUNTIME_ENVIRONMENT_FAILURE",
+            "route": "controller_runtime_repair",
+            "target_role_or_state": "NEEDS_USER_SCIENTIFIC_CHOICE",
+            "planner_adjudication": {"classification": "RUNTIME_ENVIRONMENT_FAILURE"},
+            "scientific_contract_fields_requiring_change": ["runtime.python"],
+            "scientific_alternatives": ["repair env", "change contract"],
+            "requirement_ids": ["REQ_RUNTIME_001"],
+            "same_scope_repairs_exhausted": {
+                "executor_repair": True,
+                "verifier_repair": True,
+                "runtime_repair": False,
+                "transaction_rebind": True,
+            },
+        }
+        failures = MODULE.validate_controller_routing_decision(
+            decision, self._generic_requirement_ledger(), self.schema
+        )
+        self.assertIn("human_gate_requires_scientific_choice_classification", failures)
+        self.assertIn("human_gate_same_scope_repairs_not_exhausted", failures)
+
+    def test_generic_executor_test_aware_epsilon_is_detected(self) -> None:
+        result = {
+            "status": "PASS",
+            "test_aware_behavior_detected": True,
+            "normal_public_path_exercised": True,
+            "test_awareness_indicators": ["adds epsilon only when verifier flag is set"],
+        }
+        failures = MODULE.validate_executor_result(result)
+        self.assertIn("executor_test_aware_pass_forbidden", failures)
+        self.assertIn("executor_test_awareness_indicators_forbid_pass", failures)
+
+    def test_generic_planner_adjudicates_executor_verifier_disagreement(self) -> None:
+        review = {
+            "schema": "AGENT_FLOW_V3_CONTRACT_INTERPRETATION_REVIEW",
+            "decision": "VERIFIER_CONTRACT_DRIFT",
+            "classification": "VERIFIER_CONTRACT_DRIFT",
+            "requirement_ids": ["REQ_INFERENCE_001"],
+            "planner_read_set": [
+                "frozen_contract",
+                "requirement_ledger",
+                "verifier_finding",
+                "executor_evidence",
+                "implementation",
+            ],
+        }
+        self.assertEqual(MODULE.validate_contract_interpretation_review(review, self.schema), [])
+
+    def test_generic_critic_freezing_contradictory_requirements_is_rejected(self) -> None:
+        freeze = {
+            "critic_decision": "PLAN_FROZEN",
+            "requirement_ledger_sha256": "a" * 64,
+            "contradictions": ["REQ_A conflicts with REQ_B"],
+            "numeric_threshold_audit": [],
+        }
+        self.assertIn(
+            "critic_freeze_has_contradictory_requirements",
+            MODULE.validate_critic_freeze(freeze, self._generic_requirement_ledger(), self.schema),
+        )
+
+    def test_generic_stale_ci_transaction_routes_to_provenance_repair(self) -> None:
+        transaction = {
+            "request_nonce": "nonce",
+            "frozen_contract_sha": "a" * 64,
+            "requirement_ledger_sha": "b" * 64,
+            "integration_sha": "c" * 40,
+            "implementation_fingerprint": "d" * 64,
+            "verifier_source_fingerprint": "e" * 64,
+            "verifier_runtime_fingerprint": "f" * 64,
+            "runtime_receipt_manifest_sha": "1" * 64,
+            "ci_exact_head_sha": "2" * 40,
+            "review_round": 1,
+            "classification_on_failure": "SCIENTIFIC_CHOICE_REQUIRED",
+            "route_on_failure": "user",
+        }
+        failures = MODULE.validate_transaction_binding(transaction)
+        self.assertIn("transaction_stale_ci_must_be_provenance_gap", failures)
+        self.assertIn("transaction_stale_ci_must_route_controller", failures)
+
+        transaction["classification_on_failure"] = "PROVENANCE_BINDING_GAP"
+        transaction["route_on_failure"] = "controller"
+        self.assertNotIn("transaction_stale_ci_must_be_provenance_gap", MODULE.validate_transaction_binding(transaction))
+
+    def test_generic_missing_rollout_routes_to_operational_recovery(self) -> None:
+        decision = {
+            "classification": "OPERATIONAL_FAILURE",
+            "route": "controller_same_scope_recovery",
+            "target_role_or_state": "controller",
+        }
+        self.assertEqual(
+            MODULE.validate_controller_routing_decision(decision, self._generic_requirement_ledger(), self.schema),
+            [],
+        )
+
+    def test_generic_same_scope_implementation_bug_routes_to_executor(self) -> None:
+        decision = {
+            "classification": "IMPLEMENTATION_BUG",
+            "route": "executor",
+            "target_role_or_state": "executor",
+        }
+        self.assertEqual(
+            MODULE.validate_controller_routing_decision(decision, self._generic_requirement_ledger(), self.schema),
+            [],
+        )
+
+    def test_generic_actual_scientific_alternatives_allow_human_gate(self) -> None:
+        decision = {
+            "classification": "SCIENTIFIC_CHOICE_REQUIRED",
+            "route": "user",
+            "target_role_or_state": "NEEDS_USER_SCIENTIFIC_CHOICE",
+            "planner_adjudication": {"classification": "SCIENTIFIC_CHOICE_REQUIRED"},
+            "scientific_contract_fields_requiring_change": ["contract.method_family"],
+            "scientific_alternatives": ["method A", "method B"],
+            "requirement_ids": ["REQ_SCIENCE_001"],
+            "same_scope_repairs_exhausted": {
+                "executor_repair": True,
+                "verifier_repair": True,
+                "runtime_repair": True,
+                "transaction_rebind": True,
+            },
+            "caused_by_verifier_added_requirement": False,
+        }
+        self.assertEqual(
+            MODULE.validate_controller_routing_decision(decision, self._generic_requirement_ledger(), self.schema),
+            [],
+        )
+
+    def test_generic_role_authority_write_boundary_violations_are_rejected(self) -> None:
+        cases = [
+            ("controller", "implementation_edit"),
+            ("verifier", "implementation_edit"),
+            ("executor", "verifier_edit"),
+            ("planner", "runtime_implementation"),
+            ("critic", "runtime_implementation"),
+        ]
+        for role, attempted_authority in cases:
+            with self.subTest(role=role):
+                self.assertIn(
+                    f"authority_violation:{role}:{attempted_authority}",
+                    MODULE.validate_role_authority_event(
+                        {"role": role, "attempted_authority": attempted_authority}
+                    ),
+                )
+
+    def test_generic_fail_closed_without_repair_route_is_rejected(self) -> None:
+        failures = MODULE.validate_fail_closed_routing(
+            {"status": "FAIL_CLOSED", "classification": "IMPLEMENTATION_BUG"},
+            self.schema,
+        )
+        self.assertIn("fail_closed_missing_repair_route", failures)
+
+    def test_generic_blocked_without_typed_classification_is_rejected(self) -> None:
+        failures = MODULE.validate_fail_closed_routing({"status": "BLOCKED", "reason": "unclear"}, self.schema)
+        self.assertIn("generic_blocked_missing_classification", failures)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,0 +1,18 @@
+{
+  "schema": "AGENT_FLOW_V3_ROUTING_POLICY",
+  "classification_routes": {
+    "IMPLEMENTATION_BUG": "executor",
+    "VERIFIER_BUG": "verifier",
+    "VERIFIER_CONTRACT_DRIFT": "verifier_plus_planner_adjudication",
+    "EVIDENCE_GAP": "owning_role",
+    "PROVENANCE_BINDING_GAP": "controller",
+    "OPERATIONAL_FAILURE": "controller_same_scope_recovery",
+    "RUNTIME_ENVIRONMENT_FAILURE": "controller_runtime_repair",
+    "CONTRACT_AMBIGUITY": "planner",
+    "CONTRACT_CONTRADICTION": "planner_then_critic",
+    "DIAGNOSTIC_ANOMALY": "planner_diagnostic_review",
+    "SCIENTIFIC_CHOICE_REQUIRED": "user"
+  },
+  "human_escalation_requires_planner_scientific_choice": true,
+  "generic_blocked_without_classification_allowed": false
+}

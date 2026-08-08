@@ -1,0 +1,26 @@
+{
+  "schema": "AGENT_FLOW_V3_REQUIREMENT_LEDGER",
+  "task_id": "replace_me",
+  "request_nonce": "replace_me",
+  "frozen_contract_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "requirements": [
+    {
+      "requirement_id": "REQ_PROCESS_001",
+      "source_path": "path/to/frozen_contract.md",
+      "source_clause_or_field": "section 1",
+      "requirement_text": "Describe the exact blocking requirement.",
+      "requirement_type": "PROCESS",
+      "blocking": true,
+      "owner_role": "controller",
+      "verification_allowed": true,
+      "numeric_threshold": null,
+      "threshold_source": null,
+      "scientific_rationale": "Why this requirement is part of the frozen task.",
+      "derived_invariants": [],
+      "change_requires_contract_revision": true
+    }
+  ],
+  "open_scientific_choices": [],
+  "critic_freeze_commit_sha": null,
+  "updated_utc": null
+}

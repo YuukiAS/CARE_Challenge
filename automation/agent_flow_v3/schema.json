@@ -82,5 +82,53 @@
     "PLANNER_REVISE_VERIFIER",
     "PLANNER_REVISE_BOTH",
     "PLANNER_PASS"
+  ],
+  "requirement_types": [
+    "SCIENTIFIC",
+    "IMPLEMENTATION",
+    "RUNTIME",
+    "INFERENCE",
+    "EVALUATION",
+    "PROVENANCE",
+    "PROCESS",
+    "DIAGNOSTIC"
+  ],
+  "finding_classifications": [
+    "IMPLEMENTATION_BUG",
+    "VERIFIER_BUG",
+    "VERIFIER_CONTRACT_DRIFT",
+    "EVIDENCE_GAP",
+    "PROVENANCE_BINDING_GAP",
+    "OPERATIONAL_FAILURE",
+    "RUNTIME_ENVIRONMENT_FAILURE",
+    "CONTRACT_AMBIGUITY",
+    "CONTRACT_CONTRADICTION",
+    "DIAGNOSTIC_ANOMALY",
+    "SCIENTIFIC_CHOICE_REQUIRED"
+  ],
+  "classification_routes": {
+    "IMPLEMENTATION_BUG": "executor",
+    "VERIFIER_BUG": "verifier",
+    "VERIFIER_CONTRACT_DRIFT": "verifier_plus_planner_adjudication",
+    "EVIDENCE_GAP": "owning_role",
+    "PROVENANCE_BINDING_GAP": "controller",
+    "OPERATIONAL_FAILURE": "controller_same_scope_recovery",
+    "RUNTIME_ENVIRONMENT_FAILURE": "controller_runtime_repair",
+    "CONTRACT_AMBIGUITY": "planner",
+    "CONTRACT_CONTRADICTION": "planner_then_critic",
+    "DIAGNOSTIC_ANOMALY": "planner_diagnostic_review",
+    "SCIENTIFIC_CHOICE_REQUIRED": "user"
+  },
+  "stop_categories": [
+    "RECOVERABLE_TASK_LOCAL_FAILURE",
+    "CONTRACT_REVIEW_REQUIRED",
+    "HUMAN_SCIENTIFIC_DECISION_REQUIRED"
+  ],
+  "contract_interpretation_decisions": [
+    "CONFIRM_CONTRACT_VIOLATION",
+    "VERIFIER_CONTRACT_DRIFT",
+    "DIAGNOSTIC_ONLY",
+    "CONTRACT_AMBIGUITY_REQUIRES_CRITIC",
+    "SCIENTIFIC_CHOICE_REQUIRED"
   ]
 }

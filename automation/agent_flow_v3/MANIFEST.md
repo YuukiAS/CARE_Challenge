@@ -18,9 +18,11 @@ This prevents the scheduled Planner, Critic or Codex runtime from starting befor
 
 ```text
 prompts/AGENT_FLOW_V3_PROTOCOL.md
+automation/agent_flow_v3/ROLE_AUTHORITY_POLICY.md
 automation/agent_flow_v3/README.md
 automation/agent_flow_v3/schema.json
 automation/agent_flow_v3/task_template.json
+automation/agent_flow_v3/templates/
 automation/agent_flow_v3/planner_scheduled_task_prompt.md
 automation/agent_flow_v3/critic_scheduled_task_prompt.md
 scripts/automation/validate_agent_flow_v3.py
@@ -37,6 +39,7 @@ prompts/tasks/20260805_care_ase_develop_faithful_reimplementation_role_plan.json
 prompts/tasks/20260805_care_ase_develop_faithful_reimplementation_controller.md
 automation/agent_flow_v3/tasks/care-ase-faithful/REQUEST.json
 automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json
+automation/agent_flow_v3/tasks/care-ase-faithful/REQUIREMENT_LEDGER.json
 automation/agent_flow_v3/tasks/care-ase-faithful/VISUAL_SOURCES.json
 ```
 

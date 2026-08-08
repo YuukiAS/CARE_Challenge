@@ -2,6 +2,10 @@
 
 This directory is the repository-facing state and validation layer for the explicitly authorized `develop`-branch experiment defined in `prompts/AGENT_FLOW_V3_PROTOCOL.md`.
 
+`ROLE_AUTHORITY_POLICY.md` is the project-agnostic authority source. Project
+adapters may provide contracts, runtime bindings and verifier probes, but they
+must not redefine Planner, Critic, Controller, Verifier or Executor authority.
+
 ## Practical flow
 
 ```text
@@ -32,8 +36,14 @@ Only Controller pushes `develop`. No role merges `develop` to `main` automatical
 
 - `schema.json`: state and request requirements.
 - `task_template.json`: reusable request template.
+- `ROLE_AUTHORITY_POLICY.md`: portable role authority, routing, human gate and
+  immutable transaction policy.
+- `templates/`: portable project adapter templates for authority, requirement
+  ledger, task profile and routing policy.
 - `tasks/<task_id>/REQUEST.json`: exact frozen task request.
 - `tasks/<task_id>/CURRENT.json`: current machine state, updated last in every transaction.
+- `tasks/<task_id>/REQUIREMENT_LEDGER.json`: Critic-frozen machine-readable
+  blocking requirement ledger.
 - `results/<task_id>/`: role receipts, fingerprints, CI receipts and Planner review artifacts.
 - `scripts/automation/validate_agent_flow_v3.py`: repository-safe deterministic validator.
 - `scripts/automation/agent_flow_v3_runtime.py`: server-local helper for visual URL/SHA audit,
@@ -62,6 +72,24 @@ updated_utc
 ```
 
 A receipt with missing or duplicate thread IDs, worktrees or `CODEX_HOME` paths is invalid.
+
+## Role authority and findings
+
+Role authority is distinct from write scope:
+
+```text
+Planner    = scientific/task intent owner and contract adjudicator
+Critic     = frozen-contract completeness and ambiguity auditor
+Controller = orchestration and transaction owner
+Verifier   = contract-conformance oracle builder
+Executor   = implementation owner
+```
+
+Blocking Verifier findings must cite requirement IDs from the frozen ledger.
+Controller routing uses typed classifications, not free text. Human escalation
+requires Planner-classified `SCIENTIFIC_CHOICE_REQUIRED`; runtime, CI, receipt,
+rollout, binding, verifier drift and implementation failures stay on same-scope
+repair routes.
 
 ## CI boundary
 

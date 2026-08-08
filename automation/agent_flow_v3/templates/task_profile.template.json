@@ -1,0 +1,14 @@
+{
+  "schema": "AGENT_FLOW_V3_TASK_PROFILE",
+  "task_id": "replace_me",
+  "project_bootstrap_files": [],
+  "scientific_contract_path": "path/to/frozen_contract.md",
+  "requirement_ledger_path": "automation/agent_flow_v3/tasks/<task_id>/REQUIREMENT_LEDGER.json",
+  "visual_sources_path": null,
+  "runtime_binding_example_path": "automation/agent_flow_v3/tasks/<task_id>/runtime_binding.example.json",
+  "critical_paths": [],
+  "project_specific_verifier_tests": [],
+  "training_authorized": false,
+  "outer_access_authorized": false,
+  "deployment_authorized": false
+}

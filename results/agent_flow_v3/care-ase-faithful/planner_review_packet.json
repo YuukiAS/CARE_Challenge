@@ -8,6 +8,8 @@
   "ready_state_reached_before_wait": "READY_FOR_PLANNER_REVIEW",
   "review_round": 1,
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "requirement_ledger_path": "automation/agent_flow_v3/tasks/care-ase-faithful/REQUIREMENT_LEDGER.json",
+  "requirement_ledger_sha256": "376dbc8b1c8f1af585e0ca3c2b451b788ade164221805871fca5dfefd98fbcb7",
   "integration_commit_sha": "d643c80ce15aa77a28ffb0bec6661afac5be3237",
   "verifier_fingerprint_sha256": "7bdf871a1bd13c7f3faf30350b0c73797dd5818a90622be892917ebe875803ad",
   "implementation_fingerprint_sha256": "dd5593f869823de7fe0b76f953c3ea1ade6d0c1426a7e26a39a4ae1aea6fa692",
