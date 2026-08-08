@@ -20,9 +20,16 @@
       "logical_derivation": "Verifier-owned deterministic aggregation/loss oracle with analytically constructed reference.",
       "name": "partial_hw_reference_loss_match",
       "threshold": 1e-06
+    },
+    {
+      "contract_field_or_exact_clause": "Sections 4 and 15: required evidence sources must have final reconstruction authority; implementation intervention flags are not final-authority evidence.",
+      "contract_source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+      "logical_derivation": "A test/intervention flag may only remove the same ordinary-path source contribution that the Verifier removes by module-output intervention; any extra flag-conditioned final-logit contribution must be absent.",
+      "name": "authority_disable_flag_matches_verifier_owned_removal",
+      "threshold": 1e-06
     }
   ],
-  "created_utc": "2026-08-08T04:28:17Z",
+  "created_utc": "2026-08-08T05:46:46Z",
   "diagnostic_numeric_observations": [
     {
       "blocking": false,
@@ -37,7 +44,7 @@
   "environment": {
     "cwd": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/verifier",
     "git_branch": "local/verifier/care-ase-faithful",
-    "git_head": "7833c8c9f1ffc85b4a9d50a4675986c464ac71c1",
+    "git_head": "4f648e34a086bd546b0220f84947c7279a24d370",
     "nnunetv2_available": true,
     "platform": "Linux-5.14.0-611.16.1.el9_7.x86_64-x86_64-with-glibc2.34",
     "python_executable": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
@@ -50,10 +57,12 @@
     },
     "torch_available": true
   },
-  "executable_verifier_receipt_sha256": "57f31b5fa9bcce2a7bce0acbc47fa4beac60570b70ea6f4c2075ff719d9e7955",
+  "executable_verifier_receipt_sha256": "e64dc46219732713a8d22c0bc0226d37ce3282f6069c40c061696ca8eb81823b",
   "executor_receipts_used_as_runtime_conclusion": false,
-  "failure_count": 0,
-  "failures": [],
+  "failure_count": 1,
+  "failures": [
+    "executable_probe.failed:required_module_final_authority_oracle"
+  ],
   "fixture_mode": false,
   "forbidden_shortcuts_rejected_by_design": [
     "torch.randn inputs with asserted real case IDs",
@@ -76,7 +85,7 @@
   "implementation_fingerprint_sha256": "25828c210776d499613a872754d39290cf9df416a747fb9f0f86c56f91711dc6",
   "integration_sha": "b72929c5c0cdb31770252132310b1ba472bdb5b2",
   "outer_accessed": false,
-  "passed": true,
+  "passed": false,
   "planner_review_commit": "7f81e484f89e93439280814835c44b21102f16b0",
   "probes": [
     {
@@ -400,26 +409,54 @@
       "status": "PASS"
     },
     {
+      "all_implementation_flags_match_verifier_owned_removal": false,
+      "all_required_groups_have_verifier_owned_delta": true,
+      "disable_flag_final_logit_contribution_sites": [
+        {
+          "disable_condition": "disable_scar_proposal or disable_scar_context or disable_all_evidence",
+          "line": 1290,
+          "target": "z_scar",
+          "text": "z_scar = z_scar + float(authority) * 0.01 * self._soft_authority_signal(*scar_sources, size=z_scar.shape[-3:])"
+        },
+        {
+          "disable_condition": "run_edema_graph and (disable_edema_injury or disable_edema_boundary or disable_edema_context or disable_all_evidence)",
+          "line": 1306,
+          "target": "z_edema",
+          "text": "z_edema = z_edema + float(authority) * 0.01 * self._soft_authority_signal(*edema_sources, size=z_edema.shape[-3:])"
+        }
+      ],
       "implementation_disable_flags_treated_as_authority": false,
-      "intervention_max_abs_by_required_source": {
+      "implementation_flag_equivalence_tolerance": 1e-06,
+      "implementation_flag_vs_verifier_owned_removal_max_abs": {
         "all_named_evidence_projection": 0.006192207336425781,
         "edema_boundary": 0.008139610290527344,
         "edema_context_and_dilation_1_2_4": 0.0072013139724731445,
         "edema_injury": 0.010000228881835938,
         "scar_context": 0.003616034984588623,
-        "scar_edema_extent_and_wall_bias": 1.9293804168701172,
+        "scar_edema_extent_and_wall_bias": 0.0,
         "scar_proposal_occupancy_center": 0.004195213317871094
       },
-      "intervention_mean_abs_by_required_source": {
-        "all_named_evidence_projection": 0.0006427533226087689,
-        "edema_boundary": 0.0004048326227348298,
-        "edema_context_and_dilation_1_2_4": 0.00038460479117929935,
-        "edema_injury": 0.0016447752714157104,
-        "scar_context": 9.248303831554949e-05,
-        "scar_edema_extent_and_wall_bias": 0.1997029036283493,
-        "scar_proposal_occupancy_center": 0.00015850720228627324
+      "intervention_max_abs_by_required_source": {
+        "all_named_evidence_projection": 9.794549942016602,
+        "edema_boundary": 0.14630889892578125,
+        "edema_context_and_dilation_1_2_4": 0.9815607070922852,
+        "edema_injury": 0.777562141418457,
+        "scar_context": 1.6677217483520508,
+        "scar_edema_extent_and_wall_bias": 1.9293804168701172,
+        "scar_proposal_occupancy_center": 1.1576104164123535
       },
+      "intervention_mean_abs_by_required_source": {
+        "all_named_evidence_projection": 0.8226857781410217,
+        "edema_boundary": 0.009844839572906494,
+        "edema_context_and_dilation_1_2_4": 0.057093702256679535,
+        "edema_injury": 0.03494282811880112,
+        "scar_context": 0.07806909829378128,
+        "scar_edema_extent_and_wall_bias": 0.5991086959838867,
+        "scar_proposal_occupancy_center": 0.08131677657365799
+      },
+      "missing_named_projection_gradient_sources": [],
       "missing_named_projection_sources": [],
+      "missing_required_group_sources": [],
       "name": "required_module_final_authority_oracle",
       "named_projection_counts": {
         "edema_full": 15,
@@ -427,12 +464,83 @@
         "scar_full": 11,
         "scar_half": 11
       },
+      "named_projection_final_logit_gradient_nonzero": true,
+      "named_projection_final_logit_gradient_sources_present": true,
+      "named_projection_gradient_abs_by_source": {
+        "edema_full:edema_boundary_to_full": 406107.125,
+        "edema_full:edema_c0_to_full": 406107.125,
+        "edema_full:edema_context_to_full": 406107.125,
+        "edema_full:edema_dilation1_to_full": 406107.125,
+        "edema_full:edema_dilation2_to_full": 406107.125,
+        "edema_full:edema_dilation4_to_full": 406107.125,
+        "edema_full:edema_injury_to_full": 406107.125,
+        "edema_full:edema_lge_to_full": 406107.125,
+        "edema_full:edema_p_lv_to_full": 406107.125,
+        "edema_full:edema_p_rv_to_full": 406107.125,
+        "edema_full:edema_p_wall_to_full": 406107.125,
+        "edema_full:edema_rho_to_full": 406107.125,
+        "edema_full:edema_signed_endo_to_full": 406107.125,
+        "edema_full:edema_signed_epi_to_full": 406107.125,
+        "edema_full:edema_t2_to_full": 406107.125,
+        "edema_half:edema_c0_to_half": 673862.375,
+        "edema_half:edema_context_to_half": 673862.375,
+        "edema_half:edema_lge_to_half": 673862.375,
+        "edema_half:edema_p_lv_to_half": 673862.375,
+        "edema_half:edema_p_rv_to_half": 673862.375,
+        "edema_half:edema_p_wall_to_half": 673862.375,
+        "edema_half:edema_rho_to_half": 673862.375,
+        "edema_half:edema_signed_endo_to_half": 673862.375,
+        "edema_half:edema_signed_epi_to_half": 673862.375,
+        "edema_half:edema_t2_to_half": 673862.375,
+        "scar_full:scar_c0_to_full": 523888.03125,
+        "scar_full:scar_context_to_full": 523888.03125,
+        "scar_full:scar_half_center_to_full": 523888.03125,
+        "scar_full:scar_half_occupancy_to_full": 523888.03125,
+        "scar_full:scar_lge_to_full": 523888.03125,
+        "scar_full:scar_p_lv_to_full": 523888.03125,
+        "scar_full:scar_p_rv_to_full": 523888.03125,
+        "scar_full:scar_p_wall_to_full": 523888.03125,
+        "scar_full:scar_rho_to_full": 523888.03125,
+        "scar_full:scar_signed_endo_to_full": 523888.03125,
+        "scar_full:scar_signed_epi_to_full": 523888.03125,
+        "scar_half:scar_c0_to_half": 767320.375,
+        "scar_half:scar_context_to_half": 767320.375,
+        "scar_half:scar_lge_to_half": 767320.375,
+        "scar_half:scar_p_lv_to_half": 767320.375,
+        "scar_half:scar_p_rv_to_half": 767320.375,
+        "scar_half:scar_p_wall_to_half": 767320.375,
+        "scar_half:scar_quarter_center_to_half": 767320.375,
+        "scar_half:scar_quarter_occupancy_to_half": 767320.375,
+        "scar_half:scar_rho_to_half": 767320.375,
+        "scar_half:scar_signed_endo_to_half": 767320.375,
+        "scar_half:scar_signed_epi_to_half": 767320.375
+      },
       "named_projection_source_count": 94,
+      "no_disable_flag_final_logit_contribution": false,
       "rejects_receipt_only_authority": true,
       "required_named_projection_sources_present": true,
-      "status": "PASS",
+      "status": "FAIL",
       "synthetic_epsilon_like_runtime_deltas": {},
-      "synthetic_intervention_delta_static_matches": []
+      "synthetic_intervention_delta_static_matches": [],
+      "verifier_owned_group_source_counts": {
+        "all_named_evidence_projection": 47,
+        "edema_boundary": 1,
+        "edema_context_and_dilation_1_2_4": 5,
+        "edema_injury": 1,
+        "scar_context": 2,
+        "scar_edema_extent_and_wall_bias": 1,
+        "scar_proposal_occupancy_center": 4
+      },
+      "verifier_owned_removal_max_abs_by_required_source": {
+        "all_named_evidence_projection": 9.794549942016602,
+        "edema_boundary": 0.14630889892578125,
+        "edema_context_and_dilation_1_2_4": 0.9815607070922852,
+        "edema_injury": 0.777562141418457,
+        "scar_context": 1.6677217483520508,
+        "scar_edema_extent_and_wall_bias": 1.9293804168701172,
+        "scar_proposal_occupancy_center": 1.1576104164123535
+      },
+      "zero_named_projection_gradient_sources": []
     },
     {
       "checkpoint_probe_kind": "verifier_schema_v4_save_load_no_training_credit",
@@ -886,7 +994,7 @@
     "missing_files": [],
     "source_manifest_sha256": "3a9c0b4b14c410a970bdf9686060b89347b5b8679bbe40fcc1d01c55f2c67f1a"
   },
-  "status": "PASS",
+  "status": "FAIL_CLOSED",
   "task_id": "care-ase-faithful",
   "transaction_gate": {
     "critical_source_or_receipt_changed_after_reviewed_integration": [
@@ -1060,7 +1168,7 @@
     "implementation_fingerprint_sha256": "25828c210776d499613a872754d39290cf9df416a747fb9f0f86c56f91711dc6",
     "integration_sha": "b72929c5c0cdb31770252132310b1ba472bdb5b2",
     "integration_sha_is_ancestor_of_observed_git_head": true,
-    "observed_git_head": "7833c8c9f1ffc85b4a9d50a4675986c464ac71c1",
+    "observed_git_head": "4f648e34a086bd546b0220f84947c7279a24d370",
     "planner_review_commit": "7f81e484f89e93439280814835c44b21102f16b0",
     "review_round": 1,
     "reviewed_verifier_fingerprint_sha256_at_repair_start": "a1c660830ef8decea70c4ff06d7c061736bda1b179ef9a99b8530911ef0731fe",
@@ -1070,23 +1178,23 @@
     "verifier_source_artifacts": {
       "file_hashes": {
         "tests/care_ase_faithful/test_verifier_package.py": "2c2204d09b723efdd5e6da5c35c3ac3239c927936b50838504dd50285fcb6776",
-        "validators/care_ase_faithful/build_verification_artifacts.py": "ceffdfdf1d218bf1bc8278bc0f2c8099708f1558b4e7a893914e1dad5796aa04",
-        "validators/care_ase_faithful/run_executable_verifier.py": "6f83a68f8baa6c687dc8ed874dcba7808d83ddcf6158b7f969bcd9fa2bf0b78b",
-        "validators/care_ase_faithful/validate_contract_evidence.py": "161e97cc43b65f1caa9b285d9835f82d54b245853438f3e171f274ebd7974aee"
+        "validators/care_ase_faithful/build_verification_artifacts.py": "690a45d7c35217e551a9dc771bba23ac216f2930770c029410cfc8b052193217",
+        "validators/care_ase_faithful/run_executable_verifier.py": "c3140024cd3df94c13576c66efbae6e6619b2bd689485b07e0f5bb94015d6e7b",
+        "validators/care_ase_faithful/validate_contract_evidence.py": "b3941c12b19b11d1174dadc5147cd7f7111b4295159858eaa6d3d3cd63975fd4"
       },
-      "verifier_source_fingerprint_sha256": "fc9b4c3d2b7c0706f5f03c40ba80bd067b914033d300be5cdc681e40597d0f32"
+      "verifier_source_fingerprint_sha256": "5954d4f9a0b558a63dda1ae658f6efbcce12374bd08494eed83466dad7ab2b25"
     },
-    "verifier_source_fingerprint_sha256": "fc9b4c3d2b7c0706f5f03c40ba80bd067b914033d300be5cdc681e40597d0f32"
+    "verifier_source_fingerprint_sha256": "5954d4f9a0b558a63dda1ae658f6efbcce12374bd08494eed83466dad7ab2b25"
   },
   "verifier_source_artifacts": {
     "file_hashes": {
       "tests/care_ase_faithful/test_verifier_package.py": "2c2204d09b723efdd5e6da5c35c3ac3239c927936b50838504dd50285fcb6776",
-      "validators/care_ase_faithful/build_verification_artifacts.py": "ceffdfdf1d218bf1bc8278bc0f2c8099708f1558b4e7a893914e1dad5796aa04",
-      "validators/care_ase_faithful/run_executable_verifier.py": "6f83a68f8baa6c687dc8ed874dcba7808d83ddcf6158b7f969bcd9fa2bf0b78b",
-      "validators/care_ase_faithful/validate_contract_evidence.py": "161e97cc43b65f1caa9b285d9835f82d54b245853438f3e171f274ebd7974aee"
+      "validators/care_ase_faithful/build_verification_artifacts.py": "690a45d7c35217e551a9dc771bba23ac216f2930770c029410cfc8b052193217",
+      "validators/care_ase_faithful/run_executable_verifier.py": "c3140024cd3df94c13576c66efbae6e6619b2bd689485b07e0f5bb94015d6e7b",
+      "validators/care_ase_faithful/validate_contract_evidence.py": "b3941c12b19b11d1174dadc5147cd7f7111b4295159858eaa6d3d3cd63975fd4"
     },
-    "verifier_source_fingerprint_sha256": "fc9b4c3d2b7c0706f5f03c40ba80bd067b914033d300be5cdc681e40597d0f32"
+    "verifier_source_fingerprint_sha256": "5954d4f9a0b558a63dda1ae658f6efbcce12374bd08494eed83466dad7ab2b25"
   },
-  "verifier_source_fingerprint_sha256": "fc9b4c3d2b7c0706f5f03c40ba80bd067b914033d300be5cdc681e40597d0f32",
+  "verifier_source_fingerprint_sha256": "5954d4f9a0b558a63dda1ae658f6efbcce12374bd08494eed83466dad7ab2b25",
   "zero_credit": true
 }

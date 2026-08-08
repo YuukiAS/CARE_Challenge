@@ -205,6 +205,7 @@ REQUIRED_EXECUTABLE_MUTATION_IDS = {
     "injury_random_init",
     "projection_context_no_final_authority",
     "synthetic_intervention_delta",
+    "semantic_disable_only_quadratic_signal",
     "partial_hw_straight_through_zero_loss",
     "full_support_pseudo_tiling",
     "transaction_old_tuple_reused",
@@ -773,9 +774,16 @@ def _check_verifier_owned_execution(failures: list[str], evidence: dict[str, Any
         _require(failures, tile_instrumentation.get("tile_outputs_limited_to_base_logits_wall_extent_evidence") is True, "verifier_owned.executable.instrumented_tile_output_scope")
         authority_probe = by_name.get("required_module_final_authority_oracle", {})
         _require(failures, authority_probe.get("implementation_disable_flags_treated_as_authority") is False, "verifier_owned.authority.no_disable_flag_authority")
-        _require(failures, not authority_probe.get("synthetic_intervention_delta_static_matches"), "verifier_owned.authority.no_static_synthetic_delta")
-        _require(failures, not authority_probe.get("synthetic_epsilon_like_runtime_deltas"), "verifier_owned.authority.no_epsilon_delta")
+        _require(failures, authority_probe.get("all_required_groups_have_verifier_owned_delta") is True, "verifier_owned.authority.required_group_delta")
+        _require(failures, authority_probe.get("all_implementation_flags_match_verifier_owned_removal") is True, "verifier_owned.authority.flag_matches_verifier_removal")
+        _require(failures, authority_probe.get("no_disable_flag_final_logit_contribution") is True, "verifier_owned.authority.no_disable_flag_final_logit_contribution")
+        _require(failures, not authority_probe.get("disable_flag_final_logit_contribution_sites"), "verifier_owned.authority.no_disable_flag_contribution_sites")
         _require(failures, authority_probe.get("required_named_projection_sources_present") is True, "verifier_owned.authority.named_sources_present")
+        _require(failures, not authority_probe.get("missing_required_group_sources"), "verifier_owned.authority.no_missing_group_sources")
+        _require(failures, authority_probe.get("named_projection_final_logit_gradient_sources_present") is True, "verifier_owned.authority.named_projection_gradient_sources_present")
+        _require(failures, authority_probe.get("named_projection_final_logit_gradient_nonzero") is True, "verifier_owned.authority.named_projection_gradient_nonzero")
+        _require(failures, not authority_probe.get("missing_named_projection_gradient_sources"), "verifier_owned.authority.no_missing_named_projection_gradients")
+        _require(failures, not authority_probe.get("zero_named_projection_gradient_sources"), "verifier_owned.authority.no_zero_named_projection_gradients")
         _require(failures, authority_probe.get("rejects_receipt_only_authority") is True, "verifier_owned.authority.rejects_receipt_only")
         step0_probe = by_name.get("step0_parity_report_regression", {})
         _require(failures, step0_probe.get("imported_step0_parity_report") is True, "verifier_owned.step0.imported")

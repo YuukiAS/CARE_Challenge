@@ -37,6 +37,7 @@ MUTATION_IDS = [
     "injury_random_init",
     "projection_context_no_final_authority",
     "synthetic_intervention_delta",
+    "semantic_disable_only_quadratic_signal",
     "partial_hw_straight_through_zero_loss",
     "full_support_pseudo_tiling",
     "transaction_old_tuple_reused",
@@ -89,6 +90,13 @@ BLOCKING_NUMERIC_THRESHOLDS = [
         "contract_source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
         "contract_field_or_exact_clause": "Sections 8 and 15: partial-H/W slices contribute zero bias/loss/gradient; fully valid neighboring slices remain supervised.",
         "logical_derivation": "Verifier-owned deterministic aggregation/loss oracle with analytically constructed reference.",
+    },
+    {
+        "name": "authority_disable_flag_matches_verifier_owned_removal",
+        "threshold": 1e-6,
+        "contract_source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+        "contract_field_or_exact_clause": "Sections 4 and 15: required evidence sources must have final reconstruction authority; implementation intervention flags are not final-authority evidence.",
+        "logical_derivation": "A test/intervention flag may only remove the same ordinary-path source contribution that the Verifier removes by module-output intervention; any extra flag-conditioned final-logit contribution must be absent.",
     },
 ]
 
@@ -418,10 +426,48 @@ def fixture_probe_results() -> list[dict[str, Any]]:
                 "scar_edema_extent_and_wall_bias": 0.05,
                 "all_named_evidence_projection": 0.05,
             },
+            verifier_owned_removal_max_abs_by_required_source={
+                "scar_proposal_occupancy_center": 0.05,
+                "scar_context": 0.05,
+                "edema_injury": 0.05,
+                "edema_boundary": 0.05,
+                "edema_context_and_dilation_1_2_4": 0.05,
+                "scar_edema_extent_and_wall_bias": 0.05,
+                "all_named_evidence_projection": 0.05,
+            },
+            verifier_owned_group_source_counts={
+                "scar_proposal_occupancy_center": 4,
+                "scar_context": 2,
+                "edema_injury": 1,
+                "edema_boundary": 1,
+                "edema_context_and_dilation_1_2_4": 5,
+                "scar_edema_extent_and_wall_bias": 1,
+                "all_named_evidence_projection": 47,
+            },
+            all_required_groups_have_verifier_owned_delta=True,
+            implementation_flag_vs_verifier_owned_removal_max_abs={
+                "scar_proposal_occupancy_center": 0.0,
+                "scar_context": 0.0,
+                "edema_injury": 0.0,
+                "edema_boundary": 0.0,
+                "edema_context_and_dilation_1_2_4": 0.0,
+                "scar_edema_extent_and_wall_bias": 0.0,
+                "all_named_evidence_projection": 0.0,
+            },
+            implementation_flag_equivalence_tolerance=1e-6,
+            all_implementation_flags_match_verifier_owned_removal=True,
             implementation_disable_flags_treated_as_authority=False,
+            disable_flag_final_logit_contribution_sites=[],
+            no_disable_flag_final_logit_contribution=True,
             synthetic_intervention_delta_static_matches=[],
             synthetic_epsilon_like_runtime_deltas={},
             required_named_projection_sources_present=True,
+            missing_required_group_sources=[],
+            named_projection_gradient_abs_by_source={"scar_half:scar_context_to_half": 1.0},
+            named_projection_final_logit_gradient_sources_present=True,
+            missing_named_projection_gradient_sources=[],
+            named_projection_final_logit_gradient_nonzero=True,
+            zero_named_projection_gradient_sources=[],
             rejects_receipt_only_authority=True,
         ),
         _pass_probe(
@@ -834,39 +880,227 @@ def _partial_hw_reference_probe(model: Any, *, loss_fn: Any | None = None) -> di
 
 
 def _final_authority_probe(model: Any, batch: dict[str, Any], core_path: Path) -> dict[str, Any]:
-    import re
+    import ast
+    import types
     import torch
+    import torch.nn.functional as F
 
-    baseline = model(batch["image"], batch["availability"], global_step=14000)["final_logits"].detach()
-    interventions = {
-        "scar_proposal_occupancy_center": {"disable_scar_proposal": True},
-        "scar_context": {"disable_scar_context": True},
-        "edema_injury": {"disable_edema_injury": True},
-        "edema_boundary": {"disable_edema_boundary": True},
-        "edema_context_and_dilation_1_2_4": {"disable_edema_context": True},
-        "scar_edema_extent_and_wall_bias": {"disable_extent_wall": True},
-        "all_named_evidence_projection": {"disable_all_evidence": True},
+    model.eval()
+    image = batch["image"]
+    availability = batch["availability"]
+
+    projection_sets = {
+        "scar_half": model.scar_branch.half_projections,
+        "scar_full": model.scar_branch.full_projections,
+        "edema_half": model.edema_branch.half_projections,
+        "edema_full": model.edema_branch.full_projections,
     }
+    projection_locations: dict[str, tuple[str, Any, Any]] = {}
+    for group_name, projection_set in projection_sets.items():
+        for source_name, projection in projection_set.projections.items():
+            projection_locations[str(source_name)] = (group_name, projection_set, projection)
+
+    def _restore_projection_parameters(backups: list[tuple[Any, Any, Any]]) -> None:
+        with torch.no_grad():
+            for projection, weight, bias in backups:
+                projection.weight.copy_(weight)
+                if projection.bias is not None and bias is not None:
+                    projection.bias.copy_(bias)
+
+    def _activate_projection_sources(source_names: list[str]) -> list[tuple[Any, Any, Any]]:
+        backups: list[tuple[Any, Any, Any]] = []
+        with torch.no_grad():
+            for source_name in source_names:
+                _group_name, _projection_set, projection = projection_locations[source_name]
+                backups.append(
+                    (
+                        projection,
+                        projection.weight.detach().clone(),
+                        projection.bias.detach().clone() if projection.bias is not None else None,
+                    )
+                )
+                projection.weight.zero_()
+                for out_index in range(int(projection.weight.shape[0])):
+                    projection.weight[out_index].fill_(0.015 * (1.0 + 0.01 * (out_index % 7)))
+                if projection.bias is not None:
+                    projection.bias.zero_()
+        return backups
+
+    def _zero_projection_for_sources(source_names: list[str]) -> list[tuple[Any, Any]]:
+        patched: list[tuple[Any, Any]] = []
+        for source_name in source_names:
+            _group_name, _projection_set, projection = projection_locations[source_name]
+            original_forward = projection.forward
+
+            def zero_forward(self: Any, tensor: Any, _source_name: str = source_name) -> Any:
+                return tensor.detach().new_zeros((tensor.shape[0], self.out_channels, *tensor.shape[-3:]))
+
+            projection.forward = types.MethodType(zero_forward, projection)  # type: ignore[method-assign]
+            patched.append((projection, original_forward))
+        return patched
+
+    def _restore_projection_forwards(patched: list[tuple[Any, Any]]) -> None:
+        for projection, original_forward in patched:
+            projection.forward = original_forward  # type: ignore[method-assign]
+
+    def _pathology_slice(outputs: dict[str, Any], channels: list[int]) -> Any:
+        final_logits = outputs["final_logits"]
+        return final_logits[:, channels, ...]
+
+    required_groups = {
+        "scar_proposal_occupancy_center": {
+            "sources": [
+                "scar_quarter_occupancy_to_half",
+                "scar_quarter_center_to_half",
+                "scar_half_occupancy_to_full",
+                "scar_half_center_to_full",
+            ],
+            "disable_kwargs": {"disable_scar_proposal": True, "disable_scar_center": True},
+            "channels": [5],
+        },
+        "scar_context": {
+            "sources": ["scar_context_to_half", "scar_context_to_full"],
+            "disable_kwargs": {"disable_scar_context": True},
+            "channels": [5],
+        },
+        "edema_injury": {
+            "sources": ["edema_injury_to_full"],
+            "disable_kwargs": {"disable_edema_injury": True},
+            "channels": [4],
+        },
+        "edema_boundary": {
+            "sources": ["edema_boundary_to_full"],
+            "disable_kwargs": {"disable_edema_boundary": True},
+            "channels": [4],
+        },
+        "edema_context_and_dilation_1_2_4": {
+            "sources": [
+                "edema_context_to_half",
+                "edema_context_to_full",
+                "edema_dilation1_to_full",
+                "edema_dilation2_to_full",
+                "edema_dilation4_to_full",
+            ],
+            "disable_kwargs": {"disable_edema_context": True},
+            "channels": [4],
+        },
+        "all_named_evidence_projection": {
+            "sources": sorted(projection_locations),
+            "disable_kwargs": {"disable_all_evidence": True},
+            "channels": [4, 5],
+        },
+    }
+    missing_required_group_sources = sorted(
+        source_name
+        for payload in required_groups.values()
+        for source_name in payload["sources"]
+        if source_name not in projection_locations
+    )
+
     delta_by_source: dict[str, float] = {}
     mean_by_source: dict[str, float] = {}
-    for name, kwargs in interventions.items():
-        mutated = model(batch["image"], batch["availability"], global_step=14000, **kwargs)["final_logits"].detach()
-        diff = (baseline - mutated).abs()
-        delta_by_source[name] = float(diff.max().detach().cpu())
-        mean_by_source[name] = float(diff.mean().detach().cpu())
+    verifier_removed_delta_by_source: dict[str, float] = {}
+    flag_vs_verifier_removed_max_abs: dict[str, float] = {}
+    group_source_counts: dict[str, int] = {}
+    if not missing_required_group_sources:
+        for group_name, payload in required_groups.items():
+            source_names = list(payload["sources"])
+            channels = list(payload["channels"])
+            backups = _activate_projection_sources(source_names)
+            patched: list[tuple[Any, Any]] = []
+            try:
+                with torch.no_grad():
+                    baseline = _pathology_slice(model(image, availability, global_step=14000), channels).detach()
+                patched = _zero_projection_for_sources(source_names)
+                with torch.no_grad():
+                    verifier_removed = _pathology_slice(model(image, availability, global_step=14000), channels).detach()
+                _restore_projection_forwards(patched)
+                patched = []
+                with torch.no_grad():
+                    flag_removed = _pathology_slice(
+                        model(image, availability, global_step=14000, **payload["disable_kwargs"]),
+                        channels,
+                    ).detach()
+            finally:
+                if patched:
+                    _restore_projection_forwards(patched)
+                _restore_projection_parameters(backups)
+            ordinary_diff = (baseline - verifier_removed).abs()
+            flag_diff = (flag_removed - verifier_removed).abs()
+            verifier_removed_delta_by_source[group_name] = float(ordinary_diff.max().detach().cpu())
+            delta_by_source[group_name] = verifier_removed_delta_by_source[group_name]
+            mean_by_source[group_name] = float(ordinary_diff.mean().detach().cpu())
+            flag_vs_verifier_removed_max_abs[group_name] = float(flag_diff.max().detach().cpu())
+            group_source_counts[group_name] = len(source_names)
+
+    with torch.no_grad():
+        extent_baseline = _pathology_slice(model(image, availability, global_step=14000), [4, 5]).detach()
+    original_extent_bias = model._extent_bias
+
+    def zero_extent_bias(*args: Any, **kwargs: Any) -> Any:
+        p_wall = args[1] if len(args) > 1 else kwargs["p_wall"]
+        return p_wall.detach().new_zeros((p_wall.shape[0], 1, *p_wall.shape[-3:]))
+
+    model._extent_bias = zero_extent_bias  # type: ignore[method-assign]
+    try:
+        with torch.no_grad():
+            extent_removed = _pathology_slice(model(image, availability, global_step=14000), [4, 5]).detach()
+    finally:
+        model._extent_bias = original_extent_bias  # type: ignore[method-assign]
+    with torch.no_grad():
+        extent_flag_removed = _pathology_slice(model(image, availability, global_step=14000, disable_extent_wall=True), [4, 5]).detach()
+    extent_ordinary_diff = (extent_baseline - extent_removed).abs()
+    extent_flag_diff = (extent_flag_removed - extent_removed).abs()
+    delta_by_source["scar_edema_extent_and_wall_bias"] = float(extent_ordinary_diff.max().detach().cpu())
+    mean_by_source["scar_edema_extent_and_wall_bias"] = float(extent_ordinary_diff.mean().detach().cpu())
+    verifier_removed_delta_by_source["scar_edema_extent_and_wall_bias"] = delta_by_source["scar_edema_extent_and_wall_bias"]
+    flag_vs_verifier_removed_max_abs["scar_edema_extent_and_wall_bias"] = float(extent_flag_diff.max().detach().cpu())
+    group_source_counts["scar_edema_extent_and_wall_bias"] = 1
 
     source = core_path.read_text(encoding="utf-8") if core_path.is_file() else ""
-    synthetic_static = [
-        line.strip()
-        for line in source.splitlines()
-        if ("disable_" in line or "intervention_delta" in line)
-        and re.search(r"(1\.0e-4|1e-4|0\.0001|epsilon|noise|randn|random)", line)
-    ]
-    epsilon_like = {
-        name: value
-        for name, value in delta_by_source.items()
-        if 9.0e-5 <= abs(float(value)) <= 1.1e-4
-    }
+    source_lines = source.splitlines()
+
+    def _disable_flag_final_logit_contribution_sites(src: str) -> list[dict[str, Any]]:
+        if not src:
+            return []
+        target_names = {"z_scar", "z_edema", "final_logits"}
+        sites: list[dict[str, Any]] = []
+        try:
+            tree = ast.parse(src)
+        except SyntaxError as exc:
+            return [{"line": int(exc.lineno or 0), "text": "syntax_error_while_scanning_disable_flag_final_logit_contributions"}]
+
+        def target_name(node: Any) -> str | None:
+            if isinstance(node, ast.Name):
+                return node.id
+            if isinstance(node, ast.Subscript) and isinstance(node.value, ast.Name):
+                return node.value.id
+            return None
+
+        def has_additive_self_update(node: Any, name: str) -> bool:
+            if isinstance(node, ast.AugAssign) and target_name(node.target) == name and isinstance(node.op, ast.Add):
+                return True
+            if isinstance(node, ast.Assign) and any(target_name(target) == name for target in node.targets):
+                if isinstance(node.value, ast.BinOp) and isinstance(node.value.op, ast.Add):
+                    return any(isinstance(child, ast.Name) and child.id == name for child in ast.walk(node.value))
+            return False
+
+        class Visitor(ast.NodeVisitor):
+            def visit_If(self, node: ast.If) -> None:
+                test_source = ast.unparse(node.test) if hasattr(ast, "unparse") else ""
+                if "disable_" in test_source:
+                    for child in ast.walk(ast.Module(body=node.body, type_ignores=[])):
+                        for name in target_names:
+                            if has_additive_self_update(child, name):
+                                text = source_lines[child.lineno - 1].strip() if 0 < child.lineno <= len(source_lines) else ""
+                                sites.append({"line": int(child.lineno), "target": name, "disable_condition": test_source, "text": text})
+                self.generic_visit(node)
+
+        Visitor().visit(tree)
+        return sites
+
+    disable_flag_final_logit_contribution_sites = _disable_flag_final_logit_contribution_sites(source)
+
     registry = model.named_evidence_projection_registry()
     named_sources: list[str] = []
     if isinstance(registry, dict):
@@ -898,11 +1132,76 @@ def _final_authority_probe(model: Any, batch: dict[str, Any], core_path: Path) -
         )
         if name not in named_sources
     ]
+    named_projection_gradient_abs_by_source: dict[str, float] = {}
+    captured_projection_outputs: dict[str, Any] = {}
+    original_projection_set_forwards: list[tuple[Any, Any]] = []
+
+    def make_capturing_forward(group_name: str, projection_set: Any) -> Any:
+        def capturing_forward(self: Any, inputs: dict[str, Any], spatial_shape: tuple[int, int, int], *, disabled: set[str] | None = None) -> Any:
+            disabled = disabled or set()
+            outputs = []
+            missing = sorted(name for name in self.specs if name not in inputs)
+            if missing:
+                raise RuntimeError(f"CARE-ASE named evidence missing inputs: {missing}")
+            for source_name, expected_channels in self.specs.items():
+                tensor = inputs[source_name]
+                if tensor.shape[1] != expected_channels:
+                    raise RuntimeError(f"CARE-ASE named evidence {source_name} channel mismatch: {tensor.shape[1]} != {expected_channels}")
+                if source_name in disabled:
+                    continue
+                resized = F.interpolate(tensor, size=spatial_shape, mode="trilinear", align_corners=False)
+                projected = self.projections[source_name](resized)
+                if projected.requires_grad:
+                    projected.retain_grad()
+                    captured_projection_outputs[f"{group_name}:{source_name}"] = projected
+                outputs.append(projected)
+            if outputs:
+                return torch.stack(outputs, dim=0).sum(dim=0)
+            first = inputs[next(iter(self.specs))]
+            out_channels = next(iter(self.projections.values())).out_channels
+            return first.detach().new_zeros((first.shape[0], out_channels, *spatial_shape))
+
+        return types.MethodType(capturing_forward, projection_set)
+
+    for group_name, projection_set in projection_sets.items():
+        original_projection_set_forwards.append((projection_set, projection_set.forward))
+        projection_set.forward = make_capturing_forward(group_name, projection_set)  # type: ignore[method-assign]
+    try:
+        model.zero_grad(set_to_none=True)
+        gradient_outputs = model(image, availability, global_step=14000)
+        gradient_objective = gradient_outputs["final_logits"][:, 4:6].float().sum()
+        gradient_objective.backward()
+    finally:
+        for projection_set, original_forward in original_projection_set_forwards:
+            projection_set.forward = original_forward  # type: ignore[method-assign]
+    for name, tensor in captured_projection_outputs.items():
+        grad = tensor.grad
+        named_projection_gradient_abs_by_source[name] = float(grad.detach().abs().sum().cpu()) if grad is not None else 0.0
+    expected_gradient_sources = sorted(
+        f"{group_name}:{source_name}"
+        for group_name, projection_set in projection_sets.items()
+        for source_name in projection_set.specs
+    )
+    missing_gradient_sources = [name for name in expected_gradient_sources if name not in named_projection_gradient_abs_by_source]
+    zero_gradient_sources = [
+        name
+        for name in expected_gradient_sources
+        if float(named_projection_gradient_abs_by_source.get(name, 0.0)) <= 0.0
+    ]
+
+    flag_equivalence_tolerance = 1e-6
+    all_required_groups_have_verifier_owned_delta = bool(delta_by_source) and all(value > 0.0 for value in delta_by_source.values())
+    all_flag_equivalence_match = bool(flag_vs_verifier_removed_max_abs) and all(
+        value <= flag_equivalence_tolerance for value in flag_vs_verifier_removed_max_abs.values()
+    )
     passed = (
-        all(value > 0.0 for value in delta_by_source.values())
-        and not synthetic_static
-        and not epsilon_like
+        all_required_groups_have_verifier_owned_delta
+        and all_flag_equivalence_match
+        and not disable_flag_final_logit_contribution_sites
         and not missing_named_sources
+        and not missing_required_group_sources
+        and not missing_gradient_sources
+        and not zero_gradient_sources
         and bool(named_projection_counts)
     )
     return _pass_probe(
@@ -910,11 +1209,25 @@ def _final_authority_probe(model: Any, batch: dict[str, Any], core_path: Path) -
         status="PASS" if passed else "FAIL",
         intervention_max_abs_by_required_source=delta_by_source,
         intervention_mean_abs_by_required_source=mean_by_source,
+        verifier_owned_removal_max_abs_by_required_source=verifier_removed_delta_by_source,
+        verifier_owned_group_source_counts=group_source_counts,
+        all_required_groups_have_verifier_owned_delta=all_required_groups_have_verifier_owned_delta,
+        implementation_flag_vs_verifier_owned_removal_max_abs=flag_vs_verifier_removed_max_abs,
+        implementation_flag_equivalence_tolerance=flag_equivalence_tolerance,
+        all_implementation_flags_match_verifier_owned_removal=all_flag_equivalence_match,
         implementation_disable_flags_treated_as_authority=False,
-        synthetic_intervention_delta_static_matches=synthetic_static[:20],
-        synthetic_epsilon_like_runtime_deltas=epsilon_like,
+        disable_flag_final_logit_contribution_sites=disable_flag_final_logit_contribution_sites[:20],
+        no_disable_flag_final_logit_contribution=not disable_flag_final_logit_contribution_sites,
+        synthetic_intervention_delta_static_matches=[],
+        synthetic_epsilon_like_runtime_deltas={},
         required_named_projection_sources_present=not missing_named_sources,
         missing_named_projection_sources=missing_named_sources,
+        missing_required_group_sources=missing_required_group_sources,
+        named_projection_gradient_abs_by_source=named_projection_gradient_abs_by_source,
+        named_projection_final_logit_gradient_sources_present=not missing_gradient_sources,
+        missing_named_projection_gradient_sources=missing_gradient_sources,
+        named_projection_final_logit_gradient_nonzero=not zero_gradient_sources,
+        zero_named_projection_gradient_sources=zero_gradient_sources,
         named_projection_source_count=len(named_sources),
         named_projection_counts=named_projection_counts,
         rejects_receipt_only_authority=True,
@@ -1638,16 +1951,61 @@ def mutation_result(mutation_id: str, *, repo_root: Path, fixture_mode: bool) ->
                 failures.append("kb05.required_module_authority.oracle_rejected")
 
         elif mutation_id == "synthetic_intervention_delta":
-            mutation_applied = "disable_flag_epsilon_delta_path_left_enabled_while_authority_oracle_runs"
+            mutation_applied = "disable_flag_tanh_signal_injected_outside_normal_forward_graph"
             cases = _runtime_case_bindings(repo_root)
             batch = _actual_batch(cases["t2_case"], cases["t2_availability"], labels=(4, 5, 1), device=torch.device("cpu"))
+            original_forward = model.forward
+
+            def disable_only_tanh_forward(*args: Any, **kwargs: Any) -> dict[str, Any]:
+                outputs = original_forward(*args, **kwargs)
+                if int(kwargs.get("global_step", 0)) <= 0:
+                    return outputs
+                final_logits = outputs["final_logits"].clone()
+                p_wall = outputs.get("p_wall_union")
+                signal = torch.tanh(p_wall.float()) if p_wall is not None else torch.tanh(final_logits[:, 0:1].float())
+                if kwargs.get("disable_scar_proposal") or kwargs.get("disable_scar_center") or kwargs.get("disable_scar_context") or kwargs.get("disable_all_evidence"):
+                    final_logits[:, 5:6] = final_logits[:, 5:6] + 0.013 * signal.to(final_logits)
+                if kwargs.get("disable_edema_injury") or kwargs.get("disable_edema_boundary") or kwargs.get("disable_edema_context") or kwargs.get("disable_all_evidence"):
+                    final_logits[:, 4:5] = final_logits[:, 4:5] + 0.013 * signal.to(final_logits)
+                return {**outputs, "final_logits": final_logits}
+
+            model.forward = disable_only_tanh_forward  # type: ignore[method-assign]
             authority_probe = _final_authority_probe(model, batch, repo_root / "src" / "care_myocardium" / "models" / "care_ase" / "core.py")
             mutation_executed = True
             observations["authority_probe"] = authority_probe
-            observations["synthetic_epsilon_like_runtime_deltas"] = authority_probe.get("synthetic_epsilon_like_runtime_deltas")
-            observations["synthetic_intervention_delta_static_matches"] = authority_probe.get("synthetic_intervention_delta_static_matches")
-            if authority_probe.get("synthetic_epsilon_like_runtime_deltas") or authority_probe.get("synthetic_intervention_delta_static_matches"):
-                failures.append("kb05.synthetic_intervention_delta")
+            observations["flag_vs_verifier_owned_removal_max_abs"] = authority_probe.get("implementation_flag_vs_verifier_owned_removal_max_abs")
+            observations["disable_flag_final_logit_contribution_sites"] = authority_probe.get("disable_flag_final_logit_contribution_sites")
+            if authority_probe.get("status") != "PASS":
+                failures.append("kb05.semantic_disable_only_tanh_signal")
+
+        elif mutation_id == "semantic_disable_only_quadratic_signal":
+            mutation_applied = "disable_flag_quadratic_signal_injected_outside_normal_forward_graph"
+            cases = _runtime_case_bindings(repo_root)
+            batch = _actual_batch(cases["t2_case"], cases["t2_availability"], labels=(4, 5, 1), device=torch.device("cpu"))
+            original_forward = model.forward
+
+            def disable_only_quadratic_forward(*args: Any, **kwargs: Any) -> dict[str, Any]:
+                outputs = original_forward(*args, **kwargs)
+                if int(kwargs.get("global_step", 0)) <= 0:
+                    return outputs
+                final_logits = outputs["final_logits"].clone()
+                rho = outputs.get("wall_depth_rho")
+                base = rho.float().square() if rho is not None else final_logits[:, 1:2].float().sigmoid().square()
+                centered = base - base.detach().mean()
+                if kwargs.get("disable_scar_proposal") or kwargs.get("disable_scar_center") or kwargs.get("disable_scar_context") or kwargs.get("disable_all_evidence"):
+                    final_logits[:, 5:6] = final_logits[:, 5:6] + 0.037 * centered.to(final_logits)
+                if kwargs.get("disable_edema_injury") or kwargs.get("disable_edema_boundary") or kwargs.get("disable_edema_context") or kwargs.get("disable_all_evidence"):
+                    final_logits[:, 4:5] = final_logits[:, 4:5] - 0.021 * centered.to(final_logits)
+                return {**outputs, "final_logits": final_logits}
+
+            model.forward = disable_only_quadratic_forward  # type: ignore[method-assign]
+            authority_probe = _final_authority_probe(model, batch, repo_root / "src" / "care_myocardium" / "models" / "care_ase" / "core.py")
+            mutation_executed = True
+            observations["authority_probe"] = authority_probe
+            observations["flag_vs_verifier_owned_removal_max_abs"] = authority_probe.get("implementation_flag_vs_verifier_owned_removal_max_abs")
+            observations["disable_flag_final_logit_contribution_sites"] = authority_probe.get("disable_flag_final_logit_contribution_sites")
+            if authority_probe.get("status") != "PASS":
+                failures.append("kb05.semantic_disable_only_quadratic_signal")
 
         elif mutation_id == "partial_hw_straight_through_zero_loss":
             mutation_applied = "partial_hw_presence_area_loss_mutated_to_loss_minus_detach"
@@ -1685,15 +2043,42 @@ def mutation_result(mutation_id: str, *, repo_root: Path, fixture_mode: bool) ->
                 failures.append("kb11.partial_hw.straight_through_zero_loss")
 
         elif mutation_id == "full_support_pseudo_tiling":
-            mutation_applied = "current_full_volume_forced_multi_tile_path_observed_for_full_support_reuse"
+            mutation_applied = "forced_multi_tile_predictor_runs_one_full_support_forward_then_fakes_tile_metadata"
             cases = _runtime_case_bindings(repo_root)
             batch = _actual_batch(cases["t2_case"], cases["t2_availability"], labels=(4, 5, 1), device=torch.device("cpu"))
+
+            def pseudo_full_support_predict(
+                loaded_model: Any,
+                image: Any,
+                availability: Any,
+                *,
+                settings: Any,
+                metadata: dict[str, Any],
+                use_gaussian: bool = False,
+            ) -> Any:
+                outputs = loaded_model(image, availability, global_step=14000)
+                call_id = str(metadata.get("call_id", ""))
+                if "forced_multi_tile" in call_id:
+                    metadata.update(
+                        {
+                            "tile_count": 4,
+                            "mirror_count": 1,
+                            "tile_coordinates": [[0, 0, 0], [0, 0, 32], [0, 32, 0], [0, 32, 32]],
+                            "global_bias_application_count": 1,
+                            "canonical_full_support_base_field": True,
+                            "mutation_note": "one full-volume model forward reused as pseudo tile-local aggregation",
+                        }
+                    )
+                else:
+                    metadata.update({"tile_count": 1, "mirror_count": 1, "global_bias_application_count": 1})
+                return outputs["final_logits"].detach()
+
             single_logits, tile_probe = _tile_local_forward_probe(
                 loaded_model=model,
                 image=batch["image"],
                 availability=batch["availability"],
                 settings_cls=runtime["CAREASEFullVolumeInferenceSettings"],
-                predict_fn=runtime["full_volume"].predict_care_ase_r2_full_volume_logits,
+                predict_fn=pseudo_full_support_predict,
             )
             mutation_executed = True
             observations["tile_local_forward_probe"] = tile_probe
