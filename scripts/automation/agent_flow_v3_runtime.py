@@ -1833,12 +1833,21 @@ def ensure_role_worktree_current(worktree: Path, branch: str) -> str:
     )
     if contains_remote.returncode == 0:
         return head
-    try:
+    contains_head = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", "HEAD", f"origin/{branch}"],
+        cwd=worktree,
+        check=False,
+    )
+    if contains_head.returncode == 0:
         git(worktree, "merge", "--ff-only", f"origin/{branch}")
+        return git(worktree, "rev-parse", "HEAD")
+    merge_base = git(worktree, "merge-base", "HEAD", f"origin/{branch}")
+    try:
+        git(worktree, "merge", "--no-edit", f"origin/{branch}")
     except subprocess.CalledProcessError as exc:
-        merge_base = git(worktree, "merge-base", "HEAD", f"origin/{branch}")
+        subprocess.run(["git", "merge", "--abort"], cwd=worktree, check=False)
         raise RuntimeErrorV3(
-            f"role_worktree_not_ff:{worktree}:head={head}:remote={remote}:merge_base={merge_base}"
+            f"role_worktree_merge_conflict:{worktree}:head={head}:remote={remote}:merge_base={merge_base}"
         ) from exc
     return git(worktree, "rev-parse", "HEAD")
 
@@ -2973,10 +2982,10 @@ def care_ase_fail_closed_requires_user_scientific_choice(
         and len(cited_contract_requirements) >= 2
         and len(contract_fields_to_change) >= 1
         and len(semantics) >= 1
-        and exhausted_repairs.get("executor_repair") is False
-        and exhausted_repairs.get("verifier_repair") is False
-        and exhausted_repairs.get("runtime_repair") is False
-        and exhausted_repairs.get("transaction_rebind") is False
+        and exhausted_repairs.get("executor_repair") is True
+        and exhausted_repairs.get("verifier_repair") is True
+        and exhausted_repairs.get("runtime_repair") is True
+        and exhausted_repairs.get("transaction_rebind") is True
         and "VERIFIER_ADDED_UNCITED_NUMERIC_THRESHOLD" not in remaining
     )
 
@@ -3103,9 +3112,9 @@ def apply_care_ase_executor_fail_closed_user_choice_update(
         "fail_closed_reason": completion.get("fail_closed_reason"),
         "diagnostic_executable_verifier": completion.get("diagnostic_executable_verifier"),
         "scientific_choice_required": (
-            "Frozen contract requires true tile-local inference to match the single full-context path, "
-            "while the current Verifier also rejects hidden full-support pseudo-tiling. Executor recorded "
-            "a fail-closed implementation boundary rather than reintroducing the forbidden shortcut."
+            "Executor fail-closed receipt cites two or more incompatible frozen-contract clauses, "
+            "lists the exact scientific contract fields that would have to change, and records that "
+            "Executor repair, Verifier repair, runtime repair and transaction rebinding are all exhausted."
         ),
         "forbidden_actions_confirmed": [
             "no Planner/Critic decision generated",
@@ -3131,8 +3140,8 @@ def apply_care_ase_executor_fail_closed_user_choice_update(
             "controller_executor_needs_user_choice_receipt_path": str(receipt_path.relative_to(repo)),
             "controller_executor_needs_user_choice_receipt_sha256": sha_file(receipt_path),
             "scientific_choice_required": receipt["scientific_choice_required"],
-            "next_action": "AWAIT_HUMAN_DECISION_ON_TILE_LOCAL_EXACTNESS_CONTRACT",
-            "expected_state_or_artifact": "Human decides whether to revise the frozen true tile-local exactness contract, relax tolerance/context semantics, or stop CARE-ASE.",
+            "next_action": "AWAIT_HUMAN_DECISION_ON_CITED_FROZEN_CONTRACT_CONFLICT",
+            "expected_state_or_artifact": "Human decides whether to revise the cited frozen scientific contract fields or stop CARE-ASE.",
             "last_observed_remote_sha": remote_sha,
             "last_poll_utc": now(),
             "updated_utc": now(),

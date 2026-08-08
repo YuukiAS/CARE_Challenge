@@ -534,14 +534,102 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             "scientific_contract_fields_requiring_change": ["architecture.high_resolution_paths"],
             "scientific_semantics_changed_by_required_decision": ["architecture"],
             "same_scope_repairs_exhausted": {
-                "executor_repair": False,
-                "verifier_repair": False,
-                "runtime_repair": False,
-                "transaction_rebind": False,
+                "executor_repair": True,
+                "verifier_repair": True,
+                "runtime_repair": True,
+                "transaction_rebind": True,
             },
         }
 
         self.assertTrue(RUNTIME.care_ase_fail_closed_requires_user_scientific_choice(fail_closed, current))
+
+    def test_care_ase_user_scientific_choice_rejects_verifier_added_uncited_threshold(self) -> None:
+        current = {
+            "task_id": "care-ase-faithful",
+            "request_nonce": "care-ase-nonce",
+            "review_round": 1,
+            "state": "VERIFIER_FROZEN",
+            "frozen_contract_sha256": "a" * 64,
+            "verifier_fingerprint_sha256": "b" * 64,
+        }
+        fail_closed = {
+            "status": "FAIL_CLOSED",
+            "implementation_complete": False,
+            "request_nonce": "care-ase-nonce",
+            "frozen_contract_sha256": "a" * 64,
+            "verifier_fingerprint_sha256": "b" * 64,
+            "diagnostic_executable_verifier": {
+                "exit_code": 2,
+                "verifier_fingerprint_sha256": "b" * 64,
+                "remaining_executor_relevant_failures": ["VERIFIER_ADDED_UNCITED_NUMERIC_THRESHOLD"],
+            },
+            "scientific_choice_contract_citations": [
+                {
+                    "contract_source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+                    "contract_field_or_exact_clause": "section A",
+                    "logical_derivation": "requires incompatible architecture A",
+                },
+                {
+                    "contract_source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+                    "contract_field_or_exact_clause": "section B",
+                    "logical_derivation": "requires incompatible architecture B",
+                },
+            ],
+            "scientific_contract_fields_requiring_change": ["architecture.high_resolution_paths"],
+            "scientific_semantics_changed_by_required_decision": ["architecture"],
+            "same_scope_repairs_exhausted": {
+                "executor_repair": True,
+                "verifier_repair": True,
+                "runtime_repair": True,
+                "transaction_rebind": True,
+            },
+        }
+
+        self.assertFalse(RUNTIME.care_ase_fail_closed_requires_user_scientific_choice(fail_closed, current))
+
+    def test_care_ase_user_scientific_choice_rejects_available_same_scope_repairs(self) -> None:
+        current = {
+            "task_id": "care-ase-faithful",
+            "request_nonce": "care-ase-nonce",
+            "review_round": 1,
+            "state": "VERIFIER_FROZEN",
+            "frozen_contract_sha256": "a" * 64,
+            "verifier_fingerprint_sha256": "b" * 64,
+        }
+        fail_closed = {
+            "status": "FAIL_CLOSED",
+            "implementation_complete": False,
+            "request_nonce": "care-ase-nonce",
+            "frozen_contract_sha256": "a" * 64,
+            "verifier_fingerprint_sha256": "b" * 64,
+            "diagnostic_executable_verifier": {
+                "exit_code": 2,
+                "verifier_fingerprint_sha256": "b" * 64,
+                "remaining_executor_relevant_failures": ["contract_internal_conflict"],
+            },
+            "scientific_choice_contract_citations": [
+                {
+                    "contract_source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+                    "contract_field_or_exact_clause": "section A",
+                    "logical_derivation": "requires incompatible architecture A",
+                },
+                {
+                    "contract_source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+                    "contract_field_or_exact_clause": "section B",
+                    "logical_derivation": "requires incompatible architecture B",
+                },
+            ],
+            "scientific_contract_fields_requiring_change": ["architecture.high_resolution_paths"],
+            "scientific_semantics_changed_by_required_decision": ["architecture"],
+            "same_scope_repairs_exhausted": {
+                "executor_repair": False,
+                "verifier_repair": True,
+                "runtime_repair": True,
+                "transaction_rebind": True,
+            },
+        }
+
+        self.assertFalse(RUNTIME.care_ase_fail_closed_requires_user_scientific_choice(fail_closed, current))
 
     def test_care_ase_verifier_recheck_required_is_not_processed_before_start(self) -> None:
         event = {
@@ -1766,6 +1854,39 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             head = RUNTIME.ensure_role_worktree_current(worktree, "develop")
 
             self.assertEqual(head, RUNTIME.git(worktree, "rev-parse", "HEAD"))
+
+    def test_role_worktree_current_merges_clean_diverged_role_branch(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            remote = root / "remote.git"
+            seed = root / "seed"
+            worktree = root / "worktree"
+            subprocess.check_call(["git", "init", "--bare", str(remote)], stdout=subprocess.DEVNULL)
+            subprocess.check_call(["git", "clone", str(remote), str(seed)], stdout=subprocess.DEVNULL)
+            subprocess.check_call(["git", "config", "user.email", "test@example.com"], cwd=seed)
+            subprocess.check_call(["git", "config", "user.name", "Test"], cwd=seed)
+            (seed / "README.md").write_text("base\n", encoding="utf-8")
+            subprocess.check_call(["git", "add", "README.md"], cwd=seed)
+            subprocess.check_call(["git", "commit", "-m", "base"], cwd=seed, stdout=subprocess.DEVNULL)
+            subprocess.check_call(["git", "branch", "-M", "develop"], cwd=seed)
+            subprocess.check_call(["git", "push", "origin", "develop"], cwd=seed, stdout=subprocess.DEVNULL)
+            subprocess.check_call(["git", "clone", "-b", "develop", str(remote), str(worktree)], stdout=subprocess.DEVNULL)
+            subprocess.check_call(["git", "config", "user.email", "test@example.com"], cwd=worktree)
+            subprocess.check_call(["git", "config", "user.name", "Test"], cwd=worktree)
+            (worktree / "local.txt").write_text("local\n", encoding="utf-8")
+            subprocess.check_call(["git", "add", "local.txt"], cwd=worktree)
+            subprocess.check_call(["git", "commit", "-m", "role local"], cwd=worktree, stdout=subprocess.DEVNULL)
+            (seed / "remote.txt").write_text("remote\n", encoding="utf-8")
+            subprocess.check_call(["git", "add", "remote.txt"], cwd=seed)
+            subprocess.check_call(["git", "commit", "-m", "remote advance"], cwd=seed, stdout=subprocess.DEVNULL)
+            subprocess.check_call(["git", "push", "origin", "develop"], cwd=seed, stdout=subprocess.DEVNULL)
+
+            head = RUNTIME.ensure_role_worktree_current(worktree, "develop")
+
+            self.assertEqual(head, RUNTIME.git(worktree, "rev-parse", "HEAD"))
+            self.assertTrue((worktree / "local.txt").is_file())
+            self.assertTrue((worktree / "remote.txt").is_file())
+            subprocess.check_call(["git", "merge-base", "--is-ancestor", "origin/develop", "HEAD"], cwd=worktree)
 
     def test_completed_resume_receipt_is_detected_but_not_active(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

@@ -140,6 +140,18 @@ oracle overreach, receipt/fingerprint/CI binding problems, runtime failures,
 role/session failures and ordinary implementation bugs remain same-scope repair
 or contract-drift routing, not human scientific-choice gates.
 
+For Controller state transitions this is a hard machine gate. A
+`NEEDS_USER_SCIENTIFIC_CHOICE` transition is invalid unless the receipt records
+all of the following: exact frozen-contract path and clause/field citations for
+at least two incompatible scientific requirements, the specific scientific
+contract fields that would need to change, the semantics affected by that
+change, and `same_scope_repairs_exhausted` set true for Executor repair,
+Verifier repair, runtime repair and transaction rebinding. Any uncited numeric
+threshold invented by a Verifier, including an equality gate between real CNN
+single-context and tiled-context logits, must be diagnostic-only or routed as
+`VERIFIER_CONTRACT_DRIFT` / `PLANNER_REVISE_VERIFIER`, never as a human
+scientific-choice request.
+
 Critic freeze is valid only when it records:
 
 ```text
