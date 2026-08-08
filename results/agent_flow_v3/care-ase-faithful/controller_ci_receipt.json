@@ -1,14 +1,14 @@
 {
-  "schema": "CARE_ASE_FAITHFUL_CONTROLLER_CI_RECEIPT_V5",
+  "schema": "CARE_ASE_FAITHFUL_CONTROLLER_CI_RECEIPT_V6",
   "task_id": "care-ase-faithful",
   "request_nonce": "care-ase-20260806T090955Z",
-  "created_utc": "2026-08-08T10:03:48Z",
-  "checked_commit_sha": "d643c80ce15aa77a28ffb0bec6661afac5be3237",
+  "created_utc": "2026-08-08T12:18:35Z",
+  "checked_commit_sha": "c6e75624be3717c70d67afaea62d76ad1a7f6f08",
   "local_gates_status": "PASS",
   "local_gates": [
     {
       "name": "agent_flow_v3_contract_validation",
-      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/automation/validate_agent_flow_v3.py --repo-root .",
+      "command": "/usr/bin/python scripts/automation/validate_agent_flow_v3.py --repo-root .",
       "exit_code": 0,
       "stdout_tail": "CARE Agent-Flow v3 contract validation: PASS\n",
       "stderr_tail": ""
@@ -26,17 +26,10 @@
       "name": "public_verifier_pytest",
       "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m pytest tests/care_ase_faithful/test_verifier_package.py -q",
       "exit_code": 0,
-      "stdout_tail": "..............                                                           [100%]\n14 passed in 22.40s\n",
+      "stdout_tail": "...............                                                          [100%]\n15 passed in 13.86s\n",
       "stderr_tail": ""
     }
   ],
-  "github_actions_status": "PASS",
-  "workflow_path": ".github/workflows/agent-flow-v3-ci.yml",
-  "github_actions_run_id": 31251920402,
-  "github_actions_run_url": "https://github.com/YuukiAS/CARE_Challenge/actions/runs/31251920402",
-  "github_actions_head_sha": "d643c80ce15aa77a28ffb0bec6661afac5be3237",
-  "github_actions_workflow_name": "CARE Agent-Flow v3 deterministic CI",
-  "state_transition_after_ci": "READY_FOR_PLANNER_REVIEW_TO_WAITING_FOR_EXTERNAL_GPT",
-  "human_approval_required_for_wait_transaction": false,
-  "approval_scope": "current_frozen_contract_and_request_nonce_ci_pass_to_planner_wait_loop"
+  "github_actions_status": "PENDING_AFTER_PUSH",
+  "workflow_path": ".github/workflows/agent-flow-v3-ci.yml"
 }
