@@ -1,22 +1,22 @@
 {
   "command": [
     "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
-    "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/controller/validators/care_ase_faithful/validate_contract_evidence.py",
+    "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor/validators/care_ase_faithful/validate_contract_evidence.py",
     "--verification-contract",
-    "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/controller/results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+    "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor/results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
     "--evidence",
-    "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/controller/results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json",
+    "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor/results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json",
     "--report-json",
-    "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/controller/results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence_validation_result.json"
+    "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor/results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence_validation_result.json"
   ],
-  "created_utc": "2026-08-08T04:12:35Z",
+  "created_utc": "2026-08-08T09:09:28Z",
   "exit_code": 2,
   "report_path": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence_validation_result.json",
   "request_nonce": "care-ase-20260806T090955Z",
   "schema": "CARE_ASE_FAITHFUL_IMPLEMENTATION_VALIDATOR_RECEIPT_V1",
   "stderr": "",
   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "stdout": "{\n  \"failure_count\": 31,\n  \"failures\": [\n    \"verifier_owned.executable.passed\",\n    \"verifier_owned.executable.status\",\n    \"verifier_owned.executable.runtime_binding_sha:architecture_signature\",\n    \"verifier_owned.executable.runtime_binding_sha:checkpoint_resume_probe\",\n    \"verifier_owned.executable.runtime_binding_sha:deployment_load_probe\",\n    \"verifier_owned.executable.runtime_binding_sha:evaluator_smoke\",\n    \"verifier_owned.executable.runtime_binding_sha:forward_backward_probe\",\n    \"verifier_owned.executable.runtime_binding_sha:hard_negative_binding\",\n    \"verifier_owned.executable.runtime_binding_sha:inference_probe\",\n    \"verifier_owned.executable.runtime_binding_sha:parameter_owner_registry\",\n    \"verifier_owned.executable.runtime_binding_sha:runtime_asset_manifest\",\n    \"verifier_owned.executable.runtime_binding_sha:source_manifest\",\n    \"verifier_owned.executable.runtime_binding_sha:step0_parity_probe\",\n    \"verifier_owned.executable.tile_forward_count\",\n    \"verifier_owned.executable.tile_forward_patch_limited\",\n    \"verifier_owned.executable.no_full_support_pseudo_tiling\",\n    \"verifier_owned.executable.instrumented_forward_count\",\n    \"verifier_owned.executable.instrumented_no_t2_forward_count\",\n    \"verifier_owned.executable.instrumented_patch_limit\",\n    \"verifier_owned.executable.instrumented_no_full_support\",\n    \"verifier_owned.authority.no_static_synthetic_delta\",\n    \"verifier_owned.authority.no_epsilon_delta\",\n    \"verifier_owned.partial_hw.scalar_matches_reference\",\n    \"verifier_owned.partial_hw.actual_scalar_nonzero\",\n    \"verifier_owned.partial_hw.no_straight_through_zero\",\n    \"verifier_owned.partial_hw.reference_probe_matches\",\n    \"verifier_owned.transaction.status\",\n    \"verifier_owned.transaction.no_failures\",\n    \"verifier_owned.transaction.hosted_ci_success\",\n    \"verifier_owned.transaction.runtime_ci_same_sha\",\n    \"verifier_owned.transaction.no_stale_planner_reuse\"\n  ],\n  \"known_bad_case_id\": null,\n  \"passed\": false,\n  \"schema\": \"CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1\",\n  \"task_id\": \"care-ase-faithful\"\n}\n",
-  "stdout_sha256": "252fad6a592bdf57ff16446b8e31077c269de7df9f7cd8476e2fcf510b3aea26",
+  "stdout": "{\n  \"failure_count\": 22,\n  \"failures\": [\n    \"verifier_owned.executable.passed\",\n    \"verifier_owned.executable.status\",\n    \"verifier_owned.executable.runtime_binding_sha:architecture_signature\",\n    \"verifier_owned.executable.runtime_binding_sha:checkpoint_resume_probe\",\n    \"verifier_owned.executable.runtime_binding_sha:deployment_load_probe\",\n    \"verifier_owned.executable.runtime_binding_sha:evaluator_smoke\",\n    \"verifier_owned.executable.runtime_binding_sha:forward_backward_probe\",\n    \"verifier_owned.executable.runtime_binding_sha:hard_negative_binding\",\n    \"verifier_owned.executable.runtime_binding_sha:inference_probe\",\n    \"verifier_owned.executable.runtime_binding_sha:parameter_owner_registry\",\n    \"verifier_owned.executable.runtime_binding_sha:runtime_asset_manifest\",\n    \"verifier_owned.executable.runtime_binding_sha:source_manifest\",\n    \"verifier_owned.executable.runtime_binding_sha:step0_parity_probe\",\n    \"verifier_owned.loss_semantic.status\",\n    \"verifier_owned.loss_semantic.injury_dice_bce_formula\",\n    \"verifier_owned.loss_semantic.scar_component_tversky_formula\",\n    \"verifier_owned.loss_semantic.no_scar_occupancy_hidden_auxiliary\",\n    \"verifier_owned.loss_semantic.no_extra_weighted_auxiliary\",\n    \"verifier_owned.transaction.status\",\n    \"verifier_owned.transaction.no_failures\",\n    \"verifier_owned.transaction.hosted_ci_success\",\n    \"verifier_owned.transaction.no_stale_planner_reuse\"\n  ],\n  \"known_bad_case_id\": null,\n  \"passed\": false,\n  \"schema\": \"CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1\",\n  \"task_id\": \"care-ase-faithful\"\n}\n",
+  "stdout_sha256": "8fc805174068593a686a8cc1c0c272a55147d8fcdaccd288fc889bbc1b8b3c5b",
   "task_id": "care-ase-faithful"
 }

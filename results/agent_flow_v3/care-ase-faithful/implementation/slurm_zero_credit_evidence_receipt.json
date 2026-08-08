@@ -1,0 +1,61 @@
+{
+  "schema": "CARE_ASE_FAITHFUL_EXECUTOR_SLURM_ZERO_CREDIT_EVIDENCE_RECEIPT_V1",
+  "task_id": "care-ase-faithful",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "review_round": 1,
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "verifier_fingerprint_sha256": "3dcacfe7ae41e164435278c0da4557fc61b384ef6eeb09860badb353b375dca6",
+  "created_utc": "2026-08-08T09:18:40Z",
+  "command": "sbatch jobs/agent_flow_v3/care_ase_faithful_rebuild_evidence_gpu.sh",
+  "job_id": "62604784",
+  "partition": "htzhulab",
+  "node": "g1807htzh01",
+  "slurm_accounting": [
+    {
+      "job_id": "62604784",
+      "state": "FAILED",
+      "exit_code": "2:0",
+      "elapsed": "00:02:11",
+      "max_rss": null,
+      "node_list": "g1807htzh01"
+    },
+    {
+      "job_id": "62604784.batch",
+      "state": "FAILED",
+      "exit_code": "2:0",
+      "elapsed": "00:02:11",
+      "max_rss": "20526256K",
+      "node_list": "g1807htzh01"
+    },
+    {
+      "job_id": "62604784.extern",
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed": "00:02:11",
+      "max_rss": null,
+      "node_list": "g1807htzh01"
+    }
+  ],
+  "log_path": "logs/CAREASEEvidence_62604784_20260808_050718.log",
+  "log_sha256": "794f191f5f3fbd65f59223f41dd6eb2eff40bca5136bedb2aeb695f8297ca118",
+  "gpu_visibility": {
+    "torch_version": "2.11.0+cu130",
+    "cuda_available": true,
+    "cuda_device_count": 1,
+    "cuda_device_name": "NVIDIA H100 NVL"
+  },
+  "safety": {
+    "formal_training_started": false,
+    "outer_accessed": false,
+    "docker_or_upload": false,
+    "validation_or_challenge_uploaded": false
+  },
+  "builder_result": {
+    "exit_code": 2,
+    "status": "IMPLEMENTATION_EVIDENCE_READY_PENDING_VERIFIER_RECHECK",
+    "implementation_fingerprint_sha256": "dd5593f869823de7fe0b76f953c3ea1ade6d0c1426a7e26a39a4ae1aea6fa692",
+    "implementation_evidence_sha256": "d4ca4000b8bd50343599c14bba9db0709a1db78c4b747c0c290eaf31ee813ba4",
+    "implementation_validator_failures_are_verifier_owned_transaction_recheck": true,
+    "implementation_validator_result": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence_validation_result.json"
+  }
+}

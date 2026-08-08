@@ -6,13 +6,13 @@
 #SBATCH --error=/dev/null
 #SBATCH --mem=64G
 #SBATCH --time=00:45:00
-#SBATCH --gres=gpu:nvidia_a100-pcie-40gb:1
-#SBATCH --partition=a100-gpu
+#SBATCH --gres=gpu:1
+#SBATCH --partition=htzhulab
 #SBATCH --qos=gpu_access
 
 set -euo pipefail
 
-CARE_ROOT="${CARE_ROOT:-/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/controller}"
+CARE_ROOT="${CARE_ROOT:-/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor}"
 CARE_RUNTIME_ROOT="${CARE_RUNTIME_ROOT:-/users/a/e/aereinh/CARE}"
 CARE_PYTHON="${CARE_PYTHON:-${CARE_RUNTIME_ROOT}/envs/env_CARE/bin/python}"
 
@@ -28,7 +28,7 @@ export CARE_ROOT="${CARE_RUNTIME_ROOT}"
 export nnUNet_raw="${CARE_RUNTIME_ROOT}/data/nnUNet/nnUNet_raw"
 export nnUNet_preprocessed="${CARE_RUNTIME_ROOT}/data/nnUNet/nnUNet_preprocessed"
 export nnUNet_results="${CARE_RUNTIME_ROOT}/data/nnUNet/nnUNet_results"
-export MPLCONFIGDIR="${CARE_RUNTIME_ROOT}/.tmp/codex-verifier/matplotlib"
+export MPLCONFIGDIR="${MPLCONFIGDIR:-/users/a/e/aereinh/.tmp/codex-executor/matplotlib}"
 
 echo "started_utc=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 echo "slurm_job_id=${SLURM_JOB_ID:-local}"
