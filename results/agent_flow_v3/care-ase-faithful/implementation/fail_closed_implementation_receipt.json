@@ -1,0 +1,96 @@
+{
+  "schema": "CARE_ASE_FAITHFUL_FAIL_CLOSED_IMPLEMENTATION_RECEIPT_V1",
+  "task_id": "care-ase-faithful",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "review_round": 1,
+  "created_utc": "2026-08-08T06:33:59Z",
+  "rechecked_utc": "2026-08-08T06:33:59Z",
+  "status": "FAIL_CLOSED",
+  "implementation_complete": false,
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "verifier_fingerprint_sha256": "8fc1e554df6935a0d3070d952f06c34f87a005a281367511aae16a787234d7dd",
+  "origin_develop_reconciled_sha": "41f1fabde6a41701c13e75cedc057abb51e364b4",
+  "local_executor_head_before_reconciliation": "df526fde93bf3d4fa53ae8d86079a724a1142bb7",
+  "executor_thread_id": "019fd7c1-8358-7632-9022-367e62ecfbd1",
+  "repairs_applied": [
+    {
+      "path": "src/care_myocardium/models/care_ase/core.py",
+      "summary": "Removed _soft_authority_signal and the global_step gated disable-flag additive final-logit branches for z_scar and z_pure_edema."
+    },
+    {
+      "path": "scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py",
+      "summary": "Rebound the implementation evidence builder constant to verifier fingerprint 8fc1e554df6935a0d3070d952f06c34f87a005a281367511aae16a787234d7dd."
+    }
+  ],
+  "merge_reconciliation": {
+    "origin_develop_taken_for_non_executor_files": true,
+    "executor_owned_conflicts_resolved": true,
+    "conflict_resolution_note": "Generated implementation evidence conflicts were reconciled to origin/develop before this fail-closed repair; this receipt supersedes the deleted stale fail_closed receipt."
+  },
+  "commands": [
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m py_compile src/care_myocardium/models/care_ase/core.py scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py",
+      "exit_code": 0
+    },
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m pytest tests/care_ase_faithful/test_verifier_package.py -q",
+      "exit_code": 0,
+      "summary": "10 passed"
+    },
+    {
+      "command": "source /users/a/e/aereinh/CARE/env_nnunet.sh; CARE_ROOT=/users/a/e/aereinh/CARE; validators/care_ase_faithful/run_executable_verifier.py --repo-root executor --receipt results/agent_flow_v3/care-ase-faithful/implementation/executable_verifier_diagnostic_receipt.json",
+      "exit_code": 2,
+      "zero_credit": true
+    }
+  ],
+  "diagnostic_receipt": {
+    "path": "results/agent_flow_v3/care-ase-faithful/implementation/executable_verifier_diagnostic_receipt.json",
+    "status": "FAIL_CLOSED",
+    "failure_count": 5,
+    "failures": [
+      "transaction.reviewed_verifier_fingerprint.not_exact_planner_binding",
+      "transaction.current.binding.integration_sha",
+      "transaction.hosted_ci.conclusion",
+      "transaction.evidence.missing",
+      "executable_probe.failed:required_module_final_logit_interventions"
+    ]
+  },
+  "closed_findings": {
+    "disable_flag_final_logit_contribution_sites": [],
+    "implementation_flags_match_verifier_owned_removal": true,
+    "authority_oracle_all_required_groups_have_verifier_owned_delta": true,
+    "authority_oracle_all_flag_vs_verifier_removed_max_abs": 0.0,
+    "formal_training_started": false,
+    "outer_accessed": false,
+    "docker_or_upload": false
+  },
+  "remaining_blocker": {
+    "id": "VERIFIER_LEGACY_FRESH_MODEL_DISABLE_FLAG_DELTA_CONFLICT",
+    "source": "validators/care_ase_faithful/run_executable_verifier.py::independent_probe_results required_module_final_logit_interventions",
+    "summary": "After removal of the forbidden intervention-only additive final-logit branch, the legacy fresh-model disable-flag intervention probe observes zero delta for zero-initialized evidence projections before any temporary activation/update.",
+    "observed_intervention_max_abs_by_module": {
+      "scar_proposal": 0.0,
+      "scar_context": 0.0,
+      "edema_injury": 0.0,
+      "edema_boundary": 0.0,
+      "edema_context_and_dilation": 0.0,
+      "all_named_evidence": 0.0,
+      "extent_wall": 1.9293804168701172
+    },
+    "why_executor_failed_closed": "The frozen contract requires independent named zero-initialized residual projections and the round_001_reentry_003 repair prompt forbids replacing the removed branch with any flag-triggered constant, nonlinear component-derived signal, epsilon, hook, metadata path, or test-aware workaround. The verifier-owned authority oracle already proves ordinary-path authority after temporary projection activation, but the legacy disable-flag delta probe still requires nonzero fresh-model deltas without that activation. Satisfying that probe inside Executor would require either reintroducing the prohibited intervention-only authority signal or violating zero-initialized projection parity.",
+    "needed_next_role": "verifier",
+    "needed_repair": "Remove or re-scope required_module_final_logit_interventions as evidence-derived/temporary-activation-only, or make it diagnostic-only when required_module_final_authority_oracle passes and disable_flag_final_logit_contribution_sites is empty."
+  },
+  "current_reentry_recheck": {
+    "head_sha": "1996fac667f48b1eb1f004beb168a0359485559a",
+    "current_state": "VERIFIER_FROZEN",
+    "verifier_fingerprint_sha256": "8fc1e554df6935a0d3070d952f06c34f87a005a281367511aae16a787234d7dd",
+    "worktree_status_before_recheck": "clean",
+    "implementation_decision": "no_contract_compliant_executor_repair_available_for_unchanged_verifier_fingerprint",
+    "reason": "The unchanged verifier still requires required_module_final_logit_interventions to pass on fresh zero-initialized projections without the contract-required temporary activation/update; the Executor cannot satisfy that without reintroducing the prohibited disable-flag authority signal or breaking zero-initialized projection parity."
+  }
+}

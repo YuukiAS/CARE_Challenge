@@ -1060,16 +1060,6 @@ class CAREASE(nn.Module):
             return tuple(cls._crop_forward_output(item, padded, original) for item in value)
         return value
 
-    @staticmethod
-    def _soft_authority_signal(*tensors: torch.Tensor, size: tuple[int, int, int]) -> torch.Tensor:
-        signals = []
-        for tensor in tensors:
-            resized = F.interpolate(tensor.float(), size=size, mode="trilinear", align_corners=False)
-            signals.append(torch.tanh(resized.mean(dim=1, keepdim=True)))
-        if not signals:
-            raise ValueError("at least one tensor is required for CARE-ASE authority signal")
-        return torch.stack(signals, dim=0).mean(dim=0)
-
     def forward(
         self,
         images: torch.Tensor,
@@ -1272,38 +1262,6 @@ class CAREASE(nn.Module):
             z_edema = torch.where(t2 > 0.5, z_edema, z_edema.detach().new_full(z_edema.shape, -1.0e4))
         else:
             z_edema = edema["final_logit"]
-        if global_step > 0:
-            authority = self.extent_wall_ramp(global_step)
-            if disable_scar_proposal or disable_scar_context or disable_all_evidence:
-                scar_sources = []
-                if disable_scar_proposal or disable_all_evidence:
-                    scar_sources.extend(
-                        [
-                            components["scar_quarter_occupancy"],
-                            components["scar_quarter_center"],
-                            components["scar_half_occupancy"],
-                            components["scar_half_center"],
-                        ]
-                    )
-                if disable_scar_context or disable_all_evidence:
-                    scar_sources.append(components["scar_context"])
-                z_scar = z_scar + float(authority) * 0.01 * self._soft_authority_signal(*scar_sources, size=z_scar.shape[-3:])
-            if run_edema_graph and (disable_edema_injury or disable_edema_boundary or disable_edema_context or disable_all_evidence):
-                edema_sources = []
-                if disable_edema_injury or disable_all_evidence:
-                    edema_sources.append(components["edema_injury"])
-                if disable_edema_boundary or disable_all_evidence:
-                    edema_sources.append(components["edema_boundary"])
-                if disable_edema_context or disable_all_evidence:
-                    edema_sources.extend(
-                        [
-                            components["edema_context"],
-                            components["edema_dilation_1"],
-                            components["edema_dilation_2"],
-                            components["edema_dilation_4"],
-                        ]
-                    )
-                z_edema = z_edema + float(authority) * 0.01 * self._soft_authority_signal(*edema_sources, size=z_edema.shape[-3:])
         final_logits = torch.cat([anatomy_logits, z_edema, z_scar], dim=1)
         return {
             "final_logits": final_logits,
