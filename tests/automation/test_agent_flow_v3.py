@@ -735,6 +735,42 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         executable["failures"] = ["executable_probe.failed:required_module_final_logit_interventions"]
         self.assertFalse(RUNTIME.care_ase_verifier_pre_ci_transaction_pending(executable, transaction))
 
+    def test_github_actions_success_payload_requires_exact_head_and_success(self) -> None:
+        payload = {
+            "workflow_runs": [
+                {
+                    "id": 1,
+                    "head_sha": "a" * 40,
+                    "status": "completed",
+                    "conclusion": "failure",
+                    "name": "CARE Agent-Flow v3 deterministic CI",
+                    "html_url": "https://example.invalid/fail",
+                },
+                {
+                    "id": 2,
+                    "head_sha": "b" * 40,
+                    "status": "completed",
+                    "conclusion": "success",
+                    "name": "Unrelated workflow",
+                    "html_url": "https://example.invalid/unrelated",
+                },
+                {
+                    "id": 3,
+                    "head_sha": "a" * 40,
+                    "status": "completed",
+                    "conclusion": "success",
+                    "name": "CARE Agent-Flow v3 deterministic CI",
+                    "html_url": "https://example.invalid/pass",
+                },
+            ]
+        }
+
+        observed = RUNTIME.github_actions_success_from_runs_payload(payload, "a" * 40)
+        self.assertIsNotNone(observed)
+        self.assertEqual(observed["ci_run_id"], 3)
+        self.assertEqual(observed["ci_status"], "PASS_EXACT_HOSTED_CHECKOUT_VERIFIED")
+        self.assertIsNone(RUNTIME.github_actions_success_from_runs_payload(payload, "b" * 40))
+
     def test_role_commit_scope_rejects_forbidden_or_outside_paths(self) -> None:
         role_data = {
             "write_scope": ["tests/**", "validators/**", "results/agent_flow_v3/care-ase-faithful/verification/**"],

@@ -1467,6 +1467,44 @@ def ci_pass_allows_planner_wait_transaction(current: dict[str, Any], remote_sha:
     return all(isinstance(current.get(key), str) and bool(current.get(key)) for key in required)
 
 
+def github_actions_success_from_runs_payload(payload: dict[str, Any], remote_sha: str) -> dict[str, Any] | None:
+    runs = payload.get("workflow_runs")
+    if not isinstance(runs, list):
+        return None
+    for run in runs:
+        if not isinstance(run, dict):
+            continue
+        if run.get("head_sha") != remote_sha:
+            continue
+        name = str(run.get("name") or run.get("workflowName") or "")
+        if "Agent-Flow v3" not in name and "agent-flow-v3" not in name.lower():
+            continue
+        if run.get("status") == "completed" and run.get("conclusion") == "success":
+            return {
+                "ci_status": "PASS_EXACT_HOSTED_CHECKOUT_VERIFIED",
+                "ci_run_id": run.get("id"),
+                "ci_run_url": run.get("html_url"),
+                "ci_run_actual_head_sha": run.get("head_sha"),
+                "ci_workflow_name": name,
+            }
+    return None
+
+
+def observe_github_actions_success_for_sha(remote_sha: str, *, branch: str) -> dict[str, Any] | None:
+    if not SHA40_RE.match(remote_sha):
+        return None
+    url = f"https://api.github.com/repos/YuukiAS/CARE_Challenge/actions/runs?branch={branch}&per_page=20"
+    request = Request(url, headers={"Accept": "application/vnd.github+json", "User-Agent": "care-agent-flow-v3"})
+    try:
+        with urlopen(request, timeout=15) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except Exception:
+        return None
+    if not isinstance(payload, dict):
+        return None
+    return github_actions_success_from_runs_payload(payload, remote_sha)
+
+
 def stage_event_key(task_id: str, current: dict[str, Any], remote_sha: str) -> str:
     del remote_sha
     parts = [
@@ -4374,6 +4412,20 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
         )
         if planner_event is not None:
             current = planner_event
+        if task_id == "care-ase-faithful" and current.get("state") == "CI_RUNNING":
+            ci_observation = observe_github_actions_success_for_sha(remote_sha, branch=args.branch)
+            if ci_observation is not None:
+                current = dict(current)
+                current.update(
+                    {
+                        "ci_status": ci_observation["ci_status"],
+                        "ci_checked_commit_sha": remote_sha,
+                        "ci_run_actual_head_sha": ci_observation.get("ci_run_actual_head_sha"),
+                        "ci_run_id": ci_observation.get("ci_run_id"),
+                        "ci_run_url": ci_observation.get("ci_run_url"),
+                        "ci_workflow_name": ci_observation.get("ci_workflow_name"),
+                    }
+                )
         event_key = stage_event_key(task_id, current, remote_sha)
         care_ase_executor_complete = False
         care_ase_executor_needs_verifier_recheck = False
