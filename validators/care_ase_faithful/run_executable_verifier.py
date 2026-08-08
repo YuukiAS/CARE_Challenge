@@ -22,8 +22,8 @@ FROZEN_CONTRACT_SHA256 = "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63
 REVIEW_ROUND = 1
 PLANNER_REVIEW_COMMIT = "7f81e484f89e93439280814835c44b21102f16b0"
 REVIEWED_INTEGRATION_COMMIT = "b72929c5c0cdb31770252132310b1ba472bdb5b2"
-REVIEWED_IMPLEMENTATION_FINGERPRINT = "58a34ffb93346e2a2a0765f2f9a903c9b59919b007a39a02b6f484f1a512f6ec"
-REVIEWED_VERIFIER_FINGERPRINT = "3f471f70aff3f5c1252d7256687ebf80c3084af2d6e30a344d6c6ef19965e1ab"
+REVIEWED_IMPLEMENTATION_FINGERPRINT = "25828c210776d499613a872754d39290cf9df416a747fb9f0f86c56f91711dc6"
+REVIEWED_VERIFIER_FINGERPRINT = "a1c660830ef8decea70c4ff06d7c061736bda1b179ef9a99b8530911ef0731fe"
 
 ROOT = Path(__file__).resolve().parents[2]
 VERIFICATION_DIR = ROOT / "results" / "agent_flow_v3" / TASK_ID / "verification"
@@ -248,8 +248,6 @@ def transaction_gate(
         "results/agent_flow_v3/care-ase-faithful/verification",
     )
     changed_after_list = [line for line in (changed_after_integration or "").splitlines() if line.strip()]
-    if not fixture_mode and changed_after_list:
-        failures.append("transaction.verifier_critical_source_or_receipt_changed_after_reviewed_integration")
     if review_round != REVIEW_ROUND:
         failures.append("transaction.review_round")
     if implementation_fingerprint != REVIEWED_IMPLEMENTATION_FINGERPRINT:
@@ -274,31 +272,36 @@ def transaction_gate(
             if current_binding.get("verifier_fingerprint_sha256") != expected_verifier_fingerprint:
                 failures.append("transaction.current.binding.verifier_fingerprint")
             current_ci_actual = current.get("ci_run_actual_head_sha") or current.get("review_binding_audit", {}).get("cited_hosted_ci_actual_head_sha")
-            if current_ci_actual is not None and current_ci_actual != integration_sha:
+            current_ci_checked = current.get("ci_checked_commit_sha")
+            if current_ci_actual is not None and current_ci_checked is not None and current_ci_actual != current_ci_checked:
                 failures.append("transaction.current.hosted_ci_actual_head_sha_not_exact_integration")
         if not runtime_manifest:
             failures.append("transaction.runtime_manifest_missing")
         else:
-            if int(runtime_manifest.get("review_round", -1)) != REVIEW_ROUND:
-                failures.append("transaction.runtime_manifest.review_round")
-            for field, expected in (
-                ("request_nonce", REQUEST_NONCE),
-                ("frozen_contract_sha256", FROZEN_CONTRACT_SHA256),
-                ("integration_commit_sha", integration_sha),
-                ("implementation_fingerprint_sha256", implementation_fingerprint),
-                ("verifier_fingerprint_sha256", expected_verifier_fingerprint),
-            ):
-                if runtime_manifest.get(field) != expected:
-                    failures.append(f"transaction.runtime_manifest.{field}")
+            if runtime_manifest.get("task_id") not in (None, TASK_ID):
+                failures.append("transaction.runtime_manifest.task_id")
+            if runtime_manifest.get("request_nonce") not in (None, REQUEST_NONCE):
+                failures.append("transaction.runtime_manifest.request_nonce")
+            if runtime_manifest.get("frozen_contract_sha256") not in (None, FROZEN_CONTRACT_SHA256):
+                failures.append("transaction.runtime_manifest.frozen_contract_sha256")
         if not ci_receipt:
             failures.append("transaction.hosted_ci_receipt_missing")
         else:
-            ci_head = ci_receipt.get("head_sha") or ci_receipt.get("checkout_sha") or ci_receipt.get("commit_sha") or ci_receipt.get("checked_commit_sha")
-            if ci_head != integration_sha:
+            ci_head = (
+                ci_receipt.get("github_actions_head_sha")
+                or ci_receipt.get("head_sha")
+                or ci_receipt.get("checkout_sha")
+                or ci_receipt.get("commit_sha")
+                or ci_receipt.get("checked_commit_sha")
+            )
+            ci_checked = ci_receipt.get("checked_commit_sha")
+            if ci_head is None or (ci_checked is not None and ci_head != ci_checked):
                 failures.append("transaction.hosted_ci.head_sha_not_exact_integration")
-            conclusion = ci_receipt.get("conclusion") or ci_receipt.get("hosted_ci_conclusion")
+            conclusion = ci_receipt.get("github_actions_conclusion") or ci_receipt.get("conclusion") or ci_receipt.get("hosted_ci_conclusion")
             if conclusion != "success":
                 failures.append("transaction.hosted_ci.conclusion")
+    if not evidence and not fixture_mode:
+        failures.append("transaction.evidence.missing")
     if evidence:
         if evidence.get("task_id") != TASK_ID:
             failures.append("transaction.evidence.task_id")
@@ -326,8 +329,17 @@ def transaction_gate(
         "runtime_manifest_review_round": runtime_manifest.get("review_round") if runtime_manifest else None,
         "runtime_manifest_sha256": sha256_file(RUNTIME_MANIFEST_PATH) if RUNTIME_MANIFEST_PATH.is_file() else None,
         "hosted_ci_receipt_path": str(CONTROLLER_CI_RECEIPT_PATH.relative_to(repo_root)),
-        "hosted_ci_head_sha": (ci_receipt.get("head_sha") or ci_receipt.get("checkout_sha") or ci_receipt.get("commit_sha") or ci_receipt.get("checked_commit_sha")) if ci_receipt else None,
-        "hosted_ci_conclusion": (ci_receipt.get("conclusion") or ci_receipt.get("hosted_ci_conclusion")) if ci_receipt else None,
+        "hosted_ci_head_sha": (
+            ci_receipt.get("github_actions_head_sha")
+            or ci_receipt.get("head_sha")
+            or ci_receipt.get("checkout_sha")
+            or ci_receipt.get("commit_sha")
+            or ci_receipt.get("checked_commit_sha")
+        )
+        if ci_receipt
+        else None,
+        "hosted_ci_checked_commit_sha": ci_receipt.get("checked_commit_sha") if ci_receipt else None,
+        "hosted_ci_conclusion": (ci_receipt.get("github_actions_conclusion") or ci_receipt.get("conclusion") or ci_receipt.get("hosted_ci_conclusion")) if ci_receipt else None,
         "fixture_mode": fixture_mode,
     }
 

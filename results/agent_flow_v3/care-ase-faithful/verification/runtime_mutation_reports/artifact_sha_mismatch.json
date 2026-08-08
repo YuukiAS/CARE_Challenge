@@ -1,19 +1,19 @@
 {
-  "created_utc": "2026-08-07T04:45:25Z",
+  "created_utc": "2026-08-08T04:33:07Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
     "artifact_binding.forward_backward_probe.stdout_file_sha"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "e6d9d4d567b832fb68514983108dc97e3eba0a0dfd3725a8f13b8b83d0c2fbd5",
+  "mutated_fingerprint_sha256": "deacb037ac85b8c40771cbc59124b29eaea064b4f6720c3b26615cc968bee2fc",
   "mutation_applied": "tracked_runtime_artifact_bytes_changed_after_receipt_sha_recording",
   "mutation_executed": true,
   "mutation_id": "artifact_sha_mismatch",
   "observations": {
-    "declared_sha256": "b0ddcbdf2040bfafe256007256dda87f0fa5eaa436f0f6d52bbd4068a7f5e5e0",
-    "mutated_file_sha256": "2328017f39b55410d9539f26b77125359f908b16d31642ea92c9b1a93b27d88b",
-    "source_manifest_sha256_before_mutation": "a2a165292590ed700c3534a56b3bae28f9b80120697fad39392d0207f6196d43"
+    "declared_sha256": "0b6113328f3be204d12118cf009f6f2b02212cbbe1c2d8cd7c9e638d5488b5aa",
+    "mutated_file_sha256": "199c618cebf22fa01d809b054dcc38481f085563c48cc7dd8c1182db5d183be9",
+    "source_manifest_sha256_before_mutation": "3a9c0b4b14c410a970bdf9686060b89347b5b8679bbe40fcc1d01c55f2c67f1a"
   },
   "passed": false,
   "request_nonce": "care-ase-20260806T090955Z",

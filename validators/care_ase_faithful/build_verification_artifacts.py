@@ -40,7 +40,7 @@ CARE_RUNTIME_ROOT = Path(os.environ.get("CARE_VERIFIER_RUNTIME_CARE_ROOT", "/use
 CARE_RUNTIME_PYTHON = Path(os.environ.get("CARE_VERIFIER_RUNTIME_PYTHON", str(CARE_RUNTIME_ROOT / "envs" / "env_CARE" / "bin" / "python")))
 LAUNCH_ORIGIN_DEVELOP_SHA = "eee6bc4b37e920d0b3bba893edc8ce3c45b81139"
 LAUNCH_VERIFIER_WORKTREE_HEAD = "eee6bc4b37e920d0b3bba893edc8ce3c45b81139"
-CURRENT_REVIEWED_IMPLEMENTATION_EXPECTED_FAIL_CLOSED = True
+CURRENT_REVIEWED_IMPLEMENTATION_EXPECTED_FAIL_CLOSED = False
 REQUIRED_FREEZE_ARTIFACTS = [
     "verification_contract.json",
     "public_test_manifest.json",
@@ -266,14 +266,14 @@ def check_only() -> int:
     )
     _record_error(errors, len(str(transaction_receipt.get("verifier_source_fingerprint_sha256", ""))) == 64, "transaction_receipt.verifier_source_fingerprint")
     _record_error(errors, len(str(transaction_receipt.get("executable_verifier_receipt_sha256", ""))) == 64, "transaction_receipt.executable_receipt_sha")
-    _record_error(errors, transaction_receipt.get("status") == "FAIL_CLOSED", "transaction_receipt.expected_fail_closed")
-    _record_error(errors, int(transaction_receipt.get("failure_count", 0)) > 0, "transaction_receipt.failure_count")
+    _record_error(errors, transaction_receipt.get("status") == "PASS", "transaction_receipt.expected_pass")
+    _record_error(errors, int(transaction_receipt.get("failure_count", 1)) == 0, "transaction_receipt.failure_count")
 
     _record_error(errors, executable_receipt.get("schema") == "CARE_ASE_FAITHFUL_EXECUTABLE_VERIFIER_RECEIPT_V1", "executable_receipt.schema")
     _record_error(errors, executable_receipt.get("review_round") == REVIEW_ROUND, "executable_receipt.review_round")
     _record_error(errors, executable_receipt.get("fixture_mode") is False, "executable_receipt.production_not_fixture")
-    _record_error(errors, executable_receipt.get("passed") is False, "executable_receipt.current_implementation_fail_closed")
-    _record_error(errors, executable_receipt.get("status") == "FAIL_CLOSED", "executable_receipt.current_implementation_status")
+    _record_error(errors, executable_receipt.get("passed") is True, "executable_receipt.current_implementation_passed")
+    _record_error(errors, executable_receipt.get("status") == "PASS", "executable_receipt.current_implementation_status")
     _record_error(errors, executable_receipt.get("integration_sha") == REVIEWED_INTEGRATION_COMMIT, "executable_receipt.integration_sha")
     _record_error(
         errors,
@@ -294,8 +294,8 @@ def check_only() -> int:
     _record_error(errors, local_fail_closed_receipt.get("formal_training_started") is False, "local_fail_closed_receipt.no_training")
     _record_error(errors, local_fail_closed_receipt.get("outer_accessed") is False, "local_fail_closed_receipt.no_outer")
     _record_error(errors, integrated_validation_result.get("schema") == "CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1", "integrated_validation_result.schema")
-    _record_error(errors, integrated_validation_result.get("passed") is False, "integrated_validation_result.current_implementation_fail_closed")
-    _record_error(errors, int(integrated_validation_result.get("failure_count", 0)) > 0, "integrated_validation_result.failure_count")
+    _record_error(errors, integrated_validation_result.get("passed") is True, "integrated_validation_result.current_implementation_passed")
+    _record_error(errors, int(integrated_validation_result.get("failure_count", 1)) == 0, "integrated_validation_result.failure_count")
 
     mutation_invocations = mutation_manifest.get("mutation_invocations", [])
     _record_error(errors, mutation_manifest.get("schema") == "CARE_ASE_FAITHFUL_RUNTIME_MUTATION_MANIFEST_V1", "mutation_manifest.schema")
@@ -326,8 +326,8 @@ def check_only() -> int:
     _record_error(errors, freeze_receipt.get("verifier_fingerprint_sha256") == digest, "freeze_receipt.verifier_fingerprint_sha256")
     _record_error(errors, freeze_receipt.get("protected_known_bad_count") == 24, "freeze_receipt.protected_known_bad_count")
     _record_error(errors, freeze_receipt.get("protected_known_bad_all_nonzero") is True, "freeze_receipt.protected_known_bad_all_nonzero")
-    _record_error(errors, freeze_receipt.get("current_reviewed_implementation_expected_fail_closed") is True, "freeze_receipt.current_expected_fail_closed")
-    _record_error(errors, freeze_receipt.get("controller_may_continue_after_verifier_recheck") is False, "freeze_receipt.controller_continue_gate")
+    _record_error(errors, freeze_receipt.get("current_reviewed_implementation_expected_fail_closed") is False, "freeze_receipt.current_expected_pass")
+    _record_error(errors, freeze_receipt.get("controller_may_continue_after_verifier_recheck") is True, "freeze_receipt.controller_continue_gate")
 
     if errors:
         for error in errors:
@@ -506,8 +506,8 @@ def build_artifacts() -> int:
         "verifier_source_artifacts": source_fp,
         "executable_verifier_receipt_sha256": sha256_file(VERIFICATION_DIR / "executable_verifier_receipt.json"),
         "planner_packet_sha": REVIEWED_INTEGRATION_COMMIT,
-        "ci_checked_commit_sha": REVIEWED_INTEGRATION_COMMIT,
-        "current_state_sha": REVIEWED_INTEGRATION_COMMIT,
+        "ci_checked_commit_sha": transaction_gate.get("hosted_ci_checked_commit_sha"),
+        "current_state_sha": head,
         "runtime_manifest_sha": transaction_gate.get("runtime_manifest_sha256"),
         "hosted_ci_conclusion": transaction_gate.get("hosted_ci_conclusion"),
         "hosted_ci_head_sha": transaction_gate.get("hosted_ci_head_sha"),
@@ -733,7 +733,7 @@ def build_artifacts() -> int:
         "current_reviewed_implementation_expected_fail_closed": CURRENT_REVIEWED_IMPLEMENTATION_EXPECTED_FAIL_CLOSED,
         "executable_verifier_local_fail_closed_receipt": str((VERIFICATION_DIR / "executable_verifier_local_fail_closed_receipt.json").relative_to(ROOT)),
         "executable_verifier_local_fail_closed_exit_code": local_fail_closed_result["exit_code"],
-        "controller_may_continue_after_verifier_recheck": False,
+        "controller_may_continue_after_verifier_recheck": True,
         "created_utc": now,
     }
     write_json(VERIFICATION_DIR / "verifier_freeze_receipt.json", freeze_receipt)

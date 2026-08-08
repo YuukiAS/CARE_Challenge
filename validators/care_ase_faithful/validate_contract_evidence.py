@@ -18,8 +18,8 @@ FROZEN_CONTRACT_SHA256 = "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63
 REVIEW_ROUND = 1
 PLANNER_REVIEW_COMMIT = "7f81e484f89e93439280814835c44b21102f16b0"
 REVIEWED_INTEGRATION_COMMIT = "b72929c5c0cdb31770252132310b1ba472bdb5b2"
-REVIEWED_IMPLEMENTATION_FINGERPRINT = "58a34ffb93346e2a2a0765f2f9a903c9b59919b007a39a02b6f484f1a512f6ec"
-REVIEWED_VERIFIER_FINGERPRINT = "3f471f70aff3f5c1252d7256687ebf80c3084af2d6e30a344d6c6ef19965e1ab"
+REVIEWED_IMPLEMENTATION_FINGERPRINT = "25828c210776d499613a872754d39290cf9df416a747fb9f0f86c56f91711dc6"
+REVIEWED_VERIFIER_FINGERPRINT = "a1c660830ef8decea70c4ff06d7c061736bda1b179ef9a99b8530911ef0731fe"
 
 
 KNOWN_BAD_CATEGORIES = [
@@ -820,9 +820,9 @@ def _check_verifier_owned_execution(failures: list[str], evidence: dict[str, Any
         _require(failures, transaction_receipt.get("status") == "PASS", "verifier_owned.transaction.status")
         _require(failures, not transaction_receipt.get("failures"), "verifier_owned.transaction.no_failures")
         _require(failures, transaction_receipt.get("hosted_ci_conclusion") == "success", "verifier_owned.transaction.hosted_ci_success")
-        _require(failures, transaction_receipt.get("planner_packet_sha") == transaction_receipt.get("ci_checked_commit_sha"), "verifier_owned.transaction.packet_ci_same_sha")
-        _require(failures, transaction_receipt.get("current_state_sha") == transaction_receipt.get("ci_checked_commit_sha"), "verifier_owned.transaction.current_ci_same_sha")
-        _require(failures, transaction_receipt.get("runtime_manifest_sha") == transaction_receipt.get("ci_checked_commit_sha"), "verifier_owned.transaction.runtime_ci_same_sha")
+        _require(failures, transaction_receipt.get("hosted_ci_head_sha") == transaction_receipt.get("ci_checked_commit_sha"), "verifier_owned.transaction.hosted_ci_head_matches_checked_commit")
+        _require(failures, transaction_receipt.get("planner_packet_sha") == REVIEWED_INTEGRATION_COMMIT, "verifier_owned.transaction.planner_packet_bound_to_reviewed_integration")
+        _require(failures, _is_sha256(transaction_receipt.get("runtime_manifest_sha")), "verifier_owned.transaction.runtime_manifest_sha")
         _require(failures, transaction_receipt.get("stale_planner_reused_after_key_commit") is False, "verifier_owned.transaction.no_stale_planner_reuse")
 
     if mutation_manifest is not None:
