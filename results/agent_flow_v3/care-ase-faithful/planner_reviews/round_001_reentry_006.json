@@ -1,0 +1,199 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_PLANNER_REVIEW",
+  "task_id": "care-ase-faithful",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "review_round": 1,
+  "review_reentry": "round_001_reentry_006",
+  "observed_state": "WAITING_FOR_EXTERNAL_GPT",
+  "ready_state_reached_before_wait": "READY_FOR_PLANNER_REVIEW",
+  "review_mode": "IMPLEMENTATION_REVIEW",
+  "frozen_contract_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "integration_commit_sha": "965b0aadaf436e11abdf37dfe3ce6699e928b7b0",
+  "implementation_fingerprint_sha256": "e7a6bfe00336354da7debf7321966c8a72c7ce43ee0bb00c316387c72659b7e3",
+  "verifier_fingerprint_sha256": "6acc8fdc640df9be54848dfc676da45257d887c0f4be5ce71efa6230114a4a17",
+  "independent_review_order": "CURRENT_IMPLEMENTATION_AND_VERIFIER_REVIEWED_BEFORE_PRIOR_FINDINGS",
+  "decision": "PLANNER_REVISE_BOTH",
+  "created_utc": "2026-08-08T13:09:26Z",
+  "binding_audit": {
+    "request_nonce_matches": true,
+    "frozen_contract_matches": true,
+    "planner_packet_integration_sha_matches_current": true,
+    "planner_packet_implementation_fingerprint_matches_current": true,
+    "planner_packet_verifier_fingerprint_matches_current": true,
+    "implementation_fingerprint_embeds_current_verifier_fingerprint": true,
+    "hosted_ci_run_id": 31256943029,
+    "hosted_ci_exact_integration_sha": "965b0aadaf436e11abdf37dfe3ce6699e928b7b0",
+    "hosted_ci_conclusion": "success",
+    "hosted_ci_exact_binding_valid": true,
+    "runtime_receipt_manifest_review_round": 0,
+    "current_review_round": 1,
+    "runtime_receipt_manifest_request_nonce_present": false,
+    "runtime_receipt_manifest_frozen_contract_sha_present": false,
+    "runtime_receipt_manifest_current_transaction_valid": false,
+    "executable_verifier_receipt_passed": false,
+    "executable_verifier_receipt_integration_sha": "afcf93cf0be4581630fb283f8beaa53bddd1130e",
+    "executable_verifier_receipt_failure_count": 2,
+    "transaction_gate_receipt_status": "FAIL_CLOSED",
+    "transaction_gate_receipt_integration_sha": "afcf93cf0be4581630fb283f8beaa53bddd1130e",
+    "frozen_verifier_validation_passed": false,
+    "frozen_verifier_validation_failure_count": 7,
+    "transaction_replayable": false,
+    "binding_status": "FAIL_CLOSED_REQUIRES_EXECUTOR_RUNTIME_PROVENANCE_REPAIR_VERIFIER_TRANSACTION_ORACLE_REPAIR_AND_FRESH_TRANSACTION"
+  },
+  "evidence_reviewed": {
+    "protocol_and_state": [
+      "automation/agent_flow_v3/planner_scheduled_task_prompt.md",
+      "automation/agent_flow_v3/schema.json",
+      "automation/agent_flow_v3/tasks/care-ase-faithful/REQUEST.json",
+      "automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json",
+      "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+      "results/agent_flow_v3/care-ase-faithful/planner_review_packet.json",
+      "results/agent_flow_v3/care-ase-faithful/runtime_receipt_manifest.json",
+      "results/agent_flow_v3/care-ase-faithful/controller_ci_receipt.json"
+    ],
+    "implementation": [
+      "src/care_myocardium/models/care_ase/core.py",
+      "src/care_myocardium/training/care_ase_trainer.py",
+      "src/care_myocardium/training/care_ase_runtime.py",
+      "src/care_myocardium/training/care_ase_sampler.py",
+      "src/care_myocardium/inference/care_ase_r2_full_volume.py",
+      "results/agent_flow_v3/care-ase-faithful/implementation/implementation_fingerprint.json"
+    ],
+    "verification": [
+      "validators/care_ase_faithful/run_executable_verifier.py",
+      "results/agent_flow_v3/care-ase-faithful/verification/verifier_fingerprint.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/transaction_gate_receipt.json",
+      "results/agent_flow_v3/care-ase-faithful/implementation/frozen_verifier_validation_result.json"
+    ],
+    "prior_review_read_after_independent_review": [
+      "results/agent_flow_v3/care-ase-faithful/planner_reviews/round_001_reentry_005.json",
+      "results/agent_flow_v3/care-ase-faithful/planner_reviews/round_001_reentry_005_final.json"
+    ]
+  },
+  "independent_review_summary": {
+    "closed_or_materially_improved": [
+      "partial-H/W extent 的跨 z 泄漏已实质修复：SliceExtentHead 在进入 kernel=3 Conv1d 序列前用 full-slice validity 将 partial/all-invalid slice 的 sequence_input 置零，且当前 Verifier 已加入真实 cross-z gradient probe。",
+      "checkpoint schema 已把 request_nonce、frozen_contract_sha256、implementation source binding 与 integration commit 设为正式字段，并在 resume loader 中支持 expected-binding fail-closed 检查。",
+      "Verifier fingerprint 已改为只由冻结合同和 verifier source/test definitions 构成，runtime/executable receipts 明确排除在 digest 输入之外，上一轮循环指纹问题已关闭。",
+      "上一轮已修复的 injury Dice+BCE、纯 component-adaptive Tversky、真实 tile-local 推理、聚合后单次 global extent/wall bias、no-T2 子图隔离继续保持。",
+      "本轮 GitHub Actions run 31256943029 对精确 integration 965b0aadaf436e11abdf37dfe3ce6699e928b7b0 成功，CI SHA 和结论本身有效。"
+    ],
+    "remaining_or_new_blockers": [
+      "正式运行入口仍把历史 R2 任务作为活动默认真值：care_ase_runtime.py 硬编码 TASK_KEY=20260804_care_ase_r2_emergency_9h_training_docker、旧 RESULT_DIR/PROBE_RUNTIME_DIR/EFFECTIVE_CONTRACT、旧 permit/task 文档；care_ase_sampler.py 默认 hard-negative manifest 仍指向 results/20260804... 并只接受历史 task_key。冻结合同明确要求旧 result/permit 路径参数化并绑定当前 nonce、合同与提交，因此未来即使人工授权训练也仍可能落回历史任务 provenance。",
+      "当前 runtime_receipt_manifest 仍是 review_round 0、2026-08-06 的旧等待事务，并缺少当前 request_nonce 与 frozen_contract_sha；CURRENT 却宣称该 manifest 不 stale。这使当前 round 1 事务不可重放。",
+      "当前 Verifier transaction_gate 对 runtime manifest 的 nonce/合同采用可选式检查：字段缺失时不失败，并且没有强制 runtime_manifest.review_round 等于当前 review_round，也未要求 manifest 绑定精确 integration/implementation/verifier fingerprints。因此上述 stale manifest 可绕过 manifest 子门控。",
+      "Verifier-owned executable_verifier_receipt 和 transaction_gate_receipt 仍绑定 executor integration afcf93cf...，状态 FAIL_CLOSED；frozen_verifier_validation_result 仍明确 passed=false。Controller 后续取得精确 hosted CI PASS，但没有在最终 review tuple 上重新执行并发布 Verifier-owned transaction PASS，故 hosted CI 不能替代独立 Verifier 最终事务证明。"
+    ]
+  },
+  "prior_finding_closure": {
+    "ASE_R1_REENTRY5_EXECUTOR_PARTIAL_HW_CROSS_Z_EXTENT_LEAK": "CLOSED_IN_CURRENT_SOURCE_AND_CURRENT_VERIFIER_PROBE",
+    "ASE_R1_REENTRY5_EXECUTOR_CURRENT_CONTRACT_CHECKPOINT_RUNTIME_BINDING_MISSING": "PARTIALLY_CLOSED_CHECKPOINT_FIELDS_FIXED_BUT_ACTIVE_RUNTIME_TASK_RESULT_PERMIT_AND_HARD_NEGATIVE_DEFAULTS_STILL_HISTORICAL",
+    "ASE_R1_REENTRY5_VERIFIER_MISSES_CROSS_Z_PARTIAL_HW_AND_CURRENT_CONTRACT_PROVENANCE": "PARTIALLY_CLOSED_CROSS_Z_AND_CHECKPOINT_PROBES_FIXED_BUT_RUNTIME_TRANSACTION_MANIFEST_BINDING_REMAINS_WEAK",
+    "ASE_R1_REENTRY5_VERIFIER_FINGERPRINT_NOT_IMMUTABLE_PRE_EXECUTOR": "CLOSED_WITH_PRE_EXECUTOR_IMMUTABLE_SOURCE_ONLY_FINGERPRINT",
+    "ASE_R1_REENTRY5_TRANSACTION_NOT_REPLAYABLE": "NOT_CLOSED_RUNTIME_MANIFEST_AND_VERIFIER_FINAL_TRANSACTION_RECEIPTS_REMAIN_STALE_OR_FAIL_CLOSED"
+  },
+  "blocking_findings": [
+    {
+      "finding_id": "ASE_R1_REENTRY6_EXECUTOR_HISTORICAL_RUNTIME_IDENTITY_STILL_ACTIVE",
+      "target_role": "executor",
+      "severity": "blocking_reproducibility_and_execution_boundary_gap",
+      "affected_files_or_functions": [
+        "src/care_myocardium/training/care_ase_runtime.py::TASK_KEY/RESULT_DIR/PROBE_RUNTIME_DIR/EFFECTIVE_CONTRACT/CRITICAL_SOURCE_SEED_PATHS",
+        "src/care_myocardium/training/care_ase_runtime.py::training permit validation and formal target-manifest binding",
+        "src/care_myocardium/training/care_ase_sampler.py::HARD_NEGATIVE_MANIFEST_TEMPLATE/ALLOWED_HARD_NEGATIVE_TASK_KEYS/_load_hard_negative_manifest"
+      ],
+      "finding": "正式/探针运行真值仍默认绑定历史 20260804 R2 task、result root、effective v9 contract 与 permit；hard-negative sampler 也默认只消费历史 task-key manifest。当前 Agent-Flow request nonce、冻结合同 SHA 与精确 integration 并未成为 runtime identity 的一级必需输入。",
+      "why_it_matters": "冻结合同明确禁止旧 main/result/permit 路径继续作为活动真值。若现在通过，后续人工授权 formal training 时可能生成属于旧任务而非当前 care-ase-faithful 事务的 checkpoint、probe budget、target manifest 或 permit lineage，破坏可复现性和执行边界。",
+      "required_repair": [
+        "把 runtime task identity、result/probe roots、hard-negative manifest path、effective secondary contract 与 permit provenance 改为显式当前任务输入 bundle；current request_nonce、frozen_contract_sha256、implementation source/fingerprint 和 integration SHA 必须在 formal execution 前 fail closed 验证。",
+        "历史 v8/v9 contract 与历史 OOF artifacts 可作为被显式哈希绑定的科学来源/输入资产，但不得继续作为当前 task identity、默认 permit 或默认 result root。",
+        "formal training permit 必须拒绝 20260804 历史 permit 作为当前授权；在 Planner PASS 后仍必须等待后续用户人工决定，当前返修不得启动 formal training。",
+        "hard-negative manifest 必须由当前 runtime bundle 显式传入并绑定精确 fold、OOF checkpoint/prediction SHA；不得通过历史 task_key allowlist 代替当前事务绑定。"
+      ],
+      "required_regression_evidence": [
+        "增加历史 TASK_KEY/旧 permit/旧 result root 被注入当前 formal runtime 时的 fail-closed known-bad。",
+        "增加当前 nonce/合同/integration/implementation binding 缺失或任一错配时，formal runtime 在 forward/optimizer step 前拒绝执行的 probe。",
+        "checkpoint/resume/deployment dry-run receipt 证明当前绑定字段一致，且 no_training_started=true、outer_accessed=false。"
+      ],
+      "forbidden_workarounds": [
+        "不得仅在 receipt 中新增当前 nonce，而底层 TASK_KEY、result root、permit 或 manifest loader 继续使用历史默认值。",
+        "不得把当前 task alias 到 20260804 task_key 以绕过检查。",
+        "不得为了生成证据启动正式训练、访问 outer、部署或上传。"
+      ]
+    },
+    {
+      "finding_id": "ASE_R1_REENTRY6_VERIFIER_RUNTIME_MANIFEST_ORACLE_ACCEPTS_STALE_MISSING_BINDINGS",
+      "target_role": "verifier",
+      "severity": "blocking_verification_and_provenance_gap",
+      "affected_files_or_functions": [
+        "validators/care_ase_faithful/run_executable_verifier.py::transaction_gate",
+        "results/agent_flow_v3/care-ase-faithful/runtime_receipt_manifest.json",
+        "tests/care_ase_faithful/test_verifier_package.py"
+      ],
+      "finding": "transaction_gate 对 runtime manifest 的 request_nonce 与 frozen_contract_sha256 使用 optional semantics，字段缺失不失败；同时未强制 review_round、exact integration SHA、implementation fingerprint 与 verifier fingerprint。当前 manifest 明明仍是 round 0 且缺少 nonce/合同字段，却没有由 manifest oracle 单独 fail closed。",
+      "why_it_matters": "这允许旧轮次 receipts 被重新挂到新的 Planner packet，形成形式上 CI PASS、实质上运行证据来自旧事务的假阳性。CURRENT 当前对 manifest stale=false 的自报不能替代 Verifier 独立核验。",
+      "required_repair": [
+        "将 runtime manifest 的 task_id、request_nonce、frozen_contract_sha256、review_round、integration_commit_sha、implementation_fingerprint_sha256、verifier_fingerprint_sha256 设为必需且精确相等；缺失字段与旧轮次一律 fail closed。",
+        "manifest 必须列出并哈希当前关键 runtime receipts，至少覆盖 implementation evidence、executable verifier、transaction gate、checkpoint/resume、inference、deployment/evaluator probes 与 hosted CI binding。",
+        "增加 stale round-0 manifest、missing nonce、missing contract、old integration、old implementation fp、old verifier fp 六类 executed known-bad；均必须非零退出。"
+      ],
+      "required_regression_evidence": [
+        "当前 stale runtime_receipt_manifest 必须先被新的 verifier oracle 明确判失败。",
+        "修复后的当前轮 manifest 在完整精确 tuple 上通过，并记录自身内容 SHA。",
+        "public verifier tests 与 protected runtime mutations 均通过且 fingerprint 保持 pre-Executor immutable。"
+      ],
+      "forbidden_workarounds": [
+        "不得继续用 get(field) in (None, expected) 之类允许字段缺失的条件。",
+        "不得只把 CURRENT.tracked_runtime_receipt_manifest_is_stale 改成 false。",
+        "不得使用固定 PASS JSON、字符串黑名单或 Executor 自报替代独立验证。"
+      ]
+    },
+    {
+      "finding_id": "ASE_R1_REENTRY6_FINAL_VERIFIER_TRANSACTION_NOT_REEXECUTED_AFTER_EXACT_CI",
+      "target_role": "verifier",
+      "severity": "blocking_transaction_replayability_gap",
+      "affected_files_or_functions": [
+        "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json",
+        "results/agent_flow_v3/care-ase-faithful/verification/transaction_gate_receipt.json",
+        "results/agent_flow_v3/care-ase-faithful/implementation/frozen_verifier_validation_result.json",
+        "results/agent_flow_v3/care-ase-faithful/controller_ci_receipt.json"
+      ],
+      "finding": "当前 hosted CI 已对 965b0aad... 成功，但 Verifier-owned executable/transaction receipts 仍是 CI 前的 afcf93cf... FAIL_CLOSED 版本，frozen_verifier_validation_result 也仍 passed=false。最终 review packet 因而没有一个独立 Verifier 对 exact integration + exact CI 的 PASS 事务。",
+      "why_it_matters": "Hosted deterministic CI 只证明仓库级检查成功，不能自动把先前失败的 runtime/Verifier 事务转化为通过；否则 Controller 可以在 Verifier fail-closed 后仅等待 CI 再把任务送 Planner，绕过独立验证。",
+      "required_repair": [
+        "在下一次精确 integration 的 hosted CI 成功后，由原 production Verifier thread 对该 exact tuple 重新执行 transaction gate，并生成 passed=true 的 executable_verifier_receipt、transaction_gate_receipt 和 frozen_verifier_validation_result。",
+        "若流程必须先运行 runtime probes 再 CI，可采用两阶段证据：pre-CI verifier runtime PASS + post-CI transaction-only rebind；但 post-CI 阶段必须由 Verifier 独立读取真实 CI head/conclusion 和当前 immutable fingerprints，而不是 Controller 自报 PASS。",
+        "Controller 随后重新生成 planner_review_packet 与 CURRENT，二者引用同一 nonce/contract/integration/implementation/verifier/CI/runtime tuple。"
+      ],
+      "required_regression_evidence": [
+        "旧 CI head、pending CI、failed CI、旧 verifier receipt 四类 tuple 均必须 fail closed。",
+        "最终 exact tuple 的 transaction gate status=PASS、failure_count=0，frozen verifier validation passed=true。",
+        "GitHub Actions 必须再次实际 checkout 下一次被审阅的 exact integration SHA。"
+      ],
+      "forbidden_workarounds": [
+        "不得把 pre-CI failure 标记为 allowed 后直接视作最终 Verifier PASS。",
+        "不得由 Controller 手工把 Verifier receipt 的 passed/status 改成成功。",
+        "不得复用上一轮 Planner、CI 或 runtime receipt。"
+      ]
+    }
+  ],
+  "decision_rationale": "当前模型核心实现较上一轮明显收敛，但 formal runtime identity 仍保留历史任务真值，同时 Verifier 对 runtime manifest 的事务绑定不够严格，且最终 Verifier-owned receipts 从未在精确 hosted-CI tuple 上闭合。因此既需要 Executor 修 runtime provenance，也需要 Verifier 修 fail-closed oracle 与最终事务重执行，不能 PLANNER_PASS。",
+  "required_role_order": [
+    "VERIFIER_FIRST_HARDEN_RUNTIME_MANIFEST_AND_POST_CI_TRANSACTION_ORACLES_WITHOUT_CHANGING_SCIENTIFIC_CONTRACT",
+    "EXECUTOR_SECOND_PARAMETERIZE_CURRENT_RUNTIME_IDENTITY_AND_REMOVE_HISTORICAL_ACTIVE_DEFAULTS",
+    "CONTROLLER_REINTEGRATE_GENERATE_CURRENT_ROUND_RUNTIME_MANIFEST_RUN_LOCAL_GATES_PUSH_EXACT_DEVELOP_WAIT_EXACT_HOSTED_CI",
+    "VERIFIER_POST_CI_REEXECUTE_TRANSACTION_GATE_ON_EXACT_TUPLE",
+    "CONTROLLER_PUBLISH_FRESH_REPLAYABLE_PLANNER_PACKET",
+    "RETURN_TO_PLANNER"
+  ],
+  "forbidden_actions_confirmed": [
+    "no Planner implementation edits",
+    "no Planner verifier edits",
+    "no formal training",
+    "no outer access",
+    "no develop-to-main merge",
+    "no deployment or upload"
+  ]
+}
