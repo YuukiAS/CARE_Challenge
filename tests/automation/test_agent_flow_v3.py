@@ -1923,6 +1923,10 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             sync = RUNTIME.defer_executor_merge_conflict_to_role(worktree, "develop", raised.exception)
             self.assertEqual(sync["status"], "MERGE_CONFLICT_DEFERRED_TO_EXECUTOR")
             self.assertEqual(sync["overlapping_changed_paths"], ["src/model.py"])
+            head, sync = RUNTIME.prepare_executor_worktree_for_start(worktree, "develop")
+            self.assertEqual(head, RUNTIME.git(worktree, "rev-parse", "HEAD"))
+            self.assertEqual(sync["status"], "MERGE_CONFLICT_DEFERRED_TO_EXECUTOR")
+            self.assertEqual(sync["unmerged_paths"], ["src/model.py"])
             prompt = RUNTIME.build_care_ase_executor_start_prompt(
                 {
                     "request_nonce": "nonce",
@@ -1976,6 +1980,31 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
                 self.assertFalse(
                     RUNTIME.care_ase_role_launch_satisfied(root / "stage_orchestrator", current, "executor")
                 )
+
+    def test_stale_bash_pane_launch_receipt_does_not_satisfy_role_launch(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            stage_root = root / "stage_orchestrator"
+            receipt_path = RUNTIME.care_ase_role_launch_receipt_path(stage_root, "executor")
+            active_path = RUNTIME.active_process_path(stage_root.parent, "care-ase-faithful", "executor")
+            receipt_path.parent.mkdir(parents=True)
+            active_path.parent.mkdir(parents=True, exist_ok=True)
+            payload = {
+                "task_id": "care-ase-faithful",
+                "role": "executor",
+                "request_nonce": "nonce-1",
+                "frozen_contract_sha256": "a" * 64,
+                "status": "STARTED",
+                "pane_pid": os.getpid(),
+                "prompt_path": str(root / "current_prompt.md"),
+            }
+            receipt_path.write_text(json.dumps(payload), encoding="utf-8")
+            active_path.write_text(json.dumps({**payload, "pid": os.getpid(), "exit_code": None}), encoding="utf-8")
+            current = {"request_nonce": "nonce-1", "frozen_contract_sha256": "a" * 64}
+            with mock.patch.object(RUNTIME, "is_pid_running", return_value=True), mock.patch.object(
+                RUNTIME, "process_has_child", return_value=False
+            ):
+                self.assertFalse(RUNTIME.care_ase_role_launch_satisfied(stage_root, current, "executor"))
 
     def test_watcher_restart_keeps_processed_state(self) -> None:
         args = argparse.Namespace(

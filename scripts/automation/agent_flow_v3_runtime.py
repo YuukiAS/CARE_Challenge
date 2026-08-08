@@ -1252,8 +1252,12 @@ def care_ase_role_launch_satisfied(stage_state_root: Path, current: dict[str, An
     if status == "VERIFIER_FREEZE_COMPLETE":
         return True
     if status in {"STARTED", "ALREADY_RUNNING", "STARTED_RUNNING"}:
+        if role_active_process(stage_state_root.resolve().parent, "care-ase-faithful", role) is None:
+            return False
         pid = receipt.get("pid") or receipt.get("pane_pid")
         if not isinstance(pid, int) or not is_pid_running(pid):
+            return False
+        if not process_has_child(pid):
             return False
         prompt_path = receipt.get("prompt_path")
         if status == "ALREADY_RUNNING" and isinstance(prompt_path, str):
@@ -2525,6 +2529,77 @@ def defer_executor_merge_conflict_to_role(worktree: Path, branch: str, error: Ru
     }
 
 
+def prepare_executor_worktree_for_start(worktree: Path, branch: str) -> tuple[str, dict[str, Any]]:
+    if not worktree.is_dir():
+        raise RuntimeErrorV3(f"executor_worktree_missing:{worktree}")
+    if git_status_short(worktree):
+        raise RuntimeErrorV3(f"executor_worktree_dirty:{worktree}")
+    git(worktree, "fetch", "origin", branch, "--prune")
+    remote = git(worktree, "rev-parse", f"origin/{branch}")
+    head = git(worktree, "rev-parse", "HEAD")
+    if head == remote:
+        return head, {"status": "CURRENT", "head_after_sync": head}
+    contains_remote = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", f"origin/{branch}", "HEAD"],
+        cwd=worktree,
+        check=False,
+    )
+    if contains_remote.returncode == 0:
+        return head, {"status": "LOCAL_CONTAINS_REMOTE", "head_after_sync": head}
+    contains_head = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", "HEAD", f"origin/{branch}"],
+        cwd=worktree,
+        check=False,
+    )
+    if contains_head.returncode == 0:
+        git(worktree, "merge", "--ff-only", f"origin/{branch}")
+        head_after = git(worktree, "rev-parse", "HEAD")
+        return head_after, {"status": "FAST_FORWARDED", "head_before_sync": head, "head_after_sync": head_after}
+    merge_base = git(worktree, "merge-base", "HEAD", f"origin/{branch}")
+    local_paths = git(worktree, "diff", "--name-only", f"{merge_base}..HEAD").splitlines()
+    remote_paths = git(worktree, "diff", "--name-only", f"{merge_base}..origin/{branch}").splitlines()
+    completed = subprocess.run(
+        ["git", "merge", "--no-edit", f"origin/{branch}"],
+        cwd=worktree,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+    if completed.returncode == 0:
+        head_after = git(worktree, "rev-parse", "HEAD")
+        return head_after, {
+            "status": "MERGED_ORIGIN_DEVELOP",
+            "head_before_sync": head,
+            "head_after_sync": head_after,
+            "remote": remote,
+            "merge_base": merge_base,
+        }
+    unmerged = git(worktree, "diff", "--name-only", "--diff-filter=U").splitlines()
+    if unmerged:
+        return head, {
+            "status": "MERGE_CONFLICT_DEFERRED_TO_EXECUTOR",
+            "head": head,
+            "remote": remote,
+            "merge_base": merge_base,
+            "local_changed_paths": local_paths,
+            "remote_changed_paths": remote_paths,
+            "overlapping_changed_paths": sorted(set(local_paths).intersection(remote_paths)),
+            "unmerged_paths": unmerged,
+            "merge_stdout": completed.stdout[-4000:],
+            "merge_stderr": completed.stderr[-4000:],
+            "policy": (
+                "Controller leaves the merge conflict in the Executor worktree. "
+                "The exact Executor thread must resolve Executor-owned conflicts and take origin/develop for non-owned files."
+            ),
+        }
+    subprocess.run(["git", "merge", "--abort"], cwd=worktree, check=False)
+    raise RuntimeErrorV3(
+        f"executor_worktree_merge_failed:{worktree}:head={head}:remote={remote}:merge_base={merge_base}:"
+        f"{completed.stderr[-500:]}"
+    )
+
+
 def start_care_ase_verifier_recheck(
     *,
     args: argparse.Namespace,
@@ -2714,16 +2789,7 @@ def start_care_ase_executor_from_verifier_freeze(
         )
         thread_id = str(thread_initialization["thread_id"])
     command = build_controller_start_command(args.codex_bin, worktree, thread_id)
-    worktree_sync = {"status": "NOT_CHECKED"}
-    try:
-        head_after_ff = ensure_role_worktree_current(worktree, args.branch)
-        worktree_sync = {"status": "CURRENT", "head_after_sync": head_after_ff}
-    except RuntimeErrorV3 as exc:
-        if str(exc).startswith("role_worktree_merge_conflict:"):
-            head_after_ff = git(worktree, "rev-parse", "HEAD")
-            worktree_sync = defer_executor_merge_conflict_to_role(worktree, args.branch, exc)
-        else:
-            raise
+    head_after_ff, worktree_sync = prepare_executor_worktree_for_start(worktree, args.branch)
     prompt_payload = build_care_ase_executor_start_prompt(current, worktree_sync=worktree_sync)
     prompt_sha = sha_bytes(prompt_payload)
     stamp = now().replace(":", "").replace("-", "")
@@ -4251,6 +4317,18 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
             and stage_event_was_processed(event_key, processed)
         ):
             processed = {key for key in processed if not key.startswith(event_key)}
+        if (
+            task_id == "care-ase-faithful"
+            and current.get("state") == "VERIFIER_FROZEN"
+            and stage_event_was_processed(event_key, processed)
+            and not care_ase_role_launch_satisfied(args.state_root, current, "executor")
+            and not (
+                care_ase_executor_complete
+                or care_ase_executor_needs_verifier_recheck
+                or care_ase_executor_needs_user_scientific_choice
+            )
+        ):
+            processed = remove_stage_processed_event(event_key, processed)
         if (
             task_id == "care-ase-faithful"
             and current.get("state") in {"VERIFIER_RECHECK_REQUIRED", "VERIFIER_RECHECK_RUNNING"}
