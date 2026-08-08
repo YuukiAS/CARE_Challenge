@@ -4210,8 +4210,8 @@ def validate_care_ase_verifier_recheck_completion(
     if merge_base == verifier_head:
         scope_failures.append("verifier_no_local_recheck_commit")
     goal_complete = role_rollout_goal_complete(codex_home, thread_id)
-    if goal_complete is None:
-        scope_failures.append("verifier_goal_not_complete")
+    stage_state_root = Path(getattr(args, "state_root", Path("/users/a/e/aereinh/.agent-flow-v3/stage_orchestrator"))).resolve()
+    verifier_process_active = role_active_process(stage_state_root.parent, "care-ase-faithful", "verifier") is not None
     required = {
         "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json",
         "results/agent_flow_v3/care-ase-faithful/verification/transaction_gate_receipt.json",
@@ -4236,6 +4236,10 @@ def validate_care_ase_verifier_recheck_completion(
         scope_failures.append("integrated_validation_not_pass")
     if transaction.get("implementation_fingerprint_sha256") not in {None, current.get("implementation_fingerprint_sha256")}:
         scope_failures.append("transaction_implementation_fingerprint")
+    if goal_complete is None and not pre_ci_transaction_pending:
+        scope_failures.append("verifier_goal_not_complete")
+    if goal_complete is None and pre_ci_transaction_pending and verifier_process_active:
+        scope_failures.append("verifier_process_still_running")
     fingerprint_path = verifier_worktree / "results/agent_flow_v3/care-ase-faithful/verification/verifier_fingerprint.json"
     verifier_fingerprint = load_json(fingerprint_path) if fingerprint_path.is_file() else {}
     fingerprint_sha = verifier_fingerprint.get("fingerprint_sha256") or current.get("verifier_fingerprint_sha256")
