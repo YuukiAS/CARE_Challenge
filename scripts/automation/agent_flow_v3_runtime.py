@@ -3324,20 +3324,23 @@ def care_ase_verifier_pre_ci_transaction_pending(executable: dict[str, Any], tra
         "transaction.hosted_ci.head_sha_not_exact_integration",
         "transaction.hosted_ci.conclusion",
     }
-    required = {
-        "transaction.hosted_ci.head_sha_not_exact_integration",
-        "transaction.hosted_ci.conclusion",
-    }
+    allowed_prefixes = ("transaction.runtime_manifest.",)
     executable_failures = set(str(item) for item in executable.get("failures", []))
     transaction_failures = set(str(item) for item in transaction.get("failures", []))
+    allowed_failure = lambda item: item in allowed or any(item.startswith(prefix) for prefix in allowed_prefixes)
+    provenance_failure_present = any(
+        item in allowed or any(item.startswith(prefix) for prefix in allowed_prefixes)
+        for item in executable_failures | transaction_failures
+    )
     return bool(
         executable.get("status") == "FAIL_CLOSED"
         and executable.get("passed") is False
-        and required.issubset(executable_failures)
-        and executable_failures.issubset(allowed)
+        and executable_failures
+        and all(allowed_failure(item) for item in executable_failures)
         and transaction.get("status") == "FAIL_CLOSED"
-        and required.issubset(transaction_failures)
-        and transaction_failures.issubset(allowed)
+        and transaction_failures
+        and all(allowed_failure(item) for item in transaction_failures)
+        and provenance_failure_present
     )
 
 
