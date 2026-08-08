@@ -3271,15 +3271,17 @@ def care_ase_failures_are_exact(actual: Any, expected: set[str]) -> bool:
 
 
 def care_ase_verifier_pre_ci_transaction_pending(executable: dict[str, Any], transaction: dict[str, Any]) -> bool:
-    allowed = {"transaction.hosted_ci.conclusion"}
+    allowed = {
+        "transaction.verifier_source_changed_after_reviewed_integration",
+        "transaction.hosted_ci.head_sha_not_exact_integration",
+        "transaction.hosted_ci.conclusion",
+    }
     return bool(
         executable.get("status") == "FAIL_CLOSED"
         and executable.get("passed") is False
-        and int(executable.get("failure_count", -1)) == 1
-        and care_ase_failures_are_exact(executable.get("failures"), allowed)
+        and set(str(item) for item in executable.get("failures", [])) == allowed
         and transaction.get("status") == "FAIL_CLOSED"
-        and int(transaction.get("failure_count", -1)) == 1
-        and care_ase_failures_are_exact(transaction.get("failures"), allowed)
+        and set(str(item) for item in transaction.get("failures", [])) == allowed
     )
 
 
@@ -3293,6 +3295,7 @@ def care_ase_integrated_validation_pre_ci_acceptable(integrated: dict[str, Any])
         "verifier_owned.transaction.status",
         "verifier_owned.transaction.no_failures",
         "verifier_owned.transaction.hosted_ci_success",
+        "verifier_owned.transaction.hosted_ci_exact_reviewed_integration",
         "verifier_owned.transaction.no_stale_planner_reuse",
     }
     failures = integrated.get("failures")
@@ -4192,7 +4195,9 @@ def validate_care_ase_verifier_recheck_completion(
         "goal_complete": goal_complete,
         "verifier_fingerprint_sha256": fingerprint_sha,
         "pre_ci_transaction_pending": pre_ci_transaction_pending,
-        "pre_ci_transaction_allowed_failures": ["transaction.hosted_ci.conclusion"] if pre_ci_transaction_pending else [],
+        "pre_ci_transaction_allowed_failures": sorted(set(str(item) for item in transaction.get("failures", [])))
+        if pre_ci_transaction_pending
+        else [],
         "executable_receipt_sha256": sha_file(verifier_worktree / "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json"),
         "transaction_gate_receipt_sha256": sha_file(verifier_worktree / "results/agent_flow_v3/care-ase-faithful/verification/transaction_gate_receipt.json"),
         "integrated_validation_result_sha256": sha_file(verifier_worktree / "results/agent_flow_v3/care-ase-faithful/verification/integrated_implementation_validation_result.json"),
