@@ -1888,6 +1888,53 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             self.assertTrue((worktree / "remote.txt").is_file())
             subprocess.check_call(["git", "merge-base", "--is-ancestor", "origin/develop", "HEAD"], cwd=worktree)
 
+    def test_executor_merge_conflict_can_be_deferred_to_exact_role(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            remote = root / "remote.git"
+            seed = root / "seed"
+            worktree = root / "worktree"
+            subprocess.check_call(["git", "init", "--bare", str(remote)], stdout=subprocess.DEVNULL)
+            subprocess.check_call(["git", "clone", str(remote), str(seed)], stdout=subprocess.DEVNULL)
+            subprocess.check_call(["git", "config", "user.email", "test@example.com"], cwd=seed)
+            subprocess.check_call(["git", "config", "user.name", "Test"], cwd=seed)
+            (seed / "src").mkdir()
+            (seed / "src" / "model.py").write_text("base\n", encoding="utf-8")
+            subprocess.check_call(["git", "add", "src/model.py"], cwd=seed)
+            subprocess.check_call(["git", "commit", "-m", "base"], cwd=seed, stdout=subprocess.DEVNULL)
+            subprocess.check_call(["git", "branch", "-M", "develop"], cwd=seed)
+            subprocess.check_call(["git", "push", "origin", "develop"], cwd=seed, stdout=subprocess.DEVNULL)
+            subprocess.check_call(["git", "clone", "-b", "develop", str(remote), str(worktree)], stdout=subprocess.DEVNULL)
+            subprocess.check_call(["git", "config", "user.email", "test@example.com"], cwd=worktree)
+            subprocess.check_call(["git", "config", "user.name", "Test"], cwd=worktree)
+            (worktree / "src" / "model.py").write_text("executor\n", encoding="utf-8")
+            subprocess.check_call(["git", "add", "src/model.py"], cwd=worktree)
+            subprocess.check_call(["git", "commit", "-m", "executor local"], cwd=worktree, stdout=subprocess.DEVNULL)
+            (seed / "src" / "model.py").write_text("develop\n", encoding="utf-8")
+            subprocess.check_call(["git", "add", "src/model.py"], cwd=seed)
+            subprocess.check_call(["git", "commit", "-m", "develop advance"], cwd=seed, stdout=subprocess.DEVNULL)
+            subprocess.check_call(["git", "push", "origin", "develop"], cwd=seed, stdout=subprocess.DEVNULL)
+
+            with self.assertRaises(RUNTIME.RuntimeErrorV3) as raised:
+                RUNTIME.ensure_role_worktree_current(worktree, "develop")
+
+            self.assertIn("role_worktree_merge_conflict", str(raised.exception))
+            self.assertEqual(RUNTIME.git_status_short(worktree), "")
+            sync = RUNTIME.defer_executor_merge_conflict_to_role(worktree, "develop", raised.exception)
+            self.assertEqual(sync["status"], "MERGE_CONFLICT_DEFERRED_TO_EXECUTOR")
+            self.assertEqual(sync["overlapping_changed_paths"], ["src/model.py"])
+            prompt = RUNTIME.build_care_ase_executor_start_prompt(
+                {
+                    "request_nonce": "nonce",
+                    "frozen_contract_sha256": "a" * 64,
+                    "verifier_fingerprint_sha256": "b" * 64,
+                    "state": "VERIFIER_FROZEN",
+                },
+                worktree_sync=sync,
+            ).decode("utf-8")
+            self.assertIn("MERGE_CONFLICT_DEFERRED_TO_EXECUTOR", prompt)
+            self.assertIn("reconcile origin/develop into this Executor branch", prompt)
+
     def test_completed_resume_receipt_is_detected_but_not_active(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

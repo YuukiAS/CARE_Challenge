@@ -2460,7 +2460,19 @@ def validate_care_ase_verifier_frozen_for_executor_start(
     return failures
 
 
-def build_care_ase_executor_start_prompt(current: dict[str, Any]) -> bytes:
+def build_care_ase_executor_start_prompt(current: dict[str, Any], worktree_sync: dict[str, Any] | None = None) -> bytes:
+    sync_note = ""
+    if worktree_sync and worktree_sync.get("status") == "MERGE_CONFLICT_DEFERRED_TO_EXECUTOR":
+        sync_note = f"""
+Worktree synchronization note:
+- status: MERGE_CONFLICT_DEFERRED_TO_EXECUTOR
+- local_head_before_sync: {worktree_sync.get("head")}
+- origin_develop_sha: {worktree_sync.get("remote")}
+- merge_base: {worktree_sync.get("merge_base")}
+- overlapping changed paths: {worktree_sync.get("overlapping_changed_paths")}
+
+Your first action must be to reconcile origin/develop into this Executor branch while preserving the local Executor implementation commit and the latest Verifier/Controller transaction from origin/develop. For non-Executor-owned files, take origin/develop exactly; do not author changes to tests, validators, automation schema, Planner/Critic artifacts, or the frozen contract. Resolve Executor-owned implementation/evidence conflicts inside your write scope, then continue the round_001_reentry_003 Executor repair.
+"""
     prompt = f"""/goal You are the independent Executor for CARE Agent-Flow v3 task care-ase-faithful.
 
 This is an implementation turn in the isolated Executor worktree. Read and obey:
@@ -2480,6 +2492,7 @@ Current verified binding:
 - frozen_contract_sha256: {current.get("frozen_contract_sha256")}
 - verifier_fingerprint_sha256: {current.get("verifier_fingerprint_sha256")}
 - CURRENT.state: {current.get("state")}
+{sync_note}
 
 Implement CARE-ASE faithfully against the frozen contract and the Verifier package. You may edit only the Executor role write scope: src, scripts/training, scripts/inference, jobs, configs, and results/agent_flow_v3/care-ase-faithful/implementation. You must not edit tests, validators, automation schema, blueprints, Planner/Critic artifacts, or the frozen contract.
 
@@ -2488,6 +2501,28 @@ Do not train, access outer data, build or upload Docker, upload validation/chall
 If implementation cannot proceed under the contract, write a fail-closed implementation receipt with the concrete cause before ending.
 """
     return prompt.encode("utf-8")
+
+
+def defer_executor_merge_conflict_to_role(worktree: Path, branch: str, error: RuntimeErrorV3) -> dict[str, Any]:
+    head = git(worktree, "rev-parse", "HEAD")
+    remote = git(worktree, "rev-parse", f"origin/{branch}")
+    merge_base = git(worktree, "merge-base", "HEAD", f"origin/{branch}")
+    local_paths = git(worktree, "diff", "--name-only", f"{merge_base}..HEAD").splitlines()
+    remote_paths = git(worktree, "diff", "--name-only", f"{merge_base}..origin/{branch}").splitlines()
+    return {
+        "status": "MERGE_CONFLICT_DEFERRED_TO_EXECUTOR",
+        "error": str(error),
+        "head": head,
+        "remote": remote,
+        "merge_base": merge_base,
+        "local_changed_paths": local_paths,
+        "remote_changed_paths": remote_paths,
+        "overlapping_changed_paths": sorted(set(local_paths).intersection(remote_paths)),
+        "policy": (
+            "Controller must not resolve Executor-owned implementation conflicts. "
+            "The exact Executor thread must first reconcile origin/develop into its local branch."
+        ),
+    }
 
 
 def start_care_ase_verifier_recheck(
@@ -2679,7 +2714,17 @@ def start_care_ase_executor_from_verifier_freeze(
         )
         thread_id = str(thread_initialization["thread_id"])
     command = build_controller_start_command(args.codex_bin, worktree, thread_id)
-    prompt_payload = build_care_ase_executor_start_prompt(current)
+    worktree_sync = {"status": "NOT_CHECKED"}
+    try:
+        head_after_ff = ensure_role_worktree_current(worktree, args.branch)
+        worktree_sync = {"status": "CURRENT", "head_after_sync": head_after_ff}
+    except RuntimeErrorV3 as exc:
+        if str(exc).startswith("role_worktree_merge_conflict:"):
+            head_after_ff = git(worktree, "rev-parse", "HEAD")
+            worktree_sync = defer_executor_merge_conflict_to_role(worktree, args.branch, exc)
+        else:
+            raise
+    prompt_payload = build_care_ase_executor_start_prompt(current, worktree_sync=worktree_sync)
     prompt_sha = sha_bytes(prompt_payload)
     stamp = now().replace(":", "").replace("-", "")
     prompt_path = task_state_dir / f"executor_start_prompt_{stamp}.md"
@@ -2687,7 +2732,6 @@ def start_care_ase_executor_from_verifier_freeze(
     stderr_path = task_state_dir / f"executor_start_{stamp}.stderr.log"
     prompt_path.write_bytes(prompt_payload)
 
-    head_after_ff = ensure_role_worktree_current(worktree, args.branch)
     shell_command = (
         f"CODEX_HOME={shlex.quote(codex_home)} "
         f"CODEX_PERSISTENT_HOME={shlex.quote(codex_home)} "
@@ -2740,6 +2784,7 @@ def start_care_ase_executor_from_verifier_freeze(
         "codex_home": codex_home,
         "worktree": str(worktree),
         "worktree_head_after_ff": head_after_ff,
+        "worktree_sync": worktree_sync,
         "command": shell_command,
         "prompt_path": str(prompt_path),
         "prompt_sha256": prompt_sha,
