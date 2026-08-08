@@ -6,6 +6,7 @@ from dataclasses import asdict, dataclass
 import hashlib
 import json
 import math
+import os
 import pickle
 import random
 from pathlib import Path
@@ -19,11 +20,8 @@ from src.care_myocardium.data.care_ase_splits import PREPROCESSED_REL, build_car
 from src.care_myocardium.data.case_metadata import load_myops_case_metadata
 
 
-HARD_NEGATIVE_MANIFEST_TEMPLATE = "results/20260804_care_ase_r2_emergency_9h_training_docker/hard_negative_manifest_fold{fold}.json"
-ALLOWED_HARD_NEGATIVE_TASK_KEYS = {
-    "20260804_care_ase_r2_emergency_9h_training_docker",
-    "20260803_care_ase_r2_last_hotfix_v9",
-}
+CURRENT_TASK_ID = "care-ase-faithful"
+HARD_NEGATIVE_MANIFEST_ENV = "CARE_ASE_HARD_NEGATIVE_MANIFEST"
 
 
 @dataclass(frozen=True)
@@ -94,7 +92,15 @@ def _case_group_from_availability(availability: tuple[float, float, float]) -> s
 
 def _load_hard_negative_manifest(repo_root: Path, fold: int, manifest_path: Path | None = None) -> dict[str, Any]:
     if manifest_path is None:
-        path = repo_root / HARD_NEGATIVE_MANIFEST_TEMPLATE.format(fold=int(fold))
+        env_path = os.environ.get(HARD_NEGATIVE_MANIFEST_ENV)
+        if not env_path:
+            raise FileNotFoundError(
+                "CARE-ASE hard-negative manifest must be supplied explicitly by the current runtime input bundle "
+                f"or {HARD_NEGATIVE_MANIFEST_ENV}"
+            )
+        path = Path(env_path)
+        if not path.is_absolute():
+            path = repo_root / path
     else:
         path = Path(manifest_path)
         if not path.is_absolute():
@@ -108,8 +114,8 @@ def _load_hard_negative_manifest(repo_root: Path, fold: int, manifest_path: Path
         raise ValueError(f"hard-negative manifest source is not canonical stock OOF only: {data.get('source')}")
     if data.get("v9_manifest") is not True:
         raise ValueError("hard-negative manifest must declare v9_manifest=true")
-    if data.get("task_key") not in ALLOWED_HARD_NEGATIVE_TASK_KEYS:
-        raise ValueError(f"hard-negative manifest task_key is not an allowed CARE-ASE R2 task: {data.get('task_key')}")
+    if data.get("task_id") not in (None, CURRENT_TASK_ID):
+        raise ValueError(f"hard-negative manifest task_id is not current CARE-ASE task: {data.get('task_id')}")
     if data.get("forbidden_old_manifest_paths_rejected") is not True:
         raise ValueError("hard-negative manifest must prove old manifest paths are rejected")
     cases = data.setdefault("cases", {})
