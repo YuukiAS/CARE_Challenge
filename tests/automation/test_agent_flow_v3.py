@@ -456,6 +456,125 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         self.assertEqual(receipt["decision"], "CONTROLLER_UPDATE_REQUIRED")
         self.assertIn("Verifier receipt recheck", receipt["action"])
 
+    def test_care_ase_executor_pending_verifier_recheck_receipt_prevents_duplicate_start(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            worktree = Path(tmp) / "executor"
+            implementation_dir = worktree / "results" / "agent_flow_v3" / "care-ase-faithful" / "implementation"
+            implementation_dir.mkdir(parents=True)
+            (implementation_dir / "result.md").write_text(
+                "- status: `IMPLEMENTATION_EVIDENCE_READY_PENDING_VERIFIER_RECHECK`\n",
+                encoding="utf-8",
+            )
+            (implementation_dir / "implementation_evidence_validation_result.json").write_text(
+                json.dumps(
+                    {
+                        "passed": False,
+                        "failure_count": 4,
+                        "failures": [
+                            "verifier_owned.executable.passed",
+                            "verifier_owned.loss_semantic.injury_dice_bce_formula",
+                            "verifier_owned.transaction.status",
+                            "verifier_owned.transaction.hosted_ci_success",
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            (implementation_dir / "implementation_fingerprint.json").write_text(
+                json.dumps(
+                    {
+                        "frozen_contract_sha256": "a" * 64,
+                        "request_nonce": "care-ase-nonce",
+                        "verifier_fingerprint_sha256": "b" * 64,
+                        "implementation_fingerprint_sha256": "c" * 64,
+                        "implementation_evidence_sha256": "d" * 64,
+                        "source_manifest_sha256": "e" * 64,
+                    }
+                ),
+                encoding="utf-8",
+            )
+            (implementation_dir / "implementation_evidence.json").write_text(
+                json.dumps({"implementation_evidence_sha256": "d" * 64, "source_manifest_sha256": "e" * 64}),
+                encoding="utf-8",
+            )
+            (implementation_dir / "implementation_source_manifest.json").write_text(
+                json.dumps(
+                    {
+                        "frozen_contract_sha256": "a" * 64,
+                        "request_nonce": "care-ase-nonce",
+                        "source_manifest_sha256": "e" * 64,
+                    }
+                ),
+                encoding="utf-8",
+            )
+            (implementation_dir / "runtime_asset_manifest.json").write_text("{}", encoding="utf-8")
+
+            current = {
+                "task_id": "care-ase-faithful",
+                "request_nonce": "care-ase-nonce",
+                "review_round": 1,
+                "state": "VERIFIER_FROZEN",
+                "frozen_contract_sha256": "a" * 64,
+                "verifier_fingerprint_sha256": "b" * 64,
+            }
+            args = argparse.Namespace(branch="develop")
+
+            def fake_git(_repo: Path, *cmd: str) -> str:
+                if cmd[0] == "fetch":
+                    return ""
+                if cmd[:2] == ("rev-parse", "HEAD"):
+                    return "1" * 40
+                if cmd[0] == "merge-base":
+                    return "0" * 40
+                if cmd[:2] == ("diff", "--name-only"):
+                    return "src/care_myocardium/training/care_ase_trainer.py\n"
+                raise AssertionError(cmd)
+
+            with (
+                mock.patch.object(
+                    RUNTIME,
+                    "load_care_ase_executor_binding",
+                    return_value=(
+                        {},
+                        {"write_scope": ["src/**", "results/agent_flow_v3/care-ase-faithful/implementation/**"]},
+                        worktree,
+                        "/tmp/codex-home",
+                        "thread-1",
+                    ),
+                ),
+                mock.patch.object(RUNTIME, "validate_role_plan_push_authority", return_value=[]),
+                mock.patch.object(RUNTIME, "git_status_short", return_value=""),
+                mock.patch.object(RUNTIME, "role_rollout_goal_complete", return_value={"status": "complete"}),
+                mock.patch.object(RUNTIME, "git", side_effect=fake_git),
+                mock.patch.object(RUNTIME, "git_commit_subject", return_value="executor: repair care ase loss semantics"),
+            ):
+                self.assertTrue(RUNTIME.care_ase_executor_scope_complete_pending_verifier_recheck_available(args, current))
+
+            validation_path = implementation_dir / "implementation_evidence_validation_result.json"
+            validation = json.loads(validation_path.read_text(encoding="utf-8"))
+            validation["failures"].append("implementation.loss_formula.contract_violation")
+            validation_path.write_text(json.dumps(validation), encoding="utf-8")
+
+            with (
+                mock.patch.object(
+                    RUNTIME,
+                    "load_care_ase_executor_binding",
+                    return_value=(
+                        {},
+                        {"write_scope": ["src/**", "results/agent_flow_v3/care-ase-faithful/implementation/**"]},
+                        worktree,
+                        "/tmp/codex-home",
+                        "thread-1",
+                    ),
+                ),
+                mock.patch.object(RUNTIME, "validate_role_plan_push_authority", return_value=[]),
+                mock.patch.object(RUNTIME, "git_status_short", return_value=""),
+                mock.patch.object(RUNTIME, "role_rollout_goal_complete", return_value={"status": "complete"}),
+                mock.patch.object(RUNTIME, "git", side_effect=fake_git),
+                mock.patch.object(RUNTIME, "git_commit_subject", return_value="executor: repair care ase loss semantics"),
+            ):
+                self.assertFalse(RUNTIME.care_ase_executor_scope_complete_pending_verifier_recheck_available(args, current))
+
     def test_care_ase_fail_closed_uncited_tile_local_threshold_does_not_route_to_user_choice(self) -> None:
         current = {
             "task_id": "care-ase-faithful",

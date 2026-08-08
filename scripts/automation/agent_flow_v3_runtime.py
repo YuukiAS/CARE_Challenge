@@ -3032,12 +3032,27 @@ def validate_care_ase_executor_completion(
     fail_closed_path = implementation_dir / "fail_closed_implementation_receipt.json"
     fail_closed = load_json(fail_closed_path) if fail_closed_path.is_file() else {}
     verifier_recheck_required = False
+    recheck_basis = None
     validation_passed = validation.get("passed") is True and validation.get("failure_count") == 0
     if not validation_passed:
         validation_failures = validation.get("failures") if isinstance(validation.get("failures"), list) else []
+        result_status = care_ase_implementation_result_status(implementation_dir / "result.md")
+        pending_verifier_recheck = bool(
+            allow_verifier_recheck
+            and result_status == "IMPLEMENTATION_EVIDENCE_READY_PENDING_VERIFIER_RECHECK"
+            and care_ase_validation_failures_require_verifier_recheck(validation)
+            and fingerprint.get("frozen_contract_sha256") == current.get("frozen_contract_sha256")
+            and fingerprint.get("request_nonce") == current.get("request_nonce")
+            and fingerprint.get("verifier_fingerprint_sha256") == current.get("verifier_fingerprint_sha256")
+            and evidence.get("source_manifest_sha256") == fingerprint.get("source_manifest_sha256")
+            and source_manifest.get("frozen_contract_sha256") == current.get("frozen_contract_sha256")
+            and source_manifest.get("request_nonce") == current.get("request_nonce")
+        )
         verifier_recheck_required = bool(
             allow_verifier_recheck
             and (
+                pending_verifier_recheck
+                or
                 (
                     validation.get("passed") is False
                     and validation_failures == ["implementation_fail_closed_before_validator"]
@@ -3053,6 +3068,10 @@ def validate_care_ase_executor_completion(
                 or care_ase_fail_closed_requires_verifier_recheck(fail_closed, current)
             )
         )
+        if pending_verifier_recheck:
+            recheck_basis = "implementation_evidence_ready_pending_verifier_recheck"
+        elif verifier_recheck_required:
+            recheck_basis = "legacy_fail_closed_verifier_recheck"
         if not verifier_recheck_required:
             scope_failures.append("implementation_validation_failed")
     if not verifier_recheck_required:
@@ -3090,6 +3109,7 @@ def validate_care_ase_executor_completion(
         "validation_result_file_sha256": sha_file(implementation_dir / "implementation_evidence_validation_result.json"),
         "fail_closed_receipt_file_sha256": sha_file(fail_closed_path) if fail_closed_path.is_file() else None,
         "requires_verifier_recheck": verifier_recheck_required,
+        "verifier_recheck_basis": recheck_basis,
     }
 
 
@@ -3139,6 +3159,43 @@ def care_ase_fail_closed_requires_verifier_recheck(
         and closed.get("docker_or_upload") is False
         and current_recheck.get("implementation_decision")
         == "no_contract_compliant_executor_repair_available_for_unchanged_verifier_fingerprint"
+    )
+
+
+def care_ase_implementation_result_status(result_path: Path) -> str | None:
+    try:
+        lines = result_path.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return None
+    for line in lines:
+        stripped = line.strip()
+        if not stripped.startswith("- status:"):
+            continue
+        raw_status = stripped.split(":", 1)[1].strip()
+        return raw_status.strip("`").strip()
+    return None
+
+
+def care_ase_validation_failures_require_verifier_recheck(validation: dict[str, Any]) -> bool:
+    failures = validation.get("failures")
+    if not isinstance(failures, list) or not failures:
+        return False
+    allowed_exact = {
+        "verifier_owned.executable.passed",
+        "verifier_owned.executable.status",
+        "verifier_owned.loss_semantic.status",
+        "verifier_owned.transaction.status",
+        "verifier_owned.transaction.no_failures",
+        "verifier_owned.transaction.hosted_ci_success",
+        "verifier_owned.transaction.no_stale_planner_reuse",
+    }
+    allowed_prefixes = (
+        "verifier_owned.executable.runtime_binding_sha:",
+        "verifier_owned.loss_semantic.",
+    )
+    return all(
+        str(item) in allowed_exact or any(str(item).startswith(prefix) for prefix in allowed_prefixes)
+        for item in failures
     )
 
 
@@ -3483,6 +3540,7 @@ def apply_care_ase_executor_scope_completion_verifier_recheck_update(
         "implementation_evidence_payload_sha256": completion.get("implementation_evidence_sha256"),
         "verifier_fingerprint_sha256": current.get("verifier_fingerprint_sha256"),
         "requires_independent_verifier_recheck": True,
+        "verifier_recheck_basis": completion.get("verifier_recheck_basis"),
         "fail_closed_receipt_file_sha256": completion.get("fail_closed_receipt_file_sha256"),
         "local_controller_gates": local_gates,
         "forbidden_actions_confirmed": [
