@@ -63,6 +63,9 @@ EXECUTABLE_MUTATION_IDS = [
     "synthetic_intervention_delta",
     "semantic_disable_only_quadratic_signal",
     "partial_hw_straight_through_zero_loss",
+    "injury_dice_bce_replaced_by_focal",
+    "scar_component_tversky_plus_occupancy_lambda025",
+    "scar_component_tversky_blended_occupancy_half",
     "full_support_pseudo_tiling",
     "transaction_old_tuple_reused",
     "forged_executor_pass_receipt",
@@ -255,6 +258,8 @@ def check_only() -> int:
             _record_error(errors, int(report.get("failure_count", 0)) > 0, f"known_bad_report_no_failures: {item.get('id')}")
             _record_error(errors, item.get("report_sha256") == sha256_file(report_path), f"known_bad_report_sha_mismatch: {item.get('id')}")
 
+    expected_executable_passed = not CURRENT_REVIEWED_IMPLEMENTATION_EXPECTED_FAIL_CLOSED
+    expected_executable_status = "FAIL_CLOSED" if CURRENT_REVIEWED_IMPLEMENTATION_EXPECTED_FAIL_CLOSED else "PASS"
     _record_error(errors, transaction_receipt.get("schema") == "CARE_ASE_FAITHFUL_TRANSACTION_GATE_RECEIPT_V1", "transaction_receipt.schema")
     _record_error(errors, transaction_receipt.get("review_round") == REVIEW_ROUND, "transaction_receipt.review_round")
     _record_error(errors, transaction_receipt.get("planner_review_commit") == PLANNER_REVIEW_COMMIT, "transaction_receipt.planner_review_commit")
@@ -267,14 +272,21 @@ def check_only() -> int:
     )
     _record_error(errors, len(str(transaction_receipt.get("verifier_source_fingerprint_sha256", ""))) == 64, "transaction_receipt.verifier_source_fingerprint")
     _record_error(errors, len(str(transaction_receipt.get("executable_verifier_receipt_sha256", ""))) == 64, "transaction_receipt.executable_receipt_sha")
-    _record_error(errors, transaction_receipt.get("status") == "PASS", "transaction_receipt.expected_pass")
-    _record_error(errors, int(transaction_receipt.get("failure_count", 1)) == 0, "transaction_receipt.failure_count")
+    _record_error(
+        errors,
+        transaction_receipt.get("status") == ("FAIL_CLOSED" if CURRENT_REVIEWED_IMPLEMENTATION_EXPECTED_FAIL_CLOSED else "PASS"),
+        "transaction_receipt.expected_status",
+    )
+    transaction_failure_count = int(transaction_receipt.get("failure_count", 1))
+    _record_error(
+        errors,
+        transaction_failure_count > 0 if CURRENT_REVIEWED_IMPLEMENTATION_EXPECTED_FAIL_CLOSED else transaction_failure_count == 0,
+        "transaction_receipt.failure_count",
+    )
 
     _record_error(errors, executable_receipt.get("schema") == "CARE_ASE_FAITHFUL_EXECUTABLE_VERIFIER_RECEIPT_V1", "executable_receipt.schema")
     _record_error(errors, executable_receipt.get("review_round") == REVIEW_ROUND, "executable_receipt.review_round")
     _record_error(errors, executable_receipt.get("fixture_mode") is False, "executable_receipt.production_not_fixture")
-    expected_executable_passed = not CURRENT_REVIEWED_IMPLEMENTATION_EXPECTED_FAIL_CLOSED
-    expected_executable_status = "FAIL_CLOSED" if CURRENT_REVIEWED_IMPLEMENTATION_EXPECTED_FAIL_CLOSED else "PASS"
     _record_error(errors, executable_receipt.get("passed") is expected_executable_passed, "executable_receipt.current_implementation_passed")
     _record_error(errors, executable_receipt.get("status") == expected_executable_status, "executable_receipt.current_implementation_status")
     _record_error(errors, executable_receipt.get("integration_sha") == REVIEWED_INTEGRATION_COMMIT, "executable_receipt.integration_sha")

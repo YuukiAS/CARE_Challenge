@@ -1,9 +1,14 @@
 {
-  "failure_count": 7,
+  "failure_count": 12,
   "failures": [
     "artifact_binding.source_manifest.hash:src/care_myocardium/models/care_ase/core.py",
     "verifier_owned.executable.passed",
     "verifier_owned.executable.status",
+    "verifier_owned.loss_semantic.status",
+    "verifier_owned.loss_semantic.injury_dice_bce_formula",
+    "verifier_owned.loss_semantic.scar_component_tversky_formula",
+    "verifier_owned.loss_semantic.no_scar_occupancy_hidden_auxiliary",
+    "verifier_owned.loss_semantic.no_extra_weighted_auxiliary",
     "verifier_owned.transaction.status",
     "verifier_owned.transaction.no_failures",
     "verifier_owned.transaction.hosted_ci_success",

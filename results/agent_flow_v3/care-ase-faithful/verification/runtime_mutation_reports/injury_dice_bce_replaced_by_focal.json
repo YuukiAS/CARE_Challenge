@@ -1,0 +1,128 @@
+{
+  "created_utc": "2026-08-08T08:50:55Z",
+  "exit_code": 2,
+  "failure_count": 1,
+  "failures": [
+    "kb13.loss_semantic_oracle.rejected:injury_dice_bce_replaced_by_focal"
+  ],
+  "fixture_mode": false,
+  "mutated_fingerprint_sha256": "1090faebfa3d3ba2a4ad7ea4c190cfb2b842c01307a4037538bdd2153a22413f",
+  "mutation_applied": "injury_dice_bce_term_name_preserved_but_formula_replaced_by_dice_focal",
+  "mutation_executed": true,
+  "mutation_id": "injury_dice_bce_replaced_by_focal",
+  "observations": {
+    "loss_semantic_mutation": {
+      "batch_sha256": "edca1afae5d9a147135b01afefb83bc1b47777097e3d55c825ba7d12e046b00f",
+      "injury_reference_unweighted": 0.930699348449707,
+      "mutated_unweighted_value": 0.5927543044090271,
+      "mutated_weighted_contribution": 0.23710172176361086,
+      "original_unweighted_value": 0.5927543044090271,
+      "reference_uses_implementation_loss_helper": false,
+      "replacement_formula": "Dice+Focal(alpha=0.35,gamma=2.0)",
+      "scar_component_reference_unweighted": 0.941228985786438,
+      "scar_occupancy_reference_unweighted": 1.0380148887634277,
+      "semantic_oracle_failures": [
+        "injury_dice_bce.formula_mismatch",
+        "scar_component_adaptive_tversky.formula_mismatch_or_hidden_auxiliary"
+      ],
+      "semantic_oracle_status": "FAIL",
+      "term_name_preserved": "injury_dice_bce"
+    },
+    "loss_semantic_probe": {
+      "contract_field_or_exact_clause": "Section 10 unique allowed weighted loss set",
+      "contract_source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+      "injury_dice_bce": {
+        "abs_diff": 0.33794504404067993,
+        "actual_matches_independent_dice_focal_alpha035_gamma2": true,
+        "actual_unweighted": 0.5927543044090271,
+        "edema_valid_voxel_count": 32768,
+        "matches_reference": false,
+        "reference_unweighted": 0.930699348449707,
+        "t2_eligible_rows": 1,
+        "t2_gated": true,
+        "target_labels": [
+          4,
+          5
+        ],
+        "weighted_abs_diff": 0.135178017616272,
+        "weighted_actual": 0.23710172176361086,
+        "weighted_reference": 0.37227973937988285
+      },
+      "name": "loss_semantic_oracle",
+      "reference_uses_implementation_loss_helper": false,
+      "scar_component_adaptive_tversky": {
+        "abs_diff": 0.04839295148849487,
+        "actual_unweighted": 0.9896219372749329,
+        "adaptive_weight_sum": 2.0,
+        "alpha": 0.3,
+        "beta": 0.7,
+        "component_count": 2,
+        "matches_reference": false,
+        "reference_unweighted": 0.941228985786438,
+        "scar_occupancy_dice_focal_reference_unweighted": 1.0380148887634277,
+        "small_component_weight_formula": "clip(sqrt(1000mm3/component_volume_mm3),1,4)",
+        "unauthorized_occupancy_objective_detected": true,
+        "weighted_abs_diff": 0.012098237872123718,
+        "weighted_actual": 0.24740548431873322,
+        "weighted_reference": 0.2353072464466095
+      },
+      "semantic_failures": [
+        "injury_dice_bce.formula_mismatch",
+        "scar_component_adaptive_tversky.formula_mismatch_or_hidden_auxiliary"
+      ],
+      "status": "FAIL",
+      "tolerance": 1e-05,
+      "unique_allowed_loss_set": {
+        "actual_terms": [
+          "anatomy_deep_supervision_dice_ce",
+          "conditional_final_dice_ce",
+          "distance_rho_masked_smooth_l1",
+          "edema_binary_dice_focal",
+          "edema_boundary_smooth_l1",
+          "edema_context_ce",
+          "edema_extent_bce_smooth_l1",
+          "injury_dice_bce",
+          "relation_loss",
+          "scar_binary_dice_focal",
+          "scar_center_focal_bce",
+          "scar_component_adaptive_tversky",
+          "scar_context_ce",
+          "scar_extent_bce_smooth_l1",
+          "wall_dice_bce"
+        ],
+        "expected_terms": [
+          "anatomy_deep_supervision_dice_ce",
+          "conditional_final_dice_ce",
+          "distance_rho_masked_smooth_l1",
+          "edema_binary_dice_focal",
+          "edema_boundary_smooth_l1",
+          "edema_context_ce",
+          "edema_extent_bce_smooth_l1",
+          "injury_dice_bce",
+          "relation_loss",
+          "scar_binary_dice_focal",
+          "scar_center_focal_bce",
+          "scar_component_adaptive_tversky",
+          "scar_context_ce",
+          "scar_extent_bce_smooth_l1",
+          "wall_dice_bce"
+        ],
+        "extra_terms": [],
+        "matches_contract_terms": true,
+        "missing_terms": [],
+        "no_extra_weighted_auxiliary_objective": false,
+        "reported_allowed_weighted_sum": 11.332353515923025,
+        "total_abs_diff": 7.599592066753758e-08,
+        "total_loss": 11.332353591918945,
+        "total_matches_allowed_weighted_sum": true,
+        "weight_failures": [],
+        "weights_match_contract": true
+      }
+    },
+    "source_manifest_sha256_before_mutation": "0a4ed95d7674727a97f94f85cd4e08f1f4a0e1a5bcf0c1f376773792592b0ace"
+  },
+  "passed": false,
+  "request_nonce": "care-ase-20260806T090955Z",
+  "schema": "CARE_ASE_FAITHFUL_EXECUTABLE_MUTATION_RESULT_V1",
+  "task_id": "care-ase-faithful"
+}

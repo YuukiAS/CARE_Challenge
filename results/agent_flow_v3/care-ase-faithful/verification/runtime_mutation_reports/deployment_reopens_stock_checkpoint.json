@@ -1,19 +1,19 @@
 {
-  "created_utc": "2026-08-08T07:19:58Z",
+  "created_utc": "2026-08-08T08:52:34Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
     "kb16.deployment.no_stock_checkpoint"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "274a2fac0112a84594c0c081dcaf7b99318d3c5af536d455bdd807bc207b0e45",
+  "mutated_fingerprint_sha256": "68d6e77480d60678d37b552cf19a2383f289fdf37bd45d5f49ae9059a74f7b24",
   "mutation_applied": "schema_v4_checkpoint_payload_mutated_to_require_stock_checkpoint_on_deployment_load",
   "mutation_executed": true,
   "mutation_id": "deployment_reopens_stock_checkpoint",
   "observations": {
     "deployment_load_requires_stock_checkpoint": true,
     "deployment_loader_rejected_mutated_checkpoint": true,
-    "observed_error": "ValueError:CARE-ASE checkpoint sidecar SHA mismatch: expected 5f5a8ceb0ac461ca451abc536ecb78174d038293fa55da97e3a033b73f079a75 observed 89c6379a6b6a01ce82654a938173aa3e9b1c52cd7ca798ba4b71a8585ab1b9c6",
+    "observed_error": "ValueError:CARE-ASE checkpoint sidecar SHA mismatch: expected 8b786de64cba3f1436b2a0806cf9932f45868e67a563c47a26d42388fe15244f observed b769200b85ff9bc5c7abc876b91b5d011f81a430a711d67cdfb8917b4942afee",
     "source_manifest_sha256_before_mutation": "0a4ed95d7674727a97f94f85cd4e08f1f4a0e1a5bcf0c1f376773792592b0ace"
   },
   "passed": false,
