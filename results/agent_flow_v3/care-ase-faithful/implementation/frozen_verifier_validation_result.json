@@ -1,8 +1,16 @@
 {
-  "failure_count": 0,
-  "failures": [],
+  "failure_count": 7,
+  "failures": [
+    "artifact_binding.source_manifest.hash:src/care_myocardium/models/care_ase/core.py",
+    "verifier_owned.executable.passed",
+    "verifier_owned.executable.status",
+    "verifier_owned.transaction.status",
+    "verifier_owned.transaction.no_failures",
+    "verifier_owned.transaction.hosted_ci_success",
+    "verifier_owned.transaction.no_stale_planner_reuse"
+  ],
   "known_bad_case_id": null,
-  "passed": true,
+  "passed": false,
   "schema": "CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1",
   "task_id": "care-ase-faithful"
 }
