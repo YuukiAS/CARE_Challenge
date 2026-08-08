@@ -703,6 +703,38 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         self.assertEqual(receipt["decision"], "CONTROLLER_UPDATE_REQUIRED")
         self.assertIn("Verifier recheck receipts", receipt["action"])
 
+    def test_care_ase_verifier_recheck_allows_only_pre_ci_transaction_failure(self) -> None:
+        executable = {
+            "status": "FAIL_CLOSED",
+            "passed": False,
+            "failure_count": 1,
+            "failures": ["transaction.hosted_ci.conclusion"],
+        }
+        transaction = {
+            "status": "FAIL_CLOSED",
+            "failure_count": 1,
+            "failures": ["transaction.hosted_ci.conclusion"],
+        }
+        integrated = {
+            "passed": False,
+            "failure_count": 7,
+            "failures": [
+                "artifact_binding.source_manifest.hash:src/care_myocardium/models/care_ase/core.py",
+                "verifier_owned.executable.passed",
+                "verifier_owned.executable.status",
+                "verifier_owned.transaction.status",
+                "verifier_owned.transaction.no_failures",
+                "verifier_owned.transaction.hosted_ci_success",
+                "verifier_owned.transaction.no_stale_planner_reuse",
+            ],
+        }
+
+        self.assertTrue(RUNTIME.care_ase_verifier_pre_ci_transaction_pending(executable, transaction))
+        self.assertTrue(RUNTIME.care_ase_integrated_validation_pre_ci_acceptable(integrated))
+
+        executable["failures"] = ["executable_probe.failed:required_module_final_logit_interventions"]
+        self.assertFalse(RUNTIME.care_ase_verifier_pre_ci_transaction_pending(executable, transaction))
+
     def test_role_commit_scope_rejects_forbidden_or_outside_paths(self) -> None:
         role_data = {
             "write_scope": ["tests/**", "validators/**", "results/agent_flow_v3/care-ase-faithful/verification/**"],
