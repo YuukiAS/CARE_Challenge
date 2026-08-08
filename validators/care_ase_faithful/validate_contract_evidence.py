@@ -16,10 +16,10 @@ TASK_ID = "care-ase-faithful"
 REQUEST_NONCE = "care-ase-20260806T090955Z"
 FROZEN_CONTRACT_SHA256 = "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d"
 REVIEW_ROUND = 1
-PLANNER_REVIEW_COMMIT = "b5d5e4fdd2aff3bbe04e296eede5ec45326106e4"
-REVIEWED_INTEGRATION_COMMIT = "0fc3eea2e5f1c403208ad19af1b8d4e4c5ebab56"
+PLANNER_REVIEW_COMMIT = "d96415ae0b48ae856854e475e624907392a4d7b9"
+REVIEWED_INTEGRATION_COMMIT = "491ba697e7a51712d9d04fc27824e4efa018827a"
 REVIEWED_IMPLEMENTATION_FINGERPRINT = "25828c210776d499613a872754d39290cf9df416a747fb9f0f86c56f91711dc6"
-REVIEWED_VERIFIER_FINGERPRINT = "8fc1e554df6935a0d3070d952f06c34f87a005a281367511aae16a787234d7dd"
+REVIEWED_VERIFIER_FINGERPRINT = "1cce33fdfe102efb63979870f190bfc1a2584385a07f6f2db2ccddcb14e69aaa"
 
 
 KNOWN_BAD_CATEGORIES = [
@@ -207,6 +207,9 @@ REQUIRED_EXECUTABLE_MUTATION_IDS = {
     "synthetic_intervention_delta",
     "semantic_disable_only_quadratic_signal",
     "partial_hw_straight_through_zero_loss",
+    "injury_dice_bce_replaced_by_focal",
+    "scar_component_tversky_plus_occupancy_lambda025",
+    "scar_component_tversky_blended_occupancy_half",
     "full_support_pseudo_tiling",
     "transaction_old_tuple_reused",
     "forged_executor_pass_receipt",
@@ -222,6 +225,7 @@ REQUIRED_EXECUTABLE_MUTATION_IDS = {
 REQUIRED_EXECUTABLE_PROBES = {
     "model_build_and_stock_parity",
     "real_train_case_total_loss_forward_backward",
+    "loss_semantic_oracle",
     "mixed_t2_no_t2_batch",
     "required_module_final_logit_interventions",
     "required_module_final_authority_oracle",
@@ -741,6 +745,47 @@ def _check_verifier_owned_execution(failures: list[str], evidence: dict[str, Any
         loss_probe = by_name.get("real_train_case_total_loss_forward_backward", {})
         _require(failures, loss_probe.get("random_tensor_used") is False, "verifier_owned.executable.no_random_tensor_input")
         _require(failures, int(loss_probe.get("constant_denominator_count", 1)) == 0, "verifier_owned.executable.no_constant_loss_denominators")
+        loss_semantic = by_name.get("loss_semantic_oracle", {})
+        _require(failures, loss_semantic.get("status") == "PASS", "verifier_owned.loss_semantic.status")
+        _require(
+            failures,
+            loss_semantic.get("reference_uses_implementation_loss_helper") is False,
+            "verifier_owned.loss_semantic.independent_reference",
+        )
+        injury_semantic = loss_semantic.get("injury_dice_bce", {}) if isinstance(loss_semantic.get("injury_dice_bce"), dict) else {}
+        scar_semantic = (
+            loss_semantic.get("scar_component_adaptive_tversky", {})
+            if isinstance(loss_semantic.get("scar_component_adaptive_tversky"), dict)
+            else {}
+        )
+        unique_loss_set = (
+            loss_semantic.get("unique_allowed_loss_set", {})
+            if isinstance(loss_semantic.get("unique_allowed_loss_set"), dict)
+            else {}
+        )
+        _require(failures, injury_semantic.get("matches_reference") is True, "verifier_owned.loss_semantic.injury_dice_bce_formula")
+        _require(failures, injury_semantic.get("t2_gated") is True, "verifier_owned.loss_semantic.injury_t2_gated")
+        _require(
+            failures,
+            scar_semantic.get("matches_reference") is True,
+            "verifier_owned.loss_semantic.scar_component_tversky_formula",
+        )
+        _require(
+            failures,
+            scar_semantic.get("unauthorized_occupancy_objective_detected") is False,
+            "verifier_owned.loss_semantic.no_scar_occupancy_hidden_auxiliary",
+        )
+        _require(failures, unique_loss_set.get("matches_contract_terms") is True, "verifier_owned.loss_semantic.unique_allowed_terms")
+        _require(
+            failures,
+            unique_loss_set.get("total_matches_allowed_weighted_sum") is True,
+            "verifier_owned.loss_semantic.total_allowed_weighted_sum",
+        )
+        _require(
+            failures,
+            unique_loss_set.get("no_extra_weighted_auxiliary_objective") is True,
+            "verifier_owned.loss_semantic.no_extra_weighted_auxiliary",
+        )
         tile_probe = by_name.get("single_vs_forced_multi_tile_full_volume", {})
         _require(failures, tile_probe.get("calls_are_distinct") is True, "verifier_owned.executable.single_multi_distinct_calls")
         _require(failures, tile_probe.get("patch_size_equals_input") is False, "verifier_owned.executable.patch_smaller_than_input")

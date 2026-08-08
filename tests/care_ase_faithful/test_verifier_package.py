@@ -412,6 +412,56 @@ class VerifierPackageTests(unittest.TestCase):
         self.assertNotIn("executable_probe.failed:required_module_final_logit_interventions", probe_failures)
         self.assertEqual(probe_failures, [])
 
+    def test_loss_semantic_oracle_is_required_and_independent(self) -> None:
+        spec = importlib.util.spec_from_file_location("care_ase_executable_verifier", EXECUTABLE_VERIFIER)
+        if spec is None or spec.loader is None:
+            self.fail("cannot import executable verifier")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+
+        self.assertIn("loss_semantic_oracle", module.REQUIRED_PROBES)
+        threshold_names = {item["name"] for item in module.BLOCKING_NUMERIC_THRESHOLDS}
+        self.assertIn("loss_semantic_oracle_reference_match", threshold_names)
+        probes = {probe["name"]: probe for probe in module.fixture_probe_results()}
+        semantic = probes["loss_semantic_oracle"]
+        self.assertEqual(semantic["status"], "PASS")
+        self.assertIs(semantic["reference_uses_implementation_loss_helper"], False)
+        self.assertTrue(semantic["injury_dice_bce"]["matches_reference"])
+        self.assertTrue(semantic["scar_component_adaptive_tversky"]["matches_reference"])
+        self.assertTrue(semantic["unique_allowed_loss_set"]["no_extra_weighted_auxiliary_objective"])
+
+    def test_loss_formula_runtime_mutations_are_required(self) -> None:
+        runner_spec = importlib.util.spec_from_file_location("care_ase_executable_verifier", EXECUTABLE_VERIFIER)
+        validator_spec = importlib.util.spec_from_file_location("care_ase_contract_validator", VALIDATOR)
+        builder = ROOT / "validators" / "care_ase_faithful" / "build_verification_artifacts.py"
+        builder_spec = importlib.util.spec_from_file_location("care_ase_artifact_builder", builder)
+        for spec in (runner_spec, validator_spec, builder_spec):
+            if spec is None or spec.loader is None:
+                self.fail("cannot import verifier package module")
+        runner = importlib.util.module_from_spec(runner_spec)
+        validator = importlib.util.module_from_spec(validator_spec)
+        builder_module = importlib.util.module_from_spec(builder_spec)
+        runner_spec.loader.exec_module(runner)
+        validator_spec.loader.exec_module(validator)
+        validator_dir = str(VALIDATOR.parent)
+        inserted = validator_dir not in sys.path
+        if inserted:
+            sys.path.insert(0, validator_dir)
+        try:
+            builder_spec.loader.exec_module(builder_module)
+        finally:
+            if inserted:
+                sys.path.remove(validator_dir)
+
+        required = {
+            "injury_dice_bce_replaced_by_focal",
+            "scar_component_tversky_plus_occupancy_lambda025",
+            "scar_component_tversky_blended_occupancy_half",
+        }
+        self.assertTrue(required.issubset(set(runner.MUTATION_IDS)))
+        self.assertTrue(required.issubset(set(validator.REQUIRED_EXECUTABLE_MUTATION_IDS)))
+        self.assertTrue(required.issubset(set(builder_module.EXECUTABLE_MUTATION_IDS)))
+
     def test_public_reference_fixture_requires_explicit_override(self) -> None:
         reference = _run_validator("--emit-reference")
         self.assertEqual(reference.returncode, 0, reference.stderr)

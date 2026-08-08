@@ -6,6 +6,7 @@ import hashlib
 import importlib
 import importlib.util
 import json
+import math
 import os
 import platform
 import subprocess
@@ -20,10 +21,10 @@ TASK_ID = "care-ase-faithful"
 REQUEST_NONCE = "care-ase-20260806T090955Z"
 FROZEN_CONTRACT_SHA256 = "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d"
 REVIEW_ROUND = 1
-PLANNER_REVIEW_COMMIT = "b5d5e4fdd2aff3bbe04e296eede5ec45326106e4"
-REVIEWED_INTEGRATION_COMMIT = "0fc3eea2e5f1c403208ad19af1b8d4e4c5ebab56"
+PLANNER_REVIEW_COMMIT = "d96415ae0b48ae856854e475e624907392a4d7b9"
+REVIEWED_INTEGRATION_COMMIT = "491ba697e7a51712d9d04fc27824e4efa018827a"
 REVIEWED_IMPLEMENTATION_FINGERPRINT = "25828c210776d499613a872754d39290cf9df416a747fb9f0f86c56f91711dc6"
-REVIEWED_VERIFIER_FINGERPRINT = "8fc1e554df6935a0d3070d952f06c34f87a005a281367511aae16a787234d7dd"
+REVIEWED_VERIFIER_FINGERPRINT = "1cce33fdfe102efb63979870f190bfc1a2584385a07f6f2db2ccddcb14e69aaa"
 
 ROOT = Path(__file__).resolve().parents[2]
 VERIFICATION_DIR = ROOT / "results" / "agent_flow_v3" / TASK_ID / "verification"
@@ -39,6 +40,9 @@ MUTATION_IDS = [
     "synthetic_intervention_delta",
     "semantic_disable_only_quadratic_signal",
     "partial_hw_straight_through_zero_loss",
+    "injury_dice_bce_replaced_by_focal",
+    "scar_component_tversky_plus_occupancy_lambda025",
+    "scar_component_tversky_blended_occupancy_half",
     "full_support_pseudo_tiling",
     "transaction_old_tuple_reused",
     "forged_executor_pass_receipt",
@@ -54,6 +58,7 @@ MUTATION_IDS = [
 REQUIRED_PROBES = [
     "model_build_and_stock_parity",
     "real_train_case_total_loss_forward_backward",
+    "loss_semantic_oracle",
     "mixed_t2_no_t2_batch",
     "required_module_final_logit_interventions",
     "required_module_final_authority_oracle",
@@ -68,6 +73,24 @@ REQUIRED_PROBES = [
 ]
 
 PLAN_PATCH_SIZE = (8, 64, 64)
+LOSS_SEMANTIC_TOLERANCE = 1.0e-5
+CANONICAL_LOSS_WEIGHTS = {
+    "conditional_final_dice_ce": 1.00,
+    "anatomy_deep_supervision_dice_ce": 0.50,
+    "wall_dice_bce": 0.25,
+    "distance_rho_masked_smooth_l1": 0.10,
+    "scar_binary_dice_focal": 1.00,
+    "scar_component_adaptive_tversky": 0.25,
+    "scar_center_focal_bce": 0.10,
+    "scar_extent_bce_smooth_l1": 0.15,
+    "scar_context_ce": 0.10,
+    "edema_binary_dice_focal": 1.00,
+    "injury_dice_bce": 0.40,
+    "edema_boundary_smooth_l1": 0.10,
+    "edema_extent_bce_smooth_l1": 0.20,
+    "edema_context_ce": 0.10,
+    "relation_loss": 0.05,
+}
 
 BLOCKING_NUMERIC_THRESHOLDS = [
     {
@@ -97,6 +120,13 @@ BLOCKING_NUMERIC_THRESHOLDS = [
         "contract_source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
         "contract_field_or_exact_clause": "Sections 4 and 15: required evidence sources must have final reconstruction authority; implementation intervention flags are not final-authority evidence.",
         "logical_derivation": "A test/intervention flag may only remove the same ordinary-path source contribution that the Verifier removes by module-output intervention; any extra flag-conditioned final-logit contribution must be absent.",
+    },
+    {
+        "name": "loss_semantic_oracle_reference_match",
+        "threshold": LOSS_SEMANTIC_TOLERANCE,
+        "contract_source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+        "contract_field_or_exact_clause": "Section 10: unique allowed loss set, including 0.40 injury Dice+BCE and 0.25 scar component-adaptive Tversky(alpha=.3,beta=.7).",
+        "logical_derivation": "Verifier independently re-evaluates the same deterministic FP32 formulas from runtime tensors; tolerance is only for floating-point accumulation/order effects, not a scientific threshold.",
     },
 ]
 
@@ -392,6 +422,36 @@ def fixture_probe_results() -> list[dict[str, Any]]:
             random_tensor_used=False,
             total_loss_terms=losses,
             constant_denominator_count=sum(1 for term in losses.values() if term["denominator"] == 1),
+        ),
+        _pass_probe(
+            "loss_semantic_oracle",
+            contract_source_path="automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+            contract_field_or_exact_clause="Section 10 unique allowed weighted loss set",
+            tolerance=LOSS_SEMANTIC_TOLERANCE,
+            reference_uses_implementation_loss_helper=False,
+            injury_dice_bce={
+                "matches_reference": True,
+                "actual_unweighted": 0.25,
+                "reference_unweighted": 0.25,
+                "abs_diff": 0.0,
+                "weighted_abs_diff": 0.0,
+                "t2_gated": True,
+            },
+            scar_component_adaptive_tversky={
+                "matches_reference": True,
+                "actual_unweighted": 0.25,
+                "reference_unweighted": 0.25,
+                "abs_diff": 0.0,
+                "weighted_abs_diff": 0.0,
+                "unauthorized_occupancy_objective_detected": False,
+            },
+            unique_allowed_loss_set={
+                "matches_contract_terms": True,
+                "total_matches_allowed_weighted_sum": True,
+                "no_extra_weighted_auxiliary_objective": True,
+                "actual_terms": sorted(CANONICAL_LOSS_WEIGHTS),
+            },
+            semantic_failures=[],
         ),
         _pass_probe(
             "mixed_t2_no_t2_batch",
@@ -880,6 +940,246 @@ def _partial_hw_reference_probe(model: Any, *, loss_fn: Any | None = None) -> di
         **probe,
         "name": "partial_hw_extent_reference_objective",
     }
+
+
+def _verifier_downsample_nearest(tensor: Any, size: tuple[int, int, int]) -> Any:
+    import torch.nn.functional as F
+
+    return F.interpolate(tensor.float(), size=size, mode="nearest").to(dtype=tensor.dtype)
+
+
+def _verifier_binary_dice_bce(logit: Any, target: Any, valid_mask: Any | None = None) -> Any:
+    import torch
+    import torch.nn.functional as F
+
+    logit = logit.float()
+    target = target.to(logit)
+    mask = torch.ones_like(target) if valid_mask is None else valid_mask.to(logit)
+    prob = torch.sigmoid(logit)
+    dims = tuple(range(1, prob.ndim))
+    inter = (prob * target * mask).sum(dim=dims)
+    gt_positive = (target * mask).sum(dim=dims)
+    denom = (prob * mask).sum(dim=dims) + gt_positive
+    dice_values = torch.where(
+        gt_positive > 0,
+        1.0 - (2.0 * inter + 1.0e-5) / (denom + 1.0e-5),
+        torch.zeros_like(denom),
+    )
+    dice = dice_values.mean()
+    bce = F.binary_cross_entropy_with_logits(logit, target, reduction="none")
+    return dice + ((bce * mask).sum() / mask.sum().clamp_min(1.0))
+
+
+def _verifier_binary_dice_focal(logit: Any, target: Any, valid_mask: Any | None, *, alpha: float, gamma: float) -> Any:
+    import torch
+    import torch.nn.functional as F
+
+    logit = logit.float()
+    target = target.to(logit)
+    mask = torch.ones_like(target) if valid_mask is None else valid_mask.to(logit)
+    prob = torch.sigmoid(logit)
+    dims = tuple(range(1, prob.ndim))
+    inter = (prob * target * mask).sum(dim=dims)
+    gt_positive = (target * mask).sum(dim=dims)
+    denom = (prob * mask).sum(dim=dims) + gt_positive
+    dice_values = torch.where(
+        gt_positive > 0,
+        1.0 - (2.0 * inter + 1.0e-5) / (denom + 1.0e-5),
+        torch.zeros_like(denom),
+    )
+    dice = dice_values.mean()
+    bce = F.binary_cross_entropy_with_logits(logit, target, reduction="none")
+    p_t = prob * target + (1.0 - prob) * (1.0 - target)
+    alpha_t = alpha * target + (1.0 - alpha) * (1.0 - target)
+    focal = alpha_t * (1.0 - p_t).pow(gamma) * bce
+    return dice + ((focal * mask).sum() / mask.sum().clamp_min(1.0))
+
+
+def _verifier_component_tversky(logit: Any, target: Any, valid_mask: Any, *, alpha: float = 0.3, beta: float = 0.7) -> Any:
+    logit = logit.float()
+    target = target.to(logit)
+    mask = valid_mask.to(logit)
+    prob = logit.sigmoid()
+    tp = (prob * target * mask).sum()
+    fp = (prob * (1.0 - target) * mask).sum()
+    fn = ((1.0 - prob) * target * mask).sum()
+    return 1.0 - (tp + 1.0e-5) / (tp + alpha * fp + beta * fn + 1.0e-5)
+
+
+def _verifier_component_adaptive_tversky(logit: Any, target: Any, valid_mask: Any, batch: dict[str, Any]) -> tuple[Any, dict[str, Any]]:
+    import numpy as np
+    import torch
+    from scipy import ndimage
+
+    losses: list[Any] = []
+    weights: list[float] = []
+    target_np = target.detach().cpu().numpy().astype(bool)
+    spacing = batch.get("spacing")
+    spacing_np = spacing.detach().cpu().numpy() if spacing is not None else np.ones((target_np.shape[0], 3), dtype=np.float32)
+    for batch_index in range(int(target_np.shape[0])):
+        scar_mask = target_np[batch_index, 0]
+        comp, count = ndimage.label(scar_mask, structure=np.ones((3, 3, 3), dtype=np.uint8))
+        for comp_id in range(1, int(count) + 1):
+            comp_mask_np = comp == comp_id
+            if not bool(comp_mask_np.any()):
+                continue
+            other_np = scar_mask & ~comp_mask_np
+            volume = float(comp_mask_np.sum() * np.prod(spacing_np[batch_index]))
+            weight = min(max(math.sqrt(1000.0 / max(volume, 1.0)), 1.0), 4.0)
+            comp_mask = torch.from_numpy(comp_mask_np[None, None]).to(device=logit.device, dtype=logit.dtype)
+            other_components = torch.from_numpy(other_np[None, None]).to(device=logit.device, dtype=logit.dtype)
+            comp_valid = valid_mask[batch_index : batch_index + 1].to(logit) * (1.0 - other_components)
+            losses.append(_verifier_component_tversky(logit[batch_index : batch_index + 1], comp_mask, comp_valid, alpha=0.3, beta=0.7))
+            weights.append(float(weight))
+    if not losses:
+        return logit.sum() * 0.0, {"component_count": 0, "adaptive_weight_sum": 0.0, "adaptive_weights": []}
+    weight_tensor = torch.tensor(weights, device=logit.device, dtype=torch.float32)
+    return (torch.stack(losses).float() * weight_tensor).sum() / weight_tensor.sum().clamp_min(1.0e-6), {
+        "component_count": len(losses),
+        "adaptive_weight_sum": float(sum(weights)),
+        "adaptive_weights": weights,
+    }
+
+
+def _loss_semantic_reference_values(outputs: dict[str, Any], batch: dict[str, Any]) -> dict[str, Any]:
+    import torch
+    import torch.nn.functional as F
+
+    logits = outputs["final_logits"]
+    target = batch["seg"].to(device=logits.device, dtype=torch.long)
+    availability = batch["availability"].to(logits)
+    valid_binary = (target >= 0).unsqueeze(1).to(logits)
+    t2_mask = availability[:, 1].view(-1, 1, 1, 1, 1)
+    edema_valid = valid_binary * t2_mask
+    scar_target = (target == 5).unsqueeze(1)
+    injury_target = ((target == 4) | (target == 5)).unsqueeze(1)
+    components = outputs["components"]
+
+    injury_logit = F.interpolate(components["edema_injury"], size=target.shape[-3:], mode="trilinear", align_corners=False)
+    injury_dice_bce = _verifier_binary_dice_bce(injury_logit, injury_target, edema_valid)
+    injury_dice_focal = _verifier_binary_dice_focal(injury_logit, injury_target, edema_valid, alpha=0.35, gamma=2.0)
+
+    scar_half = F.interpolate(outputs["scar"].get("half_logit", outputs["scar"]["half_logits6"][:, 5:6]), size=target.shape[-3:], mode="trilinear", align_corners=False)
+    scar_component, component_meta = _verifier_component_adaptive_tversky(scar_half, scar_target.float(), valid_binary, batch)
+    scar_occ_quarter = _verifier_downsample_nearest(scar_target, components["scar_quarter_occupancy"].shape[-3:])
+    scar_occ_half = _verifier_downsample_nearest(scar_target, components["scar_half_occupancy"].shape[-3:])
+    valid_quarter = _verifier_downsample_nearest(valid_binary, components["scar_quarter_occupancy"].shape[-3:]).float()
+    valid_half = _verifier_downsample_nearest(valid_binary, components["scar_half_occupancy"].shape[-3:]).float()
+    scar_occupancy = 0.5 * _verifier_binary_dice_focal(
+        components["scar_quarter_occupancy"], scar_occ_quarter, valid_quarter, alpha=0.25, gamma=2.0
+    ) + 0.5 * _verifier_binary_dice_focal(components["scar_half_occupancy"], scar_occ_half, valid_half, alpha=0.25, gamma=2.0)
+    return {
+        "injury_dice_bce": injury_dice_bce,
+        "injury_dice_focal_alpha035_gamma2": injury_dice_focal,
+        "scar_component_adaptive_tversky": scar_component,
+        "scar_occupancy_dice_focal": scar_occupancy,
+        "scar_component_metadata": component_meta,
+        "t2_eligible_rows": int((availability[:, 1] > 0.5).sum().detach().cpu()),
+        "valid_voxel_count": int(valid_binary.detach().float().sum().cpu()),
+        "edema_valid_voxel_count": int(edema_valid.detach().float().sum().cpu()),
+    }
+
+
+def _term_value(terms: dict[str, Any], name: str, field: str = "value") -> float:
+    value = terms.get(name, {}).get(field)
+    if not isinstance(value, (int, float)):
+        return float("nan")
+    return float(value)
+
+
+def _loss_semantic_oracle(outputs: dict[str, Any], batch: dict[str, Any], total_loss: Any, terms: dict[str, Any]) -> dict[str, Any]:
+    refs = _loss_semantic_reference_values(outputs, batch)
+    injury_actual = _term_value(terms, "injury_dice_bce")
+    injury_ref = float(refs["injury_dice_bce"].detach().cpu())
+    injury_focal = float(refs["injury_dice_focal_alpha035_gamma2"].detach().cpu())
+    scar_actual = _term_value(terms, "scar_component_adaptive_tversky")
+    scar_ref = float(refs["scar_component_adaptive_tversky"].detach().cpu())
+    scar_occupancy = float(refs["scar_occupancy_dice_focal"].detach().cpu())
+    injury_diff = abs(injury_actual - injury_ref)
+    scar_diff = abs(scar_actual - scar_ref)
+    actual_terms = set(terms)
+    expected_terms = set(CANONICAL_LOSS_WEIGHTS)
+    weighted_sum = 0.0
+    weighted_sum_finite = True
+    weight_failures: list[str] = []
+    for name, expected_weight in CANONICAL_LOSS_WEIGHTS.items():
+        term = terms.get(name, {})
+        try:
+            observed_weight = float(term.get("weight"))
+            weighted_sum += float(term.get("weighted_contribution"))
+        except Exception:
+            weighted_sum_finite = False
+            weight_failures.append(name)
+            continue
+        if abs(observed_weight - expected_weight) > 1.0e-8:
+            weight_failures.append(name)
+    total_value = float(total_loss.detach().cpu()) if hasattr(total_loss, "detach") else float(total_loss)
+    total_diff = abs(total_value - weighted_sum) if weighted_sum_finite else float("inf")
+    semantic_failures: list[str] = []
+    if injury_diff > LOSS_SEMANTIC_TOLERANCE:
+        semantic_failures.append("injury_dice_bce.formula_mismatch")
+    if scar_diff > LOSS_SEMANTIC_TOLERANCE:
+        semantic_failures.append("scar_component_adaptive_tversky.formula_mismatch_or_hidden_auxiliary")
+    if actual_terms != expected_terms:
+        semantic_failures.append("unique_allowed_loss_set.term_set_mismatch")
+    if weight_failures:
+        semantic_failures.append("unique_allowed_loss_set.weight_or_contribution_unreadable")
+    if total_diff > LOSS_SEMANTIC_TOLERANCE:
+        semantic_failures.append("unique_allowed_loss_set.total_not_reported_allowed_weighted_sum")
+    unauthorized_occupancy = scar_diff > LOSS_SEMANTIC_TOLERANCE and scar_occupancy > LOSS_SEMANTIC_TOLERANCE
+    return _pass_probe(
+        "loss_semantic_oracle",
+        status="PASS" if not semantic_failures else "FAIL",
+        contract_source_path="automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+        contract_field_or_exact_clause="Section 10 unique allowed weighted loss set",
+        tolerance=LOSS_SEMANTIC_TOLERANCE,
+        reference_uses_implementation_loss_helper=False,
+        semantic_failures=semantic_failures,
+        injury_dice_bce={
+            "matches_reference": injury_diff <= LOSS_SEMANTIC_TOLERANCE,
+            "actual_unweighted": injury_actual,
+            "reference_unweighted": injury_ref,
+            "abs_diff": injury_diff,
+            "weighted_actual": injury_actual * CANONICAL_LOSS_WEIGHTS["injury_dice_bce"],
+            "weighted_reference": injury_ref * CANONICAL_LOSS_WEIGHTS["injury_dice_bce"],
+            "weighted_abs_diff": injury_diff * CANONICAL_LOSS_WEIGHTS["injury_dice_bce"],
+            "target_labels": [4, 5],
+            "t2_gated": True,
+            "t2_eligible_rows": refs["t2_eligible_rows"],
+            "edema_valid_voxel_count": refs["edema_valid_voxel_count"],
+            "actual_matches_independent_dice_focal_alpha035_gamma2": abs(injury_actual - injury_focal) <= LOSS_SEMANTIC_TOLERANCE,
+        },
+        scar_component_adaptive_tversky={
+            "matches_reference": scar_diff <= LOSS_SEMANTIC_TOLERANCE,
+            "actual_unweighted": scar_actual,
+            "reference_unweighted": scar_ref,
+            "abs_diff": scar_diff,
+            "weighted_actual": scar_actual * CANONICAL_LOSS_WEIGHTS["scar_component_adaptive_tversky"],
+            "weighted_reference": scar_ref * CANONICAL_LOSS_WEIGHTS["scar_component_adaptive_tversky"],
+            "weighted_abs_diff": scar_diff * CANONICAL_LOSS_WEIGHTS["scar_component_adaptive_tversky"],
+            "alpha": 0.3,
+            "beta": 0.7,
+            "small_component_weight_formula": "clip(sqrt(1000mm3/component_volume_mm3),1,4)",
+            "component_count": refs["scar_component_metadata"]["component_count"],
+            "adaptive_weight_sum": refs["scar_component_metadata"]["adaptive_weight_sum"],
+            "scar_occupancy_dice_focal_reference_unweighted": scar_occupancy,
+            "unauthorized_occupancy_objective_detected": unauthorized_occupancy,
+        },
+        unique_allowed_loss_set={
+            "matches_contract_terms": actual_terms == expected_terms,
+            "actual_terms": sorted(actual_terms),
+            "expected_terms": sorted(expected_terms),
+            "missing_terms": sorted(expected_terms - actual_terms),
+            "extra_terms": sorted(actual_terms - expected_terms),
+            "weights_match_contract": not weight_failures,
+            "weight_failures": sorted(weight_failures),
+            "total_loss": total_value,
+            "reported_allowed_weighted_sum": weighted_sum,
+            "total_abs_diff": total_diff,
+            "total_matches_allowed_weighted_sum": total_diff <= LOSS_SEMANTIC_TOLERANCE,
+            "no_extra_weighted_auxiliary_objective": not unauthorized_occupancy and total_diff <= LOSS_SEMANTIC_TOLERANCE,
+        },
+    )
 
 
 def _final_authority_probe(model: Any, batch: dict[str, Any], core_path: Path) -> dict[str, Any]:
@@ -1441,6 +1741,7 @@ def independent_probe_results(repo_root: Path) -> tuple[list[str], list[dict[str
     loss.backward()
     grad_max = _max_grad_abs(model.parameters())
     constant_denominators = sum(1 for term in terms.values() if int(term.get("denominator", 0)) == 1)
+    loss_semantic_probe = _loss_semantic_oracle(outputs, mixed, loss, terms)
     loss_passed = bool(torch.isfinite(loss)) and grad_max > 0.0 and constant_denominators == 0
     probes.append(
         _pass_probe(
@@ -1455,6 +1756,7 @@ def independent_probe_results(repo_root: Path) -> tuple[list[str], list[dict[str
             batch_sha256=json_sha([t2_batch["batch_sha256"], no_t2_batch["batch_sha256"]]),
         )
     )
+    probes.append(loss_semantic_probe)
 
     no_t2_model = build_care_ase_for_fold(0, map_location="cpu").to(device)
     no_t2_model.train()
@@ -1889,6 +2191,76 @@ def _mutation_runtime_imports(repo_root: Path) -> dict[str, Any]:
     }
 
 
+def _loss_semantic_mutation_probe(repo_root: Path, mutation_id: str) -> tuple[dict[str, Any], dict[str, Any]]:
+    import torch
+    from src.care_myocardium.models.care_ase import build_care_ase_for_fold
+    from src.care_myocardium.training.care_ase_trainer import care_ase_loss_with_term_details
+
+    torch.manual_seed(4106)
+    device = torch.device("cpu")
+    cases = _runtime_case_bindings(repo_root)
+    t2_batch = _actual_batch(cases["t2_case"], cases["t2_availability"], labels=(4, 1, 5, 0), device=device)
+    no_t2_batch = _actual_batch(cases["no_t2_case"], cases["no_t2_availability"], labels=(5, 1, 0), device=device)
+    mixed = {
+        "image": torch.cat([t2_batch["image"], no_t2_batch["image"]], dim=0),
+        "seg": torch.cat([t2_batch["seg"], no_t2_batch["seg"]], dim=0),
+        "availability": torch.cat([t2_batch["availability"], no_t2_batch["availability"]], dim=0),
+        "spacing": torch.cat([t2_batch["spacing"], no_t2_batch["spacing"]], dim=0),
+        "extent_valid_spatial_mask": torch.cat([t2_batch["extent_valid_spatial_mask"], no_t2_batch["extent_valid_spatial_mask"]], dim=0),
+    }
+    model = build_care_ase_for_fold(0, map_location="cpu").to(device)
+    model.train()
+    outputs = model(mixed["image"], mixed["availability"], global_step=6000, extent_valid_spatial_mask=mixed["extent_valid_spatial_mask"])
+    base_loss, _metrics, base_terms = care_ase_loss_with_term_details(outputs, mixed)
+    refs = _loss_semantic_reference_values(outputs, mixed)
+    mutated_terms = json.loads(json.dumps(base_terms))
+    mutation_observations: dict[str, Any] = {
+        "batch_sha256": json_sha([t2_batch["batch_sha256"], no_t2_batch["batch_sha256"]]),
+        "reference_uses_implementation_loss_helper": False,
+    }
+
+    if mutation_id == "injury_dice_bce_replaced_by_focal":
+        term_name = "injury_dice_bce"
+        weight = CANONICAL_LOSS_WEIGHTS[term_name]
+        mutated_value_tensor = refs["injury_dice_focal_alpha035_gamma2"]
+        mutation_observations["replacement_formula"] = "Dice+Focal(alpha=0.35,gamma=2.0)"
+    elif mutation_id == "scar_component_tversky_plus_occupancy_lambda025":
+        term_name = "scar_component_adaptive_tversky"
+        weight = CANONICAL_LOSS_WEIGHTS[term_name]
+        mutated_value_tensor = refs["scar_component_adaptive_tversky"] + 0.25 * refs["scar_occupancy_dice_focal"]
+        mutation_observations["replacement_formula"] = "Tversky(alpha=0.3,beta=0.7)+0.25*occupancy Dice/Focal"
+    elif mutation_id == "scar_component_tversky_blended_occupancy_half":
+        term_name = "scar_component_adaptive_tversky"
+        weight = CANONICAL_LOSS_WEIGHTS[term_name]
+        mutated_value_tensor = 0.5 * refs["scar_component_adaptive_tversky"] + 0.5 * refs["scar_occupancy_dice_focal"]
+        mutation_observations["replacement_formula"] = "0.5*Tversky(alpha=0.3,beta=0.7)+0.5*occupancy Dice/Focal"
+    else:
+        raise KeyError(f"not a loss semantic mutation: {mutation_id}")
+
+    original_value = _term_value(mutated_terms, term_name)
+    mutated_value = float(mutated_value_tensor.detach().cpu())
+    mutated_loss = base_loss + (mutated_value_tensor - base_loss.new_tensor(original_value)) * float(weight)
+    mutated_terms[term_name]["value"] = mutated_value
+    mutated_terms[term_name]["unweighted_value"] = mutated_value
+    mutated_terms[term_name]["weighted_contribution"] = mutated_value * float(weight)
+    mutated_terms[term_name]["computed_by"] = "verifier_runtime_protected_mutation_same_term_name"
+    probe = _loss_semantic_oracle(outputs, mixed, mutated_loss, mutated_terms)
+    mutation_observations.update(
+        {
+            "term_name_preserved": term_name,
+            "original_unweighted_value": original_value,
+            "mutated_unweighted_value": mutated_value,
+            "mutated_weighted_contribution": mutated_value * float(weight),
+            "semantic_oracle_status": probe.get("status"),
+            "semantic_oracle_failures": probe.get("semantic_failures"),
+            "injury_reference_unweighted": float(refs["injury_dice_bce"].detach().cpu()),
+            "scar_component_reference_unweighted": float(refs["scar_component_adaptive_tversky"].detach().cpu()),
+            "scar_occupancy_reference_unweighted": float(refs["scar_occupancy_dice_focal"].detach().cpu()),
+        }
+    )
+    return probe, mutation_observations
+
+
 def mutation_result(mutation_id: str, *, repo_root: Path, fixture_mode: bool) -> dict[str, Any]:
     if mutation_id not in MUTATION_IDS:
         raise KeyError(mutation_id)
@@ -2056,6 +2428,25 @@ def mutation_result(mutation_id: str, *, repo_root: Path, fixture_mode: bool) ->
             observations["partial_hw_reference_probe"] = partial_probe
             if partial_probe.get("straight_through_zero_loss_detected") or partial_probe.get("status") != "PASS":
                 failures.append("kb11.partial_hw.straight_through_zero_loss")
+
+        elif mutation_id in {
+            "injury_dice_bce_replaced_by_focal",
+            "scar_component_tversky_plus_occupancy_lambda025",
+            "scar_component_tversky_blended_occupancy_half",
+        }:
+            mutation_applied = {
+                "injury_dice_bce_replaced_by_focal": "injury_dice_bce_term_name_preserved_but_formula_replaced_by_dice_focal",
+                "scar_component_tversky_plus_occupancy_lambda025": "scar_component_term_name_preserved_but_formula_adds_lambda025_occupancy_objective",
+                "scar_component_tversky_blended_occupancy_half": "scar_component_term_name_preserved_but_formula_blends_half_occupancy_objective",
+            }[mutation_id]
+            semantic_probe, semantic_observations = _loss_semantic_mutation_probe(repo_root, mutation_id)
+            mutation_executed = True
+            observations["loss_semantic_mutation"] = semantic_observations
+            observations["loss_semantic_probe"] = semantic_probe
+            if semantic_probe.get("status") != "PASS":
+                failures.append(f"kb13.loss_semantic_oracle.rejected:{mutation_id}")
+            else:
+                failures.append(f"kb13.loss_semantic_oracle.failed_to_reject:{mutation_id}")
 
         elif mutation_id == "full_support_pseudo_tiling":
             mutation_applied = "forced_multi_tile_predictor_runs_one_full_support_forward_then_fakes_tile_metadata"
