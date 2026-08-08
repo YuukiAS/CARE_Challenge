@@ -461,6 +461,13 @@ class VerifierPackageTests(unittest.TestCase):
             "scar_component_tversky_blended_occupancy_half",
             "partial_hw_cross_z_presequence_mask_removed",
             "checkpoint_current_contract_provenance_drift",
+            "runtime_manifest_round0_reused",
+            "runtime_manifest_missing_nonce",
+            "runtime_manifest_missing_frozen_contract",
+            "runtime_manifest_old_integration",
+            "runtime_manifest_old_implementation_fingerprint",
+            "runtime_manifest_old_verifier_fingerprint",
+            "runtime_manifest_receipt_sha_drift",
         }
         self.assertTrue(required.issubset(set(runner.MUTATION_IDS)))
         self.assertTrue(required.issubset(set(validator.REQUIRED_EXECUTABLE_MUTATION_IDS)))
@@ -514,6 +521,21 @@ class VerifierPackageTests(unittest.TestCase):
         runner = importlib.util.module_from_spec(runner_spec)
         runner_spec.loader.exec_module(runner)
 
+        def valid_runtime_manifest() -> dict[str, Any]:
+            receipt_paths = list(runner.REQUIRED_RUNTIME_MANIFEST_ARTIFACTS.values())
+            return {
+                "schema": "CARE_AGENT_FLOW_V3_RUNTIME_RECEIPT_MANIFEST",
+                "task_id": runner.TASK_ID,
+                "request_nonce": runner.REQUEST_NONCE,
+                "frozen_contract_sha256": runner.FROZEN_CONTRACT_SHA256,
+                "review_round": runner.REVIEW_ROUND,
+                "integration_commit_sha": runner.REVIEWED_INTEGRATION_COMMIT,
+                "implementation_fingerprint_sha256": runner.REVIEWED_IMPLEMENTATION_FINGERPRINT,
+                "verifier_fingerprint_sha256": runner.REVIEWED_VERIFIER_FINGERPRINT,
+                "receipts": receipt_paths,
+                "receipt_sha256s": {path: _sha256_file(ROOT / path) for path in receipt_paths},
+            }
+
         evidence = {
             "task_id": runner.TASK_ID,
             "request_nonce": runner.REQUEST_NONCE,
@@ -540,39 +562,163 @@ class VerifierPackageTests(unittest.TestCase):
                 encoding="utf-8",
             )
             runtime_manifest_path.write_text(
-                json.dumps(
-                    {
-                        "task_id": runner.TASK_ID,
-                        "request_nonce": runner.REQUEST_NONCE,
-                        "frozen_contract_sha256": runner.FROZEN_CONTRACT_SHA256,
-                    }
-                ),
+                json.dumps(valid_runtime_manifest()),
                 encoding="utf-8",
             )
-            ci_receipt_path.write_text(
-                json.dumps(
-                    {
-                        "github_actions_head_sha": old_ci_sha,
-                        "checked_commit_sha": old_ci_sha,
-                        "github_actions_conclusion": "success",
-                    }
-                ),
-                encoding="utf-8",
-            )
-            runner.CURRENT_PATH = current_path
-            runner.RUNTIME_MANIFEST_PATH = runtime_manifest_path
-            runner.CONTROLLER_CI_RECEIPT_PATH = ci_receipt_path
-            failures, transaction = runner.transaction_gate(
-                repo_root=ROOT,
-                evidence=evidence,
-                review_round=runner.REVIEW_ROUND,
-                integration_sha=runner.REVIEWED_INTEGRATION_COMMIT,
-                implementation_fingerprint=runner.REVIEWED_IMPLEMENTATION_FINGERPRINT,
-                expected_verifier_fingerprint=runner.REVIEWED_VERIFIER_FINGERPRINT,
-                fixture_mode=False,
-            )
-        self.assertIn("transaction.hosted_ci.head_sha_not_exact_integration", failures)
-        self.assertNotEqual(transaction["hosted_ci_head_sha"], runner.REVIEWED_INTEGRATION_COMMIT)
+            original_current = runner.CURRENT_PATH
+            original_manifest = runner.RUNTIME_MANIFEST_PATH
+            original_ci = runner.CONTROLLER_CI_RECEIPT_PATH
+            try:
+                runner.CURRENT_PATH = current_path
+                runner.RUNTIME_MANIFEST_PATH = runtime_manifest_path
+                runner.CONTROLLER_CI_RECEIPT_PATH = ci_receipt_path
+                ci_cases = [
+                    (
+                        "old_head",
+                        {
+                            "github_actions_head_sha": old_ci_sha,
+                            "checked_commit_sha": old_ci_sha,
+                            "github_actions_conclusion": "success",
+                        },
+                        "transaction.hosted_ci.head_sha_not_exact_integration",
+                    ),
+                    (
+                        "pending",
+                        {
+                            "github_actions_head_sha": runner.REVIEWED_INTEGRATION_COMMIT,
+                            "checked_commit_sha": runner.REVIEWED_INTEGRATION_COMMIT,
+                            "github_actions_conclusion": "in_progress",
+                        },
+                        "transaction.hosted_ci.conclusion",
+                    ),
+                    (
+                        "failed",
+                        {
+                            "github_actions_head_sha": runner.REVIEWED_INTEGRATION_COMMIT,
+                            "checked_commit_sha": runner.REVIEWED_INTEGRATION_COMMIT,
+                            "github_actions_conclusion": "failure",
+                        },
+                        "transaction.hosted_ci.conclusion",
+                    ),
+                ]
+                for label, ci_payload, expected_failure in ci_cases:
+                    ci_receipt_path.write_text(json.dumps(ci_payload), encoding="utf-8")
+                    failures, transaction = runner.transaction_gate(
+                        repo_root=ROOT,
+                        evidence=evidence,
+                        review_round=runner.REVIEW_ROUND,
+                        integration_sha=runner.REVIEWED_INTEGRATION_COMMIT,
+                        implementation_fingerprint=runner.REVIEWED_IMPLEMENTATION_FINGERPRINT,
+                        expected_verifier_fingerprint=runner.REVIEWED_VERIFIER_FINGERPRINT,
+                        fixture_mode=False,
+                    )
+                    self.assertIn(expected_failure, failures, label)
+                    if label == "old_head":
+                        self.assertNotEqual(transaction["hosted_ci_head_sha"], runner.REVIEWED_INTEGRATION_COMMIT)
+            finally:
+                runner.CURRENT_PATH = original_current
+                runner.RUNTIME_MANIFEST_PATH = original_manifest
+                runner.CONTROLLER_CI_RECEIPT_PATH = original_ci
+
+    def test_transaction_gate_rejects_stale_runtime_manifest_bindings(self) -> None:
+        runner_spec = importlib.util.spec_from_file_location("care_ase_executable_verifier", EXECUTABLE_VERIFIER)
+        if runner_spec is None or runner_spec.loader is None:
+            self.fail("cannot import executable verifier")
+        runner = importlib.util.module_from_spec(runner_spec)
+        runner_spec.loader.exec_module(runner)
+
+        receipt_paths = list(runner.REQUIRED_RUNTIME_MANIFEST_ARTIFACTS.values())
+        base_manifest = {
+            "schema": "CARE_AGENT_FLOW_V3_RUNTIME_RECEIPT_MANIFEST",
+            "task_id": runner.TASK_ID,
+            "request_nonce": runner.REQUEST_NONCE,
+            "frozen_contract_sha256": runner.FROZEN_CONTRACT_SHA256,
+            "review_round": runner.REVIEW_ROUND,
+            "integration_commit_sha": runner.REVIEWED_INTEGRATION_COMMIT,
+            "implementation_fingerprint_sha256": runner.REVIEWED_IMPLEMENTATION_FINGERPRINT,
+            "verifier_fingerprint_sha256": runner.REVIEWED_VERIFIER_FINGERPRINT,
+            "receipts": receipt_paths,
+            "receipt_sha256s": {path: _sha256_file(ROOT / path) for path in receipt_paths},
+        }
+        current = {
+            "task_id": runner.TASK_ID,
+            "request_nonce": runner.REQUEST_NONCE,
+            "frozen_contract_sha256": runner.FROZEN_CONTRACT_SHA256,
+            "integration_commit_sha": runner.REVIEWED_INTEGRATION_COMMIT,
+            "implementation_fingerprint_sha256": runner.REVIEWED_IMPLEMENTATION_FINGERPRINT,
+            "verifier_fingerprint_sha256": runner.REVIEWED_VERIFIER_FINGERPRINT,
+            "ci_checked_commit_sha": runner.REVIEWED_INTEGRATION_COMMIT,
+            "ci_run_actual_head_sha": runner.REVIEWED_INTEGRATION_COMMIT,
+        }
+        ci_receipt = {
+            "github_actions_head_sha": runner.REVIEWED_INTEGRATION_COMMIT,
+            "checked_commit_sha": runner.REVIEWED_INTEGRATION_COMMIT,
+            "github_actions_conclusion": "success",
+        }
+        evidence = {
+            "task_id": runner.TASK_ID,
+            "request_nonce": runner.REQUEST_NONCE,
+            "frozen_contract_sha256": runner.FROZEN_CONTRACT_SHA256,
+            "implementation_fingerprint_sha256": runner.REVIEWED_IMPLEMENTATION_FINGERPRINT,
+        }
+        cases: list[tuple[str, str, Any]] = [
+            ("review_round", "transaction.runtime_manifest.review_round", 0),
+            ("request_nonce", "transaction.runtime_manifest.request_nonce", None),
+            ("frozen_contract_sha256", "transaction.runtime_manifest.frozen_contract_sha256", None),
+            ("integration_commit_sha", "transaction.runtime_manifest.integration_commit_sha", "0" * 40),
+            ("implementation_fingerprint_sha256", "transaction.runtime_manifest.implementation_fingerprint_sha256", "1" * 64),
+            ("verifier_fingerprint_sha256", "transaction.runtime_manifest.verifier_fingerprint_sha256", "2" * 64),
+        ]
+        with tempfile.TemporaryDirectory(dir=ROOT) as tmp:
+            tmp_path = Path(tmp)
+            current_path = tmp_path / "CURRENT.json"
+            runtime_manifest_path = tmp_path / "runtime_receipt_manifest.json"
+            ci_receipt_path = tmp_path / "controller_ci_receipt.json"
+            current_path.write_text(json.dumps(current), encoding="utf-8")
+            ci_receipt_path.write_text(json.dumps(ci_receipt), encoding="utf-8")
+            original_current = runner.CURRENT_PATH
+            original_manifest = runner.RUNTIME_MANIFEST_PATH
+            original_ci = runner.CONTROLLER_CI_RECEIPT_PATH
+            try:
+                runner.CURRENT_PATH = current_path
+                runner.RUNTIME_MANIFEST_PATH = runtime_manifest_path
+                runner.CONTROLLER_CI_RECEIPT_PATH = ci_receipt_path
+                for field, expected_failure, value in cases:
+                    manifest = dict(base_manifest)
+                    if value is None:
+                        manifest.pop(field, None)
+                    else:
+                        manifest[field] = value
+                    runtime_manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+                    failures, _transaction = runner.transaction_gate(
+                        repo_root=ROOT,
+                        evidence=evidence,
+                        review_round=runner.REVIEW_ROUND,
+                        integration_sha=runner.REVIEWED_INTEGRATION_COMMIT,
+                        implementation_fingerprint=runner.REVIEWED_IMPLEMENTATION_FINGERPRINT,
+                        expected_verifier_fingerprint=runner.REVIEWED_VERIFIER_FINGERPRINT,
+                        fixture_mode=False,
+                    )
+                    self.assertIn(expected_failure, failures, field)
+
+                manifest = dict(base_manifest)
+                manifest["receipt_sha256s"] = dict(base_manifest["receipt_sha256s"])
+                manifest["receipt_sha256s"][runner.REQUIRED_RUNTIME_MANIFEST_ARTIFACTS["implementation_evidence"]] = "0" * 64
+                runtime_manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+                failures, _transaction = runner.transaction_gate(
+                    repo_root=ROOT,
+                    evidence=evidence,
+                    review_round=runner.REVIEW_ROUND,
+                    integration_sha=runner.REVIEWED_INTEGRATION_COMMIT,
+                    implementation_fingerprint=runner.REVIEWED_IMPLEMENTATION_FINGERPRINT,
+                    expected_verifier_fingerprint=runner.REVIEWED_VERIFIER_FINGERPRINT,
+                    fixture_mode=False,
+                )
+                self.assertIn("transaction.runtime_manifest.artifact_sha256:implementation_evidence", failures)
+            finally:
+                runner.CURRENT_PATH = original_current
+                runner.RUNTIME_MANIFEST_PATH = original_manifest
+                runner.CONTROLLER_CI_RECEIPT_PATH = original_ci
 
     def test_public_reference_fixture_requires_explicit_override(self) -> None:
         reference = _run_validator("--emit-reference")
