@@ -631,6 +631,41 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
 
         self.assertFalse(RUNTIME.care_ase_fail_closed_requires_user_scientific_choice(fail_closed, current))
 
+    def test_care_ase_fail_closed_can_route_same_scope_verifier_recheck(self) -> None:
+        current = {
+            "task_id": "care-ase-faithful",
+            "request_nonce": "care-ase-nonce",
+            "review_round": 1,
+            "state": "VERIFIER_FROZEN",
+            "frozen_contract_sha256": "a" * 64,
+            "verifier_fingerprint_sha256": "b" * 64,
+        }
+        fail_closed = {
+            "status": "FAIL_CLOSED",
+            "implementation_complete": False,
+            "request_nonce": "care-ase-nonce",
+            "frozen_contract_sha256": "a" * 64,
+            "verifier_fingerprint_sha256": "b" * 64,
+            "closed_findings": {
+                "disable_flag_final_logit_contribution_sites": [],
+                "implementation_flags_match_verifier_owned_removal": True,
+                "authority_oracle_all_required_groups_have_verifier_owned_delta": True,
+                "formal_training_started": False,
+                "outer_accessed": False,
+                "docker_or_upload": False,
+            },
+            "remaining_blocker": {
+                "id": "VERIFIER_LEGACY_FRESH_MODEL_DISABLE_FLAG_DELTA_CONFLICT",
+                "needed_next_role": "verifier",
+            },
+            "current_reentry_recheck": {
+                "implementation_decision": "no_contract_compliant_executor_repair_available_for_unchanged_verifier_fingerprint"
+            },
+        }
+
+        self.assertTrue(RUNTIME.care_ase_fail_closed_requires_verifier_recheck(fail_closed, current))
+        self.assertFalse(RUNTIME.care_ase_fail_closed_requires_user_scientific_choice(fail_closed, current))
+
     def test_care_ase_verifier_recheck_required_is_not_processed_before_start(self) -> None:
         event = {
             "task_id": "care-ase-faithful",

@@ -2985,31 +2985,37 @@ def validate_care_ase_executor_completion(
         validation_failures = validation.get("failures") if isinstance(validation.get("failures"), list) else []
         verifier_recheck_required = bool(
             allow_verifier_recheck
-            and validation.get("passed") is False
-            and validation_failures == ["implementation_fail_closed_before_validator"]
-            and fail_closed.get("status") == "FAIL_CLOSED"
-            and fail_closed.get("blocking_scope") == "verifier_owned_reexecution_required_after_controller_integration"
-            and fail_closed.get("executor_scope_completed") is True
-            and fail_closed.get("implementation_complete_claimed") is False
-            and fail_closed.get("request_nonce") == current.get("request_nonce")
-            and fail_closed.get("frozen_contract_sha256") == current.get("frozen_contract_sha256")
-            and fail_closed.get("verifier_fingerprint_sha256") == current.get("verifier_fingerprint_sha256")
-            and isinstance(fail_closed.get("implementation_fingerprint_sha256"), str)
+            and (
+                (
+                    validation.get("passed") is False
+                    and validation_failures == ["implementation_fail_closed_before_validator"]
+                    and fail_closed.get("status") == "FAIL_CLOSED"
+                    and fail_closed.get("blocking_scope") == "verifier_owned_reexecution_required_after_controller_integration"
+                    and fail_closed.get("executor_scope_completed") is True
+                    and fail_closed.get("implementation_complete_claimed") is False
+                    and fail_closed.get("request_nonce") == current.get("request_nonce")
+                    and fail_closed.get("frozen_contract_sha256") == current.get("frozen_contract_sha256")
+                    and fail_closed.get("verifier_fingerprint_sha256") == current.get("verifier_fingerprint_sha256")
+                    and isinstance(fail_closed.get("implementation_fingerprint_sha256"), str)
+                )
+                or care_ase_fail_closed_requires_verifier_recheck(fail_closed, current)
+            )
         )
         if not verifier_recheck_required:
             scope_failures.append("implementation_validation_failed")
-    if fingerprint.get("frozen_contract_sha256") != current.get("frozen_contract_sha256"):
-        scope_failures.append("fingerprint_frozen_contract_sha256")
-    if fingerprint.get("request_nonce") != current.get("request_nonce"):
-        scope_failures.append("fingerprint_request_nonce")
-    if fingerprint.get("verifier_fingerprint_sha256") != current.get("verifier_fingerprint_sha256"):
-        scope_failures.append("fingerprint_verifier_fingerprint_sha256")
-    if evidence.get("source_manifest_sha256") != fingerprint.get("source_manifest_sha256"):
-        scope_failures.append("evidence_source_manifest_sha256")
-    if source_manifest.get("frozen_contract_sha256") != current.get("frozen_contract_sha256"):
-        scope_failures.append("source_manifest_frozen_contract_sha256")
-    if source_manifest.get("request_nonce") != current.get("request_nonce"):
-        scope_failures.append("source_manifest_request_nonce")
+    if not verifier_recheck_required:
+        if fingerprint.get("frozen_contract_sha256") != current.get("frozen_contract_sha256"):
+            scope_failures.append("fingerprint_frozen_contract_sha256")
+        if fingerprint.get("request_nonce") != current.get("request_nonce"):
+            scope_failures.append("fingerprint_request_nonce")
+        if fingerprint.get("verifier_fingerprint_sha256") != current.get("verifier_fingerprint_sha256"):
+            scope_failures.append("fingerprint_verifier_fingerprint_sha256")
+        if evidence.get("source_manifest_sha256") != fingerprint.get("source_manifest_sha256"):
+            scope_failures.append("evidence_source_manifest_sha256")
+        if source_manifest.get("frozen_contract_sha256") != current.get("frozen_contract_sha256"):
+            scope_failures.append("source_manifest_frozen_contract_sha256")
+        if source_manifest.get("request_nonce") != current.get("request_nonce"):
+            scope_failures.append("source_manifest_request_nonce")
 
     if scope_failures:
         raise RuntimeErrorV3("care_ase_executor_completion_invalid:" + ",".join(scope_failures))
@@ -3050,6 +3056,38 @@ def care_ase_executor_scope_complete_pending_verifier_recheck_available(args: ar
     except RuntimeErrorV3:
         return False
     return completion.get("requires_verifier_recheck") is True
+
+
+def care_ase_fail_closed_requires_verifier_recheck(
+    fail_closed: dict[str, Any],
+    current: dict[str, Any],
+) -> bool:
+    blocker = fail_closed.get("remaining_blocker")
+    if not isinstance(blocker, dict):
+        blocker = {}
+    closed = fail_closed.get("closed_findings")
+    if not isinstance(closed, dict):
+        closed = {}
+    current_recheck = fail_closed.get("current_reentry_recheck")
+    if not isinstance(current_recheck, dict):
+        current_recheck = {}
+    return bool(
+        fail_closed.get("status") == "FAIL_CLOSED"
+        and fail_closed.get("implementation_complete") is False
+        and fail_closed.get("request_nonce") == current.get("request_nonce")
+        and fail_closed.get("frozen_contract_sha256") == current.get("frozen_contract_sha256")
+        and fail_closed.get("verifier_fingerprint_sha256") == current.get("verifier_fingerprint_sha256")
+        and blocker.get("needed_next_role") == "verifier"
+        and str(blocker.get("id", "")).startswith("VERIFIER_")
+        and closed.get("disable_flag_final_logit_contribution_sites") == []
+        and closed.get("implementation_flags_match_verifier_owned_removal") is True
+        and closed.get("authority_oracle_all_required_groups_have_verifier_owned_delta") is True
+        and closed.get("formal_training_started") is False
+        and closed.get("outer_accessed") is False
+        and closed.get("docker_or_upload") is False
+        and current_recheck.get("implementation_decision")
+        == "no_contract_compliant_executor_repair_available_for_unchanged_verifier_fingerprint"
+    )
 
 
 def care_ase_fail_closed_requires_user_scientific_choice(
