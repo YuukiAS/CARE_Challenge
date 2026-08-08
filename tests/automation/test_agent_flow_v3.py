@@ -1000,6 +1000,118 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         self.assertEqual(receipt["decision"], "MONITOR_ONLY")
         self.assertIn("instead of launching a duplicate", receipt["action"])
 
+    def test_care_ase_verifier_recheck_provenance_gap_allows_controller_integration_without_goal_complete(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            verifier_worktree = root / "verifier"
+            verification_dir = verifier_worktree / "results/agent_flow_v3/care-ase-faithful/verification"
+            verification_dir.mkdir(parents=True)
+            thread_file = root / "verifier_thread_id"
+            thread_file.write_text("thread-1", encoding="utf-8")
+            role_plan = {
+                "integration_branch": "develop",
+                "controller_pushes_integration_branch": True,
+                "remote_role_branches_authorized": False,
+                "roles": {
+                    "controller": {"push_authority": "develop"},
+                    "verifier": {
+                        "worktree": str(verifier_worktree),
+                        "codex_home": str(root / "codex-home"),
+                        "thread_id_file": str(thread_file),
+                        "write_scope": ["results/agent_flow_v3/care-ase-faithful/verification/**"],
+                        "pushes_integration_branch": False,
+                    },
+                    "executor": {"push_authority": "none", "pushes_integration_branch": False},
+                }
+            }
+            (root / "role_plan.json").write_text(json.dumps(role_plan), encoding="utf-8")
+            failures = [
+                "transaction.runtime_manifest.request_nonce",
+                "transaction.runtime_manifest.integration_commit_sha",
+                "transaction.runtime_manifest.artifact_missing:implementation_evidence",
+                "transaction.runtime_manifest.artifact_sha256:implementation_evidence",
+                "transaction.hosted_ci.head_sha_not_exact_integration",
+                "transaction.hosted_ci.conclusion",
+            ]
+            for name, payload in {
+                "executable_verifier_receipt.json": {
+                    "status": "FAIL_CLOSED",
+                    "passed": False,
+                    "implementation_fingerprint_sha256": "i" * 64,
+                    "failures": failures,
+                },
+                "transaction_gate_receipt.json": {
+                    "status": "FAIL_CLOSED",
+                    "implementation_fingerprint_sha256": "i" * 64,
+                    "failures": failures,
+                },
+                "integrated_implementation_validation_result.json": {
+                    "passed": False,
+                    "failure_count": 7,
+                    "failures": [
+                        "verifier_owned.executable.passed",
+                        "verifier_owned.executable.status",
+                        "verifier_owned.transaction.status",
+                        "verifier_owned.transaction.no_failures",
+                        "verifier_owned.transaction.hosted_ci_success",
+                        "verifier_owned.transaction.hosted_ci_exact_reviewed_integration",
+                        "verifier_owned.transaction.no_stale_planner_reuse",
+                    ],
+                },
+                "verifier_fingerprint.json": {"fingerprint_sha256": "v" * 64},
+            }.items():
+                (verification_dir / name).write_text(json.dumps(payload), encoding="utf-8")
+            changed_paths = "\n".join(
+                [
+                    "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json",
+                    "results/agent_flow_v3/care-ase-faithful/verification/transaction_gate_receipt.json",
+                    "results/agent_flow_v3/care-ase-faithful/verification/integrated_implementation_validation_result.json",
+                    "results/agent_flow_v3/care-ase-faithful/verification/verifier_fingerprint.json",
+                ]
+            )
+
+            def fake_git(_repo: Path, *cmd: str) -> str:
+                if cmd[0] == "fetch":
+                    return ""
+                if cmd[:2] == ("rev-parse", "HEAD"):
+                    return "1" * 40
+                if cmd[0] == "merge-base":
+                    return "0" * 40
+                if cmd[:2] == ("diff", "--name-only"):
+                    return changed_paths + "\n"
+                raise AssertionError(cmd)
+
+            args = argparse.Namespace(
+                repo_root=root,
+                controller_role_plan="role_plan.json",
+                branch="develop",
+                state_root=root / "state" / "stage_orchestrator",
+            )
+            current = {
+                "state": "VERIFIER_RECHECK_REQUIRED",
+                "request_nonce": "nonce",
+                "frozen_contract_sha256": "f" * 64,
+                "implementation_fingerprint_sha256": "i" * 64,
+                "verifier_fingerprint_sha256": "v" * 64,
+            }
+            request = {"enabled": True, "request_nonce": "nonce", "frozen_contract_sha256": "f" * 64}
+
+            with (
+                mock.patch.object(RUNTIME, "git", side_effect=fake_git),
+                mock.patch.object(RUNTIME, "git_status_short", return_value=""),
+                mock.patch.object(RUNTIME, "role_rollout_goal_complete", return_value=None),
+                mock.patch.object(RUNTIME, "role_active_process", return_value=None),
+                mock.patch.object(RUNTIME, "git_commit_subject", return_value="verification: refresh care ase recheck receipts"),
+            ):
+                completion = RUNTIME.validate_care_ase_verifier_recheck_completion(
+                    args=args,
+                    request=request,
+                    current=current,
+                )
+
+            self.assertIsNone(completion["goal_complete"])
+            self.assertTrue(completion["pre_ci_transaction_pending"])
+
     def test_care_ase_verifier_recheck_allows_only_pre_ci_transaction_failure(self) -> None:
         executable = {
             "status": "FAIL_CLOSED",
