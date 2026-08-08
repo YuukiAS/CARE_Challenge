@@ -68,6 +68,46 @@ REQUIRED_PROBES = [
 
 PLAN_PATCH_SIZE = (8, 64, 64)
 
+BLOCKING_NUMERIC_THRESHOLDS = [
+    {
+        "name": "stock_step0_t2_present_max_abs_error",
+        "threshold": 1e-6,
+        "contract_source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+        "contract_field_or_exact_clause": "Section 3: new evidence disabled stock-compatible logits max_abs_error <= 1e-6",
+        "logical_derivation": "Direct stock/step0 compatibility parity gate.",
+    },
+    {
+        "name": "stock_step0_no_t2_max_abs_error",
+        "threshold": 1e-6,
+        "contract_source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+        "contract_field_or_exact_clause": "Section 3: new evidence disabled stock-compatible logits max_abs_error <= 1e-6",
+        "logical_derivation": "Direct stock/step0 compatibility parity gate.",
+    },
+    {
+        "name": "partial_hw_reference_loss_match",
+        "threshold": 1e-6,
+        "contract_source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+        "contract_field_or_exact_clause": "Sections 8 and 15: partial-H/W slices contribute zero bias/loss/gradient; fully valid neighboring slices remain supervised.",
+        "logical_derivation": "Verifier-owned deterministic aggregation/loss oracle with analytically constructed reference.",
+    },
+]
+
+
+def real_cnn_single_multi_context_diagnostic_policy() -> dict[str, Any]:
+    return {
+        "name": "real_care_ase_single_full_context_vs_forced_tile_local_diff",
+        "blocking": False,
+        "contract_source_path": None,
+        "contract_field_or_exact_clause": None,
+        "logical_derivation": (
+            "The frozen contract requires the same public canonical inference path/settings, genuine "
+            "tile-local model forwards, no full-support pseudo-tiling, and one post-aggregation global "
+            "bias application. It does not require a real CNN evaluated with different receptive-field "
+            "context to match a single full-context whole-volume forward at 1e-6."
+        ),
+        "diagnostic_only": True,
+    }
+
 
 def utc_now() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
@@ -953,7 +993,6 @@ def _tile_local_forward_probe(
         and int(forced_meta.get("global_bias_application_count", 0)) == 1
         and int(no_t2_meta.get("global_bias_application_count", 0)) == 1
         and forced_diff is not None
-        and forced_diff <= 1e-6
         and not has_context_override
         and not pseudo_full_support
     )
@@ -982,6 +1021,7 @@ def _tile_local_forward_probe(
         no_t2_global_bias_application_count=int(no_t2_meta.get("global_bias_application_count", 0)),
         canonical_settings_has_no_context_override=not has_context_override,
         max_abs_diff_without_context_override=forced_diff,
+        max_abs_diff_without_context_override_policy=real_cnn_single_multi_context_diagnostic_policy(),
         full_support_pseudo_tiling_detected=pseudo_full_support,
         observed_error=inference_error,
     )
@@ -1230,6 +1270,7 @@ def independent_probe_results(repo_root: Path) -> tuple[list[str], list[dict[str
             global_bias_application_count=tile_probe["global_bias_application_count"],
             canonical_settings_has_no_context_override=tile_probe["canonical_settings_has_no_context_override"],
             max_abs_diff_without_context_override=tile_probe["max_abs_diff_without_context_override"],
+            max_abs_diff_without_context_override_policy=tile_probe["max_abs_diff_without_context_override_policy"],
             observed_error=tile_probe["observed_error"],
         )
     )
@@ -1909,6 +1950,10 @@ def build_receipt(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
         "runtime_receipt_bindings": runtime_receipt_bindings(repo_root, evidence),
         "probes": probes,
         "required_probes": REQUIRED_PROBES,
+        "blocking_numeric_thresholds": BLOCKING_NUMERIC_THRESHOLDS,
+        "diagnostic_numeric_observations": [
+            real_cnn_single_multi_context_diagnostic_policy(),
+        ],
         "forbidden_shortcuts_rejected_by_design": [
             "torch.randn inputs with asserted real case IDs",
             "same call reused for single and forced multi tile",

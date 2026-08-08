@@ -1,7 +1,7 @@
 {
-  "checkpoint_sha256": "b198cf4b1b897094bdafc5e52abf964f67ca90246f89e851854a85ab354a9f2b",
+  "checkpoint_sha256": "af08f021a396f97324d135b7145e95c8039892c22b7a0d31579ee29dffeee94b",
   "checkpoint_sidecar_matches": true,
-  "checkpoint_sidecar_sha256": "b198cf4b1b897094bdafc5e52abf964f67ca90246f89e851854a85ab354a9f2b",
+  "checkpoint_sidecar_sha256": "af08f021a396f97324d135b7145e95c8039892c22b7a0d31579ee29dffeee94b",
   "checkpoint_storage": "temporary_directory_removed_after_hashing",
   "checkpoint_written": true,
   "control_next_step": {

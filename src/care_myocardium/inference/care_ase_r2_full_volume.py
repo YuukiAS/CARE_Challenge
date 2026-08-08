@@ -227,7 +227,7 @@ def predict_care_ase_r2_full_volume_logits(
         gaussian_sigma_scale = settings.gaussian_sigma_scale
         use_mirroring = settings.use_mirroring
         allowed_mirror_axes = settings.allowed_mirror_axes
-    model_min_patch_size = tuple(max(int(tile), int(minimum)) for tile, minimum in zip(tuple(int(v) for v in patch_size), (8, 64, 64)))
+    model_min_patch_size = tuple(int(v) for v in patch_size)
     was_training = model.training
     model.eval()
     original_spatial = tuple(int(v) for v in image.shape[-3:])
@@ -266,7 +266,7 @@ def predict_care_ase_r2_full_volume_logits(
                         "global_bias_application_count": 0,
                         "exact_context_tiling": False,
                         "exact_context_patch_size": None,
-                        "canonical_full_support_base_field": int(len(starts[0]) * len(starts[1]) * len(starts[2])) > 1,
+                        "canonical_full_support_base_field": False,
                     }
                 )
             base = image.new_zeros((image.shape[0], 6, *spatial), dtype=torch.float32)
@@ -279,57 +279,24 @@ def predict_care_ase_r2_full_volume_logits(
             }
             denominator = image.new_zeros((image.shape[0], 1, *spatial), dtype=torch.float32)
             valid_support = image.new_zeros((image.shape[0], 1, *spatial), dtype=torch.float32)
-            tile_count = int(len(starts[0]) * len(starts[1]) * len(starts[2]))
-            full_support_outputs = None
-            full_support_offsets = spatial_offsets
-            if tile_count > 1:
-                full_support_shape = tuple(
-                    max(int(minimum), _round_up_to_multiple(int(dim), int(multiple)))
-                    for dim, minimum, multiple in zip(spatial, model_min_patch_size, (4, 64, 64))
-                )
-                full_support_patch, full_support_crop_slicer = pad_nd_image(
-                    fp32_image,
-                    new_shape=full_support_shape,
-                    mode="constant",
-                    kwargs={"value": 0},
-                    return_slicer=True,
-                )
-                full_support_offsets = tuple(int(slc.start or 0) for slc in full_support_crop_slicer[-3:])
-                full_support_outputs = _forward_with_mirror_average(
-                    model,
-                    full_support_patch,
-                    availability,
-                    global_step=global_step,
-                    mirror_axes=tuple(int(axis) for axis in allowed_mirror_axes) if use_mirroring else (),
-                )
-                if metadata is not None:
-                    metadata["tile_base_logit_call_count"] = int(metadata.get("tile_base_logit_call_count", 0)) + int(full_support_outputs["mirror_count"])
             for z in starts[0]:
                 for y in starts[1]:
                     for x in starts[2]:
                         actual = tuple(int(v) for v in patch_size)
-                        if full_support_outputs is None:
-                            patch_padded = padded_image[..., z : z + patch_size[0], y : y + patch_size[1], x : x + patch_size[2]]
-                            local_start = (0, 0, 0)
-                            model_patch, _model_actual = _pad_patch_to_size(patch_padded, model_min_patch_size)
-                            output_size = tuple(int(v) for v in model_min_patch_size)
-                            mirror_axes = tuple(int(axis) for axis in allowed_mirror_axes) if use_mirroring else ()
-                            outputs = _forward_with_mirror_average(
-                                model,
-                                model_patch,
-                                availability,
-                                global_step=global_step,
-                                mirror_axes=mirror_axes,
-                            )
-                            if metadata is not None:
-                                metadata["tile_base_logit_call_count"] = int(metadata.get("tile_base_logit_call_count", 0)) + int(outputs["mirror_count"])
-                        else:
-                            outputs = full_support_outputs
-                            local_start = tuple(
-                                int(start) - int(spatial_offsets[axis]) + int(full_support_offsets[axis])
-                                for axis, start in enumerate((z, y, x))
-                            )
-                            output_size = tuple(int(v) for v in full_support_outputs["final_logits"].shape[-3:])
+                        patch_padded = padded_image[..., z : z + patch_size[0], y : y + patch_size[1], x : x + patch_size[2]]
+                        local_start = (0, 0, 0)
+                        model_patch, _model_actual = _pad_patch_to_size(patch_padded, model_min_patch_size)
+                        output_size = tuple(int(v) for v in model_patch.shape[-3:])
+                        mirror_axes = tuple(int(axis) for axis in allowed_mirror_axes) if use_mirroring else ()
+                        outputs = _forward_with_mirror_average(
+                            model,
+                            model_patch,
+                            availability,
+                            global_step=global_step,
+                            mirror_axes=mirror_axes,
+                        )
+                        if metadata is not None:
+                            metadata["tile_base_logit_call_count"] = int(metadata.get("tile_base_logit_call_count", 0)) + int(outputs["mirror_count"])
                         weight = (
                             gaussian_importance_map(
                                 patch_size,

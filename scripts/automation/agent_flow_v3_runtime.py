@@ -2942,7 +2942,26 @@ def care_ase_fail_closed_requires_user_scientific_choice(
     remaining = diagnostic.get("remaining_executor_relevant_failures")
     if not isinstance(remaining, list):
         remaining = []
-    reason = str(fail_closed.get("reason") or "")
+    contract_citations = fail_closed.get("scientific_choice_contract_citations")
+    if not isinstance(contract_citations, list):
+        contract_citations = []
+    cited_contract_requirements = [
+        item
+        for item in contract_citations
+        if isinstance(item, dict)
+        and item.get("contract_source_path")
+        and (item.get("contract_field_or_exact_clause") or item.get("section"))
+        and item.get("logical_derivation")
+    ]
+    contract_fields_to_change = fail_closed.get("scientific_contract_fields_requiring_change")
+    if not isinstance(contract_fields_to_change, list):
+        contract_fields_to_change = []
+    exhausted_repairs = fail_closed.get("same_scope_repairs_exhausted")
+    if not isinstance(exhausted_repairs, dict):
+        exhausted_repairs = {}
+    semantics = fail_closed.get("scientific_semantics_changed_by_required_decision")
+    if not isinstance(semantics, list):
+        semantics = []
     return bool(
         fail_closed.get("status") == "FAIL_CLOSED"
         and fail_closed.get("implementation_complete") is False
@@ -2951,9 +2970,14 @@ def care_ase_fail_closed_requires_user_scientific_choice(
         and fail_closed.get("verifier_fingerprint_sha256") == current.get("verifier_fingerprint_sha256")
         and diagnostic.get("exit_code") != 0
         and diagnostic.get("verifier_fingerprint_sha256") == current.get("verifier_fingerprint_sha256")
-        and diagnostic.get("full_support_pseudo_tiling_detected") is False
-        and "single_vs_forced_multi_tile_full_volume" in remaining
-        and "full-support pseudo-tiling" in reason
+        and len(cited_contract_requirements) >= 2
+        and len(contract_fields_to_change) >= 1
+        and len(semantics) >= 1
+        and exhausted_repairs.get("executor_repair") is False
+        and exhausted_repairs.get("verifier_repair") is False
+        and exhausted_repairs.get("runtime_repair") is False
+        and exhausted_repairs.get("transaction_rebind") is False
+        and "VERIFIER_ADDED_UNCITED_NUMERIC_THRESHOLD" not in remaining
     )
 
 

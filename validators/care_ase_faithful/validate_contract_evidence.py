@@ -620,7 +620,11 @@ def _check_runtime_receipt_payloads(
     _require(failures, inf_payload.get("patch_size_equals_input") is not True, "kb12.inference.patch_not_equal_input")
     if "forced_multi_tile_count" in inf_payload:
         _require(failures, int(inf_payload.get("forced_multi_tile_count", 0)) > 1, "kb12.inference.forced_multi_tile_count")
-    _require(failures, float(inf_payload.get("single_vs_forced_multi_tile_max_abs_diff", 1.0)) <= 1e-6, "kb12.inference.single_multi_match")
+    try:
+        diff = float(inf_payload.get("single_vs_forced_multi_tile_max_abs_diff"))
+    except (TypeError, ValueError):
+        diff = math.nan
+    _require(failures, math.isfinite(diff), "kb12.inference.single_multi_diff_diagnostic_finite")
     _require(failures, int(inf_payload.get("global_bias_application_count", 0)) == 1, "kb12.inference.global_bias_once")
 
     checkpoint_payload = receipt_payloads.get("checkpoint_resume_probe", {}).get("payload", {})

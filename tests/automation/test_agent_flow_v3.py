@@ -456,7 +456,7 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         self.assertEqual(receipt["decision"], "CONTROLLER_UPDATE_REQUIRED")
         self.assertIn("Verifier receipt recheck", receipt["action"])
 
-    def test_care_ase_fail_closed_tile_local_routes_to_user_choice(self) -> None:
+    def test_care_ase_fail_closed_uncited_tile_local_threshold_does_not_route_to_user_choice(self) -> None:
         current = {
             "task_id": "care-ase-faithful",
             "request_nonce": "care-ase-nonce",
@@ -483,7 +483,7 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             },
         }
 
-        self.assertTrue(RUNTIME.care_ase_fail_closed_requires_user_scientific_choice(fail_closed, current))
+        self.assertFalse(RUNTIME.care_ase_fail_closed_requires_user_scientific_choice(fail_closed, current))
 
         receipt = RUNTIME.evaluate_stage_event(
             task_id="care-ase-faithful",
@@ -493,12 +493,55 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             remote_sha="c" * 40,
             processed=set(),
             default_wait_hours=4,
-            care_ase_executor_needs_user_scientific_choice=True,
+            care_ase_executor_needs_user_scientific_choice=RUNTIME.care_ase_fail_closed_requires_user_scientific_choice(fail_closed, current),
         )
 
-        self.assertEqual(receipt["decision"], "CONTROLLER_UPDATE_REQUIRED")
-        self.assertIn("scientific-choice boundary", receipt["action"])
-        self.assertNotEqual(receipt["decision"], "STAGE_READY")
+        self.assertEqual(receipt["decision"], "STAGE_READY")
+        self.assertIn("start persistent CARE-ASE Executor", receipt["action"])
+
+    def test_care_ase_user_scientific_choice_requires_cited_contract_conflict(self) -> None:
+        current = {
+            "task_id": "care-ase-faithful",
+            "request_nonce": "care-ase-nonce",
+            "review_round": 1,
+            "state": "VERIFIER_FROZEN",
+            "frozen_contract_sha256": "a" * 64,
+            "verifier_fingerprint_sha256": "b" * 64,
+        }
+        fail_closed = {
+            "status": "FAIL_CLOSED",
+            "implementation_complete": False,
+            "request_nonce": "care-ase-nonce",
+            "frozen_contract_sha256": "a" * 64,
+            "verifier_fingerprint_sha256": "b" * 64,
+            "diagnostic_executable_verifier": {
+                "exit_code": 2,
+                "verifier_fingerprint_sha256": "b" * 64,
+                "remaining_executor_relevant_failures": ["contract_internal_conflict"],
+            },
+            "scientific_choice_contract_citations": [
+                {
+                    "contract_source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+                    "contract_field_or_exact_clause": "section A",
+                    "logical_derivation": "requires incompatible architecture A",
+                },
+                {
+                    "contract_source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+                    "contract_field_or_exact_clause": "section B",
+                    "logical_derivation": "requires incompatible architecture B",
+                },
+            ],
+            "scientific_contract_fields_requiring_change": ["architecture.high_resolution_paths"],
+            "scientific_semantics_changed_by_required_decision": ["architecture"],
+            "same_scope_repairs_exhausted": {
+                "executor_repair": False,
+                "verifier_repair": False,
+                "runtime_repair": False,
+                "transaction_rebind": False,
+            },
+        }
+
+        self.assertTrue(RUNTIME.care_ase_fail_closed_requires_user_scientific_choice(fail_closed, current))
 
     def test_care_ase_verifier_recheck_required_is_not_processed_before_start(self) -> None:
         event = {

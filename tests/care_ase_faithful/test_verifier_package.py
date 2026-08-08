@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import importlib.util
 import json
 import os
 import subprocess
@@ -12,6 +13,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
 VALIDATOR = ROOT / "validators" / "care_ase_faithful" / "validate_contract_evidence.py"
+EXECUTABLE_VERIFIER = ROOT / "validators" / "care_ase_faithful" / "run_executable_verifier.py"
 CONTRACT = ROOT / "results" / "agent_flow_v3" / "care-ase-faithful" / "verification" / "verification_contract.json"
 
 TASK_ID = "care-ase-faithful"
@@ -354,6 +356,22 @@ def _build_strict_fixture(tmp: Path, *, core_source: str | None = None) -> Path:
 
 
 class VerifierPackageTests(unittest.TestCase):
+    def test_real_cnn_single_multi_diff_is_diagnostic_not_hard_gate(self) -> None:
+        spec = importlib.util.spec_from_file_location("care_ase_executable_verifier", EXECUTABLE_VERIFIER)
+        if spec is None or spec.loader is None:
+            self.fail("cannot import executable verifier")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+
+        policy = module.real_cnn_single_multi_context_diagnostic_policy()
+        self.assertIs(policy["blocking"], False)
+        self.assertIs(policy["diagnostic_only"], True)
+        self.assertIsNone(policy["contract_source_path"])
+        self.assertNotIn(
+            "real_care_ase_single_full_context_vs_forced_tile_local_diff",
+            {item["name"] for item in module.BLOCKING_NUMERIC_THRESHOLDS},
+        )
+
     def test_public_reference_fixture_requires_explicit_override(self) -> None:
         reference = _run_validator("--emit-reference")
         self.assertEqual(reference.returncode, 0, reference.stderr)

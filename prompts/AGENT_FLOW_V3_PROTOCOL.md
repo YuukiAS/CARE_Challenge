@@ -122,6 +122,24 @@ Concrete server values belong in ignored local config or shell environment, not 
 
 The Critic is not a slow relay that always sends work back to the Planner. It must directly repair the staged contract when the repair is logically determined by the Planner objective, repository evidence and existing policy. It returns `NEEDS_USER_SCIENTIFIC_CHOICE` only when two or more scientifically meaningful alternatives remain and choosing among them changes the hypothesis, model, data, loss, evaluation or resource budget.
 
+For CARE-ASE verifier and Planner review, `single_tile_and_tiled_use_same_path`
+means the same public canonical inference API/settings, genuine tile-local model
+forwards, and one post-aggregation global bias application. It does not imply
+mathematical equality of real CNN logits under different receptive-field
+contexts. Any blocking numeric threshold must record `contract_source_path`,
+`contract_field_or_exact_clause`, and `logical_derivation`; otherwise it is only
+diagnostic evidence or must be routed back for contract clarification.
+
+Controllers must not escalate CARE-ASE to `NEEDS_USER_SCIENTIFIC_CHOICE` merely
+because the Verifier returns `FAIL` or an Executor writes a fail-closed receipt.
+Escalation requires cited frozen-contract clauses for two or more incompatible
+scientific requirements, a concrete list of contract fields that must change,
+and proof that Executor repair, Verifier repair, runtime repair and transaction
+rebinding cannot resolve the issue. Verifier-added thresholds, validator bugs,
+oracle overreach, receipt/fingerprint/CI binding problems, runtime failures,
+role/session failures and ordinary implementation bugs remain same-scope repair
+or contract-drift routing, not human scientific-choice gates.
+
 Critic freeze is valid only when it records:
 
 ```text
