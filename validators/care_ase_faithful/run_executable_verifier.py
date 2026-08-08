@@ -64,6 +64,7 @@ MUTATION_IDS = [
     "synthetic_intervention_delta",
     "semantic_disable_only_quadratic_signal",
     "partial_hw_straight_through_zero_loss",
+    "partial_hw_cross_z_presequence_mask_removed",
     "injury_dice_bce_replaced_by_focal",
     "scar_component_tversky_plus_occupancy_lambda025",
     "scar_component_tversky_blended_occupancy_half",
@@ -76,6 +77,7 @@ MUTATION_IDS = [
     "deployment_reopens_stock_checkpoint",
     "evaluator_population_mismatch",
     "checkpoint_next_step_drift",
+    "checkpoint_current_contract_provenance_drift",
     "artifact_sha_mismatch",
 ]
 
@@ -94,6 +96,7 @@ REQUIRED_PROBES = [
     "step0_parity_report_regression",
     "partial_hw_extent_zero_contribution",
     "partial_hw_extent_reference_objective",
+    "partial_hw_slice_extent_head_cross_z_gradient",
 ]
 
 PLAN_PATCH_SIZE = (8, 64, 64)
@@ -647,6 +650,15 @@ def fixture_probe_results() -> list[dict[str, Any]]:
             straight_through_zero_loss_detected=False,
             disables_all_extent_on_padding=False,
         ),
+        _pass_probe(
+            "partial_hw_slice_extent_head_cross_z_gradient",
+            uses_real_slice_extent_head=True,
+            loss_applied_only_to_fully_valid_neighbor=True,
+            partial_hw_input_feature_grad_abs_sum=0.0,
+            full_neighbor_input_feature_grad_abs_sum=0.1,
+            cross_z_partial_feature_gradient_zero=True,
+            full_neighbor_gradient_nonzero=True,
+        ),
     ]
 
 
@@ -731,6 +743,11 @@ def _load_runtime_receipts(repo_root: Path, evidence: dict[str, Any]) -> tuple[l
         payload = receipt.get("payload", {})
         if not isinstance(payload, dict) or payload.get("status") != "PASS":
             failures.append(f"runtime_receipts.payload_status:{name}")
+        if name == "checkpoint_resume_probe" and isinstance(payload, dict):
+            if payload.get("request_nonce") != REQUEST_NONCE:
+                failures.append("runtime_receipts.checkpoint.current_request_nonce")
+            if payload.get("frozen_contract_sha256") != FROZEN_CONTRACT_SHA256:
+                failures.append("runtime_receipts.checkpoint.current_frozen_contract_sha256")
     return failures, receipts
 
 
@@ -974,6 +991,71 @@ def _partial_hw_reference_probe(model: Any, *, loss_fn: Any | None = None) -> di
         **probe,
         "name": "partial_hw_extent_reference_objective",
     }
+
+
+def _slice_extent_head_cross_z_probe(model: Any) -> dict[str, Any]:
+    import torch
+    import torch.nn.functional as F
+
+    head = model.component_heads.scar_extent_head
+    conv = next((module for module in head.sequence.modules() if module.__class__.__name__ == "Conv1d"), None)
+    in_channels = int(getattr(conv, "in_channels", 0) or 0)
+    if in_channels <= 0:
+        return _pass_probe(
+            "partial_hw_slice_extent_head_cross_z_gradient",
+            status="FAIL",
+            uses_real_slice_extent_head=False,
+            loss_applied_only_to_fully_valid_neighbor=True,
+            partial_hw_input_feature_grad_abs_sum=math.inf,
+            full_neighbor_input_feature_grad_abs_sum=0.0,
+            cross_z_partial_feature_gradient_zero=False,
+            full_neighbor_gradient_nonzero=False,
+            failure_reason="scar_extent_head_sequence_conv1d_missing",
+        )
+
+    torch.manual_seed(91027)
+    feature = torch.randn(1, in_channels, 3, 4, 4, requires_grad=True)
+    valid = torch.ones(1, 1, 3, 4, 4)
+    valid[..., 1, 0, 0] = 0.0
+    outputs = head(feature, valid)
+    presence = outputs["presence_logits"]
+    area = outputs["area_logits"]
+
+    neighbor_slice = 2
+    objective = F.binary_cross_entropy_with_logits(
+        presence[..., neighbor_slice, :, :],
+        torch.ones_like(presence[..., neighbor_slice, :, :]),
+    ) + F.smooth_l1_loss(
+        area[..., neighbor_slice, :, :],
+        torch.zeros_like(area[..., neighbor_slice, :, :]),
+    )
+    objective.backward()
+
+    partial_grad = float(feature.grad[..., 1, :, :].detach().abs().sum().cpu())
+    full_grad = float(feature.grad[..., neighbor_slice, :, :].detach().abs().sum().cpu())
+    passed = partial_grad == 0.0 and full_grad > 0.0
+    return _pass_probe(
+        "partial_hw_slice_extent_head_cross_z_gradient",
+        status="PASS" if passed else "FAIL",
+        contract_source_path="automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+        contract_field_or_exact_clause=(
+            "Sections 8 and 15: partial-H/W slices contribute zero bias/loss/gradient; fully valid "
+            "neighboring slices remain supervised."
+        ),
+        logical_derivation=(
+            "The real SliceExtentHead pooling plus Conv1d sequence is executed, and only a fully-valid "
+            "neighbor slice objective is backpropagated. Any gradient on the adjacent partial-H/W input "
+            "feature is forbidden cross-z leakage from a masked-out slice."
+        ),
+        uses_real_slice_extent_head=True,
+        loss_applied_only_to_fully_valid_neighbor=True,
+        partial_slice_index=1,
+        fully_valid_neighbor_slice_index=neighbor_slice,
+        partial_hw_input_feature_grad_abs_sum=partial_grad,
+        full_neighbor_input_feature_grad_abs_sum=full_grad,
+        cross_z_partial_feature_gradient_zero=partial_grad == 0.0,
+        full_neighbor_gradient_nonzero=full_grad > 0.0,
+    )
 
 
 def _verifier_downsample_nearest(tensor: Any, size: tuple[int, int, int]) -> Any:
@@ -1895,8 +1977,22 @@ def independent_probe_results(repo_root: Path) -> tuple[list[str], list[dict[str
             stock_checkpoint_hash=sha256_file(Path(model.config.checkpoint_path)),
             checkpoint_reason="verifier_zero_credit_schema_v4",
         )
+        import torch
+
+        verifier_payload = torch.load(ckpt, map_location="cpu", weights_only=False)
+        verifier_payload["request_nonce"] = REQUEST_NONCE
+        verifier_payload["frozen_contract_sha256"] = FROZEN_CONTRACT_SHA256
+        torch.save(verifier_payload, ckpt)
+        ckpt.with_suffix(ckpt.suffix + ".sha256").write_text(f"{sha256_file(ckpt)}  {ckpt.name}\n", encoding="utf-8")
         loaded_model, loaded_payload = load_care_ase_checkpoint_for_inference(ckpt, map_location="cpu", plans_path=Path(model.config.plans_path))
-    checkpoint_passed = loaded_payload.get("deployment_load_requires_stock_checkpoint") is False and int(loaded_payload.get("schema_version", 0)) == 4
+    checkpoint_current_request = loaded_payload.get("request_nonce") == REQUEST_NONCE
+    checkpoint_current_contract = loaded_payload.get("frozen_contract_sha256") == FROZEN_CONTRACT_SHA256
+    checkpoint_passed = (
+        loaded_payload.get("deployment_load_requires_stock_checkpoint") is False
+        and int(loaded_payload.get("schema_version", 0)) == 4
+        and checkpoint_current_request
+        and checkpoint_current_contract
+    )
     probes.append(
         _pass_probe(
             "schema_v4_checkpoint_resume",
@@ -1905,6 +2001,10 @@ def independent_probe_results(repo_root: Path) -> tuple[list[str], list[dict[str
             manual_gradient_only=False,
             next_descriptor_matches=loaded_payload.get("next_batch_descriptor_sha256") == "VERIFIER_ZERO_CREDIT_NEXT_DESCRIPTOR",
             scheduler_rng_sampler_cursor_match=True,
+            observed_request_nonce=loaded_payload.get("request_nonce"),
+            observed_frozen_contract_sha256=loaded_payload.get("frozen_contract_sha256"),
+            current_request_nonce_bound=checkpoint_current_request,
+            current_frozen_contract_sha256_bound=checkpoint_current_contract,
         )
     )
     probes.append(
@@ -1988,6 +2088,7 @@ def independent_probe_results(repo_root: Path) -> tuple[list[str], list[dict[str
     )
     probes.append(_independent_partial_hw_probe(model))
     probes.append(_partial_hw_reference_probe(model))
+    probes.append(_slice_extent_head_cross_z_probe(model))
 
     for probe in probes:
         if probe.get("status") != "PASS":
@@ -2070,6 +2171,10 @@ def receipt_bound_probe_results(repo_root: Path, evidence: dict[str, Any]) -> tu
 
     if checkpoint.get("synthetic_gradient_used") is not False:
         failures.append("checkpoint.synthetic_gradient")
+    if checkpoint.get("request_nonce") != REQUEST_NONCE:
+        failures.append("checkpoint.current_request_nonce")
+    if checkpoint.get("frozen_contract_sha256") != FROZEN_CONTRACT_SHA256:
+        failures.append("checkpoint.current_frozen_contract_sha256")
     if not _as_bool(checkpoint.get("next_step_matches_uninterrupted")):
         failures.append("checkpoint.next_step")
     if not _as_bool(checkpoint.get("rng_and_cursor_state_matches")):
@@ -2146,6 +2251,10 @@ def receipt_bound_probe_results(repo_root: Path, evidence: dict[str, Any]) -> tu
             next_descriptor_matches=checkpoint.get("next_descriptor_sha256") == checkpoint.get("first_descriptor_sha256")
             or checkpoint.get("next_step_matches_uninterrupted") is True,
             scheduler_rng_sampler_cursor_match=checkpoint.get("rng_and_cursor_state_matches"),
+            observed_request_nonce=checkpoint.get("request_nonce"),
+            observed_frozen_contract_sha256=checkpoint.get("frozen_contract_sha256"),
+            current_request_nonce_bound=checkpoint.get("request_nonce") == REQUEST_NONCE,
+            current_frozen_contract_sha256_bound=checkpoint.get("frozen_contract_sha256") == FROZEN_CONTRACT_SHA256,
             implementation_receipt_sha256=receipts["checkpoint_resume_probe"]["_verifier_observed_sha256"],
         ),
         _pass_probe(
@@ -2463,6 +2572,44 @@ def mutation_result(mutation_id: str, *, repo_root: Path, fixture_mode: bool) ->
             if partial_probe.get("straight_through_zero_loss_detected") or partial_probe.get("status") != "PASS":
                 failures.append("kb11.partial_hw.straight_through_zero_loss")
 
+        elif mutation_id == "partial_hw_cross_z_presequence_mask_removed":
+            mutation_applied = "slice_extent_head_partial_hw_only_pixel_pooling_allows_cross_z_conv1d_leakage"
+            head = model.component_heads.scar_extent_head
+
+            def leaky_forward(feature: Any, valid_spatial_mask: Any = None) -> dict[str, Any]:
+                import torch
+                import torch.nn.functional as F
+
+                if valid_spatial_mask is None:
+                    masked = feature
+                    valid = torch.ones_like(feature[:, :1])
+                else:
+                    valid = F.interpolate(valid_spatial_mask.detach().float(), size=feature.shape[-3:], mode="nearest").clamp(0.0, 1.0)
+                    masked = feature * valid
+                valid_sum = valid.sum(dim=(-2, -1)).clamp_min(1.0)
+                masked_average = masked.sum(dim=(-2, -1)) / valid_sum
+                masked_values = feature.masked_fill(valid <= 0.0, -torch.inf)
+                masked_max = masked_values.amax(dim=(-2, -1))
+                masked_max = torch.where(torch.isfinite(masked_max), masked_max, torch.zeros_like(masked_average))
+                sequence_input = 0.5 * masked_average + 0.5 * masked_max
+                hidden = head.sequence(sequence_input)
+                presence_logits = head.presence(hidden).unsqueeze(-1).unsqueeze(-1)
+                area_logits = head.area(hidden).unsqueeze(-1).unsqueeze(-1)
+                expand_shape = (-1, -1, -1, feature.shape[-2], feature.shape[-1])
+                return {
+                    "presence_logits": presence_logits.expand(expand_shape),
+                    "area_logits": area_logits.expand(expand_shape),
+                }
+
+            head.forward = leaky_forward  # type: ignore[method-assign]
+            cross_z_probe = _slice_extent_head_cross_z_probe(model)
+            mutation_executed = True
+            observations["partial_hw_slice_extent_head_cross_z_probe"] = cross_z_probe
+            if cross_z_probe.get("status") != "PASS":
+                failures.append("kb11.partial_hw.cross_z_presequence_mask")
+            else:
+                failures.append("kb11.partial_hw.cross_z_presequence_mask_not_rejected")
+
         elif mutation_id in {
             "injury_dice_bce_replaced_by_focal",
             "scar_component_tversky_plus_occupancy_lambda025",
@@ -2693,6 +2840,45 @@ def mutation_result(mutation_id: str, *, repo_root: Path, fixture_mode: bool) ->
                     observations["next_descriptor_matches"] = False
             if not observations["next_descriptor_matches"]:
                 failures.append("kb16.checkpoint_resume.next_step")
+
+        elif mutation_id == "checkpoint_current_contract_provenance_drift":
+            mutation_applied = "schema_v4_checkpoint_payload_mutated_to_old_request_nonce_and_frozen_contract"
+            optimizer = runtime["build_optimizer"](model)
+            scheduler = runtime["CAREASEStageScheduler"](optimizer)
+            with tempfile.TemporaryDirectory(prefix="care_ase_mutation_checkpoint_contract_") as tmp:
+                ckpt = Path(tmp) / "mutated_current_contract.pth"
+                runtime["save_care_ase_checkpoint"](
+                    ckpt,
+                    model=model,
+                    optimizer=optimizer,
+                    scheduler=scheduler,
+                    global_step=1,
+                    stage_id="A",
+                    next_batch_hash="EXPECTED_NEXT",
+                    loss_history_tail=[],
+                    code_hash=sha256_file(Path(__file__)),
+                    config_hash=json_sha(model.config.__dict__),
+                    split_hash="MUTATION_SPLIT",
+                    stock_checkpoint_hash=sha256_file(Path(model.config.checkpoint_path)),
+                    checkpoint_reason="mutation_current_contract_provenance",
+                )
+                payload = torch.load(ckpt, map_location="cpu", weights_only=False)
+                payload["request_nonce"] = "old-request-nonce"
+                payload["frozen_contract_sha256"] = "0" * 64
+                torch.save(payload, ckpt)
+                ckpt.with_suffix(ckpt.suffix + ".sha256").write_text(f"{sha256_file(ckpt)}  {ckpt.name}\n", encoding="utf-8")
+                mutation_executed = True
+                _loaded, loaded_payload = runtime["load_care_ase_checkpoint_for_inference"](
+                    ckpt,
+                    map_location="cpu",
+                    plans_path=Path(model.config.plans_path),
+                )
+                observations["observed_request_nonce"] = loaded_payload.get("request_nonce")
+                observations["observed_frozen_contract_sha256"] = loaded_payload.get("frozen_contract_sha256")
+                observations["current_request_nonce_bound"] = loaded_payload.get("request_nonce") == REQUEST_NONCE
+                observations["current_frozen_contract_sha256_bound"] = loaded_payload.get("frozen_contract_sha256") == FROZEN_CONTRACT_SHA256
+            if not observations["current_request_nonce_bound"] or not observations["current_frozen_contract_sha256_bound"]:
+                failures.append("kb16.checkpoint_resume.current_contract_provenance")
 
         elif mutation_id == "artifact_sha_mismatch":
             mutation_applied = "tracked_runtime_artifact_bytes_changed_after_receipt_sha_recording"

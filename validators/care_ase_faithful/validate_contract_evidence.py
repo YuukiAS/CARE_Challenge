@@ -233,6 +233,7 @@ REQUIRED_EXECUTABLE_MUTATION_IDS = {
     "synthetic_intervention_delta",
     "semantic_disable_only_quadratic_signal",
     "partial_hw_straight_through_zero_loss",
+    "partial_hw_cross_z_presequence_mask_removed",
     "injury_dice_bce_replaced_by_focal",
     "scar_component_tversky_plus_occupancy_lambda025",
     "scar_component_tversky_blended_occupancy_half",
@@ -245,6 +246,7 @@ REQUIRED_EXECUTABLE_MUTATION_IDS = {
     "deployment_reopens_stock_checkpoint",
     "evaluator_population_mismatch",
     "checkpoint_next_step_drift",
+    "checkpoint_current_contract_provenance_drift",
     "artifact_sha_mismatch",
 }
 
@@ -263,6 +265,7 @@ REQUIRED_EXECUTABLE_PROBES = {
     "step0_parity_report_regression",
     "partial_hw_extent_zero_contribution",
     "partial_hw_extent_reference_objective",
+    "partial_hw_slice_extent_head_cross_z_gradient",
 }
 
 CRITICAL_SOURCE_PATHS = {
@@ -661,6 +664,12 @@ def _check_runtime_receipt_payloads(
     checkpoint_payload = receipt_payloads.get("checkpoint_resume_probe", {}).get("payload", {})
     _require(failures, checkpoint_payload.get("status") == "PASS", "kb16.checkpoint_resume.payload_status")
     _require(failures, checkpoint_payload.get("schema_version") == 4, "kb16.checkpoint_resume.schema_v4")
+    _require(failures, checkpoint_payload.get("request_nonce") == REQUEST_NONCE, "kb16.checkpoint_resume.current_request_nonce")
+    _require(
+        failures,
+        checkpoint_payload.get("frozen_contract_sha256") == FROZEN_CONTRACT_SHA256,
+        "kb16.checkpoint_resume.current_frozen_contract_sha256",
+    )
     _require(failures, checkpoint_payload.get("next_step_matches_uninterrupted") is True, "kb16.checkpoint_resume.next_step")
     _require(failures, checkpoint_payload.get("rng_and_cursor_state_matches") is True, "kb16.checkpoint_resume.rng_cursor")
 
@@ -878,6 +887,17 @@ def _check_verifier_owned_execution(failures: list[str], evidence: dict[str, Any
         reference_probe = by_name.get("partial_hw_extent_reference_objective", {})
         _require(failures, reference_probe.get("loss_matches_fully_valid_reference") is True, "verifier_owned.partial_hw.reference_probe_matches")
         _require(failures, float(reference_probe.get("full_neighbor_extent_head_grad_abs_sum", 0.0)) > 0.0, "verifier_owned.partial_hw.reference_probe_full_grad")
+        cross_z_probe = by_name.get("partial_hw_slice_extent_head_cross_z_gradient", {})
+        _require(failures, cross_z_probe.get("uses_real_slice_extent_head") is True, "verifier_owned.partial_hw.cross_z_real_slice_extent_head")
+        _require(failures, cross_z_probe.get("loss_applied_only_to_fully_valid_neighbor") is True, "verifier_owned.partial_hw.cross_z_neighbor_only_objective")
+        _require(failures, cross_z_probe.get("cross_z_partial_feature_gradient_zero") is True, "verifier_owned.partial_hw.cross_z_partial_feature_grad_zero")
+        _require(failures, cross_z_probe.get("full_neighbor_gradient_nonzero") is True, "verifier_owned.partial_hw.cross_z_full_neighbor_grad_nonzero")
+        _require(failures, float(cross_z_probe.get("partial_hw_input_feature_grad_abs_sum", 1.0)) == 0.0, "verifier_owned.partial_hw.cross_z_partial_feature_grad_abs_zero")
+        _require(failures, float(cross_z_probe.get("full_neighbor_input_feature_grad_abs_sum", 0.0)) > 0.0, "verifier_owned.partial_hw.cross_z_full_neighbor_feature_grad_abs_nonzero")
+
+        checkpoint_probe = by_name.get("schema_v4_checkpoint_resume", {})
+        _require(failures, checkpoint_probe.get("current_request_nonce_bound") is True, "verifier_owned.checkpoint.current_request_nonce")
+        _require(failures, checkpoint_probe.get("current_frozen_contract_sha256_bound") is True, "verifier_owned.checkpoint.current_frozen_contract_sha256")
 
     if transaction_receipt is not None:
         _require(failures, transaction_receipt.get("schema") == "CARE_ASE_FAITHFUL_TRANSACTION_GATE_RECEIPT_V1", "verifier_owned.transaction.schema")
