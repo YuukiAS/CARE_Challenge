@@ -1704,6 +1704,82 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             self.assertEqual(receipt["resume_commands"][0]["role"], "verifier")
             self.assertIn("round_001_reentry_001.json", receipt["event_key"])
 
+    def test_reentry_event_without_exact_prompt_uses_planner_artifact_not_old_round_prompt(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            repo = root / "repo"
+            repo.mkdir()
+            subprocess.check_call(["git", "init"], cwd=repo, stdout=subprocess.DEVNULL)
+            subprocess.check_call(["git", "config", "user.email", "test@example.invalid"], cwd=repo)
+            subprocess.check_call(["git", "config", "user.name", "Agent Flow Test"], cwd=repo)
+            task_dir = repo / "automation/agent_flow_v3/tasks/portable-task"
+            review_dir = repo / "results/agent_flow_v3/portable-task/planner_reviews"
+            repair_dir = task_dir / "repairs"
+            review_dir.mkdir(parents=True)
+            repair_dir.mkdir(parents=True)
+            (repair_dir / "round_001_verifier.md").write_text("stale old prompt\n", encoding="utf-8")
+            review_path = review_dir / "round_001_reentry_005.json"
+            review_path.write_text(
+                json.dumps(
+                    {
+                        "schema": "CARE_AGENT_FLOW_V3_PLANNER_REVIEW",
+                        "task_id": "portable-task",
+                        "request_nonce": "nonce-1",
+                        "review_round": 1,
+                        "review_reentry": "round_001_reentry_005",
+                        "decision": "PLANNER_REVISE_VERIFIER",
+                        "frozen_contract_sha256": "a" * 64,
+                        "integration_commit_sha": "b" * 40,
+                        "implementation_fingerprint_sha256": "c" * 64,
+                        "verifier_fingerprint_sha256": "d" * 64,
+                        "created_utc": "2026-08-08T10:06:19Z",
+                    }
+                ),
+                encoding="utf-8",
+            )
+            subprocess.check_call(["git", "add", "."], cwd=repo)
+            subprocess.check_call(["git", "commit", "-m", "planner reentry"], cwd=repo, stdout=subprocess.DEVNULL)
+            request = {
+                "schema": RUNTIME.SCHEMA,
+                "enabled": True,
+                "task_id": "portable-task",
+                "integration_branch": "develop",
+                "request_nonce": "nonce-1",
+                "frozen_contract_sha256": "a" * 64,
+            }
+            current = {
+                "schema": RUNTIME.SCHEMA,
+                "task_id": "portable-task",
+                "state": "WAITING_FOR_EXTERNAL_GPT",
+                "review_round": 1,
+                "request_nonce": "nonce-1",
+                "frozen_contract_sha256": "a" * 64,
+                "integration_commit_sha": "b" * 40,
+                "implementation_fingerprint_sha256": "c" * 64,
+                "verifier_fingerprint_sha256": "d" * 64,
+            }
+            overlay = RUNTIME.planner_review_artifact_event(
+                repo=repo,
+                ref="HEAD",
+                task_id="portable-task",
+                request=request,
+                current=current,
+                remote_sha="e" * 40,
+            )
+            self.assertIsNotNone(overlay)
+            assert overlay is not None
+            self.assertEqual(overlay["state"], "PLANNER_REVISE_VERIFIER")
+            self.assertEqual(overlay["repair_prompts"], {})
+            payload, path, _sha = RUNTIME.load_exact_repair_prompt(
+                repo,
+                "portable-task",
+                "verifier",
+                overlay,
+                ref="HEAD",
+            )
+            self.assertEqual(path, repo / "results/agent_flow_v3/portable-task/planner_reviews/round_001_reentry_005.json")
+            self.assertIn(b"PLANNER_REVISE_VERIFIER", payload)
+
     def test_care_ase_reentry_current_routes_verifier_before_executor(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

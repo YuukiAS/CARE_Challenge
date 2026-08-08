@@ -684,7 +684,8 @@ def planner_review_artifact_event(
             prompt_candidates: list[str] = []
             if isinstance(review_reentry, str) and review_reentry:
                 prompt_candidates.append(f"automation/agent_flow_v3/tasks/{task_id}/repairs/{review_reentry}_{role}.md")
-            prompt_candidates.append(f"automation/agent_flow_v3/tasks/{task_id}/repairs/round_{int(review.get('review_round')):03d}_{role}.md")
+            else:
+                prompt_candidates.append(f"automation/agent_flow_v3/tasks/{task_id}/repairs/round_{int(review.get('review_round')):03d}_{role}.md")
             for prompt in prompt_candidates:
                 if git_show_bytes_or_none(repo, ref, prompt) is not None:
                     repair_prompts[role] = prompt
