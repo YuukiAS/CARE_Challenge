@@ -10,7 +10,7 @@
   "review_round": 1,
   "checked_remote_develop_sha": "491ba697e7a51712d9d04fc27824e4efa018827a",
   "ci_receipt": "results/agent_flow_v3/care-ase-faithful/controller_ci_receipt.json",
-  "ci_receipt_sha256": "d61e5848a21a4d029448f982cf3a1bf425d921c5de32ecccfda532acb2bf63b9",
+  "ci_receipt_sha256": "7a2a3c705529ca90f429c777f4b2346d4da31e3e7742eef58822f04388771c0e",
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
   "implementation_fingerprint_sha256": "25828c210776d499613a872754d39290cf9df416a747fb9f0f86c56f91711dc6",
   "verifier_fingerprint_sha256": "1cce33fdfe102efb63979870f190bfc1a2584385a07f6f2db2ccddcb14e69aaa",

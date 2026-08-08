@@ -20,9 +20,9 @@
   "verifier_integration_merge_sha": "57a5105efc79e389ba0ef4e4ec5a697d8ac71980",
   "controller_checked_remote_develop_sha": "491ba697e7a51712d9d04fc27824e4efa018827a",
   "controller_ci_receipt": "results/agent_flow_v3/care-ase-faithful/controller_ci_receipt.json",
-  "controller_ci_receipt_sha256": "d61e5848a21a4d029448f982cf3a1bf425d921c5de32ecccfda532acb2bf63b9",
+  "controller_ci_receipt_sha256": "7a2a3c705529ca90f429c777f4b2346d4da31e3e7742eef58822f04388771c0e",
   "controller_ready_for_planner_review_receipt": "results/agent_flow_v3/care-ase-faithful/controller_ready_for_planner_review_receipt.json",
-  "controller_ready_for_planner_review_receipt_sha256": "c9ae17c816ee8f9b5cbd3febb163118d3be0dcd894b92b8b513b9e52b72fef43",
+  "controller_ready_for_planner_review_receipt_sha256": "ef8db952d17e12500045368686e41743a6d1f78f4681612d645b2fe5a33181c4",
   "controller_integration_receipt": "results/agent_flow_v3/care-ase-faithful/controller_integration_receipt.json",
   "runtime_receipts": {
     "runtime_binding_receipt": "results/agent_flow_v3/care-ase-faithful/runtime_binding_receipt.json",
@@ -38,5 +38,9 @@
     "PLANNER_REVISE_BOTH",
     "PLANNER_REVISE_EXECUTOR",
     "PLANNER_REVISE_VERIFIER"
-  ]
+  ],
+  "ci_run_id": 31246780293,
+  "ci_run_url": "https://github.com/YuukiAS/CARE_Challenge/actions/runs/31246780293",
+  "ci_run_actual_head_sha": "491ba697e7a51712d9d04fc27824e4efa018827a",
+  "ci_workflow_name": "CARE Agent-Flow v3 deterministic CI"
 }

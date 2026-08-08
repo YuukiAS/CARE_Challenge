@@ -1005,6 +1005,10 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
                 "state": "CI_RUNNING",
                 "ci_status": "PASS",
                 "ci_checked_commit_sha": "e" * 40,
+                "ci_run_id": 12345,
+                "ci_run_url": "https://github.example/actions/runs/12345",
+                "ci_run_actual_head_sha": "e" * 40,
+                "ci_workflow_name": "CARE Agent-Flow v3 deterministic CI",
                 "frozen_contract_sha256": "a" * 64,
                 "implementation_fingerprint_sha256": "b" * 64,
                 "verifier_fingerprint_sha256": "c" * 64,
@@ -1057,6 +1061,12 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             self.assertEqual(updated["integration_commit_sha"], "e" * 40)
             self.assertEqual(planner_packet["integration_commit_sha"], "e" * 40)
             self.assertEqual(planner_packet["ci_checked_commit_sha"], "e" * 40)
+            self.assertEqual(planner_packet["ci_run_actual_head_sha"], "e" * 40)
+            self.assertEqual(planner_packet["ci_run_id"], 12345)
+            self.assertEqual(updated["ci_run_actual_head_sha"], "e" * 40)
+            self.assertEqual(updated["ci_run_id"], 12345)
+            self.assertEqual(ci_receipt["github_actions_head_sha"], "e" * 40)
+            self.assertEqual(ci_receipt["github_actions_run_id"], 12345)
             self.assertIsNone(updated["planner_decision"])
             self.assertIsNone(updated["planner_review_artifact"])
             self.assertIsNone(updated["planner_review_artifact_commit_sha"])

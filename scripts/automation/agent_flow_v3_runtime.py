@@ -3839,6 +3839,10 @@ def apply_care_ase_ci_pass_planner_wait_update(
     planner_packet_path = repo / "results/agent_flow_v3/care-ase-faithful/planner_review_packet.json"
     wait_started = now()
     wait_deadline_value = wait_deadline(wait_started, max(4, int(args.default_wait_hours)))
+    ci_run_id = current.get("ci_run_id")
+    ci_run_url = current.get("ci_run_url")
+    ci_run_actual_head_sha = current.get("ci_run_actual_head_sha") or remote_sha
+    ci_workflow_name = current.get("ci_workflow_name") or "CARE Agent-Flow v3 deterministic CI"
     stale_planner_review = {
         key: current.get(key)
         for key in (
@@ -3863,6 +3867,10 @@ def apply_care_ase_ci_pass_planner_wait_update(
             "created_utc": wait_started,
             "checked_commit_sha": remote_sha,
             "github_actions_status": "PASS",
+            "github_actions_run_id": ci_run_id,
+            "github_actions_run_url": ci_run_url,
+            "github_actions_head_sha": ci_run_actual_head_sha,
+            "github_actions_workflow_name": ci_workflow_name,
             "state_transition_after_ci": "READY_FOR_PLANNER_REVIEW_TO_WAITING_FOR_EXTERNAL_GPT",
             "human_approval_required_for_wait_transaction": False,
             "approval_scope": "current_frozen_contract_and_request_nonce_ci_pass_to_planner_wait_loop",
@@ -3944,6 +3952,10 @@ def apply_care_ase_ci_pass_planner_wait_update(
         "local_gates": "PASS",
         "ci_for_review_inputs": "PASS",
         "ci_checked_commit_sha": remote_sha,
+        "ci_run_id": ci_run_id,
+        "ci_run_url": ci_run_url,
+        "ci_run_actual_head_sha": ci_run_actual_head_sha,
+        "ci_workflow_name": ci_workflow_name,
         "planner_allowed_decisions": sorted({"PLANNER_REVISE_EXECUTOR", "PLANNER_REVISE_VERIFIER", "PLANNER_REVISE_BOTH", "PLANNER_PASS"}),
     }
     write_json(planner_packet_path, planner_packet)
@@ -3958,6 +3970,10 @@ def apply_care_ase_ci_pass_planner_wait_update(
             "controller_local_gates_status": "PASS",
             "ci_status": "PASS",
             "ci_checked_commit_sha": remote_sha,
+            "ci_run_id": ci_run_id,
+            "ci_run_url": ci_run_url,
+            "ci_run_actual_head_sha": ci_run_actual_head_sha,
+            "ci_workflow_name": ci_workflow_name,
             "planner_decision": None,
             "planner_review_artifact": None,
             "planner_review_artifact_commit_sha": None,
@@ -3986,6 +4002,9 @@ def apply_care_ase_ci_pass_planner_wait_update(
             "review_binding_audit": {
                 "exact_integration_ci_status": "PASS",
                 "checked_commit_sha": remote_sha,
+                "ci_run_id": ci_run_id,
+                "ci_run_actual_head_sha": ci_run_actual_head_sha,
+                "ci_run_url": ci_run_url,
                 "tracked_ci_receipt_is_stale": False,
                 "tracked_planner_review_packet_is_stale": False,
                 "tracked_runtime_receipt_manifest_is_stale": False,
