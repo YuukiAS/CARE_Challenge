@@ -1,18 +1,18 @@
 {
-  "created_utc": "2026-08-07T04:43:59Z",
+  "created_utc": "2026-08-08T05:51:54Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
     "kb12.inference.full_support_pseudo_tiling"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "d0a2dc7da59405f7246102e4659d6a3e2b8b7f6d084b374b4c8f60e624104015",
-  "mutation_applied": "current_full_volume_forced_multi_tile_path_observed_for_full_support_reuse",
+  "mutated_fingerprint_sha256": "718146f22be9222df410f2f6c5d5836b0b17da91c6c668b16aa58c6d23e3f0e1",
+  "mutation_applied": "forced_multi_tile_predictor_runs_one_full_support_forward_then_fakes_tile_metadata",
   "mutation_executed": true,
   "mutation_id": "full_support_pseudo_tiling",
   "observations": {
     "single_logits_available": true,
-    "source_manifest_sha256_before_mutation": "a2a165292590ed700c3534a56b3bae28f9b80120697fad39392d0207f6196d43",
+    "source_manifest_sha256_before_mutation": "3a9c0b4b14c410a970bdf9686060b89347b5b8679bbe40fcc1d01c55f2c67f1a",
     "tile_local_forward_probe": {
       "actual_forward_records": [
         {
@@ -34,13 +34,21 @@
         32,
         32
       ],
-      "expected_model_forward_count": 9,
+      "expected_model_forward_count": 4,
       "forced_model_forward_count": 1,
       "forced_multi_tile_call_id": "verifier_forced_multi_tile",
-      "forced_multi_tile_count": 9,
+      "forced_multi_tile_count": 4,
       "full_support_pseudo_tiling_detected": true,
       "global_bias_application_count": 1,
-      "max_abs_diff_without_context_override": 9.5367431640625e-07,
+      "max_abs_diff_without_context_override": 0.0,
+      "max_abs_diff_without_context_override_policy": {
+        "blocking": false,
+        "contract_field_or_exact_clause": null,
+        "contract_source_path": null,
+        "diagnostic_only": true,
+        "logical_derivation": "The frozen contract requires the same public canonical inference path/settings, genuine tile-local model forwards, no full-support pseudo-tiling, and one post-aggregation global bias application. It does not require a real CNN evaluated with different receptive-field context to match a single full-context whole-volume forward at 1e-6.",
+        "name": "real_care_ase_single_full_context_vs_forced_tile_local_diff"
+      },
       "mirror_factor": 1,
       "model_input_spatial_within_declared_patch": false,
       "name": "tile_local_forward_instrumentation",
@@ -89,8 +97,29 @@
       ],
       "single_tile_call_id": "verifier_single_tile",
       "status": "FAIL",
-      "tile_coordinates": [],
-      "tile_coordinates_recorded": false,
+      "tile_coordinates": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          32
+        ],
+        [
+          0,
+          32,
+          0
+        ],
+        [
+          0,
+          32,
+          32
+        ]
+      ],
+      "tile_coordinates_recorded": true,
       "tile_outputs_limited_to_base_logits_wall_extent_evidence": true
     }
   },

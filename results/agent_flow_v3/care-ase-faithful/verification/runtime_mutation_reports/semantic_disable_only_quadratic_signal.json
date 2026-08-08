@@ -1,19 +1,19 @@
 {
-  "created_utc": "2026-08-08T05:49:44Z",
+  "created_utc": "2026-08-08T05:51:28Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
-    "kb05.required_module_authority.oracle_rejected"
+    "kb05.semantic_disable_only_quadratic_signal"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "d60a35ffec8ea0da42950994c5258a2ac57bb1cf0281bb7540cf1f433dac9e5f",
-  "mutation_applied": "all_named_evidence_projection_modules_return_zero_into_final_branches",
+  "mutated_fingerprint_sha256": "571e27f3be4e1884e53e3fcac40ef9bf60f9a1abb0a740639831894ccb07997d",
+  "mutation_applied": "disable_flag_quadratic_signal_injected_outside_normal_forward_graph",
   "mutation_executed": true,
-  "mutation_id": "projection_context_no_final_authority",
+  "mutation_id": "semantic_disable_only_quadratic_signal",
   "observations": {
     "authority_probe": {
       "all_implementation_flags_match_verifier_owned_removal": false,
-      "all_required_groups_have_verifier_owned_delta": false,
+      "all_required_groups_have_verifier_owned_delta": true,
       "disable_flag_final_logit_contribution_sites": [
         {
           "disable_condition": "disable_scar_proposal or disable_scar_context or disable_all_evidence",
@@ -31,31 +31,31 @@
       "implementation_disable_flags_treated_as_authority": false,
       "implementation_flag_equivalence_tolerance": 1e-06,
       "implementation_flag_vs_verifier_owned_removal_max_abs": {
-        "all_named_evidence_projection": 0.006192207336425781,
-        "edema_boundary": 0.008139610290527344,
-        "edema_context_and_dilation_1_2_4": 0.0072013139724731445,
-        "edema_injury": 0.010000228881835938,
-        "scar_context": 0.003616034984588623,
+        "all_named_evidence_projection": 0.032595157623291016,
+        "edema_boundary": 0.025628089904785156,
+        "edema_context_and_dilation_1_2_4": 0.022975683212280273,
+        "edema_injury": 0.016876220703125,
+        "scar_context": 0.030620574951171875,
         "scar_edema_extent_and_wall_bias": 0.0,
-        "scar_proposal_occupancy_center": 0.004195213317871094
+        "scar_proposal_occupancy_center": 0.033579349517822266
       },
       "intervention_max_abs_by_required_source": {
-        "all_named_evidence_projection": 0.0,
-        "edema_boundary": 0.0,
-        "edema_context_and_dilation_1_2_4": 0.0,
-        "edema_injury": 0.0,
-        "scar_context": 0.0,
+        "all_named_evidence_projection": 9.794549942016602,
+        "edema_boundary": 0.14630889892578125,
+        "edema_context_and_dilation_1_2_4": 0.9815607070922852,
+        "edema_injury": 0.777562141418457,
+        "scar_context": 1.6677217483520508,
         "scar_edema_extent_and_wall_bias": 1.9293804168701172,
-        "scar_proposal_occupancy_center": 0.0
+        "scar_proposal_occupancy_center": 1.1576104164123535
       },
       "intervention_mean_abs_by_required_source": {
-        "all_named_evidence_projection": 0.0,
-        "edema_boundary": 0.0,
-        "edema_context_and_dilation_1_2_4": 0.0,
-        "edema_injury": 0.0,
-        "scar_context": 0.0,
+        "all_named_evidence_projection": 0.8226857781410217,
+        "edema_boundary": 0.009844839572906494,
+        "edema_context_and_dilation_1_2_4": 0.057093702256679535,
+        "edema_injury": 0.03494282811880112,
+        "scar_context": 0.07806909829378128,
         "scar_edema_extent_and_wall_bias": 0.5991086959838867,
-        "scar_proposal_occupancy_center": 0.0
+        "scar_proposal_occupancy_center": 0.08131677657365799
       },
       "missing_named_projection_gradient_sources": [],
       "missing_named_projection_sources": [],
@@ -135,15 +135,38 @@
         "scar_proposal_occupancy_center": 4
       },
       "verifier_owned_removal_max_abs_by_required_source": {
-        "all_named_evidence_projection": 0.0,
-        "edema_boundary": 0.0,
-        "edema_context_and_dilation_1_2_4": 0.0,
-        "edema_injury": 0.0,
-        "scar_context": 0.0,
+        "all_named_evidence_projection": 9.794549942016602,
+        "edema_boundary": 0.14630889892578125,
+        "edema_context_and_dilation_1_2_4": 0.9815607070922852,
+        "edema_injury": 0.777562141418457,
+        "scar_context": 1.6677217483520508,
         "scar_edema_extent_and_wall_bias": 1.9293804168701172,
-        "scar_proposal_occupancy_center": 0.0
+        "scar_proposal_occupancy_center": 1.1576104164123535
       },
       "zero_named_projection_gradient_sources": []
+    },
+    "disable_flag_final_logit_contribution_sites": [
+      {
+        "disable_condition": "disable_scar_proposal or disable_scar_context or disable_all_evidence",
+        "line": 1290,
+        "target": "z_scar",
+        "text": "z_scar = z_scar + float(authority) * 0.01 * self._soft_authority_signal(*scar_sources, size=z_scar.shape[-3:])"
+      },
+      {
+        "disable_condition": "run_edema_graph and (disable_edema_injury or disable_edema_boundary or disable_edema_context or disable_all_evidence)",
+        "line": 1306,
+        "target": "z_edema",
+        "text": "z_edema = z_edema + float(authority) * 0.01 * self._soft_authority_signal(*edema_sources, size=z_edema.shape[-3:])"
+      }
+    ],
+    "flag_vs_verifier_owned_removal_max_abs": {
+      "all_named_evidence_projection": 0.032595157623291016,
+      "edema_boundary": 0.025628089904785156,
+      "edema_context_and_dilation_1_2_4": 0.022975683212280273,
+      "edema_injury": 0.016876220703125,
+      "scar_context": 0.030620574951171875,
+      "scar_edema_extent_and_wall_bias": 0.0,
+      "scar_proposal_occupancy_center": 0.033579349517822266
     },
     "source_manifest_sha256_before_mutation": "3a9c0b4b14c410a970bdf9686060b89347b5b8679bbe40fcc1d01c55f2c67f1a"
   },

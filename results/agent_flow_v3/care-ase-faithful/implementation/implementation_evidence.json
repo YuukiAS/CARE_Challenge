@@ -44,7 +44,7 @@
       "trunk_permanently_frozen": false
     }
   },
-  "architecture_signature_sha256": "46ceffe7bac7bc05e2fd5d90eac70d700841d4a909c11a76f13afecef727e98e",
+  "architecture_signature_sha256": "2554babedb6a87df20cde8f129d671a4b25a317c5bfed0974ea02ef9e5e51094",
   "checkpoint_and_resume": {
     "contract_manifest_environment_drift_rejected": true,
     "cross_fold_resume_rejected": true,
@@ -106,7 +106,7 @@
     "visited_stages": []
   },
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
-  "implementation_evidence_sha256": "47943bc77483c992642f8d6603a375c0b86d4d1127854db1c22eb9491c8e8608",
+  "implementation_evidence_sha256": "b84457949fd183dcae0a86e8fa46d583e8f2c5f6fa4756e66590f9952baa472f",
   "losses": {
     "eligible_row_voxel_normalization": true,
     "fp32_sensitive_reductions": true,
@@ -200,7 +200,7 @@
     "edema_supervision_rows": 0,
     "mixed_batch_safe_scatter": true
   },
-  "parameter_owner_registry_sha256": "c57e2b6304657a2fa618a1dab39c46715473d0a55b4ac235daa184114f8c7ba9",
+  "parameter_owner_registry_sha256": "280eecfec8cc99924f24e1cb8fb110ed5f75f0181b80fee6388dc694210d418e",
   "receipt_paths": {
     "architecture_signature": "results/agent_flow_v3/care-ase-faithful/implementation/architecture_signature.json",
     "checkpoint_resume_probe": "results/agent_flow_v3/care-ase-faithful/implementation/checkpoint_resume_probe_receipt.json",
@@ -229,11 +229,11 @@
     },
     "verifier": {
       "codex_home": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_VERIFIER",
-      "thread_id": "019fd76a-5628-7972-ac2f-59bbd81b1587",
+      "thread_id": "019fda33-10c3-70e1-aa41-684b46d2cbda",
       "worktree": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/verifier"
     }
   },
-  "runtime_asset_manifest_sha256": "6f039dd2f3ef1b2d1a985b3c48380d682971df67301627a0220de33ab9bc0e6e",
+  "runtime_asset_manifest_sha256": "9491ea4ae90e910bce2874e39164a005f6aa6984d4fd5def68324c5234f4d53f",
   "runtime_receipts": {
     "canned_without_execution": false,
     "checkpoint_resume_probe": {
@@ -241,21 +241,21 @@
       "executed": true,
       "exit_code": 0,
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "830fd6ebabab2775a4af1729f31b3c6277efd45a608393c304af394e5891d155"
+      "stdout_sha256": "4fe76f42ccdd38219b6751cc1c0cc8dc31a98d334de680432df3086b4fdee621"
     },
     "deployment_load_probe": {
       "command_sha256": "4d63aa253f31cfc1d47e65546003a89a2b7088c58efb422b74157c30aa317eb5",
       "executed": true,
       "exit_code": 0,
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "496fec77030023dd36ad58ad7f0b50613a3ee041ecc95e2f07ecf94892ca2b10"
+      "stdout_sha256": "ea317c8b2d1fc55ce05001e0f9103f6480aa41bf0702fb2555d65d67e29a0ad8"
     },
     "evaluator_smoke": {
       "command_sha256": "5735db4394765b2bda44eac196dabd06a8ff0e9e99ea84c8191fd0855de1a9e8",
       "executed": true,
       "exit_code": 0,
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "921682ed2c2f914b9a23836965d2b75b6ebabe1bd784f222b12233b93fd9e513"
+      "stdout_sha256": "d48932307e5315ce6559339973b60e568901bbdf703bc4962154d87dd0fb5236"
     },
     "forward_backward_probe": {
       "command_sha256": "efae6f7e709d28edca28b44b2c06079fadc35f3dc485b7f074b65b134e270fa5",
@@ -276,7 +276,7 @@
       "executed": true,
       "exit_code": 0,
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "ee5c2b9737b53c842329575f5d1c2d03cebe856bc0fdf0e0ccad2cec91ef154f"
+      "stdout_sha256": "613419509a29f732238fc91eca3f352ccd5f4330e56836fd207769f54cdb9e68"
     },
     "step0_parity_probe": {
       "command_sha256": "7aa590529a0ef92dca72319bdded53315066ec63795f60f1c9a8a7f06ddf1491",
@@ -313,7 +313,7 @@
     ]
   },
   "schema": "CARE_ASE_FAITHFUL_IMPLEMENTATION_EVIDENCE_V1",
-  "source_manifest_sha256": "ea8829fd73ea3866482fa5faed94304b08e70580db482a1729aa60109683e011",
+  "source_manifest_sha256": "2d6f62f0fe41a3c5966d821b3fae946f8e1f7eaa7792898873a332eed1ebf7c5",
   "static_architecture_checks_sha256": "7e970f141b72fb660542a52de6e3f1ac3b6ad34112c420ec7c206c1b4bce8acc",
   "task_id": "care-ase-faithful"
 }

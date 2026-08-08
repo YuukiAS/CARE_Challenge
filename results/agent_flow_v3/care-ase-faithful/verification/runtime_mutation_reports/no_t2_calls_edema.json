@@ -1,18 +1,18 @@
 {
-  "created_utc": "2026-08-07T04:44:24Z",
+  "created_utc": "2026-08-08T05:52:23Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
     "kb08.runtime_no_t2.call_count"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "b71d8f9d03283d6f98aeae64c5fc6a3fc366efd4f650a01eb0997320798f5825",
+  "mutated_fingerprint_sha256": "125c8044be0cec32574c421cc819505b332d9eda205a9aa10f61ead18ec9ee88",
   "mutation_applied": "no_t2_path_explicitly_invokes_edema_owned_injury_head",
   "mutation_executed": true,
   "mutation_id": "no_t2_calls_edema",
   "observations": {
     "no_t2_edema_owned_module_call_count": 1,
-    "source_manifest_sha256_before_mutation": "a2a165292590ed700c3534a56b3bae28f9b80120697fad39392d0207f6196d43"
+    "source_manifest_sha256_before_mutation": "3a9c0b4b14c410a970bdf9686060b89347b5b8679bbe40fcc1d01c55f2c67f1a"
   },
   "passed": false,
   "request_nonce": "care-ase-20260806T090955Z",

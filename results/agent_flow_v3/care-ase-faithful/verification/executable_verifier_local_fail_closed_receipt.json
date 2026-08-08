@@ -1,10 +1,50 @@
 {
-  "created_utc": "2026-08-07T04:42:23Z",
+  "blocking_numeric_thresholds": [
+    {
+      "contract_field_or_exact_clause": "Section 3: new evidence disabled stock-compatible logits max_abs_error <= 1e-6",
+      "contract_source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+      "logical_derivation": "Direct stock/step0 compatibility parity gate.",
+      "name": "stock_step0_t2_present_max_abs_error",
+      "threshold": 1e-06
+    },
+    {
+      "contract_field_or_exact_clause": "Section 3: new evidence disabled stock-compatible logits max_abs_error <= 1e-6",
+      "contract_source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+      "logical_derivation": "Direct stock/step0 compatibility parity gate.",
+      "name": "stock_step0_no_t2_max_abs_error",
+      "threshold": 1e-06
+    },
+    {
+      "contract_field_or_exact_clause": "Sections 8 and 15: partial-H/W slices contribute zero bias/loss/gradient; fully valid neighboring slices remain supervised.",
+      "contract_source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+      "logical_derivation": "Verifier-owned deterministic aggregation/loss oracle with analytically constructed reference.",
+      "name": "partial_hw_reference_loss_match",
+      "threshold": 1e-06
+    },
+    {
+      "contract_field_or_exact_clause": "Sections 4 and 15: required evidence sources must have final reconstruction authority; implementation intervention flags are not final-authority evidence.",
+      "contract_source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+      "logical_derivation": "A test/intervention flag may only remove the same ordinary-path source contribution that the Verifier removes by module-output intervention; any extra flag-conditioned final-logit contribution must be absent.",
+      "name": "authority_disable_flag_matches_verifier_owned_removal",
+      "threshold": 1e-06
+    }
+  ],
+  "created_utc": "2026-08-08T05:48:31Z",
+  "diagnostic_numeric_observations": [
+    {
+      "blocking": false,
+      "contract_field_or_exact_clause": null,
+      "contract_source_path": null,
+      "diagnostic_only": true,
+      "logical_derivation": "The frozen contract requires the same public canonical inference path/settings, genuine tile-local model forwards, no full-support pseudo-tiling, and one post-aggregation global bias application. It does not require a real CNN evaluated with different receptive-field context to match a single full-context whole-volume forward at 1e-6.",
+      "name": "real_care_ase_single_full_context_vs_forced_tile_local_diff"
+    }
+  ],
   "docker_or_upload": false,
   "environment": {
     "cwd": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/verifier",
     "git_branch": "local/verifier/care-ase-faithful",
-    "git_head": "eee6bc4b37e920d0b3bba893edc8ce3c45b81139",
+    "git_head": "4f648e34a086bd546b0220f84947c7279a24d370",
     "nnunetv2_available": true,
     "platform": "Linux-5.14.0-611.16.1.el9_7.x86_64-x86_64-with-glibc2.34",
     "python_executable": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
@@ -17,24 +57,12 @@
     },
     "torch_available": true
   },
-  "executable_verifier_receipt_sha256": "bd0ec759e11e9e34e81ece7c1943b7dfba08c694073b4eb40077b74551d0383f",
+  "executable_verifier_receipt_sha256": "be92786ba948b0a6f9d58edbee71eea29b02e1a84774449e682f5f0bf3c361f5",
   "executor_receipts_used_as_runtime_conclusion": false,
-  "failure_count": 14,
+  "failure_count": 2,
   "failures": [
-    "transaction.verifier_critical_source_or_receipt_changed_after_reviewed_integration",
-    "transaction.current.hosted_ci_actual_head_sha_not_exact_integration",
-    "transaction.runtime_manifest.review_round",
-    "transaction.runtime_manifest.request_nonce",
-    "transaction.runtime_manifest.frozen_contract_sha256",
-    "transaction.runtime_manifest.integration_commit_sha",
-    "transaction.runtime_manifest.implementation_fingerprint_sha256",
-    "transaction.runtime_manifest.verifier_fingerprint_sha256",
-    "transaction.hosted_ci.conclusion",
-    "executable_probe.failed:required_module_final_authority_oracle",
-    "executable_probe.failed:single_vs_forced_multi_tile_full_volume",
-    "executable_probe.failed:tile_local_forward_instrumentation",
-    "executable_probe.failed:partial_hw_extent_zero_contribution",
-    "executable_probe.failed:partial_hw_extent_reference_objective"
+    "transaction.evidence.missing",
+    "executable_probe.failed:required_module_final_authority_oracle"
   ],
   "fixture_mode": false,
   "forbidden_shortcuts_rejected_by_design": [
@@ -55,7 +83,7 @@
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
   "implementation_evidence_file_sha256": null,
   "implementation_evidence_path": null,
-  "implementation_fingerprint_sha256": "58a34ffb93346e2a2a0765f2f9a903c9b59919b007a39a02b6f484f1a512f6ec",
+  "implementation_fingerprint_sha256": "25828c210776d499613a872754d39290cf9df416a747fb9f0f86c56f91711dc6",
   "integration_sha": "b72929c5c0cdb31770252132310b1ba472bdb5b2",
   "outer_accessed": false,
   "passed": false,
@@ -370,55 +398,150 @@
     {
       "all_changed_intended_final_logits": true,
       "intervention_max_abs_by_module": {
-        "all_named_evidence": 0.00010013580322265625,
-        "edema_boundary": 0.00010013580322265625,
-        "edema_context_and_dilation": 0.00010013580322265625,
-        "edema_injury": 0.00010013580322265625,
+        "all_named_evidence": 0.006192207336425781,
+        "edema_boundary": 0.008139610290527344,
+        "edema_context_and_dilation": 0.0072013139724731445,
+        "edema_injury": 0.010000228881835938,
         "extent_wall": 1.9293804168701172,
-        "scar_context": 0.00010013580322265625,
-        "scar_proposal": 0.00010013580322265625
+        "scar_context": 0.003616034984588623,
+        "scar_proposal": 0.004195213317871094
       },
       "name": "required_module_final_logit_interventions",
       "status": "PASS"
     },
     {
+      "all_implementation_flags_match_verifier_owned_removal": false,
+      "all_required_groups_have_verifier_owned_delta": true,
+      "disable_flag_final_logit_contribution_sites": [
+        {
+          "disable_condition": "disable_scar_proposal or disable_scar_context or disable_all_evidence",
+          "line": 1290,
+          "target": "z_scar",
+          "text": "z_scar = z_scar + float(authority) * 0.01 * self._soft_authority_signal(*scar_sources, size=z_scar.shape[-3:])"
+        },
+        {
+          "disable_condition": "run_edema_graph and (disable_edema_injury or disable_edema_boundary or disable_edema_context or disable_all_evidence)",
+          "line": 1306,
+          "target": "z_edema",
+          "text": "z_edema = z_edema + float(authority) * 0.01 * self._soft_authority_signal(*edema_sources, size=z_edema.shape[-3:])"
+        }
+      ],
       "implementation_disable_flags_treated_as_authority": false,
+      "implementation_flag_equivalence_tolerance": 1e-06,
+      "implementation_flag_vs_verifier_owned_removal_max_abs": {
+        "all_named_evidence_projection": 0.006192207336425781,
+        "edema_boundary": 0.008139610290527344,
+        "edema_context_and_dilation_1_2_4": 0.0072013139724731445,
+        "edema_injury": 0.010000228881835938,
+        "scar_context": 0.003616034984588623,
+        "scar_edema_extent_and_wall_bias": 0.0,
+        "scar_proposal_occupancy_center": 0.004195213317871094
+      },
       "intervention_max_abs_by_required_source": {
-        "all_named_evidence_projection": 0.00010013580322265625,
-        "edema_boundary": 0.00010013580322265625,
-        "edema_context_and_dilation_1_2_4": 0.00010013580322265625,
-        "edema_injury": 0.00010013580322265625,
-        "scar_context": 0.00010013580322265625,
+        "all_named_evidence_projection": 9.794549942016602,
+        "edema_boundary": 0.14630889892578125,
+        "edema_context_and_dilation_1_2_4": 0.9815607070922852,
+        "edema_injury": 0.777562141418457,
+        "scar_context": 1.6677217483520508,
         "scar_edema_extent_and_wall_bias": 1.9293804168701172,
-        "scar_proposal_occupancy_center": 0.00010013580322265625
+        "scar_proposal_occupancy_center": 1.1576104164123535
       },
       "intervention_mean_abs_by_required_source": {
-        "all_named_evidence_projection": 3.332429696456529e-05,
-        "edema_boundary": 1.6662983398418874e-05,
-        "edema_context_and_dilation_1_2_4": 1.6662983398418874e-05,
-        "edema_injury": 1.6662983398418874e-05,
-        "scar_context": 1.666131356614642e-05,
-        "scar_edema_extent_and_wall_bias": 0.1997029036283493,
-        "scar_proposal_occupancy_center": 1.666131356614642e-05
+        "all_named_evidence_projection": 0.8226857781410217,
+        "edema_boundary": 0.009844839572906494,
+        "edema_context_and_dilation_1_2_4": 0.057093702256679535,
+        "edema_injury": 0.03494282811880112,
+        "scar_context": 0.07806909829378128,
+        "scar_edema_extent_and_wall_bias": 0.5991086959838867,
+        "scar_proposal_occupancy_center": 0.08131677657365799
       },
+      "missing_named_projection_gradient_sources": [],
       "missing_named_projection_sources": [],
+      "missing_required_group_sources": [],
       "name": "required_module_final_authority_oracle",
-      "named_projection_counts": {},
+      "named_projection_counts": {
+        "edema_full": 15,
+        "edema_half": 10,
+        "scar_full": 11,
+        "scar_half": 11
+      },
+      "named_projection_final_logit_gradient_nonzero": true,
+      "named_projection_final_logit_gradient_sources_present": true,
+      "named_projection_gradient_abs_by_source": {
+        "edema_full:edema_boundary_to_full": 406107.125,
+        "edema_full:edema_c0_to_full": 406107.125,
+        "edema_full:edema_context_to_full": 406107.125,
+        "edema_full:edema_dilation1_to_full": 406107.125,
+        "edema_full:edema_dilation2_to_full": 406107.125,
+        "edema_full:edema_dilation4_to_full": 406107.125,
+        "edema_full:edema_injury_to_full": 406107.125,
+        "edema_full:edema_lge_to_full": 406107.125,
+        "edema_full:edema_p_lv_to_full": 406107.125,
+        "edema_full:edema_p_rv_to_full": 406107.125,
+        "edema_full:edema_p_wall_to_full": 406107.125,
+        "edema_full:edema_rho_to_full": 406107.125,
+        "edema_full:edema_signed_endo_to_full": 406107.125,
+        "edema_full:edema_signed_epi_to_full": 406107.125,
+        "edema_full:edema_t2_to_full": 406107.125,
+        "edema_half:edema_c0_to_half": 673862.375,
+        "edema_half:edema_context_to_half": 673862.375,
+        "edema_half:edema_lge_to_half": 673862.375,
+        "edema_half:edema_p_lv_to_half": 673862.375,
+        "edema_half:edema_p_rv_to_half": 673862.375,
+        "edema_half:edema_p_wall_to_half": 673862.375,
+        "edema_half:edema_rho_to_half": 673862.375,
+        "edema_half:edema_signed_endo_to_half": 673862.375,
+        "edema_half:edema_signed_epi_to_half": 673862.375,
+        "edema_half:edema_t2_to_half": 673862.375,
+        "scar_full:scar_c0_to_full": 523888.03125,
+        "scar_full:scar_context_to_full": 523888.03125,
+        "scar_full:scar_half_center_to_full": 523888.03125,
+        "scar_full:scar_half_occupancy_to_full": 523888.03125,
+        "scar_full:scar_lge_to_full": 523888.03125,
+        "scar_full:scar_p_lv_to_full": 523888.03125,
+        "scar_full:scar_p_rv_to_full": 523888.03125,
+        "scar_full:scar_p_wall_to_full": 523888.03125,
+        "scar_full:scar_rho_to_full": 523888.03125,
+        "scar_full:scar_signed_endo_to_full": 523888.03125,
+        "scar_full:scar_signed_epi_to_full": 523888.03125,
+        "scar_half:scar_c0_to_half": 767320.375,
+        "scar_half:scar_context_to_half": 767320.375,
+        "scar_half:scar_lge_to_half": 767320.375,
+        "scar_half:scar_p_lv_to_half": 767320.375,
+        "scar_half:scar_p_rv_to_half": 767320.375,
+        "scar_half:scar_p_wall_to_half": 767320.375,
+        "scar_half:scar_quarter_center_to_half": 767320.375,
+        "scar_half:scar_quarter_occupancy_to_half": 767320.375,
+        "scar_half:scar_rho_to_half": 767320.375,
+        "scar_half:scar_signed_endo_to_half": 767320.375,
+        "scar_half:scar_signed_epi_to_half": 767320.375
+      },
       "named_projection_source_count": 94,
+      "no_disable_flag_final_logit_contribution": false,
       "rejects_receipt_only_authority": true,
       "required_named_projection_sources_present": true,
       "status": "FAIL",
-      "synthetic_epsilon_like_runtime_deltas": {
-        "all_named_evidence_projection": 0.00010013580322265625,
-        "edema_boundary": 0.00010013580322265625,
-        "edema_context_and_dilation_1_2_4": 0.00010013580322265625,
-        "edema_injury": 0.00010013580322265625,
-        "scar_context": 0.00010013580322265625,
-        "scar_proposal_occupancy_center": 0.00010013580322265625
+      "synthetic_epsilon_like_runtime_deltas": {},
+      "synthetic_intervention_delta_static_matches": [],
+      "verifier_owned_group_source_counts": {
+        "all_named_evidence_projection": 47,
+        "edema_boundary": 1,
+        "edema_context_and_dilation_1_2_4": 5,
+        "edema_injury": 1,
+        "scar_context": 2,
+        "scar_edema_extent_and_wall_bias": 1,
+        "scar_proposal_occupancy_center": 4
       },
-      "synthetic_intervention_delta_static_matches": [
-        "intervention_delta = anatomy_logits.detach().new_tensor(1.0e-4)"
-      ]
+      "verifier_owned_removal_max_abs_by_required_source": {
+        "all_named_evidence_projection": 9.794549942016602,
+        "edema_boundary": 0.14630889892578125,
+        "edema_context_and_dilation_1_2_4": 0.9815607070922852,
+        "edema_injury": 0.777562141418457,
+        "scar_context": 1.6677217483520508,
+        "scar_edema_extent_and_wall_bias": 1.9293804168701172,
+        "scar_proposal_occupancy_center": 1.1576104164123535
+      },
+      "zero_named_projection_gradient_sources": []
     },
     {
       "checkpoint_probe_kind": "verifier_schema_v4_save_load_no_training_credit",
@@ -439,18 +562,26 @@
       "calls_are_distinct": true,
       "canonical_settings_has_no_context_override": true,
       "expected_model_forward_count": 9,
-      "forced_model_forward_count": 1,
+      "forced_model_forward_count": 9,
       "forced_multi_tile_call_id": "verifier_forced_multi_tile",
       "forced_multi_tile_count": 9,
-      "full_support_pseudo_tiling_detected": true,
+      "full_support_pseudo_tiling_detected": false,
       "global_bias_application_count": 1,
-      "max_abs_diff_without_context_override": 9.5367431640625e-07,
-      "model_input_spatial_within_declared_patch": false,
+      "max_abs_diff_without_context_override": 19.57863426208496,
+      "max_abs_diff_without_context_override_policy": {
+        "blocking": false,
+        "contract_field_or_exact_clause": null,
+        "contract_source_path": null,
+        "diagnostic_only": true,
+        "logical_derivation": "The frozen contract requires the same public canonical inference path/settings, genuine tile-local model forwards, no full-support pseudo-tiling, and one post-aggregation global bias application. It does not require a real CNN evaluated with different receptive-field context to match a single full-context whole-volume forward at 1e-6.",
+        "name": "real_care_ase_single_full_context_vs_forced_tile_local_diff"
+      },
+      "model_input_spatial_within_declared_patch": true,
       "name": "single_vs_forced_multi_tile_full_volume",
       "observed_error": null,
       "patch_size_equals_input": false,
       "single_tile_call_id": "verifier_single_tile",
-      "status": "FAIL"
+      "status": "PASS"
     },
     {
       "actual_forward_records": [
@@ -460,8 +591,88 @@
             1,
             3,
             8,
-            64,
-            64
+            32,
+            32
+          ]
+        },
+        {
+          "call_id": "forced_t2:1",
+          "input_shape": [
+            1,
+            3,
+            8,
+            32,
+            32
+          ]
+        },
+        {
+          "call_id": "forced_t2:2",
+          "input_shape": [
+            1,
+            3,
+            8,
+            32,
+            32
+          ]
+        },
+        {
+          "call_id": "forced_t2:3",
+          "input_shape": [
+            1,
+            3,
+            8,
+            32,
+            32
+          ]
+        },
+        {
+          "call_id": "forced_t2:4",
+          "input_shape": [
+            1,
+            3,
+            8,
+            32,
+            32
+          ]
+        },
+        {
+          "call_id": "forced_t2:5",
+          "input_shape": [
+            1,
+            3,
+            8,
+            32,
+            32
+          ]
+        },
+        {
+          "call_id": "forced_t2:6",
+          "input_shape": [
+            1,
+            3,
+            8,
+            32,
+            32
+          ]
+        },
+        {
+          "call_id": "forced_t2:7",
+          "input_shape": [
+            1,
+            3,
+            8,
+            32,
+            32
+          ]
+        },
+        {
+          "call_id": "forced_t2:8",
+          "input_shape": [
+            1,
+            3,
+            8,
+            32,
+            32
           ]
         }
       ],
@@ -474,14 +685,22 @@
         32
       ],
       "expected_model_forward_count": 9,
-      "forced_model_forward_count": 1,
+      "forced_model_forward_count": 9,
       "forced_multi_tile_call_id": "verifier_forced_multi_tile",
       "forced_multi_tile_count": 9,
-      "full_support_pseudo_tiling_detected": true,
+      "full_support_pseudo_tiling_detected": false,
       "global_bias_application_count": 1,
-      "max_abs_diff_without_context_override": 9.5367431640625e-07,
+      "max_abs_diff_without_context_override": 19.57863426208496,
+      "max_abs_diff_without_context_override_policy": {
+        "blocking": false,
+        "contract_field_or_exact_clause": null,
+        "contract_source_path": null,
+        "diagnostic_only": true,
+        "logical_derivation": "The frozen contract requires the same public canonical inference path/settings, genuine tile-local model forwards, no full-support pseudo-tiling, and one post-aggregation global bias application. It does not require a real CNN evaluated with different receptive-field context to match a single full-context whole-volume forward at 1e-6.",
+        "name": "real_care_ase_single_full_context_vs_forced_tile_local_diff"
+      },
       "mirror_factor": 1,
-      "model_input_spatial_within_declared_patch": false,
+      "model_input_spatial_within_declared_patch": true,
       "name": "tile_local_forward_instrumentation",
       "no_t2_actual_forward_records": [
         {
@@ -490,30 +709,95 @@
             1,
             3,
             8,
-            64,
-            64
+            32,
+            32
+          ]
+        },
+        {
+          "call_id": "forced_no_t2:1",
+          "input_shape": [
+            1,
+            3,
+            8,
+            32,
+            32
+          ]
+        },
+        {
+          "call_id": "forced_no_t2:2",
+          "input_shape": [
+            1,
+            3,
+            8,
+            32,
+            32
+          ]
+        },
+        {
+          "call_id": "forced_no_t2:3",
+          "input_shape": [
+            1,
+            3,
+            8,
+            32,
+            32
+          ]
+        },
+        {
+          "call_id": "forced_no_t2:4",
+          "input_shape": [
+            1,
+            3,
+            8,
+            32,
+            32
+          ]
+        },
+        {
+          "call_id": "forced_no_t2:5",
+          "input_shape": [
+            1,
+            3,
+            8,
+            32,
+            32
+          ]
+        },
+        {
+          "call_id": "forced_no_t2:6",
+          "input_shape": [
+            1,
+            3,
+            8,
+            32,
+            32
+          ]
+        },
+        {
+          "call_id": "forced_no_t2:7",
+          "input_shape": [
+            1,
+            3,
+            8,
+            32,
+            32
+          ]
+        },
+        {
+          "call_id": "forced_no_t2:8",
+          "input_shape": [
+            1,
+            3,
+            8,
+            32,
+            32
           ]
         }
       ],
-      "no_t2_forced_model_forward_count": 1,
+      "no_t2_forced_model_forward_count": 9,
       "no_t2_global_bias_application_count": 1,
       "observed_error": null,
-      "offending_forward_input_shapes": [
-        [
-          1,
-          3,
-          8,
-          64,
-          64
-        ],
-        [
-          1,
-          3,
-          8,
-          64,
-          64
-        ]
-      ],
+      "offending_forward_input_shapes": [],
       "single_forward_records": [
         {
           "call_id": "single:0",
@@ -527,7 +811,7 @@
         }
       ],
       "single_tile_call_id": "verifier_single_tile",
-      "status": "FAIL",
+      "status": "PASS",
       "tile_coordinates": [],
       "tile_coordinates_recorded": false,
       "tile_outputs_limited_to_base_logits_wall_extent_evidence": true
@@ -569,13 +853,13 @@
       "t2_present_stock_max_abs_err": 0.0
     },
     {
-      "actual_scalar_loss": 0.0,
+      "actual_scalar_loss": 0.26595064997673035,
       "disables_all_extent_on_padding": false,
       "full_neighbor_area_denominator_contribution": 1.0,
       "full_neighbor_extent_bias_abs_sum": 77.95539855957031,
       "full_neighbor_extent_head_grad_abs_sum": 0.21048109233379364,
       "full_neighbor_presence_denominator_contribution": 1.0,
-      "loss_matches_fully_valid_reference": false,
+      "loss_matches_fully_valid_reference": true,
       "name": "partial_hw_extent_zero_contribution",
       "partial_hw_area_denominator_contribution": 0.0,
       "partial_hw_extent_bias_abs_sum": 0.0,
@@ -583,17 +867,17 @@
       "partial_hw_loss_contribution": 0.0,
       "partial_hw_presence_denominator_contribution": 0.0,
       "reference_fully_valid_only_loss": 0.26595064997673035,
-      "status": "FAIL",
-      "straight_through_zero_loss_detected": true
+      "status": "PASS",
+      "straight_through_zero_loss_detected": false
     },
     {
-      "actual_scalar_loss": 0.0,
+      "actual_scalar_loss": 0.26595064997673035,
       "disables_all_extent_on_padding": false,
       "full_neighbor_area_denominator_contribution": 1.0,
       "full_neighbor_extent_bias_abs_sum": 77.95539855957031,
       "full_neighbor_extent_head_grad_abs_sum": 0.21048109233379364,
       "full_neighbor_presence_denominator_contribution": 1.0,
-      "loss_matches_fully_valid_reference": false,
+      "loss_matches_fully_valid_reference": true,
       "name": "partial_hw_extent_reference_objective",
       "partial_hw_area_denominator_contribution": 0.0,
       "partial_hw_extent_bias_abs_sum": 0.0,
@@ -601,8 +885,8 @@
       "partial_hw_loss_contribution": 0.0,
       "partial_hw_presence_denominator_contribution": 0.0,
       "reference_fully_valid_only_loss": 0.26595064997673035,
-      "status": "FAIL",
-      "straight_through_zero_loss_detected": true
+      "status": "PASS",
+      "straight_through_zero_loss_detected": false
     }
   ],
   "request_nonce": "care-ase-20260806T090955Z",
@@ -622,21 +906,21 @@
     "partial_hw_extent_reference_objective"
   ],
   "review_round": 1,
-  "reviewed_verifier_fingerprint_sha256_at_repair_start": "3f471f70aff3f5c1252d7256687ebf80c3084af2d6e30a344d6c6ef19965e1ab",
+  "reviewed_verifier_fingerprint_sha256_at_repair_start": "a1c660830ef8decea70c4ff06d7c061736bda1b179ef9a99b8530911ef0731fe",
   "runtime_conclusion_source": "verifier_owned_independent_execution",
   "runtime_receipt_bindings": {},
   "schema": "CARE_ASE_FAITHFUL_EXECUTABLE_VERIFIER_RECEIPT_V1",
   "source_artifacts": {
     "file_hashes": {
       "src/care_myocardium/inference/care_ase_r2_decode.py": "7fea71edba56d259dbbb31c3832b74709bd83d5af1f8b680a85c2e0a41acb05b",
-      "src/care_myocardium/inference/care_ase_r2_full_volume.py": "04720a6c267ac2c212a11a0eded0222d06e7d5f35d6dadfd0780aed54e935fc6",
+      "src/care_myocardium/inference/care_ase_r2_full_volume.py": "a6110ac444ccd44f023c73a2b776bdc4365329fe5e9c9723b6c04098ad8e70cd",
       "src/care_myocardium/models/care_ase/__init__.py": "1754cf65f68d7853a4ad393737404a1d339f745566beb15849d3272302b0d4d9",
-      "src/care_myocardium/models/care_ase/core.py": "fff8f0d3d3408cbc0d4dff238a283767f20668797cda2f8866c0937d8d9d6949",
+      "src/care_myocardium/models/care_ase/core.py": "6620aa7e751894f0187fc7e2cbea8bf0c02cbb428a077b09aecb0836de942bcb",
       "src/care_myocardium/training/care_ase_sampler.py": "e8d0b9d10f90d3e70fb9e1a8f4cfff2dd4fbae30d7f73868377350af278f65d9",
-      "src/care_myocardium/training/care_ase_trainer.py": "7a852622e6423d19fd342ee396c7005c3fa556345f6e7845aa23b5b7c3104877"
+      "src/care_myocardium/training/care_ase_trainer.py": "9b114cfc4e145786c38686b08493a2b1c8cbccddeae220d38bf2b1fc2e5e61ff"
     },
     "missing_files": [],
-    "source_manifest_sha256": "a2a165292590ed700c3534a56b3bae28f9b80120697fad39392d0207f6196d43"
+    "source_manifest_sha256": "3a9c0b4b14c410a970bdf9686060b89347b5b8679bbe40fcc1d01c55f2c67f1a"
   },
   "status": "FAIL_CLOSED",
   "task_id": "care-ase-faithful",
@@ -654,17 +938,23 @@
       "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/dilation_residual_removed.json",
       "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/evaluator_population_mismatch.json",
       "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/extent_conv3d_alias.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/forged_executor_pass_receipt.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/full_support_pseudo_tiling.json",
       "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/injury_random_init.json",
       "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/no_t2_calls_edema.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/partial_hw_straight_through_zero_loss.json",
       "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/projection_context_no_final_authority.json",
       "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/single_multi_same_call.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/synthetic_intervention_delta.json",
       "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/tile_local_global_bias.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/transaction_old_tuple_reused.json",
       "results/agent_flow_v3/care-ase-faithful/verification/transaction_gate_receipt.json",
       "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
       "results/agent_flow_v3/care-ase-faithful/verification/verifier_fingerprint.json",
       "results/agent_flow_v3/care-ase-faithful/verification/verifier_freeze_receipt.json",
       "results/agent_flow_v3/care-ase-faithful/verification/verifier_local_commands_recorded_in_manifests.json",
       "results/agent_flow_v3/care-ase-faithful/verification/verifier_session_receipt.json",
+      "tests/care_ase_faithful/test_verifier_package.py",
       "validators/care_ase_faithful/build_verification_artifacts.py",
       "validators/care_ase_faithful/run_executable_verifier.py",
       "validators/care_ase_faithful/validate_contract_evidence.py"
@@ -672,14 +962,16 @@
     "current_binding": {
       "blocked_failures": [],
       "blocked_or_failure_reason": null,
-      "ci_checked_commit_sha": "b72929c5c0cdb31770252132310b1ba472bdb5b2",
-      "ci_run_actual_head_sha": "a6edd4ca10d357c0207f6812d4051989dbae7cb1",
-      "ci_run_id": 31127920423,
-      "ci_run_url": "https://github.com/YuukiAS/CARE_Challenge/actions/runs/31127920423",
-      "ci_status": "BINDING_INVALID_CITED_HOSTED_RUN_HEAD_MISMATCH",
+      "ci_checked_commit_sha": "a80b7502cbd2bc090a366c7989bd2c5b062a5afd",
+      "ci_run_actual_head_sha": "a80b7502cbd2bc090a366c7989bd2c5b062a5afd",
+      "ci_run_id": 31239089759,
+      "ci_run_url": "https://github.com/YuukiAS/CARE_Challenge/actions/runs/31239089759",
+      "ci_status": "PASS",
       "ci_workflow_name": "CARE Agent-Flow v3 deterministic CI",
       "controller_ci_receipt_path": "results/agent_flow_v3/care-ase-faithful/controller_ci_receipt.json",
-      "controller_ci_receipt_sha256": "e10f499b4e9f2715048d9df678c58d2f29914e376b4117e31e6b1f0f7eb4b683",
+      "controller_ci_receipt_sha256": "294c0391123124690929d8afb19115e9fa2b2ba4b5a10c2c55f45728a391885c",
+      "controller_executor_needs_user_choice_receipt_path": "results/agent_flow_v3/care-ase-faithful/controller_executor_needs_user_choice_receipt.json",
+      "controller_executor_needs_user_choice_receipt_sha256": "77026c66c0efc16b5fcb946075c726a1d81cb57164f6d74a03b4d1c2071bdad4",
       "controller_executor_recheck_integration_receipt_path": "results/agent_flow_v3/care-ase-faithful/controller_executor_recheck_integration_receipt.json",
       "controller_executor_recheck_integration_receipt_sha256": "bd400ea554c9dab844c24e68987eec593c208051a9f1cc5fc3619d0883707e49",
       "controller_integration_receipt_path": "results/agent_flow_v3/care-ase-faithful/controller_integration_receipt.json",
@@ -687,32 +979,33 @@
       "controller_production_thread_id": "019fd7c0-2979-7061-94d3-99577ba9c834",
       "controller_ready_for_planner_review_receipt_path": "results/agent_flow_v3/care-ase-faithful/controller_ready_for_planner_review_receipt.json",
       "controller_ready_for_planner_review_receipt_sha256": "96feff81ebca24fa7070dbf2ce5951d05e42dc313f53abc5930033ef22eb97bf",
+      "controller_same_scope_verifier_contract_drift_repair_receipt_path": "results/agent_flow_v3/care-ase-faithful/controller_same_scope_verifier_contract_drift_repair_receipt.json",
+      "controller_same_scope_verifier_contract_drift_repair_receipt_sha256": "5b67a4fd52eb6998dd178995c1ad93a1fb03d664e58407edfaf2b16eece72af9",
       "controller_thread_id": "019fd7c0-2979-7061-94d3-99577ba9c834",
       "controller_verifier_recheck_integration_receipt_path": "results/agent_flow_v3/care-ase-faithful/controller_verifier_recheck_integration_receipt.json",
       "controller_verifier_recheck_integration_receipt_sha256": "95f48aeb736b7cf71fc5924756a6bba4e0b0fbea81b4d9ccb1a57fed588b3461",
       "critic_decision": "PLAN_FROZEN",
       "critic_freeze_receipt_commit_sha": "bfd6289d8778da3d9510922fd448c69237b4cb4f",
       "critic_freeze_receipt_path": "results/agent_flow_v3/care-ase-faithful/critic_freeze_receipt.json",
+      "executor_fail_closed_receipt_path": "results/agent_flow_v3/care-ase-faithful/implementation/fail_closed_implementation_receipt.json",
+      "executor_fail_closed_receipt_sha256": "045f635fa93f5f7dbb7dc585bc380764853b611afe0c1be255456e805a92fe45",
       "executor_historical_thread_id": "019fd2ea-30f3-7d72-b605-2fc7a2d901ba",
       "executor_integration_merge_sha": "5fd6c265109c19c91108fd3a2fa80a6b7d4092a4",
-      "executor_local_commit_sha": "fd55c9a876defccede2ef2794d0f215e034bfd4e",
+      "executor_local_commit_sha": "df526fde93bf3d4fa53ae8d86079a724a1142bb7",
       "executor_production_thread_id": "019fd7c1-8358-7632-9022-367e62ecfbd1",
-      "executor_status": "REPAIR_REQUESTED_AFTER_VERIFIER_ROUND_1_REENTRY_002",
+      "executor_status": "IMPLEMENTATION_EVIDENCE_READY_PENDING_VERIFIER_RECHECK",
       "executor_thread_id": "019fd7c1-8358-7632-9022-367e62ecfbd1",
-      "expected_state_or_artifact": "Verifier first closes causal-authority, extent-loss, true tile-local inference and exact transaction-oracle gaps; Executor then removes implementation shortcuts; Controller reintegrates, regenerates exact fingerprints/runtime manifest, obtains hosted CI on the exact integration SHA, and republishes READY_FOR_PLANNER_REVIEW/WAITING_FOR_EXTERNAL_GPT.",
-      "external_wait_closed_utc": "2026-08-07T04:05:37Z",
-      "external_wait_deadline_utc": "2026-08-07T07:28:06Z",
-      "external_wait_started_utc": "2026-08-07T03:28:06Z",
+      "expected_state_or_artifact": "New verifier-owned executable receipt, protected runtime mutation manifest, verifier fingerprint and transaction gate bound to the current implementation evidence.",
       "frozen_contract_commit_sha": "6806b38c215f8b644b86da5275b20832bb9a7d50",
       "frozen_contract_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
       "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
       "implementation_complete": false,
-      "implementation_evidence_sha256": "47943bc77483c992642f8d6603a375c0b86d4d1127854db1c22eb9491c8e8608",
-      "implementation_fingerprint_sha256": "58a34ffb93346e2a2a0765f2f9a903c9b59919b007a39a02b6f484f1a512f6ec",
+      "implementation_evidence_sha256": "b84457949fd183dcae0a86e8fa46d583e8f2c5f6fa4756e66590f9952baa472f",
+      "implementation_fingerprint_sha256": "25828c210776d499613a872754d39290cf9df416a747fb9f0f86c56f91711dc6",
       "integration_commit_sha": "b72929c5c0cdb31770252132310b1ba472bdb5b2",
-      "last_observed_remote_sha": "b72929c5c0cdb31770252132310b1ba472bdb5b2",
-      "last_poll_utc": "2026-08-07T03:28:06Z",
-      "next_action": "RESUME_EXACT_PRODUCTION_VERIFIER_THEN_EXECUTOR_FOR_ROUND_1_REENTRY_002",
+      "last_observed_remote_sha": "905bcc8c0acdf6530d11d4eb49e06210e4fd6d35",
+      "last_poll_utc": "2026-08-08T04:18:04Z",
+      "next_action": "RUN_SAME_SCOPE_VERIFIER_RECHECK_AND_TRANSACTION_REBIND",
       "open_scientific_choices": [],
       "planner_decision": "PLANNER_REVISE_BOTH",
       "planner_draft_commit_sha": "abf549e57452e0047a767332e786ea3a06c214cb",
@@ -759,7 +1052,8 @@
       "runtime_binding_receipt_path": "results/agent_flow_v3/care-ase-faithful/runtime_binding_receipt.json",
       "runtime_binding_sha256": "1365a5b9ea6c4f2cb07389c4de8abb1a384fbe082bfa2b07bab3ad98717c2bf3",
       "schema": "CARE_AGENT_FLOW_V3",
-      "state": "PLANNER_REVISE_BOTH",
+      "scientific_choice_required": false,
+      "state": "VERIFIER_RECHECK_REQUIRED",
       "superseded_planner_review_before_current_wait": {
         "external_wait_closed_utc": "2026-08-07T01:28:00Z",
         "planner_decision": "PLANNER_REVISE_BOTH",
@@ -773,56 +1067,62 @@
           "verifier": "automation/agent_flow_v3/tasks/care-ase-faithful/repairs/round_001_reentry_001_verifier.md"
         }
       },
+      "superseded_state": {
+        "state": "NEEDS_USER_SCIENTIFIC_CHOICE",
+        "superseded_by": "VERIFIER_CONTRACT_DRIFT/SAME_SCOPE_VERIFICATION_REPAIR",
+        "superseded_utc": "2026-08-08T04:15:35Z"
+      },
       "task_id": "care-ase-faithful",
-      "updated_utc": "2026-08-07T04:05:37Z",
-      "verifier_branch_head_sha": "d109c37168b76c8977f69c1f64c60c666a658484",
-      "verifier_fingerprint_sha256": "3f471f70aff3f5c1252d7256687ebf80c3084af2d6e30a344d6c6ef19965e1ab",
-      "verifier_freeze_receipt_commit_sha": "b7ef00302f0670d9f4c094500b2b94823ff347a3",
+      "updated_utc": "2026-08-08T04:18:04Z",
+      "verifier_branch_head_sha": "3340c99424847b88fdc8b4d29e7d5785a0fc78ec",
+      "verifier_fingerprint_sha256": "a1c660830ef8decea70c4ff06d7c061736bda1b179ef9a99b8530911ef0731fe",
+      "verifier_freeze_receipt_commit_sha": "3340c99424847b88fdc8b4d29e7d5785a0fc78ec",
       "verifier_freeze_receipt_path": "results/agent_flow_v3/care-ase-faithful/verification/verifier_freeze_receipt.json",
-      "verifier_freeze_receipt_sha256": "f97f24fbb7f77afc92ab3d2ae35bd9a60ae4dac1f0e31595887f28f77711ac40",
-      "verifier_integration_merge_sha": "22b897b7e270d33ec9c1a4d3955324c36028216b",
+      "verifier_freeze_receipt_sha256": "e30cbadfb17ae3714aa2e4d64a282439dacd08ba9c49cccd19c803b59cfc1715",
+      "verifier_integration_merge_sha": "17828cb0dd6ae6700b0e1a3e7b7eb5314c71b6ec",
       "verifier_production_thread_id": "019fda33-10c3-70e1-aa41-684b46d2cbda",
       "verifier_recheck_integration_merge_sha": "76cbec1df903c95359f712bbbfb837e9ef5343a4",
-      "verifier_recheck_reason": "planner_reentry_002_requires_oracle_repair_for_hardcoded_intervention_delta_hidden_extent_gradient_full_support_pseudotiling_and_exact_transaction_binding",
+      "verifier_recheck_reason": "verifier_contract_drift_uncited_real_cnn_single_multi_equality_gate_removed_and_transaction_rebind_required",
       "verifier_recheck_required": true,
       "verifier_status": "REPAIR_REQUESTED_ROUND_1_REENTRY_002",
       "verifier_thread_id": "019fda33-10c3-70e1-aa41-684b46d2cbda"
     },
     "expected_review_round": 1,
     "fixture_mode": false,
-    "hosted_ci_conclusion": null,
-    "hosted_ci_head_sha": "b72929c5c0cdb31770252132310b1ba472bdb5b2",
+    "hosted_ci_checked_commit_sha": "a80b7502cbd2bc090a366c7989bd2c5b062a5afd",
+    "hosted_ci_conclusion": "success",
+    "hosted_ci_head_sha": "a80b7502cbd2bc090a366c7989bd2c5b062a5afd",
     "hosted_ci_receipt_path": "results/agent_flow_v3/care-ase-faithful/controller_ci_receipt.json",
-    "implementation_fingerprint_sha256": "58a34ffb93346e2a2a0765f2f9a903c9b59919b007a39a02b6f484f1a512f6ec",
+    "implementation_fingerprint_sha256": "25828c210776d499613a872754d39290cf9df416a747fb9f0f86c56f91711dc6",
     "integration_sha": "b72929c5c0cdb31770252132310b1ba472bdb5b2",
     "integration_sha_is_ancestor_of_observed_git_head": true,
-    "observed_git_head": "eee6bc4b37e920d0b3bba893edc8ce3c45b81139",
+    "observed_git_head": "4f648e34a086bd546b0220f84947c7279a24d370",
     "planner_review_commit": "7f81e484f89e93439280814835c44b21102f16b0",
     "review_round": 1,
-    "reviewed_verifier_fingerprint_sha256_at_repair_start": "3f471f70aff3f5c1252d7256687ebf80c3084af2d6e30a344d6c6ef19965e1ab",
+    "reviewed_verifier_fingerprint_sha256_at_repair_start": "a1c660830ef8decea70c4ff06d7c061736bda1b179ef9a99b8530911ef0731fe",
     "runtime_manifest_path": "results/agent_flow_v3/care-ase-faithful/runtime_receipt_manifest.json",
     "runtime_manifest_review_round": 0,
     "runtime_manifest_sha256": "11a1571dc182e7b7b59f34833cd73b6a9074b9fe957c62e081aac12767dbfaec",
     "verifier_source_artifacts": {
       "file_hashes": {
-        "tests/care_ase_faithful/test_verifier_package.py": "843a13bb92b6635b0453f647c6e55546425df9c8d09f28e4fb55ca817254fdbf",
-        "validators/care_ase_faithful/build_verification_artifacts.py": "9be634d48af7ca388b10908faf5eb563789662c63e408d1212be9f3cadf263d8",
-        "validators/care_ase_faithful/run_executable_verifier.py": "94711cbcab14b3c16263e7d133f70499cacef074869d5c72d57547155dceb5b7",
-        "validators/care_ase_faithful/validate_contract_evidence.py": "49af5d16d1b83df865fadef229d0f79b92c0f24049ab982be7038ee11f396c24"
+        "tests/care_ase_faithful/test_verifier_package.py": "2c2204d09b723efdd5e6da5c35c3ac3239c927936b50838504dd50285fcb6776",
+        "validators/care_ase_faithful/build_verification_artifacts.py": "690a45d7c35217e551a9dc771bba23ac216f2930770c029410cfc8b052193217",
+        "validators/care_ase_faithful/run_executable_verifier.py": "c3140024cd3df94c13576c66efbae6e6619b2bd689485b07e0f5bb94015d6e7b",
+        "validators/care_ase_faithful/validate_contract_evidence.py": "b3941c12b19b11d1174dadc5147cd7f7111b4295159858eaa6d3d3cd63975fd4"
       },
-      "verifier_source_fingerprint_sha256": "21084c5f87b0fa24b5e95bc6463a7300783ad31d24c5ba58cfc725ee3fcdafb7"
+      "verifier_source_fingerprint_sha256": "5954d4f9a0b558a63dda1ae658f6efbcce12374bd08494eed83466dad7ab2b25"
     },
-    "verifier_source_fingerprint_sha256": "21084c5f87b0fa24b5e95bc6463a7300783ad31d24c5ba58cfc725ee3fcdafb7"
+    "verifier_source_fingerprint_sha256": "5954d4f9a0b558a63dda1ae658f6efbcce12374bd08494eed83466dad7ab2b25"
   },
   "verifier_source_artifacts": {
     "file_hashes": {
-      "tests/care_ase_faithful/test_verifier_package.py": "843a13bb92b6635b0453f647c6e55546425df9c8d09f28e4fb55ca817254fdbf",
-      "validators/care_ase_faithful/build_verification_artifacts.py": "9be634d48af7ca388b10908faf5eb563789662c63e408d1212be9f3cadf263d8",
-      "validators/care_ase_faithful/run_executable_verifier.py": "94711cbcab14b3c16263e7d133f70499cacef074869d5c72d57547155dceb5b7",
-      "validators/care_ase_faithful/validate_contract_evidence.py": "49af5d16d1b83df865fadef229d0f79b92c0f24049ab982be7038ee11f396c24"
+      "tests/care_ase_faithful/test_verifier_package.py": "2c2204d09b723efdd5e6da5c35c3ac3239c927936b50838504dd50285fcb6776",
+      "validators/care_ase_faithful/build_verification_artifacts.py": "690a45d7c35217e551a9dc771bba23ac216f2930770c029410cfc8b052193217",
+      "validators/care_ase_faithful/run_executable_verifier.py": "c3140024cd3df94c13576c66efbae6e6619b2bd689485b07e0f5bb94015d6e7b",
+      "validators/care_ase_faithful/validate_contract_evidence.py": "b3941c12b19b11d1174dadc5147cd7f7111b4295159858eaa6d3d3cd63975fd4"
     },
-    "verifier_source_fingerprint_sha256": "21084c5f87b0fa24b5e95bc6463a7300783ad31d24c5ba58cfc725ee3fcdafb7"
+    "verifier_source_fingerprint_sha256": "5954d4f9a0b558a63dda1ae658f6efbcce12374bd08494eed83466dad7ab2b25"
   },
-  "verifier_source_fingerprint_sha256": "21084c5f87b0fa24b5e95bc6463a7300783ad31d24c5ba58cfc725ee3fcdafb7",
+  "verifier_source_fingerprint_sha256": "5954d4f9a0b558a63dda1ae658f6efbcce12374bd08494eed83466dad7ab2b25",
   "zero_credit": true
 }

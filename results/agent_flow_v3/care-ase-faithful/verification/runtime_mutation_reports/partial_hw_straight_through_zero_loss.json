@@ -1,12 +1,12 @@
 {
-  "created_utc": "2026-08-07T04:43:46Z",
+  "created_utc": "2026-08-08T05:51:39Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
     "kb11.partial_hw.straight_through_zero_loss"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "b7771cc1a9f6461e84f7a858fec7bf4a474b02b02fc43fde8e607b10847884ca",
+  "mutated_fingerprint_sha256": "a3e9b62ef9c5337319257fb4e041eea6049a42bdf60829317205dd569a839591",
   "mutation_applied": "partial_hw_presence_area_loss_mutated_to_loss_minus_detach",
   "mutation_executed": true,
   "mutation_id": "partial_hw_straight_through_zero_loss",
@@ -29,7 +29,7 @@
       "status": "FAIL",
       "straight_through_zero_loss_detected": true
     },
-    "source_manifest_sha256_before_mutation": "a2a165292590ed700c3534a56b3bae28f9b80120697fad39392d0207f6196d43"
+    "source_manifest_sha256_before_mutation": "3a9c0b4b14c410a970bdf9686060b89347b5b8679bbe40fcc1d01c55f2c67f1a"
   },
   "passed": false,
   "request_nonce": "care-ase-20260806T090955Z",

@@ -1,12 +1,12 @@
 {
-  "created_utc": "2026-08-07T04:44:16Z",
+  "created_utc": "2026-08-08T05:52:13Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
     "kb18.forged_executor_pass_receipt_not_verifier_observation"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "34c08988f9d1ca73855df59c1f7bb17913868ed64919c5eef852b75c13bc76b9",
+  "mutated_fingerprint_sha256": "6a2099e3e8e730f8676dc01dc22e2551c9b06aa9164af64385f2ff82ea90e34f",
   "mutation_applied": "executor_pass_receipt_without_verifier_runtime_observations_presented_as_conclusion",
   "mutation_executed": true,
   "mutation_id": "forged_executor_pass_receipt",
@@ -18,7 +18,7 @@
       "schema": "CARE_ASE_FAITHFUL_EXECUTOR_RECEIPT",
       "status": "PASS"
     },
-    "source_manifest_sha256_before_mutation": "a2a165292590ed700c3534a56b3bae28f9b80120697fad39392d0207f6196d43"
+    "source_manifest_sha256_before_mutation": "3a9c0b4b14c410a970bdf9686060b89347b5b8679bbe40fcc1d01c55f2c67f1a"
   },
   "passed": false,
   "request_nonce": "care-ase-20260806T090955Z",

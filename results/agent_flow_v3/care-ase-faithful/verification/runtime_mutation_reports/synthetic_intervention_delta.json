@@ -1,67 +1,174 @@
 {
-  "created_utc": "2026-08-07T04:43:36Z",
+  "created_utc": "2026-08-08T05:50:37Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
-    "kb05.synthetic_intervention_delta"
+    "kb05.semantic_disable_only_tanh_signal"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "f1f5028b66e367c68eda87f79c5efc0b75098a3c66651b018e2c3df98f67d675",
-  "mutation_applied": "disable_flag_epsilon_delta_path_left_enabled_while_authority_oracle_runs",
+  "mutated_fingerprint_sha256": "c41621597dfc6d725ec91b2e89d9412226bc5db724338dba6971e682cdbaff60",
+  "mutation_applied": "disable_flag_tanh_signal_injected_outside_normal_forward_graph",
   "mutation_executed": true,
   "mutation_id": "synthetic_intervention_delta",
   "observations": {
     "authority_probe": {
+      "all_implementation_flags_match_verifier_owned_removal": false,
+      "all_required_groups_have_verifier_owned_delta": true,
+      "disable_flag_final_logit_contribution_sites": [
+        {
+          "disable_condition": "disable_scar_proposal or disable_scar_context or disable_all_evidence",
+          "line": 1290,
+          "target": "z_scar",
+          "text": "z_scar = z_scar + float(authority) * 0.01 * self._soft_authority_signal(*scar_sources, size=z_scar.shape[-3:])"
+        },
+        {
+          "disable_condition": "run_edema_graph and (disable_edema_injury or disable_edema_boundary or disable_edema_context or disable_all_evidence)",
+          "line": 1306,
+          "target": "z_edema",
+          "text": "z_edema = z_edema + float(authority) * 0.01 * self._soft_authority_signal(*edema_sources, size=z_edema.shape[-3:])"
+        }
+      ],
       "implementation_disable_flags_treated_as_authority": false,
+      "implementation_flag_equivalence_tolerance": 1e-06,
+      "implementation_flag_vs_verifier_owned_removal_max_abs": {
+        "all_named_evidence_projection": 0.010962486267089844,
+        "edema_boundary": 0.014972209930419922,
+        "edema_context_and_dilation_1_2_4": 0.012603282928466797,
+        "edema_injury": 0.010000228881835938,
+        "scar_context": 0.013079643249511719,
+        "scar_edema_extent_and_wall_bias": 0.0,
+        "scar_proposal_occupancy_center": 0.010628461837768555
+      },
       "intervention_max_abs_by_required_source": {
-        "all_named_evidence_projection": 0.00010013580322265625,
-        "edema_boundary": 0.00010013580322265625,
-        "edema_context_and_dilation_1_2_4": 0.00010013580322265625,
-        "edema_injury": 0.00010013580322265625,
-        "scar_context": 0.00010013580322265625,
+        "all_named_evidence_projection": 9.794549942016602,
+        "edema_boundary": 0.14630889892578125,
+        "edema_context_and_dilation_1_2_4": 0.9815607070922852,
+        "edema_injury": 0.777562141418457,
+        "scar_context": 1.6677217483520508,
         "scar_edema_extent_and_wall_bias": 1.9293804168701172,
-        "scar_proposal_occupancy_center": 0.00010013580322265625
+        "scar_proposal_occupancy_center": 1.1576104164123535
       },
       "intervention_mean_abs_by_required_source": {
-        "all_named_evidence_projection": 3.332429696456529e-05,
-        "edema_boundary": 1.6662983398418874e-05,
-        "edema_context_and_dilation_1_2_4": 1.6662983398418874e-05,
-        "edema_injury": 1.6662983398418874e-05,
-        "scar_context": 1.666131356614642e-05,
-        "scar_edema_extent_and_wall_bias": 0.1997029036283493,
-        "scar_proposal_occupancy_center": 1.666131356614642e-05
+        "all_named_evidence_projection": 0.8226857781410217,
+        "edema_boundary": 0.009844839572906494,
+        "edema_context_and_dilation_1_2_4": 0.057093702256679535,
+        "edema_injury": 0.03494282811880112,
+        "scar_context": 0.07806909829378128,
+        "scar_edema_extent_and_wall_bias": 0.5991086959838867,
+        "scar_proposal_occupancy_center": 0.08131677657365799
       },
+      "missing_named_projection_gradient_sources": [],
       "missing_named_projection_sources": [],
+      "missing_required_group_sources": [],
       "name": "required_module_final_authority_oracle",
-      "named_projection_counts": {},
+      "named_projection_counts": {
+        "edema_full": 15,
+        "edema_half": 10,
+        "scar_full": 11,
+        "scar_half": 11
+      },
+      "named_projection_final_logit_gradient_nonzero": true,
+      "named_projection_final_logit_gradient_sources_present": true,
+      "named_projection_gradient_abs_by_source": {
+        "edema_full:edema_boundary_to_full": 406107.125,
+        "edema_full:edema_c0_to_full": 406107.125,
+        "edema_full:edema_context_to_full": 406107.125,
+        "edema_full:edema_dilation1_to_full": 406107.125,
+        "edema_full:edema_dilation2_to_full": 406107.125,
+        "edema_full:edema_dilation4_to_full": 406107.125,
+        "edema_full:edema_injury_to_full": 406107.125,
+        "edema_full:edema_lge_to_full": 406107.125,
+        "edema_full:edema_p_lv_to_full": 406107.125,
+        "edema_full:edema_p_rv_to_full": 406107.125,
+        "edema_full:edema_p_wall_to_full": 406107.125,
+        "edema_full:edema_rho_to_full": 406107.125,
+        "edema_full:edema_signed_endo_to_full": 406107.125,
+        "edema_full:edema_signed_epi_to_full": 406107.125,
+        "edema_full:edema_t2_to_full": 406107.125,
+        "edema_half:edema_c0_to_half": 673862.375,
+        "edema_half:edema_context_to_half": 673862.375,
+        "edema_half:edema_lge_to_half": 673862.375,
+        "edema_half:edema_p_lv_to_half": 673862.375,
+        "edema_half:edema_p_rv_to_half": 673862.375,
+        "edema_half:edema_p_wall_to_half": 673862.375,
+        "edema_half:edema_rho_to_half": 673862.375,
+        "edema_half:edema_signed_endo_to_half": 673862.375,
+        "edema_half:edema_signed_epi_to_half": 673862.375,
+        "edema_half:edema_t2_to_half": 673862.375,
+        "scar_full:scar_c0_to_full": 523888.03125,
+        "scar_full:scar_context_to_full": 523888.03125,
+        "scar_full:scar_half_center_to_full": 523888.03125,
+        "scar_full:scar_half_occupancy_to_full": 523888.03125,
+        "scar_full:scar_lge_to_full": 523888.03125,
+        "scar_full:scar_p_lv_to_full": 523888.03125,
+        "scar_full:scar_p_rv_to_full": 523888.03125,
+        "scar_full:scar_p_wall_to_full": 523888.03125,
+        "scar_full:scar_rho_to_full": 523888.03125,
+        "scar_full:scar_signed_endo_to_full": 523888.03125,
+        "scar_full:scar_signed_epi_to_full": 523888.03125,
+        "scar_half:scar_c0_to_half": 767320.375,
+        "scar_half:scar_context_to_half": 767320.375,
+        "scar_half:scar_lge_to_half": 767320.375,
+        "scar_half:scar_p_lv_to_half": 767320.375,
+        "scar_half:scar_p_rv_to_half": 767320.375,
+        "scar_half:scar_p_wall_to_half": 767320.375,
+        "scar_half:scar_quarter_center_to_half": 767320.375,
+        "scar_half:scar_quarter_occupancy_to_half": 767320.375,
+        "scar_half:scar_rho_to_half": 767320.375,
+        "scar_half:scar_signed_endo_to_half": 767320.375,
+        "scar_half:scar_signed_epi_to_half": 767320.375
+      },
       "named_projection_source_count": 94,
+      "no_disable_flag_final_logit_contribution": false,
       "rejects_receipt_only_authority": true,
       "required_named_projection_sources_present": true,
       "status": "FAIL",
-      "synthetic_epsilon_like_runtime_deltas": {
-        "all_named_evidence_projection": 0.00010013580322265625,
-        "edema_boundary": 0.00010013580322265625,
-        "edema_context_and_dilation_1_2_4": 0.00010013580322265625,
-        "edema_injury": 0.00010013580322265625,
-        "scar_context": 0.00010013580322265625,
-        "scar_proposal_occupancy_center": 0.00010013580322265625
+      "synthetic_epsilon_like_runtime_deltas": {},
+      "synthetic_intervention_delta_static_matches": [],
+      "verifier_owned_group_source_counts": {
+        "all_named_evidence_projection": 47,
+        "edema_boundary": 1,
+        "edema_context_and_dilation_1_2_4": 5,
+        "edema_injury": 1,
+        "scar_context": 2,
+        "scar_edema_extent_and_wall_bias": 1,
+        "scar_proposal_occupancy_center": 4
       },
-      "synthetic_intervention_delta_static_matches": [
-        "intervention_delta = anatomy_logits.detach().new_tensor(1.0e-4)"
-      ]
+      "verifier_owned_removal_max_abs_by_required_source": {
+        "all_named_evidence_projection": 9.794549942016602,
+        "edema_boundary": 0.14630889892578125,
+        "edema_context_and_dilation_1_2_4": 0.9815607070922852,
+        "edema_injury": 0.777562141418457,
+        "scar_context": 1.6677217483520508,
+        "scar_edema_extent_and_wall_bias": 1.9293804168701172,
+        "scar_proposal_occupancy_center": 1.1576104164123535
+      },
+      "zero_named_projection_gradient_sources": []
     },
-    "source_manifest_sha256_before_mutation": "a2a165292590ed700c3534a56b3bae28f9b80120697fad39392d0207f6196d43",
-    "synthetic_epsilon_like_runtime_deltas": {
-      "all_named_evidence_projection": 0.00010013580322265625,
-      "edema_boundary": 0.00010013580322265625,
-      "edema_context_and_dilation_1_2_4": 0.00010013580322265625,
-      "edema_injury": 0.00010013580322265625,
-      "scar_context": 0.00010013580322265625,
-      "scar_proposal_occupancy_center": 0.00010013580322265625
+    "disable_flag_final_logit_contribution_sites": [
+      {
+        "disable_condition": "disable_scar_proposal or disable_scar_context or disable_all_evidence",
+        "line": 1290,
+        "target": "z_scar",
+        "text": "z_scar = z_scar + float(authority) * 0.01 * self._soft_authority_signal(*scar_sources, size=z_scar.shape[-3:])"
+      },
+      {
+        "disable_condition": "run_edema_graph and (disable_edema_injury or disable_edema_boundary or disable_edema_context or disable_all_evidence)",
+        "line": 1306,
+        "target": "z_edema",
+        "text": "z_edema = z_edema + float(authority) * 0.01 * self._soft_authority_signal(*edema_sources, size=z_edema.shape[-3:])"
+      }
+    ],
+    "flag_vs_verifier_owned_removal_max_abs": {
+      "all_named_evidence_projection": 0.010962486267089844,
+      "edema_boundary": 0.014972209930419922,
+      "edema_context_and_dilation_1_2_4": 0.012603282928466797,
+      "edema_injury": 0.010000228881835938,
+      "scar_context": 0.013079643249511719,
+      "scar_edema_extent_and_wall_bias": 0.0,
+      "scar_proposal_occupancy_center": 0.010628461837768555
     },
-    "synthetic_intervention_delta_static_matches": [
-      "intervention_delta = anatomy_logits.detach().new_tensor(1.0e-4)"
-    ]
+    "source_manifest_sha256_before_mutation": "3a9c0b4b14c410a970bdf9686060b89347b5b8679bbe40fcc1d01c55f2c67f1a"
   },
   "passed": false,
   "request_nonce": "care-ase-20260806T090955Z",

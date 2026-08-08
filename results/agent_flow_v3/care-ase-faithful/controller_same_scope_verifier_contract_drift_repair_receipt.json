@@ -1,0 +1,151 @@
+{
+  "classification": "VERIFIER_CONTRACT_DRIFT/SAME_SCOPE_VERIFICATION_REPAIR",
+  "contract_correction": {
+    "global_bias_requirement": "extent/wall bias applied exactly once after aggregation",
+    "real_context_difference_policy": "diagnostic_only",
+    "real_multi_tile_requirement": "genuine tile-local model forwards without full-support pseudo-tiling",
+    "removed_uncited_gate": "real CARE-ASE single full-context logits == forced tile-local logits at 1e-6",
+    "single_tile_and_tiled_use_same_path": "same public canonical inference API/settings"
+  },
+  "created_utc": "2026-08-08T04:15:35Z",
+  "current_git_head_before_commit": "905bcc8c0acdf6530d11d4eb49e06210e4fd6d35",
+  "forbidden_actions_confirmed": {
+    "develop_to_main_merge": false,
+    "docker_built_or_uploaded": false,
+    "formal_training_started": false,
+    "frozen_contract_modified": false,
+    "organizer_email_sent": false,
+    "outer_accessed": false,
+    "planner_or_critic_decision_forged": false,
+    "validation_or_challenge_uploaded": false
+  },
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "gpu_runtime_attempts": [
+    {
+      "exit_code": "0:0",
+      "job_id": "62582823",
+      "partition": "a100-gpu",
+      "reason": "pending_priority_before_compatible_fallback",
+      "state": "CANCELLED"
+    },
+    {
+      "exit_code": "1:0",
+      "job_id": "62583097",
+      "partition": "volta-gpu",
+      "reason": "torch_cuda_no_kernel_image_for_v100_cc70",
+      "state": "FAILED"
+    },
+    {
+      "exit_code": "0:0",
+      "gres": "gpu:nvidia_l40:1",
+      "job_id": "62583867",
+      "partition": "l40-gpu",
+      "reason": "pending_priority_switched_to_l40s",
+      "state": "CANCELLED"
+    },
+    {
+      "exit_code": "2:0",
+      "gres": "gpu:nvidia_l40s:1",
+      "job_id": "62584036",
+      "partition": "l40-gpu",
+      "reason": "builder_completed_runtime_probes_but_old_summary_marked_fail_closed",
+      "state": "FAILED"
+    },
+    {
+      "exit_code": "2:0",
+      "gres": "gpu:nvidia_l40s:1",
+      "job_id": "62584545",
+      "partition": "l40-gpu",
+      "reason": "builder_completed_runtime_probes_and_correctly_marked_pending_verifier_recheck",
+      "state": "FAILED"
+    }
+  ],
+  "implementation_evidence": {
+    "implementation_evidence_file_sha256": "0dc97b936d34642f5030fdc4b6b1d47f08bf6032c1456015d1be9cb1756bf918",
+    "implementation_evidence_sha256": "b84457949fd183dcae0a86e8fa46d583e8f2c5f6fa4756e66590f9952baa472f",
+    "implementation_fingerprint_file_sha256": "3b641ec36cc0c3d638606b7f8483cef81b576f35d4d547d751e5f405fa61e82b",
+    "implementation_fingerprint_sha256": "25828c210776d499613a872754d39290cf9df416a747fb9f0f86c56f91711dc6",
+    "source_manifest_sha256": "2d6f62f0fe41a3c5966d821b3fae946f8e1f7eaa7792898873a332eed1ebf7c5",
+    "validator_exit_code": 2,
+    "validator_failure_classification": "stale_verifier_owned_executable_and_transaction_binding_plus_same_scope_verifier_oracle_rebuild_required",
+    "validator_failure_count": 31,
+    "validator_failures": [
+      "verifier_owned.executable.passed",
+      "verifier_owned.executable.status",
+      "verifier_owned.executable.runtime_binding_sha:architecture_signature",
+      "verifier_owned.executable.runtime_binding_sha:checkpoint_resume_probe",
+      "verifier_owned.executable.runtime_binding_sha:deployment_load_probe",
+      "verifier_owned.executable.runtime_binding_sha:evaluator_smoke",
+      "verifier_owned.executable.runtime_binding_sha:forward_backward_probe",
+      "verifier_owned.executable.runtime_binding_sha:hard_negative_binding",
+      "verifier_owned.executable.runtime_binding_sha:inference_probe",
+      "verifier_owned.executable.runtime_binding_sha:parameter_owner_registry",
+      "verifier_owned.executable.runtime_binding_sha:runtime_asset_manifest",
+      "verifier_owned.executable.runtime_binding_sha:source_manifest",
+      "verifier_owned.executable.runtime_binding_sha:step0_parity_probe",
+      "verifier_owned.executable.tile_forward_count",
+      "verifier_owned.executable.tile_forward_patch_limited",
+      "verifier_owned.executable.no_full_support_pseudo_tiling",
+      "verifier_owned.executable.instrumented_forward_count",
+      "verifier_owned.executable.instrumented_no_t2_forward_count",
+      "verifier_owned.executable.instrumented_patch_limit",
+      "verifier_owned.executable.instrumented_no_full_support",
+      "verifier_owned.authority.no_static_synthetic_delta",
+      "verifier_owned.authority.no_epsilon_delta",
+      "verifier_owned.partial_hw.scalar_matches_reference",
+      "verifier_owned.partial_hw.actual_scalar_nonzero",
+      "verifier_owned.partial_hw.no_straight_through_zero",
+      "verifier_owned.partial_hw.reference_probe_matches",
+      "verifier_owned.transaction.status",
+      "verifier_owned.transaction.no_failures",
+      "verifier_owned.transaction.hosted_ci_success",
+      "verifier_owned.transaction.runtime_ci_same_sha",
+      "verifier_owned.transaction.no_stale_planner_reuse"
+    ],
+    "validator_stdout_sha256": "252fad6a592bdf57ff16446b8e31077c269de7df9f7cd8476e2fcf510b3aea26",
+    "verifier_fingerprint_sha256_at_evidence_build": "a1c660830ef8decea70c4ff06d7c061736bda1b179ef9a99b8530911ef0731fe"
+  },
+  "next_action": "rebuild verifier-owned executable artifacts, protected mutations, fingerprint, transaction binding, then re-run local/hosted CI before planner wait",
+  "next_state": "VERIFIER_RECHECK_REQUIRED",
+  "origin_develop_sha_at_repair": "905bcc8c0acdf6530d11d4eb49e06210e4fd6d35",
+  "real_care_ase_diagnostic_oracle": {
+    "case_id": "Case2003",
+    "diff_policy": {
+      "blocking": false,
+      "contract_field_or_exact_clause": null,
+      "contract_source_path": null,
+      "diagnostic_only": true,
+      "logical_derivation": "The frozen contract requires one public inference API/settings, genuine tile-local forwards, and one post-aggregation global bias; it does not require real CNN logits under different receptive-field contexts to match at 1e-6.",
+      "name": "real_care_ase_single_full_context_vs_forced_tile_local_diff"
+    },
+    "forced_multi_tile_base_logit_call_count": 2,
+    "forced_multi_tile_count": 2,
+    "forced_multi_tile_forward_count_matches_tile_count": true,
+    "full_support_pseudo_tiling_detected": false,
+    "global_bias_application_count": 1,
+    "no_t2_case_id": "Case1001",
+    "no_t2_class4_excluded": true,
+    "probe_status": "PASS",
+    "single_vs_forced_multi_tile_decode_changed_voxels": 609,
+    "single_vs_forced_multi_tile_max_abs_diff": 6.50684118270874,
+    "single_vs_forced_multi_tile_mean_abs_diff": 0.28167885541915894,
+    "single_vs_forced_multi_tile_per_class_changed_voxels": {
+      "0": 247,
+      "1": 279,
+      "2": 148,
+      "3": 148,
+      "4": 302,
+      "5": 94
+    }
+  },
+  "request_nonce": "care-ase-20260806T090955Z",
+  "schema": "CARE_ASE_FAITHFUL_SAME_SCOPE_VERIFIER_CONTRACT_DRIFT_REPAIR_RECEIPT_V1",
+  "supersedes_state": "NEEDS_USER_SCIENTIFIC_CHOICE",
+  "task_id": "care-ase-faithful",
+  "user_decision_applied": {
+    "create_new_scientific_nonce": false,
+    "modify_frozen_scientific_contract": false,
+    "relax_care_ase_scientific_design": false,
+    "stop_care_ase": false
+  }
+}

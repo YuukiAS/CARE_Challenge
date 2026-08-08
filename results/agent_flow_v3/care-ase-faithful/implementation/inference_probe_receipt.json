@@ -12,19 +12,94 @@
     "zero_credit": true
   },
   "command_sha256": "91c32b44019b3ef599adc21beed86532e3532d3f965a40c8a3aac85cb4f2ee3e",
-  "created_utc": "2026-08-07T05:04:54Z",
+  "created_utc": "2026-08-08T04:10:22Z",
   "docker_or_upload": false,
   "executed": true,
-  "exit_code": 2,
+  "exit_code": 0,
   "formal_training_started": false,
   "outer_accessed": false,
   "payload": {
+    "all_global_bias_application_count_across_compared_calls": 2,
+    "canonical_full_volume_finite": true,
+    "canonical_full_volume_logits_shape": [
+      1,
+      6,
+      10,
+      291,
+      239
+    ],
+    "canonical_settings_has_no_context_override": true,
     "case_id": "Case2003",
-    "case_selection": "smallest_train_side_preprocessed_case_by_stride_aligned_patch_volume",
-    "failure_reason": "local_executor_session_has_no_cuda_and_cpu_full_volume_probe_exceeded_interactive_resource_budget",
+    "case_selection": "smallest_train_side_preprocessed_case_with_plan_patch_forced_multitile",
+    "class4_excluded_from_no_t2_decode": true,
+    "class5_decode_remaps_to_official_label5": true,
     "fold": 0,
+    "forced_multi_tile_base_logit_call_count": 2,
+    "forced_multi_tile_call_id": "forced_multi_tile_real_case",
+    "forced_multi_tile_count": 2,
+    "forced_multi_tile_exact_context_patch_size": null,
+    "forced_multi_tile_forward_count_matches_tile_count": true,
+    "forced_multi_tile_metadata": {
+      "call_id": "forced_multi_tile_real_case",
+      "canonical_full_support_base_field": false,
+      "exact_context_patch_size": null,
+      "exact_context_tiling": false,
+      "global_bias_application_count": 1,
+      "input_shape": [
+        1,
+        3,
+        10,
+        291,
+        239
+      ],
+      "model_min_patch_size": [
+        20,
+        256,
+        256
+      ],
+      "overlap": 0.5,
+      "padded_spatial": [
+        20,
+        291,
+        256
+      ],
+      "patch_size": [
+        20,
+        256,
+        256
+      ],
+      "starts_per_axis": [
+        [
+          0
+        ],
+        [
+          0,
+          35
+        ],
+        [
+          0
+        ]
+      ],
+      "tile_base_logit_call_count": 2,
+      "tile_count": 2
+    },
+    "forced_multi_tile_patch_size": [
+      20,
+      256,
+      256
+    ],
+    "forced_multi_tile_path": "predict_care_ase_r2_full_volume_logits",
+    "forced_patch_smaller_than_input": true,
     "formal_training_started": false,
+    "global_bias_application_count": 1,
     "input_origin": "train_split_preprocessed_full_case",
+    "input_shape": [
+      1,
+      3,
+      10,
+      291,
+      239
+    ],
     "no_t2_case": {
       "array_sha256": "8cfa02ef7503b6eceac81525db865b475f96321709c15325991f3e95e08631e6",
       "availability": [
@@ -55,12 +130,89 @@
       ]
     },
     "no_t2_case_id": "Case1001",
+    "no_t2_final_logits_shape": [
+      1,
+      6,
+      20,
+      256,
+      256
+    ],
     "outer_accessed": false,
+    "patch_proxy_evaluator": false,
+    "patch_size_equals_input": false,
     "probe_type": "train_split_zero_credit_canonical_full_volume_inference",
     "random_tensor_used": false,
-    "requires_gpu_or_explicit_CARE_ASE_ALLOW_SLOW_CPU_FULL_VOLUME_PROBE": true,
+    "single_tile_call_id": "single_tile_real_case",
+    "single_tile_metadata": {
+      "call_id": "single_tile_real_case",
+      "canonical_full_support_base_field": false,
+      "exact_context_patch_size": null,
+      "exact_context_tiling": false,
+      "global_bias_application_count": 1,
+      "input_shape": [
+        1,
+        3,
+        10,
+        291,
+        239
+      ],
+      "model_min_patch_size": [
+        20,
+        320,
+        256
+      ],
+      "overlap": 0.5,
+      "padded_spatial": [
+        20,
+        320,
+        256
+      ],
+      "patch_size": [
+        20,
+        320,
+        256
+      ],
+      "starts_per_axis": [
+        [
+          0
+        ],
+        [
+          0
+        ],
+        [
+          0
+        ]
+      ],
+      "tile_base_logit_call_count": 1,
+      "tile_count": 1
+    },
+    "single_tile_patch_size": [
+      20,
+      320,
+      256
+    ],
+    "single_tile_path": "predict_care_ase_r2_full_volume_logits",
+    "single_vs_forced_multi_tile_decode_changed_voxels": 609,
+    "single_vs_forced_multi_tile_diff_policy": {
+      "blocking": false,
+      "contract_field_or_exact_clause": null,
+      "contract_source_path": null,
+      "diagnostic_only": true,
+      "logical_derivation": "The frozen contract requires one public inference API/settings, genuine tile-local forwards, and one post-aggregation global bias; it does not require real CNN logits under different receptive-field contexts to match at 1e-6.",
+      "name": "real_care_ase_single_full_context_vs_forced_tile_local_diff"
+    },
+    "single_vs_forced_multi_tile_max_abs_diff": 6.50684118270874,
+    "single_vs_forced_multi_tile_mean_abs_diff": 0.28167885541915894,
+    "single_vs_forced_multi_tile_per_class_changed_voxels": {
+      "0": 247,
+      "1": 279,
+      "2": 148,
+      "3": 148,
+      "4": 302,
+      "5": 94
+    },
     "split_sha256": "9c3e9f3b7e4565a5c3c2589ddbb913c78c0ad423f4265370585841c93c6f880a",
-    "status": "FAIL",
+    "status": "PASS",
     "t2_present_case": {
       "array_sha256": "78d0e980500f4af842a421ab6de5cdab0da77fd4c6cf41ab49bd3945677e1544",
       "availability": [
@@ -89,13 +241,14 @@
         1.5625,
         1.5625
       ]
-    }
+    },
+    "t2_present_class4_still_available": true
   },
   "probe": "inference_probe",
   "request_nonce": "care-ase-20260806T090955Z",
   "schema": "CARE_ASE_FAITHFUL_ZERO_CREDIT_PROBE_RECEIPT_V1",
   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "stdout_sha256": "efaed9fd7847428f917f173951890a879a6fcfb8776452a731558717635949d4",
+  "stdout_sha256": "613419509a29f732238fc91eca3f352ccd5f4330e56836fd207769f54cdb9e68",
   "task_id": "care-ase-faithful",
   "zero_credit": true
 }

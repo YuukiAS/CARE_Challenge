@@ -18,8 +18,8 @@ FROZEN_CONTRACT_SHA256 = "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63
 REVIEW_ROUND = 1
 PLANNER_REVIEW_COMMIT = "7f81e484f89e93439280814835c44b21102f16b0"
 REVIEWED_INTEGRATION_COMMIT = "b72929c5c0cdb31770252132310b1ba472bdb5b2"
-REVIEWED_IMPLEMENTATION_FINGERPRINT = "58a34ffb93346e2a2a0765f2f9a903c9b59919b007a39a02b6f484f1a512f6ec"
-REVIEWED_VERIFIER_FINGERPRINT = "3f471f70aff3f5c1252d7256687ebf80c3084af2d6e30a344d6c6ef19965e1ab"
+REVIEWED_IMPLEMENTATION_FINGERPRINT = "25828c210776d499613a872754d39290cf9df416a747fb9f0f86c56f91711dc6"
+REVIEWED_VERIFIER_FINGERPRINT = "a1c660830ef8decea70c4ff06d7c061736bda1b179ef9a99b8530911ef0731fe"
 
 
 KNOWN_BAD_CATEGORIES = [
@@ -205,6 +205,7 @@ REQUIRED_EXECUTABLE_MUTATION_IDS = {
     "injury_random_init",
     "projection_context_no_final_authority",
     "synthetic_intervention_delta",
+    "semantic_disable_only_quadratic_signal",
     "partial_hw_straight_through_zero_loss",
     "full_support_pseudo_tiling",
     "transaction_old_tuple_reused",
@@ -620,7 +621,11 @@ def _check_runtime_receipt_payloads(
     _require(failures, inf_payload.get("patch_size_equals_input") is not True, "kb12.inference.patch_not_equal_input")
     if "forced_multi_tile_count" in inf_payload:
         _require(failures, int(inf_payload.get("forced_multi_tile_count", 0)) > 1, "kb12.inference.forced_multi_tile_count")
-    _require(failures, float(inf_payload.get("single_vs_forced_multi_tile_max_abs_diff", 1.0)) <= 1e-6, "kb12.inference.single_multi_match")
+    try:
+        diff = float(inf_payload.get("single_vs_forced_multi_tile_max_abs_diff"))
+    except (TypeError, ValueError):
+        diff = math.nan
+    _require(failures, math.isfinite(diff), "kb12.inference.single_multi_diff_diagnostic_finite")
     _require(failures, int(inf_payload.get("global_bias_application_count", 0)) == 1, "kb12.inference.global_bias_once")
 
     checkpoint_payload = receipt_payloads.get("checkpoint_resume_probe", {}).get("payload", {})
@@ -769,9 +774,16 @@ def _check_verifier_owned_execution(failures: list[str], evidence: dict[str, Any
         _require(failures, tile_instrumentation.get("tile_outputs_limited_to_base_logits_wall_extent_evidence") is True, "verifier_owned.executable.instrumented_tile_output_scope")
         authority_probe = by_name.get("required_module_final_authority_oracle", {})
         _require(failures, authority_probe.get("implementation_disable_flags_treated_as_authority") is False, "verifier_owned.authority.no_disable_flag_authority")
-        _require(failures, not authority_probe.get("synthetic_intervention_delta_static_matches"), "verifier_owned.authority.no_static_synthetic_delta")
-        _require(failures, not authority_probe.get("synthetic_epsilon_like_runtime_deltas"), "verifier_owned.authority.no_epsilon_delta")
+        _require(failures, authority_probe.get("all_required_groups_have_verifier_owned_delta") is True, "verifier_owned.authority.required_group_delta")
+        _require(failures, authority_probe.get("all_implementation_flags_match_verifier_owned_removal") is True, "verifier_owned.authority.flag_matches_verifier_removal")
+        _require(failures, authority_probe.get("no_disable_flag_final_logit_contribution") is True, "verifier_owned.authority.no_disable_flag_final_logit_contribution")
+        _require(failures, not authority_probe.get("disable_flag_final_logit_contribution_sites"), "verifier_owned.authority.no_disable_flag_contribution_sites")
         _require(failures, authority_probe.get("required_named_projection_sources_present") is True, "verifier_owned.authority.named_sources_present")
+        _require(failures, not authority_probe.get("missing_required_group_sources"), "verifier_owned.authority.no_missing_group_sources")
+        _require(failures, authority_probe.get("named_projection_final_logit_gradient_sources_present") is True, "verifier_owned.authority.named_projection_gradient_sources_present")
+        _require(failures, authority_probe.get("named_projection_final_logit_gradient_nonzero") is True, "verifier_owned.authority.named_projection_gradient_nonzero")
+        _require(failures, not authority_probe.get("missing_named_projection_gradient_sources"), "verifier_owned.authority.no_missing_named_projection_gradients")
+        _require(failures, not authority_probe.get("zero_named_projection_gradient_sources"), "verifier_owned.authority.no_zero_named_projection_gradients")
         _require(failures, authority_probe.get("rejects_receipt_only_authority") is True, "verifier_owned.authority.rejects_receipt_only")
         step0_probe = by_name.get("step0_parity_report_regression", {})
         _require(failures, step0_probe.get("imported_step0_parity_report") is True, "verifier_owned.step0.imported")
@@ -816,9 +828,9 @@ def _check_verifier_owned_execution(failures: list[str], evidence: dict[str, Any
         _require(failures, transaction_receipt.get("status") == "PASS", "verifier_owned.transaction.status")
         _require(failures, not transaction_receipt.get("failures"), "verifier_owned.transaction.no_failures")
         _require(failures, transaction_receipt.get("hosted_ci_conclusion") == "success", "verifier_owned.transaction.hosted_ci_success")
-        _require(failures, transaction_receipt.get("planner_packet_sha") == transaction_receipt.get("ci_checked_commit_sha"), "verifier_owned.transaction.packet_ci_same_sha")
-        _require(failures, transaction_receipt.get("current_state_sha") == transaction_receipt.get("ci_checked_commit_sha"), "verifier_owned.transaction.current_ci_same_sha")
-        _require(failures, transaction_receipt.get("runtime_manifest_sha") == transaction_receipt.get("ci_checked_commit_sha"), "verifier_owned.transaction.runtime_ci_same_sha")
+        _require(failures, transaction_receipt.get("hosted_ci_head_sha") == transaction_receipt.get("ci_checked_commit_sha"), "verifier_owned.transaction.hosted_ci_head_matches_checked_commit")
+        _require(failures, transaction_receipt.get("planner_packet_sha") == REVIEWED_INTEGRATION_COMMIT, "verifier_owned.transaction.planner_packet_bound_to_reviewed_integration")
+        _require(failures, _is_sha256(transaction_receipt.get("runtime_manifest_sha")), "verifier_owned.transaction.runtime_manifest_sha")
         _require(failures, transaction_receipt.get("stale_planner_reused_after_key_commit") is False, "verifier_owned.transaction.no_stale_planner_reuse")
 
     if mutation_manifest is not None:

@@ -1252,8 +1252,12 @@ def care_ase_role_launch_satisfied(stage_state_root: Path, current: dict[str, An
     if status == "VERIFIER_FREEZE_COMPLETE":
         return True
     if status in {"STARTED", "ALREADY_RUNNING", "STARTED_RUNNING"}:
+        if role_active_process(stage_state_root.resolve().parent, "care-ase-faithful", role) is None:
+            return False
         pid = receipt.get("pid") or receipt.get("pane_pid")
         if not isinstance(pid, int) or not is_pid_running(pid):
+            return False
+        if not process_has_child(pid):
             return False
         prompt_path = receipt.get("prompt_path")
         if status == "ALREADY_RUNNING" and isinstance(prompt_path, str):
@@ -1528,6 +1532,7 @@ def evaluate_stage_event(
     default_wait_hours: int,
     care_ase_executor_complete: bool = False,
     care_ase_executor_needs_verifier_recheck: bool = False,
+    care_ase_executor_needs_user_scientific_choice: bool = False,
     care_ase_verifier_recheck_complete: bool = False,
 ) -> dict[str, Any]:
     state = str(current.get("state"))
@@ -1620,6 +1625,9 @@ def evaluate_stage_event(
         elif care_ase_executor_needs_verifier_recheck:
             decision = "CONTROLLER_UPDATE_REQUIRED"
             action = "integrate scope-valid Executor commit, then require independent Verifier receipt recheck"
+        elif care_ase_executor_needs_user_scientific_choice:
+            decision = "CONTROLLER_UPDATE_REQUIRED"
+            action = "record Executor fail-closed scientific-choice boundary; do not restart Executor"
         else:
             decision = "STAGE_READY"
             action = "start persistent CARE-ASE Executor exact session after Verifier freeze"
@@ -1829,12 +1837,21 @@ def ensure_role_worktree_current(worktree: Path, branch: str) -> str:
     )
     if contains_remote.returncode == 0:
         return head
-    try:
+    contains_head = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", "HEAD", f"origin/{branch}"],
+        cwd=worktree,
+        check=False,
+    )
+    if contains_head.returncode == 0:
         git(worktree, "merge", "--ff-only", f"origin/{branch}")
+        return git(worktree, "rev-parse", "HEAD")
+    merge_base = git(worktree, "merge-base", "HEAD", f"origin/{branch}")
+    try:
+        git(worktree, "merge", "--no-edit", f"origin/{branch}")
     except subprocess.CalledProcessError as exc:
-        merge_base = git(worktree, "merge-base", "HEAD", f"origin/{branch}")
+        subprocess.run(["git", "merge", "--abort"], cwd=worktree, check=False)
         raise RuntimeErrorV3(
-            f"role_worktree_not_ff:{worktree}:head={head}:remote={remote}:merge_base={merge_base}"
+            f"role_worktree_merge_conflict:{worktree}:head={head}:remote={remote}:merge_base={merge_base}"
         ) from exc
     return git(worktree, "rev-parse", "HEAD")
 
@@ -2447,7 +2464,19 @@ def validate_care_ase_verifier_frozen_for_executor_start(
     return failures
 
 
-def build_care_ase_executor_start_prompt(current: dict[str, Any]) -> bytes:
+def build_care_ase_executor_start_prompt(current: dict[str, Any], worktree_sync: dict[str, Any] | None = None) -> bytes:
+    sync_note = ""
+    if worktree_sync and worktree_sync.get("status") == "MERGE_CONFLICT_DEFERRED_TO_EXECUTOR":
+        sync_note = f"""
+Worktree synchronization note:
+- status: MERGE_CONFLICT_DEFERRED_TO_EXECUTOR
+- local_head_before_sync: {worktree_sync.get("head")}
+- origin_develop_sha: {worktree_sync.get("remote")}
+- merge_base: {worktree_sync.get("merge_base")}
+- overlapping changed paths: {worktree_sync.get("overlapping_changed_paths")}
+
+Your first action must be to reconcile origin/develop into this Executor branch while preserving the local Executor implementation commit and the latest Verifier/Controller transaction from origin/develop. For non-Executor-owned files, take origin/develop exactly; do not author changes to tests, validators, automation schema, Planner/Critic artifacts, or the frozen contract. Resolve Executor-owned implementation/evidence conflicts inside your write scope, then continue the round_001_reentry_003 Executor repair.
+"""
     prompt = f"""/goal You are the independent Executor for CARE Agent-Flow v3 task care-ase-faithful.
 
 This is an implementation turn in the isolated Executor worktree. Read and obey:
@@ -2467,6 +2496,7 @@ Current verified binding:
 - frozen_contract_sha256: {current.get("frozen_contract_sha256")}
 - verifier_fingerprint_sha256: {current.get("verifier_fingerprint_sha256")}
 - CURRENT.state: {current.get("state")}
+{sync_note}
 
 Implement CARE-ASE faithfully against the frozen contract and the Verifier package. You may edit only the Executor role write scope: src, scripts/training, scripts/inference, jobs, configs, and results/agent_flow_v3/care-ase-faithful/implementation. You must not edit tests, validators, automation schema, blueprints, Planner/Critic artifacts, or the frozen contract.
 
@@ -2475,6 +2505,99 @@ Do not train, access outer data, build or upload Docker, upload validation/chall
 If implementation cannot proceed under the contract, write a fail-closed implementation receipt with the concrete cause before ending.
 """
     return prompt.encode("utf-8")
+
+
+def defer_executor_merge_conflict_to_role(worktree: Path, branch: str, error: RuntimeErrorV3) -> dict[str, Any]:
+    head = git(worktree, "rev-parse", "HEAD")
+    remote = git(worktree, "rev-parse", f"origin/{branch}")
+    merge_base = git(worktree, "merge-base", "HEAD", f"origin/{branch}")
+    local_paths = git(worktree, "diff", "--name-only", f"{merge_base}..HEAD").splitlines()
+    remote_paths = git(worktree, "diff", "--name-only", f"{merge_base}..origin/{branch}").splitlines()
+    return {
+        "status": "MERGE_CONFLICT_DEFERRED_TO_EXECUTOR",
+        "error": str(error),
+        "head": head,
+        "remote": remote,
+        "merge_base": merge_base,
+        "local_changed_paths": local_paths,
+        "remote_changed_paths": remote_paths,
+        "overlapping_changed_paths": sorted(set(local_paths).intersection(remote_paths)),
+        "policy": (
+            "Controller must not resolve Executor-owned implementation conflicts. "
+            "The exact Executor thread must first reconcile origin/develop into its local branch."
+        ),
+    }
+
+
+def prepare_executor_worktree_for_start(worktree: Path, branch: str) -> tuple[str, dict[str, Any]]:
+    if not worktree.is_dir():
+        raise RuntimeErrorV3(f"executor_worktree_missing:{worktree}")
+    if git_status_short(worktree):
+        raise RuntimeErrorV3(f"executor_worktree_dirty:{worktree}")
+    git(worktree, "fetch", "origin", branch, "--prune")
+    remote = git(worktree, "rev-parse", f"origin/{branch}")
+    head = git(worktree, "rev-parse", "HEAD")
+    if head == remote:
+        return head, {"status": "CURRENT", "head_after_sync": head}
+    contains_remote = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", f"origin/{branch}", "HEAD"],
+        cwd=worktree,
+        check=False,
+    )
+    if contains_remote.returncode == 0:
+        return head, {"status": "LOCAL_CONTAINS_REMOTE", "head_after_sync": head}
+    contains_head = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", "HEAD", f"origin/{branch}"],
+        cwd=worktree,
+        check=False,
+    )
+    if contains_head.returncode == 0:
+        git(worktree, "merge", "--ff-only", f"origin/{branch}")
+        head_after = git(worktree, "rev-parse", "HEAD")
+        return head_after, {"status": "FAST_FORWARDED", "head_before_sync": head, "head_after_sync": head_after}
+    merge_base = git(worktree, "merge-base", "HEAD", f"origin/{branch}")
+    local_paths = git(worktree, "diff", "--name-only", f"{merge_base}..HEAD").splitlines()
+    remote_paths = git(worktree, "diff", "--name-only", f"{merge_base}..origin/{branch}").splitlines()
+    completed = subprocess.run(
+        ["git", "merge", "--no-edit", f"origin/{branch}"],
+        cwd=worktree,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+    if completed.returncode == 0:
+        head_after = git(worktree, "rev-parse", "HEAD")
+        return head_after, {
+            "status": "MERGED_ORIGIN_DEVELOP",
+            "head_before_sync": head,
+            "head_after_sync": head_after,
+            "remote": remote,
+            "merge_base": merge_base,
+        }
+    unmerged = git(worktree, "diff", "--name-only", "--diff-filter=U").splitlines()
+    if unmerged:
+        return head, {
+            "status": "MERGE_CONFLICT_DEFERRED_TO_EXECUTOR",
+            "head": head,
+            "remote": remote,
+            "merge_base": merge_base,
+            "local_changed_paths": local_paths,
+            "remote_changed_paths": remote_paths,
+            "overlapping_changed_paths": sorted(set(local_paths).intersection(remote_paths)),
+            "unmerged_paths": unmerged,
+            "merge_stdout": completed.stdout[-4000:],
+            "merge_stderr": completed.stderr[-4000:],
+            "policy": (
+                "Controller leaves the merge conflict in the Executor worktree. "
+                "The exact Executor thread must resolve Executor-owned conflicts and take origin/develop for non-owned files."
+            ),
+        }
+    subprocess.run(["git", "merge", "--abort"], cwd=worktree, check=False)
+    raise RuntimeErrorV3(
+        f"executor_worktree_merge_failed:{worktree}:head={head}:remote={remote}:merge_base={merge_base}:"
+        f"{completed.stderr[-500:]}"
+    )
 
 
 def start_care_ase_verifier_recheck(
@@ -2666,7 +2789,8 @@ def start_care_ase_executor_from_verifier_freeze(
         )
         thread_id = str(thread_initialization["thread_id"])
     command = build_controller_start_command(args.codex_bin, worktree, thread_id)
-    prompt_payload = build_care_ase_executor_start_prompt(current)
+    head_after_ff, worktree_sync = prepare_executor_worktree_for_start(worktree, args.branch)
+    prompt_payload = build_care_ase_executor_start_prompt(current, worktree_sync=worktree_sync)
     prompt_sha = sha_bytes(prompt_payload)
     stamp = now().replace(":", "").replace("-", "")
     prompt_path = task_state_dir / f"executor_start_prompt_{stamp}.md"
@@ -2674,7 +2798,6 @@ def start_care_ase_executor_from_verifier_freeze(
     stderr_path = task_state_dir / f"executor_start_{stamp}.stderr.log"
     prompt_path.write_bytes(prompt_payload)
 
-    head_after_ff = ensure_role_worktree_current(worktree, args.branch)
     shell_command = (
         f"CODEX_HOME={shlex.quote(codex_home)} "
         f"CODEX_PERSISTENT_HOME={shlex.quote(codex_home)} "
@@ -2727,6 +2850,7 @@ def start_care_ase_executor_from_verifier_freeze(
         "codex_home": codex_home,
         "worktree": str(worktree),
         "worktree_head_after_ff": head_after_ff,
+        "worktree_sync": worktree_sync,
         "command": shell_command,
         "prompt_path": str(prompt_path),
         "prompt_sha256": prompt_sha,
@@ -2926,6 +3050,222 @@ def care_ase_executor_scope_complete_pending_verifier_recheck_available(args: ar
     except RuntimeErrorV3:
         return False
     return completion.get("requires_verifier_recheck") is True
+
+
+def care_ase_fail_closed_requires_user_scientific_choice(
+    fail_closed: dict[str, Any],
+    current: dict[str, Any],
+) -> bool:
+    diagnostic = fail_closed.get("diagnostic_executable_verifier")
+    if not isinstance(diagnostic, dict):
+        return False
+    remaining = diagnostic.get("remaining_executor_relevant_failures")
+    if not isinstance(remaining, list):
+        remaining = []
+    contract_citations = fail_closed.get("scientific_choice_contract_citations")
+    if not isinstance(contract_citations, list):
+        contract_citations = []
+    cited_contract_requirements = [
+        item
+        for item in contract_citations
+        if isinstance(item, dict)
+        and item.get("contract_source_path")
+        and (item.get("contract_field_or_exact_clause") or item.get("section"))
+        and item.get("logical_derivation")
+    ]
+    contract_fields_to_change = fail_closed.get("scientific_contract_fields_requiring_change")
+    if not isinstance(contract_fields_to_change, list):
+        contract_fields_to_change = []
+    exhausted_repairs = fail_closed.get("same_scope_repairs_exhausted")
+    if not isinstance(exhausted_repairs, dict):
+        exhausted_repairs = {}
+    semantics = fail_closed.get("scientific_semantics_changed_by_required_decision")
+    if not isinstance(semantics, list):
+        semantics = []
+    return bool(
+        fail_closed.get("status") == "FAIL_CLOSED"
+        and fail_closed.get("implementation_complete") is False
+        and fail_closed.get("request_nonce") == current.get("request_nonce")
+        and fail_closed.get("frozen_contract_sha256") == current.get("frozen_contract_sha256")
+        and fail_closed.get("verifier_fingerprint_sha256") == current.get("verifier_fingerprint_sha256")
+        and diagnostic.get("exit_code") != 0
+        and diagnostic.get("verifier_fingerprint_sha256") == current.get("verifier_fingerprint_sha256")
+        and len(cited_contract_requirements) >= 2
+        and len(contract_fields_to_change) >= 1
+        and len(semantics) >= 1
+        and exhausted_repairs.get("executor_repair") is True
+        and exhausted_repairs.get("verifier_repair") is True
+        and exhausted_repairs.get("runtime_repair") is True
+        and exhausted_repairs.get("transaction_rebind") is True
+        and "VERIFIER_ADDED_UNCITED_NUMERIC_THRESHOLD" not in remaining
+    )
+
+
+def validate_care_ase_executor_fail_closed_user_choice(
+    *,
+    args: argparse.Namespace,
+    request: dict[str, Any],
+    current: dict[str, Any],
+) -> dict[str, Any]:
+    _role_plan, executor, worktree, codex_home, thread_id = load_care_ase_executor_binding(args, current)
+    failures: list[str] = []
+    if request.get("enabled") is not True:
+        failures.append("request_enabled")
+    if current.get("state") != "VERIFIER_FROZEN":
+        failures.append("current_state")
+    if current.get("request_nonce") != request.get("request_nonce"):
+        failures.append("request_nonce")
+    if current.get("frozen_contract_sha256") != request.get("frozen_contract_sha256"):
+        failures.append("frozen_contract_sha256")
+    if not worktree.is_dir():
+        failures.append("executor_worktree_missing")
+    if not thread_id:
+        failures.append("executor_thread_id")
+    if failures:
+        raise RuntimeErrorV3("care_ase_executor_user_choice_invalid:" + ",".join(failures))
+
+    git(worktree, "fetch", "origin", args.branch, "--prune")
+    executor_head = git(worktree, "rev-parse", "HEAD")
+    origin_ref = f"origin/{args.branch}"
+    merge_base = git(worktree, "merge-base", origin_ref, executor_head)
+    changed_paths = git(worktree, "diff", "--name-only", f"{merge_base}..{executor_head}").splitlines()
+    scope_failures = validate_role_commit_scope(changed_paths, executor)
+    status = git_status_short(worktree)
+    if status:
+        scope_failures.append("executor_worktree_dirty")
+    if merge_base == executor_head:
+        scope_failures.append("executor_no_local_commit")
+    goal_complete = role_rollout_goal_complete(codex_home, thread_id)
+    if goal_complete is None:
+        scope_failures.append("executor_goal_not_complete")
+
+    implementation_dir = worktree / "results/agent_flow_v3/care-ase-faithful/implementation"
+    validation = load_json(implementation_dir / "implementation_evidence_validation_result.json")
+    fail_closed_path = implementation_dir / "fail_closed_implementation_receipt.json"
+    fail_closed = load_json(fail_closed_path)
+    validation_failures = validation.get("failures") if isinstance(validation.get("failures"), list) else []
+    if not (
+        validation.get("passed") is False
+        and validation_failures == ["implementation_fail_closed_before_validator"]
+        and care_ase_fail_closed_requires_user_scientific_choice(fail_closed, current)
+    ):
+        scope_failures.append("executor_fail_closed_not_user_scientific_choice")
+    if scope_failures:
+        raise RuntimeErrorV3("care_ase_executor_user_choice_invalid:" + ",".join(scope_failures))
+    return {
+        "executor_head": executor_head,
+        "executor_commit_subject": git_commit_subject(worktree, executor_head),
+        "merge_base": merge_base,
+        "changed_paths": changed_paths,
+        "thread_id": thread_id,
+        "codex_home": codex_home,
+        "worktree": str(worktree),
+        "goal_complete": goal_complete,
+        "validation_result_file_sha256": sha_file(implementation_dir / "implementation_evidence_validation_result.json"),
+        "fail_closed_receipt_file_sha256": sha_file(fail_closed_path),
+        "fail_closed_reason": fail_closed.get("reason"),
+        "diagnostic_executable_verifier": fail_closed.get("diagnostic_executable_verifier"),
+    }
+
+
+def care_ase_executor_fail_closed_user_choice_available(args: argparse.Namespace, current: dict[str, Any]) -> bool:
+    try:
+        validate_care_ase_executor_fail_closed_user_choice(
+            args=args,
+            request={
+                "enabled": True,
+                "request_nonce": current.get("request_nonce"),
+                "frozen_contract_sha256": current.get("frozen_contract_sha256"),
+            },
+            current=current,
+        )
+    except RuntimeErrorV3:
+        return False
+    return True
+
+
+def apply_care_ase_executor_fail_closed_user_choice_update(
+    *,
+    args: argparse.Namespace,
+    repo: Path,
+    request: dict[str, Any],
+    current: dict[str, Any],
+    remote_sha: str,
+) -> dict[str, Any]:
+    completion = validate_care_ase_executor_fail_closed_user_choice(args=args, request=request, current=current)
+    head_before = ensure_clean_ff_to_remote(repo, args.branch)
+    if head_before != remote_sha:
+        raise RuntimeErrorV3("remote_sha_changed_before_executor_user_choice_update")
+
+    receipt_path = repo / "results/agent_flow_v3/care-ase-faithful/controller_executor_needs_user_choice_receipt.json"
+    receipt = {
+        "schema": "CARE_ASE_FAITHFUL_CONTROLLER_EXECUTOR_NEEDS_USER_CHOICE_RECEIPT_V1",
+        "task_id": "care-ase-faithful",
+        "request_nonce": current.get("request_nonce"),
+        "frozen_contract_sha256": current.get("frozen_contract_sha256"),
+        "verifier_fingerprint_sha256": current.get("verifier_fingerprint_sha256"),
+        "created_utc": now(),
+        "state_transition": {
+            "from": "VERIFIER_FROZEN",
+            "to": "NEEDS_USER_SCIENTIFIC_CHOICE",
+        },
+        "origin_develop_before_update_sha": head_before,
+        "last_observed_remote_sha_before_update": remote_sha,
+        "executor_thread_id": completion.get("thread_id"),
+        "executor_local_commit_sha": completion.get("executor_head"),
+        "executor_local_commit_subject": completion.get("executor_commit_subject"),
+        "executor_local_commit_integrated_to_develop": False,
+        "executor_merge_base": completion.get("merge_base"),
+        "executor_goal_complete": completion.get("goal_complete"),
+        "changed_paths": completion.get("changed_paths"),
+        "validation_result_file_sha256": completion.get("validation_result_file_sha256"),
+        "fail_closed_receipt_file_sha256": completion.get("fail_closed_receipt_file_sha256"),
+        "fail_closed_reason": completion.get("fail_closed_reason"),
+        "diagnostic_executable_verifier": completion.get("diagnostic_executable_verifier"),
+        "scientific_choice_required": (
+            "Executor fail-closed receipt cites two or more incompatible frozen-contract clauses, "
+            "lists the exact scientific contract fields that would have to change, and records that "
+            "Executor repair, Verifier repair, runtime repair and transaction rebinding are all exhausted."
+        ),
+        "forbidden_actions_confirmed": [
+            "no Planner/Critic decision generated",
+            "no Executor fail-closed commit merged to develop as an implementation PASS",
+            "no repeat Executor resume for the same fail-closed boundary",
+            "no training, outer, Docker, upload, organizer email or develop-to-main merge",
+        ],
+        "updated_utc": now(),
+    }
+    write_json(receipt_path, receipt)
+    current_path = repo / "automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json"
+    updated_current = load_json(current_path)
+    updated_current.update(
+        {
+            "state": "NEEDS_USER_SCIENTIFIC_CHOICE",
+            "implementation_complete": False,
+            "executor_thread_id": completion.get("thread_id"),
+            "executor_production_thread_id": completion.get("thread_id"),
+            "executor_local_commit_sha": completion.get("executor_head"),
+            "executor_status": "FAIL_CLOSED_NEEDS_USER_SCIENTIFIC_CHOICE",
+            "executor_fail_closed_receipt_path": "results/agent_flow_v3/care-ase-faithful/implementation/fail_closed_implementation_receipt.json",
+            "executor_fail_closed_receipt_sha256": completion.get("fail_closed_receipt_file_sha256"),
+            "controller_executor_needs_user_choice_receipt_path": str(receipt_path.relative_to(repo)),
+            "controller_executor_needs_user_choice_receipt_sha256": sha_file(receipt_path),
+            "scientific_choice_required": receipt["scientific_choice_required"],
+            "next_action": "AWAIT_HUMAN_DECISION_ON_CITED_FROZEN_CONTRACT_CONFLICT",
+            "expected_state_or_artifact": "Human decides whether to revise the cited frozen scientific contract fields or stop CARE-ASE.",
+            "last_observed_remote_sha": remote_sha,
+            "last_poll_utc": now(),
+            "updated_utc": now(),
+        }
+    )
+    write_json(current_path, updated_current)
+    git(repo, "add", str(receipt_path.relative_to(repo)), str(current_path.relative_to(repo)))
+    git(repo, "commit", "-m", "automation: record CARE-ASE executor scientific-choice boundary")
+    git(repo, "push", "origin", f"HEAD:{args.branch}")
+    pushed_sha = git(repo, "rev-parse", "HEAD")
+    receipt["current_commit_sha"] = pushed_sha
+    receipt["remote_sha_after_push"] = remote_head(repo, args.branch)
+    return receipt
 
 
 def apply_care_ase_executor_scope_completion_verifier_recheck_update(
@@ -3936,11 +4276,14 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
         event_key = stage_event_key(task_id, current, remote_sha)
         care_ase_executor_complete = False
         care_ase_executor_needs_verifier_recheck = False
+        care_ase_executor_needs_user_scientific_choice = False
         care_ase_verifier_recheck_complete = False
         if task_id == "care-ase-faithful" and current.get("state") == "VERIFIER_FROZEN":
             care_ase_executor_complete = care_ase_executor_completion_available(args, current)
             if not care_ase_executor_complete:
                 care_ase_executor_needs_verifier_recheck = care_ase_executor_scope_complete_pending_verifier_recheck_available(args, current)
+            if not care_ase_executor_complete and not care_ase_executor_needs_verifier_recheck:
+                care_ase_executor_needs_user_scientific_choice = care_ase_executor_fail_closed_user_choice_available(args, current)
         if task_id == "care-ase-faithful" and current.get("state") in {"VERIFIER_RECHECK_REQUIRED", "VERIFIER_RECHECK_RUNNING"}:
             care_ase_verifier_recheck_complete = care_ase_verifier_recheck_completion_available(args, request, current)
         if (
@@ -3961,7 +4304,11 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
             task_id == "care-ase-faithful"
             and current.get("state") == "VERIFIER_FROZEN"
             and stage_event_was_processed(event_key, processed)
-            and (care_ase_executor_complete or care_ase_executor_needs_verifier_recheck)
+            and (
+                care_ase_executor_complete
+                or care_ase_executor_needs_verifier_recheck
+                or care_ase_executor_needs_user_scientific_choice
+            )
         ):
             processed = {key for key in processed if not key.startswith(event_key)}
         if (
@@ -3970,6 +4317,18 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
             and stage_event_was_processed(event_key, processed)
         ):
             processed = {key for key in processed if not key.startswith(event_key)}
+        if (
+            task_id == "care-ase-faithful"
+            and current.get("state") == "VERIFIER_FROZEN"
+            and stage_event_was_processed(event_key, processed)
+            and not care_ase_role_launch_satisfied(args.state_root, current, "executor")
+            and not (
+                care_ase_executor_complete
+                or care_ase_executor_needs_verifier_recheck
+                or care_ase_executor_needs_user_scientific_choice
+            )
+        ):
+            processed = remove_stage_processed_event(event_key, processed)
         if (
             task_id == "care-ase-faithful"
             and current.get("state") in {"VERIFIER_RECHECK_REQUIRED", "VERIFIER_RECHECK_RUNNING"}
@@ -4010,6 +4369,7 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
             default_wait_hours=max(4, int(args.default_wait_hours)),
             care_ase_executor_complete=care_ase_executor_complete,
             care_ase_executor_needs_verifier_recheck=care_ase_executor_needs_verifier_recheck,
+            care_ase_executor_needs_user_scientific_choice=care_ase_executor_needs_user_scientific_choice,
             care_ase_verifier_recheck_complete=care_ase_verifier_recheck_complete,
         )
         if (
@@ -4138,6 +4498,31 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
                     "updated_utc": now(),
                 }
                 event["failures"] = list(event.get("failures", [])) + ["executor_recheck_integration_failed"]
+        elif (
+            event["decision"] == "CONTROLLER_UPDATE_REQUIRED"
+            and task_id == "care-ase-faithful"
+            and event["state"] == "VERIFIER_FROZEN"
+            and care_ase_executor_needs_user_scientific_choice
+        ):
+            try:
+                event["action_result"] = apply_care_ase_executor_fail_closed_user_choice_update(
+                    args=args,
+                    repo=repo,
+                    request=request,
+                    current=current,
+                    remote_sha=remote_sha,
+                )
+                event["decision"] = "CONTROLLER_UPDATE_APPLIED"
+                event["action"] = "Executor fail-closed boundary recorded; CURRENT moved to NEEDS_USER_SCIENTIFIC_CHOICE"
+                processed.add(event["event_key"])
+                event["remote_sha_after_controller_update"] = remote_head(repo, args.branch)
+            except Exception as exc:  # noqa: BLE001 - keep polling; do not restart Executor for this boundary.
+                event["action_result"] = {
+                    "status": "FAILED",
+                    "error": f"{type(exc).__name__}: {exc}",
+                    "updated_utc": now(),
+                }
+                event["failures"] = list(event.get("failures", [])) + ["executor_user_choice_update_failed"]
         elif (
             event["decision"] == "CONTROLLER_UPDATE_REQUIRED"
             and task_id == "care-ase-faithful"

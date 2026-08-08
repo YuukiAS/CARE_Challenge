@@ -1,132 +1,87 @@
 {
-  "created_utc": "2026-08-07T05:04:54Z",
-  "docker_built_or_uploaded": false,
-  "environment": {
-    "default_dataset_json_exists": true,
-    "default_dataset_json_path": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/dataset.json",
-    "default_fold0_checkpoint_exists": true,
-    "default_fold0_checkpoint_path": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_final.pth",
-    "default_plans_exists": true,
-    "default_plans_path": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans.json",
-    "default_stock_root_exists": true,
-    "default_stock_root_path": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres",
-    "inference_probe": {
-      "case_id": "Case2003",
-      "case_selection": "smallest_train_side_preprocessed_case_by_stride_aligned_patch_volume",
-      "failure_reason": "local_executor_session_has_no_cuda_and_cpu_full_volume_probe_exceeded_interactive_resource_budget",
-      "fold": 0,
-      "formal_training_started": false,
-      "input_origin": "train_split_preprocessed_full_case",
-      "no_t2_case": {
-        "array_sha256": "8cfa02ef7503b6eceac81525db865b475f96321709c15325991f3e95e08631e6",
-        "availability": [
-          1.0,
-          0.0,
-          0.0
-        ],
-        "case_id": "Case1001",
-        "center": "CenterA",
-        "geometry_sha256": "2c96243b3053d2bc473024257656ac05f18f26003b88a611d5dcef385e5e2fb3",
-        "image_shape": [
-          3,
-          20,
-          256,
-          256
-        ],
-        "properties_sha256": "4959c949a8b7414436756028ee1ddf4e2a251712bd231a705207310e09f6af05",
-        "segmentation_sha256": "c1fb19a9d833cf7d2e1f5e6b56bce4e729dea53dff2e839646107786a6c5fe51",
-        "segmentation_shape": [
-          20,
-          256,
-          256
-        ],
-        "spacing_zyx": [
-          11.0,
-          1.3672000169754028,
-          1.3672000169754028
-        ]
-      },
-      "no_t2_case_id": "Case1001",
-      "outer_accessed": false,
-      "probe_type": "train_split_zero_credit_canonical_full_volume_inference",
-      "random_tensor_used": false,
-      "requires_gpu_or_explicit_CARE_ASE_ALLOW_SLOW_CPU_FULL_VOLUME_PROBE": true,
-      "split_sha256": "9c3e9f3b7e4565a5c3c2589ddbb913c78c0ad423f4265370585841c93c6f880a",
-      "status": "FAIL",
-      "t2_present_case": {
-        "array_sha256": "78d0e980500f4af842a421ab6de5cdab0da77fd4c6cf41ab49bd3945677e1544",
-        "availability": [
-          1.0,
-          1.0,
-          1.0
-        ],
-        "case_id": "Case2003",
-        "center": "CenterB",
-        "geometry_sha256": "ccc1f57a72852cf091037138be52e3cd57893b14fd61381e3ee9e0c0400eac54",
-        "image_shape": [
-          3,
-          10,
-          291,
-          239
-        ],
-        "properties_sha256": "353df97be805c93bc51d4f56066895c4d2ca2c18a26dfe3813f6708c9e33d732",
-        "segmentation_sha256": "e568a2e686d80ead61882ab940f845f7d77718ff85c86b168b5f3524f9129f81",
-        "segmentation_shape": [
-          10,
-          291,
-          239
-        ],
-        "spacing_zyx": [
-          10.0,
-          1.5625,
-          1.5625
-        ]
-      }
-    },
-    "nnunet_available": true,
-    "python_executable": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
-    "python_version": "3.12.13 | packaged by conda-forge | (main, Mar  5 2026, 16:50:00) [GCC 14.3.0]",
-    "torch_available": true
-  },
-  "failures": [
-    "inference_probe_status_not_pass",
-    "diagnostic_executable_verifier.single_vs_forced_multi_tile_full_volume",
-    "diagnostic_executable_verifier.tile_local_forward_instrumentation.max_abs_diff_without_context_override"
-  ],
-  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
-  "implementation_complete": false,
-  "no_training_started": true,
-  "outer_accessed": false,
-  "reason": "canonical inference zero-credit probe remains fail-closed under the new Verifier: true tile-local forwards execute with the declared small patch and no full-support pseudo-tiling, but their logits do not match the single full-context path within the frozen tolerance. Reintroducing a hidden full-support forward would be the forbidden shortcut this verifier fingerprint rejects.",
-  "request_nonce": "care-ase-20260806T090955Z",
-  "schema": "CARE_ASE_FAITHFUL_IMPLEMENTATION_FAIL_CLOSED_RECEIPT_V1",
-  "diagnostic_executable_verifier": {
-    "receipt_path": "/tmp/care_ase_exec_verifier_a1_after_registry.json",
-    "exit_code": 2,
-    "verifier_fingerprint_sha256": "a1c660830ef8decea70c4ff06d7c061736bda1b179ef9a99b8530911ef0731fe",
-    "executor_relevant_repairs_closed": [
-      "required_module_final_authority_oracle",
-      "partial_hw_extent_zero_contribution",
-      "partial_hw_extent_reference_objective",
-      "tile_local_forward_instrumentation.forward_count_and_patch_limit"
-    ],
-    "remaining_executor_relevant_failures": [
-      "single_vs_forced_multi_tile_full_volume",
-      "tile_local_forward_instrumentation"
-    ],
-    "forced_multi_tile_count": 9,
-    "forced_model_forward_count": 9,
-    "no_t2_forced_model_forward_count": 9,
-    "model_input_spatial_within_declared_patch": true,
-    "full_support_pseudo_tiling_detected": false,
-    "global_bias_application_count": 1,
-    "max_abs_diff_without_context_override": 19.57863426208496
-  },
-  "source_manifest_path": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_source_manifest.json",
-  "source_manifest_sha256": "1e8a192e55b6d91a28019928782c3acec087e7eee373d0900c39796244b82061",
-  "status": "FAIL_CLOSED",
+  "schema": "CARE_ASE_FAITHFUL_FAIL_CLOSED_IMPLEMENTATION_RECEIPT_V1",
   "task_id": "care-ase-faithful",
-  "validation_or_challenge_uploaded": false,
-  "verification_contract_path": "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
-  "verifier_fingerprint_sha256": "a1c660830ef8decea70c4ff06d7c061736bda1b179ef9a99b8530911ef0731fe"
+  "request_nonce": "care-ase-20260806T090955Z",
+  "review_round": 1,
+  "created_utc": "2026-08-08T06:36:00Z",
+  "status": "FAIL_CLOSED",
+  "implementation_complete": false,
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "verifier_fingerprint_sha256": "8fc1e554df6935a0d3070d952f06c34f87a005a281367511aae16a787234d7dd",
+  "origin_develop_reconciled_sha": "41f1fabde6a41701c13e75cedc057abb51e364b4",
+  "local_executor_head_before_reconciliation": "df526fde93bf3d4fa53ae8d86079a724a1142bb7",
+  "executor_thread_id": "019fd7c1-8358-7632-9022-367e62ecfbd1",
+  "repairs_applied": [
+    {
+      "path": "src/care_myocardium/models/care_ase/core.py",
+      "summary": "Removed _soft_authority_signal and the global_step gated disable-flag additive final-logit branches for z_scar and z_pure_edema."
+    },
+    {
+      "path": "scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py",
+      "summary": "Rebound the implementation evidence builder constant to verifier fingerprint 8fc1e554df6935a0d3070d952f06c34f87a005a281367511aae16a787234d7dd."
+    }
+  ],
+  "merge_reconciliation": {
+    "origin_develop_taken_for_non_executor_files": true,
+    "executor_owned_conflicts_resolved": true,
+    "conflict_resolution_note": "Generated implementation evidence conflicts were reconciled to origin/develop before this fail-closed repair; this receipt supersedes the deleted stale fail_closed receipt."
+  },
+  "commands": [
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m py_compile src/care_myocardium/models/care_ase/core.py scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py",
+      "exit_code": 0
+    },
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m pytest tests/care_ase_faithful/test_verifier_package.py -q",
+      "exit_code": 0,
+      "summary": "10 passed"
+    },
+    {
+      "command": "source /users/a/e/aereinh/CARE/env_nnunet.sh; CARE_ROOT=/users/a/e/aereinh/CARE; validators/care_ase_faithful/run_executable_verifier.py --repo-root executor --receipt results/agent_flow_v3/care-ase-faithful/implementation/executable_verifier_diagnostic_receipt.json",
+      "exit_code": 2,
+      "zero_credit": true
+    }
+  ],
+  "diagnostic_receipt": {
+    "path": "results/agent_flow_v3/care-ase-faithful/implementation/executable_verifier_diagnostic_receipt.json",
+    "status": "FAIL_CLOSED",
+    "failure_count": 5,
+    "failures": [
+      "transaction.reviewed_verifier_fingerprint.not_exact_planner_binding",
+      "transaction.current.binding.integration_sha",
+      "transaction.hosted_ci.conclusion",
+      "transaction.evidence.missing",
+      "executable_probe.failed:required_module_final_logit_interventions"
+    ]
+  },
+  "closed_findings": {
+    "disable_flag_final_logit_contribution_sites": [],
+    "implementation_flags_match_verifier_owned_removal": true,
+    "authority_oracle_all_required_groups_have_verifier_owned_delta": true,
+    "authority_oracle_all_flag_vs_verifier_removed_max_abs": 0.0,
+    "formal_training_started": false,
+    "outer_accessed": false,
+    "docker_or_upload": false
+  },
+  "remaining_blocker": {
+    "id": "VERIFIER_LEGACY_FRESH_MODEL_DISABLE_FLAG_DELTA_CONFLICT",
+    "source": "validators/care_ase_faithful/run_executable_verifier.py::independent_probe_results required_module_final_logit_interventions",
+    "summary": "After removal of the forbidden intervention-only additive final-logit branch, the legacy fresh-model disable-flag intervention probe observes zero delta for zero-initialized evidence projections before any temporary activation/update.",
+    "observed_intervention_max_abs_by_module": {
+      "scar_proposal": 0.0,
+      "scar_context": 0.0,
+      "edema_injury": 0.0,
+      "edema_boundary": 0.0,
+      "edema_context_and_dilation": 0.0,
+      "all_named_evidence": 0.0,
+      "extent_wall": 1.9293804168701172
+    },
+    "why_executor_failed_closed": "The frozen contract requires independent named zero-initialized residual projections and the round_001_reentry_003 repair prompt forbids replacing the removed branch with any flag-triggered constant, nonlinear component-derived signal, epsilon, hook, metadata path, or test-aware workaround. The verifier-owned authority oracle already proves ordinary-path authority after temporary projection activation, but the legacy disable-flag delta probe still requires nonzero fresh-model deltas without that activation. Satisfying that probe inside Executor would require either reintroducing the prohibited intervention-only authority signal or violating zero-initialized projection parity.",
+    "needed_next_role": "verifier",
+    "needed_repair": "Remove or re-scope required_module_final_logit_interventions as evidence-derived/temporary-activation-only, or make it diagnostic-only when required_module_final_authority_oracle passes and disable_flag_final_logit_contribution_sites is empty."
+  }
 }

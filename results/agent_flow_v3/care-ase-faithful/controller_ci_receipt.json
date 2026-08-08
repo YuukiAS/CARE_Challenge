@@ -2,8 +2,8 @@
   "schema": "CARE_ASE_FAITHFUL_CONTROLLER_CI_RECEIPT_V5",
   "task_id": "care-ase-faithful",
   "request_nonce": "care-ase-20260806T090955Z",
-  "created_utc": "2026-08-07T03:28:06Z",
-  "checked_commit_sha": "b72929c5c0cdb31770252132310b1ba472bdb5b2",
+  "created_utc": "2026-08-08T04:40:30Z",
+  "checked_commit_sha": "aee2873abd00ca40225c078937091eaab34159b5",
   "local_gates_status": "PASS",
   "local_gates": [
     {
@@ -24,7 +24,7 @@
       "name": "public_verifier_pytest",
       "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m pytest tests/care_ase_faithful/test_verifier_package.py -q",
       "exit_code": 0,
-      "stdout_tail": ".........                                                                [100%]\n9 passed in 14.08s\n",
+      "stdout_tail": "..........                                                               [100%]\n10 passed in 13.24s\n",
       "stderr_tail": ""
     }
   ],

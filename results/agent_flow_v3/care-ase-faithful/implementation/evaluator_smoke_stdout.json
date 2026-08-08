@@ -1,8 +1,8 @@
 {
-  "baseline_prediction_sha256": "3e250578a19a450e2848d21d1804912e3e7820c902fab28e5424fed1b12e664e",
+  "baseline_prediction_sha256": "128a7e2458b74163147d601174fca0da8fc6e640e2a6218dc335df5213a112a3",
   "called_module": "src.care_myocardium.evaluation.care_ase_r2_evaluator.evaluate_care_ase_r2_prediction_pair",
   "canonical_full_volume_only": true,
-  "care_prediction_sha256": "3e250578a19a450e2848d21d1804912e3e7820c902fab28e5424fed1b12e664e",
+  "care_prediction_sha256": "128a7e2458b74163147d601174fca0da8fc6e640e2a6218dc335df5213a112a3",
   "case": {
     "array_sha256": "82de36600aec40679228da8ab29e29dfa42265a76d8b844a4f497f75acd05c13",
     "availability": [
@@ -36,62 +36,62 @@
   "evaluator_result": {
     "baseline": {
       "4": {
-        "blood_pool_adjacent_fp": 969,
-        "component_count": 5,
-        "dice": 0.9499136442141624,
+        "blood_pool_adjacent_fp": 974,
+        "component_count": 9,
+        "dice": 0.9401947148817803,
         "exact_hd": 8.399800034822258,
         "hd95": 1.328125,
-        "lesion_recall": 0.7142857142857143,
-        "precision": 0.9499136442141624,
-        "remote_fp_count": 0,
-        "remote_fp_volume": 0.0,
-        "sensitivity": 0.9499136442141624,
-        "small_lesion_recall": 0.6666666666666666,
-        "volume_ratio": 1.0
+        "lesion_recall": 0.42857142857142855,
+        "precision": 0.9319194061505832,
+        "remote_fp_count": 1,
+        "remote_fp_volume": 17.63916015625,
+        "sensitivity": 0.9486183074265976,
+        "small_lesion_recall": 0.3333333333333333,
+        "volume_ratio": 1.0179188255613125
       },
       "5": {
-        "blood_pool_adjacent_fp": 190,
+        "blood_pool_adjacent_fp": 200,
         "component_count": 1,
-        "dice": 0.9708235294117648,
+        "dice": 0.9676511954992968,
         "exact_hd": 1.328125,
         "hd95": 1.328125,
         "lesion_recall": 1.0,
-        "precision": 0.9767992424242424,
+        "precision": 0.9699248120300752,
         "remote_fp_count": 0,
         "remote_fp_volume": 0.0,
-        "sensitivity": 0.9649204864359214,
+        "sensitivity": 0.9653882132834425,
         "small_lesion_recall": 1.0,
-        "volume_ratio": 0.9878391019644528
+        "volume_ratio": 0.9953227315247896
       }
     },
     "care": {
       "4": {
-        "blood_pool_adjacent_fp": 969,
-        "component_count": 5,
-        "dice": 0.9499136442141624,
+        "blood_pool_adjacent_fp": 974,
+        "component_count": 9,
+        "dice": 0.9401947148817803,
         "exact_hd": 8.399800034822258,
         "hd95": 1.328125,
-        "lesion_recall": 0.7142857142857143,
-        "precision": 0.9499136442141624,
-        "remote_fp_count": 0,
-        "remote_fp_volume": 0.0,
-        "sensitivity": 0.9499136442141624,
-        "small_lesion_recall": 0.6666666666666666,
-        "volume_ratio": 1.0
+        "lesion_recall": 0.42857142857142855,
+        "precision": 0.9319194061505832,
+        "remote_fp_count": 1,
+        "remote_fp_volume": 17.63916015625,
+        "sensitivity": 0.9486183074265976,
+        "small_lesion_recall": 0.3333333333333333,
+        "volume_ratio": 1.0179188255613125
       },
       "5": {
-        "blood_pool_adjacent_fp": 190,
+        "blood_pool_adjacent_fp": 200,
         "component_count": 1,
-        "dice": 0.9708235294117648,
+        "dice": 0.9676511954992968,
         "exact_hd": 1.328125,
         "hd95": 1.328125,
         "lesion_recall": 1.0,
-        "precision": 0.9767992424242424,
+        "precision": 0.9699248120300752,
         "remote_fp_count": 0,
         "remote_fp_volume": 0.0,
-        "sensitivity": 0.9649204864359214,
+        "sensitivity": 0.9653882132834425,
         "small_lesion_recall": 1.0,
-        "volume_ratio": 0.9878391019644528
+        "volume_ratio": 0.9953227315247896
       }
     },
     "case_id": "Case2001",
@@ -144,7 +144,7 @@
   "outer_accessed": false,
   "patch_proxy_evaluator": false,
   "probe_type": "zero_credit_metric_interface_smoke",
-  "result_sha256": "39ba340d26350dc050398181d14299b4051bd024b9599f93ce412fb8d26b81f8",
+  "result_sha256": "f31422ace8e80db0e48818147d67a7253c8a5a0d8de699d7aec0d6dda4303c23",
   "same_case_population": true,
   "same_tta_decode_metric_interface": true,
   "status": "PASS"

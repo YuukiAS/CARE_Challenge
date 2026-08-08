@@ -1,14 +1,14 @@
-# Controller Report: Agent-Flow v3 Infrastructure Activation
+# Controller Report: CARE-ASE Faithful Agent-Flow v3 Gate
 
-此前这份报告中的“Scheduled Critic 缺失”结论已经被后续远端证据取代。当前 `origin/develop` 已包含真实 Scheduled Critic 视觉 receipt 和 `critic_freeze_receipt.json`，并且二者绑定同一 nonce、图片 SHA 和冻结合同 SHA；因此 visual smoke 现在是 PASS。真实 `care-ase-faithful` request 仍保持关闭，但原因已经变为 Smoke B 尚未达到真实 `PLANNER_PASS`，不是视觉 smoke 阻塞。
+当前 CARE-ASE 没有停止，也没有要求修改 frozen scientific contract。上一版 `NEEDS_USER_SCIENTIFIC_CHOICE` 是错误升级，已由当前 `CURRENT.json` supersede：问题被归类为 `VERIFIER_CONTRACT_DRIFT / SAME_SCOPE_VERIFICATION_REPAIR`，Verifier 已修复并重新冻结，Executor 的同范围实现修复已集成，现正等待真实 Scheduled Planner 审阅。
 
-controller_verification_decision: SUPERSEDED_BY_LATER_CRITIC_FREEZE
+controller_verification_decision: WAITING_FOR_EXTERNAL_GPT
 
-operational_completion_status: visual_smoke_pass_smoke_b_pending
+operational_completion_status: non_terminal_waiting_for_scheduled_planner
 
-contract_compliance_status: PASS_FOR_VISUAL_SMOKE_DO_NOT_ARM_CARE_ASE_BEFORE_SMOKE_B
+contract_compliance_status: PASS_FOR_CURRENT_REVIEW_TRANSACTION_NO_CONTRACT_CHANGE
 
-required_outputs_complete: visual_smoke_complete_smoke_b_pending
+required_outputs_complete: current_review_packet_and_watcher_receipts_complete
 
 validators_passed: true
 
@@ -16,25 +16,43 @@ all_jobs_terminal: not_applicable
 
 aggregation_complete: not_applicable
 
-git_commit_decision: authorized
+git_commit_decision: authorized_develop_only
 
-git_push_decision: authorized_develop_only
+git_push_decision: pushed_develop
 
-scientific_resolution_status: NOT_STARTED
+notifier_status: not_sent_non_terminal_waiting_for_external_gpt
 
-next_required_action: Continue Smoke B through the persistent orchestrator and existing watcher. Enter `WAITING_FOR_EXTERNAL_GPT` before any Scheduled Planner wait; do not arm `care-ase-faithful` until Smoke B reaches true `PLANNER_PASS`.
+scientific_resolution_status: waiting_for_planner_review
+
+next_required_action: Wait for true Scheduled Planner to return `PLANNER_PASS` or a bound `PLANNER_REVISE_*` artifact. The persistent watcher/orchestrator must continue the loop; Codex must not fabricate a Planner decision.
+
+## Current State
+
+- `CURRENT.state`: `WAITING_FOR_EXTERNAL_GPT`
+- request nonce: `care-ase-20260806T090955Z`
+- frozen contract SHA: `a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d`
+- integration commit for Planner review: `aee2873abd00ca40225c078937091eaab34159b5`
+- implementation fingerprint: `25828c210776d499613a872754d39290cf9df416a747fb9f0f86c56f91711dc6`
+- verifier fingerprint: `ab6d3cae72ff8027e46b8c6d66d843b987e1d9584fa99692169e2cd2156b6249`
+- CI status for integration commit: `PASS`
+- external wait started: `2026-08-08T04:40:30Z`
+- external wait deadline: `2026-08-08T08:40:30Z`
+- develop SHA at observation: `ff88d4d07ec3126fa64ebd82047ea3a1dfd8fbed`
+
+## Supersession
+
+The earlier `final_state.json` and activation packet that said `NEEDS_USER_SCIENTIFIC_CHOICE` are superseded. The human explicitly decided that no frozen scientific contract change is needed, and the uncited real-CNN tile/full equality threshold was Verifier contract drift, not a user scientific-choice gate.
 
 ## Evidence
 
-- Visual source access: `results/agent_flow_v3/care-ase-faithful/visual_smoke/visual_source_access_receipt.json`.
-- Independent visual observations: `visual_smoke/planner_visual_observation_receipt.json`, `visual_smoke/critic_visual_observation_receipt.json`.
-- Role receipts: `controller_session_receipt.json`, `verifier_session_receipt.json`, `executor_session_receipt.json`.
-- Exact resume: `watcher_smoke/exact_resume_receipt.json`.
-- Watcher positive and negative receipts: `watcher_smoke/wake_smoke_*.json`.
-- Scheduled task observation: `scheduled_task_observation.json`; real visual-smoke observer: `../care-visual-smoke/visual_smoke_final.json`.
-- Smoke B block: `gpt_loop_smoke_receipt.json`.
- - Superseding Critic evidence: `../care-visual-smoke/critic_visual_receipt.json`, `../care-visual-smoke/critic_freeze_receipt.json`.
+- Current task state: `automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json`
+- Planner review packet: `results/agent_flow_v3/care-ase-faithful/planner_review_packet.json`
+- Controller CI receipt: `results/agent_flow_v3/care-ase-faithful/controller_ci_receipt.json`
+- Verifier repair receipt: `results/agent_flow_v3/care-ase-faithful/controller_same_scope_verifier_contract_drift_repair_receipt.json`
+- Production watcher receipt: `results/agent_flow_v3/care-ase-faithful/production_watcher_receipt.json`
+- Exact resume history: `results/agent_flow_v3/care-ase-faithful/exact_resume_history.json`
+- Final state supersession packet: `results/agent_flow_v3/care-ase-faithful/final_state.json`
 
 ## Forbidden Scope Check
 
-No CARE-ASE implementation files under `src/**`, `scripts/training/**`, `scripts/inference/**`, `jobs/**`, `configs/**`, `tests/**`, or `validators/**` were edited by a live Verifier or Executor role in this task. The new test changes are infrastructure tests under `tests/automation/test_agent_flow_v3.py`.
+No formal training, outer access, Docker build/upload, validation/challenge upload, organizer email, fake Planner/Critic decision, frozen contract edit, or develop-to-main merge was performed.
