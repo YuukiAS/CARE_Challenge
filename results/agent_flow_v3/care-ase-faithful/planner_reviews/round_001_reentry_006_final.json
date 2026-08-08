@@ -1,0 +1,69 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_PLANNER_REVIEW",
+  "task_id": "care-ase-faithful",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "review_round": 1,
+  "review_reentry": "round_001_reentry_006",
+  "observed_state": "WAITING_FOR_EXTERNAL_GPT",
+  "decision": "PLANNER_REVISE_BOTH",
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "integration_commit_sha": "965b0aadaf436e11abdf37dfe3ce6699e928b7b0",
+  "implementation_fingerprint_sha256": "e7a6bfe00336354da7debf7321966c8a72c7ce43ee0bb00c316387c72659b7e3",
+  "verifier_fingerprint_sha256": "6acc8fdc640df9be54848dfc676da45257d887c0f4be5ce71efa6230114a4a17",
+  "detailed_review_artifact": "results/agent_flow_v3/care-ase-faithful/planner_reviews/round_001_reentry_006.json",
+  "detailed_review_artifact_commit_sha": "c9337b3b7778480c48b26e17227faa30c98c0ba3",
+  "blocking_finding_ids": [
+    "ASE_R1_REENTRY6_EXECUTOR_HISTORICAL_RUNTIME_IDENTITY_STILL_ACTIVE",
+    "ASE_R1_REENTRY6_VERIFIER_RUNTIME_MANIFEST_ORACLE_ACCEPTS_STALE_MISSING_BINDINGS",
+    "ASE_R1_REENTRY6_FINAL_VERIFIER_TRANSACTION_NOT_REEXECUTED_AFTER_EXACT_CI"
+  ],
+  "binding_audit": {
+    "hosted_ci_run_id": 31256943029,
+    "hosted_ci_checked_out_sha": "965b0aadaf436e11abdf37dfe3ce6699e928b7b0",
+    "hosted_ci_conclusion": "success",
+    "implementation_fingerprint_embedded_verifier_fingerprint": "6acc8fdc640df9be54848dfc676da45257d887c0f4be5ce71efa6230114a4a17",
+    "implementation_fingerprint_matches_current_verifier": true,
+    "runtime_receipt_manifest_review_round": 0,
+    "current_review_round": 1,
+    "runtime_receipt_manifest_current_binding_complete": false,
+    "executable_verifier_receipt_passed": false,
+    "executable_verifier_receipt_integration_sha": "afcf93cf0be4581630fb283f8beaa53bddd1130e",
+    "transaction_gate_status": "FAIL_CLOSED",
+    "frozen_verifier_validation_passed": false,
+    "transaction_replayable": false
+  },
+  "prior_finding_closure": {
+    "partial_hw_cross_z": "CLOSED",
+    "checkpoint_current_nonce_contract_fields": "CLOSED_AT_HELPER_SCHEMA_LEVEL",
+    "verifier_pre_executor_immutable_fingerprint": "CLOSED",
+    "historical_runtime_task_result_permit_defaults": "OPEN",
+    "current_round_runtime_manifest_binding": "OPEN",
+    "post_ci_exact_verifier_transaction": "OPEN"
+  },
+  "repair_prompts": {
+    "verifier": "automation/agent_flow_v3/tasks/care-ase-faithful/repairs/round_001_reentry_006_verifier.md",
+    "executor": "automation/agent_flow_v3/tasks/care-ase-faithful/repairs/round_001_reentry_006_executor.md"
+  },
+  "repair_prompt_commits": {
+    "verifier": "3259814a3df6a185b0fae9e73166ccb87d91f513",
+    "executor": "38f15b0526b0415c580afaf0802c1dd53b88d8a5"
+  },
+  "required_role_order": [
+    "VERIFIER_FIRST_HARDEN_RUNTIME_MANIFEST_AND_POST_CI_TRANSACTION_ORACLES",
+    "EXECUTOR_SECOND_PARAMETERIZE_CURRENT_RUNTIME_IDENTITY_AND_REMOVE_HISTORICAL_ACTIVE_DEFAULTS",
+    "CONTROLLER_REINTEGRATE_AND_GENERATE_CURRENT_ROUND_RUNTIME_MANIFEST",
+    "RUN_EXACT_HOSTED_CI_ON_NEW_INTEGRATION",
+    "VERIFIER_POST_CI_REEXECUTE_EXACT_TRANSACTION_GATE",
+    "CONTROLLER_PUBLISH_FRESH_REPLAYABLE_PLANNER_PACKET",
+    "RETURN_TO_PLANNER"
+  ],
+  "forbidden_actions_confirmed": [
+    "no Planner implementation edits",
+    "no Planner verifier edits",
+    "no formal training",
+    "no outer access",
+    "no develop-to-main merge",
+    "no deployment or upload"
+  ],
+  "created_utc": "2026-08-08T13:09:26Z"
+}
