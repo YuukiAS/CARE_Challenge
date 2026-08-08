@@ -1,9 +1,9 @@
 {
-  "schema": "CARE_ASE_FAITHFUL_CONTROLLER_CI_RECEIPT_V6",
+  "schema": "CARE_ASE_FAITHFUL_CONTROLLER_CI_RECEIPT_V5",
   "task_id": "care-ase-faithful",
   "request_nonce": "care-ase-20260806T090955Z",
-  "created_utc": "2026-08-08T12:18:35Z",
-  "checked_commit_sha": "c6e75624be3717c70d67afaea62d76ad1a7f6f08",
+  "created_utc": "2026-08-08T12:20:19Z",
+  "checked_commit_sha": "965b0aadaf436e11abdf37dfe3ce6699e928b7b0",
   "local_gates_status": "PASS",
   "local_gates": [
     {
@@ -30,6 +30,13 @@
       "stderr_tail": ""
     }
   ],
-  "github_actions_status": "PENDING_AFTER_PUSH",
-  "workflow_path": ".github/workflows/agent-flow-v3-ci.yml"
+  "github_actions_status": "PASS",
+  "workflow_path": ".github/workflows/agent-flow-v3-ci.yml",
+  "github_actions_run_id": 31256943029,
+  "github_actions_run_url": "https://github.com/YuukiAS/CARE_Challenge/actions/runs/31256943029",
+  "github_actions_head_sha": "965b0aadaf436e11abdf37dfe3ce6699e928b7b0",
+  "github_actions_workflow_name": "CARE Agent-Flow v3 deterministic CI",
+  "state_transition_after_ci": "READY_FOR_PLANNER_REVIEW_TO_WAITING_FOR_EXTERNAL_GPT",
+  "human_approval_required_for_wait_transaction": false,
+  "approval_scope": "current_frozen_contract_and_request_nonce_ci_pass_to_planner_wait_loop"
 }
