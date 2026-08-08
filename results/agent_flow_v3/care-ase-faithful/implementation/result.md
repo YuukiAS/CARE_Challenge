@@ -5,13 +5,14 @@
 - task_id: `care-ase-faithful`
 - request_nonce: `care-ase-20260806T090955Z`
 - frozen_contract_sha256: `a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d`
-- verifier_fingerprint_sha256: `a1c660830ef8decea70c4ff06d7c061736bda1b179ef9a99b8530911ef0731fe`
+- verifier_fingerprint_sha256: `3dcacfe7ae41e164435278c0da4557fc61b384ef6eeb09860badb353b375dca6`
 - status: `IMPLEMENTATION_EVIDENCE_READY_PENDING_VERIFIER_RECHECK`
 - exit_code: `2`
 - runtime_asset_manifest: `results/agent_flow_v3/care-ase-faithful/implementation/runtime_asset_manifest.json`
 - validator_result: `results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence_validation_result.json`
 - implementation_evidence: `results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json`
 - implementation_fingerprint: `results/agent_flow_v3/care-ase-faithful/implementation/implementation_fingerprint.json`
+- slurm_zero_credit_evidence: `results/agent_flow_v3/care-ase-faithful/implementation/slurm_zero_credit_evidence_receipt.json`
 - formal_training_started: `false`
 - outer_accessed: `false`
 - docker_or_upload: `false`

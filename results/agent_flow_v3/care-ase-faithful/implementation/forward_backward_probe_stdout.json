@@ -13,7 +13,7 @@
   ],
   "checkpoint_written": false,
   "constant_denominator_count": 0,
-  "first_loss": 11.678964614868164,
+  "first_loss": 11.794109344482422,
   "fold": 0,
   "formal_optimizer_step_executed": false,
   "input_origin": "train_split_preprocessed_real_case_microbatch",
@@ -38,7 +38,7 @@
     "edema_owned_module_call_count": 0,
     "edema_parameter_grad_abs_sum": 0.0,
     "edema_supervision_rows": 0,
-    "no_t2_only_loss": 10.585493087768555,
+    "no_t2_only_loss": 10.569184303283691,
     "no_t2_only_metrics": {
       "all_finite": 1.0,
       "all_nonnegative": 1.0,
@@ -55,22 +55,21 @@
       "edema_extent": 0.0,
       "edema_extent_area": 0.0,
       "edema_extent_presence": 0.0,
-      "final_competition": 5.722657203674316,
-      "five_class_ce_without_class4": 4.729618549346924,
+      "final_competition": 5.722657680511475,
+      "five_class_ce_without_class4": 4.729619026184082,
       "five_class_dice_without_class4": 0.9930384755134583,
       "injury": 0.0,
-      "loss": 10.585493087768555,
+      "loss": 10.569184303283691,
       "no_t2_edema_exclusive_total_loss": -0.0,
       "relation": 0.0,
       "scar_center": 0.20339667797088623,
       "scar_component": 0.9093414545059204,
-      "scar_component_adaptive_tversky": 0.9745802283287048,
-      "scar_context": 1.413370132446289,
-      "scar_dense": 0.9261177778244019,
+      "scar_component_adaptive_tversky": 0.9093414545059204,
+      "scar_context": 1.4133702516555786,
+      "scar_dense": 0.9261177182197571,
       "scar_extent": 0.34502384066581726,
       "scar_extent_area": 0.0,
       "scar_extent_presence": 0.6900476813316345,
-      "scar_occupancy": 1.0398190021514893,
       "wall": 1.781177043914795
     }
   },
@@ -83,7 +82,7 @@
   "random_tensor_used": false,
   "required_projection_nonzero_finite_count": 94,
   "required_projection_parameter_count": 94,
-  "second_loss": 11.589771270751953,
+  "second_loss": 11.68162727355957,
   "second_total_loss_terms": {
     "anatomy_deep_supervision_dice_ce": {
       "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
@@ -106,10 +105,10 @@
       "eligible_voxel_or_count_denominator": 65536,
       "exclusion_reason": null,
       "included_in_total": true,
-      "unweighted_value": 5.76308536529541,
-      "value": 5.76308536529541,
+      "unweighted_value": 5.760836601257324,
+      "value": 5.760836601257324,
       "weight": 1.0,
-      "weighted_contribution": 5.76308536529541
+      "weighted_contribution": 5.760836601257324
     },
     "distance_rho_masked_smooth_l1": {
       "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
@@ -132,10 +131,10 @@
       "eligible_voxel_or_count_denominator": 32768,
       "exclusion_reason": null,
       "included_in_total": true,
-      "unweighted_value": 0.4883442223072052,
-      "value": 0.4883442223072052,
+      "unweighted_value": 0.4838290512561798,
+      "value": 0.4838290512561798,
       "weight": 1.0,
-      "weighted_contribution": 0.4883442223072052
+      "weighted_contribution": 0.4838290512561798
     },
     "edema_boundary_smooth_l1": {
       "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
@@ -145,10 +144,10 @@
       "eligible_voxel_or_count_denominator": 11909,
       "exclusion_reason": null,
       "included_in_total": true,
-      "unweighted_value": 0.30834144353866577,
-      "value": 0.30834144353866577,
+      "unweighted_value": 0.30738508701324463,
+      "value": 0.30738508701324463,
       "weight": 0.1,
-      "weighted_contribution": 0.03083414435386658
+      "weighted_contribution": 0.030738508701324465
     },
     "edema_context_ce": {
       "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
@@ -184,10 +183,10 @@
       "eligible_voxel_or_count_denominator": 32768,
       "exclusion_reason": null,
       "included_in_total": true,
-      "unweighted_value": 0.5740239024162292,
-      "value": 0.5740239024162292,
+      "unweighted_value": 0.868733286857605,
+      "value": 0.868733286857605,
       "weight": 0.4,
-      "weighted_contribution": 0.2296095609664917
+      "weighted_contribution": 0.347493314743042
     },
     "relation_loss": {
       "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
@@ -197,10 +196,10 @@
       "eligible_voxel_or_count_denominator": 32768,
       "exclusion_reason": null,
       "included_in_total": true,
-      "unweighted_value": 0.07185258716344833,
-      "value": 0.07185258716344833,
+      "unweighted_value": 0.07166500389575958,
+      "value": 0.07166500389575958,
       "weight": 0.05,
-      "weighted_contribution": 0.003592629358172417
+      "weighted_contribution": 0.003583250194787979
     },
     "scar_binary_dice_focal": {
       "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
@@ -210,10 +209,10 @@
       "eligible_voxel_or_count_denominator": 65536,
       "exclusion_reason": null,
       "included_in_total": true,
-      "unweighted_value": 0.9370845556259155,
-      "value": 0.9370845556259155,
+      "unweighted_value": 0.936434268951416,
+      "value": 0.936434268951416,
       "weight": 1.0,
-      "weighted_contribution": 0.9370845556259155
+      "weighted_contribution": 0.936434268951416
     },
     "scar_center_focal_bce": {
       "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
@@ -223,10 +222,10 @@
       "eligible_voxel_or_count_denominator": 65536,
       "exclusion_reason": null,
       "included_in_total": true,
-      "unweighted_value": 0.1902608573436737,
-      "value": 0.1902608573436737,
+      "unweighted_value": 0.19025856256484985,
+      "value": 0.19025856256484985,
       "weight": 0.1,
-      "weighted_contribution": 0.01902608573436737
+      "weighted_contribution": 0.019025856256484987
     },
     "scar_component_adaptive_tversky": {
       "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
@@ -236,10 +235,10 @@
       "eligible_voxel_or_count_denominator": 65536,
       "exclusion_reason": null,
       "included_in_total": true,
-      "unweighted_value": 0.9919902086257935,
-      "value": 0.9919902086257935,
+      "unweighted_value": 0.9179599285125732,
+      "value": 0.9179599285125732,
       "weight": 0.25,
-      "weighted_contribution": 0.24799755215644836
+      "weighted_contribution": 0.2294899821281433
     },
     "scar_context_ce": {
       "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
@@ -344,10 +343,10 @@
       "eligible_voxel_or_count_denominator": 11909,
       "exclusion_reason": null,
       "included_in_total": true,
-      "unweighted_value": 0.30919453501701355,
-      "value": 0.30919453501701355,
+      "unweighted_value": 0.30919450521469116,
+      "value": 0.30919450521469116,
       "weight": 0.1,
-      "weighted_contribution": 0.030919453501701357
+      "weighted_contribution": 0.03091945052146912
     },
     "edema_context_ce": {
       "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
@@ -383,10 +382,10 @@
       "eligible_voxel_or_count_denominator": 32768,
       "exclusion_reason": null,
       "included_in_total": true,
-      "unweighted_value": 0.606564998626709,
-      "value": 0.606564998626709,
+      "unweighted_value": 0.9379255175590515,
+      "value": 0.9379255175590515,
       "weight": 0.4,
-      "weighted_contribution": 0.2426259994506836
+      "weighted_contribution": 0.37517020702362064
     },
     "relation_loss": {
       "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
@@ -396,10 +395,10 @@
       "eligible_voxel_or_count_denominator": 32768,
       "exclusion_reason": null,
       "included_in_total": true,
-      "unweighted_value": 0.07337721437215805,
-      "value": 0.07337721437215805,
+      "unweighted_value": 0.07337722182273865,
+      "value": 0.07337722182273865,
       "weight": 0.05,
-      "weighted_contribution": 0.0036688607186079027
+      "weighted_contribution": 0.0036688610911369325
     },
     "scar_binary_dice_focal": {
       "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
@@ -435,10 +434,10 @@
       "eligible_voxel_or_count_denominator": 65536,
       "exclusion_reason": null,
       "included_in_total": true,
-      "unweighted_value": 0.995758056640625,
-      "value": 0.995758056640625,
+      "unweighted_value": 0.9261618256568909,
+      "value": 0.9261618256568909,
       "weight": 0.25,
-      "weighted_contribution": 0.24893951416015625
+      "weighted_contribution": 0.23154045641422272
     },
     "scar_context_ce": {
       "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",

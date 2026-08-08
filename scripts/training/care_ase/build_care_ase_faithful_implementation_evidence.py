@@ -29,7 +29,7 @@ from typing import Any
 TASK_ID = "care-ase-faithful"
 REQUEST_NONCE = "care-ase-20260806T090955Z"
 FROZEN_CONTRACT_SHA256 = "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d"
-VERIFIER_FINGERPRINT_SHA256 = "8fc1e554df6935a0d3070d952f06c34f87a005a281367511aae16a787234d7dd"
+VERIFIER_FINGERPRINT_SHA256 = "3dcacfe7ae41e164435278c0da4557fc61b384ef6eeb09860badb353b375dca6"
 
 ROOT = Path(__file__).resolve().parents[3]
 if str(ROOT) not in sys.path:

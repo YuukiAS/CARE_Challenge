@@ -957,18 +957,15 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor], *, co
     scar_half = F.interpolate(outputs["scar"].get("half_logit", outputs["scar"]["half_logits6"][:, 5:6]), size=target.shape[-3:], mode="trilinear", align_corners=False)
     edema_half = F.interpolate(outputs["edema"].get("half_logit", outputs["edema"]["half_logits6"][:, 4:5]), size=target.shape[-3:], mode="trilinear", align_corners=False)
     scar_component = per_gt_component_tversky(scar_half, scar_target.float(), valid_binary, batch)
-    scar_occ_quarter = _downsample_target(scar_target, components["scar_quarter_occupancy"].shape[-3:])
-    scar_occ_half = _downsample_target(scar_target, components["scar_half_occupancy"].shape[-3:])
     valid_quarter = _downsample_target(valid_binary, components["scar_quarter_center"].shape[-3:]).float()
     valid_half = _downsample_target(valid_binary, components["scar_half_center"].shape[-3:]).float()
     scar_center = 0.5 * normalized_focal_bce(components["scar_quarter_center"], built_targets["scar_center_quarter"], valid_quarter, alpha=0.25, gamma=2.0) + 0.5 * normalized_focal_bce(components["scar_half_center"], built_targets["scar_center_half"], valid_half, alpha=0.25, gamma=2.0)
-    scar_occupancy = 0.5 * binary_dice_focal(components["scar_quarter_occupancy"], scar_occ_quarter, valid_quarter, alpha=0.25, gamma=2.0) + 0.5 * binary_dice_focal(components["scar_half_occupancy"], scar_occ_half, valid_half, alpha=0.25, gamma=2.0)
     edema_boundary_target = built_targets["edema_boundary"]
     edema_boundary_valid = built_targets["edema_boundary_valid"].to(logits) * t2_mask
     edema_boundary_logit = F.interpolate(components["edema_boundary"], size=target.shape[-3:], mode="trilinear", align_corners=False)
     edema_boundary = _masked_mean_loss(F.smooth_l1_loss(torch.tanh(edema_boundary_logit.float()), edema_boundary_target.float(), reduction="none"), edema_boundary_valid)
     injury_logit = F.interpolate(components["edema_injury"], size=target.shape[-3:], mode="trilinear", align_corners=False)
-    injury = binary_dice_focal(injury_logit, injury_target, edema_valid, alpha=0.35, gamma=2.0)
+    injury = binary_dice_bce(injury_logit, injury_target, edema_valid)
     scar_presence, scar_area = per_slice_extent_loss(
         components["scar_extent_presence"],
         components["scar_extent_area"],
@@ -1003,14 +1000,13 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor], *, co
     final_competition = torch.stack(final_terms).mean()
     scar_extent = 0.5 * scar_presence + 0.5 * scar_area
     edema_extent = 0.5 * edema_presence + 0.5 * edema_area
-    scar_component_supervision = 0.5 * scar_component + 0.5 * scar_occupancy
     weighted_terms = {
         "final_competition": REQUIRED_LOSS_WEIGHTS["final_competition"] * final_competition,
         "anatomy4": REQUIRED_LOSS_WEIGHTS["anatomy4"] * anatomy4_loss,
         "wall": REQUIRED_LOSS_WEIGHTS["wall"] * wall_loss,
         "distance": REQUIRED_LOSS_WEIGHTS["distance"] * distance_loss,
         "scar_dense": REQUIRED_LOSS_WEIGHTS["scar_dense"] * scar_dense,
-        "scar_component": REQUIRED_LOSS_WEIGHTS["scar_component"] * scar_component_supervision,
+        "scar_component": REQUIRED_LOSS_WEIGHTS["scar_component"] * scar_component,
         "scar_center": REQUIRED_LOSS_WEIGHTS["scar_center"] * scar_center,
         "scar_extent": REQUIRED_LOSS_WEIGHTS["scar_extent"] * scar_extent,
         "scar_context": REQUIRED_LOSS_WEIGHTS["scar_context"] * scar_context,
@@ -1036,8 +1032,7 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor], *, co
                 "distance": distance_loss,
                 "scar_dense": scar_dense,
                 "scar_component": scar_component,
-                "scar_occupancy": scar_occupancy,
-                "scar_component_adaptive_tversky": scar_component_supervision,
+                "scar_component_adaptive_tversky": scar_component,
                 "scar_center": scar_center,
                 "scar_extent_presence": scar_presence,
                 "scar_extent_area": scar_area,

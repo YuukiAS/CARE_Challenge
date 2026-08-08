@@ -44,7 +44,7 @@
       "trunk_permanently_frozen": false
     }
   },
-  "architecture_signature_sha256": "2554babedb6a87df20cde8f129d671a4b25a317c5bfed0974ea02ef9e5e51094",
+  "architecture_signature_sha256": "312943bc01fb471e5a1e222c19dd0e25173cc38b3401934415fd77bbb345b14f",
   "checkpoint_and_resume": {
     "contract_manifest_environment_drift_rejected": true,
     "cross_fold_resume_rejected": true,
@@ -106,7 +106,7 @@
     "visited_stages": []
   },
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
-  "implementation_evidence_sha256": "b84457949fd183dcae0a86e8fa46d583e8f2c5f6fa4756e66590f9952baa472f",
+  "implementation_evidence_sha256": "d4ca4000b8bd50343599c14bba9db0709a1db78c4b747c0c290eaf31ee813ba4",
   "losses": {
     "eligible_row_voxel_normalization": true,
     "fp32_sensitive_reductions": true,
@@ -200,7 +200,7 @@
     "edema_supervision_rows": 0,
     "mixed_batch_safe_scatter": true
   },
-  "parameter_owner_registry_sha256": "280eecfec8cc99924f24e1cb8fb110ed5f75f0181b80fee6388dc694210d418e",
+  "parameter_owner_registry_sha256": "14ee49171b9f21b38409013e13381720c60dde2075c8ebbd0b2c5f2983c2409b",
   "receipt_paths": {
     "architecture_signature": "results/agent_flow_v3/care-ase-faithful/implementation/architecture_signature.json",
     "checkpoint_resume_probe": "results/agent_flow_v3/care-ase-faithful/implementation/checkpoint_resume_probe_receipt.json",
@@ -233,7 +233,7 @@
       "worktree": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/verifier"
     }
   },
-  "runtime_asset_manifest_sha256": "9491ea4ae90e910bce2874e39164a005f6aa6984d4fd5def68324c5234f4d53f",
+  "runtime_asset_manifest_sha256": "9dc36631f579a514711dd664b60760723fee6bef514c3ad71df37d1e05083c56",
   "runtime_receipts": {
     "canned_without_execution": false,
     "checkpoint_resume_probe": {
@@ -241,14 +241,14 @@
       "executed": true,
       "exit_code": 0,
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "4fe76f42ccdd38219b6751cc1c0cc8dc31a98d334de680432df3086b4fdee621"
+      "stdout_sha256": "145d78ea1cd3985853ab02af4c158a2ad410a687358d2c5b63f0558bf31ab3cf"
     },
     "deployment_load_probe": {
       "command_sha256": "4d63aa253f31cfc1d47e65546003a89a2b7088c58efb422b74157c30aa317eb5",
       "executed": true,
       "exit_code": 0,
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "ea317c8b2d1fc55ce05001e0f9103f6480aa41bf0702fb2555d65d67e29a0ad8"
+      "stdout_sha256": "fb4ccc2321cedd99abddefbe7b8ffeafc70e1112018f402b88d2910a25d71d4d"
     },
     "evaluator_smoke": {
       "command_sha256": "5735db4394765b2bda44eac196dabd06a8ff0e9e99ea84c8191fd0855de1a9e8",
@@ -262,7 +262,7 @@
       "executed": true,
       "exit_code": 0,
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "0b9fb7b9b863e3744e9ebcdbd2797a363155daade26f247aa4127829243754cf"
+      "stdout_sha256": "cccb66925f4a7ed7000283fc6ac3eae4e9a33d4a2a1b84223bddaf904a4d2070"
     },
     "hard_negative_binding": {
       "command_sha256": "f0e1091155e325f3ed67fe2f865d101f7fdcd63e83108f03623bbae0bdea5908",
@@ -276,7 +276,7 @@
       "executed": true,
       "exit_code": 0,
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "613419509a29f732238fc91eca3f352ccd5f4330e56836fd207769f54cdb9e68"
+      "stdout_sha256": "40cdf16a4d30f0ba0690d9deb52da472e3ad77ed5df43c03ba567507a6d050bd"
     },
     "step0_parity_probe": {
       "command_sha256": "7aa590529a0ef92dca72319bdded53315066ec63795f60f1c9a8a7f06ddf1491",
@@ -313,7 +313,7 @@
     ]
   },
   "schema": "CARE_ASE_FAITHFUL_IMPLEMENTATION_EVIDENCE_V1",
-  "source_manifest_sha256": "2d6f62f0fe41a3c5966d821b3fae946f8e1f7eaa7792898873a332eed1ebf7c5",
+  "source_manifest_sha256": "fd40008080bf58738497b3f47ce7ba070f005317fa3195275cd6afe2e3f4e7b7",
   "static_architecture_checks_sha256": "7e970f141b72fb660542a52de6e3f1ac3b6ad34112c420ec7c206c1b4bce8acc",
   "task_id": "care-ase-faithful"
 }
