@@ -1,12 +1,12 @@
 {
-  "created_utc": "2026-08-07T04:43:36Z",
+  "created_utc": "2026-08-08T04:30:52Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
-    "kb05.synthetic_intervention_delta"
+    "mutation.expected_rejection_missing:synthetic_intervention_delta"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "f1f5028b66e367c68eda87f79c5efc0b75098a3c66651b018e2c3df98f67d675",
+  "mutated_fingerprint_sha256": "6d823774b0e9ee8126cb95dacdf484990df01d3ec48dd317ef593f70354ed27f",
   "mutation_applied": "disable_flag_epsilon_delta_path_left_enabled_while_authority_oracle_runs",
   "mutation_executed": true,
   "mutation_id": "synthetic_intervention_delta",
@@ -14,54 +14,41 @@
     "authority_probe": {
       "implementation_disable_flags_treated_as_authority": false,
       "intervention_max_abs_by_required_source": {
-        "all_named_evidence_projection": 0.00010013580322265625,
-        "edema_boundary": 0.00010013580322265625,
-        "edema_context_and_dilation_1_2_4": 0.00010013580322265625,
-        "edema_injury": 0.00010013580322265625,
-        "scar_context": 0.00010013580322265625,
+        "all_named_evidence_projection": 0.006192207336425781,
+        "edema_boundary": 0.008139610290527344,
+        "edema_context_and_dilation_1_2_4": 0.0072013139724731445,
+        "edema_injury": 0.010000228881835938,
+        "scar_context": 0.003616034984588623,
         "scar_edema_extent_and_wall_bias": 1.9293804168701172,
-        "scar_proposal_occupancy_center": 0.00010013580322265625
+        "scar_proposal_occupancy_center": 0.004195213317871094
       },
       "intervention_mean_abs_by_required_source": {
-        "all_named_evidence_projection": 3.332429696456529e-05,
-        "edema_boundary": 1.6662983398418874e-05,
-        "edema_context_and_dilation_1_2_4": 1.6662983398418874e-05,
-        "edema_injury": 1.6662983398418874e-05,
-        "scar_context": 1.666131356614642e-05,
+        "all_named_evidence_projection": 0.0006427533226087689,
+        "edema_boundary": 0.0004048326227348298,
+        "edema_context_and_dilation_1_2_4": 0.00038460479117929935,
+        "edema_injury": 0.0016447752714157104,
+        "scar_context": 9.248303831554949e-05,
         "scar_edema_extent_and_wall_bias": 0.1997029036283493,
-        "scar_proposal_occupancy_center": 1.666131356614642e-05
+        "scar_proposal_occupancy_center": 0.00015850720228627324
       },
       "missing_named_projection_sources": [],
       "name": "required_module_final_authority_oracle",
-      "named_projection_counts": {},
+      "named_projection_counts": {
+        "edema_full": 15,
+        "edema_half": 10,
+        "scar_full": 11,
+        "scar_half": 11
+      },
       "named_projection_source_count": 94,
       "rejects_receipt_only_authority": true,
       "required_named_projection_sources_present": true,
-      "status": "FAIL",
-      "synthetic_epsilon_like_runtime_deltas": {
-        "all_named_evidence_projection": 0.00010013580322265625,
-        "edema_boundary": 0.00010013580322265625,
-        "edema_context_and_dilation_1_2_4": 0.00010013580322265625,
-        "edema_injury": 0.00010013580322265625,
-        "scar_context": 0.00010013580322265625,
-        "scar_proposal_occupancy_center": 0.00010013580322265625
-      },
-      "synthetic_intervention_delta_static_matches": [
-        "intervention_delta = anatomy_logits.detach().new_tensor(1.0e-4)"
-      ]
+      "status": "PASS",
+      "synthetic_epsilon_like_runtime_deltas": {},
+      "synthetic_intervention_delta_static_matches": []
     },
-    "source_manifest_sha256_before_mutation": "a2a165292590ed700c3534a56b3bae28f9b80120697fad39392d0207f6196d43",
-    "synthetic_epsilon_like_runtime_deltas": {
-      "all_named_evidence_projection": 0.00010013580322265625,
-      "edema_boundary": 0.00010013580322265625,
-      "edema_context_and_dilation_1_2_4": 0.00010013580322265625,
-      "edema_injury": 0.00010013580322265625,
-      "scar_context": 0.00010013580322265625,
-      "scar_proposal_occupancy_center": 0.00010013580322265625
-    },
-    "synthetic_intervention_delta_static_matches": [
-      "intervention_delta = anatomy_logits.detach().new_tensor(1.0e-4)"
-    ]
+    "source_manifest_sha256_before_mutation": "3a9c0b4b14c410a970bdf9686060b89347b5b8679bbe40fcc1d01c55f2c67f1a",
+    "synthetic_epsilon_like_runtime_deltas": {},
+    "synthetic_intervention_delta_static_matches": []
   },
   "passed": false,
   "request_nonce": "care-ase-20260806T090955Z",
