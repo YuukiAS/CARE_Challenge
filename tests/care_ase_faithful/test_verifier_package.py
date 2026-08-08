@@ -462,6 +462,73 @@ class VerifierPackageTests(unittest.TestCase):
         self.assertTrue(required.issubset(set(validator.REQUIRED_EXECUTABLE_MUTATION_IDS)))
         self.assertTrue(required.issubset(set(builder_module.EXECUTABLE_MUTATION_IDS)))
 
+    def test_transaction_gate_rejects_old_ci_run_for_current_integration(self) -> None:
+        runner_spec = importlib.util.spec_from_file_location("care_ase_executable_verifier", EXECUTABLE_VERIFIER)
+        if runner_spec is None or runner_spec.loader is None:
+            self.fail("cannot import executable verifier")
+        runner = importlib.util.module_from_spec(runner_spec)
+        runner_spec.loader.exec_module(runner)
+
+        evidence = {
+            "task_id": runner.TASK_ID,
+            "request_nonce": runner.REQUEST_NONCE,
+            "frozen_contract_sha256": runner.FROZEN_CONTRACT_SHA256,
+            "implementation_fingerprint_sha256": runner.REVIEWED_IMPLEMENTATION_FINGERPRINT,
+        }
+        with tempfile.TemporaryDirectory(dir=ROOT) as tmp:
+            tmp_path = Path(tmp)
+            current_path = tmp_path / "CURRENT.json"
+            runtime_manifest_path = tmp_path / "runtime_receipt_manifest.json"
+            ci_receipt_path = tmp_path / "controller_ci_receipt.json"
+            old_ci_sha = "491ba697e7a51712d9d04fc27824e4efa018827a"
+            current_path.write_text(
+                json.dumps(
+                    {
+                        "task_id": runner.TASK_ID,
+                        "request_nonce": runner.REQUEST_NONCE,
+                        "frozen_contract_sha256": runner.FROZEN_CONTRACT_SHA256,
+                        "integration_commit_sha": runner.REVIEWED_INTEGRATION_COMMIT,
+                        "implementation_fingerprint_sha256": runner.REVIEWED_IMPLEMENTATION_FINGERPRINT,
+                        "verifier_fingerprint_sha256": runner.REVIEWED_VERIFIER_FINGERPRINT,
+                    }
+                ),
+                encoding="utf-8",
+            )
+            runtime_manifest_path.write_text(
+                json.dumps(
+                    {
+                        "task_id": runner.TASK_ID,
+                        "request_nonce": runner.REQUEST_NONCE,
+                        "frozen_contract_sha256": runner.FROZEN_CONTRACT_SHA256,
+                    }
+                ),
+                encoding="utf-8",
+            )
+            ci_receipt_path.write_text(
+                json.dumps(
+                    {
+                        "github_actions_head_sha": old_ci_sha,
+                        "checked_commit_sha": old_ci_sha,
+                        "github_actions_conclusion": "success",
+                    }
+                ),
+                encoding="utf-8",
+            )
+            runner.CURRENT_PATH = current_path
+            runner.RUNTIME_MANIFEST_PATH = runtime_manifest_path
+            runner.CONTROLLER_CI_RECEIPT_PATH = ci_receipt_path
+            failures, transaction = runner.transaction_gate(
+                repo_root=ROOT,
+                evidence=evidence,
+                review_round=runner.REVIEW_ROUND,
+                integration_sha=runner.REVIEWED_INTEGRATION_COMMIT,
+                implementation_fingerprint=runner.REVIEWED_IMPLEMENTATION_FINGERPRINT,
+                expected_verifier_fingerprint=runner.REVIEWED_VERIFIER_FINGERPRINT,
+                fixture_mode=False,
+            )
+        self.assertIn("transaction.hosted_ci.head_sha_not_exact_integration", failures)
+        self.assertNotEqual(transaction["hosted_ci_head_sha"], runner.REVIEWED_INTEGRATION_COMMIT)
+
     def test_public_reference_fixture_requires_explicit_override(self) -> None:
         reference = _run_validator("--emit-reference")
         self.assertEqual(reference.returncode, 0, reference.stderr)

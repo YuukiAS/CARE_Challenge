@@ -16,10 +16,38 @@ TASK_ID = "care-ase-faithful"
 REQUEST_NONCE = "care-ase-20260806T090955Z"
 FROZEN_CONTRACT_SHA256 = "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d"
 REVIEW_ROUND = 1
-PLANNER_REVIEW_COMMIT = "d96415ae0b48ae856854e475e624907392a4d7b9"
-REVIEWED_INTEGRATION_COMMIT = "491ba697e7a51712d9d04fc27824e4efa018827a"
-REVIEWED_IMPLEMENTATION_FINGERPRINT = "25828c210776d499613a872754d39290cf9df416a747fb9f0f86c56f91711dc6"
-REVIEWED_VERIFIER_FINGERPRINT = "1cce33fdfe102efb63979870f190bfc1a2584385a07f6f2db2ccddcb14e69aaa"
+FALLBACK_PLANNER_REVIEW_COMMIT = "d96415ae0b48ae856854e475e624907392a4d7b9"
+FALLBACK_REVIEWED_INTEGRATION_COMMIT = "a60ba7a68f07dbade0ab400e9e859352ca7d1b9a"
+FALLBACK_REVIEWED_IMPLEMENTATION_FINGERPRINT = "dd5593f869823de7fe0b76f953c3ea1ade6d0c1426a7e26a39a4ae1aea6fa692"
+FALLBACK_REVIEWED_VERIFIER_FINGERPRINT = "3dcacfe7ae41e164435278c0da4557fc61b384ef6eeb09860badb353b375dca6"
+
+ROOT = Path(__file__).resolve().parents[2]
+VERIFICATION_DIR = ROOT / "results" / "agent_flow_v3" / TASK_ID / "verification"
+CURRENT_PATH = ROOT / "automation" / "agent_flow_v3" / "tasks" / TASK_ID / "CURRENT.json"
+
+
+def _current_binding_value(field: str, fallback: str) -> str:
+    try:
+        current = json.loads(CURRENT_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        return fallback
+    binding = current.get("binding", current) if isinstance(current, dict) else {}
+    value = binding.get(field) if isinstance(binding, dict) else None
+    if value is None and isinstance(current, dict):
+        value = current.get(field)
+    return str(value) if value else fallback
+
+
+PLANNER_REVIEW_COMMIT = _current_binding_value("planner_review_artifact_commit_sha", FALLBACK_PLANNER_REVIEW_COMMIT)
+REVIEWED_INTEGRATION_COMMIT = _current_binding_value("integration_commit_sha", FALLBACK_REVIEWED_INTEGRATION_COMMIT)
+REVIEWED_IMPLEMENTATION_FINGERPRINT = _current_binding_value(
+    "implementation_fingerprint_sha256",
+    FALLBACK_REVIEWED_IMPLEMENTATION_FINGERPRINT,
+)
+REVIEWED_VERIFIER_FINGERPRINT = _current_binding_value(
+    "verifier_fingerprint_sha256",
+    FALLBACK_REVIEWED_VERIFIER_FINGERPRINT,
+)
 
 
 KNOWN_BAD_CATEGORIES = [
@@ -184,8 +212,6 @@ REQUIRED_METRICS = {
 }
 
 
-ROOT = Path(__file__).resolve().parents[2]
-VERIFICATION_DIR = ROOT / "results" / "agent_flow_v3" / TASK_ID / "verification"
 REQUIRED_RECEIPT_PATHS = {
     "source_manifest",
     "static_architecture_checks",
@@ -874,6 +900,12 @@ def _check_verifier_owned_execution(failures: list[str], evidence: dict[str, Any
         _require(failures, not transaction_receipt.get("failures"), "verifier_owned.transaction.no_failures")
         _require(failures, transaction_receipt.get("hosted_ci_conclusion") == "success", "verifier_owned.transaction.hosted_ci_success")
         _require(failures, transaction_receipt.get("hosted_ci_head_sha") == transaction_receipt.get("ci_checked_commit_sha"), "verifier_owned.transaction.hosted_ci_head_matches_checked_commit")
+        _require(
+            failures,
+            transaction_receipt.get("hosted_ci_head_sha") == REVIEWED_INTEGRATION_COMMIT
+            and transaction_receipt.get("ci_checked_commit_sha") == REVIEWED_INTEGRATION_COMMIT,
+            "verifier_owned.transaction.hosted_ci_exact_reviewed_integration",
+        )
         _require(failures, transaction_receipt.get("planner_packet_sha") == REVIEWED_INTEGRATION_COMMIT, "verifier_owned.transaction.planner_packet_bound_to_reviewed_integration")
         _require(failures, _is_sha256(transaction_receipt.get("runtime_manifest_sha")), "verifier_owned.transaction.runtime_manifest_sha")
         _require(failures, transaction_receipt.get("stale_planner_reused_after_key_commit") is False, "verifier_owned.transaction.no_stale_planner_reuse")

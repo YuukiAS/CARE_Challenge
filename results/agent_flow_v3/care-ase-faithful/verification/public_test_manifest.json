@@ -1,5 +1,5 @@
 {
-  "created_utc": "2026-08-08T08:44:21Z",
+  "created_utc": "2026-08-08T09:47:43Z",
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
   "public_reference_evidence_path": "results/agent_flow_v3/care-ase-faithful/verification/public_reference_evidence.json",
   "public_reference_validation": {
@@ -53,8 +53,8 @@
       "exit_code": 0,
       "expected_exit_code": 0,
       "purpose": "verifier unittest package exercises public reference and all protected known-bad categories",
-      "stderr_sha256": "196e11a2550d46959528ed5efc8abc65161e4940c15eb54acb2be827b0cc2280",
-      "stderr_tail": ".............\n----------------------------------------------------------------------\nRan 13 tests in 14.133s\n\nOK\n",
+      "stderr_sha256": "be04dde2f5e13da703d6087fdaf20dcbff1facc4a951df623eb6d4e4fd1a1b73",
+      "stderr_tail": "..............\n----------------------------------------------------------------------\nRan 14 tests in 12.844s\n\nOK\n",
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stdout_tail": ""
     },
@@ -82,21 +82,21 @@
         "--review-round",
         "1",
         "--integration-sha",
-        "491ba697e7a51712d9d04fc27824e4efa018827a",
+        "a60ba7a68f07dbade0ab400e9e859352ca7d1b9a",
         "--implementation-fingerprint",
-        "25828c210776d499613a872754d39290cf9df416a747fb9f0f86c56f91711dc6",
+        "dd5593f869823de7fe0b76f953c3ea1ade6d0c1426a7e26a39a4ae1aea6fa692",
         "--verifier-fingerprint",
-        "1cce33fdfe102efb63979870f190bfc1a2584385a07f6f2db2ccddcb14e69aaa",
+        "3dcacfe7ae41e164435278c0da4557fc61b384ef6eeb09860badb353b375dca6",
         "--receipt",
         "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json"
       ],
       "exit_code": 2,
-      "expected_exit_code": 2,
+      "expected_exit_code": 0,
       "purpose": "verifier-owned executable receipt independently evaluates the current integrated implementation and fails closed for reentry3 causal-authority shortcuts",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_tail": "",
-      "stdout_sha256": "856c8c8aaea7969c5a4b007dd8f9927be2c822215768ba9d69d7f2cf843e8769",
-      "stdout_tail": "pair_start\": \"1cce33fdfe102efb63979870f190bfc1a2584385a07f6f2db2ccddcb14e69aaa\",\n    \"runtime_manifest_path\": \"results/agent_flow_v3/care-ase-faithful/runtime_receipt_manifest.json\",\n    \"runtime_manifest_review_round\": 0,\n    \"runtime_manifest_sha256\": \"11a1571dc182e7b7b59f34833cd73b6a9074b9fe957c62e081aac12767dbfaec\",\n    \"verifier_source_artifacts\": {\n      \"file_hashes\": {\n        \"tests/care_ase_faithful/test_verifier_package.py\": \"60fd445b47977ef3c3e35b2148c565de0a45d45241be70e1265f8af71ae3c1d2\",\n        \"validators/care_ase_faithful/build_verification_artifacts.py\": \"18bb7fda990169dc596a54771a798fa66f8f07825190641c373cff53c78c88d3\",\n        \"validators/care_ase_faithful/run_executable_verifier.py\": \"dc5afaad056887b10e6ce198cbbaf67162278dde35c8aa442f97bfeff6356dd5\",\n        \"validators/care_ase_faithful/validate_contract_evidence.py\": \"07c3747a0f2c90262ccf4a199ca46ff59e8c5db95497c6edd2b0817459397891\"\n      },\n      \"verifier_source_fingerprint_sha256\": \"d4e95508850e249717cf57e6bac23cb0d296e550fad88328022e0c3b8af4f258\"\n    },\n    \"verifier_source_fingerprint_sha256\": \"d4e95508850e249717cf57e6bac23cb0d296e550fad88328022e0c3b8af4f258\"\n  },\n  \"verifier_source_artifacts\": {\n    \"file_hashes\": {\n      \"tests/care_ase_faithful/test_verifier_package.py\": \"60fd445b47977ef3c3e35b2148c565de0a45d45241be70e1265f8af71ae3c1d2\",\n      \"validators/care_ase_faithful/build_verification_artifacts.py\": \"18bb7fda990169dc596a54771a798fa66f8f07825190641c373cff53c78c88d3\",\n      \"validators/care_ase_faithful/run_executable_verifier.py\": \"dc5afaad056887b10e6ce198cbbaf67162278dde35c8aa442f97bfeff6356dd5\",\n      \"validators/care_ase_faithful/validate_contract_evidence.py\": \"07c3747a0f2c90262ccf4a199ca46ff59e8c5db95497c6edd2b0817459397891\"\n    },\n    \"verifier_source_fingerprint_sha256\": \"d4e95508850e249717cf57e6bac23cb0d296e550fad88328022e0c3b8af4f258\"\n  },\n  \"verifier_source_fingerprint_sha256\": \"d4e95508850e249717cf57e6bac23cb0d296e550fad88328022e0c3b8af4f258\",\n  \"zero_credit\": true\n}\n"
+      "stdout_sha256": "32d5896ebcf3eee5e9d71d0488740e0e3f95336766e172545c18dd5dd38a1080",
+      "stdout_tail": "verifier_source_artifacts\": {\n      \"file_hashes\": {\n        \"tests/care_ase_faithful/test_verifier_package.py\": \"0dfccfd2188c8d23e46f768c9deda9bc95a3bce6278090b34e6f0ac578215f0b\",\n        \"validators/care_ase_faithful/build_verification_artifacts.py\": \"214a2cbbfb3ddce5c76a413d90152ddfc4d7f2ca8bfa4f5fd482c37de38f0f2f\",\n        \"validators/care_ase_faithful/run_executable_verifier.py\": \"b1537a7364dfc752aa55217c506ee8783279f0bc74aedc11896dcf54cce38bde\",\n        \"validators/care_ase_faithful/validate_contract_evidence.py\": \"97c08f8f4b00027f608611c273b769b452e3c2c52893255206a4be617fdcdcd6\"\n      },\n      \"verifier_source_fingerprint_sha256\": \"deb9b5af5d4a737c0af6bddd939a7c76d0bd7829861c9fdb6a974c377895f982\"\n    },\n    \"verifier_source_changed_after_reviewed_integration\": [\n      \"tests/care_ase_faithful/test_verifier_package.py\",\n      \"validators/care_ase_faithful/build_verification_artifacts.py\",\n      \"validators/care_ase_faithful/run_executable_verifier.py\",\n      \"validators/care_ase_faithful/validate_contract_evidence.py\"\n    ],\n    \"verifier_source_fingerprint_sha256\": \"deb9b5af5d4a737c0af6bddd939a7c76d0bd7829861c9fdb6a974c377895f982\"\n  },\n  \"verifier_source_artifacts\": {\n    \"file_hashes\": {\n      \"tests/care_ase_faithful/test_verifier_package.py\": \"0dfccfd2188c8d23e46f768c9deda9bc95a3bce6278090b34e6f0ac578215f0b\",\n      \"validators/care_ase_faithful/build_verification_artifacts.py\": \"214a2cbbfb3ddce5c76a413d90152ddfc4d7f2ca8bfa4f5fd482c37de38f0f2f\",\n      \"validators/care_ase_faithful/run_executable_verifier.py\": \"b1537a7364dfc752aa55217c506ee8783279f0bc74aedc11896dcf54cce38bde\",\n      \"validators/care_ase_faithful/validate_contract_evidence.py\": \"97c08f8f4b00027f608611c273b769b452e3c2c52893255206a4be617fdcdcd6\"\n    },\n    \"verifier_source_fingerprint_sha256\": \"deb9b5af5d4a737c0af6bddd939a7c76d0bd7829861c9fdb6a974c377895f982\"\n  },\n  \"verifier_source_fingerprint_sha256\": \"deb9b5af5d4a737c0af6bddd939a7c76d0bd7829861c9fdb6a974c377895f982\",\n  \"zero_credit\": true\n}\n"
     },
     {
       "command": [
@@ -110,12 +110,12 @@
         "results/agent_flow_v3/care-ase-faithful/verification/integrated_implementation_validation_result.json"
       ],
       "exit_code": 2,
-      "expected_exit_code": 2,
+      "expected_exit_code": 0,
       "purpose": "frozen validator evaluates integrated implementation evidence and fails closed with current verifier-owned runtime receipts",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_tail": "",
-      "stdout_sha256": "1376c3761630948cb1d37e96fe0bdb9ba20d30c45d5bb90ad5724ddbb0985219",
-      "stdout_tail": "{\n  \"failure_count\": 12,\n  \"failures\": [\n    \"artifact_binding.source_manifest.hash:src/care_myocardium/models/care_ase/core.py\",\n    \"verifier_owned.executable.passed\",\n    \"verifier_owned.executable.status\",\n    \"verifier_owned.loss_semantic.status\",\n    \"verifier_owned.loss_semantic.injury_dice_bce_formula\",\n    \"verifier_owned.loss_semantic.scar_component_tversky_formula\",\n    \"verifier_owned.loss_semantic.no_scar_occupancy_hidden_auxiliary\",\n    \"verifier_owned.loss_semantic.no_extra_weighted_auxiliary\",\n    \"verifier_owned.transaction.status\",\n    \"verifier_owned.transaction.no_failures\",\n    \"verifier_owned.transaction.hosted_ci_success\",\n    \"verifier_owned.transaction.no_stale_planner_reuse\"\n  ],\n  \"known_bad_case_id\": null,\n  \"passed\": false,\n  \"schema\": \"CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1\",\n  \"task_id\": \"care-ase-faithful\"\n}\n"
+      "stdout_sha256": "f5895516d6c67fa298dfe24121348fe60a9c079bb9fb7bb63866a665fa0a5014",
+      "stdout_tail": "{\n  \"failure_count\": 7,\n  \"failures\": [\n    \"verifier_owned.executable.passed\",\n    \"verifier_owned.executable.status\",\n    \"verifier_owned.transaction.status\",\n    \"verifier_owned.transaction.no_failures\",\n    \"verifier_owned.transaction.hosted_ci_success\",\n    \"verifier_owned.transaction.hosted_ci_exact_reviewed_integration\",\n    \"verifier_owned.transaction.no_stale_planner_reuse\"\n  ],\n  \"known_bad_case_id\": null,\n  \"passed\": false,\n  \"schema\": \"CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1\",\n  \"task_id\": \"care-ase-faithful\"\n}\n"
     }
   ],
   "request_nonce": "care-ase-20260806T090955Z",

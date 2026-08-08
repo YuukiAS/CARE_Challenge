@@ -1,18 +1,18 @@
 {
-  "created_utc": "2026-08-08T08:52:22Z",
+  "created_utc": "2026-08-08T09:55:35Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
     "kb12.inference.global_bias_once"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "d9d9081ea48a97e5416498c80606495bd0dd4a6b196e2d721034b3ffd43dad5c",
+  "mutated_fingerprint_sha256": "6b1f9c2b5a5fe686654fcac41126d832f6bfe775320bcb2dc0fd9c3c66d8d49a",
   "mutation_applied": "global_extent_bias_after_aggregation_invoked_twice_for_one_prediction",
   "mutation_executed": true,
   "mutation_id": "tile_local_global_bias",
   "observations": {
     "global_bias_application_count": 2,
-    "source_manifest_sha256_before_mutation": "0a4ed95d7674727a97f94f85cd4e08f1f4a0e1a5bcf0c1f376773792592b0ace"
+    "source_manifest_sha256_before_mutation": "ff3ac8061ecd3b58e38d831fe989b8ee2bbdb724eabc9eac03348b8897e6d341"
   },
   "passed": false,
   "request_nonce": "care-ase-20260806T090955Z",
