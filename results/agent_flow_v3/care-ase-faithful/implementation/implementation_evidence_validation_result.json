@@ -1,6 +1,7 @@
 {
-  "failure_count": 22,
+  "failure_count": 21,
   "failures": [
+    "verifier_owned.executable.reviewed_verifier_fingerprint",
     "verifier_owned.executable.passed",
     "verifier_owned.executable.status",
     "verifier_owned.executable.runtime_binding_sha:architecture_signature",
@@ -14,11 +15,9 @@
     "verifier_owned.executable.runtime_binding_sha:runtime_asset_manifest",
     "verifier_owned.executable.runtime_binding_sha:source_manifest",
     "verifier_owned.executable.runtime_binding_sha:step0_parity_probe",
-    "verifier_owned.loss_semantic.status",
-    "verifier_owned.loss_semantic.injury_dice_bce_formula",
-    "verifier_owned.loss_semantic.scar_component_tversky_formula",
-    "verifier_owned.loss_semantic.no_scar_occupancy_hidden_auxiliary",
-    "verifier_owned.loss_semantic.no_extra_weighted_auxiliary",
+    "verifier_owned.partial_hw.cross_z_partial_feature_grad_zero",
+    "verifier_owned.partial_hw.cross_z_partial_feature_grad_abs_zero",
+    "verifier_owned.transaction.reviewed_verifier_fingerprint",
     "verifier_owned.transaction.status",
     "verifier_owned.transaction.no_failures",
     "verifier_owned.transaction.hosted_ci_success",

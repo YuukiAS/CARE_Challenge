@@ -58,6 +58,10 @@ REQUIRED_CHECKPOINT_FIELDS = (
     "training_source_commit_sha",
     "formal_execution_checkout_commit_sha",
     "review_packet_commit_sha",
+    "request_nonce",
+    "frozen_contract_sha256",
+    "implementation_source_manifest_sha256",
+    "integration_commit_sha",
     "origin_main_sha",
     "origin_main_at_review_request_sha",
     "effective_contract_sha256",
@@ -1629,6 +1633,11 @@ def save_care_ase_checkpoint(
     training_source_commit_sha: str | None = None,
     formal_execution_checkout_commit_sha: str | None = None,
     review_packet_commit_sha: str | None = None,
+    request_nonce: str | None = None,
+    frozen_contract_sha256: str | None = None,
+    implementation_source_manifest_sha256: str | None = None,
+    implementation_fingerprint_sha256: str | None = None,
+    integration_commit_sha: str | None = None,
     origin_main_sha: str | None = None,
     origin_main_at_review_request_sha: str | None = None,
     effective_contract_sha256: str | None = None,
@@ -1668,6 +1677,11 @@ def save_care_ase_checkpoint(
         "training_source_commit_sha": training_source_commit_sha or "UNSET",
         "formal_execution_checkout_commit_sha": formal_execution_checkout_commit_sha or review_packet_commit_sha or "UNSET",
         "review_packet_commit_sha": review_packet_commit_sha or "UNSET",
+        "request_nonce": request_nonce or "UNSET",
+        "frozen_contract_sha256": frozen_contract_sha256 or effective_contract_sha256 or "UNSET",
+        "implementation_source_manifest_sha256": implementation_source_manifest_sha256 or critical_source_manifest_sha256 or code_hash or "UNSET",
+        "implementation_fingerprint_sha256": implementation_fingerprint_sha256 or "UNSET",
+        "integration_commit_sha": integration_commit_sha or formal_execution_checkout_commit_sha or review_packet_commit_sha or "UNSET",
         "origin_main_sha": origin_main_sha or "UNSET",
         "origin_main_at_review_request_sha": origin_main_at_review_request_sha or origin_main_sha or "UNSET",
         "effective_contract_sha256": effective_contract_sha256 or "UNSET",
@@ -1754,6 +1768,10 @@ def save_care_ase_checkpoint(
             "training_source_commit_sha",
             "formal_execution_checkout_commit_sha",
             "review_packet_commit_sha",
+            "request_nonce",
+            "frozen_contract_sha256",
+            "implementation_source_manifest_sha256",
+            "integration_commit_sha",
             "origin_main_sha",
             "origin_main_at_review_request_sha",
             "effective_contract_sha256",
@@ -1810,6 +1828,10 @@ def load_care_ase_checkpoint(
     map_location: str | torch.device = "cpu",
     restore_rng: bool = True,
     stock_checkpoint_required: bool = True,
+    expected_request_nonce: str | None = None,
+    expected_frozen_contract_sha256: str | None = None,
+    expected_implementation_source_manifest_sha256: str | None = None,
+    expected_integration_commit_sha: str | None = None,
 ) -> tuple[CAREASE, dict[str, Any]]:
     sidecar = path.with_suffix(path.suffix + ".sha256")
     if not sidecar.is_file():
@@ -1830,6 +1852,19 @@ def load_care_ase_checkpoint(
         or payload.get("next_optimizer_step_micro_descriptor_sha256") == "TRAINING_COMPLETE"
     ):
         raise ValueError("early checkpoint contains forbidden TRAINING_COMPLETE token")
+    expected_bindings = {
+        "request_nonce": expected_request_nonce,
+        "frozen_contract_sha256": expected_frozen_contract_sha256,
+        "implementation_source_manifest_sha256": expected_implementation_source_manifest_sha256,
+        "integration_commit_sha": expected_integration_commit_sha,
+    }
+    mismatched = [
+        f"{field}:expected={expected} observed={payload.get(field)}"
+        for field, expected in expected_bindings.items()
+        if expected is not None and payload.get(field) != expected
+    ]
+    if mismatched:
+        raise ValueError(f"CARE-ASE checkpoint provenance mismatch: {mismatched}")
     model = CAREASE(CAREASEConfig(**payload["config"]), map_location=map_location, stock_checkpoint_required=stock_checkpoint_required)
     model.load_state_dict(payload["model"])
     if restore_rng:
@@ -1850,8 +1885,21 @@ def load_care_ase_checkpoint_for_training_resume(
     requested_fold: int,
     map_location: str | torch.device = "cpu",
     restore_rng: bool = True,
+    expected_request_nonce: str | None = None,
+    expected_frozen_contract_sha256: str | None = None,
+    expected_implementation_source_manifest_sha256: str | None = None,
+    expected_integration_commit_sha: str | None = None,
 ) -> tuple[CAREASE, dict[str, Any]]:
-    model, payload = load_care_ase_checkpoint(path, map_location=map_location, restore_rng=restore_rng, stock_checkpoint_required=True)
+    model, payload = load_care_ase_checkpoint(
+        path,
+        map_location=map_location,
+        restore_rng=restore_rng,
+        stock_checkpoint_required=True,
+        expected_request_nonce=expected_request_nonce,
+        expected_frozen_contract_sha256=expected_frozen_contract_sha256,
+        expected_implementation_source_manifest_sha256=expected_implementation_source_manifest_sha256,
+        expected_integration_commit_sha=expected_integration_commit_sha,
+    )
     if int(payload.get("fold", -1)) != int(requested_fold) or int(model.config.fold) != int(requested_fold):
         raise ValueError(f"training resume fold mismatch: requested={requested_fold} payload={payload.get('fold')} config={model.config.fold}")
     canonical = CAREASEConfig.for_fold(int(requested_fold)).checkpoint_path

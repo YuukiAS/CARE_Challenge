@@ -508,6 +508,8 @@ class SliceExtentHead(nn.Module):
         masked_max = masked_values.amax(dim=(-2, -1))
         masked_max = torch.where(torch.isfinite(masked_max), masked_max, torch.zeros_like(masked_average))
         sequence_input = 0.5 * masked_average + 0.5 * masked_max
+        full_slice_valid = (valid.sum(dim=(-2, -1)) >= float(feature.shape[-2] * feature.shape[-1])).to(sequence_input.dtype)
+        sequence_input = sequence_input * full_slice_valid
         hidden = self.sequence(sequence_input)
         presence_logits = self.presence(hidden).unsqueeze(-1).unsqueeze(-1)
         area_logits = self.area(hidden).unsqueeze(-1).unsqueeze(-1)
