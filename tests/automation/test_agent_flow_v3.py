@@ -456,6 +456,68 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         self.assertEqual(receipt["decision"], "CONTROLLER_UPDATE_REQUIRED")
         self.assertIn("Verifier receipt recheck", receipt["action"])
 
+    def test_care_ase_executor_local_commit_pending_controller_prevents_duplicate_start(self) -> None:
+        current = {
+            "task_id": "care-ase-faithful",
+            "request_nonce": "care-ase-nonce",
+            "review_round": 1,
+            "state": "VERIFIER_FROZEN",
+            "frozen_contract_sha256": "a" * 64,
+        }
+
+        receipt = RUNTIME.evaluate_stage_event(
+            task_id="care-ase-faithful",
+            request={"enabled": True, "request_nonce": "care-ase-nonce", "frozen_contract_sha256": "a" * 64},
+            current=current,
+            visual_final=None,
+            remote_sha="b" * 40,
+            processed=set(),
+            default_wait_hours=4,
+            care_ase_executor_local_commit_pending_controller=True,
+        )
+
+        self.assertEqual(receipt["decision"], "MONITOR_ONLY")
+        self.assertIn("instead of launching a duplicate", receipt["action"])
+
+    def test_care_ase_executor_local_commit_pending_controller_detects_scope_valid_ahead_commit(self) -> None:
+        current = {
+            "task_id": "care-ase-faithful",
+            "request_nonce": "care-ase-nonce",
+            "review_round": 1,
+            "state": "VERIFIER_FROZEN",
+            "frozen_contract_sha256": "a" * 64,
+        }
+        args = argparse.Namespace(branch="develop")
+
+        def fake_git(_repo: Path, *cmd: str) -> str:
+            if cmd[0] == "fetch":
+                return ""
+            if cmd[:2] == ("rev-parse", "HEAD"):
+                return "1" * 40
+            if cmd[0] == "merge-base":
+                return "0" * 40
+            if cmd[:2] == ("diff", "--name-only"):
+                return "src/care_myocardium/training/care_ase_runtime.py\n"
+            raise AssertionError(cmd)
+
+        with (
+            mock.patch.object(
+                RUNTIME,
+                "load_care_ase_executor_binding",
+                return_value=(
+                    {},
+                    {"write_scope": ["src/**", "results/agent_flow_v3/care-ase-faithful/implementation/**"]},
+                    Path("/tmp/executor"),
+                    "/tmp/codex-home",
+                    "thread-1",
+                ),
+            ),
+            mock.patch.object(Path, "is_dir", return_value=True),
+            mock.patch.object(RUNTIME, "git_status_short", return_value=""),
+            mock.patch.object(RUNTIME, "git", side_effect=fake_git),
+        ):
+            self.assertTrue(RUNTIME.care_ase_executor_local_commit_pending_controller(args, current))
+
     def test_care_ase_executor_pending_verifier_recheck_receipt_prevents_duplicate_start(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             worktree = Path(tmp) / "executor"
@@ -549,6 +611,35 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
                 mock.patch.object(RUNTIME, "git_commit_subject", return_value="executor: repair care ase loss semantics"),
             ):
                 self.assertTrue(RUNTIME.care_ase_executor_scope_complete_pending_verifier_recheck_available(args, current))
+
+            with (
+                mock.patch.object(
+                    RUNTIME,
+                    "load_care_ase_executor_binding",
+                    return_value=(
+                        {},
+                        {"write_scope": ["src/**", "results/agent_flow_v3/care-ase-faithful/implementation/**"]},
+                        worktree,
+                        "/tmp/codex-home",
+                        "thread-1",
+                    ),
+                ),
+                mock.patch.object(RUNTIME, "validate_role_plan_push_authority", return_value=[]),
+                mock.patch.object(RUNTIME, "git_status_short", return_value=""),
+                mock.patch.object(RUNTIME, "role_rollout_goal_complete", return_value=None),
+                mock.patch.object(RUNTIME, "role_active_process", return_value=None),
+                mock.patch.object(RUNTIME, "git", side_effect=fake_git),
+                mock.patch.object(RUNTIME, "git_commit_subject", return_value="executor: repair care ase loss semantics"),
+            ):
+                completion = RUNTIME.validate_care_ase_executor_completion(
+                    args=args,
+                    request={"enabled": True, "request_nonce": "care-ase-nonce", "frozen_contract_sha256": "a" * 64},
+                    current=current,
+                    allow_verifier_recheck=True,
+                )
+
+            self.assertTrue(completion["requires_verifier_recheck"])
+            self.assertIsNone(completion["goal_complete"])
 
             validation_path = implementation_dir / "implementation_evidence_validation_result.json"
             validation = json.loads(validation_path.read_text(encoding="utf-8"))

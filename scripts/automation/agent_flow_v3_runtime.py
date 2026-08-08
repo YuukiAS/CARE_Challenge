@@ -1602,6 +1602,7 @@ def evaluate_stage_event(
     care_ase_executor_complete: bool = False,
     care_ase_executor_needs_verifier_recheck: bool = False,
     care_ase_executor_needs_user_scientific_choice: bool = False,
+    care_ase_executor_local_commit_pending_controller: bool = False,
     care_ase_verifier_recheck_complete: bool = False,
     care_ase_verifier_recheck_local_artifacts: bool = False,
 ) -> dict[str, Any]:
@@ -1698,6 +1699,9 @@ def evaluate_stage_event(
         elif care_ase_executor_needs_user_scientific_choice:
             decision = "CONTROLLER_UPDATE_REQUIRED"
             action = "record Executor fail-closed scientific-choice boundary; do not restart Executor"
+        elif care_ase_executor_local_commit_pending_controller:
+            decision = "MONITOR_ONLY"
+            action = "Executor has scope-valid local commit output for this round; wait for role finalization or Controller integration instead of launching a duplicate"
         else:
             decision = "STAGE_READY"
             action = "start persistent CARE-ASE Executor exact session after Verifier freeze"
@@ -3042,8 +3046,8 @@ def validate_care_ase_executor_completion(
         scope_failures.append("executor_no_local_commit")
 
     goal_complete = role_rollout_goal_complete(codex_home, thread_id)
-    if goal_complete is None:
-        scope_failures.append("executor_goal_not_complete")
+    stage_state_root = Path(getattr(args, "state_root", Path("/users/a/e/aereinh/.agent-flow-v3/stage_orchestrator"))).resolve()
+    executor_process_active = role_active_process(stage_state_root.parent, "care-ase-faithful", "executor") is not None
 
     implementation_dir = worktree / "results/agent_flow_v3/care-ase-faithful/implementation"
     validation = load_json(implementation_dir / "implementation_evidence_validation_result.json")
@@ -3095,6 +3099,10 @@ def validate_care_ase_executor_completion(
             recheck_basis = "legacy_fail_closed_verifier_recheck"
         if not verifier_recheck_required:
             scope_failures.append("implementation_validation_failed")
+    if goal_complete is None and not verifier_recheck_required:
+        scope_failures.append("executor_goal_not_complete")
+    if goal_complete is None and verifier_recheck_required and executor_process_active:
+        scope_failures.append("executor_process_still_running")
     if not verifier_recheck_required:
         if fingerprint.get("frozen_contract_sha256") != current.get("frozen_contract_sha256"):
             scope_failures.append("fingerprint_frozen_contract_sha256")
@@ -3151,6 +3159,30 @@ def care_ase_executor_scope_complete_pending_verifier_recheck_available(args: ar
     return completion.get("requires_verifier_recheck") is True
 
 
+def care_ase_executor_local_commit_pending_controller(args: argparse.Namespace, current: dict[str, Any]) -> bool:
+    try:
+        _, executor, worktree, _codex_home, thread_id = load_care_ase_executor_binding(args, current)
+    except RuntimeErrorV3:
+        return False
+    if not worktree.is_dir() or not thread_id:
+        return False
+    if git_status_short(worktree):
+        return False
+    try:
+        git(worktree, "fetch", "origin", args.branch, "--prune")
+        executor_head = git(worktree, "rev-parse", "HEAD")
+        origin_ref = f"origin/{args.branch}"
+        merge_base = git(worktree, "merge-base", origin_ref, executor_head)
+        if merge_base == executor_head:
+            return False
+        changed_paths = git(worktree, "diff", "--name-only", f"{merge_base}..{executor_head}").splitlines()
+    except Exception:
+        return False
+    if not changed_paths:
+        return False
+    return validate_role_commit_scope(changed_paths, executor) == []
+
+
 def care_ase_fail_closed_requires_verifier_recheck(
     fail_closed: dict[str, Any],
     current: dict[str, Any],
@@ -3202,20 +3234,27 @@ def care_ase_validation_failures_require_verifier_recheck(validation: dict[str, 
     if not isinstance(failures, list) or not failures:
         return False
     allowed_exact = {
+        "verifier_owned.executable.planner_review_commit",
+        "verifier_owned.executable.integration_sha",
         "verifier_owned.executable.reviewed_verifier_fingerprint",
         "verifier_owned.executable.passed",
         "verifier_owned.executable.status",
         "verifier_owned.loss_semantic.status",
         "verifier_owned.partial_hw.cross_z_partial_feature_grad_zero",
         "verifier_owned.partial_hw.cross_z_partial_feature_grad_abs_zero",
+        "verifier_owned.transaction.planner_review_commit",
+        "verifier_owned.transaction.integration_sha",
         "verifier_owned.transaction.reviewed_verifier_fingerprint",
         "verifier_owned.transaction.status",
         "verifier_owned.transaction.no_failures",
         "verifier_owned.transaction.hosted_ci_success",
+        "verifier_owned.transaction.hosted_ci_exact_reviewed_integration",
+        "verifier_owned.transaction.planner_packet_bound_to_reviewed_integration",
         "verifier_owned.transaction.no_stale_planner_reuse",
     }
     allowed_prefixes = (
         "verifier_owned.executable.runtime_binding_sha:",
+        "verifier_owned.executable.runtime_binding_missing:",
         "verifier_owned.loss_semantic.",
     )
     return all(
@@ -4600,6 +4639,7 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
         care_ase_executor_complete = False
         care_ase_executor_needs_verifier_recheck = False
         care_ase_executor_needs_user_scientific_choice = False
+        care_ase_executor_local_commit_pending_controller_update = False
         care_ase_verifier_recheck_complete = False
         care_ase_verifier_recheck_local_artifacts = False
         if task_id == "care-ase-faithful" and current.get("state") == "VERIFIER_FROZEN":
@@ -4608,6 +4648,15 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
                 care_ase_executor_needs_verifier_recheck = care_ase_executor_scope_complete_pending_verifier_recheck_available(args, current)
             if not care_ase_executor_complete and not care_ase_executor_needs_verifier_recheck:
                 care_ase_executor_needs_user_scientific_choice = care_ase_executor_fail_closed_user_choice_available(args, current)
+            if (
+                not care_ase_executor_complete
+                and not care_ase_executor_needs_verifier_recheck
+                and not care_ase_executor_needs_user_scientific_choice
+            ):
+                care_ase_executor_local_commit_pending_controller_update = care_ase_executor_local_commit_pending_controller(
+                    args,
+                    current,
+                )
         if task_id == "care-ase-faithful" and current.get("state") in {"VERIFIER_RECHECK_REQUIRED", "VERIFIER_RECHECK_RUNNING"}:
             care_ase_verifier_recheck_complete = care_ase_verifier_recheck_completion_available(args, request, current)
             if not care_ase_verifier_recheck_complete:
@@ -4624,6 +4673,7 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
             and current.get("state") == "VERIFIER_FROZEN"
             and stage_event_was_processed(event_key, processed)
             and not care_ase_role_launch_satisfied(args.state_root, current, "executor")
+            and not care_ase_executor_local_commit_pending_controller_update
         ):
             processed = {key for key in processed if not key.startswith(event_key)}
         if (
@@ -4634,6 +4684,7 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
                 care_ase_executor_complete
                 or care_ase_executor_needs_verifier_recheck
                 or care_ase_executor_needs_user_scientific_choice
+                or care_ase_executor_local_commit_pending_controller_update
             )
         ):
             processed = {key for key in processed if not key.startswith(event_key)}
@@ -4652,6 +4703,7 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
                 care_ase_executor_complete
                 or care_ase_executor_needs_verifier_recheck
                 or care_ase_executor_needs_user_scientific_choice
+                or care_ase_executor_local_commit_pending_controller_update
             )
         ):
             processed = remove_stage_processed_event(event_key, processed)
@@ -4708,6 +4760,7 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
             care_ase_executor_complete=care_ase_executor_complete,
             care_ase_executor_needs_verifier_recheck=care_ase_executor_needs_verifier_recheck,
             care_ase_executor_needs_user_scientific_choice=care_ase_executor_needs_user_scientific_choice,
+            care_ase_executor_local_commit_pending_controller=care_ase_executor_local_commit_pending_controller_update,
             care_ase_verifier_recheck_complete=care_ase_verifier_recheck_complete,
             care_ase_verifier_recheck_local_artifacts=care_ase_verifier_recheck_local_artifacts,
         )
