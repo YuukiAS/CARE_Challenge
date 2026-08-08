@@ -1,0 +1,60 @@
+{
+  "before_forward_rejection_errors": {
+    "missing_nonce_rejected_before_forward": "formal runtime input bundle request_nonce mismatch",
+    "old_permit_rejected_before_forward": "historical 20260804 training permit cannot authorize care-ase-faithful",
+    "old_result_root_rejected_before_forward": "formal runtime input bundle result_root still points at legacy R2 task root",
+    "old_task_key_rejected_before_forward": "formal runtime input bundle task_id mismatch: 20260804_care_ase_r2_emergency_9h_training_docker != care-ase-faithful",
+    "wrong_frozen_contract_rejected_before_forward": "formal runtime input bundle frozen_contract_sha256 mismatch",
+    "wrong_implementation_fingerprint_rejected_before_forward": "formal runtime input bundle implementation_fingerprint_sha256 mismatch",
+    "wrong_integration_rejected_before_forward": "formal runtime input bundle integration_commit_sha mismatch",
+    "wrong_nonce_rejected_before_forward": "formal runtime input bundle request_nonce mismatch",
+    "wrong_verifier_fingerprint_rejected_before_forward": "formal runtime input bundle verifier_fingerprint_sha256 mismatch"
+  },
+  "before_forward_rejections": {
+    "missing_nonce_rejected_before_forward": true,
+    "old_permit_rejected_before_forward": true,
+    "old_result_root_rejected_before_forward": true,
+    "old_task_key_rejected_before_forward": true,
+    "wrong_frozen_contract_rejected_before_forward": true,
+    "wrong_implementation_fingerprint_rejected_before_forward": true,
+    "wrong_integration_rejected_before_forward": true,
+    "wrong_nonce_rejected_before_forward": true,
+    "wrong_verifier_fingerprint_rejected_before_forward": true
+  },
+  "bundle_path": "results/agent_flow_v3/care-ase-faithful/implementation/current_runtime_input_bundle.json",
+  "bundle_payload_sha256": "b1549f3ecd982038ba5193a421769b6f3d024d63066124a6f9760dc63c928ca8",
+  "bundle_sha256": "0b6acc78ac5844b73dc3141141ca2f36717e37cc547d9239705daa0802a5e972",
+  "docker_or_upload": false,
+  "fold": 0,
+  "formal_training_started": false,
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "happy_path_validation": {
+    "checks": {
+      "explicit_hard_negative_manifest": true,
+      "explicit_probe_root": true,
+      "explicit_result_root": true,
+      "fold": true,
+      "frozen_contract_sha256": true,
+      "implementation_fingerprint_sha256": true,
+      "implementation_source_manifest_sha256": true,
+      "integration_commit_sha": true,
+      "legacy_task_key_rejected": true,
+      "request_nonce": true,
+      "task_id": true,
+      "verifier_fingerprint_sha256": true
+    },
+    "hard_negative_manifest_sha256": "6d793249e3c6fc42aa29ff97f84fa75431cece9c8a4e08d243ed1cf96ce4da21",
+    "status": "PASS"
+  },
+  "hard_negative_manifest_path": "results/20260804_care_ase_r2_emergency_9h_training_docker/hard_negative_manifest_fold1.json",
+  "hard_negative_manifest_sha256": "6d793249e3c6fc42aa29ff97f84fa75431cece9c8a4e08d243ed1cf96ce4da21",
+  "implementation_fingerprint_sha256": "e7a6bfe00336354da7debf7321966c8a72c7ce43ee0bb00c316387c72659b7e3",
+  "implementation_source_manifest_sha256": "053f8116f064afb7e5b29d63cb03af2ead9d9327e7c756451b92038ed2447e2e",
+  "integration_commit_sha": "965b0aadaf436e11abdf37dfe3ce6699e928b7b0",
+  "outer_accessed": false,
+  "probe_type": "zero_credit_current_runtime_identity_bundle_validation",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "status": "PASS",
+  "task_id": "care-ase-faithful",
+  "verifier_fingerprint_sha256": "a731eec931128a73fc32113048c49a5a8de5a7db2d877b6f8bb66732eebbb380"
+}

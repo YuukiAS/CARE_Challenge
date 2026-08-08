@@ -29,7 +29,7 @@ from typing import Any
 TASK_ID = "care-ase-faithful"
 REQUEST_NONCE = "care-ase-20260806T090955Z"
 FROZEN_CONTRACT_SHA256 = "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d"
-VERIFIER_FINGERPRINT_SHA256 = "6acc8fdc640df9be54848dfc676da45257d887c0f4be5ce71efa6230114a4a17"
+VERIFIER_FINGERPRINT_SHA256 = "a731eec931128a73fc32113048c49a5a8de5a7db2d877b6f8bb66732eebbb380"
 
 ROOT = Path(__file__).resolve().parents[3]
 if str(ROOT) not in sys.path:
@@ -241,6 +241,18 @@ def runtime_asset_manifest() -> dict[str, Any]:
     }
     payload["runtime_asset_manifest_sha256"] = json_sha(payload)
     return payload
+
+
+def _current_binding() -> dict[str, Any]:
+    path = ROOT / "automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json"
+    if not path.is_file():
+        return {}
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+    binding = payload.get("binding", payload)
+    return binding if isinstance(binding, dict) else {}
 
 
 def environment_gate() -> tuple[bool, list[str], dict[str, Any]]:
@@ -1271,6 +1283,25 @@ def run_checkpoint_resume_probe() -> dict[str, Any]:
             expected_implementation_source_manifest_sha256=source["source_manifest_sha256"],
             expected_integration_commit_sha=git_head,
         )
+        mismatch_rejections: dict[str, bool] = {}
+        mismatch_specs = {
+            "request_nonce": {"expected_request_nonce": "wrong-nonce"},
+            "frozen_contract_sha256": {"expected_frozen_contract_sha256": "0" * 64},
+            "implementation_source_manifest_sha256": {"expected_implementation_source_manifest_sha256": "1" * 64},
+            "integration_commit_sha": {"expected_integration_commit_sha": "0" * 40},
+        }
+        for field, kwargs in mismatch_specs.items():
+            try:
+                load_care_ase_checkpoint(
+                    checkpoint_path,
+                    map_location="cpu",
+                    restore_rng=False,
+                    **kwargs,
+                )
+            except (RuntimeError, ValueError):
+                mismatch_rejections[field] = True
+            else:
+                mismatch_rejections[field] = False
         reloaded_optimizer = build_optimizer(reloaded_model)
         reloaded_optimizer.load_state_dict(reloaded_payload["optimizer"])
         reloaded_scheduler = CAREASEStageScheduler(reloaded_optimizer)
@@ -1323,6 +1354,7 @@ def run_checkpoint_resume_probe() -> dict[str, Any]:
         and current_frozen_contract_bound
         and source_binding_matches
         and integration_binding_matches
+        and all(mismatch_rejections.values())
         and next_step_matches
         and optimizer_state_matches
         and scheduler_ramp_state_matches
@@ -1340,6 +1372,8 @@ def run_checkpoint_resume_probe() -> dict[str, Any]:
         "current_frozen_contract_sha256_bound": current_frozen_contract_bound,
         "implementation_source_manifest_bound": source_binding_matches,
         "integration_commit_bound": integration_binding_matches,
+        "current_binding_mismatch_rejections": mismatch_rejections,
+        "contract_manifest_environment_drift_rejected": all(mismatch_rejections.values()),
         "train_case_ids": {
             "scar": case_ids["scar"],
             "edema_t2_present": case_ids["edema_t2_present"],
@@ -1698,6 +1732,117 @@ def run_hard_negative_binding_probe(architecture: dict[str, Any]) -> dict[str, A
     return payload
 
 
+def run_current_runtime_identity_probe(manifest: dict[str, Any], hard_negative_payload: dict[str, Any]) -> dict[str, Any]:
+    from src.care_myocardium.training.care_ase_runtime import (
+        build_current_runtime_input_bundle,
+        validate_current_runtime_input_bundle,
+    )
+
+    binding = _current_binding()
+    integration_sha = str(binding.get("integration_commit_sha") or git_value("rev-parse", "HEAD") or "")
+    if len(integration_sha) != 40:
+        integration_sha = git_value("rev-parse", "HEAD") or "0" * 40
+    implementation_fingerprint = str(
+        binding.get("implementation_fingerprint_sha256")
+        or manifest.get("source_manifest_sha256")
+        or "0" * 64
+    )
+    hard_negative_path = ROOT / str(hard_negative_payload["manifest_path"])
+    bundle = build_current_runtime_input_bundle(
+        fold=0,
+        hard_negative_manifest_path=hard_negative_path,
+        implementation_source_manifest_sha256=manifest["source_manifest_sha256"],
+        implementation_fingerprint_sha256=implementation_fingerprint,
+        integration_commit_sha=integration_sha,
+        verifier_fingerprint_sha256=VERIFIER_FINGERPRINT_SHA256,
+        result_root=IMPLEMENTATION_DIR / "formal_runtime",
+        probe_root=IMPLEMENTATION_DIR / "runtime_zero_credit",
+    )
+    bundle_path = IMPLEMENTATION_DIR / "current_runtime_input_bundle.json"
+    write_json(bundle_path, bundle)
+    happy = validate_current_runtime_input_bundle(
+        copy.deepcopy(bundle),
+        fold=0,
+        expected_request_nonce=REQUEST_NONCE,
+        expected_frozen_contract_sha256=FROZEN_CONTRACT_SHA256,
+        expected_implementation_source_manifest_sha256=manifest["source_manifest_sha256"],
+        expected_implementation_fingerprint_sha256=implementation_fingerprint,
+        expected_integration_commit_sha=integration_sha,
+        expected_verifier_fingerprint_sha256=VERIFIER_FINGERPRINT_SHA256,
+    )
+
+    mutation_specs: dict[str, tuple[str, Any]] = {
+        "old_task_key_rejected_before_forward": ("task_id", "20260804_care_ase_r2_emergency_9h_training_docker"),
+        "old_result_root_rejected_before_forward": ("result_root", str(ROOT / "results/20260804_care_ase_r2_emergency_9h_training_docker/runtime")),
+        "old_permit_rejected_before_forward": (
+            "formal_user_decision_permit_provenance",
+            {
+                "training_authorized": True,
+                "decision": "PRETRAINING_CONTROLLER_USER_AUTHORIZED_PASS_20260804",
+                "task_key": "20260804_care_ase_r2_emergency_9h_training_docker",
+            },
+        ),
+        "missing_nonce_rejected_before_forward": ("request_nonce", None),
+        "wrong_nonce_rejected_before_forward": ("request_nonce", "wrong-nonce"),
+        "wrong_frozen_contract_rejected_before_forward": ("frozen_contract_sha256", "0" * 64),
+        "wrong_integration_rejected_before_forward": ("integration_commit_sha", "0" * 40),
+        "wrong_implementation_fingerprint_rejected_before_forward": ("implementation_fingerprint_sha256", "1" * 64),
+        "wrong_verifier_fingerprint_rejected_before_forward": ("verifier_fingerprint_sha256", "2" * 64),
+    }
+    rejections: dict[str, bool] = {}
+    rejection_errors: dict[str, str] = {}
+    for name, (field, value) in mutation_specs.items():
+        mutated = copy.deepcopy(bundle)
+        if value is None:
+            mutated.pop(field, None)
+        else:
+            mutated[field] = value
+        mutated.pop("bundle_payload_sha256", None)
+        mutated["bundle_payload_sha256"] = json_sha(mutated)
+        try:
+            validate_current_runtime_input_bundle(
+                mutated,
+                fold=0,
+                expected_request_nonce=REQUEST_NONCE,
+                expected_frozen_contract_sha256=FROZEN_CONTRACT_SHA256,
+                expected_implementation_source_manifest_sha256=manifest["source_manifest_sha256"],
+                expected_implementation_fingerprint_sha256=implementation_fingerprint,
+                expected_integration_commit_sha=integration_sha,
+                expected_verifier_fingerprint_sha256=VERIFIER_FINGERPRINT_SHA256,
+            )
+        except (RuntimeError, ValueError) as exc:
+            rejections[name] = True
+            rejection_errors[name] = str(exc)
+        else:
+            rejections[name] = False
+            rejection_errors[name] = "mutation accepted unexpectedly"
+
+    payload = {
+        "status": "PASS" if happy["status"] == "PASS" and all(rejections.values()) else "FAIL",
+        "probe_type": "zero_credit_current_runtime_identity_bundle_validation",
+        "task_id": TASK_ID,
+        "request_nonce": REQUEST_NONCE,
+        "frozen_contract_sha256": FROZEN_CONTRACT_SHA256,
+        "verifier_fingerprint_sha256": VERIFIER_FINGERPRINT_SHA256,
+        "fold": 0,
+        "bundle_path": str(bundle_path.relative_to(ROOT)),
+        "bundle_sha256": sha256_file(bundle_path),
+        "bundle_payload_sha256": bundle["bundle_payload_sha256"],
+        "implementation_source_manifest_sha256": manifest["source_manifest_sha256"],
+        "implementation_fingerprint_sha256": implementation_fingerprint,
+        "integration_commit_sha": integration_sha,
+        "hard_negative_manifest_path": hard_negative_payload["manifest_path"],
+        "hard_negative_manifest_sha256": hard_negative_payload["manifest_sha256"],
+        "happy_path_validation": happy,
+        "before_forward_rejections": rejections,
+        "before_forward_rejection_errors": rejection_errors,
+        "formal_training_started": False,
+        "outer_accessed": False,
+        "docker_or_upload": False,
+    }
+    return payload
+
+
 def architecture_signature(model: Any, manifest: dict[str, Any], static_checks: dict[str, Any]) -> dict[str, Any]:
     summary = model.__class__.__module__
     payload = {
@@ -1749,6 +1894,7 @@ def implementation_evidence(
     deployment_load_receipt: dict[str, Any],
     evaluator_smoke_receipt: dict[str, Any],
     hard_negative_binding_receipt: dict[str, Any],
+    current_runtime_identity_receipt: dict[str, Any],
 ) -> dict[str, Any]:
     controller = json.loads((ROOT / "results/agent_flow_v3/care-ase-faithful/controller_session_receipt.json").read_text(encoding="utf-8"))
     verifier = json.loads((ROOT / "results/agent_flow_v3/care-ase-faithful/verification/verifier_session_receipt.json").read_text(encoding="utf-8"))
@@ -1877,12 +2023,37 @@ def implementation_evidence(
             "schema_version": 4,
             "self_contained_deployment": True,
             "cross_fold_resume_rejected": True,
-            "contract_manifest_environment_drift_rejected": True,
+            "contract_manifest_environment_drift_rejected": bool(
+                checkpoint_resume_receipt["payload"].get("contract_manifest_environment_drift_rejected", False)
+            ),
             "reload_next_step_matches_uninterrupted": True,
             "reload_validation_advances_training_rng": False,
             "nonfinite_blocks_optimizer_commit": True,
             "early_checkpoint_uses_saved_step_ramp": True,
             "early_checkpoint_uses_final_step_ramp": False,
+        },
+        "current_runtime_identity": {
+            "task_id": current_runtime_identity_receipt["payload"]["task_id"],
+            "request_nonce": current_runtime_identity_receipt["payload"]["request_nonce"],
+            "frozen_contract_sha256": current_runtime_identity_receipt["payload"]["frozen_contract_sha256"],
+            "verifier_fingerprint_sha256": current_runtime_identity_receipt["payload"]["verifier_fingerprint_sha256"],
+            "bundle_path": current_runtime_identity_receipt["payload"]["bundle_path"],
+            "bundle_sha256": current_runtime_identity_receipt["payload"]["bundle_sha256"],
+            "hard_negative_manifest_path": current_runtime_identity_receipt["payload"]["hard_negative_manifest_path"],
+            "hard_negative_manifest_sha256": current_runtime_identity_receipt["payload"]["hard_negative_manifest_sha256"],
+            "before_forward_rejections": current_runtime_identity_receipt["payload"]["before_forward_rejections"],
+            "legacy_task_key_rejected": current_runtime_identity_receipt["payload"]["before_forward_rejections"].get(
+                "old_task_key_rejected_before_forward",
+                False,
+            ),
+            "legacy_result_root_rejected": current_runtime_identity_receipt["payload"]["before_forward_rejections"].get(
+                "old_result_root_rejected_before_forward",
+                False,
+            ),
+            "legacy_permit_rejected": current_runtime_identity_receipt["payload"]["before_forward_rejections"].get(
+                "old_permit_rejected_before_forward",
+                False,
+            ),
         },
         "runtime_receipts": {
             "step0_parity_probe": {
@@ -1934,6 +2105,13 @@ def implementation_evidence(
                 "stdout_sha256": hard_negative_binding_receipt["stdout_sha256"],
                 "stderr_sha256": hard_negative_binding_receipt["stderr_sha256"],
             },
+            "current_runtime_identity": {
+                "executed": True,
+                "command_sha256": current_runtime_identity_receipt["command_sha256"],
+                "exit_code": current_runtime_identity_receipt["exit_code"],
+                "stdout_sha256": current_runtime_identity_receipt["stdout_sha256"],
+                "stderr_sha256": current_runtime_identity_receipt["stderr_sha256"],
+            },
             "canned_without_execution": False,
         },
         "evaluation_interface": {
@@ -1970,6 +2148,8 @@ def implementation_evidence(
             "deployment_load_probe": f"results/agent_flow_v3/{TASK_ID}/implementation/deployment_load_probe_receipt.json",
             "evaluator_smoke": f"results/agent_flow_v3/{TASK_ID}/implementation/evaluator_smoke_receipt.json",
             "hard_negative_binding": f"results/agent_flow_v3/{TASK_ID}/implementation/hard_negative_binding_receipt.json",
+            "current_runtime_identity": f"results/agent_flow_v3/{TASK_ID}/implementation/current_runtime_identity_receipt.json",
+            "current_runtime_input_bundle": f"results/agent_flow_v3/{TASK_ID}/implementation/current_runtime_input_bundle.json",
         },
         "source_manifest_sha256": manifest["source_manifest_sha256"],
         "runtime_asset_manifest_sha256": runtime_manifest["runtime_asset_manifest_sha256"],
@@ -2102,6 +2282,22 @@ def build_runtime_receipts() -> int:
         hard_negative_payload,
         {"entrypoint": "run_hard_negative_binding_probe", "fold": 0, "zero_credit": True},
     )
+    current_runtime_identity_payload = run_current_runtime_identity_probe(manifest, hard_negative_payload)
+    current_runtime_identity_receipt = _receipt_for_probe(
+        "current_runtime_identity",
+        current_runtime_identity_payload,
+        {"entrypoint": "run_current_runtime_identity_probe", "fold": 0, "zero_credit": True},
+    )
+    if current_runtime_identity_receipt["exit_code"] != 0:
+        payload = fail_closed_payload(
+            "current runtime identity bundle zero-credit probe failed",
+            ["current_runtime_identity_status_not_pass"],
+            {"current_runtime_identity_probe": current_runtime_identity_payload, **env_details},
+            manifest,
+        )
+        write_json(IMPLEMENTATION_DIR / "fail_closed_implementation_receipt.json", payload)
+        write_summary(2, status="FAIL_CLOSED")
+        return 2
     evidence = implementation_evidence(
         manifest=manifest,
         runtime_manifest=runtime_manifest,
@@ -2115,6 +2311,7 @@ def build_runtime_receipts() -> int:
         deployment_load_receipt=deployment_receipt,
         evaluator_smoke_receipt=evaluator_receipt,
         hard_negative_binding_receipt=hard_negative_receipt,
+        current_runtime_identity_receipt=current_runtime_identity_receipt,
     )
     write_json(IMPLEMENTATION_DIR / "implementation_evidence.json", evidence)
     fingerprint = {
@@ -2135,6 +2332,8 @@ def build_runtime_receipts() -> int:
         "deployment_load_probe_receipt_sha256": json_sha(deployment_receipt),
         "evaluator_smoke_receipt_sha256": json_sha(evaluator_receipt),
         "hard_negative_binding_receipt_sha256": json_sha(hard_negative_receipt),
+        "current_runtime_identity_receipt_sha256": json_sha(current_runtime_identity_receipt),
+        "current_runtime_input_bundle_sha256": sha256_file(IMPLEMENTATION_DIR / "current_runtime_input_bundle.json"),
         "no_training_started": True,
         "outer_accessed": False,
         "docker_built_or_uploaded": False,

@@ -1,4 +1,4 @@
-"""Authoritative CARE-ASE R2 formal/probe runtime.
+"""Authoritative CARE-ASE faithful formal/probe runtime.
 
 The Slurm/Python wrapper is intentionally thin. This module owns descriptor
 bundles, case materialization, stock augmentation, target-cache binding,
@@ -82,24 +82,27 @@ _PREPROCESSED_ROOT = Path(
 )
 PREPROCESSED = _PREPROCESSED_ROOT / "Dataset501_CAREMyoPS/nnUNetPlans_3d_fullres"
 SPLITS = _PREPROCESSED_ROOT / "Dataset501_CAREMyoPS/splits_final.json"
-TASK_KEY = "20260804_care_ase_r2_emergency_9h_training_docker"
-RESULT_DIR = REPO_ROOT / "results" / TASK_KEY
+TASK_KEY = "care-ase-faithful"
+TASK_ID = TASK_KEY
+REQUEST_NONCE = "care-ase-20260806T090955Z"
+FROZEN_CONTRACT = REPO_ROOT / "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md"
+FROZEN_CONTRACT_SHA256 = "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d"
+LEGACY_R2_TASK_KEY = "20260804_care_ase_r2_emergency_9h_training_docker"
+RESULT_DIR = REPO_ROOT / "results/agent_flow_v3/care-ase-faithful/implementation"
 STATIC_REVIEW_INPUT_DIR = RESULT_DIR
 V8_RESULT_DIR = REPO_ROOT / "results/20260803_care_ase_r2_final_pretraining_closure_v8"
-PROBE_RUNTIME_DIR = Path("/users/a/e/aereinh/.tmp/codex-CARE") / TASK_KEY
-FORMAL_RUNTIME_PREFIX = "20260804_care_ase_r2_formal_training_"
+PROBE_RUNTIME_DIR = RESULT_DIR / "runtime_zero_credit"
+FORMAL_RUNTIME_PREFIX = "care_ase_faithful_formal_training_"
 EFFECTIVE_CONTRACT = REPO_ROOT / "prompts/blueprints/CARE_ASE_R2_effective_contract_v9_20260803.yaml"
 CRITICAL_SOURCE_SEED_PATHS = (
+    "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+    "automation/agent_flow_v3/tasks/care-ase-faithful/REQUEST.json",
+    "automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json",
+    "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
     "prompts/blueprints/CARE_ASE_R2_effective_contract_v9_20260803.yaml",
-    "prompts/tasks/20260804_care_ase_r2_emergency_9h_training_docker_controller.md",
-    "prompts/tasks/20260804_care_ase_r2_deadline_recovery_training_docker_controller.md",
-    "prompts/tasks/20260804_care_ase_r2_deadline_recovery_training_docker_addendum.md",
-    "prompts/tasks/20260803_care_ase_r2_last_hotfix_v9.md",
-    "prompts/tasks/20260803_care_ase_r2_last_hotfix_v9_executor_plan.yaml",
-    "prompts/tasks/20260803_care_ase_r2_last_hotfix_v9_final_addendum.md",
-    "prompts/tasks/20260803_care_ase_r2_final_pretraining_closure_v8_addendum.md",
-    "src/care_myocardium/models/care_ase.py",
     "src/care_myocardium/models/care_prism.py",
+    "src/care_myocardium/models/care_ase/__init__.py",
+    "src/care_myocardium/models/care_ase/core.py",
     "src/care_myocardium/training/care_ase_trainer.py",
     "src/care_myocardium/training/care_ase_runtime.py",
     "src/care_myocardium/training/care_ase_sampler.py",
@@ -165,6 +168,18 @@ def effective_contract_sha256() -> str:
     if not EFFECTIVE_CONTRACT.is_file():
         raise FileNotFoundError(f"CARE-ASE R2 v9 effective contract missing: {EFFECTIVE_CONTRACT}")
     return sha256_file(EFFECTIVE_CONTRACT)
+
+
+def frozen_contract_sha256() -> str:
+    if not FROZEN_CONTRACT.is_file():
+        raise FileNotFoundError(f"CARE-ASE frozen contract missing: {FROZEN_CONTRACT}")
+    observed = sha256_file(FROZEN_CONTRACT)
+    if observed != FROZEN_CONTRACT_SHA256:
+        raise RuntimeError(
+            "CARE-ASE frozen contract SHA mismatch: "
+            f"expected={FROZEN_CONTRACT_SHA256} observed={observed}"
+        )
+    return observed
 
 
 def _module_to_repo_path(module: str) -> str | None:
@@ -267,7 +282,7 @@ def reserve_v9_probe_budget(*, fold: int, start_step: int, end_step: int, max_st
     requested = int(end_step) - int(start_step)
     if requested <= 0:
         raise ValueError("probe budget reservation requires positive step count")
-    root = PROBE_RUNTIME_DIR.parent / TASK_KEY / "probe_budget"
+    root = PROBE_RUNTIME_DIR / "probe_budget"
     root.mkdir(parents=True, exist_ok=True)
     counter = root / "counter.json"
     ledger = root / "reservations.jsonl"
@@ -301,7 +316,7 @@ def reserve_v9_probe_budget(*, fold: int, start_step: int, end_step: int, max_st
         new_total = int(payload.get("total_reserved_optimizer_steps", 0)) + requested
         if new_total > int(max_steps):
             raise RuntimeError(
-                "CARE-ASE R2 v9 probe budget exceeded before forward/materialization: "
+                "CARE-ASE faithful zero-credit probe budget exceeded before forward/materialization: "
                 f"requested={requested} previous={payload.get('total_reserved_optimizer_steps', 0)} max={max_steps}"
             )
         reservation = {
@@ -397,7 +412,7 @@ def record_v8_probe_budget_completion(reservation: dict[str, Any] | None, *, sta
 
 
 def formal_runtime_input_bundle_default_path() -> Path:
-    return RESULT_DIR / "formal_runtime_input_bundle.json"
+    return RESULT_DIR / "current_runtime_input_bundle.json"
 
 
 def validate_logical_chunk_invocation(
@@ -439,6 +454,215 @@ def _require_bound_sha(bundle: dict[str, Any], key: str, path_key: str | None = 
     return value
 
 
+def _sha_field(value: Any, *, field: str) -> str:
+    text = str(value or "")
+    if len(text) != 64 or any(ch not in "0123456789abcdef" for ch in text):
+        raise RuntimeError(f"formal runtime input bundle requires hex SHA-256 field {field}")
+    return text
+
+
+def _git_sha_field(value: Any, *, field: str) -> str:
+    text = str(value or "")
+    if len(text) != 40 or any(ch not in "0123456789abcdef" for ch in text):
+        raise RuntimeError(f"formal runtime input bundle requires git SHA field {field}")
+    return text
+
+
+def _bundle_path(bundle: dict[str, Any], key: str, *, must_exist: bool = False) -> Path:
+    value = str(bundle.get(key, ""))
+    if not value:
+        raise RuntimeError(f"formal runtime input bundle missing path field: {key}")
+    path = Path(value)
+    if not path.is_absolute():
+        path = REPO_ROOT / path
+    if must_exist and not path.exists():
+        raise RuntimeError(f"formal runtime input bundle path is missing: {path}")
+    return path.resolve()
+
+
+def _reject_legacy_runtime_identity(bundle: dict[str, Any]) -> None:
+    serialized = json.dumps(bundle, sort_keys=True, default=str)
+    for field in ("result_root", "probe_root"):
+        if LEGACY_R2_TASK_KEY in str(bundle.get(field, "")):
+            raise RuntimeError(f"formal runtime input bundle {field} still points at legacy R2 task root")
+    permit = bundle.get("formal_user_decision_permit_provenance", {})
+    if isinstance(permit, dict):
+        decision = str(permit.get("decision", ""))
+        task_key = str(permit.get("task_key", permit.get("task_id", "")))
+        if decision == "PRETRAINING_CONTROLLER_USER_AUTHORIZED_PASS_20260804" or task_key == LEGACY_R2_TASK_KEY:
+            raise RuntimeError("historical 20260804 training permit cannot authorize care-ase-faithful")
+    if "prompts/tasks/20260804_care_ase_r2_emergency_9h_training_docker_controller.md" in serialized:
+        raise RuntimeError("formal runtime input bundle contains legacy 20260804 task document authority")
+
+
+def validate_current_runtime_input_bundle(
+    bundle: dict[str, Any],
+    *,
+    fold: int,
+    expected_request_nonce: str = REQUEST_NONCE,
+    expected_frozen_contract_sha256: str = FROZEN_CONTRACT_SHA256,
+    expected_implementation_source_manifest_sha256: str | None = None,
+    expected_implementation_fingerprint_sha256: str | None = None,
+    expected_integration_commit_sha: str | None = None,
+    expected_verifier_fingerprint_sha256: str | None = None,
+) -> dict[str, Any]:
+    if not isinstance(bundle, dict):
+        raise RuntimeError("formal runtime input bundle must be a JSON object")
+    if bundle.get("task_id") != TASK_ID:
+        raise RuntimeError(f"formal runtime input bundle task_id mismatch: {bundle.get('task_id')} != {TASK_ID}")
+    declared_payload_sha = str(bundle.get("bundle_payload_sha256", ""))
+    if declared_payload_sha:
+        tmp = dict(bundle)
+        tmp.pop("bundle_payload_sha256", None)
+        observed_payload_sha = json_sha(tmp)
+        if declared_payload_sha != observed_payload_sha:
+            raise RuntimeError("formal runtime input bundle payload SHA mismatch")
+    if bundle.get("request_nonce") != expected_request_nonce:
+        raise RuntimeError("formal runtime input bundle request_nonce mismatch")
+    if bundle.get("frozen_contract_sha256") != expected_frozen_contract_sha256:
+        raise RuntimeError("formal runtime input bundle frozen_contract_sha256 mismatch")
+    if int(bundle.get("fold", -1)) != int(fold):
+        raise RuntimeError(f"formal runtime input bundle fold mismatch: {bundle.get('fold')} != {fold}")
+    frozen_contract_sha256()
+    _reject_legacy_runtime_identity(bundle)
+
+    result_root = _bundle_path(bundle, "result_root", must_exist=False)
+    probe_root = _bundle_path(bundle, "probe_root", must_exist=False)
+    implementation_root = (REPO_ROOT / "results/agent_flow_v3/care-ase-faithful/implementation").resolve()
+    if implementation_root not in result_root.parents and result_root != implementation_root:
+        raise RuntimeError(f"formal runtime result_root is outside current implementation namespace: {result_root}")
+    if implementation_root not in probe_root.parents and probe_root != implementation_root:
+        raise RuntimeError(f"formal runtime probe_root is outside current implementation namespace: {probe_root}")
+
+    expected_fields = {
+        "implementation_source_manifest_sha256": expected_implementation_source_manifest_sha256,
+        "implementation_fingerprint_sha256": expected_implementation_fingerprint_sha256,
+        "verifier_fingerprint_sha256": expected_verifier_fingerprint_sha256,
+    }
+    for field, expected in expected_fields.items():
+        observed = bundle.get(field)
+        _sha_field(observed, field=field)
+        if expected is not None and observed != expected:
+            raise RuntimeError(f"formal runtime input bundle {field} mismatch")
+    integration_observed = _git_sha_field(bundle.get("integration_commit_sha"), field="integration_commit_sha")
+    if expected_integration_commit_sha is not None and integration_observed != expected_integration_commit_sha:
+        raise RuntimeError("formal runtime input bundle integration_commit_sha mismatch")
+
+    hard_negative_path_key = f"hard_negative_manifest_fold{int(fold)}_path"
+    hard_negative_sha_key = f"hard_negative_manifest_fold{int(fold)}_sha256"
+    hard_negative_path = bundle.get(hard_negative_path_key) or bundle.get("hard_negative_manifest_path")
+    hard_negative_sha = bundle.get(hard_negative_sha_key) or bundle.get("hard_negative_manifest_sha256")
+    if not hard_negative_path:
+        raise RuntimeError("formal runtime input bundle requires explicit hard-negative manifest path")
+    if not hard_negative_sha:
+        raise RuntimeError("formal runtime input bundle requires explicit hard-negative manifest SHA")
+    normalized_path = Path(str(hard_negative_path))
+    if not normalized_path.is_absolute():
+        normalized_path = REPO_ROOT / normalized_path
+    if not normalized_path.is_file():
+        raise RuntimeError(f"formal runtime hard-negative manifest is missing: {normalized_path}")
+    observed_manifest_sha = sha256_file(normalized_path)
+    if observed_manifest_sha != str(hard_negative_sha):
+        raise RuntimeError("formal runtime hard-negative manifest SHA mismatch")
+    bundle[hard_negative_path_key] = str(normalized_path)
+    bundle[hard_negative_sha_key] = observed_manifest_sha
+    bundle["hard_negative_manifest_path"] = str(normalized_path)
+    bundle["hard_negative_manifest_sha256"] = observed_manifest_sha
+
+    secondary_path = bundle.get("secondary_effective_contract_path")
+    if secondary_path:
+        secondary_resolved = Path(str(secondary_path))
+        if not secondary_resolved.is_absolute():
+            secondary_resolved = REPO_ROOT / secondary_resolved
+        if not secondary_resolved.is_file():
+            raise RuntimeError(f"secondary effective contract is missing: {secondary_resolved}")
+        expected_secondary = bundle.get("secondary_effective_contract_sha256") or bundle.get("effective_contract_sha256")
+        if expected_secondary and sha256_file(secondary_resolved) != str(expected_secondary):
+            raise RuntimeError("secondary effective contract SHA mismatch")
+
+    checks = {
+        "task_id": True,
+        "request_nonce": True,
+        "frozen_contract_sha256": True,
+        "fold": True,
+        "implementation_source_manifest_sha256": True,
+        "implementation_fingerprint_sha256": True,
+        "integration_commit_sha": True,
+        "verifier_fingerprint_sha256": True,
+        "explicit_result_root": True,
+        "explicit_probe_root": True,
+        "explicit_hard_negative_manifest": True,
+        "legacy_task_key_rejected": True,
+    }
+    return {"status": "PASS", "checks": checks, "hard_negative_manifest_sha256": observed_manifest_sha}
+
+
+def build_current_runtime_input_bundle(
+    *,
+    fold: int,
+    hard_negative_manifest_path: Path,
+    implementation_source_manifest_sha256: str,
+    implementation_fingerprint_sha256: str,
+    integration_commit_sha: str,
+    verifier_fingerprint_sha256: str,
+    result_root: Path | None = None,
+    probe_root: Path | None = None,
+) -> dict[str, Any]:
+    hard_negative_path = Path(hard_negative_manifest_path)
+    if not hard_negative_path.is_absolute():
+        hard_negative_path = REPO_ROOT / hard_negative_path
+    payload = {
+        "schema": "CARE_ASE_FAITHFUL_CURRENT_RUNTIME_INPUT_BUNDLE_V1",
+        "task_id": TASK_ID,
+        "request_nonce": REQUEST_NONCE,
+        "frozen_contract_path": str(FROZEN_CONTRACT.relative_to(REPO_ROOT)),
+        "frozen_contract_sha256": FROZEN_CONTRACT_SHA256,
+        "secondary_effective_contract_path": str(EFFECTIVE_CONTRACT.relative_to(REPO_ROOT)),
+        "secondary_effective_contract_sha256": effective_contract_sha256(),
+        "implementation_source_manifest_sha256": _sha_field(
+            implementation_source_manifest_sha256,
+            field="implementation_source_manifest_sha256",
+        ),
+        "implementation_fingerprint_sha256": _sha_field(
+            implementation_fingerprint_sha256,
+            field="implementation_fingerprint_sha256",
+        ),
+        "integration_commit_sha": _git_sha_field(integration_commit_sha, field="integration_commit_sha"),
+        "verifier_fingerprint_sha256": _sha_field(verifier_fingerprint_sha256, field="verifier_fingerprint_sha256"),
+        "fold": int(fold),
+        "result_root": str((result_root or RESULT_DIR / "formal_runtime").resolve()),
+        "probe_root": str((probe_root or PROBE_RUNTIME_DIR).resolve()),
+        "hard_negative_manifest_path": str(hard_negative_path.resolve()),
+        "hard_negative_manifest_sha256": sha256_file(hard_negative_path),
+        f"hard_negative_manifest_fold{int(fold)}_path": str(hard_negative_path.resolve()),
+        f"hard_negative_manifest_fold{int(fold)}_sha256": sha256_file(hard_negative_path),
+        "formal_user_decision_permit_provenance": {
+            "training_authorized": False,
+            "decision": "NO_FORMAL_TRAINING_AUTHORIZED_FOR_CARE_ASE_FAITHFUL",
+            "permit_path": None,
+        },
+    }
+    payload["bundle_payload_sha256"] = json_sha({k: v for k, v in payload.items() if k != "bundle_payload_sha256"})
+    return payload
+
+
+def resolve_zero_credit_hard_negative_manifest_path(fold: int) -> Path:
+    explicit = os.environ.get("CARE_ASE_HARD_NEGATIVE_MANIFEST")
+    candidates = [Path(explicit)] if explicit else []
+    candidates.extend(
+        [
+            REPO_ROOT / f"results/20260804_care_ase_r2_emergency_9h_training_docker/hard_negative_manifest_fold{int(fold)}.json",
+            REPO_ROOT / f"results/20260803_care_ase_r2_last_hotfix_v9/hard_negative_manifest_fold{int(fold)}.json",
+            REPO_ROOT / f"results/20260803_care_ase_r2_final_pretraining_closure_v8/hard_negative_manifest_fold{int(fold)}.json",
+        ]
+    )
+    for candidate in candidates:
+        path = candidate if candidate.is_absolute() else REPO_ROOT / candidate
+        if path.is_file():
+            return path.resolve()
+    raise FileNotFoundError(f"no explicit zero-credit hard-negative manifest is available for fold {fold}")
+
+
 def load_formal_runtime_input_bundle(
     path: Path,
     *,
@@ -446,6 +670,10 @@ def load_formal_runtime_input_bundle(
     implementation_source_sha: str,
     review_packet_sha: str,
     effective_contract_sha256_expected: str,
+    implementation_source_manifest_sha256_expected: str | None = None,
+    implementation_fingerprint_sha256_expected: str | None = None,
+    integration_commit_sha_expected: str | None = None,
+    verifier_fingerprint_sha256_expected: str | None = None,
 ) -> dict[str, Any]:
     if path is None:
         raise RuntimeError("formal runtime requires --formal-runtime-input-bundle before forward")
@@ -461,9 +689,19 @@ def load_formal_runtime_input_bundle(
     observed_payload_sha = json_sha(tmp)
     if payload_sha != observed_payload_sha:
         raise RuntimeError(f"formal runtime input bundle payload SHA mismatch: expected {payload_sha} observed {observed_payload_sha}")
-    if str(bundle.get("implementation_source_commit_sha")) != str(implementation_source_sha):
+    current_checks = validate_current_runtime_input_bundle(
+        bundle,
+        fold=fold,
+        expected_implementation_source_manifest_sha256=implementation_source_manifest_sha256_expected,
+        expected_implementation_fingerprint_sha256=implementation_fingerprint_sha256_expected,
+        expected_integration_commit_sha=integration_commit_sha_expected,
+        expected_verifier_fingerprint_sha256=verifier_fingerprint_sha256_expected,
+    )
+    if "implementation_source_commit_sha" in bundle and str(bundle.get("implementation_source_commit_sha")) != str(implementation_source_sha):
         raise RuntimeError("formal runtime input bundle implementation Commit A mismatch")
     binding_mode = str(bundle.get("review_packet_sha_binding_mode", "embedded_exact_sha"))
+    if "review_packet_commit_sha" not in bundle:
+        binding_mode = "current_agent_flow_runtime_bundle_without_legacy_review_commit"
     if binding_mode == "embedded_exact_sha":
         if str(bundle.get("review_packet_commit_sha")) != str(review_packet_sha):
             raise RuntimeError("formal runtime input bundle review packet Commit B mismatch")
@@ -478,17 +716,21 @@ def load_formal_runtime_input_bundle(
             "BOUND_BY_CONTROLLER_PERMIT",
         }:
             raise RuntimeError("formal runtime input bundle must not embed a self-referential Commit B SHA")
-    else:
+    elif binding_mode != "current_agent_flow_runtime_bundle_without_legacy_review_commit":
         raise RuntimeError(f"unsupported formal runtime input bundle Commit B binding mode: {binding_mode}")
-    if str(bundle.get("effective_contract_sha256")) != str(effective_contract_sha256_expected):
+    effective_observed = str(bundle.get("effective_contract_sha256", bundle.get("secondary_effective_contract_sha256", "")))
+    if effective_observed and effective_observed != str(effective_contract_sha256_expected):
         raise RuntimeError("formal runtime input bundle effective contract SHA mismatch")
     _require_bound_sha(bundle, f"hard_negative_manifest_fold{int(fold)}_sha256", f"hard_negative_manifest_fold{int(fold)}_path")
-    _require_bound_sha(bundle, f"full_case_target_cache_manifest_fold{int(fold)}_sha256", f"full_case_target_cache_manifest_fold{int(fold)}_path")
+    if f"full_case_target_cache_manifest_fold{int(fold)}_path" in bundle:
+        _require_bound_sha(bundle, f"full_case_target_cache_manifest_fold{int(fold)}_sha256", f"full_case_target_cache_manifest_fold{int(fold)}_path")
     for key in ("direct_stock_oof_provenance_manifest_sha256", "area_reference_receipt_sha256"):
-        _require_bound_sha(bundle, key)
+        if key in bundle:
+            _require_bound_sha(bundle, key)
     bundle["path"] = str(path)
     bundle["sha256"] = sha256_file(path)
     bundle["verified_for_fold"] = int(fold)
+    bundle["current_runtime_identity_validation"] = current_checks
     bundle["target_builder_provenance"] = "full_case_target_cache_manifest_verified"
     return bundle
 
@@ -645,22 +887,9 @@ def verify_external_review_permit(path: Path, *, expected_environment_determinis
         raise RuntimeError(f"external review permit missing fields: {missing}")
     allowed_decisions = {
         "PRETRAINING_EXTERNAL_REVIEW_PASS",
-        "PRETRAINING_CONTROLLER_USER_AUTHORIZED_PASS_20260804",
     }
     if permit["decision"] not in allowed_decisions:
         raise RuntimeError(f"CARE-ASE training permit decision is not authorized: {permit['decision']}")
-    if permit["decision"] == "PRETRAINING_CONTROLLER_USER_AUTHORIZED_PASS_20260804":
-        if permit.get("task_key") != TASK_KEY:
-            raise RuntimeError(f"controller permit task_key mismatch: {permit.get('task_key')} != {TASK_KEY}")
-        if permit.get("user_authorized_controller_training_permit") is not True:
-            raise RuntimeError("controller permit must record user_authorized_controller_training_permit=true")
-        task_path = REPO_ROOT / "prompts/tasks/20260804_care_ase_r2_emergency_9h_training_docker_controller.md"
-        expected_task_sha = sha256_file(task_path)
-        if permit.get("user_authorized_task_sha256") != expected_task_sha:
-            raise RuntimeError(
-                "controller permit task SHA mismatch: "
-                f"permit={permit.get('user_authorized_task_sha256')} current={expected_task_sha}"
-            )
     head = git_sha("HEAD")
     origin = git_sha("origin/main")
     implementation_sha = str(permit["implementation_source_sha"])
@@ -741,7 +970,7 @@ def verify_external_review_permit(path: Path, *, expected_environment_determinis
             "critical source tree changed between implementation Commit A and review packet Commit B: "
             f"commitA={implementation_manifest} commitB={review_packet_manifest} current={current_manifest}"
         )
-    if permit["decision"] != "PRETRAINING_CONTROLLER_USER_AUTHORIZED_PASS_20260804" and not review_packet_contains_implementation_source(review_packet_sha, implementation_sha):
+    if not review_packet_contains_implementation_source(review_packet_sha, implementation_sha):
         raise RuntimeError(
             "review packet Commit B does not contain the reviewed implementation source SHA "
             f"{implementation_sha}"
@@ -1437,6 +1666,11 @@ def validate_resume_payload(
     expected_area_reference_receipt_sha256: str,
     expected_stock_checkpoint_sha256: str | None = None,
     expected_environment_determinism_manifest_sha256: str | None = None,
+    expected_request_nonce: str | None = None,
+    expected_frozen_contract_sha256: str | None = None,
+    expected_implementation_source_manifest_sha256: str | None = None,
+    expected_implementation_fingerprint_sha256: str | None = None,
+    expected_integration_commit_sha: str | None = None,
     allow_short_smoke_resume: bool = False,
 ) -> dict[str, Any]:
     canonical_stock_path = Path(CAREASEConfig.for_fold(int(requested_fold)).checkpoint_path)
@@ -1465,6 +1699,15 @@ def validate_resume_payload(
         "stock_checkpoint_file_sha256": str(payload.get("stock_checkpoint_sha256")) == str(observed_stock_sha),
         "environment_determinism_manifest_sha256": expected_environment_determinism_manifest_sha256 is None
         or str(payload.get("environment_determinism_manifest_sha256")) == str(expected_environment_determinism_manifest_sha256),
+        "request_nonce": expected_request_nonce is None or str(payload.get("request_nonce")) == str(expected_request_nonce),
+        "frozen_contract_sha256": expected_frozen_contract_sha256 is None
+        or str(payload.get("frozen_contract_sha256")) == str(expected_frozen_contract_sha256),
+        "implementation_source_manifest_sha256": expected_implementation_source_manifest_sha256 is None
+        or str(payload.get("implementation_source_manifest_sha256")) == str(expected_implementation_source_manifest_sha256),
+        "implementation_fingerprint_sha256": expected_implementation_fingerprint_sha256 is None
+        or str(payload.get("implementation_fingerprint_sha256")) == str(expected_implementation_fingerprint_sha256),
+        "integration_commit_sha": expected_integration_commit_sha is None
+        or str(payload.get("integration_commit_sha")) == str(expected_integration_commit_sha),
         "formal_resumable": bool(allow_short_smoke_resume) or payload.get("formal_resumable") is True,
         "microbatch_cursor_zero": int(payload.get("accumulation_microbatch_cursor", -1)) == 0,
         "next_optimizer_step_micro_descriptor_sha256_present": str(payload.get("next_optimizer_step_micro_descriptor_sha256", "")) not in {"", "UNSET"},
@@ -1509,6 +1752,11 @@ def _load_previous(
     expected_area_reference_receipt_sha256: str,
     expected_stock_checkpoint_sha256: str | None = None,
     expected_environment_determinism_manifest_sha256: str | None = None,
+    expected_request_nonce: str | None = None,
+    expected_frozen_contract_sha256: str | None = None,
+    expected_implementation_source_manifest_sha256: str | None = None,
+    expected_implementation_fingerprint_sha256: str | None = None,
+    expected_integration_commit_sha: str | None = None,
     allow_short_smoke_resume: bool = False,
 ) -> tuple[torch.nn.Module, dict[str, Any]]:
     model, payload = load_care_ase_checkpoint_for_training_resume(
@@ -1516,6 +1764,10 @@ def _load_previous(
         requested_fold=int(requested_fold),
         map_location=device,
         restore_rng=True,
+        expected_request_nonce=expected_request_nonce,
+        expected_frozen_contract_sha256=expected_frozen_contract_sha256,
+        expected_implementation_source_manifest_sha256=expected_implementation_source_manifest_sha256,
+        expected_integration_commit_sha=expected_integration_commit_sha,
     )
     source_sha = str(payload.get("training_source_commit_sha", payload.get("config", {}).get("training_source_commit_sha", "")))
     if source_sha in INVALIDATED_TRAINING_SOURCE_SHAS:
@@ -1532,6 +1784,11 @@ def _load_previous(
         expected_area_reference_receipt_sha256=expected_area_reference_receipt_sha256,
         expected_stock_checkpoint_sha256=expected_stock_checkpoint_sha256,
         expected_environment_determinism_manifest_sha256=expected_environment_determinism_manifest_sha256,
+        expected_request_nonce=expected_request_nonce,
+        expected_frozen_contract_sha256=expected_frozen_contract_sha256,
+        expected_implementation_source_manifest_sha256=expected_implementation_source_manifest_sha256,
+        expected_implementation_fingerprint_sha256=expected_implementation_fingerprint_sha256,
+        expected_integration_commit_sha=expected_integration_commit_sha,
         allow_short_smoke_resume=allow_short_smoke_resume,
     )
     return model.to(device), payload
@@ -1571,6 +1828,10 @@ def _write_full_reload_receipt(
     seed: int,
     out_dir: Path,
     hard_negative_manifest_path: Path | None = None,
+    expected_request_nonce: str | None = None,
+    expected_frozen_contract_sha256: str | None = None,
+    expected_implementation_source_manifest_sha256: str | None = None,
+    expected_integration_commit_sha: str | None = None,
 ) -> dict[str, Any]:
     was_training = live_model.training
     live_model.eval()
@@ -1588,6 +1849,10 @@ def _write_full_reload_receipt(
         requested_fold=int(fold),
         map_location=fixed_batch["image"].device,
         restore_rng=False,
+        expected_request_nonce=expected_request_nonce,
+        expected_frozen_contract_sha256=expected_frozen_contract_sha256,
+        expected_implementation_source_manifest_sha256=expected_implementation_source_manifest_sha256,
+        expected_integration_commit_sha=expected_integration_commit_sha,
     )
     reloaded_model = reloaded_model.to(fixed_batch["image"].device)
     reloaded_optimizer = build_optimizer(reloaded_model)
@@ -1630,7 +1895,7 @@ def _write_full_reload_receipt(
         "next_batch_hash_match": payload.get("next_batch_descriptor_sha256") == next_hash,
         "next_optimizer_step_micro_descriptor_hash_match": payload.get("next_optimizer_step_micro_descriptor_sha256") == next_hash,
         "live_scheduler_last_global_step": live_scheduler.last_global_step,
-        "hard_negative_manifest_path": str(hard_negative_manifest_path) if hard_negative_manifest_path else "default_v9_manifest_path",
+        "hard_negative_manifest_path": str(hard_negative_manifest_path) if hard_negative_manifest_path else "EXPLICIT_CURRENT_MANIFEST_REQUIRED",
     }
     receipt["payload_sha256"] = hashlib.sha256(json.dumps(receipt, sort_keys=True, default=str).encode("utf-8")).hexdigest()
     fold_receipt = out_dir / f"{ckpt.stem}_full_reload_receipt.json"
@@ -1641,7 +1906,7 @@ def _write_full_reload_receipt(
 
 
 class CAREASEFormalRuntime:
-    """Single public authority for CARE-ASE v8 optimizer-step execution."""
+    """Single public authority for CARE-ASE faithful optimizer-step execution."""
 
     public_api_name = "src.care_myocardium.training.care_ase_runtime.CAREASEFormalRuntime.run_formal_training_step"
 
@@ -1660,6 +1925,7 @@ class CAREASEFormalRuntime:
         autocast_dtype: torch.dtype = torch.bfloat16,
         autocast_enabled: bool = False,
         formal_mode: bool = False,
+        runtime_input_bundle: dict[str, Any] | None = None,
         full_case_target_cache_manifest_path: Path | None = None,
         target_builder_provenance: str | None = None,
     ) -> None:
@@ -1675,18 +1941,30 @@ class CAREASEFormalRuntime:
         self.autocast_dtype = autocast_dtype
         self.autocast_enabled = bool(autocast_enabled)
         self.formal_mode = bool(formal_mode)
+        self.runtime_input_bundle = copy.deepcopy(runtime_input_bundle) if runtime_input_bundle is not None else None
         self.full_case_target_cache_manifest_path = Path(full_case_target_cache_manifest_path) if full_case_target_cache_manifest_path is not None else None
         self.target_builder_provenance = target_builder_provenance or "patch_local_fallback_for_tests_only"
         self.full_case_target_manifest: dict[str, Any] | None = None
         self._verified_target_cache_cases: set[str] = set()
         if self.formal_mode:
+            if self.runtime_input_bundle is None:
+                raise RuntimeError("formal runtime requires current runtime input bundle before materialization")
+            validate_current_runtime_input_bundle(
+                self.runtime_input_bundle,
+                fold=int(self.sampler.fold),
+                expected_implementation_source_manifest_sha256=str(self.runtime_input_bundle["implementation_source_manifest_sha256"]),
+                expected_implementation_fingerprint_sha256=str(self.runtime_input_bundle["implementation_fingerprint_sha256"]),
+                expected_integration_commit_sha=str(self.runtime_input_bundle["integration_commit_sha"]),
+                expected_verifier_fingerprint_sha256=str(self.runtime_input_bundle["verifier_fingerprint_sha256"]),
+            )
             if self.target_builder_provenance != "full_case_target_cache_manifest_verified":
                 raise RuntimeError("formal runtime requires full_case_target_cache_manifest_verified before forward")
             if self.full_case_target_cache_manifest_path is None or not self.full_case_target_cache_manifest_path.is_file():
                 raise RuntimeError("formal runtime requires full-case target cache manifest before forward")
             self.full_case_target_manifest = json.loads(self.full_case_target_cache_manifest_path.read_text(encoding="utf-8"))
-            if self.full_case_target_manifest.get("task_key") != TASK_KEY:
-                raise RuntimeError("formal runtime refuses non-v9 full-case target cache manifest")
+            manifest_task = self.full_case_target_manifest.get("task_id", self.full_case_target_manifest.get("task_key"))
+            if manifest_task != TASK_ID:
+                raise RuntimeError("formal runtime refuses target cache manifest not bound to care-ase-faithful")
             if int(self.full_case_target_manifest.get("fold", -1)) != int(self.sampler.fold):
                 raise RuntimeError("full-case target cache manifest fold mismatch")
             payload_sha = str(self.full_case_target_manifest.get("payload_sha256", ""))
@@ -1733,6 +2011,17 @@ class CAREASEFormalRuntime:
         self._verified_target_cache_cases.add(case_id)
 
     def materialize_microbatch(self, descriptor: CAREASEBatchDescriptor, *, descriptor_sha: str, micro: int) -> dict[str, Any]:
+        if self.formal_mode:
+            if self.runtime_input_bundle is None:
+                raise RuntimeError("formal runtime requires current runtime input bundle before materialization")
+            validate_current_runtime_input_bundle(
+                self.runtime_input_bundle,
+                fold=int(self.sampler.fold),
+                expected_implementation_source_manifest_sha256=str(self.runtime_input_bundle["implementation_source_manifest_sha256"]),
+                expected_implementation_fingerprint_sha256=str(self.runtime_input_bundle["implementation_fingerprint_sha256"]),
+                expected_integration_commit_sha=str(self.runtime_input_bundle["integration_commit_sha"]),
+                expected_verifier_fingerprint_sha256=str(self.runtime_input_bundle["verifier_fingerprint_sha256"]),
+            )
         if self.formal_mode and descriptor.selected_target_coordinate is None:
             raise RuntimeError("formal runtime descriptor requires selected_target_coordinate before materialization")
         self._verify_target_manifest_case(descriptor.case_id)
@@ -2097,7 +2386,7 @@ def main() -> int:
         if permit and runtime_input_bundle["sha256"] != str(permit.get("formal_runtime_input_bundle_sha256")):
             raise RuntimeError("external review permit formal runtime input bundle SHA mismatch")
     elif not args.allow_short_smoke:
-        raise RuntimeError("formal CARE-ASE R2 W3 chunk requires --formal-runtime-input-bundle")
+        raise RuntimeError("formal CARE-ASE faithful chunk requires --formal-runtime-input-bundle")
     probe_budget = None
     if args.allow_short_smoke:
         probe_budget = reserve_v9_probe_budget(
@@ -2145,6 +2434,11 @@ def main() -> int:
     if args.resume_checkpoint is not None:
         canonical_stock_path = Path(CAREASEConfig.for_fold(fold).checkpoint_path)
         canonical_stock_sha = sha256_file(canonical_stock_path)
+        explicit_resume_hard_negative_sha = (
+            runtime_input_bundle.get(f"hard_negative_manifest_fold{fold}_sha256")
+            if runtime_input_bundle
+            else sha256_file(resolve_zero_credit_hard_negative_manifest_path(fold))
+        )
         model, prior = _load_previous(
             args.resume_checkpoint,
             device,
@@ -2153,14 +2447,15 @@ def main() -> int:
             expected_critical_source_manifest_sha256=live_critical_source_manifest_sha,
             expected_split_file_sha256=sha256_file(SPLITS),
             expected_actual_train_case_ids_sha256=json_sha({"actual_train": actual_train_ids}),
-            expected_hard_negative_manifest_sha256=(
-                runtime_input_bundle.get(f"hard_negative_manifest_fold{fold}_sha256")
-                if runtime_input_bundle
-                else CAREASEDeterministicSampler(REPO_ROOT, fold, seed=args.seed).hard_negative_manifest.get("manifest_sha256", "UNSET")
-            ),
+            expected_hard_negative_manifest_sha256=explicit_resume_hard_negative_sha,
             expected_area_reference_receipt_sha256=json_sha(area),
             expected_stock_checkpoint_sha256=canonical_stock_sha,
             expected_environment_determinism_manifest_sha256=str(env_manifest["sha256"]),
+            expected_request_nonce=runtime_input_bundle.get("request_nonce") if runtime_input_bundle else None,
+            expected_frozen_contract_sha256=runtime_input_bundle.get("frozen_contract_sha256") if runtime_input_bundle else None,
+            expected_implementation_source_manifest_sha256=runtime_input_bundle.get("implementation_source_manifest_sha256") if runtime_input_bundle else None,
+            expected_implementation_fingerprint_sha256=runtime_input_bundle.get("implementation_fingerprint_sha256") if runtime_input_bundle else None,
+            expected_integration_commit_sha=runtime_input_bundle.get("integration_commit_sha") if runtime_input_bundle else None,
             allow_short_smoke_resume=bool(args.allow_short_smoke),
         )
         if int(prior["global_optimizer_step"]) != int(args.start_step):
@@ -2179,6 +2474,10 @@ def main() -> int:
     sampler_manifest_path = None
     if runtime_input_bundle:
         sampler_manifest_path = runtime_input_bundle.get(f"hard_negative_manifest_fold{fold}_path")
+    elif args.allow_short_smoke:
+        sampler_manifest_path = str(resolve_zero_credit_hard_negative_manifest_path(fold))
+    else:
+        raise RuntimeError("formal runtime requires explicit hard-negative manifest from current runtime input bundle")
     sampler = CAREASEDeterministicSampler(REPO_ROOT, fold, seed=args.seed, hard_negative_manifest_path=Path(str(sampler_manifest_path)) if sampler_manifest_path else None)
     for step in range(args.start_step):
         sampler.descriptor_bundle_for_step(step)
@@ -2226,7 +2525,7 @@ def main() -> int:
             "outer_access_before_freeze": 0,
             "fixed_decode_function": decode_care_ase_r2_logits.__name__,
             "formal_training_credit_current_external_review_revise_runtime": "zero_until_new_external_review_pass",
-            "formal_training_credit": "zero" if args.allow_short_smoke else "requires_valid_20260804_controller_or_external_permit",
+            "formal_training_credit": "zero" if args.allow_short_smoke else "requires_current_runtime_bundle_and_future_user_training_authorization",
             "probe_nonresumable_start": bool(args.allow_probe_nonresumable_start),
             "external_review_permit": permit or {"not_required_for_allow_short_smoke": bool(args.allow_short_smoke)},
             "chunk_lock": lock_receipt,
@@ -2255,6 +2554,7 @@ def main() -> int:
         autocast_dtype=torch.bfloat16,
         autocast_enabled=(device.type == "cuda"),
         formal_mode=not bool(args.allow_short_smoke),
+        runtime_input_bundle=runtime_input_bundle,
         full_case_target_cache_manifest_path=Path(str(runtime_input_bundle.get(f"full_case_target_cache_manifest_fold{fold}_path"))) if runtime_input_bundle else None,
         target_builder_provenance=runtime_input_bundle.get("target_builder_provenance") if runtime_input_bundle else None,
     )
@@ -2373,6 +2673,13 @@ def main() -> int:
                     formal_execution_checkout_commit_sha=head_sha,
                     formal_runtime_input_bundle_sha256=runtime_input_bundle.get("sha256") if runtime_input_bundle else "SHORT_SMOKE_NO_FORMAL_CREDIT",
                     review_packet_commit_sha=permit.get("review_packet_commit_sha") if permit else "SHORT_SMOKE_NO_FORMAL_CREDIT",
+                    request_nonce=runtime_input_bundle.get("request_nonce") if runtime_input_bundle else REQUEST_NONCE,
+                    frozen_contract_sha256=runtime_input_bundle.get("frozen_contract_sha256") if runtime_input_bundle else FROZEN_CONTRACT_SHA256,
+                    implementation_source_manifest_sha256=(
+                        runtime_input_bundle.get("implementation_source_manifest_sha256") if runtime_input_bundle else live_critical_source_manifest_sha
+                    ),
+                    implementation_fingerprint_sha256=runtime_input_bundle.get("implementation_fingerprint_sha256") if runtime_input_bundle else None,
+                    integration_commit_sha=runtime_input_bundle.get("integration_commit_sha") if runtime_input_bundle else head_sha,
                     origin_main_sha=git_sha("origin/main") if not args.allow_short_smoke else "SHORT_SMOKE_NO_FORMAL_CREDIT",
                     origin_main_at_review_request_sha=permit.get("origin_main_at_review_request") if permit else "SHORT_SMOKE_NO_FORMAL_CREDIT",
                     effective_contract_sha256=live_effective_contract_sha,
@@ -2435,6 +2742,10 @@ def main() -> int:
                     seed=args.seed,
                     out_dir=out_dir,
                     hard_negative_manifest_path=Path(str(sampler_manifest_path)) if sampler_manifest_path else None,
+                    expected_request_nonce=runtime_input_bundle.get("request_nonce") if runtime_input_bundle else None,
+                    expected_frozen_contract_sha256=runtime_input_bundle.get("frozen_contract_sha256") if runtime_input_bundle else None,
+                    expected_implementation_source_manifest_sha256=runtime_input_bundle.get("implementation_source_manifest_sha256") if runtime_input_bundle else None,
+                    expected_integration_commit_sha=runtime_input_bundle.get("integration_commit_sha") if runtime_input_bundle else None,
                 )
                 restore_training_rng_state(rng_state_before_reload_probe, sampler)
                 rng_after_reload_probe = rng_state_hashes(sampler)

@@ -1,9 +1,10 @@
 {
-  "checkpoint_sha256": "206ee878a3e279701b30d3d3cb5377d75a24d34f48853a687f4132058cd38d4b",
+  "checkpoint_sha256": "d6dd63aceb01947173cd41887d1241f5b68dcf2a9d06d5cf236e1ce188cb7654",
   "checkpoint_sidecar_matches": true,
-  "checkpoint_sidecar_sha256": "206ee878a3e279701b30d3d3cb5377d75a24d34f48853a687f4132058cd38d4b",
+  "checkpoint_sidecar_sha256": "d6dd63aceb01947173cd41887d1241f5b68dcf2a9d06d5cf236e1ce188cb7654",
   "checkpoint_storage": "temporary_directory_removed_after_hashing",
   "checkpoint_written": true,
+  "contract_manifest_environment_drift_rejected": true,
   "control_next_step": {
     "formal_step_api": "src.care_myocardium.training.care_ase_trainer._optimizer_step_from_materialized_microbatches",
     "grad_norm": 13.707971572875977,
@@ -49,6 +50,12 @@
     "stage": "A"
   },
   "control_state_digest_sha256": "756834841b0f210b14ad3dd99936ec1e64224fbd493e982097bd454679aba18c",
+  "current_binding_mismatch_rejections": {
+    "frozen_contract_sha256": true,
+    "implementation_source_manifest_sha256": true,
+    "integration_commit_sha": true,
+    "request_nonce": true
+  },
   "current_frozen_contract_sha256_bound": true,
   "current_request_nonce_bound": true,
   "first_descriptor_sha256": "d9b931dff5ed689359047a6529273be0300964d897f545ac5a79ad2dd2ef37d0",
@@ -102,9 +109,9 @@
   "formal_training_started": false,
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
   "implementation_source_manifest_bound": true,
-  "implementation_source_manifest_sha256": "fe98d3048c06b3660e8ac7af4ca3fd80567b5784d87f820ddc341aeec3e0abde",
+  "implementation_source_manifest_sha256": "053f8116f064afb7e5b29d63cb03af2ead9d9327e7c756451b92038ed2447e2e",
   "integration_commit_bound": true,
-  "integration_commit_sha": "11ac1c3d340c888e7e8710b2d6370f3065ea39c8",
+  "integration_commit_sha": "d400c003ff6d15617ae96566e285f79a71a1d8b5",
   "next_descriptor_sha256": "d9b931dff5ed689359047a6529273be0300964d897f545ac5a79ad2dd2ef37d0",
   "next_gradient_matches_uninterrupted": true,
   "next_loss_matches_uninterrupted": true,
