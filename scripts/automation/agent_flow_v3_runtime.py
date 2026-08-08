@@ -16,6 +16,7 @@ import json
 import os
 import re
 import shlex
+import ssl
 import subprocess
 import sys
 import time
@@ -1477,7 +1478,13 @@ def github_actions_success_from_runs_payload(payload: dict[str, Any], remote_sha
         if run.get("head_sha") != remote_sha:
             continue
         name = str(run.get("name") or run.get("workflowName") or "")
-        if "Agent-Flow v3" not in name and "agent-flow-v3" not in name.lower():
+        path = str(run.get("path") or "")
+        workflow_identity = f"{name}\n{path}".lower()
+        if (
+            "agent-flow v3" not in workflow_identity
+            and "agent-flow-v3" not in workflow_identity
+            and "agent_flow_v3" not in workflow_identity
+        ):
             continue
         if run.get("status") == "completed" and run.get("conclusion") == "success":
             return {
@@ -1495,8 +1502,15 @@ def observe_github_actions_success_for_sha(remote_sha: str, *, branch: str) -> d
         return None
     url = f"https://api.github.com/repos/YuukiAS/CARE_Challenge/actions/runs?branch={branch}&per_page=20"
     request = Request(url, headers={"Accept": "application/vnd.github+json", "User-Agent": "care-agent-flow-v3"})
+    context = ssl.create_default_context()
     try:
-        with urlopen(request, timeout=15) as response:
+        import certifi  # type: ignore[import-not-found]
+
+        context = ssl.create_default_context(cafile=certifi.where())
+    except Exception:
+        pass
+    try:
+        with urlopen(request, timeout=15, context=context) as response:
             payload = json.loads(response.read().decode("utf-8"))
     except Exception:
         return None

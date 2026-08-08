@@ -752,6 +752,7 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
                     "status": "completed",
                     "conclusion": "success",
                     "name": "Unrelated workflow",
+                    "path": ".github/workflows/unrelated.yml",
                     "html_url": "https://example.invalid/unrelated",
                 },
                 {
@@ -759,7 +760,8 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
                     "head_sha": "a" * 40,
                     "status": "completed",
                     "conclusion": "success",
-                    "name": "CARE Agent-Flow v3 deterministic CI",
+                    "name": "",
+                    "path": ".github/workflows/care_agent_flow_v3_deterministic_ci.yml",
                     "html_url": "https://example.invalid/pass",
                 },
             ]
