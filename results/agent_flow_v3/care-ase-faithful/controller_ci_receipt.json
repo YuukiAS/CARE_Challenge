@@ -1,36 +1,37 @@
 {
-  "schema": "CARE_ASE_FAITHFUL_CONTROLLER_CI_RECEIPT_V5",
-  "task_id": "care-ase-faithful",
-  "request_nonce": "care-ase-20260806T090955Z",
-  "created_utc": "2026-08-07T03:28:06Z",
-  "checked_commit_sha": "b72929c5c0cdb31770252132310b1ba472bdb5b2",
-  "local_gates_status": "PASS",
+  "checked_commit_sha": "a80b7502cbd2bc090a366c7989bd2c5b062a5afd",
+  "created_utc": "2026-08-08T04:18:04Z",
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "github_actions_conclusion": "success",
+  "github_actions_head_sha": "a80b7502cbd2bc090a366c7989bd2c5b062a5afd",
+  "github_actions_run_id": 31239089759,
+  "github_actions_run_url": "https://github.com/YuukiAS/CARE_Challenge/actions/runs/31239089759",
+  "github_actions_status": "PASS",
   "local_gates": [
     {
-      "name": "agent_flow_v3_contract_validation",
-      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/automation/validate_agent_flow_v3.py --repo-root .",
       "exit_code": 0,
-      "stdout_tail": "CARE Agent-Flow v3 contract validation: PASS\n",
-      "stderr_tail": ""
+      "name": "agent_flow_v3_contract_validation"
     },
     {
-      "name": "frozen_verifier_validate_implementation_evidence",
-      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python validators/care_ase_faithful/validate_contract_evidence.py --verification-contract results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json --evidence results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json --report-json results/agent_flow_v3/care-ase-faithful/implementation/frozen_verifier_validation_result.json",
       "exit_code": 0,
-      "stdout_tail": "{\n  \"failure_count\": 0,\n  \"failures\": [],\n  \"known_bad_case_id\": null,\n  \"passed\": true,\n  \"schema\": \"CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1\",\n  \"task_id\": \"care-ase-faithful\"\n}\n",
-      "stderr_tail": ""
+      "name": "agent_flow_v3_pytest",
+      "passed": "67 passed"
     },
     {
-      "name": "public_verifier_pytest",
-      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m pytest tests/care_ase_faithful/test_verifier_package.py -q",
       "exit_code": 0,
-      "stdout_tail": ".........                                                                [100%]\n9 passed in 14.08s\n",
-      "stderr_tail": ""
+      "name": "care_ase_verifier_package_pytest",
+      "passed": "10 passed"
+    },
+    {
+      "exit_code": 0,
+      "name": "git_diff_check"
     }
   ],
-  "github_actions_status": "PASS",
-  "workflow_path": ".github/workflows/agent-flow-v3-ci.yml",
-  "state_transition_after_ci": "READY_FOR_PLANNER_REVIEW_TO_WAITING_FOR_EXTERNAL_GPT",
-  "human_approval_required_for_wait_transaction": false,
-  "approval_scope": "current_frozen_contract_and_request_nonce_ci_pass_to_planner_wait_loop"
+  "local_gates_status": "PASS",
+  "next_action": "RUN_SAME_SCOPE_VERIFIER_RECHECK_AND_TRANSACTION_REBIND",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "schema": "CARE_ASE_FAITHFUL_CONTROLLER_CI_RECEIPT_V7",
+  "state_after_ci": "VERIFIER_RECHECK_REQUIRED",
+  "task_id": "care-ase-faithful",
+  "workflow_name": "CARE Agent-Flow v3 deterministic CI"
 }
