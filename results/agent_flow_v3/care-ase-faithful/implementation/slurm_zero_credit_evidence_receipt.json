@@ -4,40 +4,40 @@
   "request_nonce": "care-ase-20260806T090955Z",
   "review_round": 1,
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
-  "verifier_fingerprint_sha256": "3dcacfe7ae41e164435278c0da4557fc61b384ef6eeb09860badb353b375dca6",
-  "created_utc": "2026-08-08T09:18:40Z",
+  "verifier_fingerprint_sha256": "6acc8fdc640df9be54848dfc676da45257d887c0f4be5ce71efa6230114a4a17",
+  "created_utc": "2026-08-08T11:36:45Z",
   "command": "sbatch jobs/agent_flow_v3/care_ase_faithful_rebuild_evidence_gpu.sh",
-  "job_id": "62604784",
+  "job_id": "62610987",
   "partition": "htzhulab",
   "node": "g1807htzh01",
   "slurm_accounting": [
     {
-      "job_id": "62604784",
+      "job_id": "62610987",
       "state": "FAILED",
       "exit_code": "2:0",
-      "elapsed": "00:02:11",
+      "elapsed": "00:02:08",
       "max_rss": null,
       "node_list": "g1807htzh01"
     },
     {
-      "job_id": "62604784.batch",
+      "job_id": "62610987.batch",
       "state": "FAILED",
       "exit_code": "2:0",
-      "elapsed": "00:02:11",
-      "max_rss": "20526256K",
+      "elapsed": "00:02:08",
+      "max_rss": "20553860K",
       "node_list": "g1807htzh01"
     },
     {
-      "job_id": "62604784.extern",
+      "job_id": "62610987.extern",
       "state": "COMPLETED",
       "exit_code": "0:0",
-      "elapsed": "00:02:11",
+      "elapsed": "00:02:08",
       "max_rss": null,
       "node_list": "g1807htzh01"
     }
   ],
-  "log_path": "logs/CAREASEEvidence_62604784_20260808_050718.log",
-  "log_sha256": "794f191f5f3fbd65f59223f41dd6eb2eff40bca5136bedb2aeb695f8297ca118",
+  "log_path": "logs/CAREASEEvidence_62610987_20260808_072947.log",
+  "log_sha256": "9d97b9dd924511c7a7dcbcaa554352f994ad78215325ed0600e6a3bdf34c4eea",
   "gpu_visibility": {
     "torch_version": "2.11.0+cu130",
     "cuda_available": true,
@@ -53,9 +53,12 @@
   "builder_result": {
     "exit_code": 2,
     "status": "IMPLEMENTATION_EVIDENCE_READY_PENDING_VERIFIER_RECHECK",
-    "implementation_fingerprint_sha256": "dd5593f869823de7fe0b76f953c3ea1ade6d0c1426a7e26a39a4ae1aea6fa692",
-    "implementation_evidence_sha256": "d4ca4000b8bd50343599c14bba9db0709a1db78c4b747c0c290eaf31ee813ba4",
-    "implementation_validator_failures_are_verifier_owned_transaction_recheck": true,
-    "implementation_validator_result": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence_validation_result.json"
+    "implementation_fingerprint_sha256": "e7a6bfe00336354da7debf7321966c8a72c7ce43ee0bb00c316387c72659b7e3",
+    "implementation_evidence_sha256": "416afe2d864be7f92af90e1ec7ad5517b4a9a3ac06f840d6a1ccf6d96817441f",
+    "implementation_validator_failure_scope": "stale_verifier_owned_executable_runtime_binding_and_controller_transaction_recheck",
+    "implementation_validator_result": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence_validation_result.json",
+    "fresh_executor_diagnostic_receipt": "results/agent_flow_v3/care-ase-faithful/implementation/executable_verifier_diagnostic_receipt.json",
+    "fresh_executor_diagnostic_sha256": "3195822ae878b4e3962d39ec3bd863c338e820ba649734b912813e3f930ca843",
+    "fresh_executor_diagnostic_non_transaction_failure_count": 0
   }
 }

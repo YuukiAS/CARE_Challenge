@@ -29,7 +29,7 @@ from typing import Any
 TASK_ID = "care-ase-faithful"
 REQUEST_NONCE = "care-ase-20260806T090955Z"
 FROZEN_CONTRACT_SHA256 = "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d"
-VERIFIER_FINGERPRINT_SHA256 = "3dcacfe7ae41e164435278c0da4557fc61b384ef6eeb09860badb353b375dca6"
+VERIFIER_FINGERPRINT_SHA256 = "6acc8fdc640df9be54848dfc676da45257d887c0f4be5ce71efa6230114a4a17"
 
 ROOT = Path(__file__).resolve().parents[3]
 if str(ROOT) not in sys.path:
@@ -1234,6 +1234,10 @@ def run_checkpoint_resume_probe() -> dict[str, Any]:
             training_source_commit_sha=git_head,
             formal_execution_checkout_commit_sha=git_head,
             review_packet_commit_sha=git_head,
+            request_nonce=REQUEST_NONCE,
+            frozen_contract_sha256=FROZEN_CONTRACT_SHA256,
+            implementation_source_manifest_sha256=source["source_manifest_sha256"],
+            integration_commit_sha=git_head,
             origin_main_sha=git_head,
             origin_main_at_review_request_sha=git_head,
             effective_contract_sha256=FROZEN_CONTRACT_SHA256,
@@ -1258,7 +1262,15 @@ def run_checkpoint_resume_probe() -> dict[str, Any]:
             formal_resumable=False,
         )
         checkpoint_sha = sha256_file(checkpoint_path)
-        reloaded_model, reloaded_payload = load_care_ase_checkpoint(checkpoint_path, map_location="cpu", restore_rng=True)
+        reloaded_model, reloaded_payload = load_care_ase_checkpoint(
+            checkpoint_path,
+            map_location="cpu",
+            restore_rng=True,
+            expected_request_nonce=REQUEST_NONCE,
+            expected_frozen_contract_sha256=FROZEN_CONTRACT_SHA256,
+            expected_implementation_source_manifest_sha256=source["source_manifest_sha256"],
+            expected_integration_commit_sha=git_head,
+        )
         reloaded_optimizer = build_optimizer(reloaded_model)
         reloaded_optimizer.load_state_dict(reloaded_payload["optimizer"])
         reloaded_scheduler = CAREASEStageScheduler(reloaded_optimizer)
@@ -1299,10 +1311,18 @@ def run_checkpoint_resume_probe() -> dict[str, Any]:
     scheduler_ramp_state_matches = reloaded_scheduler.state_dict() == control_scheduler.state_dict()
     loss_matches = abs(float(reload_next["loss_mean"]) - float(control_next["loss_mean"])) <= 1.0e-8
     gradient_matches = reload_grad_sha == control_grad_sha
+    current_request_nonce_bound = reloaded_payload.get("request_nonce") == REQUEST_NONCE
+    current_frozen_contract_bound = reloaded_payload.get("frozen_contract_sha256") == FROZEN_CONTRACT_SHA256
+    source_binding_matches = reloaded_payload.get("implementation_source_manifest_sha256") == source["source_manifest_sha256"]
+    integration_binding_matches = reloaded_payload.get("integration_commit_sha") == git_head
     payload = {
         "status": "PASS"
         if int(CHECKPOINT_SCHEMA_VERSION) == 4
         and sidecar_matches
+        and current_request_nonce_bound
+        and current_frozen_contract_bound
+        and source_binding_matches
+        and integration_binding_matches
         and next_step_matches
         and optimizer_state_matches
         and scheduler_ramp_state_matches
@@ -1312,6 +1332,14 @@ def run_checkpoint_resume_probe() -> dict[str, Any]:
         "probe_type": "zero_credit_schema_v4_save_reload_next_step_probe",
         "fold": 0,
         "schema_version": int(CHECKPOINT_SCHEMA_VERSION),
+        "request_nonce": reloaded_payload.get("request_nonce"),
+        "frozen_contract_sha256": reloaded_payload.get("frozen_contract_sha256"),
+        "implementation_source_manifest_sha256": reloaded_payload.get("implementation_source_manifest_sha256"),
+        "integration_commit_sha": reloaded_payload.get("integration_commit_sha"),
+        "current_request_nonce_bound": current_request_nonce_bound,
+        "current_frozen_contract_sha256_bound": current_frozen_contract_bound,
+        "implementation_source_manifest_bound": source_binding_matches,
+        "integration_commit_bound": integration_binding_matches,
         "train_case_ids": {
             "scar": case_ids["scar"],
             "edema_t2_present": case_ids["edema_t2_present"],
@@ -1383,6 +1411,10 @@ def _save_zero_credit_inference_checkpoint(path: Path, model: Any, architecture:
         training_source_commit_sha=git_head,
         formal_execution_checkout_commit_sha=git_head,
         review_packet_commit_sha=git_head,
+        request_nonce=REQUEST_NONCE,
+        frozen_contract_sha256=FROZEN_CONTRACT_SHA256,
+        implementation_source_manifest_sha256=source["source_manifest_sha256"],
+        integration_commit_sha=git_head,
         origin_main_sha=git_head,
         origin_main_at_review_request_sha=git_head,
         effective_contract_sha256=FROZEN_CONTRACT_SHA256,
