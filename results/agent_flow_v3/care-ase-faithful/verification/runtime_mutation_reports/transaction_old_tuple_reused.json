@@ -1,12 +1,12 @@
 {
-  "created_utc": "2026-08-08T11:58:24Z",
+  "created_utc": "2026-08-08T12:11:46Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
     "transaction.old_tuple_rejected"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "36953ebd49750aeb14181a563e00d7a801c6bcc0c283d6403cc4cd6639526e13",
+  "mutated_fingerprint_sha256": "d3ec5282d564d071665585778f3fd64bdc6e36f218d311b354835d0efdb68979",
   "mutation_applied": "transaction_inputs_mutated_to_old_integration_and_verifier_fingerprint",
   "mutation_executed": true,
   "mutation_id": "transaction_old_tuple_reused",
@@ -213,7 +213,7 @@
       "implementation_fingerprint_sha256": "3eabfb0be9eda776da6dd6fe3068004894ea7a5b4c30966941fc05bdc412e0dc",
       "integration_sha": "5fd6c265109c19c91108fd3a2fa80a6b7d4092a4",
       "integration_sha_is_ancestor_of_observed_git_head": true,
-      "observed_git_head": "07469d4933b269a3a3ed3bbe1990ed2a894106d7",
+      "observed_git_head": "424e29702cdb58fe11667fa60269ced366ee7b5e",
       "planner_review_commit": "d4e436a55db414dfa42c07268148e9b285d79236",
       "review_round": 0,
       "reviewed_verifier_fingerprint_sha256_at_repair_start": "8149d75c397904e6db2daa3ab1ba765e5c2c4db4abde607796645c51deb3c4ca",
