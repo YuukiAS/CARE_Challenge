@@ -3,11 +3,11 @@
   "task_id": "care-ase-faithful",
   "request_nonce": "care-ase-20260806T090955Z",
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
-  "head_before_update": "656ff5b9815c08cbb9b5da9ffaf877b8cc142042",
-  "verifier_branch_head_sha": "e56cc2b4def427d94d6b818fa6116f96663a82f9",
-  "verifier_merge_base": "656ff5b9815c08cbb9b5da9ffaf877b8cc142042",
-  "integration_merge_sha": "e08fdc1efc82b897028bb4f99bb7c5d6521f69d0",
-  "verifier_fingerprint_sha256": "3dcacfe7ae41e164435278c0da4557fc61b384ef6eeb09860badb353b375dca6",
+  "head_before_update": "64a77f9549d27f87a74e429a04c6fab3f403ebd3",
+  "verifier_branch_head_sha": "e19c65b57dc75795ee7fbee33022af19afc640a1",
+  "verifier_merge_base": "44a586bfa5699410dee3da6b8a03933aa3aa8022",
+  "integration_merge_sha": "95797a31d3c4e741699636a7ec6644e239528ea9",
+  "verifier_fingerprint_sha256": "6acc8fdc640df9be54848dfc676da45257d887c0f4be5ce71efa6230114a4a17",
   "changed_paths": [
     "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_local_fail_closed_receipt.json",
     "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json",
@@ -16,6 +16,7 @@
     "results/agent_flow_v3/care-ase-faithful/verification/public_test_manifest.json",
     "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_manifest.json",
     "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/artifact_sha_mismatch.json",
+    "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/checkpoint_current_contract_provenance_drift.json",
     "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/checkpoint_next_step_drift.json",
     "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/deployment_reopens_stock_checkpoint.json",
     "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/dilation_residual_removed.json",
@@ -26,6 +27,7 @@
     "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/injury_dice_bce_replaced_by_focal.json",
     "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/injury_random_init.json",
     "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/no_t2_calls_edema.json",
+    "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/partial_hw_cross_z_presequence_mask_removed.json",
     "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/partial_hw_straight_through_zero_loss.json",
     "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/projection_context_no_final_authority.json",
     "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/scar_component_tversky_blended_occupancy_half.json",
@@ -52,5 +54,5 @@
     "no implementation source modified by controller integration",
     "no training, outer, Docker, upload, organizer email or develop-to-main merge"
   ],
-  "updated_utc": "2026-08-08T08:55:41Z"
+  "updated_utc": "2026-08-08T11:21:36Z"
 }
