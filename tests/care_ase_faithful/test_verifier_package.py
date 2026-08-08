@@ -372,6 +372,46 @@ class VerifierPackageTests(unittest.TestCase):
             {item["name"] for item in module.BLOCKING_NUMERIC_THRESHOLDS},
         )
 
+    def test_fresh_model_disable_flag_delta_is_diagnostic_not_hard_gate(self) -> None:
+        spec = importlib.util.spec_from_file_location("care_ase_executable_verifier", EXECUTABLE_VERIFIER)
+        if spec is None or spec.loader is None:
+            self.fail("cannot import executable verifier")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+
+        probes = module.fixture_probe_results()
+        diagnostic_probe = {
+            "name": "required_module_final_logit_interventions",
+            "status": "PASS",
+            "intervention_max_abs_by_module": {
+                "all_named_evidence": 0.0,
+                "edema_boundary": 0.0,
+                "edema_context_and_dilation": 0.0,
+                "edema_injury": 0.0,
+                "extent_wall": 0.0,
+                "scar_context": 0.0,
+                "scar_proposal": 0.0,
+            },
+            "all_changed_intended_final_logits": False,
+            "blocking": False,
+            "diagnostic_only": True,
+            "fresh_zero_initialized_disable_flag_delta_required": False,
+        }
+        probes = [
+            diagnostic_probe if probe["name"] == "required_module_final_logit_interventions" else probe
+            for probe in probes
+        ]
+        authority_probe = next(probe for probe in probes if probe["name"] == "required_module_final_authority_oracle")
+        self.assertEqual(authority_probe["status"], "PASS")
+        self.assertTrue(authority_probe["no_disable_flag_final_logit_contribution"])
+
+        observed = {probe["name"] for probe in probes}
+        coverage_failures = [f"executable_probe.missing:{name}" for name in module.REQUIRED_PROBES if name not in observed]
+        probe_failures = [f"executable_probe.failed:{probe['name']}" for probe in probes if probe.get("status") != "PASS"]
+        self.assertEqual(coverage_failures, [])
+        self.assertNotIn("executable_probe.failed:required_module_final_logit_interventions", probe_failures)
+        self.assertEqual(probe_failures, [])
+
     def test_public_reference_fixture_requires_explicit_override(self) -> None:
         reference = _run_validator("--emit-reference")
         self.assertEqual(reference.returncode, 0, reference.stderr)

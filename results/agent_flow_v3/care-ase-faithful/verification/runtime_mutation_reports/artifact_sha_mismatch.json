@@ -1,19 +1,19 @@
 {
-  "created_utc": "2026-08-08T05:53:32Z",
+  "created_utc": "2026-08-08T07:20:32Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
     "artifact_binding.forward_backward_probe.stdout_file_sha"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "deacb037ac85b8c40771cbc59124b29eaea064b4f6720c3b26615cc968bee2fc",
+  "mutated_fingerprint_sha256": "7dab3516467683f4a0d70c3711759f63ed174e345706bb75f22a21cd62e74af9",
   "mutation_applied": "tracked_runtime_artifact_bytes_changed_after_receipt_sha_recording",
   "mutation_executed": true,
   "mutation_id": "artifact_sha_mismatch",
   "observations": {
     "declared_sha256": "0b6113328f3be204d12118cf009f6f2b02212cbbe1c2d8cd7c9e638d5488b5aa",
     "mutated_file_sha256": "199c618cebf22fa01d809b054dcc38481f085563c48cc7dd8c1182db5d183be9",
-    "source_manifest_sha256_before_mutation": "3a9c0b4b14c410a970bdf9686060b89347b5b8679bbe40fcc1d01c55f2c67f1a"
+    "source_manifest_sha256_before_mutation": "0a4ed95d7674727a97f94f85cd4e08f1f4a0e1a5bcf0c1f376773792592b0ace"
   },
   "passed": false,
   "request_nonce": "care-ase-20260806T090955Z",

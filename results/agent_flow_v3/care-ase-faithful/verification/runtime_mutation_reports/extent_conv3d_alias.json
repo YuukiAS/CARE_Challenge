@@ -1,5 +1,5 @@
 {
-  "created_utc": "2026-08-08T05:48:42Z",
+  "created_utc": "2026-08-08T07:15:44Z",
   "exit_code": 2,
   "failure_count": 2,
   "failures": [
@@ -7,14 +7,14 @@
     "kb11.scar_extent_presence_not_occupancy_alias"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "9ed9be67e00dfba6fb90da0eebe6497a037d3c5e0d972f945589db1e079a0007",
+  "mutated_fingerprint_sha256": "081adcf5c54cc56148747052e2a74fe2514c93a81367cd3f712ecab7914a7694",
   "mutation_applied": "component_heads.scar_extent_head_replaced_by_scar_quarter_occupancy",
   "mutation_executed": true,
   "mutation_id": "extent_conv3d_alias",
   "observations": {
     "scar_extent_aliases_occupancy": true,
     "scar_extent_head_class": "Conv3d",
-    "source_manifest_sha256_before_mutation": "3a9c0b4b14c410a970bdf9686060b89347b5b8679bbe40fcc1d01c55f2c67f1a"
+    "source_manifest_sha256_before_mutation": "0a4ed95d7674727a97f94f85cd4e08f1f4a0e1a5bcf0c1f376773792592b0ace"
   },
   "passed": false,
   "request_nonce": "care-ase-20260806T090955Z",
