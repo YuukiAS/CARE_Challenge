@@ -1,12 +1,12 @@
 {
   "failure_count": 7,
   "failures": [
-    "artifact_binding.source_manifest.hash:src/care_myocardium/models/care_ase/core.py",
     "verifier_owned.executable.passed",
     "verifier_owned.executable.status",
     "verifier_owned.transaction.status",
     "verifier_owned.transaction.no_failures",
     "verifier_owned.transaction.hosted_ci_success",
+    "verifier_owned.transaction.hosted_ci_exact_reviewed_integration",
     "verifier_owned.transaction.no_stale_planner_reuse"
   ],
   "known_bad_case_id": null,
