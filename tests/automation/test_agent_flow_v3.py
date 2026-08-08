@@ -893,6 +893,22 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         self.assertEqual(receipt["decision"], "CONTROLLER_UPDATE_REQUIRED")
         self.assertIn("Verifier recheck receipts", receipt["action"])
 
+    def test_care_ase_verifier_recheck_local_artifacts_prevent_duplicate_start(self) -> None:
+        receipt = RUNTIME.evaluate_stage_event(
+            task_id="care-ase-faithful",
+            request={"enabled": True},
+            current={"request_nonce": "nonce", "review_round": 1, "state": "VERIFIER_RECHECK_REQUIRED"},
+            visual_final=None,
+            remote_sha="b" * 40,
+            processed=set(),
+            default_wait_hours=4,
+            care_ase_verifier_recheck_complete=False,
+            care_ase_verifier_recheck_local_artifacts=True,
+        )
+
+        self.assertEqual(receipt["decision"], "MONITOR_ONLY")
+        self.assertIn("instead of launching a duplicate", receipt["action"])
+
     def test_care_ase_verifier_recheck_allows_only_pre_ci_transaction_failure(self) -> None:
         executable = {
             "status": "FAIL_CLOSED",
@@ -929,6 +945,16 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
 
         self.assertTrue(RUNTIME.care_ase_verifier_pre_ci_transaction_pending(executable, transaction))
         self.assertTrue(RUNTIME.care_ase_integrated_validation_pre_ci_acceptable(integrated))
+
+        executable["failures"] = [
+            "transaction.hosted_ci.head_sha_not_exact_integration",
+            "transaction.hosted_ci.conclusion",
+        ]
+        transaction["failures"] = [
+            "transaction.hosted_ci.head_sha_not_exact_integration",
+            "transaction.hosted_ci.conclusion",
+        ]
+        self.assertTrue(RUNTIME.care_ase_verifier_pre_ci_transaction_pending(executable, transaction))
 
         executable["failures"] = ["executable_probe.failed:required_module_final_logit_interventions"]
         self.assertFalse(RUNTIME.care_ase_verifier_pre_ci_transaction_pending(executable, transaction))

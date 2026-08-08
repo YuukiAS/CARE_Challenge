@@ -1603,6 +1603,7 @@ def evaluate_stage_event(
     care_ase_executor_needs_verifier_recheck: bool = False,
     care_ase_executor_needs_user_scientific_choice: bool = False,
     care_ase_verifier_recheck_complete: bool = False,
+    care_ase_verifier_recheck_local_artifacts: bool = False,
 ) -> dict[str, Any]:
     state = str(current.get("state"))
     event_key = stage_event_key(task_id, current, remote_sha)
@@ -1704,6 +1705,9 @@ def evaluate_stage_event(
         if care_ase_verifier_recheck_complete:
             decision = "CONTROLLER_UPDATE_REQUIRED"
             action = "validate and integrate independent Verifier recheck receipts, then enter CI_RUNNING"
+        elif care_ase_verifier_recheck_local_artifacts:
+            decision = "MONITOR_ONLY"
+            action = "independent Verifier recheck artifacts exist; wait for exact role finalization instead of launching a duplicate"
         else:
             decision = "STAGE_READY"
             action = "start persistent CARE-ASE Verifier recheck exact session"
@@ -3281,12 +3285,20 @@ def care_ase_verifier_pre_ci_transaction_pending(executable: dict[str, Any], tra
         "transaction.hosted_ci.head_sha_not_exact_integration",
         "transaction.hosted_ci.conclusion",
     }
+    required = {
+        "transaction.hosted_ci.head_sha_not_exact_integration",
+        "transaction.hosted_ci.conclusion",
+    }
+    executable_failures = set(str(item) for item in executable.get("failures", []))
+    transaction_failures = set(str(item) for item in transaction.get("failures", []))
     return bool(
         executable.get("status") == "FAIL_CLOSED"
         and executable.get("passed") is False
-        and set(str(item) for item in executable.get("failures", [])) == allowed
+        and required.issubset(executable_failures)
+        and executable_failures.issubset(allowed)
         and transaction.get("status") == "FAIL_CLOSED"
-        and set(str(item) for item in transaction.get("failures", [])) == allowed
+        and required.issubset(transaction_failures)
+        and transaction_failures.issubset(allowed)
     )
 
 
@@ -4209,6 +4221,47 @@ def validate_care_ase_verifier_recheck_completion(
     }
 
 
+def care_ase_verifier_recheck_local_artifacts_present(args: argparse.Namespace, current: dict[str, Any]) -> bool:
+    try:
+        role_plan = load_json((args.repo_root.resolve() / args.controller_role_plan).resolve())
+    except RuntimeErrorV3:
+        return False
+    verifier = dict(role_plan.get("roles", {}).get("verifier", {}))
+    verifier_worktree = Path(str(verifier.get("worktree", "")))
+    if current.get("state") not in {"VERIFIER_RECHECK_REQUIRED", "VERIFIER_RECHECK_RUNNING"}:
+        return False
+    if not verifier_worktree.is_dir():
+        return False
+    try:
+        origin_ref = f"origin/{args.branch}"
+        head_changed = set(git(verifier_worktree, "diff", "--name-only", f"{origin_ref}..HEAD").splitlines())
+        unstaged_changed = set(git(verifier_worktree, "diff", "--name-only").splitlines())
+        staged_changed = set(git(verifier_worktree, "diff", "--cached", "--name-only").splitlines())
+    except RuntimeErrorV3:
+        return False
+    required = {
+        "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json",
+        "results/agent_flow_v3/care-ase-faithful/verification/transaction_gate_receipt.json",
+        "results/agent_flow_v3/care-ase-faithful/verification/integrated_implementation_validation_result.json",
+    }
+    changed = head_changed | unstaged_changed | staged_changed
+    if not required.issubset(changed):
+        return False
+    try:
+        executable = load_json(verifier_worktree / "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json")
+        transaction = load_json(verifier_worktree / "results/agent_flow_v3/care-ase-faithful/verification/transaction_gate_receipt.json")
+    except RuntimeErrorV3:
+        return False
+    return bool(
+        executable.get("implementation_fingerprint_sha256") == current.get("implementation_fingerprint_sha256")
+        and transaction.get("implementation_fingerprint_sha256") in {None, current.get("implementation_fingerprint_sha256")}
+        and (
+            executable.get("passed") is True
+            or care_ase_verifier_pre_ci_transaction_pending(executable, transaction)
+        )
+    )
+
+
 def care_ase_verifier_recheck_completion_available(args: argparse.Namespace, request: dict[str, Any], current: dict[str, Any]) -> bool:
     try:
         validate_care_ase_verifier_recheck_completion(args=args, request=request, current=current)
@@ -4548,6 +4601,7 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
         care_ase_executor_needs_verifier_recheck = False
         care_ase_executor_needs_user_scientific_choice = False
         care_ase_verifier_recheck_complete = False
+        care_ase_verifier_recheck_local_artifacts = False
         if task_id == "care-ase-faithful" and current.get("state") == "VERIFIER_FROZEN":
             care_ase_executor_complete = care_ase_executor_completion_available(args, current)
             if not care_ase_executor_complete:
@@ -4556,6 +4610,8 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
                 care_ase_executor_needs_user_scientific_choice = care_ase_executor_fail_closed_user_choice_available(args, current)
         if task_id == "care-ase-faithful" and current.get("state") in {"VERIFIER_RECHECK_REQUIRED", "VERIFIER_RECHECK_RUNNING"}:
             care_ase_verifier_recheck_complete = care_ase_verifier_recheck_completion_available(args, request, current)
+            if not care_ase_verifier_recheck_complete:
+                care_ase_verifier_recheck_local_artifacts = care_ase_verifier_recheck_local_artifacts_present(args, current)
         if (
             task_id == "care-ase-faithful"
             and current.get("state") == "PLAN_FROZEN"
@@ -4615,6 +4671,7 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
                 event_key,
                 verifier_recheck_complete=care_ase_verifier_recheck_complete,
             )
+            and not care_ase_verifier_recheck_local_artifacts
         ):
             processed = remove_stage_processed_event(event_key, processed)
         if (
@@ -4652,6 +4709,7 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
             care_ase_executor_needs_verifier_recheck=care_ase_executor_needs_verifier_recheck,
             care_ase_executor_needs_user_scientific_choice=care_ase_executor_needs_user_scientific_choice,
             care_ase_verifier_recheck_complete=care_ase_verifier_recheck_complete,
+            care_ase_verifier_recheck_local_artifacts=care_ase_verifier_recheck_local_artifacts,
         )
         if (
             task_id == "care-ase-faithful"
