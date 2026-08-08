@@ -1047,6 +1047,17 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         ]
         self.assertTrue(RUNTIME.care_ase_verifier_pre_ci_transaction_pending(executable, transaction))
 
+        executable["failures"] = [
+            "transaction.runtime_manifest.request_nonce",
+            "transaction.runtime_manifest.integration_commit_sha",
+            "transaction.runtime_manifest.artifact_missing:implementation_evidence",
+            "transaction.runtime_manifest.artifact_sha256:implementation_evidence",
+            "transaction.hosted_ci.head_sha_not_exact_integration",
+            "transaction.hosted_ci.conclusion",
+        ]
+        transaction["failures"] = list(executable["failures"])
+        self.assertTrue(RUNTIME.care_ase_verifier_pre_ci_transaction_pending(executable, transaction))
+
         executable["failures"] = ["executable_probe.failed:required_module_final_logit_interventions"]
         self.assertFalse(RUNTIME.care_ase_verifier_pre_ci_transaction_pending(executable, transaction))
 
