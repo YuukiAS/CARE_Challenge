@@ -1267,6 +1267,22 @@ def care_ase_role_launch_satisfied(stage_state_root: Path, current: dict[str, An
     return False
 
 
+def care_ase_verifier_recheck_needs_exact_resume_retry(
+    stage_state_root: Path,
+    current: dict[str, Any],
+    processed: set[str],
+    event_key: str,
+    *,
+    verifier_recheck_complete: bool,
+) -> bool:
+    return bool(
+        current.get("state") in {"VERIFIER_RECHECK_REQUIRED", "VERIFIER_RECHECK_RUNNING"}
+        and stage_event_was_processed(event_key, processed)
+        and not verifier_recheck_complete
+        and not care_ase_role_launch_satisfied(stage_state_root, current, "verifier")
+    )
+
+
 def path_matches_any(path: str, patterns: list[str]) -> bool:
     return any(fnmatch(path, pattern) for pattern in patterns)
 
@@ -4578,6 +4594,17 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
             and current.get("state") in {"VERIFIER_RECHECK_REQUIRED", "VERIFIER_RECHECK_RUNNING"}
             and stage_event_was_processed(event_key, processed)
             and care_ase_verifier_recheck_complete
+        ):
+            processed = remove_stage_processed_event(event_key, processed)
+        if (
+            task_id == "care-ase-faithful"
+            and care_ase_verifier_recheck_needs_exact_resume_retry(
+                args.state_root,
+                current,
+                processed,
+                event_key,
+                verifier_recheck_complete=care_ase_verifier_recheck_complete,
+            )
         ):
             processed = remove_stage_processed_event(event_key, processed)
         if (

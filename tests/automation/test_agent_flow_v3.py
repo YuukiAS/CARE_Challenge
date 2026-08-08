@@ -807,6 +807,50 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         self.assertEqual(receipt["decision"], "STAGE_READY")
         self.assertIn("Verifier recheck", receipt["action"])
 
+    def test_care_ase_verifier_recheck_processed_event_retries_when_launch_exited(self) -> None:
+        current = {
+            "task_id": "care-ase-faithful",
+            "request_nonce": "care-ase-nonce",
+            "review_round": 1,
+            "state": "VERIFIER_RECHECK_REQUIRED",
+            "frozen_contract_sha256": "a" * 64,
+        }
+        event_key = "care-ase-faithful:care-ase-nonce:1:VERIFIER_RECHECK_REQUIRED:review.json"
+        processed = {event_key}
+
+        with mock.patch.object(RUNTIME, "care_ase_role_launch_satisfied", return_value=False):
+            self.assertTrue(
+                RUNTIME.care_ase_verifier_recheck_needs_exact_resume_retry(
+                    Path("/tmp/stage"),
+                    current,
+                    processed,
+                    event_key,
+                    verifier_recheck_complete=False,
+                )
+            )
+
+        with mock.patch.object(RUNTIME, "care_ase_role_launch_satisfied", return_value=True):
+            self.assertFalse(
+                RUNTIME.care_ase_verifier_recheck_needs_exact_resume_retry(
+                    Path("/tmp/stage"),
+                    current,
+                    processed,
+                    event_key,
+                    verifier_recheck_complete=False,
+                )
+            )
+
+        with mock.patch.object(RUNTIME, "care_ase_role_launch_satisfied", return_value=False):
+            self.assertFalse(
+                RUNTIME.care_ase_verifier_recheck_needs_exact_resume_retry(
+                    Path("/tmp/stage"),
+                    current,
+                    processed,
+                    event_key,
+                    verifier_recheck_complete=True,
+                )
+            )
+
     def test_care_ase_verifier_recheck_complete_routes_to_controller_update(self) -> None:
         receipt = RUNTIME.evaluate_stage_event(
             task_id="care-ase-faithful",
