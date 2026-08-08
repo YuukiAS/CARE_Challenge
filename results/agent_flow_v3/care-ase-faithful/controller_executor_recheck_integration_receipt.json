@@ -3,7 +3,7 @@
   "task_id": "care-ase-faithful",
   "request_nonce": "care-ase-20260806T090955Z",
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
-  "created_utc": "2026-08-08T09:33:23Z",
+  "created_utc": "2026-08-08T11:47:26Z",
   "state_transition": {
     "from": "VERIFIER_FROZEN",
     "through": [
@@ -11,12 +11,12 @@
     ],
     "to": "VERIFIER_RECHECK_REQUIRED"
   },
-  "origin_develop_before_integration_sha": "19a26c75d29479df8d501db7d5b79bfa9dc15cb0",
-  "last_observed_remote_sha_before_integration": "19a26c75d29479df8d501db7d5b79bfa9dc15cb0",
+  "origin_develop_before_integration_sha": "2bec157dd849792721afcfe4446b451eb48d5dea",
+  "last_observed_remote_sha_before_integration": "2bec157dd849792721afcfe4446b451eb48d5dea",
   "executor_thread_id": "019fd7c1-8358-7632-9022-367e62ecfbd1",
-  "executor_local_commit_sha": "d5096ad282cb1c62773835203eedb3b4db78ccd8",
-  "executor_local_commit_subject": "executor: repair care ase loss semantics",
-  "executor_merge_base": "bcd7892931df9c95669f46080ab759d95a13efcb",
+  "executor_local_commit_sha": "f82595f02afa5da614974e2f98137cbd768df502",
+  "executor_local_commit_subject": "Repair CARE-ASE executor runtime provenance",
+  "executor_merge_base": "11ac1c3d340c888e7e8710b2d6370f3065ea39c8",
   "executor_goal_complete": {
     "rollout_path": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_EXECUTOR/sessions/2026/08/06/rollout-2026-08-06T11-46-51-019fd7c1-8358-7632-9022-367e62ecfbd1.jsonl",
     "thread_id": "019fd7c1-8358-7632-9022-367e62ecfbd1",
@@ -25,17 +25,17 @@
     "time_used_seconds": 3252,
     "updated_at": 1786037419
   },
-  "integration_merge_sha": "a60ba7a68f07dbade0ab400e9e859352ca7d1b9a",
-  "implementation_fingerprint_sha256": "dd5593f869823de7fe0b76f953c3ea1ade6d0c1426a7e26a39a4ae1aea6fa692",
-  "implementation_evidence_payload_sha256": "d4ca4000b8bd50343599c14bba9db0709a1db78c4b747c0c290eaf31ee813ba4",
-  "verifier_fingerprint_sha256": "3dcacfe7ae41e164435278c0da4557fc61b384ef6eeb09860badb353b375dca6",
+  "integration_merge_sha": "afcf93cf0be4581630fb283f8beaa53bddd1130e",
+  "implementation_fingerprint_sha256": "e7a6bfe00336354da7debf7321966c8a72c7ce43ee0bb00c316387c72659b7e3",
+  "implementation_evidence_payload_sha256": "416afe2d864be7f92af90e1ec7ad5517b4a9a3ac06f840d6a1ccf6d96817441f",
+  "verifier_fingerprint_sha256": "6acc8fdc640df9be54848dfc676da45257d887c0f4be5ce71efa6230114a4a17",
   "requires_independent_verifier_recheck": true,
   "verifier_recheck_basis": "implementation_evidence_ready_pending_verifier_recheck",
   "fail_closed_receipt_file_sha256": null,
   "local_controller_gates": [
     {
       "name": "agent_flow_v3_contract_validation",
-      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/automation/validate_agent_flow_v3.py --repo-root .",
+      "command": "/usr/bin/python scripts/automation/validate_agent_flow_v3.py --repo-root .",
       "exit_code": 0,
       "stdout_tail": "CARE Agent-Flow v3 contract validation: PASS\n",
       "stderr_tail": ""
@@ -51,7 +51,7 @@
       "name": "public_verifier_pytest",
       "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m pytest tests/care_ase_faithful/test_verifier_package.py -q",
       "exit_code": 0,
-      "stdout_tail": ".............                                                            [100%]\n13 passed in 16.17s\n",
+      "stdout_tail": "...............                                                          [100%]\n15 passed in 13.56s\n",
       "stderr_tail": ""
     }
   ],
@@ -61,5 +61,5 @@
     "no implementation_complete claim before Verifier recheck",
     "no training, outer, Docker, upload, organizer email or develop-to-main merge"
   ],
-  "updated_utc": "2026-08-08T09:33:23Z"
+  "updated_utc": "2026-08-08T11:47:26Z"
 }
