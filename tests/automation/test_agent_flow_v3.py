@@ -2368,7 +2368,7 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             ):
                 self.assertFalse(RUNTIME.care_ase_role_launch_satisfied(stage_root, current, "executor"))
 
-    def test_watcher_restart_keeps_processed_state(self) -> None:
+    def test_watcher_dry_run_does_not_consume_event(self) -> None:
         args = argparse.Namespace(
             task_id="smoke-task",
             branch="develop",
@@ -2386,7 +2386,12 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             "updated_utc": "2026-08-05T00:00:00Z",
         }
         state = RUNTIME.update_watcher_state({"processed_events": []}, receipt)
-        self.assertIn(receipt["event_key"], state["processed_events"])
+        self.assertNotIn(receipt["event_key"], state["processed_events"])
+        live_state = RUNTIME.update_watcher_state(
+            {"processed_events": []},
+            {**receipt, "decision": "LIVE_RESUME", "resume_results": []},
+        )
+        self.assertIn(receipt["event_key"], live_state["processed_events"])
         request = {
             "schema": RUNTIME.SCHEMA,
             "enabled": True,
@@ -2404,7 +2409,7 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             "frozen_contract_sha256": "b" * 64,
             "integration_commit_sha": "c" * 40,
         }
-        self.assertEqual(RUNTIME.evaluate_watcher_event(args, request, current, state)["decision"], "IGNORE")
+        self.assertEqual(RUNTIME.evaluate_watcher_event(args, request, current, live_state)["decision"], "IGNORE")
 
     def test_planner_pass_stops_at_human_gate(self) -> None:
         args = argparse.Namespace(

@@ -861,7 +861,7 @@ def update_watcher_state(local_state: dict[str, Any], receipt: dict[str, Any]) -
         "last_receipt": receipt,
         "updated_utc": now(),
     }
-    if receipt["decision"] in {"DRY_RUN_RESUME", "LIVE_RESUME", "STOP_AT_HUMAN_GATE"}:
+    if receipt["decision"] in {"LIVE_RESUME", "STOP_AT_HUMAN_GATE"}:
         if receipt["event_key"] not in state["processed_events"]:
             state["processed_events"].append(receipt["event_key"])
     if receipt["decision"] == "LIVE_RESUME":
