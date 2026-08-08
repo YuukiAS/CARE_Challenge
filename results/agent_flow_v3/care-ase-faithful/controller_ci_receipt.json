@@ -1,9 +1,9 @@
 {
-  "schema": "CARE_ASE_FAITHFUL_CONTROLLER_CI_RECEIPT_V6",
+  "schema": "CARE_ASE_FAITHFUL_CONTROLLER_CI_RECEIPT_V5",
   "task_id": "care-ase-faithful",
   "request_nonce": "care-ase-20260806T090955Z",
-  "created_utc": "2026-08-08T07:29:32Z",
-  "checked_commit_sha": "49861c40ee97bdaa0c0194c8ca0027f5c9899f84",
+  "created_utc": "2026-08-08T07:44:43Z",
+  "checked_commit_sha": "491ba697e7a51712d9d04fc27824e4efa018827a",
   "local_gates_status": "PASS",
   "local_gates": [
     {
@@ -30,6 +30,9 @@
       "stderr_tail": ""
     }
   ],
-  "github_actions_status": "PENDING_AFTER_PUSH",
-  "workflow_path": ".github/workflows/agent-flow-v3-ci.yml"
+  "github_actions_status": "PASS",
+  "workflow_path": ".github/workflows/agent-flow-v3-ci.yml",
+  "state_transition_after_ci": "READY_FOR_PLANNER_REVIEW_TO_WAITING_FOR_EXTERNAL_GPT",
+  "human_approval_required_for_wait_transaction": false,
+  "approval_scope": "current_frozen_contract_and_request_nonce_ci_pass_to_planner_wait_loop"
 }
