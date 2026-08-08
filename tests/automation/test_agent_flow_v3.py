@@ -870,24 +870,32 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         executable = {
             "status": "FAIL_CLOSED",
             "passed": False,
-            "failure_count": 1,
-            "failures": ["transaction.hosted_ci.conclusion"],
+            "failure_count": 3,
+            "failures": [
+                "transaction.verifier_source_changed_after_reviewed_integration",
+                "transaction.hosted_ci.head_sha_not_exact_integration",
+                "transaction.hosted_ci.conclusion",
+            ],
         }
         transaction = {
             "status": "FAIL_CLOSED",
-            "failure_count": 1,
-            "failures": ["transaction.hosted_ci.conclusion"],
+            "failure_count": 3,
+            "failures": [
+                "transaction.verifier_source_changed_after_reviewed_integration",
+                "transaction.hosted_ci.head_sha_not_exact_integration",
+                "transaction.hosted_ci.conclusion",
+            ],
         }
         integrated = {
             "passed": False,
             "failure_count": 7,
             "failures": [
-                "artifact_binding.source_manifest.hash:src/care_myocardium/models/care_ase/core.py",
                 "verifier_owned.executable.passed",
                 "verifier_owned.executable.status",
                 "verifier_owned.transaction.status",
                 "verifier_owned.transaction.no_failures",
                 "verifier_owned.transaction.hosted_ci_success",
+                "verifier_owned.transaction.hosted_ci_exact_reviewed_integration",
                 "verifier_owned.transaction.no_stale_planner_reuse",
             ],
         }
