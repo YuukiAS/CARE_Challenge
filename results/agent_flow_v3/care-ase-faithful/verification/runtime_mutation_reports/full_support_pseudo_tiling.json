@@ -1,18 +1,18 @@
 {
-  "created_utc": "2026-08-08T05:51:54Z",
+  "created_utc": "2026-08-08T06:49:45Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
     "kb12.inference.full_support_pseudo_tiling"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "718146f22be9222df410f2f6c5d5836b0b17da91c6c668b16aa58c6d23e3f0e1",
+  "mutated_fingerprint_sha256": "8681bc9f70837cbc8e2bc6f72c2b50ca498c3f42753df47e218dc3a033647abd",
   "mutation_applied": "forced_multi_tile_predictor_runs_one_full_support_forward_then_fakes_tile_metadata",
   "mutation_executed": true,
   "mutation_id": "full_support_pseudo_tiling",
   "observations": {
     "single_logits_available": true,
-    "source_manifest_sha256_before_mutation": "3a9c0b4b14c410a970bdf9686060b89347b5b8679bbe40fcc1d01c55f2c67f1a",
+    "source_manifest_sha256_before_mutation": "0a4ed95d7674727a97f94f85cd4e08f1f4a0e1a5bcf0c1f376773792592b0ace",
     "tile_local_forward_probe": {
       "actual_forward_records": [
         {

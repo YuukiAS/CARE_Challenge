@@ -1,12 +1,12 @@
 {
-  "created_utc": "2026-08-08T05:48:53Z",
+  "created_utc": "2026-08-08T06:46:50Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
     "kb07.edema_dilation.residual_add"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "b8ba4c77ec3abde44b60605e60683bd74b4723876abe5655f9b9b517e7044754",
+  "mutated_fingerprint_sha256": "cb292d878b60d814b704dc2557ac610c96f96936c90d1771472d7fb0c90df14f",
   "mutation_applied": "edema_dilation_context.forward_uses_projection_of_block_without_identity_add",
   "mutation_executed": true,
   "mutation_id": "dilation_residual_removed",
@@ -16,7 +16,7 @@
       "edema_dilation_2": 1.8003369569778442,
       "edema_dilation_4": 3.194995403289795
     },
-    "source_manifest_sha256_before_mutation": "3a9c0b4b14c410a970bdf9686060b89347b5b8679bbe40fcc1d01c55f2c67f1a"
+    "source_manifest_sha256_before_mutation": "0a4ed95d7674727a97f94f85cd4e08f1f4a0e1a5bcf0c1f376773792592b0ace"
   },
   "passed": false,
   "request_nonce": "care-ase-20260806T090955Z",
