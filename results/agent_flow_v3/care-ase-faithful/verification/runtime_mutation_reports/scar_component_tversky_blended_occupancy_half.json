@@ -1,12 +1,12 @@
 {
-  "created_utc": "2026-08-08T11:15:12Z",
+  "created_utc": "2026-08-08T12:11:23Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
     "kb13.loss_semantic_oracle.rejected:scar_component_tversky_blended_occupancy_half"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "2846bf4b27866b46aa660c505067a51c6fcc03846acaeb06789d12e5a907bb69",
+  "mutated_fingerprint_sha256": "2c5751c128efd9ccb14553be067ff669c56e4ee361014166038d2465061654bf",
   "mutation_applied": "scar_component_term_name_preserved_but_formula_blends_half_occupancy_objective",
   "mutation_executed": true,
   "mutation_id": "scar_component_tversky_blended_occupancy_half",
@@ -117,7 +117,7 @@
         "weights_match_contract": true
       }
     },
-    "source_manifest_sha256_before_mutation": "ff3ac8061ecd3b58e38d831fe989b8ee2bbdb724eabc9eac03348b8897e6d341"
+    "source_manifest_sha256_before_mutation": "ecf1a7378b64e5d870c79cefa1ed075dd7556e2c1f02752e635648955fd51a6a"
   },
   "passed": false,
   "request_nonce": "care-ase-20260806T090955Z",
