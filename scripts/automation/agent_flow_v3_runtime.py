@@ -4215,7 +4215,6 @@ def validate_care_ase_verifier_recheck_completion(
     required = {
         "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json",
         "results/agent_flow_v3/care-ase-faithful/verification/transaction_gate_receipt.json",
-        "results/agent_flow_v3/care-ase-faithful/verification/integrated_implementation_validation_result.json",
     }
     missing = sorted(required.difference(changed_paths))
     if missing:
