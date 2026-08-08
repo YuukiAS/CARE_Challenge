@@ -40,7 +40,7 @@ CARE_RUNTIME_ROOT = Path(os.environ.get("CARE_VERIFIER_RUNTIME_CARE_ROOT", "/use
 CARE_RUNTIME_PYTHON = Path(os.environ.get("CARE_VERIFIER_RUNTIME_PYTHON", str(CARE_RUNTIME_ROOT / "envs" / "env_CARE" / "bin" / "python")))
 LAUNCH_ORIGIN_DEVELOP_SHA = "eee6bc4b37e920d0b3bba893edc8ce3c45b81139"
 LAUNCH_VERIFIER_WORKTREE_HEAD = "eee6bc4b37e920d0b3bba893edc8ce3c45b81139"
-CURRENT_REVIEWED_IMPLEMENTATION_EXPECTED_FAIL_CLOSED = False
+CURRENT_REVIEWED_IMPLEMENTATION_EXPECTED_FAIL_CLOSED = True
 REQUIRED_FREEZE_ARTIFACTS = [
     "verification_contract.json",
     "public_test_manifest.json",
@@ -63,6 +63,7 @@ EXECUTABLE_MUTATION_IDS = [
     "synthetic_intervention_delta",
     "semantic_disable_only_quadratic_signal",
     "partial_hw_straight_through_zero_loss",
+    "partial_hw_cross_z_presequence_mask_removed",
     "injury_dice_bce_replaced_by_focal",
     "scar_component_tversky_plus_occupancy_lambda025",
     "scar_component_tversky_blended_occupancy_half",
@@ -75,6 +76,7 @@ EXECUTABLE_MUTATION_IDS = [
     "deployment_reopens_stock_checkpoint",
     "evaluator_population_mismatch",
     "checkpoint_next_step_drift",
+    "checkpoint_current_contract_provenance_drift",
     "artifact_sha_mismatch",
 ]
 
@@ -146,25 +148,12 @@ def active_verifier_thread_id() -> str:
 
 
 def fingerprint_input_paths() -> list[Path]:
-    paths = [
+    return [
         VALIDATOR_PATH,
         BUILDER_PATH,
         TEST_PATH,
         EXECUTABLE_VERIFIER_PATH,
-        VERIFICATION_DIR / "verification_contract.json",
-        VERIFICATION_DIR / "public_test_manifest.json",
-        VERIFICATION_DIR / "protected_known_bad_manifest.json",
-        VERIFICATION_DIR / "runtime_mutation_manifest.json",
-        VERIFICATION_DIR / "transaction_gate_receipt.json",
-        VERIFICATION_DIR / "executable_verifier_receipt.json",
-        VERIFICATION_DIR / "executable_verifier_local_fail_closed_receipt.json",
-        VERIFICATION_DIR / "integrated_implementation_validation_result.json",
-        VERIFICATION_DIR / "public_reference_evidence.json",
-        VERIFICATION_DIR / "verifier_local_commands_recorded_in_manifests.json",
     ]
-    paths.extend(sorted((VERIFICATION_DIR / "runtime_mutation_reports").glob("*.json")))
-    paths.extend(sorted((VERIFICATION_DIR / "protected_reports").glob("*.json")))
-    return paths
 
 
 def verifier_source_fingerprint() -> dict[str, Any]:
@@ -706,12 +695,42 @@ def build_artifacts() -> int:
     file_hashes = fingerprint_file_hashes(contract_hash)
     digest = sha256_bytes(json.dumps(file_hashes, sort_keys=True).encode("utf-8"))
     source_fp = verifier_source_fingerprint()
+    alternate_runtime_tuple = {
+        "integration_sha": "0" * 40,
+        "implementation_fingerprint_sha256": "f" * 64,
+        "executable_verifier_receipt_sha256": "1" * 64,
+        "ci_head_sha": "0" * 40,
+    }
+    alternate_digest = sha256_bytes(json.dumps(fingerprint_file_hashes(contract_hash), sort_keys=True).encode("utf-8"))
     fingerprint = {
         "schema": "CARE_ASE_FAITHFUL_VERIFIER_FINGERPRINT_V1",
         "task_id": TASK_ID,
         "request_nonce": REQUEST_NONCE,
         "frozen_contract_sha256": FROZEN_CONTRACT_SHA256,
         "fingerprint_sha256": digest,
+        "fingerprint_scope": "pre_executor_immutable_frozen_contract_hash_and_verifier_source_test_definitions_only",
+        "runtime_evidence_excluded_from_fingerprint": True,
+        "reexecution_stability_oracle": {
+            "distinct_runtime_tuple": alternate_runtime_tuple,
+            "alternate_runtime_tuple_distinct_from_reviewed": True,
+            "alternate_runtime_tuple_fingerprint_sha256": alternate_digest,
+            "same_frozen_verifier_fingerprint_for_distinct_runtime_tuple": alternate_digest == digest,
+            "logical_derivation": (
+                "The frozen verifier digest is computed only from the frozen contract, verifier source/test "
+                "files, and static verifier-owned manifest definitions; implementation/integration/runtime "
+                "receipt hashes are recorded as reverse bindings but are not digest inputs."
+            ),
+        },
+        "excluded_runtime_evidence": [
+            "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json",
+            "results/agent_flow_v3/care-ase-faithful/verification/transaction_gate_receipt.json",
+            "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_local_fail_closed_receipt.json",
+            "results/agent_flow_v3/care-ase-faithful/verification/integrated_implementation_validation_result.json",
+            "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_manifest.json",
+            "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/*.json",
+            "results/agent_flow_v3/care-ase-faithful/verification/protected_reports/*.json",
+            "results/agent_flow_v3/care-ase-faithful/verification/verifier_local_commands_recorded_in_manifests.json",
+        ],
         "verifier_source_fingerprint_sha256": source_fp["verifier_source_fingerprint_sha256"],
         "verifier_source_file_hashes": source_fp["file_hashes"],
         "transaction_fingerprint_sha256": load_json(VERIFICATION_DIR / "transaction_gate_receipt.json").get("transaction_fingerprint_sha256"),

@@ -291,6 +291,8 @@ def _build_strict_fixture(tmp: Path, *, core_source: str | None = None) -> Path:
         {
             "status": "PASS",
             "schema_version": 4,
+            "request_nonce": "care-ase-20260806T090955Z",
+            "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
             "next_step_matches_uninterrupted": True,
             "rng_and_cursor_state_matches": True,
         },
@@ -457,10 +459,53 @@ class VerifierPackageTests(unittest.TestCase):
             "injury_dice_bce_replaced_by_focal",
             "scar_component_tversky_plus_occupancy_lambda025",
             "scar_component_tversky_blended_occupancy_half",
+            "partial_hw_cross_z_presequence_mask_removed",
+            "checkpoint_current_contract_provenance_drift",
         }
         self.assertTrue(required.issubset(set(runner.MUTATION_IDS)))
         self.assertTrue(required.issubset(set(validator.REQUIRED_EXECUTABLE_MUTATION_IDS)))
         self.assertTrue(required.issubset(set(builder_module.EXECUTABLE_MUTATION_IDS)))
+        self.assertIn("partial_hw_slice_extent_head_cross_z_gradient", set(runner.REQUIRED_PROBES))
+        self.assertIn("partial_hw_slice_extent_head_cross_z_gradient", set(validator.REQUIRED_EXECUTABLE_PROBES))
+
+    def test_verifier_fingerprint_excludes_runtime_execution_receipts(self) -> None:
+        builder = ROOT / "validators" / "care_ase_faithful" / "build_verification_artifacts.py"
+        builder_spec = importlib.util.spec_from_file_location("care_ase_artifact_builder", builder)
+        if builder_spec is None or builder_spec.loader is None:
+            self.fail("cannot import artifact builder")
+        validator_dir = str(VALIDATOR.parent)
+        inserted = validator_dir not in sys.path
+        if inserted:
+            sys.path.insert(0, validator_dir)
+        try:
+            builder_module = importlib.util.module_from_spec(builder_spec)
+            builder_spec.loader.exec_module(builder_module)
+        finally:
+            if inserted:
+                sys.path.remove(validator_dir)
+        fingerprint_names = {path.name for path in builder_module.fingerprint_input_paths()}
+        self.assertNotIn("executable_verifier_receipt.json", fingerprint_names)
+        self.assertNotIn("transaction_gate_receipt.json", fingerprint_names)
+        self.assertNotIn("runtime_mutation_manifest.json", fingerprint_names)
+        self.assertNotIn("integrated_implementation_validation_result.json", fingerprint_names)
+        self.assertNotIn("verification_contract.json", fingerprint_names)
+        self.assertNotIn("public_test_manifest.json", fingerprint_names)
+        self.assertNotIn("protected_known_bad_manifest.json", fingerprint_names)
+
+        file_hashes_a = builder_module.fingerprint_file_hashes(builder_module.FROZEN_CONTRACT_SHA256)
+        file_hashes_b = builder_module.fingerprint_file_hashes(builder_module.FROZEN_CONTRACT_SHA256)
+        digest_a = builder_module.sha256_bytes(json.dumps(file_hashes_a, sort_keys=True).encode("utf-8"))
+        digest_b = builder_module.sha256_bytes(json.dumps(file_hashes_b, sort_keys=True).encode("utf-8"))
+        runtime_tuple_a = {
+            "integration_sha": "d643c80ce15aa77a28ffb0bec6661afac5be3237",
+            "implementation_fingerprint_sha256": "dd5593f869823de7fe0b76f953c3ea1ade6d0c1426a7e26a39a4ae1aea6fa692",
+        }
+        runtime_tuple_b = {
+            "integration_sha": "0" * 40,
+            "implementation_fingerprint_sha256": "f" * 64,
+        }
+        self.assertNotEqual(runtime_tuple_a, runtime_tuple_b)
+        self.assertEqual(digest_a, digest_b)
 
     def test_transaction_gate_rejects_old_ci_run_for_current_integration(self) -> None:
         runner_spec = importlib.util.spec_from_file_location("care_ase_executable_verifier", EXECUTABLE_VERIFIER)

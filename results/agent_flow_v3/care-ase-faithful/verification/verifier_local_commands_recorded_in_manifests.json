@@ -3,7 +3,7 @@
     "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
     "validators/care_ase_faithful/build_verification_artifacts.py"
   ],
-  "created_utc": "2026-08-08T09:47:43Z",
+  "created_utc": "2026-08-08T11:08:12Z",
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
   "integrated_implementation_validation": {
     "command": [
@@ -19,11 +19,11 @@
     "exit_code": 2,
     "purpose": "frozen validator rejects current implementation evidence using executable verifier receipt",
     "report_path": "results/agent_flow_v3/care-ase-faithful/verification/integrated_implementation_validation_result.json",
-    "report_sha256": "f5895516d6c67fa298dfe24121348fe60a9c079bb9fb7bb63866a665fa0a5014",
+    "report_sha256": "40d7d9080b1afa52e4bce411086036d32c990c1494a5c5390bbe0bb1680463b2",
     "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "stderr_tail": "",
-    "stdout_sha256": "f5895516d6c67fa298dfe24121348fe60a9c079bb9fb7bb63866a665fa0a5014",
-    "stdout_tail": "{\n  \"failure_count\": 7,\n  \"failures\": [\n    \"verifier_owned.executable.passed\",\n    \"verifier_owned.executable.status\",\n    \"verifier_owned.transaction.status\",\n    \"verifier_owned.transaction.no_failures\",\n    \"verifier_owned.transaction.hosted_ci_success\",\n    \"verifier_owned.transaction.hosted_ci_exact_reviewed_integration\",\n    \"verifier_owned.transaction.no_stale_planner_reuse\"\n  ],\n  \"known_bad_case_id\": null,\n  \"passed\": false,\n  \"schema\": \"CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1\",\n  \"task_id\": \"care-ase-faithful\"\n}\n"
+    "stdout_sha256": "40d7d9080b1afa52e4bce411086036d32c990c1494a5c5390bbe0bb1680463b2",
+    "stdout_tail": "{\n  \"failure_count\": 10,\n  \"failures\": [\n    \"kb16.checkpoint_resume.current_request_nonce\",\n    \"kb16.checkpoint_resume.current_frozen_contract_sha256\",\n    \"verifier_owned.executable.passed\",\n    \"verifier_owned.executable.status\",\n    \"verifier_owned.partial_hw.cross_z_partial_feature_grad_zero\",\n    \"verifier_owned.partial_hw.cross_z_partial_feature_grad_abs_zero\",\n    \"verifier_owned.transaction.status\",\n    \"verifier_owned.transaction.no_failures\",\n    \"verifier_owned.transaction.hosted_ci_success\",\n    \"verifier_owned.transaction.no_stale_planner_reuse\"\n  ],\n  \"known_bad_case_id\": null,\n  \"passed\": false,\n  \"schema\": \"CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1\",\n  \"task_id\": \"care-ase-faithful\"\n}\n"
   },
   "local_fail_closed_executable_probe": {
     "command": [
@@ -32,11 +32,11 @@
       "--review-round",
       "1",
       "--integration-sha",
-      "a60ba7a68f07dbade0ab400e9e859352ca7d1b9a",
+      "d643c80ce15aa77a28ffb0bec6661afac5be3237",
       "--implementation-fingerprint",
       "dd5593f869823de7fe0b76f953c3ea1ade6d0c1426a7e26a39a4ae1aea6fa692",
       "--verifier-fingerprint",
-      "3dcacfe7ae41e164435278c0da4557fc61b384ef6eeb09860badb353b375dca6",
+      "7bdf871a1bd13c7f3faf30350b0c73797dd5818a90622be892917ebe875803ad",
       "--receipt",
       "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_local_fail_closed_receipt.json"
     ],
@@ -44,8 +44,8 @@
     "purpose": "verifier-owned real-mode executable probe can run independently without using Executor receipts as its conclusion",
     "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "stderr_tail": "",
-    "stdout_sha256": "3876e1de1a8fe84bda06aec19ac39c6231073cb923b3d4d895804f65d592a748",
-    "stdout_tail": "verifier_source_artifacts\": {\n      \"file_hashes\": {\n        \"tests/care_ase_faithful/test_verifier_package.py\": \"0dfccfd2188c8d23e46f768c9deda9bc95a3bce6278090b34e6f0ac578215f0b\",\n        \"validators/care_ase_faithful/build_verification_artifacts.py\": \"214a2cbbfb3ddce5c76a413d90152ddfc4d7f2ca8bfa4f5fd482c37de38f0f2f\",\n        \"validators/care_ase_faithful/run_executable_verifier.py\": \"b1537a7364dfc752aa55217c506ee8783279f0bc74aedc11896dcf54cce38bde\",\n        \"validators/care_ase_faithful/validate_contract_evidence.py\": \"97c08f8f4b00027f608611c273b769b452e3c2c52893255206a4be617fdcdcd6\"\n      },\n      \"verifier_source_fingerprint_sha256\": \"deb9b5af5d4a737c0af6bddd939a7c76d0bd7829861c9fdb6a974c377895f982\"\n    },\n    \"verifier_source_changed_after_reviewed_integration\": [\n      \"tests/care_ase_faithful/test_verifier_package.py\",\n      \"validators/care_ase_faithful/build_verification_artifacts.py\",\n      \"validators/care_ase_faithful/run_executable_verifier.py\",\n      \"validators/care_ase_faithful/validate_contract_evidence.py\"\n    ],\n    \"verifier_source_fingerprint_sha256\": \"deb9b5af5d4a737c0af6bddd939a7c76d0bd7829861c9fdb6a974c377895f982\"\n  },\n  \"verifier_source_artifacts\": {\n    \"file_hashes\": {\n      \"tests/care_ase_faithful/test_verifier_package.py\": \"0dfccfd2188c8d23e46f768c9deda9bc95a3bce6278090b34e6f0ac578215f0b\",\n      \"validators/care_ase_faithful/build_verification_artifacts.py\": \"214a2cbbfb3ddce5c76a413d90152ddfc4d7f2ca8bfa4f5fd482c37de38f0f2f\",\n      \"validators/care_ase_faithful/run_executable_verifier.py\": \"b1537a7364dfc752aa55217c506ee8783279f0bc74aedc11896dcf54cce38bde\",\n      \"validators/care_ase_faithful/validate_contract_evidence.py\": \"97c08f8f4b00027f608611c273b769b452e3c2c52893255206a4be617fdcdcd6\"\n    },\n    \"verifier_source_fingerprint_sha256\": \"deb9b5af5d4a737c0af6bddd939a7c76d0bd7829861c9fdb6a974c377895f982\"\n  },\n  \"verifier_source_fingerprint_sha256\": \"deb9b5af5d4a737c0af6bddd939a7c76d0bd7829861c9fdb6a974c377895f982\",\n  \"zero_credit\": true\n}\n"
+    "stdout_sha256": "8f60a7522d3098b247cae2d28a91a89ebc2ffc0acb00fc2ee12e08f72acac5d2",
+    "stdout_tail": "verifier_source_artifacts\": {\n      \"file_hashes\": {\n        \"tests/care_ase_faithful/test_verifier_package.py\": \"7328cd6f1478e3051323387f4d977e2815ab56986c63d9552b533d3599fc39f1\",\n        \"validators/care_ase_faithful/build_verification_artifacts.py\": \"c4de1c0276b8a86a1fc2b37ada0b50ab90ce3d40b176c1361e14ee836f80505f\",\n        \"validators/care_ase_faithful/run_executable_verifier.py\": \"fe02d9b5181156124a20c5626341fe146d663e6d07c95ecc8bc3867052510272\",\n        \"validators/care_ase_faithful/validate_contract_evidence.py\": \"62d2e90fecb4e324486b942e9ecb1af01c9bdee523a1600b63f3bf61951edc12\"\n      },\n      \"verifier_source_fingerprint_sha256\": \"62e2915dc872844a7f30f283def43f4abdde6c8995387e890873c6f6a91acba1\"\n    },\n    \"verifier_source_changed_after_reviewed_integration\": [\n      \"tests/care_ase_faithful/test_verifier_package.py\",\n      \"validators/care_ase_faithful/build_verification_artifacts.py\",\n      \"validators/care_ase_faithful/run_executable_verifier.py\",\n      \"validators/care_ase_faithful/validate_contract_evidence.py\"\n    ],\n    \"verifier_source_fingerprint_sha256\": \"62e2915dc872844a7f30f283def43f4abdde6c8995387e890873c6f6a91acba1\"\n  },\n  \"verifier_source_artifacts\": {\n    \"file_hashes\": {\n      \"tests/care_ase_faithful/test_verifier_package.py\": \"7328cd6f1478e3051323387f4d977e2815ab56986c63d9552b533d3599fc39f1\",\n      \"validators/care_ase_faithful/build_verification_artifacts.py\": \"c4de1c0276b8a86a1fc2b37ada0b50ab90ce3d40b176c1361e14ee836f80505f\",\n      \"validators/care_ase_faithful/run_executable_verifier.py\": \"fe02d9b5181156124a20c5626341fe146d663e6d07c95ecc8bc3867052510272\",\n      \"validators/care_ase_faithful/validate_contract_evidence.py\": \"62d2e90fecb4e324486b942e9ecb1af01c9bdee523a1600b63f3bf61951edc12\"\n    },\n    \"verifier_source_fingerprint_sha256\": \"62e2915dc872844a7f30f283def43f4abdde6c8995387e890873c6f6a91acba1\"\n  },\n  \"verifier_source_fingerprint_sha256\": \"62e2915dc872844a7f30f283def43f4abdde6c8995387e890873c6f6a91acba1\",\n  \"zero_credit\": true\n}\n"
   },
   "protected_known_bad_invocations": [
     {
@@ -582,8 +582,8 @@
       "exit_code": 0,
       "expected_exit_code": 0,
       "purpose": "verifier unittest package exercises public reference and all protected known-bad categories",
-      "stderr_sha256": "be04dde2f5e13da703d6087fdaf20dcbff1facc4a951df623eb6d4e4fd1a1b73",
-      "stderr_tail": "..............\n----------------------------------------------------------------------\nRan 14 tests in 12.844s\n\nOK\n",
+      "stderr_sha256": "0f5e4bfbad07eae06f06a98af13b847095b74ffa21616c0ca0d6ad15ff92f76b",
+      "stderr_tail": "...............\n----------------------------------------------------------------------\nRan 15 tests in 11.183s\n\nOK\n",
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stdout_tail": ""
     },
@@ -611,21 +611,21 @@
         "--review-round",
         "1",
         "--integration-sha",
-        "a60ba7a68f07dbade0ab400e9e859352ca7d1b9a",
+        "d643c80ce15aa77a28ffb0bec6661afac5be3237",
         "--implementation-fingerprint",
         "dd5593f869823de7fe0b76f953c3ea1ade6d0c1426a7e26a39a4ae1aea6fa692",
         "--verifier-fingerprint",
-        "3dcacfe7ae41e164435278c0da4557fc61b384ef6eeb09860badb353b375dca6",
+        "7bdf871a1bd13c7f3faf30350b0c73797dd5818a90622be892917ebe875803ad",
         "--receipt",
         "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json"
       ],
       "exit_code": 2,
-      "expected_exit_code": 0,
+      "expected_exit_code": 2,
       "purpose": "verifier-owned executable receipt independently evaluates the current integrated implementation and fails closed for reentry3 causal-authority shortcuts",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_tail": "",
-      "stdout_sha256": "32d5896ebcf3eee5e9d71d0488740e0e3f95336766e172545c18dd5dd38a1080",
-      "stdout_tail": "verifier_source_artifacts\": {\n      \"file_hashes\": {\n        \"tests/care_ase_faithful/test_verifier_package.py\": \"0dfccfd2188c8d23e46f768c9deda9bc95a3bce6278090b34e6f0ac578215f0b\",\n        \"validators/care_ase_faithful/build_verification_artifacts.py\": \"214a2cbbfb3ddce5c76a413d90152ddfc4d7f2ca8bfa4f5fd482c37de38f0f2f\",\n        \"validators/care_ase_faithful/run_executable_verifier.py\": \"b1537a7364dfc752aa55217c506ee8783279f0bc74aedc11896dcf54cce38bde\",\n        \"validators/care_ase_faithful/validate_contract_evidence.py\": \"97c08f8f4b00027f608611c273b769b452e3c2c52893255206a4be617fdcdcd6\"\n      },\n      \"verifier_source_fingerprint_sha256\": \"deb9b5af5d4a737c0af6bddd939a7c76d0bd7829861c9fdb6a974c377895f982\"\n    },\n    \"verifier_source_changed_after_reviewed_integration\": [\n      \"tests/care_ase_faithful/test_verifier_package.py\",\n      \"validators/care_ase_faithful/build_verification_artifacts.py\",\n      \"validators/care_ase_faithful/run_executable_verifier.py\",\n      \"validators/care_ase_faithful/validate_contract_evidence.py\"\n    ],\n    \"verifier_source_fingerprint_sha256\": \"deb9b5af5d4a737c0af6bddd939a7c76d0bd7829861c9fdb6a974c377895f982\"\n  },\n  \"verifier_source_artifacts\": {\n    \"file_hashes\": {\n      \"tests/care_ase_faithful/test_verifier_package.py\": \"0dfccfd2188c8d23e46f768c9deda9bc95a3bce6278090b34e6f0ac578215f0b\",\n      \"validators/care_ase_faithful/build_verification_artifacts.py\": \"214a2cbbfb3ddce5c76a413d90152ddfc4d7f2ca8bfa4f5fd482c37de38f0f2f\",\n      \"validators/care_ase_faithful/run_executable_verifier.py\": \"b1537a7364dfc752aa55217c506ee8783279f0bc74aedc11896dcf54cce38bde\",\n      \"validators/care_ase_faithful/validate_contract_evidence.py\": \"97c08f8f4b00027f608611c273b769b452e3c2c52893255206a4be617fdcdcd6\"\n    },\n    \"verifier_source_fingerprint_sha256\": \"deb9b5af5d4a737c0af6bddd939a7c76d0bd7829861c9fdb6a974c377895f982\"\n  },\n  \"verifier_source_fingerprint_sha256\": \"deb9b5af5d4a737c0af6bddd939a7c76d0bd7829861c9fdb6a974c377895f982\",\n  \"zero_credit\": true\n}\n"
+      "stdout_sha256": "c7fd15226d637a4441369534d698c99f005725694127b114c155e5511ce9defa",
+      "stdout_tail": "verifier_source_artifacts\": {\n      \"file_hashes\": {\n        \"tests/care_ase_faithful/test_verifier_package.py\": \"7328cd6f1478e3051323387f4d977e2815ab56986c63d9552b533d3599fc39f1\",\n        \"validators/care_ase_faithful/build_verification_artifacts.py\": \"c4de1c0276b8a86a1fc2b37ada0b50ab90ce3d40b176c1361e14ee836f80505f\",\n        \"validators/care_ase_faithful/run_executable_verifier.py\": \"fe02d9b5181156124a20c5626341fe146d663e6d07c95ecc8bc3867052510272\",\n        \"validators/care_ase_faithful/validate_contract_evidence.py\": \"62d2e90fecb4e324486b942e9ecb1af01c9bdee523a1600b63f3bf61951edc12\"\n      },\n      \"verifier_source_fingerprint_sha256\": \"62e2915dc872844a7f30f283def43f4abdde6c8995387e890873c6f6a91acba1\"\n    },\n    \"verifier_source_changed_after_reviewed_integration\": [\n      \"tests/care_ase_faithful/test_verifier_package.py\",\n      \"validators/care_ase_faithful/build_verification_artifacts.py\",\n      \"validators/care_ase_faithful/run_executable_verifier.py\",\n      \"validators/care_ase_faithful/validate_contract_evidence.py\"\n    ],\n    \"verifier_source_fingerprint_sha256\": \"62e2915dc872844a7f30f283def43f4abdde6c8995387e890873c6f6a91acba1\"\n  },\n  \"verifier_source_artifacts\": {\n    \"file_hashes\": {\n      \"tests/care_ase_faithful/test_verifier_package.py\": \"7328cd6f1478e3051323387f4d977e2815ab56986c63d9552b533d3599fc39f1\",\n      \"validators/care_ase_faithful/build_verification_artifacts.py\": \"c4de1c0276b8a86a1fc2b37ada0b50ab90ce3d40b176c1361e14ee836f80505f\",\n      \"validators/care_ase_faithful/run_executable_verifier.py\": \"fe02d9b5181156124a20c5626341fe146d663e6d07c95ecc8bc3867052510272\",\n      \"validators/care_ase_faithful/validate_contract_evidence.py\": \"62d2e90fecb4e324486b942e9ecb1af01c9bdee523a1600b63f3bf61951edc12\"\n    },\n    \"verifier_source_fingerprint_sha256\": \"62e2915dc872844a7f30f283def43f4abdde6c8995387e890873c6f6a91acba1\"\n  },\n  \"verifier_source_fingerprint_sha256\": \"62e2915dc872844a7f30f283def43f4abdde6c8995387e890873c6f6a91acba1\",\n  \"zero_credit\": true\n}\n"
     },
     {
       "command": [
@@ -639,12 +639,12 @@
         "results/agent_flow_v3/care-ase-faithful/verification/integrated_implementation_validation_result.json"
       ],
       "exit_code": 2,
-      "expected_exit_code": 0,
+      "expected_exit_code": 2,
       "purpose": "frozen validator evaluates integrated implementation evidence and fails closed with current verifier-owned runtime receipts",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_tail": "",
-      "stdout_sha256": "f5895516d6c67fa298dfe24121348fe60a9c079bb9fb7bb63866a665fa0a5014",
-      "stdout_tail": "{\n  \"failure_count\": 7,\n  \"failures\": [\n    \"verifier_owned.executable.passed\",\n    \"verifier_owned.executable.status\",\n    \"verifier_owned.transaction.status\",\n    \"verifier_owned.transaction.no_failures\",\n    \"verifier_owned.transaction.hosted_ci_success\",\n    \"verifier_owned.transaction.hosted_ci_exact_reviewed_integration\",\n    \"verifier_owned.transaction.no_stale_planner_reuse\"\n  ],\n  \"known_bad_case_id\": null,\n  \"passed\": false,\n  \"schema\": \"CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1\",\n  \"task_id\": \"care-ase-faithful\"\n}\n"
+      "stdout_sha256": "40d7d9080b1afa52e4bce411086036d32c990c1494a5c5390bbe0bb1680463b2",
+      "stdout_tail": "{\n  \"failure_count\": 10,\n  \"failures\": [\n    \"kb16.checkpoint_resume.current_request_nonce\",\n    \"kb16.checkpoint_resume.current_frozen_contract_sha256\",\n    \"verifier_owned.executable.passed\",\n    \"verifier_owned.executable.status\",\n    \"verifier_owned.partial_hw.cross_z_partial_feature_grad_zero\",\n    \"verifier_owned.partial_hw.cross_z_partial_feature_grad_abs_zero\",\n    \"verifier_owned.transaction.status\",\n    \"verifier_owned.transaction.no_failures\",\n    \"verifier_owned.transaction.hosted_ci_success\",\n    \"verifier_owned.transaction.no_stale_planner_reuse\"\n  ],\n  \"known_bad_case_id\": null,\n  \"passed\": false,\n  \"schema\": \"CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1\",\n  \"task_id\": \"care-ase-faithful\"\n}\n"
     }
   ],
   "request_nonce": "care-ase-20260806T090955Z",
@@ -661,9 +661,9 @@
       "mutation_id": "extent_conv3d_alias",
       "passed_fail_closed": true,
       "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/extent_conv3d_alias.json",
-      "report_sha256": "fa7b265bf23d68a878ada6168e4759bdb2e37062b611f3dffc037c361a5714b7",
+      "report_sha256": "23012d32aaf7be590328347135366f40f52b048e03866be68eea8d596662c01f",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "fa7b265bf23d68a878ada6168e4759bdb2e37062b611f3dffc037c361a5714b7"
+      "stdout_sha256": "23012d32aaf7be590328347135366f40f52b048e03866be68eea8d596662c01f"
     },
     {
       "command": [
@@ -677,9 +677,9 @@
       "mutation_id": "dilation_residual_removed",
       "passed_fail_closed": true,
       "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/dilation_residual_removed.json",
-      "report_sha256": "c56e9d8ef684c2e870113d29bae4310293b659248e881269ad1482539989de56",
+      "report_sha256": "793283a7c1d40e610529e497f9a60e209f6598b3d0f86486bfe3f370c3579cc8",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "c56e9d8ef684c2e870113d29bae4310293b659248e881269ad1482539989de56"
+      "stdout_sha256": "793283a7c1d40e610529e497f9a60e209f6598b3d0f86486bfe3f370c3579cc8"
     },
     {
       "command": [
@@ -693,9 +693,9 @@
       "mutation_id": "injury_random_init",
       "passed_fail_closed": true,
       "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/injury_random_init.json",
-      "report_sha256": "530e752acb319032ff8f58670fecf21009e8edaf1b092871df7eb0ee905fcbda",
+      "report_sha256": "8a229577efe7b8b53b51988ae03e51f3102a4a694a5c48304c7c36f3ad89078c",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "530e752acb319032ff8f58670fecf21009e8edaf1b092871df7eb0ee905fcbda"
+      "stdout_sha256": "8a229577efe7b8b53b51988ae03e51f3102a4a694a5c48304c7c36f3ad89078c"
     },
     {
       "command": [
@@ -709,9 +709,9 @@
       "mutation_id": "projection_context_no_final_authority",
       "passed_fail_closed": true,
       "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/projection_context_no_final_authority.json",
-      "report_sha256": "b85e44f77c478732a8e1cc120abc778f9f692977b53f6880b1e136fe2e8f3b85",
+      "report_sha256": "e276601553e67e6f4ec6c3eff1af78746b79f32347f424b80478d58db3061b40",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "b85e44f77c478732a8e1cc120abc778f9f692977b53f6880b1e136fe2e8f3b85"
+      "stdout_sha256": "e276601553e67e6f4ec6c3eff1af78746b79f32347f424b80478d58db3061b40"
     },
     {
       "command": [
@@ -725,9 +725,9 @@
       "mutation_id": "synthetic_intervention_delta",
       "passed_fail_closed": true,
       "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/synthetic_intervention_delta.json",
-      "report_sha256": "0f5e1183dc68a126a3e2d108be3981eedec1bd77355bd11b16531e0242ed9c19",
+      "report_sha256": "9c6650d7a3a001e4e5304c4227dc5e8ffe4e1eea14019100905e63ea12528cc5",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "0f5e1183dc68a126a3e2d108be3981eedec1bd77355bd11b16531e0242ed9c19"
+      "stdout_sha256": "9c6650d7a3a001e4e5304c4227dc5e8ffe4e1eea14019100905e63ea12528cc5"
     },
     {
       "command": [
@@ -741,9 +741,9 @@
       "mutation_id": "semantic_disable_only_quadratic_signal",
       "passed_fail_closed": true,
       "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/semantic_disable_only_quadratic_signal.json",
-      "report_sha256": "ba7ef7554dcfbb4042f560bdafe5989c86960117ae5910eef69f45f33b34595b",
+      "report_sha256": "105bf69980c9b8a24cf649d01a4a1ff025cff70f70acda7bcab91d33fb10af21",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "ba7ef7554dcfbb4042f560bdafe5989c86960117ae5910eef69f45f33b34595b"
+      "stdout_sha256": "105bf69980c9b8a24cf649d01a4a1ff025cff70f70acda7bcab91d33fb10af21"
     },
     {
       "command": [
@@ -757,9 +757,25 @@
       "mutation_id": "partial_hw_straight_through_zero_loss",
       "passed_fail_closed": true,
       "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/partial_hw_straight_through_zero_loss.json",
-      "report_sha256": "044d0611619969517406c8edded259ebe6ad5b14d86cfdcb2452308e8750f960",
+      "report_sha256": "ac02e933f1fa354ee4fe0ff1d7c254eb96f914170fe9657244e1d923f96c994b",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "044d0611619969517406c8edded259ebe6ad5b14d86cfdcb2452308e8750f960"
+      "stdout_sha256": "ac02e933f1fa354ee4fe0ff1d7c254eb96f914170fe9657244e1d923f96c994b"
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "validators/care_ase_faithful/run_executable_verifier.py",
+        "--mutation-id",
+        "partial_hw_cross_z_presequence_mask_removed"
+      ],
+      "command_sha256": "b22c1924b46319f137e5cebd150dd532c7c2503be88ad898f488b1b45bb2079a",
+      "exit_code": 2,
+      "mutation_id": "partial_hw_cross_z_presequence_mask_removed",
+      "passed_fail_closed": true,
+      "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/partial_hw_cross_z_presequence_mask_removed.json",
+      "report_sha256": "11e7b288734e6b8953d6e09686c2d865c93ea14b3776e373e568b6a087f8db51",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "11e7b288734e6b8953d6e09686c2d865c93ea14b3776e373e568b6a087f8db51"
     },
     {
       "command": [
@@ -773,9 +789,9 @@
       "mutation_id": "injury_dice_bce_replaced_by_focal",
       "passed_fail_closed": true,
       "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/injury_dice_bce_replaced_by_focal.json",
-      "report_sha256": "0166d9f4d75165e21c3d55f6584361d87e185fd1f3c34defb535571759486229",
+      "report_sha256": "d031fb69f89d51322aa809187da6ac9337aae00cd35f765b280edecf0bd9d929",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "0166d9f4d75165e21c3d55f6584361d87e185fd1f3c34defb535571759486229"
+      "stdout_sha256": "d031fb69f89d51322aa809187da6ac9337aae00cd35f765b280edecf0bd9d929"
     },
     {
       "command": [
@@ -789,9 +805,9 @@
       "mutation_id": "scar_component_tversky_plus_occupancy_lambda025",
       "passed_fail_closed": true,
       "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/scar_component_tversky_plus_occupancy_lambda025.json",
-      "report_sha256": "b848b94dfaa89204dd0353ddb01f3a9a8eb8a40d7d6bb236bcccbef28be87c27",
+      "report_sha256": "67b74a1831131e93905c3e3f7157b59508f623e234e7417282718a88a0ba0648",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "b848b94dfaa89204dd0353ddb01f3a9a8eb8a40d7d6bb236bcccbef28be87c27"
+      "stdout_sha256": "67b74a1831131e93905c3e3f7157b59508f623e234e7417282718a88a0ba0648"
     },
     {
       "command": [
@@ -805,9 +821,9 @@
       "mutation_id": "scar_component_tversky_blended_occupancy_half",
       "passed_fail_closed": true,
       "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/scar_component_tversky_blended_occupancy_half.json",
-      "report_sha256": "c0fb70ab1a59017b7496b8ba705c2730abc12df5b88c3aae1c889416bd7222d8",
+      "report_sha256": "7606929321b5798e65f97aa0f6a886a3ed4d4c41e509ca4f0842e9e42ba13573",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "c0fb70ab1a59017b7496b8ba705c2730abc12df5b88c3aae1c889416bd7222d8"
+      "stdout_sha256": "7606929321b5798e65f97aa0f6a886a3ed4d4c41e509ca4f0842e9e42ba13573"
     },
     {
       "command": [
@@ -821,9 +837,9 @@
       "mutation_id": "full_support_pseudo_tiling",
       "passed_fail_closed": true,
       "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/full_support_pseudo_tiling.json",
-      "report_sha256": "546a996fa76e0f7a6e0b940629b1f75ed26a9d1d3f80a0a44e2070e06d919297",
+      "report_sha256": "a9b9b5718d61f867e580630146e717286f8195f8611c729bc4df57407bbe6a07",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "546a996fa76e0f7a6e0b940629b1f75ed26a9d1d3f80a0a44e2070e06d919297"
+      "stdout_sha256": "a9b9b5718d61f867e580630146e717286f8195f8611c729bc4df57407bbe6a07"
     },
     {
       "command": [
@@ -837,9 +853,9 @@
       "mutation_id": "transaction_old_tuple_reused",
       "passed_fail_closed": true,
       "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/transaction_old_tuple_reused.json",
-      "report_sha256": "369aecda8df68f628343cbf1e6678982dfeade80e7bbb006565843fbc99ce33e",
+      "report_sha256": "fc0c04675417f77d70929542d65f2a8110fe513eb757beecd6c8686369889900",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "369aecda8df68f628343cbf1e6678982dfeade80e7bbb006565843fbc99ce33e"
+      "stdout_sha256": "fc0c04675417f77d70929542d65f2a8110fe513eb757beecd6c8686369889900"
     },
     {
       "command": [
@@ -853,9 +869,9 @@
       "mutation_id": "forged_executor_pass_receipt",
       "passed_fail_closed": true,
       "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/forged_executor_pass_receipt.json",
-      "report_sha256": "db994251f5fae06ff421cd7b6c66ef70fd6fdd29be218092fb9fcb2d16fb690b",
+      "report_sha256": "0725e4c6e434706e35e2d428c827d1023c41755142fccc6df5e143440fa80cec",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "db994251f5fae06ff421cd7b6c66ef70fd6fdd29be218092fb9fcb2d16fb690b"
+      "stdout_sha256": "0725e4c6e434706e35e2d428c827d1023c41755142fccc6df5e143440fa80cec"
     },
     {
       "command": [
@@ -869,9 +885,9 @@
       "mutation_id": "no_t2_calls_edema",
       "passed_fail_closed": true,
       "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/no_t2_calls_edema.json",
-      "report_sha256": "193b09f85789f1105f9cd69ba7895c404da1bd77654e5aa3601d292cac547a86",
+      "report_sha256": "fd94b73bd032bcd3f5084ec22fd01f9300c85d32a99a7f7a581a8dd8fbd3e84d",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "193b09f85789f1105f9cd69ba7895c404da1bd77654e5aa3601d292cac547a86"
+      "stdout_sha256": "fd94b73bd032bcd3f5084ec22fd01f9300c85d32a99a7f7a581a8dd8fbd3e84d"
     },
     {
       "command": [
@@ -885,9 +901,9 @@
       "mutation_id": "single_multi_same_call",
       "passed_fail_closed": true,
       "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/single_multi_same_call.json",
-      "report_sha256": "9aedb26e54ee4532717210609a4150b040b6e4de8abeb08f80567331275a9431",
+      "report_sha256": "9d1bd882fb95d589225d2cdbc13b3a83f612ff0161a19b6d8c3a6399da471c0e",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "9aedb26e54ee4532717210609a4150b040b6e4de8abeb08f80567331275a9431"
+      "stdout_sha256": "9d1bd882fb95d589225d2cdbc13b3a83f612ff0161a19b6d8c3a6399da471c0e"
     },
     {
       "command": [
@@ -901,9 +917,9 @@
       "mutation_id": "tile_local_global_bias",
       "passed_fail_closed": true,
       "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/tile_local_global_bias.json",
-      "report_sha256": "394e6de75d3a36c80dd2d9c3dd87f6a8eb1dec284ff8d0459ddbf58edd48729e",
+      "report_sha256": "3d429ea9cd5bfeeab9148c79c844c2055b89b630e01c8313203bb716fc61508b",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "394e6de75d3a36c80dd2d9c3dd87f6a8eb1dec284ff8d0459ddbf58edd48729e"
+      "stdout_sha256": "3d429ea9cd5bfeeab9148c79c844c2055b89b630e01c8313203bb716fc61508b"
     },
     {
       "command": [
@@ -917,9 +933,9 @@
       "mutation_id": "deployment_reopens_stock_checkpoint",
       "passed_fail_closed": true,
       "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/deployment_reopens_stock_checkpoint.json",
-      "report_sha256": "6b213b3187698332a8fb8bca08e9c0384ba56db614d6488de7aeaaf9950a702e",
+      "report_sha256": "0b2c5bee0e6dd9141ba11c08e19fab57bc778f5a0ce02fb3ff0b367aa837c8b5",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "6b213b3187698332a8fb8bca08e9c0384ba56db614d6488de7aeaaf9950a702e"
+      "stdout_sha256": "0b2c5bee0e6dd9141ba11c08e19fab57bc778f5a0ce02fb3ff0b367aa837c8b5"
     },
     {
       "command": [
@@ -933,9 +949,9 @@
       "mutation_id": "evaluator_population_mismatch",
       "passed_fail_closed": true,
       "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/evaluator_population_mismatch.json",
-      "report_sha256": "aaf29a1ef21217de9c878aefa1e892413f758630ba8dee15ed554eb0cfe63c5c",
+      "report_sha256": "91d9b7bd9d6996e081266dec9333c292e09c32770d73d942c3ecf968062dcf73",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "aaf29a1ef21217de9c878aefa1e892413f758630ba8dee15ed554eb0cfe63c5c"
+      "stdout_sha256": "91d9b7bd9d6996e081266dec9333c292e09c32770d73d942c3ecf968062dcf73"
     },
     {
       "command": [
@@ -949,9 +965,25 @@
       "mutation_id": "checkpoint_next_step_drift",
       "passed_fail_closed": true,
       "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/checkpoint_next_step_drift.json",
-      "report_sha256": "a1e89166a14a3d192797d3cdb671c3b3fb09f3712e76539c8c22ad049a2df72d",
+      "report_sha256": "66bee66d0c77b602b3ee8bbebefb549d77b018c39e90e408891108b15cfe6931",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "a1e89166a14a3d192797d3cdb671c3b3fb09f3712e76539c8c22ad049a2df72d"
+      "stdout_sha256": "66bee66d0c77b602b3ee8bbebefb549d77b018c39e90e408891108b15cfe6931"
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "validators/care_ase_faithful/run_executable_verifier.py",
+        "--mutation-id",
+        "checkpoint_current_contract_provenance_drift"
+      ],
+      "command_sha256": "f14f835e287291be91b65eb5c990dc0e5e59a98f127d3f845faf7545cb7da077",
+      "exit_code": 2,
+      "mutation_id": "checkpoint_current_contract_provenance_drift",
+      "passed_fail_closed": true,
+      "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/checkpoint_current_contract_provenance_drift.json",
+      "report_sha256": "1840f6492c47561b02d0332ec1e776aaffa365a7d089914f93e3f0a46d6cae77",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "1840f6492c47561b02d0332ec1e776aaffa365a7d089914f93e3f0a46d6cae77"
     },
     {
       "command": [
@@ -965,9 +997,9 @@
       "mutation_id": "artifact_sha_mismatch",
       "passed_fail_closed": true,
       "report_path": "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/artifact_sha_mismatch.json",
-      "report_sha256": "9433466065da470b2379107cb9e27198c5d8e88752bb0cf8cffeb785155b5378",
+      "report_sha256": "38fdbf49d3dd2650c80cd54f1dcf24c1ad8cd996a9b0e5a07d4ac49bf5c0d0e3",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_sha256": "9433466065da470b2379107cb9e27198c5d8e88752bb0cf8cffeb785155b5378"
+      "stdout_sha256": "38fdbf49d3dd2650c80cd54f1dcf24c1ad8cd996a9b0e5a07d4ac49bf5c0d0e3"
     }
   ],
   "schema": "CARE_ASE_FAITHFUL_VERIFIER_COMMAND_LOG_V1",
