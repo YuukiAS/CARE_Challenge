@@ -1,12 +1,12 @@
 {
-  "created_utc": "2026-08-08T13:49:01Z",
+  "created_utc": "2026-08-08T15:06:14Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
     "kb13.loss_semantic_oracle.rejected:scar_component_tversky_plus_occupancy_lambda025"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "fb1fef0418882a3cfbad64a7a455a968ab4196f8c06109368b40afbed5d06b93",
+  "mutated_fingerprint_sha256": "2d03c7a13d259f56df0115a23c38214bd20a6d956a8e9baf48c8fa681f9cbafd",
   "mutation_applied": "scar_component_term_name_preserved_but_formula_adds_lambda025_occupancy_objective",
   "mutation_executed": true,
   "mutation_id": "scar_component_tversky_plus_occupancy_lambda025",
@@ -117,7 +117,7 @@
         "weights_match_contract": true
       }
     },
-    "source_manifest_sha256_before_mutation": "ecf1a7378b64e5d870c79cefa1ed075dd7556e2c1f02752e635648955fd51a6a"
+    "source_manifest_sha256_before_mutation": "9c00dcf67188fff01a77f11b2eff47b33a17fbac5437a96bf00c51015315124d"
   },
   "passed": false,
   "request_nonce": "care-ase-20260806T090955Z",

@@ -1,5 +1,5 @@
 {
-  "created_utc": "2026-08-08T13:42:08Z",
+  "created_utc": "2026-08-08T15:00:00Z",
   "current_reviewed_implementation_expected_fail_closed": true,
   "excluded_runtime_evidence": [
     "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json",
@@ -12,7 +12,7 @@
     "results/agent_flow_v3/care-ase-faithful/verification/verifier_local_commands_recorded_in_manifests.json"
   ],
   "executable_verifier_production_exit_code": 2,
-  "executable_verifier_receipt_sha256": "3b71aa4823cb0e1f4d6f573b66294f73dd29a423bcd464786f28dc6af6d5fefc",
+  "executable_verifier_receipt_sha256": "898ec8d20923b432bf4c70413276594933b6105ceeee5bad58d4c0865aca53fe",
   "file_hashes": {
     "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
     "tests/care_ase_faithful/test_verifier_package.py": "2df15b95750181095b17c9c6a2921d8b822572ce236fbdb08d262c9f23b2879f",
@@ -23,7 +23,7 @@
   "fingerprint_scope": "pre_executor_immutable_frozen_contract_hash_and_verifier_source_test_definitions_only",
   "fingerprint_sha256": "a731eec931128a73fc32113048c49a5a8de5a7db2d877b6f8bb66732eebbb380",
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
-  "integrated_implementation_fingerprint_sha256": "e7a6bfe00336354da7debf7321966c8a72c7ce43ee0bb00c316387c72659b7e3",
+  "integrated_implementation_fingerprint_sha256": "d4b60e96a46603a19acf19d9a040a84005f046b1252aceca844edf9f75eb28b6",
   "integrated_implementation_validation_exit_code": 2,
   "protected_known_bad_all_nonzero": true,
   "protected_known_bad_count": 24,
@@ -40,13 +40,13 @@
     "same_frozen_verifier_fingerprint_for_distinct_runtime_tuple": true
   },
   "request_nonce": "care-ase-20260806T090955Z",
-  "reviewed_integration_sha": "afcf93cf0be4581630fb283f8beaa53bddd1130e",
+  "reviewed_integration_sha": "b4d836cf65adf2be0ccf1a1f2106e3046e2b2f48",
   "runtime_evidence_excluded_from_fingerprint": true,
   "runtime_mutation_all_nonzero": true,
   "runtime_mutation_count": 29,
   "schema": "CARE_ASE_FAITHFUL_VERIFIER_FINGERPRINT_V1",
   "task_id": "care-ase-faithful",
-  "transaction_fingerprint_sha256": "15f3e106f487f05a5d7a3f28b897d262712ffc78dd17759734f2c94ae1097de0",
+  "transaction_fingerprint_sha256": "b7b84a8c4497fefb9bd3d6588f1d30d988111651f3cfb104fad411dd08a70659",
   "verifier_source_file_hashes": {
     "tests/care_ase_faithful/test_verifier_package.py": "2df15b95750181095b17c9c6a2921d8b822572ce236fbdb08d262c9f23b2879f",
     "validators/care_ase_faithful/build_verification_artifacts.py": "fba3ddbb597bf1a91554fe05afb7b916903e3b83ddd486aa6958e70492e1fa92",

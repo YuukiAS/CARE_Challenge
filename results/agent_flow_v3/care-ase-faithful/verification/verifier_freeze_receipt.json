@@ -2,7 +2,7 @@
   "controller_may_continue_after_verifier_recheck": true,
   "controller_verified_launch_origin_develop_sha": "eee6bc4b37e920d0b3bba893edc8ce3c45b81139",
   "controller_verified_launch_verifier_worktree_head": "eee6bc4b37e920d0b3bba893edc8ce3c45b81139",
-  "created_utc": "2026-08-08T13:42:08Z",
+  "created_utc": "2026-08-08T15:00:00Z",
   "current_reviewed_implementation_expected_fail_closed": true,
   "executable_verifier_local_fail_closed_exit_code": 2,
   "executable_verifier_local_fail_closed_receipt": "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_local_fail_closed_receipt.json",
@@ -11,7 +11,7 @@
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
   "integrated_implementation_validation_exit_code": 2,
   "integrated_implementation_validation_result": "results/agent_flow_v3/care-ase-faithful/verification/integrated_implementation_validation_result.json",
-  "observed_origin_develop_sha_at_freeze": "123691c5c20439d5cbfbccc2bc7bb6f629891d07",
+  "observed_origin_develop_sha_at_freeze": "f687676a0546a6646e0b81cb745433e31b91d898",
   "protected_known_bad_all_nonzero": true,
   "protected_known_bad_count": 24,
   "public_reference_exit_code": 0,
@@ -37,5 +37,5 @@
   "task_id": "care-ase-faithful",
   "verifier_branch": "local/verifier/care-ase-faithful",
   "verifier_fingerprint_sha256": "a731eec931128a73fc32113048c49a5a8de5a7db2d877b6f8bb66732eebbb380",
-  "verifier_worktree_head_before_freeze_commit": "9bc9fbdc213778ae6fc3cf69b1f79539a8561348"
+  "verifier_worktree_head_before_freeze_commit": "a2eceac1dfe296f34732fa43f11f3b4cb65472c8"
 }
