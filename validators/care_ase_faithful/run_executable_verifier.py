@@ -78,22 +78,24 @@ MUTATION_IDS = [
     "evaluator_population_mismatch",
     "checkpoint_next_step_drift",
     "checkpoint_current_contract_provenance_drift",
-    "runtime_manifest_stale_round0",
+    "runtime_manifest_round0_reused",
     "runtime_manifest_missing_nonce",
-    "runtime_manifest_missing_contract",
+    "runtime_manifest_missing_frozen_contract",
     "runtime_manifest_old_integration",
     "runtime_manifest_old_implementation_fingerprint",
     "runtime_manifest_old_verifier_fingerprint",
+    "runtime_manifest_receipt_sha_drift",
     "artifact_sha_mismatch",
 ]
 
 RUNTIME_MANIFEST_MUTATION_IDS = {
-    "runtime_manifest_stale_round0",
+    "runtime_manifest_round0_reused",
     "runtime_manifest_missing_nonce",
-    "runtime_manifest_missing_contract",
+    "runtime_manifest_missing_frozen_contract",
     "runtime_manifest_old_integration",
     "runtime_manifest_old_implementation_fingerprint",
     "runtime_manifest_old_verifier_fingerprint",
+    "runtime_manifest_receipt_sha_drift",
 }
 
 REQUIRED_RUNTIME_MANIFEST_ARTIFACTS = {
@@ -104,6 +106,7 @@ REQUIRED_RUNTIME_MANIFEST_ARTIFACTS = {
     "inference": f"results/agent_flow_v3/{TASK_ID}/implementation/inference_probe_receipt.json",
     "deployment_load": f"results/agent_flow_v3/{TASK_ID}/implementation/deployment_load_probe_receipt.json",
     "evaluator_smoke": f"results/agent_flow_v3/{TASK_ID}/implementation/evaluator_smoke_receipt.json",
+    "frozen_verifier_validation": f"results/agent_flow_v3/{TASK_ID}/implementation/frozen_verifier_validation_result.json",
     "hosted_ci": f"results/agent_flow_v3/{TASK_ID}/controller_ci_receipt.json",
 }
 
@@ -459,22 +462,23 @@ def _valid_runtime_manifest_payload(repo_root: Path) -> dict[str, Any]:
 
 def _runtime_manifest_mutation_result(mutation_id: str, *, repo_root: Path, fixture_mode: bool) -> dict[str, Any]:
     expected_failure = {
-        "runtime_manifest_stale_round0": "transaction.runtime_manifest.review_round",
+        "runtime_manifest_round0_reused": "transaction.runtime_manifest.review_round",
         "runtime_manifest_missing_nonce": "transaction.runtime_manifest.request_nonce",
-        "runtime_manifest_missing_contract": "transaction.runtime_manifest.frozen_contract_sha256",
+        "runtime_manifest_missing_frozen_contract": "transaction.runtime_manifest.frozen_contract_sha256",
         "runtime_manifest_old_integration": "transaction.runtime_manifest.integration_commit_sha",
         "runtime_manifest_old_implementation_fingerprint": "transaction.runtime_manifest.implementation_fingerprint_sha256",
         "runtime_manifest_old_verifier_fingerprint": "transaction.runtime_manifest.verifier_fingerprint_sha256",
+        "runtime_manifest_receipt_sha_drift": "transaction.runtime_manifest.artifact_sha256:implementation_evidence",
     }[mutation_id]
     runtime_manifest = _valid_runtime_manifest_payload(repo_root)
     mutation_applied = mutation_id
-    if mutation_id == "runtime_manifest_stale_round0":
+    if mutation_id == "runtime_manifest_round0_reused":
         runtime_manifest["review_round"] = 0
         mutation_applied = "runtime_manifest_review_round_mutated_to_stale_round0"
     elif mutation_id == "runtime_manifest_missing_nonce":
         runtime_manifest.pop("request_nonce", None)
         mutation_applied = "runtime_manifest_request_nonce_removed"
-    elif mutation_id == "runtime_manifest_missing_contract":
+    elif mutation_id == "runtime_manifest_missing_frozen_contract":
         runtime_manifest.pop("frozen_contract_sha256", None)
         mutation_applied = "runtime_manifest_frozen_contract_sha256_removed"
     elif mutation_id == "runtime_manifest_old_integration":
@@ -486,6 +490,10 @@ def _runtime_manifest_mutation_result(mutation_id: str, *, repo_root: Path, fixt
     elif mutation_id == "runtime_manifest_old_verifier_fingerprint":
         runtime_manifest["verifier_fingerprint_sha256"] = "2" * 64
         mutation_applied = "runtime_manifest_verifier_fingerprint_mutated_to_old_value"
+    elif mutation_id == "runtime_manifest_receipt_sha_drift":
+        rel_path = REQUIRED_RUNTIME_MANIFEST_ARTIFACTS["implementation_evidence"]
+        runtime_manifest["receipt_sha256s"][rel_path] = "0" * 64
+        mutation_applied = "runtime_manifest_implementation_evidence_sha256_mutated_after_receipt_binding"
 
     current = {
         "task_id": TASK_ID,
@@ -676,6 +684,8 @@ def transaction_gate(
             failures.append("transaction.evidence.implementation_fingerprint")
     return failures, {
         "planner_review_commit": PLANNER_REVIEW_COMMIT,
+        "transaction_closure_phase": "post_ci_exact_transaction_gate",
+        "post_ci_gate_requires_exact_hosted_ci_success": not fixture_mode,
         "review_round": review_round,
         "expected_review_round": REVIEW_ROUND,
         "integration_sha": integration_sha,

@@ -461,12 +461,13 @@ class VerifierPackageTests(unittest.TestCase):
             "scar_component_tversky_blended_occupancy_half",
             "partial_hw_cross_z_presequence_mask_removed",
             "checkpoint_current_contract_provenance_drift",
-            "runtime_manifest_stale_round0",
+            "runtime_manifest_round0_reused",
             "runtime_manifest_missing_nonce",
-            "runtime_manifest_missing_contract",
+            "runtime_manifest_missing_frozen_contract",
             "runtime_manifest_old_integration",
             "runtime_manifest_old_implementation_fingerprint",
             "runtime_manifest_old_verifier_fingerprint",
+            "runtime_manifest_receipt_sha_drift",
         }
         self.assertTrue(required.issubset(set(runner.MUTATION_IDS)))
         self.assertTrue(required.issubset(set(validator.REQUIRED_EXECUTABLE_MUTATION_IDS)))
@@ -564,30 +565,60 @@ class VerifierPackageTests(unittest.TestCase):
                 json.dumps(valid_runtime_manifest()),
                 encoding="utf-8",
             )
-            ci_receipt_path.write_text(
-                json.dumps(
-                    {
-                        "github_actions_head_sha": old_ci_sha,
-                        "checked_commit_sha": old_ci_sha,
-                        "github_actions_conclusion": "success",
-                    }
-                ),
-                encoding="utf-8",
-            )
-            runner.CURRENT_PATH = current_path
-            runner.RUNTIME_MANIFEST_PATH = runtime_manifest_path
-            runner.CONTROLLER_CI_RECEIPT_PATH = ci_receipt_path
-            failures, transaction = runner.transaction_gate(
-                repo_root=ROOT,
-                evidence=evidence,
-                review_round=runner.REVIEW_ROUND,
-                integration_sha=runner.REVIEWED_INTEGRATION_COMMIT,
-                implementation_fingerprint=runner.REVIEWED_IMPLEMENTATION_FINGERPRINT,
-                expected_verifier_fingerprint=runner.REVIEWED_VERIFIER_FINGERPRINT,
-                fixture_mode=False,
-            )
-        self.assertIn("transaction.hosted_ci.head_sha_not_exact_integration", failures)
-        self.assertNotEqual(transaction["hosted_ci_head_sha"], runner.REVIEWED_INTEGRATION_COMMIT)
+            original_current = runner.CURRENT_PATH
+            original_manifest = runner.RUNTIME_MANIFEST_PATH
+            original_ci = runner.CONTROLLER_CI_RECEIPT_PATH
+            try:
+                runner.CURRENT_PATH = current_path
+                runner.RUNTIME_MANIFEST_PATH = runtime_manifest_path
+                runner.CONTROLLER_CI_RECEIPT_PATH = ci_receipt_path
+                ci_cases = [
+                    (
+                        "old_head",
+                        {
+                            "github_actions_head_sha": old_ci_sha,
+                            "checked_commit_sha": old_ci_sha,
+                            "github_actions_conclusion": "success",
+                        },
+                        "transaction.hosted_ci.head_sha_not_exact_integration",
+                    ),
+                    (
+                        "pending",
+                        {
+                            "github_actions_head_sha": runner.REVIEWED_INTEGRATION_COMMIT,
+                            "checked_commit_sha": runner.REVIEWED_INTEGRATION_COMMIT,
+                            "github_actions_conclusion": "in_progress",
+                        },
+                        "transaction.hosted_ci.conclusion",
+                    ),
+                    (
+                        "failed",
+                        {
+                            "github_actions_head_sha": runner.REVIEWED_INTEGRATION_COMMIT,
+                            "checked_commit_sha": runner.REVIEWED_INTEGRATION_COMMIT,
+                            "github_actions_conclusion": "failure",
+                        },
+                        "transaction.hosted_ci.conclusion",
+                    ),
+                ]
+                for label, ci_payload, expected_failure in ci_cases:
+                    ci_receipt_path.write_text(json.dumps(ci_payload), encoding="utf-8")
+                    failures, transaction = runner.transaction_gate(
+                        repo_root=ROOT,
+                        evidence=evidence,
+                        review_round=runner.REVIEW_ROUND,
+                        integration_sha=runner.REVIEWED_INTEGRATION_COMMIT,
+                        implementation_fingerprint=runner.REVIEWED_IMPLEMENTATION_FINGERPRINT,
+                        expected_verifier_fingerprint=runner.REVIEWED_VERIFIER_FINGERPRINT,
+                        fixture_mode=False,
+                    )
+                    self.assertIn(expected_failure, failures, label)
+                    if label == "old_head":
+                        self.assertNotEqual(transaction["hosted_ci_head_sha"], runner.REVIEWED_INTEGRATION_COMMIT)
+            finally:
+                runner.CURRENT_PATH = original_current
+                runner.RUNTIME_MANIFEST_PATH = original_manifest
+                runner.CONTROLLER_CI_RECEIPT_PATH = original_ci
 
     def test_transaction_gate_rejects_stale_runtime_manifest_bindings(self) -> None:
         runner_spec = importlib.util.spec_from_file_location("care_ase_executable_verifier", EXECUTABLE_VERIFIER)
@@ -669,6 +700,21 @@ class VerifierPackageTests(unittest.TestCase):
                         fixture_mode=False,
                     )
                     self.assertIn(expected_failure, failures, field)
+
+                manifest = dict(base_manifest)
+                manifest["receipt_sha256s"] = dict(base_manifest["receipt_sha256s"])
+                manifest["receipt_sha256s"][runner.REQUIRED_RUNTIME_MANIFEST_ARTIFACTS["implementation_evidence"]] = "0" * 64
+                runtime_manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+                failures, _transaction = runner.transaction_gate(
+                    repo_root=ROOT,
+                    evidence=evidence,
+                    review_round=runner.REVIEW_ROUND,
+                    integration_sha=runner.REVIEWED_INTEGRATION_COMMIT,
+                    implementation_fingerprint=runner.REVIEWED_IMPLEMENTATION_FINGERPRINT,
+                    expected_verifier_fingerprint=runner.REVIEWED_VERIFIER_FINGERPRINT,
+                    fixture_mode=False,
+                )
+                self.assertIn("transaction.runtime_manifest.artifact_sha256:implementation_evidence", failures)
             finally:
                 runner.CURRENT_PATH = original_current
                 runner.RUNTIME_MANIFEST_PATH = original_manifest

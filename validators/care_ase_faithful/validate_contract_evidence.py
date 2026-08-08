@@ -247,12 +247,13 @@ REQUIRED_EXECUTABLE_MUTATION_IDS = {
     "evaluator_population_mismatch",
     "checkpoint_next_step_drift",
     "checkpoint_current_contract_provenance_drift",
-    "runtime_manifest_stale_round0",
+    "runtime_manifest_round0_reused",
     "runtime_manifest_missing_nonce",
-    "runtime_manifest_missing_contract",
+    "runtime_manifest_missing_frozen_contract",
     "runtime_manifest_old_integration",
     "runtime_manifest_old_implementation_fingerprint",
     "runtime_manifest_old_verifier_fingerprint",
+    "runtime_manifest_receipt_sha_drift",
     "artifact_sha_mismatch",
 }
 
