@@ -1,12 +1,12 @@
 {
-  "created_utc": "2026-08-08T08:50:55Z",
+  "created_utc": "2026-08-08T09:54:11Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
     "kb13.loss_semantic_oracle.rejected:injury_dice_bce_replaced_by_focal"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "1090faebfa3d3ba2a4ad7ea4c190cfb2b842c01307a4037538bdd2153a22413f",
+  "mutated_fingerprint_sha256": "9e465854ffbb44b42d230ea3f4f30f3e434d885fc8d60ab026279efe3589b584",
   "mutation_applied": "injury_dice_bce_term_name_preserved_but_formula_replaced_by_dice_focal",
   "mutation_executed": true,
   "mutation_id": "injury_dice_bce_replaced_by_focal",
@@ -16,14 +16,13 @@
       "injury_reference_unweighted": 0.930699348449707,
       "mutated_unweighted_value": 0.5927543044090271,
       "mutated_weighted_contribution": 0.23710172176361086,
-      "original_unweighted_value": 0.5927543044090271,
+      "original_unweighted_value": 0.930699348449707,
       "reference_uses_implementation_loss_helper": false,
       "replacement_formula": "Dice+Focal(alpha=0.35,gamma=2.0)",
       "scar_component_reference_unweighted": 0.941228985786438,
       "scar_occupancy_reference_unweighted": 1.0380148887634277,
       "semantic_oracle_failures": [
-        "injury_dice_bce.formula_mismatch",
-        "scar_component_adaptive_tversky.formula_mismatch_or_hidden_auxiliary"
+        "injury_dice_bce.formula_mismatch"
       ],
       "semantic_oracle_status": "FAIL",
       "term_name_preserved": "injury_dice_bce"
@@ -51,24 +50,23 @@
       "name": "loss_semantic_oracle",
       "reference_uses_implementation_loss_helper": false,
       "scar_component_adaptive_tversky": {
-        "abs_diff": 0.04839295148849487,
-        "actual_unweighted": 0.9896219372749329,
+        "abs_diff": 0.0,
+        "actual_unweighted": 0.941228985786438,
         "adaptive_weight_sum": 2.0,
         "alpha": 0.3,
         "beta": 0.7,
         "component_count": 2,
-        "matches_reference": false,
+        "matches_reference": true,
         "reference_unweighted": 0.941228985786438,
         "scar_occupancy_dice_focal_reference_unweighted": 1.0380148887634277,
         "small_component_weight_formula": "clip(sqrt(1000mm3/component_volume_mm3),1,4)",
-        "unauthorized_occupancy_objective_detected": true,
-        "weighted_abs_diff": 0.012098237872123718,
-        "weighted_actual": 0.24740548431873322,
+        "unauthorized_occupancy_objective_detected": false,
+        "weighted_abs_diff": 0.0,
+        "weighted_actual": 0.2353072464466095,
         "weighted_reference": 0.2353072464466095
       },
       "semantic_failures": [
-        "injury_dice_bce.formula_mismatch",
-        "scar_component_adaptive_tversky.formula_mismatch_or_hidden_auxiliary"
+        "injury_dice_bce.formula_mismatch"
       ],
       "status": "FAIL",
       "tolerance": 1e-05,
@@ -110,16 +108,16 @@
         "extra_terms": [],
         "matches_contract_terms": true,
         "missing_terms": [],
-        "no_extra_weighted_auxiliary_objective": false,
-        "reported_allowed_weighted_sum": 11.332353515923025,
-        "total_abs_diff": 7.599592066753758e-08,
-        "total_loss": 11.332353591918945,
+        "no_extra_weighted_auxiliary_objective": true,
+        "reported_allowed_weighted_sum": 11.320255278050901,
+        "total_abs_diff": 9.551644311045493e-07,
+        "total_loss": 11.320256233215332,
         "total_matches_allowed_weighted_sum": true,
         "weight_failures": [],
         "weights_match_contract": true
       }
     },
-    "source_manifest_sha256_before_mutation": "0a4ed95d7674727a97f94f85cd4e08f1f4a0e1a5bcf0c1f376773792592b0ace"
+    "source_manifest_sha256_before_mutation": "ff3ac8061ecd3b58e38d831fe989b8ee2bbdb724eabc9eac03348b8897e6d341"
   },
   "passed": false,
   "request_nonce": "care-ase-20260806T090955Z",

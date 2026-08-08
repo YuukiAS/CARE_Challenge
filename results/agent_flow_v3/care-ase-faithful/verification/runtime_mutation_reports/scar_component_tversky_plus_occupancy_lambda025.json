@@ -1,12 +1,12 @@
 {
-  "created_utc": "2026-08-08T08:51:08Z",
+  "created_utc": "2026-08-08T09:54:23Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
     "kb13.loss_semantic_oracle.rejected:scar_component_tversky_plus_occupancy_lambda025"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "b9ce07943d88ff44a7f208575cea901558cb289a9728fad3b5433fe7f54941be",
+  "mutated_fingerprint_sha256": "137b45796759e0666dac8a5164d6ad618803795b37cf7fdef5871faaea806342",
   "mutation_applied": "scar_component_term_name_preserved_but_formula_adds_lambda025_occupancy_objective",
   "mutation_executed": true,
   "mutation_id": "scar_component_tversky_plus_occupancy_lambda025",
@@ -16,13 +16,12 @@
       "injury_reference_unweighted": 0.930699348449707,
       "mutated_unweighted_value": 1.200732707977295,
       "mutated_weighted_contribution": 0.30018317699432373,
-      "original_unweighted_value": 0.9896219372749329,
+      "original_unweighted_value": 0.941228985786438,
       "reference_uses_implementation_loss_helper": false,
       "replacement_formula": "Tversky(alpha=0.3,beta=0.7)+0.25*occupancy Dice/Focal",
       "scar_component_reference_unweighted": 0.941228985786438,
       "scar_occupancy_reference_unweighted": 1.0380148887634277,
       "semantic_oracle_failures": [
-        "injury_dice_bce.formula_mismatch",
         "scar_component_adaptive_tversky.formula_mismatch_or_hidden_auxiliary"
       ],
       "semantic_oracle_status": "FAIL",
@@ -32,11 +31,11 @@
       "contract_field_or_exact_clause": "Section 10 unique allowed weighted loss set",
       "contract_source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
       "injury_dice_bce": {
-        "abs_diff": 0.33794504404067993,
-        "actual_matches_independent_dice_focal_alpha035_gamma2": true,
-        "actual_unweighted": 0.5927543044090271,
+        "abs_diff": 0.0,
+        "actual_matches_independent_dice_focal_alpha035_gamma2": false,
+        "actual_unweighted": 0.930699348449707,
         "edema_valid_voxel_count": 32768,
-        "matches_reference": false,
+        "matches_reference": true,
         "reference_unweighted": 0.930699348449707,
         "t2_eligible_rows": 1,
         "t2_gated": true,
@@ -44,8 +43,8 @@
           4,
           5
         ],
-        "weighted_abs_diff": 0.135178017616272,
-        "weighted_actual": 0.23710172176361086,
+        "weighted_abs_diff": 0.0,
+        "weighted_actual": 0.37227973937988285,
         "weighted_reference": 0.37227973937988285
       },
       "name": "loss_semantic_oracle",
@@ -67,7 +66,6 @@
         "weighted_reference": 0.2353072464466095
       },
       "semantic_failures": [
-        "injury_dice_bce.formula_mismatch",
         "scar_component_adaptive_tversky.formula_mismatch_or_hidden_auxiliary"
       ],
       "status": "FAIL",
@@ -111,15 +109,15 @@
         "matches_contract_terms": true,
         "missing_terms": [],
         "no_extra_weighted_auxiliary_objective": false,
-        "reported_allowed_weighted_sum": 11.385131208598615,
-        "total_abs_diff": 3.2633543156634914e-07,
-        "total_loss": 11.385130882263184,
+        "reported_allowed_weighted_sum": 11.520309226214886,
+        "total_abs_diff": 2.220273014330587e-07,
+        "total_loss": 11.520309448242188,
         "total_matches_allowed_weighted_sum": true,
         "weight_failures": [],
         "weights_match_contract": true
       }
     },
-    "source_manifest_sha256_before_mutation": "0a4ed95d7674727a97f94f85cd4e08f1f4a0e1a5bcf0c1f376773792592b0ace"
+    "source_manifest_sha256_before_mutation": "ff3ac8061ecd3b58e38d831fe989b8ee2bbdb724eabc9eac03348b8897e6d341"
   },
   "passed": false,
   "request_nonce": "care-ase-20260806T090955Z",
