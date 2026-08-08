@@ -1,13 +1,13 @@
 {
-  "created_utc": "2026-08-08T04:31:36Z",
+  "created_utc": "2026-08-08T05:51:54Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
-    "mutation.expected_rejection_missing:full_support_pseudo_tiling"
+    "kb12.inference.full_support_pseudo_tiling"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "6069201d228ba3288837c8116d14a7832242dbe84dd688ab57718135f775712a",
-  "mutation_applied": "current_full_volume_forced_multi_tile_path_observed_for_full_support_reuse",
+  "mutated_fingerprint_sha256": "718146f22be9222df410f2f6c5d5836b0b17da91c6c668b16aa58c6d23e3f0e1",
+  "mutation_applied": "forced_multi_tile_predictor_runs_one_full_support_forward_then_fakes_tile_metadata",
   "mutation_executed": true,
   "mutation_id": "full_support_pseudo_tiling",
   "observations": {
@@ -21,88 +21,8 @@
             1,
             3,
             8,
-            32,
-            32
-          ]
-        },
-        {
-          "call_id": "forced_t2:1",
-          "input_shape": [
-            1,
-            3,
-            8,
-            32,
-            32
-          ]
-        },
-        {
-          "call_id": "forced_t2:2",
-          "input_shape": [
-            1,
-            3,
-            8,
-            32,
-            32
-          ]
-        },
-        {
-          "call_id": "forced_t2:3",
-          "input_shape": [
-            1,
-            3,
-            8,
-            32,
-            32
-          ]
-        },
-        {
-          "call_id": "forced_t2:4",
-          "input_shape": [
-            1,
-            3,
-            8,
-            32,
-            32
-          ]
-        },
-        {
-          "call_id": "forced_t2:5",
-          "input_shape": [
-            1,
-            3,
-            8,
-            32,
-            32
-          ]
-        },
-        {
-          "call_id": "forced_t2:6",
-          "input_shape": [
-            1,
-            3,
-            8,
-            32,
-            32
-          ]
-        },
-        {
-          "call_id": "forced_t2:7",
-          "input_shape": [
-            1,
-            3,
-            8,
-            32,
-            32
-          ]
-        },
-        {
-          "call_id": "forced_t2:8",
-          "input_shape": [
-            1,
-            3,
-            8,
-            32,
-            32
+            64,
+            64
           ]
         }
       ],
@@ -114,13 +34,13 @@
         32,
         32
       ],
-      "expected_model_forward_count": 9,
-      "forced_model_forward_count": 9,
+      "expected_model_forward_count": 4,
+      "forced_model_forward_count": 1,
       "forced_multi_tile_call_id": "verifier_forced_multi_tile",
-      "forced_multi_tile_count": 9,
-      "full_support_pseudo_tiling_detected": false,
+      "forced_multi_tile_count": 4,
+      "full_support_pseudo_tiling_detected": true,
       "global_bias_application_count": 1,
-      "max_abs_diff_without_context_override": 19.57863426208496,
+      "max_abs_diff_without_context_override": 0.0,
       "max_abs_diff_without_context_override_policy": {
         "blocking": false,
         "contract_field_or_exact_clause": null,
@@ -130,7 +50,7 @@
         "name": "real_care_ase_single_full_context_vs_forced_tile_local_diff"
       },
       "mirror_factor": 1,
-      "model_input_spatial_within_declared_patch": true,
+      "model_input_spatial_within_declared_patch": false,
       "name": "tile_local_forward_instrumentation",
       "no_t2_actual_forward_records": [
         {
@@ -139,95 +59,30 @@
             1,
             3,
             8,
-            32,
-            32
-          ]
-        },
-        {
-          "call_id": "forced_no_t2:1",
-          "input_shape": [
-            1,
-            3,
-            8,
-            32,
-            32
-          ]
-        },
-        {
-          "call_id": "forced_no_t2:2",
-          "input_shape": [
-            1,
-            3,
-            8,
-            32,
-            32
-          ]
-        },
-        {
-          "call_id": "forced_no_t2:3",
-          "input_shape": [
-            1,
-            3,
-            8,
-            32,
-            32
-          ]
-        },
-        {
-          "call_id": "forced_no_t2:4",
-          "input_shape": [
-            1,
-            3,
-            8,
-            32,
-            32
-          ]
-        },
-        {
-          "call_id": "forced_no_t2:5",
-          "input_shape": [
-            1,
-            3,
-            8,
-            32,
-            32
-          ]
-        },
-        {
-          "call_id": "forced_no_t2:6",
-          "input_shape": [
-            1,
-            3,
-            8,
-            32,
-            32
-          ]
-        },
-        {
-          "call_id": "forced_no_t2:7",
-          "input_shape": [
-            1,
-            3,
-            8,
-            32,
-            32
-          ]
-        },
-        {
-          "call_id": "forced_no_t2:8",
-          "input_shape": [
-            1,
-            3,
-            8,
-            32,
-            32
+            64,
+            64
           ]
         }
       ],
-      "no_t2_forced_model_forward_count": 9,
+      "no_t2_forced_model_forward_count": 1,
       "no_t2_global_bias_application_count": 1,
       "observed_error": null,
-      "offending_forward_input_shapes": [],
+      "offending_forward_input_shapes": [
+        [
+          1,
+          3,
+          8,
+          64,
+          64
+        ],
+        [
+          1,
+          3,
+          8,
+          64,
+          64
+        ]
+      ],
       "single_forward_records": [
         {
           "call_id": "single:0",
@@ -241,9 +96,30 @@
         }
       ],
       "single_tile_call_id": "verifier_single_tile",
-      "status": "PASS",
-      "tile_coordinates": [],
-      "tile_coordinates_recorded": false,
+      "status": "FAIL",
+      "tile_coordinates": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          32
+        ],
+        [
+          0,
+          32,
+          0
+        ],
+        [
+          0,
+          32,
+          32
+        ]
+      ],
+      "tile_coordinates_recorded": true,
       "tile_outputs_limited_to_base_logits_wall_extent_evidence": true
     }
   },

@@ -40,7 +40,7 @@ CARE_RUNTIME_ROOT = Path(os.environ.get("CARE_VERIFIER_RUNTIME_CARE_ROOT", "/use
 CARE_RUNTIME_PYTHON = Path(os.environ.get("CARE_VERIFIER_RUNTIME_PYTHON", str(CARE_RUNTIME_ROOT / "envs" / "env_CARE" / "bin" / "python")))
 LAUNCH_ORIGIN_DEVELOP_SHA = "eee6bc4b37e920d0b3bba893edc8ce3c45b81139"
 LAUNCH_VERIFIER_WORKTREE_HEAD = "eee6bc4b37e920d0b3bba893edc8ce3c45b81139"
-CURRENT_REVIEWED_IMPLEMENTATION_EXPECTED_FAIL_CLOSED = False
+CURRENT_REVIEWED_IMPLEMENTATION_EXPECTED_FAIL_CLOSED = True
 REQUIRED_FREEZE_ARTIFACTS = [
     "verification_contract.json",
     "public_test_manifest.json",
@@ -61,6 +61,7 @@ EXECUTABLE_MUTATION_IDS = [
     "injury_random_init",
     "projection_context_no_final_authority",
     "synthetic_intervention_delta",
+    "semantic_disable_only_quadratic_signal",
     "partial_hw_straight_through_zero_loss",
     "full_support_pseudo_tiling",
     "transaction_old_tuple_reused",
@@ -272,8 +273,10 @@ def check_only() -> int:
     _record_error(errors, executable_receipt.get("schema") == "CARE_ASE_FAITHFUL_EXECUTABLE_VERIFIER_RECEIPT_V1", "executable_receipt.schema")
     _record_error(errors, executable_receipt.get("review_round") == REVIEW_ROUND, "executable_receipt.review_round")
     _record_error(errors, executable_receipt.get("fixture_mode") is False, "executable_receipt.production_not_fixture")
-    _record_error(errors, executable_receipt.get("passed") is True, "executable_receipt.current_implementation_passed")
-    _record_error(errors, executable_receipt.get("status") == "PASS", "executable_receipt.current_implementation_status")
+    expected_executable_passed = not CURRENT_REVIEWED_IMPLEMENTATION_EXPECTED_FAIL_CLOSED
+    expected_executable_status = "FAIL_CLOSED" if CURRENT_REVIEWED_IMPLEMENTATION_EXPECTED_FAIL_CLOSED else "PASS"
+    _record_error(errors, executable_receipt.get("passed") is expected_executable_passed, "executable_receipt.current_implementation_passed")
+    _record_error(errors, executable_receipt.get("status") == expected_executable_status, "executable_receipt.current_implementation_status")
     _record_error(errors, executable_receipt.get("integration_sha") == REVIEWED_INTEGRATION_COMMIT, "executable_receipt.integration_sha")
     _record_error(
         errors,
@@ -294,8 +297,13 @@ def check_only() -> int:
     _record_error(errors, local_fail_closed_receipt.get("formal_training_started") is False, "local_fail_closed_receipt.no_training")
     _record_error(errors, local_fail_closed_receipt.get("outer_accessed") is False, "local_fail_closed_receipt.no_outer")
     _record_error(errors, integrated_validation_result.get("schema") == "CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1", "integrated_validation_result.schema")
-    _record_error(errors, integrated_validation_result.get("passed") is True, "integrated_validation_result.current_implementation_passed")
-    _record_error(errors, int(integrated_validation_result.get("failure_count", 1)) == 0, "integrated_validation_result.failure_count")
+    _record_error(errors, integrated_validation_result.get("passed") is expected_executable_passed, "integrated_validation_result.current_implementation_passed")
+    validation_failure_count = int(integrated_validation_result.get("failure_count", 1))
+    _record_error(
+        errors,
+        validation_failure_count == 0 if expected_executable_passed else validation_failure_count > 0,
+        "integrated_validation_result.failure_count",
+    )
 
     mutation_invocations = mutation_manifest.get("mutation_invocations", [])
     _record_error(errors, mutation_manifest.get("schema") == "CARE_ASE_FAITHFUL_RUNTIME_MUTATION_MANIFEST_V1", "mutation_manifest.schema")
@@ -326,7 +334,11 @@ def check_only() -> int:
     _record_error(errors, freeze_receipt.get("verifier_fingerprint_sha256") == digest, "freeze_receipt.verifier_fingerprint_sha256")
     _record_error(errors, freeze_receipt.get("protected_known_bad_count") == 24, "freeze_receipt.protected_known_bad_count")
     _record_error(errors, freeze_receipt.get("protected_known_bad_all_nonzero") is True, "freeze_receipt.protected_known_bad_all_nonzero")
-    _record_error(errors, freeze_receipt.get("current_reviewed_implementation_expected_fail_closed") is False, "freeze_receipt.current_expected_pass")
+    _record_error(
+        errors,
+        freeze_receipt.get("current_reviewed_implementation_expected_fail_closed") is CURRENT_REVIEWED_IMPLEMENTATION_EXPECTED_FAIL_CLOSED,
+        "freeze_receipt.current_expected_pass",
+    )
     _record_error(errors, freeze_receipt.get("controller_may_continue_after_verifier_recheck") is True, "freeze_receipt.controller_continue_gate")
 
     if errors:
@@ -588,6 +600,7 @@ def build_artifacts() -> int:
         "created_utc": now,
     }
     write_json(VERIFICATION_DIR / "runtime_mutation_manifest.json", mutation_manifest)
+    integrated_validation_result = run_command(integrated_validation_command)
 
     unittest_result = run_command([sys.executable, "-m", "unittest", "tests.care_ase_faithful.test_verifier_package"])
     v3_validator_result = run_command([sys.executable, "scripts/automation/validate_agent_flow_v3.py", "--repo-root", "."])
@@ -608,7 +621,7 @@ def build_artifacts() -> int:
             **v3_validator_result,
         },
         {
-            "purpose": "verifier-owned executable receipt independently evaluates the current integrated implementation and fails closed for reentry2 shortcuts",
+            "purpose": "verifier-owned executable receipt independently evaluates the current integrated implementation and fails closed for reentry3 causal-authority shortcuts",
             "expected_exit_code": 2 if CURRENT_REVIEWED_IMPLEMENTATION_EXPECTED_FAIL_CLOSED else 0,
             **executable_result,
         },

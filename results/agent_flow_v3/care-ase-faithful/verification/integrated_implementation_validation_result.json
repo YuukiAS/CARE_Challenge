@@ -1,8 +1,14 @@
 {
-  "failure_count": 0,
-  "failures": [],
+  "failure_count": 5,
+  "failures": [
+    "verifier_owned.executable.passed",
+    "verifier_owned.executable.status",
+    "verifier_owned.authority.flag_matches_verifier_removal",
+    "verifier_owned.authority.no_disable_flag_final_logit_contribution",
+    "verifier_owned.authority.no_disable_flag_contribution_sites"
+  ],
   "known_bad_case_id": null,
-  "passed": true,
+  "passed": false,
   "schema": "CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1",
   "task_id": "care-ase-faithful"
 }
