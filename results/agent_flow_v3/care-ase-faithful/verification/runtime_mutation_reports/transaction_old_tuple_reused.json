@@ -1,12 +1,12 @@
 {
-  "created_utc": "2026-08-08T14:51:51Z",
+  "created_utc": "2026-08-08T15:06:48Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
     "transaction.old_tuple_rejected"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "01f53042271f19f778b325e8a72998cbac19ac2c2193f6fd9544d7171079a9f7",
+  "mutated_fingerprint_sha256": "083845c87af05a19eb7c79ebb87e97a72ea8cb0d739ead3807e55da6045036a5",
   "mutation_applied": "transaction_inputs_mutated_to_old_integration_and_verifier_fingerprint",
   "mutation_executed": true,
   "mutation_id": "transaction_old_tuple_reused",
@@ -243,7 +243,7 @@
       "implementation_fingerprint_sha256": "3eabfb0be9eda776da6dd6fe3068004894ea7a5b4c30966941fc05bdc412e0dc",
       "integration_sha": "5fd6c265109c19c91108fd3a2fa80a6b7d4092a4",
       "integration_sha_is_ancestor_of_observed_git_head": true,
-      "observed_git_head": "b320174c429f0f48f517e5c1f5024c5356f8eb53",
+      "observed_git_head": "a2eceac1dfe296f34732fa43f11f3b4cb65472c8",
       "planner_review_commit": "c6b867ba9e688f595bad013e2972b2574d014a14",
       "post_ci_gate_requires_exact_hosted_ci_success": true,
       "review_round": 0,
@@ -294,7 +294,7 @@
           },
           "executable_verifier": {
             "declared_sha256": null,
-            "expected_sha256": "a24993f8acbf50b01a84bbb7be995cdbccab2595d58359110c42a8a63e5de4e1",
+            "expected_sha256": "898ec8d20923b432bf4c70413276594933b6105ceeee5bad58d4c0865aca53fe",
             "file_exists": true,
             "listed": false,
             "path": "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json"
@@ -329,7 +329,7 @@
           },
           "transaction_gate": {
             "declared_sha256": null,
-            "expected_sha256": "02a836919274a2f9fd1ef1f5edbd03614c0f0db0b542dc4f66dd144830881e8a",
+            "expected_sha256": "ae59092b40f2695fce2e97f1ac5a6a76f12b8de6d9c8d9d39ebfb50fdd52eb50",
             "file_exists": true,
             "listed": false,
             "path": "results/agent_flow_v3/care-ase-faithful/verification/transaction_gate_receipt.json"

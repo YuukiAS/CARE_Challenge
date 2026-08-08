@@ -1,5 +1,5 @@
 {
-  "created_utc": "2026-08-08T14:44:51Z",
+  "created_utc": "2026-08-08T15:00:00Z",
   "evidence_schema": "CARE_ASE_FAITHFUL_IMPLEMENTATION_EVIDENCE_V1",
   "executor_boundary": {
     "may_read_public_manifest": true,

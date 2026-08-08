@@ -36,7 +36,7 @@
       "threshold": 1e-05
     }
   ],
-  "created_utc": "2026-08-08T14:48:05Z",
+  "created_utc": "2026-08-08T15:03:04Z",
   "diagnostic_numeric_observations": [
     {
       "blocking": false,
@@ -51,7 +51,7 @@
   "environment": {
     "cwd": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/verifier",
     "git_branch": "local/verifier/care-ase-faithful",
-    "git_head": "b320174c429f0f48f517e5c1f5024c5356f8eb53",
+    "git_head": "a2eceac1dfe296f34732fa43f11f3b4cb65472c8",
     "nnunetv2_available": true,
     "platform": "Linux-5.14.0-611.16.1.el9_7.x86_64-x86_64-with-glibc2.34",
     "python_executable": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
@@ -64,7 +64,7 @@
     },
     "torch_available": true
   },
-  "executable_verifier_receipt_sha256": "b603e13a6e05c5afb7df34118a4302d7f3ffedf7f9fd510adaf98dc3dd363adb",
+  "executable_verifier_receipt_sha256": "6f00ef848c599bc5cdfd2ff545ffe0905bd0a7f8b8fd7b0bcc0a8a1294eca436",
   "executor_receipts_used_as_runtime_conclusion": false,
   "failure_count": 26,
   "failures": [
@@ -1056,11 +1056,46 @@
   "task_id": "care-ase-faithful",
   "transaction_gate": {
     "critical_source_or_receipt_changed_after_reviewed_integration": [
+      "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_local_fail_closed_receipt.json",
       "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json",
       "results/agent_flow_v3/care-ase-faithful/verification/protected_known_bad_manifest.json",
       "results/agent_flow_v3/care-ase-faithful/verification/public_test_manifest.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_manifest.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/artifact_sha_mismatch.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/checkpoint_current_contract_provenance_drift.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/checkpoint_next_step_drift.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/deployment_reopens_stock_checkpoint.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/dilation_residual_removed.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/evaluator_population_mismatch.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/extent_conv3d_alias.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/forged_executor_pass_receipt.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/full_support_pseudo_tiling.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/injury_dice_bce_replaced_by_focal.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/injury_random_init.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/no_t2_calls_edema.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/partial_hw_cross_z_presequence_mask_removed.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/partial_hw_straight_through_zero_loss.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/projection_context_no_final_authority.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/runtime_manifest_missing_frozen_contract.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/runtime_manifest_missing_nonce.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/runtime_manifest_old_implementation_fingerprint.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/runtime_manifest_old_integration.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/runtime_manifest_old_verifier_fingerprint.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/runtime_manifest_receipt_sha_drift.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/runtime_manifest_round0_reused.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/scar_component_tversky_blended_occupancy_half.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/scar_component_tversky_plus_occupancy_lambda025.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/semantic_disable_only_quadratic_signal.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/single_multi_same_call.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/synthetic_intervention_delta.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/tile_local_global_bias.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/transaction_old_tuple_reused.json",
       "results/agent_flow_v3/care-ase-faithful/verification/transaction_gate_receipt.json",
-      "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json"
+      "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/verifier_fingerprint.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/verifier_freeze_receipt.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/verifier_local_commands_recorded_in_manifests.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/verifier_session_receipt.json"
     ],
     "current_binding": {
       "blocked_failures": [],
@@ -1209,7 +1244,7 @@
     "implementation_fingerprint_sha256": "d4b60e96a46603a19acf19d9a040a84005f046b1252aceca844edf9f75eb28b6",
     "integration_sha": "b4d836cf65adf2be0ccf1a1f2106e3046e2b2f48",
     "integration_sha_is_ancestor_of_observed_git_head": true,
-    "observed_git_head": "b320174c429f0f48f517e5c1f5024c5356f8eb53",
+    "observed_git_head": "a2eceac1dfe296f34732fa43f11f3b4cb65472c8",
     "planner_review_commit": "c6b867ba9e688f595bad013e2972b2574d014a14",
     "post_ci_gate_requires_exact_hosted_ci_success": true,
     "review_round": 1,
@@ -1260,7 +1295,7 @@
         },
         "executable_verifier": {
           "declared_sha256": null,
-          "expected_sha256": "a24993f8acbf50b01a84bbb7be995cdbccab2595d58359110c42a8a63e5de4e1",
+          "expected_sha256": "898ec8d20923b432bf4c70413276594933b6105ceeee5bad58d4c0865aca53fe",
           "file_exists": true,
           "listed": false,
           "path": "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json"
@@ -1295,7 +1330,7 @@
         },
         "transaction_gate": {
           "declared_sha256": null,
-          "expected_sha256": "02a836919274a2f9fd1ef1f5edbd03614c0f0db0b542dc4f66dd144830881e8a",
+          "expected_sha256": "ae59092b40f2695fce2e97f1ac5a6a76f12b8de6d9c8d9d39ebfb50fdd52eb50",
           "file_exists": true,
           "listed": false,
           "path": "results/agent_flow_v3/care-ase-faithful/verification/transaction_gate_receipt.json"
