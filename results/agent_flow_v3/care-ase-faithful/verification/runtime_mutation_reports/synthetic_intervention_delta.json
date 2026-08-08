@@ -1,12 +1,12 @@
 {
-  "created_utc": "2026-08-08T13:47:07Z",
+  "created_utc": "2026-08-08T14:49:51Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
     "kb05.semantic_disable_only_tanh_signal"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "a8bcc4744f570f81991af5e6d273910158e440efbc9565d20aae9c9e711afae7",
+  "mutated_fingerprint_sha256": "536ccca536fb9fe5fe2ab7ce08a97a1ace89eb00616698bb8151043e9f310cc6",
   "mutation_applied": "disable_flag_tanh_signal_injected_outside_normal_forward_graph",
   "mutation_executed": true,
   "mutation_id": "synthetic_intervention_delta",
@@ -142,7 +142,7 @@
       "scar_edema_extent_and_wall_bias": 0.0,
       "scar_proposal_occupancy_center": 0.00989079475402832
     },
-    "source_manifest_sha256_before_mutation": "ecf1a7378b64e5d870c79cefa1ed075dd7556e2c1f02752e635648955fd51a6a"
+    "source_manifest_sha256_before_mutation": "9c00dcf67188fff01a77f11b2eff47b33a17fbac5437a96bf00c51015315124d"
   },
   "passed": false,
   "request_nonce": "care-ase-20260806T090955Z",

@@ -1,12 +1,12 @@
 {
-  "created_utc": "2026-08-08T13:46:15Z",
+  "created_utc": "2026-08-08T14:49:07Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
     "kb05.required_module_authority.oracle_rejected"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "eabe03119930294c776225d65aa82de057c4141ad11d472ccca37bbf45ba2573",
+  "mutated_fingerprint_sha256": "bbd9b8161b8bde1c7c5430dc9a2e6302f1525a5a9b7c1e34b2024d2529d5d7fd",
   "mutation_applied": "all_named_evidence_projection_modules_return_zero_into_final_branches",
   "mutation_executed": true,
   "mutation_id": "projection_context_no_final_authority",
@@ -132,7 +132,7 @@
       },
       "zero_named_projection_gradient_sources": []
     },
-    "source_manifest_sha256_before_mutation": "ecf1a7378b64e5d870c79cefa1ed075dd7556e2c1f02752e635648955fd51a6a"
+    "source_manifest_sha256_before_mutation": "9c00dcf67188fff01a77f11b2eff47b33a17fbac5437a96bf00c51015315124d"
   },
   "passed": false,
   "request_nonce": "care-ase-20260806T090955Z",

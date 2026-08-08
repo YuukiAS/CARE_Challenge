@@ -1,12 +1,12 @@
 {
-  "created_utc": "2026-08-08T13:48:49Z",
+  "created_utc": "2026-08-08T14:51:07Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
     "kb13.loss_semantic_oracle.rejected:injury_dice_bce_replaced_by_focal"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "213edf16d831a23cc538608b59feba5089bd1e5f23cb111ca77e17204f45619a",
+  "mutated_fingerprint_sha256": "3f51296c2ed4d78197026558a102dddf3fcdb7be0f323cdb27d0922781b449e3",
   "mutation_applied": "injury_dice_bce_term_name_preserved_but_formula_replaced_by_dice_focal",
   "mutation_executed": true,
   "mutation_id": "injury_dice_bce_replaced_by_focal",
@@ -117,7 +117,7 @@
         "weights_match_contract": true
       }
     },
-    "source_manifest_sha256_before_mutation": "ecf1a7378b64e5d870c79cefa1ed075dd7556e2c1f02752e635648955fd51a6a"
+    "source_manifest_sha256_before_mutation": "9c00dcf67188fff01a77f11b2eff47b33a17fbac5437a96bf00c51015315124d"
   },
   "passed": false,
   "request_nonce": "care-ase-20260806T090955Z",
