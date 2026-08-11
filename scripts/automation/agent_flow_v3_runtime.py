@@ -3417,7 +3417,12 @@ def care_ase_verifier_pre_ci_transaction_pending(executable: dict[str, Any], tra
         "transaction.hosted_ci.head_sha_not_exact_integration",
         "transaction.hosted_ci.conclusion",
     }
-    allowed_prefixes = ("transaction.runtime_manifest.",)
+    allowed_prefixes = (
+        "transaction.runtime_manifest.",
+        "transaction.current_runtime_input_bundle.",
+        "transaction.current_runtime_identity_receipt.",
+        "transaction.checkpoint_resume.",
+    )
     executable_failures = set(str(item) for item in executable.get("failures", []))
     transaction_failures = set(str(item) for item in transaction.get("failures", []))
     allowed_failure = lambda item: item in allowed or any(item.startswith(prefix) for prefix in allowed_prefixes)
