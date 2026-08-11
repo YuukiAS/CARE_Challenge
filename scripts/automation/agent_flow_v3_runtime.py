@@ -3420,6 +3420,7 @@ def care_ase_failures_are_exact(actual: Any, expected: set[str]) -> bool:
 def care_ase_verifier_pre_ci_transaction_pending(executable: dict[str, Any], transaction: dict[str, Any]) -> bool:
     allowed = {
         "transaction.verifier_source_changed_after_reviewed_integration",
+        "transaction.current.hosted_ci_actual_head_sha_not_exact_integration",
         "transaction.hosted_ci.head_sha_not_exact_integration",
         "transaction.hosted_ci.conclusion",
     }

@@ -1215,6 +1215,7 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             "transaction.current_runtime_input_bundle.integration_commit_sha",
             "transaction.current_runtime_identity_receipt.integration_commit_sha",
             "transaction.checkpoint_resume.integration_commit_sha",
+            "transaction.current.hosted_ci_actual_head_sha_not_exact_integration",
             "transaction.hosted_ci.head_sha_not_exact_integration",
             "transaction.hosted_ci.conclusion",
         ]
