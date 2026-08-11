@@ -2572,6 +2572,21 @@ Worktree synchronization note:
 
 Your first action must be to reconcile origin/develop into this Executor branch while preserving the local Executor implementation commit and the latest Verifier/Controller transaction from origin/develop. For non-Executor-owned files, take origin/develop exactly; do not author changes to tests, validators, automation schema, Planner/Critic artifacts, or the frozen contract. Resolve Executor-owned implementation/evidence conflicts inside your write scope, then continue the round_001_reentry_003 Executor repair.
 """
+    if current.get("state") == "PROVENANCE_REBIND_REQUIRED":
+        executor_scope_instruction = """This is a narrow same-scope provenance/runtime transaction rebind turn, not a new architecture implementation turn. The Verifier recheck has already committed fail-closed receipts showing stale or incomplete transaction bindings. Your task is to repair only Executor-owned runtime evidence and implementation receipt files so they bind the current Controller integration tuple exactly.
+
+Required rebind scope:
+- read results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json;
+- read results/agent_flow_v3/care-ase-faithful/verification/transaction_gate_receipt.json;
+- update/regenerate only Executor-owned implementation evidence under results/agent_flow_v3/care-ase-faithful/implementation and any necessary Executor-owned source that generates those receipts;
+- bind request_nonce, frozen_contract_sha256, review_round, current integration_commit_sha, implementation_fingerprint_sha256, verifier_fingerprint_sha256, and artifact SHA manifest consistently;
+- rerun only zero-credit probes needed to refresh those receipts;
+- leave the scientific design and frozen contract unchanged.
+
+Do not change model architecture or training logic unless it is strictly necessary to make the existing receipt generator write the correct provenance tuple. Do not claim implementation PASS; the expected result is fresh Executor-owned evidence that is ready for another independent Verifier recheck."""
+    else:
+        executor_scope_instruction = "Implement CARE-ASE faithfully against the frozen contract and the Verifier package."
+
     prompt = f"""/goal You are the independent Executor for CARE Agent-Flow v3 task care-ase-faithful.
 
 This is an implementation turn in the isolated Executor worktree. Read and obey:
@@ -2593,18 +2608,7 @@ Current verified binding:
 - CURRENT.state: {current.get("state")}
 {sync_note}
 
-{("""This is a narrow same-scope provenance/runtime transaction rebind turn, not a new architecture implementation turn. The Verifier recheck has already committed fail-closed receipts showing stale or incomplete transaction bindings. Your task is to repair only Executor-owned runtime evidence and implementation receipt files so they bind the current Controller integration tuple exactly.
-
-Required rebind scope:
-- read results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json;
-- read results/agent_flow_v3/care-ase-faithful/verification/transaction_gate_receipt.json;
-- update/regenerate only Executor-owned implementation evidence under results/agent_flow_v3/care-ase-faithful/implementation and any necessary Executor-owned source that generates those receipts;
-- bind request_nonce, frozen_contract_sha256, review_round, current integration_commit_sha, implementation_fingerprint_sha256, verifier_fingerprint_sha256, and artifact SHA manifest consistently;
-- rerun only zero-credit probes needed to refresh those receipts;
-- leave the scientific design and frozen contract unchanged.
-
-Do not change model architecture or training logic unless it is strictly necessary to make the existing receipt generator write the correct provenance tuple. Do not claim implementation PASS; the expected result is fresh Executor-owned evidence that is ready for another independent Verifier recheck.
-""" if current.get("state") == "PROVENANCE_REBIND_REQUIRED" else """Implement CARE-ASE faithfully against the frozen contract and the Verifier package.""")} You may edit only the Executor role write scope: src, scripts/training, scripts/inference, jobs, configs, and results/agent_flow_v3/care-ase-faithful/implementation. You must not edit tests, validators, automation schema, blueprints, Planner/Critic artifacts, or the frozen contract.
+{executor_scope_instruction} You may edit only the Executor role write scope: src, scripts/training, scripts/inference, jobs, configs, and results/agent_flow_v3/care-ase-faithful/implementation. You must not edit tests, validators, automation schema, blueprints, Planner/Critic artifacts, or the frozen contract.
 
 Do not train, access outer data, build or upload Docker, upload validation/challenge results, send organizer email, hand-write Planner/Critic decisions, use --last, or use TUI key injection. Commit implementation-only changes on the local Executor branch. Do not push develop; Controller owns integration and push.
 
@@ -3097,7 +3101,10 @@ def validate_care_ase_executor_completion(
         result_status = care_ase_implementation_result_status(implementation_dir / "result.md")
         pending_verifier_recheck = bool(
             allow_verifier_recheck
-            and result_status == "IMPLEMENTATION_EVIDENCE_READY_PENDING_VERIFIER_RECHECK"
+            and result_status in {
+                "IMPLEMENTATION_EVIDENCE_READY_PENDING_VERIFIER_RECHECK",
+                "EXECUTOR_PROVENANCE_REBIND_READY_PENDING_CONTROLLER_VERIFIER_RECHECK",
+            }
             and care_ase_validation_failures_require_verifier_recheck(validation)
             and fingerprint.get("frozen_contract_sha256") == current.get("frozen_contract_sha256")
             and fingerprint.get("request_nonce") == current.get("request_nonce")
