@@ -1221,9 +1221,17 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         ]
         transaction["failures"] = list(executable["failures"])
         self.assertTrue(RUNTIME.care_ase_verifier_pre_ci_transaction_pending(executable, transaction))
+        self.assertTrue(RUNTIME.care_ase_transaction_failures_require_provenance_rebind(executable["failures"]))
 
         executable["failures"] = ["executable_probe.failed:required_module_final_logit_interventions"]
         self.assertFalse(RUNTIME.care_ase_verifier_pre_ci_transaction_pending(executable, transaction))
+
+        hosted_ci_only = [
+            "transaction.current.hosted_ci_actual_head_sha_not_exact_integration",
+            "transaction.hosted_ci.head_sha_not_exact_integration",
+            "transaction.hosted_ci.conclusion",
+        ]
+        self.assertFalse(RUNTIME.care_ase_transaction_failures_require_provenance_rebind(hosted_ci_only))
 
     def test_github_actions_success_payload_requires_exact_head_and_success(self) -> None:
         payload = {

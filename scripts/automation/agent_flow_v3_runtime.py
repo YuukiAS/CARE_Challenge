@@ -3449,6 +3449,18 @@ def care_ase_verifier_pre_ci_transaction_pending(executable: dict[str, Any], tra
     )
 
 
+def care_ase_transaction_failures_require_provenance_rebind(failures: Any) -> bool:
+    if not isinstance(failures, list):
+        return False
+    rebind_prefixes = (
+        "transaction.runtime_manifest.",
+        "transaction.current_runtime_input_bundle.",
+        "transaction.current_runtime_identity_receipt.",
+        "transaction.checkpoint_resume.",
+    )
+    return any(str(item).startswith(rebind_prefixes) for item in failures)
+
+
 def care_ase_integrated_validation_pre_ci_acceptable(integrated: dict[str, Any]) -> bool:
     if integrated.get("passed") is True and int(integrated.get("failure_count", 0)) == 0:
         return True
@@ -4501,10 +4513,15 @@ def apply_care_ase_verifier_recheck_controller_update(
     receipt_path = repo / "results/agent_flow_v3/care-ase-faithful/controller_verifier_recheck_integration_receipt.json"
     ci_receipt_path = repo / "results/agent_flow_v3/care-ase-faithful/controller_ci_receipt.json"
     post_ci_recheck = current.get("state") in {"POST_CI_VERIFIER_RECHECK_REQUIRED", "POST_CI_VERIFIER_RECHECK_RUNNING"}
-    post_ci_transaction_pending = post_ci_recheck and completion.get("pre_ci_transaction_pending") is True
+    provenance_rebind_pending = (
+        completion.get("pre_ci_transaction_pending") is True
+        and care_ase_transaction_failures_require_provenance_rebind(
+            completion.get("pre_ci_transaction_allowed_failures")
+        )
+    )
     state_after = (
         "PROVENANCE_REBIND_REQUIRED"
-        if post_ci_transaction_pending
+        if provenance_rebind_pending
         else ("READY_FOR_PLANNER_REVIEW" if post_ci_recheck else "CI_RUNNING")
     )
     receipt = {
@@ -4572,13 +4589,13 @@ def apply_care_ase_verifier_recheck_controller_update(
             "controller_local_gates_status": "PASS",
             "ci_status": (
                 "POST_CI_VERIFIER_RECHECK_FAIL_CLOSED_PROVENANCE_REBIND_REQUIRED"
-                if post_ci_transaction_pending
+                if provenance_rebind_pending
                 else ("POST_CI_VERIFIER_RECHECK_PASS" if post_ci_recheck else "PENDING_AFTER_PUSH")
             ),
             "ci_checked_commit_sha": integration_merge_sha,
             "next_action": (
                 "START_EXECUTOR_PROVENANCE_RUNTIME_REBIND_EXACT_SESSION"
-                if post_ci_transaction_pending
+                if provenance_rebind_pending
                 else (
                     "READY_FOR_PLANNER_CONTROL_PLANE_ENABLEMENT"
                     if post_ci_recheck
@@ -4587,7 +4604,7 @@ def apply_care_ase_verifier_recheck_controller_update(
             ),
             "expected_state_or_artifact": (
                 "Executor/Controller refresh runtime manifest, current runtime/checkpoint tuple receipts, artifact SHA bindings, and CI conclusion for the exact post-CI transaction."
-                if post_ci_transaction_pending
+                if provenance_rebind_pending
                 else (
                 "Controller may notify the user that Planner/Critic control-plane can be enabled for the fresh transaction."
                 if post_ci_recheck
