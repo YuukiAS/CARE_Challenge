@@ -1805,12 +1805,20 @@ def apply_smoke_b_pass_controller_update(repo: Path, branch: str) -> dict[str, A
         activation_nonce="care-ase-" + now().replace(":", "").replace("-", ""),
         dry_run=False,
     )
-    commit_result = commit_and_push(
-        repo,
-        branch,
-        activation["updated_paths"],
-        "automation: arm care ase after smoke b pass",
-    )
+    if activation["updated_paths"]:
+        commit_result = commit_and_push(
+            repo,
+            branch,
+            activation["updated_paths"],
+            "automation: arm care ase after smoke b pass",
+        )
+    else:
+        commit_result = {
+            "status": "NO_CHANGES",
+            "branch": branch,
+            "commit_sha": git(repo, "rev-parse", "HEAD"),
+            "pushed": False,
+        }
     return {
         "status": "APPLIED",
         "head_before_update": head_before,
@@ -5763,6 +5771,20 @@ def activate_care_ase_after_smoke_b(
     care_current = git_show_json(repo, ref, care_current_path)
     visual_sources = git_show_json(repo, ref, care_visual_sources_path)
     visual_final = git_show_json(repo, ref, visual_final_path)
+    if care_request.get("enabled") is True:
+        return {
+            "schema": "CARE_AGENT_FLOW_V3_CARE_ASE_ACTIVATION_COMMAND",
+            "status": "NOOP_ALREADY_ARMED",
+            "branch": branch,
+            "source_ref": ref,
+            "smoke_final_path": smoke_final_path,
+            "activation_state_path": activation_state_path,
+            "updated_paths": [],
+            "request_nonce": care_request.get("request_nonce"),
+            "current_state": care_current.get("state"),
+            "idempotency_policy": "existing enabled care-ase-faithful request must not be re-armed or assigned a new nonce",
+            "updated_utc": now(),
+        }
 
     review_path = ""
     review: dict[str, Any] | None = None
