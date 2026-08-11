@@ -886,7 +886,6 @@ def review_packet_contains_implementation_source(review_packet_sha: str, impleme
 
 
 def verify_external_review_permit(path: Path, *, expected_environment_determinism_manifest_sha256: str) -> dict[str, Any]:
-    git_fetch_origin_main()
     permit = json.loads(path.read_text(encoding="utf-8"))
     required = {
         "decision",
@@ -909,6 +908,8 @@ def verify_external_review_permit(path: Path, *, expected_environment_determinis
     if permit["decision"] not in allowed_decisions:
         raise RuntimeError(f"CARE-ASE training permit decision is not authorized: {permit['decision']}")
     user_authorized_training = permit["decision"] == "USER_FORMAL_TRAINING_AUTHORIZED_20260812"
+    if not user_authorized_training:
+        git_fetch_origin_main()
     head = git_sha("HEAD")
     origin = git_sha("origin/main")
     implementation_sha = str(permit["implementation_source_sha"])
