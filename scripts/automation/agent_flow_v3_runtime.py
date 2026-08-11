@@ -4580,7 +4580,7 @@ def stage_event_should_mark_processed(event: dict[str, Any]) -> bool:
         return False
     return not (
         event.get("task_id") == "care-ase-faithful"
-        and event.get("state") in {"PLAN_FROZEN", "VERIFIER_FROZEN", "VERIFIER_RECHECK_REQUIRED"}
+        and event.get("state") in {"PLAN_FROZEN", "VERIFIER_FROZEN", "VERIFIER_RECHECK_REQUIRED", "PROVENANCE_REBIND_REQUIRED"}
     )
 
 
@@ -4799,6 +4799,13 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
             and current.get("state") in {"VERIFIER_RECHECK_REQUIRED", "VERIFIER_RECHECK_RUNNING"}
             and stage_event_was_processed(event_key, processed)
             and care_ase_verifier_recheck_complete
+        ):
+            processed = remove_stage_processed_event(event_key, processed)
+        if (
+            task_id == "care-ase-faithful"
+            and current.get("state") == "PROVENANCE_REBIND_REQUIRED"
+            and stage_event_was_processed(event_key, processed)
+            and not care_ase_role_launch_satisfied(args.state_root, current, "executor")
         ):
             processed = remove_stage_processed_event(event_key, processed)
         if (
