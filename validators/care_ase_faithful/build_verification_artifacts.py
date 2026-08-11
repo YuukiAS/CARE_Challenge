@@ -84,6 +84,13 @@ EXECUTABLE_MUTATION_IDS = [
     "runtime_manifest_old_implementation_fingerprint",
     "runtime_manifest_old_verifier_fingerprint",
     "runtime_manifest_receipt_sha_drift",
+    "current_runtime_bundle_old_integration",
+    "current_runtime_bundle_old_implementation_identity",
+    "current_runtime_bundle_old_verifier_fingerprint",
+    "current_runtime_identity_receipt_old_tuple",
+    "current_runtime_identity_artifact_omitted_from_manifest",
+    "current_checkpoint_receipt_old_integration_tuple",
+    "post_integration_bundle_self_reference_or_previous_fingerprint_reuse",
     "artifact_sha_mismatch",
 ]
 
