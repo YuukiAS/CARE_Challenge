@@ -1,42 +1,64 @@
 {
-  "schema": "CARE_ASE_FAITHFUL_CONTROLLER_CI_RECEIPT_V5",
-  "task_id": "care-ase-faithful",
-  "request_nonce": "care-ase-20260806T090955Z",
-  "created_utc": "2026-08-11T06:14:29Z",
-  "checked_commit_sha": "cbafd7aa18b89c11f10e9663fa3cc1683192fa48",
-  "local_gates_status": "PASS",
+  "checked_commit_sha": "8c3bf85655d6008d2e64c9534f40bb0e6f629f33",
+  "created_utc": "2026-08-11T06:50:41Z",
+  "github_actions_status": "NOT_STARTED_PROVENANCE_REBIND_REQUIRED",
   "local_gates": [
     {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "scripts/automation/validate_agent_flow_v3.py",
+        "--repo-root",
+        "."
+      ],
+      "exit_code": 0,
       "name": "agent_flow_v3_contract_validation",
-      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/automation/validate_agent_flow_v3.py --repo-root .",
-      "exit_code": 0,
-      "stdout_tail": "CARE Agent-Flow v3 contract validation: PASS\n",
-      "stderr_tail": ""
+      "status": "PASS"
     },
     {
-      "name": "frozen_verifier_validate_implementation_evidence",
-      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python validators/care_ase_faithful/validate_contract_evidence.py --verification-contract results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json --evidence results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json --report-json results/agent_flow_v3/care-ase-faithful/implementation/frozen_verifier_validation_result.json",
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "validators/care_ase_faithful/validate_contract_evidence.py",
+        "--verification-contract",
+        "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+        "--evidence",
+        "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json",
+        "--report-json",
+        "results/agent_flow_v3/care-ase-faithful/implementation/frozen_verifier_validation_result.json"
+      ],
       "exit_code": 2,
-      "stdout_tail": "{\n  \"failure_count\": 7,\n  \"failures\": [\n    \"verifier_owned.executable.passed\",\n    \"verifier_owned.executable.status\",\n    \"verifier_owned.transaction.status\",\n    \"verifier_owned.transaction.no_failures\",\n    \"verifier_owned.transaction.hosted_ci_success\",\n    \"verifier_owned.transaction.hosted_ci_exact_reviewed_integration\",\n    \"verifier_owned.transaction.no_stale_planner_reuse\"\n  ],\n  \"known_bad_case_id\": null,\n  \"passed\": false,\n  \"schema\": \"CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1\",\n  \"task_id\": \"care-ase-faithful\"\n}\n",
-      "stderr_tail": "",
+      "failure_count": 6,
+      "failures": [
+        "verifier_owned.executable.passed",
+        "verifier_owned.executable.status",
+        "verifier_owned.transaction.status",
+        "verifier_owned.transaction.no_failures",
+        "verifier_owned.transaction.hosted_ci_success",
+        "verifier_owned.transaction.no_stale_planner_reuse"
+      ],
+      "name": "frozen_verifier_validate_implementation_evidence",
       "pre_ci_transaction_failure_allowed": true,
-      "pre_ci_transaction_policy": "Verifier recheck may enter CI_RUNNING when only hosted-CI transaction binding is pending; post-push CI must pass before WAITING_FOR_EXTERNAL_GPT."
+      "pre_ci_transaction_policy": "Post-CI Verifier recheck found only transaction/provenance binding gaps; route to provenance rebind instead of Planner/Critic wait or scientific choice.",
+      "report_path": "results/agent_flow_v3/care-ase-faithful/implementation/frozen_verifier_validation_result.json",
+      "status": "FAIL_CLOSED_ALLOWED_PROVENANCE_REBIND_REQUIRED"
     },
     {
-      "name": "public_verifier_pytest",
-      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m pytest tests/care_ase_faithful/test_verifier_package.py -q",
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "-m",
+        "pytest",
+        "tests/care_ase_faithful/test_verifier_package.py",
+        "-q"
+      ],
       "exit_code": 0,
-      "stdout_tail": ".................                                                 [100%]\n17 passed, 7 subtests passed in 10.20s\n",
-      "stderr_tail": ""
+      "name": "public_verifier_pytest",
+      "status": "PASS",
+      "summary": "17 passed, 7 subtests passed"
     }
   ],
-  "github_actions_status": "PASS",
-  "workflow_path": ".github/workflows/agent-flow-v3-ci.yml",
-  "github_actions_run_id": 31464272753,
-  "github_actions_run_url": "https://github.com/YuukiAS/CARE_Challenge/actions/runs/31464272753",
-  "github_actions_head_sha": "cbafd7aa18b89c11f10e9663fa3cc1683192fa48",
-  "github_actions_workflow_name": "CARE Agent-Flow v3 deterministic CI",
-  "state_transition_after_ci": "READY_FOR_PLANNER_REVIEW_TO_WAITING_FOR_EXTERNAL_GPT",
-  "human_approval_required_for_wait_transaction": false,
-  "approval_scope": "current_frozen_contract_and_request_nonce_ci_pass_to_planner_wait_loop"
+  "local_gates_status": "PASS_WITH_ALLOWED_POST_CI_PROVENANCE_REBIND",
+  "next_action": "Executor/Controller must refresh runtime manifest, current runtime/checkpoint tuple receipts, artifact SHA bindings, and CI conclusion for the exact post-CI transaction before Planner/Critic enablement.",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "schema": "CARE_ASE_FAITHFUL_CONTROLLER_CI_RECEIPT_V6",
+  "task_id": "care-ase-faithful",
+  "workflow_path": ".github/workflows/agent-flow-v3-ci.yml"
 }

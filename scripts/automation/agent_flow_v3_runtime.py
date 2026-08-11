@@ -263,13 +263,6 @@ def cmd_audit_visual_sources(args: argparse.Namespace) -> int:
             failures.append(f"{name}:missing_raw_url")
         rows.append(row)
 
-    post_ci_recheck = current.get("state") in {"POST_CI_VERIFIER_RECHECK_REQUIRED", "POST_CI_VERIFIER_RECHECK_RUNNING"}
-    post_ci_transaction_pending = post_ci_recheck and completion.get("pre_ci_transaction_pending") is True
-    state_after = (
-        "PROVENANCE_REBIND_REQUIRED"
-        if post_ci_transaction_pending
-        else ("READY_FOR_PLANNER_REVIEW" if post_ci_recheck else "CI_RUNNING")
-    )
     receipt = {
         "schema": VISUAL_RECEIPT_SCHEMA,
         "task_id": manifest.get("task_id"),
@@ -4506,6 +4499,13 @@ def apply_care_ase_verifier_recheck_controller_update(
 
     receipt_path = repo / "results/agent_flow_v3/care-ase-faithful/controller_verifier_recheck_integration_receipt.json"
     ci_receipt_path = repo / "results/agent_flow_v3/care-ase-faithful/controller_ci_receipt.json"
+    post_ci_recheck = current.get("state") in {"POST_CI_VERIFIER_RECHECK_REQUIRED", "POST_CI_VERIFIER_RECHECK_RUNNING"}
+    post_ci_transaction_pending = post_ci_recheck and completion.get("pre_ci_transaction_pending") is True
+    state_after = (
+        "PROVENANCE_REBIND_REQUIRED"
+        if post_ci_transaction_pending
+        else ("READY_FOR_PLANNER_REVIEW" if post_ci_recheck else "CI_RUNNING")
+    )
     receipt = {
         "schema": "CARE_ASE_FAITHFUL_CONTROLLER_VERIFIER_RECHECK_INTEGRATION_RECEIPT_V1",
         "task_id": "care-ase-faithful",

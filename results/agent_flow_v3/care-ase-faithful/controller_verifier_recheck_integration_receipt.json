@@ -1,73 +1,8 @@
 {
-  "schema": "CARE_ASE_FAITHFUL_CONTROLLER_VERIFIER_RECHECK_INTEGRATION_RECEIPT_V1",
-  "task_id": "care-ase-faithful",
-  "request_nonce": "care-ase-20260806T090955Z",
-  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
-  "created_utc": "2026-08-11T06:12:54Z",
-  "state_transition": {
-    "from": "VERIFIER_RECHECK_REQUIRED",
-    "through": [
-      "INTEGRATION_RUNNING"
-    ],
-    "to": "CI_RUNNING"
-  },
-  "origin_develop_before_integration_sha": "a0b0a930b712366f8a3c461b0432e794f63be700",
-  "last_observed_remote_sha_before_integration": "a0b0a930b712366f8a3c461b0432e794f63be700",
-  "verifier_thread_id": "019fda33-10c3-70e1-aa41-684b46d2cbda",
-  "verifier_local_commit_sha": "a4702ca7b0cec13e36bd2a4e59ade6d5daf1ca6c",
-  "verifier_local_commit_subject": "verification: rerun care ase transaction receipts",
-  "verifier_merge_base": "edf786a2cf8b05aad523e36083f18179ee99768f",
-  "verifier_goal_complete": {
-    "rollout_path": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_VERIFIER/sessions/2026/08/06/rollout-2026-08-06T23-10-07-019fda33-10c3-70e1-aa41-684b46d2cbda.jsonl",
-    "thread_id": "019fda33-10c3-70e1-aa41-684b46d2cbda",
-    "status": "complete",
-    "tokens_used": 79837,
-    "time_used_seconds": 808,
-    "updated_at": 1786201809
-  },
-  "integration_merge_sha": "e7b3520f601eb381d7d5071262c04e8581962c7e",
-  "implementation_fingerprint_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
-  "verifier_fingerprint_sha256": "a833449fe2dd3de5041e740f1d6f4d32a0ffec592a157dd0178f6e6182819c81",
-  "pre_ci_transaction_pending": true,
-  "pre_ci_transaction_allowed_failures": [
-    "transaction.checkpoint_resume.integration_commit_sha",
-    "transaction.current_runtime_identity_receipt.integration_commit_sha",
-    "transaction.current_runtime_input_bundle.integration_commit_sha",
-    "transaction.hosted_ci.conclusion",
-    "transaction.hosted_ci.head_sha_not_exact_integration",
-    "transaction.runtime_manifest.artifact_missing:checkpoint_resume",
-    "transaction.runtime_manifest.artifact_missing:current_runtime_identity_receipt",
-    "transaction.runtime_manifest.artifact_missing:current_runtime_input_bundle",
-    "transaction.runtime_manifest.artifact_missing:deployment_load",
-    "transaction.runtime_manifest.artifact_missing:evaluator_smoke",
-    "transaction.runtime_manifest.artifact_missing:executable_verifier",
-    "transaction.runtime_manifest.artifact_missing:frozen_verifier_validation",
-    "transaction.runtime_manifest.artifact_missing:implementation_evidence",
-    "transaction.runtime_manifest.artifact_missing:implementation_fingerprint",
-    "transaction.runtime_manifest.artifact_missing:inference",
-    "transaction.runtime_manifest.artifact_missing:transaction_gate",
-    "transaction.runtime_manifest.artifact_sha256:checkpoint_resume",
-    "transaction.runtime_manifest.artifact_sha256:current_runtime_identity_receipt",
-    "transaction.runtime_manifest.artifact_sha256:current_runtime_input_bundle",
-    "transaction.runtime_manifest.artifact_sha256:deployment_load",
-    "transaction.runtime_manifest.artifact_sha256:evaluator_smoke",
-    "transaction.runtime_manifest.artifact_sha256:executable_verifier",
-    "transaction.runtime_manifest.artifact_sha256:frozen_verifier_validation",
-    "transaction.runtime_manifest.artifact_sha256:hosted_ci",
-    "transaction.runtime_manifest.artifact_sha256:implementation_evidence",
-    "transaction.runtime_manifest.artifact_sha256:implementation_fingerprint",
-    "transaction.runtime_manifest.artifact_sha256:inference",
-    "transaction.runtime_manifest.artifact_sha256:transaction_gate",
-    "transaction.runtime_manifest.frozen_contract_sha256",
-    "transaction.runtime_manifest.implementation_fingerprint_sha256",
-    "transaction.runtime_manifest.integration_commit_sha",
-    "transaction.runtime_manifest.request_nonce",
-    "transaction.runtime_manifest.review_round",
-    "transaction.runtime_manifest.verifier_fingerprint_sha256"
-  ],
   "changed_paths": [
     "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_local_fail_closed_receipt.json",
     "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json",
+    "results/agent_flow_v3/care-ase-faithful/verification/integrated_implementation_validation_result.json",
     "results/agent_flow_v3/care-ase-faithful/verification/protected_known_bad_manifest.json",
     "results/agent_flow_v3/care-ase-faithful/verification/public_test_manifest.json",
     "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_manifest.json",
@@ -114,35 +49,135 @@
     "results/agent_flow_v3/care-ase-faithful/verification/verifier_local_commands_recorded_in_manifests.json",
     "results/agent_flow_v3/care-ase-faithful/verification/verifier_session_receipt.json"
   ],
-  "local_controller_gates": [
-    {
-      "name": "agent_flow_v3_contract_validation",
-      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/automation/validate_agent_flow_v3.py --repo-root .",
-      "exit_code": 0,
-      "stdout_tail": "CARE Agent-Flow v3 contract validation: PASS\n",
-      "stderr_tail": ""
-    },
-    {
-      "name": "frozen_verifier_validate_implementation_evidence",
-      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python validators/care_ase_faithful/validate_contract_evidence.py --verification-contract results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json --evidence results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json --report-json results/agent_flow_v3/care-ase-faithful/implementation/frozen_verifier_validation_result.json",
-      "exit_code": 2,
-      "stdout_tail": "{\n  \"failure_count\": 7,\n  \"failures\": [\n    \"verifier_owned.executable.passed\",\n    \"verifier_owned.executable.status\",\n    \"verifier_owned.transaction.status\",\n    \"verifier_owned.transaction.no_failures\",\n    \"verifier_owned.transaction.hosted_ci_success\",\n    \"verifier_owned.transaction.hosted_ci_exact_reviewed_integration\",\n    \"verifier_owned.transaction.no_stale_planner_reuse\"\n  ],\n  \"known_bad_case_id\": null,\n  \"passed\": false,\n  \"schema\": \"CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1\",\n  \"task_id\": \"care-ase-faithful\"\n}\n",
-      "stderr_tail": "",
-      "pre_ci_transaction_failure_allowed": true,
-      "pre_ci_transaction_policy": "Verifier recheck may enter CI_RUNNING when only hosted-CI transaction binding is pending; post-push CI must pass before WAITING_FOR_EXTERNAL_GPT."
-    },
-    {
-      "name": "public_verifier_pytest",
-      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m pytest tests/care_ase_faithful/test_verifier_package.py -q",
-      "exit_code": 0,
-      "stdout_tail": ".................                                                 [100%]\n17 passed, 7 subtests passed in 10.20s\n",
-      "stderr_tail": ""
-    }
-  ],
+  "created_utc": "2026-08-11T06:50:41Z",
+  "executable_verifier_receipt_sha256": "1bc71758e4a31f2c6af2500bf0a5410a63cbc82ecc12d8b0e96309a863f6c39d",
   "forbidden_actions_confirmed": [
     "no Planner/Critic decision generated",
     "no Controller edit to Verifier source or Executor implementation source",
     "no training, outer, Docker, upload, organizer email or develop-to-main merge"
   ],
-  "updated_utc": "2026-08-11T06:12:54Z"
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "frozen_verifier_validation_result_sha256": "988b4bba97774f55e16d5079a9a57503b1c51c9419600ffb8241416e3c3fe779",
+  "implementation_fingerprint_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
+  "integrated_validation_result_sha256": "988b4bba97774f55e16d5079a9a57503b1c51c9419600ffb8241416e3c3fe779",
+  "integration_merge_sha": "8c3bf85655d6008d2e64c9534f40bb0e6f629f33",
+  "last_observed_remote_sha_before_integration": "8fb5637cc4aae49ddb5b1424e574139f44296fb3",
+  "local_controller_gates": [
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "scripts/automation/validate_agent_flow_v3.py",
+        "--repo-root",
+        "."
+      ],
+      "exit_code": 0,
+      "name": "agent_flow_v3_contract_validation",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "validators/care_ase_faithful/validate_contract_evidence.py",
+        "--verification-contract",
+        "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+        "--evidence",
+        "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json",
+        "--report-json",
+        "results/agent_flow_v3/care-ase-faithful/implementation/frozen_verifier_validation_result.json"
+      ],
+      "exit_code": 2,
+      "failure_count": 6,
+      "failures": [
+        "verifier_owned.executable.passed",
+        "verifier_owned.executable.status",
+        "verifier_owned.transaction.status",
+        "verifier_owned.transaction.no_failures",
+        "verifier_owned.transaction.hosted_ci_success",
+        "verifier_owned.transaction.no_stale_planner_reuse"
+      ],
+      "name": "frozen_verifier_validate_implementation_evidence",
+      "pre_ci_transaction_failure_allowed": true,
+      "pre_ci_transaction_policy": "Post-CI Verifier recheck found only transaction/provenance binding gaps; route to provenance rebind instead of Planner/Critic wait or scientific choice.",
+      "report_path": "results/agent_flow_v3/care-ase-faithful/implementation/frozen_verifier_validation_result.json",
+      "status": "FAIL_CLOSED_ALLOWED_PROVENANCE_REBIND_REQUIRED"
+    },
+    {
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "-m",
+        "pytest",
+        "tests/care_ase_faithful/test_verifier_package.py",
+        "-q"
+      ],
+      "exit_code": 0,
+      "name": "public_verifier_pytest",
+      "status": "PASS",
+      "summary": "17 passed, 7 subtests passed"
+    }
+  ],
+  "origin_develop_before_integration_sha": "8fb5637cc4aae49ddb5b1424e574139f44296fb3",
+  "pre_ci_transaction_allowed_failures": [
+    "transaction.checkpoint_resume.integration_commit_sha",
+    "transaction.current_runtime_identity_receipt.integration_commit_sha",
+    "transaction.current_runtime_input_bundle.integration_commit_sha",
+    "transaction.hosted_ci.conclusion",
+    "transaction.runtime_manifest.artifact_missing:checkpoint_resume",
+    "transaction.runtime_manifest.artifact_missing:current_runtime_identity_receipt",
+    "transaction.runtime_manifest.artifact_missing:current_runtime_input_bundle",
+    "transaction.runtime_manifest.artifact_missing:deployment_load",
+    "transaction.runtime_manifest.artifact_missing:evaluator_smoke",
+    "transaction.runtime_manifest.artifact_missing:executable_verifier",
+    "transaction.runtime_manifest.artifact_missing:frozen_verifier_validation",
+    "transaction.runtime_manifest.artifact_missing:implementation_evidence",
+    "transaction.runtime_manifest.artifact_missing:implementation_fingerprint",
+    "transaction.runtime_manifest.artifact_missing:inference",
+    "transaction.runtime_manifest.artifact_missing:transaction_gate",
+    "transaction.runtime_manifest.artifact_sha256:checkpoint_resume",
+    "transaction.runtime_manifest.artifact_sha256:current_runtime_identity_receipt",
+    "transaction.runtime_manifest.artifact_sha256:current_runtime_input_bundle",
+    "transaction.runtime_manifest.artifact_sha256:deployment_load",
+    "transaction.runtime_manifest.artifact_sha256:evaluator_smoke",
+    "transaction.runtime_manifest.artifact_sha256:executable_verifier",
+    "transaction.runtime_manifest.artifact_sha256:frozen_verifier_validation",
+    "transaction.runtime_manifest.artifact_sha256:hosted_ci",
+    "transaction.runtime_manifest.artifact_sha256:implementation_evidence",
+    "transaction.runtime_manifest.artifact_sha256:implementation_fingerprint",
+    "transaction.runtime_manifest.artifact_sha256:inference",
+    "transaction.runtime_manifest.artifact_sha256:transaction_gate",
+    "transaction.runtime_manifest.frozen_contract_sha256",
+    "transaction.runtime_manifest.implementation_fingerprint_sha256",
+    "transaction.runtime_manifest.integration_commit_sha",
+    "transaction.runtime_manifest.request_nonce",
+    "transaction.runtime_manifest.review_round",
+    "transaction.runtime_manifest.verifier_fingerprint_sha256"
+  ],
+  "pre_ci_transaction_pending": true,
+  "request_nonce": "care-ase-20260806T090955Z",
+  "routing_decision": {
+    "classification": "PROVENANCE_BINDING_GAP",
+    "next_action": "START_EXECUTOR_PROVENANCE_RUNTIME_REBIND_EXACT_SESSION",
+    "notifier_policy": "Do not notify until fresh transaction is ready for Planner/Critic control-plane enablement.",
+    "planner_critic_enablement": "NOT_READY",
+    "state_after": "PROVENANCE_REBIND_REQUIRED"
+  },
+  "schema": "CARE_ASE_FAITHFUL_CONTROLLER_VERIFIER_RECHECK_INTEGRATION_RECEIPT_V1",
+  "state_transition": {
+    "from": "POST_CI_VERIFIER_RECHECK_REQUIRED",
+    "through": [
+      "INTEGRATION_RUNNING"
+    ],
+    "to": "PROVENANCE_REBIND_REQUIRED"
+  },
+  "task_id": "care-ase-faithful",
+  "transaction_gate_receipt_sha256": "e0c62d8250a5ea00f4524c9b26e72fe3e0e9ae069668405e6bff7d340098edd2",
+  "updated_utc": "2026-08-11T06:50:41Z",
+  "verifier_fingerprint_sha256": "a833449fe2dd3de5041e740f1d6f4d32a0ffec592a157dd0178f6e6182819c81",
+  "verifier_goal_complete": {
+    "evidence": "post-CI verifier exact thread produced and committed current verification receipts; controller did not rerun or edit Verifier source",
+    "rollout_path": "/users/a/e/aereinh/.codex-homes/CARE/role_homes/care-ase-faithful/verifier/sessions/019fda33-10c3-70e1-aa41-684b46d2cbda"
+  },
+  "verifier_local_commit_sha": "ac2b7422436566f19b53490fe7d7d54c088a0bd7",
+  "verifier_local_commit_subject": "verification: rerun care ase post-ci receipts",
+  "verifier_merge_base": "8e25ca94a9900bebaef98bfd44f71f400ec94e5a",
+  "verifier_thread_id": "019fda33-10c3-70e1-aa41-684b46d2cbda"
 }
