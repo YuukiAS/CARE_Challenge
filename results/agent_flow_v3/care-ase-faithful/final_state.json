@@ -38,7 +38,9 @@
   "main_merge_status": "not_performed_forbidden_by_goal",
   "main_push_status": "not_applicable_no_main_update",
   "next_action": "AWAIT_HUMAN_DECISION",
-  "notifier_status": "sent_after_terminal_state_push",
+  "notifier_failure_reason": "Existing notifier found the GOAL_COMPLETE event, but local notification config/env expanded the recipient list to an empty address. No custom SMTP sender was used.",
+  "notifier_status": "attempted_failed_empty_recipient",
+  "notifier_status_path": "controller_notifications/state/notify_goal_watcher_status.json",
   "planner_decision": "PLANNER_PASS",
   "planner_review_artifact": "results/agent_flow_v3/care-ase-faithful/planner_reviews/round_001_reentry_009_final.json",
   "planner_review_artifact_commit_sha": "ff12c67e1d4fb4fccfd6254d95c014d1b46f8ede",
@@ -57,6 +59,6 @@
   "schema": "CARE_AGENT_FLOW_V3_FINAL_STATE",
   "source_snapshot_sha256": "b3b6e27d24f389f76762db7b21c2e37b8c590b26a33050dea01d5757464c9fd2",
   "task_id": "care-ase-faithful",
-  "updated_utc": "2026-08-11T12:32:23Z",
+  "updated_utc": "2026-08-11T12:36:44Z",
   "verifier_fingerprint_sha256": "bda682e16508eed941e8ec92cc6fae2597dc409a92c63216e40d790887c35244"
 }

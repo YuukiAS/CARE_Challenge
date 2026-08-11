@@ -13,6 +13,9 @@
   "final_status": "complete",
   "key_conclusion": "CARE-ASE faithful implementation reached true Scheduled Planner PLANNER_PASS for the stable review snapshot and is now at AWAIT_HUMAN_DECISION. No formal training, outer access, Docker, upload, organizer email, or develop-to-main merge was performed.",
   "next_step": "Human decision is required before any formal training, outer access, Docker/upload, validation/challenge upload, organizer email, or develop-to-main promotion.",
+  "notifier_failure_reason": "Existing notifier found the terminal event but SMTP rejected an empty recipient because CARE_NOTIFY_TO is not configured in the available local notify env.",
+  "notifier_status": "attempted_failed_empty_recipient",
+  "notifier_status_path": "controller_notifications/state/notify_goal_watcher_status.json",
   "push_status": "terminal_planner_pass_state_pushed_to_develop",
   "slurm_terminal_status": "not_applicable",
   "task_name": "care-ase-faithful Agent-Flow v3"

@@ -20,7 +20,7 @@ git_commit_decision: authorized_develop_only_terminal_state_transaction
 
 git_push_decision: pushed_develop_after_terminal_state_commit
 
-notifier_status: sent_after_terminal_state_push
+notifier_status: attempted_failed_empty_recipient
 
 scientific_resolution_status: PLANNER_PASS
 
@@ -68,3 +68,7 @@ No formal training, outer access, Docker build/upload, validation/challenge uplo
 - Final state: `results/agent_flow_v3/care-ase-faithful/final_state.json`
 - Scheduled task observation: `results/agent_flow_v3/care-ase-faithful/scheduled_task_observation.json`
 - Current task state: `automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json`
+
+## Notifier Attempt
+
+The existing notifier was run after the terminal state push. It discovered the `GOAL_COMPLETE` event, but SMTP rejected an empty recipient because the available local notify env does not define `CARE_NOTIFY_TO`. No custom SMTP sender was used. Status file: `controller_notifications/state/notify_goal_watcher_status.json`.
