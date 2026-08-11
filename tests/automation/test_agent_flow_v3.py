@@ -1289,7 +1289,6 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             "transaction.hosted_ci.conclusion",
         ]
         self.assertTrue(RUNTIME.care_ase_verifier_pre_ci_transaction_pending(executable, transaction))
-
         executable["failures"] = [
             "transaction.runtime_manifest.request_nonce",
             "transaction.runtime_manifest.integration_commit_sha",
@@ -1315,6 +1314,20 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             "transaction.hosted_ci.conclusion",
         ]
         self.assertFalse(RUNTIME.care_ase_transaction_failures_require_provenance_rebind(hosted_ci_only))
+
+    def test_care_ase_integrated_validation_allows_planner_packet_rebind_only(self) -> None:
+        integrated = {
+            "passed": False,
+            "failure_count": 4,
+            "failures": [
+                "verifier_owned.transaction.hosted_ci_success",
+                "verifier_owned.transaction.hosted_ci_exact_reviewed_integration",
+                "verifier_owned.transaction.planner_packet_bound_to_reviewed_integration",
+                "verifier_owned.transaction.no_stale_planner_reuse",
+            ],
+        }
+
+        self.assertTrue(RUNTIME.care_ase_integrated_validation_pre_ci_acceptable(integrated))
 
     def test_care_ase_provenance_rebind_preserves_reviewed_integration_target(self) -> None:
         self.assertEqual(

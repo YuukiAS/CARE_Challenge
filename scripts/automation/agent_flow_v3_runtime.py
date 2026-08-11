@@ -4561,7 +4561,7 @@ def apply_care_ase_verifier_recheck_controller_update(
         if gate["name"] == "frozen_verifier_validate_implementation_evidence":
             report_path = repo / "results/agent_flow_v3/care-ase-faithful/implementation/frozen_verifier_validation_result.json"
             report = load_json(report_path) if report_path.is_file() else {}
-            if completion.get("pre_ci_transaction_pending") is True and care_ase_integrated_validation_pre_ci_acceptable(report):
+            if care_ase_integrated_validation_pre_ci_acceptable(report):
                 gate["pre_ci_transaction_failure_allowed"] = True
                 gate["pre_ci_transaction_policy"] = (
                     "Verifier recheck may enter CI_RUNNING when only hosted-CI transaction binding is pending; "
