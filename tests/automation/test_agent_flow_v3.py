@@ -456,6 +456,52 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         self.assertEqual(receipt["decision"], "CONTROLLER_UPDATE_REQUIRED")
         self.assertIn("Verifier receipt recheck", receipt["action"])
 
+    def test_care_ase_provenance_rebind_ready_routes_to_controller_update(self) -> None:
+        current = {
+            "task_id": "care-ase-faithful",
+            "request_nonce": "care-ase-nonce",
+            "review_round": 1,
+            "state": "PROVENANCE_REBIND_REQUIRED",
+            "frozen_contract_sha256": "a" * 64,
+        }
+
+        receipt = RUNTIME.evaluate_stage_event(
+            task_id="care-ase-faithful",
+            request={"enabled": True, "request_nonce": "care-ase-nonce", "frozen_contract_sha256": "a" * 64},
+            current=current,
+            visual_final=None,
+            remote_sha="b" * 40,
+            processed=set(),
+            default_wait_hours=4,
+            care_ase_executor_needs_verifier_recheck=True,
+        )
+
+        self.assertEqual(receipt["decision"], "CONTROLLER_UPDATE_REQUIRED")
+        self.assertIn("provenance/runtime rebind", receipt["action"])
+
+    def test_care_ase_provenance_rebind_local_commit_prevents_duplicate_start(self) -> None:
+        current = {
+            "task_id": "care-ase-faithful",
+            "request_nonce": "care-ase-nonce",
+            "review_round": 1,
+            "state": "PROVENANCE_REBIND_REQUIRED",
+            "frozen_contract_sha256": "a" * 64,
+        }
+
+        receipt = RUNTIME.evaluate_stage_event(
+            task_id="care-ase-faithful",
+            request={"enabled": True, "request_nonce": "care-ase-nonce", "frozen_contract_sha256": "a" * 64},
+            current=current,
+            visual_final=None,
+            remote_sha="b" * 40,
+            processed=set(),
+            default_wait_hours=4,
+            care_ase_executor_local_commit_pending_controller=True,
+        )
+
+        self.assertEqual(receipt["decision"], "MONITOR_ONLY")
+        self.assertIn("instead of launching a duplicate", receipt["action"])
+
     def test_care_ase_executor_local_commit_pending_controller_prevents_duplicate_start(self) -> None:
         current = {
             "task_id": "care-ase-faithful",

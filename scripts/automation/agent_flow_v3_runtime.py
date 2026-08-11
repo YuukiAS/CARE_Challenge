@@ -1726,8 +1726,15 @@ def evaluate_stage_event(
             decision = "MONITOR_ONLY"
             action = "wait for independent Verifier receipt recheck commit"
     elif task_id == "care-ase-faithful" and state == "PROVENANCE_REBIND_REQUIRED":
-        decision = "STAGE_READY"
-        action = "start persistent CARE-ASE Executor exact session for provenance/runtime transaction rebind"
+        if care_ase_executor_needs_verifier_recheck:
+            decision = "CONTROLLER_UPDATE_REQUIRED"
+            action = "integrate scope-valid Executor provenance/runtime rebind commit, then require independent Verifier receipt recheck"
+        elif care_ase_executor_local_commit_pending_controller:
+            decision = "MONITOR_ONLY"
+            action = "Executor has scope-valid provenance/runtime rebind output; wait for role finalization or Controller integration instead of launching a duplicate"
+        else:
+            decision = "STAGE_READY"
+            action = "start persistent CARE-ASE Executor exact session for provenance/runtime transaction rebind"
     elif task_id == "care-ase-faithful" and state == "PROVENANCE_REBIND_RUNNING":
         decision = "MONITOR_ONLY"
         action = "wait for Executor provenance/runtime rebind commit"
@@ -4817,7 +4824,11 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
             task_id == "care-ase-faithful"
             and current.get("state") == "PROVENANCE_REBIND_REQUIRED"
             and stage_event_was_processed(event_key, processed)
-            and not care_ase_role_launch_satisfied(args.state_root, current, "executor")
+            and (
+                not care_ase_role_launch_satisfied(args.state_root, current, "executor")
+                or care_ase_executor_needs_verifier_recheck
+                or care_ase_executor_local_commit_pending_controller_update
+            )
         ):
             processed = remove_stage_processed_event(event_key, processed)
         if (
