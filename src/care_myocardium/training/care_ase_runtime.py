@@ -503,6 +503,7 @@ def validate_current_runtime_input_bundle(
     expected_frozen_contract_sha256: str = FROZEN_CONTRACT_SHA256,
     expected_implementation_source_manifest_sha256: str | None = None,
     expected_implementation_fingerprint_sha256: str | None = None,
+    expected_immutable_implementation_fingerprint_sha256: str | None = None,
     expected_integration_commit_sha: str | None = None,
     expected_verifier_fingerprint_sha256: str | None = None,
 ) -> dict[str, Any]:
@@ -537,6 +538,10 @@ def validate_current_runtime_input_bundle(
     expected_fields = {
         "implementation_source_manifest_sha256": expected_implementation_source_manifest_sha256,
         "implementation_fingerprint_sha256": expected_implementation_fingerprint_sha256,
+        "immutable_implementation_fingerprint_sha256": (
+            expected_immutable_implementation_fingerprint_sha256
+            or expected_implementation_fingerprint_sha256
+        ),
         "verifier_fingerprint_sha256": expected_verifier_fingerprint_sha256,
     }
     for field, expected in expected_fields.items():
@@ -587,6 +592,7 @@ def validate_current_runtime_input_bundle(
         "fold": True,
         "implementation_source_manifest_sha256": True,
         "implementation_fingerprint_sha256": True,
+        "immutable_implementation_fingerprint_sha256": True,
         "integration_commit_sha": True,
         "verifier_fingerprint_sha256": True,
         "explicit_result_root": True,
@@ -603,6 +609,7 @@ def build_current_runtime_input_bundle(
     hard_negative_manifest_path: Path,
     implementation_source_manifest_sha256: str,
     implementation_fingerprint_sha256: str,
+    immutable_implementation_fingerprint_sha256: str | None = None,
     integration_commit_sha: str,
     verifier_fingerprint_sha256: str,
     result_root: Path | None = None,
@@ -626,6 +633,10 @@ def build_current_runtime_input_bundle(
         "implementation_fingerprint_sha256": _sha_field(
             implementation_fingerprint_sha256,
             field="implementation_fingerprint_sha256",
+        ),
+        "immutable_implementation_fingerprint_sha256": _sha_field(
+            immutable_implementation_fingerprint_sha256 or implementation_fingerprint_sha256,
+            field="immutable_implementation_fingerprint_sha256",
         ),
         "integration_commit_sha": _git_sha_field(integration_commit_sha, field="integration_commit_sha"),
         "verifier_fingerprint_sha256": _sha_field(verifier_fingerprint_sha256, field="verifier_fingerprint_sha256"),
@@ -672,6 +683,7 @@ def load_formal_runtime_input_bundle(
     effective_contract_sha256_expected: str,
     implementation_source_manifest_sha256_expected: str | None = None,
     implementation_fingerprint_sha256_expected: str | None = None,
+    immutable_implementation_fingerprint_sha256_expected: str | None = None,
     integration_commit_sha_expected: str | None = None,
     verifier_fingerprint_sha256_expected: str | None = None,
 ) -> dict[str, Any]:
@@ -694,6 +706,7 @@ def load_formal_runtime_input_bundle(
         fold=fold,
         expected_implementation_source_manifest_sha256=implementation_source_manifest_sha256_expected,
         expected_implementation_fingerprint_sha256=implementation_fingerprint_sha256_expected,
+        expected_immutable_implementation_fingerprint_sha256=immutable_implementation_fingerprint_sha256_expected,
         expected_integration_commit_sha=integration_commit_sha_expected,
         expected_verifier_fingerprint_sha256=verifier_fingerprint_sha256_expected,
     )
@@ -1670,6 +1683,7 @@ def validate_resume_payload(
     expected_frozen_contract_sha256: str | None = None,
     expected_implementation_source_manifest_sha256: str | None = None,
     expected_implementation_fingerprint_sha256: str | None = None,
+    expected_verifier_fingerprint_sha256: str | None = None,
     expected_integration_commit_sha: str | None = None,
     allow_short_smoke_resume: bool = False,
 ) -> dict[str, Any]:
@@ -1706,6 +1720,8 @@ def validate_resume_payload(
         or str(payload.get("implementation_source_manifest_sha256")) == str(expected_implementation_source_manifest_sha256),
         "implementation_fingerprint_sha256": expected_implementation_fingerprint_sha256 is None
         or str(payload.get("implementation_fingerprint_sha256")) == str(expected_implementation_fingerprint_sha256),
+        "verifier_fingerprint_sha256": expected_verifier_fingerprint_sha256 is None
+        or str(payload.get("verifier_fingerprint_sha256")) == str(expected_verifier_fingerprint_sha256),
         "integration_commit_sha": expected_integration_commit_sha is None
         or str(payload.get("integration_commit_sha")) == str(expected_integration_commit_sha),
         "formal_resumable": bool(allow_short_smoke_resume) or payload.get("formal_resumable") is True,
@@ -1756,6 +1772,7 @@ def _load_previous(
     expected_frozen_contract_sha256: str | None = None,
     expected_implementation_source_manifest_sha256: str | None = None,
     expected_implementation_fingerprint_sha256: str | None = None,
+    expected_verifier_fingerprint_sha256: str | None = None,
     expected_integration_commit_sha: str | None = None,
     allow_short_smoke_resume: bool = False,
 ) -> tuple[torch.nn.Module, dict[str, Any]]:
@@ -1767,7 +1784,9 @@ def _load_previous(
         expected_request_nonce=expected_request_nonce,
         expected_frozen_contract_sha256=expected_frozen_contract_sha256,
         expected_implementation_source_manifest_sha256=expected_implementation_source_manifest_sha256,
+        expected_implementation_fingerprint_sha256=expected_implementation_fingerprint_sha256,
         expected_integration_commit_sha=expected_integration_commit_sha,
+        expected_verifier_fingerprint_sha256=expected_verifier_fingerprint_sha256,
     )
     source_sha = str(payload.get("training_source_commit_sha", payload.get("config", {}).get("training_source_commit_sha", "")))
     if source_sha in INVALIDATED_TRAINING_SOURCE_SHAS:
@@ -1788,6 +1807,7 @@ def _load_previous(
         expected_frozen_contract_sha256=expected_frozen_contract_sha256,
         expected_implementation_source_manifest_sha256=expected_implementation_source_manifest_sha256,
         expected_implementation_fingerprint_sha256=expected_implementation_fingerprint_sha256,
+        expected_verifier_fingerprint_sha256=expected_verifier_fingerprint_sha256,
         expected_integration_commit_sha=expected_integration_commit_sha,
         allow_short_smoke_resume=allow_short_smoke_resume,
     )
@@ -1954,6 +1974,9 @@ class CAREASEFormalRuntime:
                 fold=int(self.sampler.fold),
                 expected_implementation_source_manifest_sha256=str(self.runtime_input_bundle["implementation_source_manifest_sha256"]),
                 expected_implementation_fingerprint_sha256=str(self.runtime_input_bundle["implementation_fingerprint_sha256"]),
+                expected_immutable_implementation_fingerprint_sha256=str(
+                    self.runtime_input_bundle["immutable_implementation_fingerprint_sha256"]
+                ),
                 expected_integration_commit_sha=str(self.runtime_input_bundle["integration_commit_sha"]),
                 expected_verifier_fingerprint_sha256=str(self.runtime_input_bundle["verifier_fingerprint_sha256"]),
             )
@@ -2019,6 +2042,9 @@ class CAREASEFormalRuntime:
                 fold=int(self.sampler.fold),
                 expected_implementation_source_manifest_sha256=str(self.runtime_input_bundle["implementation_source_manifest_sha256"]),
                 expected_implementation_fingerprint_sha256=str(self.runtime_input_bundle["implementation_fingerprint_sha256"]),
+                expected_immutable_implementation_fingerprint_sha256=str(
+                    self.runtime_input_bundle["immutable_implementation_fingerprint_sha256"]
+                ),
                 expected_integration_commit_sha=str(self.runtime_input_bundle["integration_commit_sha"]),
                 expected_verifier_fingerprint_sha256=str(self.runtime_input_bundle["verifier_fingerprint_sha256"]),
             )
@@ -2382,6 +2408,20 @@ def main() -> int:
             implementation_source_sha=str(implementation_sha_for_runtime),
             review_packet_sha=str(review_packet_sha_for_runtime),
             effective_contract_sha256_expected=live_effective_contract_sha,
+            implementation_fingerprint_sha256_expected=(
+                permit.get("implementation_fingerprint_sha256")
+                or permit.get("immutable_implementation_fingerprint_sha256")
+                if permit
+                else None
+            ),
+            immutable_implementation_fingerprint_sha256_expected=(
+                permit.get("immutable_implementation_fingerprint_sha256")
+                or permit.get("implementation_fingerprint_sha256")
+                if permit
+                else None
+            ),
+            integration_commit_sha_expected=permit.get("integration_commit_sha") if permit else None,
+            verifier_fingerprint_sha256_expected=permit.get("verifier_fingerprint_sha256") if permit else None,
         )
         if permit and runtime_input_bundle["sha256"] != str(permit.get("formal_runtime_input_bundle_sha256")):
             raise RuntimeError("external review permit formal runtime input bundle SHA mismatch")
@@ -2455,6 +2495,7 @@ def main() -> int:
             expected_frozen_contract_sha256=runtime_input_bundle.get("frozen_contract_sha256") if runtime_input_bundle else None,
             expected_implementation_source_manifest_sha256=runtime_input_bundle.get("implementation_source_manifest_sha256") if runtime_input_bundle else None,
             expected_implementation_fingerprint_sha256=runtime_input_bundle.get("implementation_fingerprint_sha256") if runtime_input_bundle else None,
+            expected_verifier_fingerprint_sha256=runtime_input_bundle.get("verifier_fingerprint_sha256") if runtime_input_bundle else None,
             expected_integration_commit_sha=runtime_input_bundle.get("integration_commit_sha") if runtime_input_bundle else None,
             allow_short_smoke_resume=bool(args.allow_short_smoke),
         )
@@ -2680,6 +2721,7 @@ def main() -> int:
                     ),
                     implementation_fingerprint_sha256=runtime_input_bundle.get("implementation_fingerprint_sha256") if runtime_input_bundle else None,
                     integration_commit_sha=runtime_input_bundle.get("integration_commit_sha") if runtime_input_bundle else head_sha,
+                    verifier_fingerprint_sha256=runtime_input_bundle.get("verifier_fingerprint_sha256") if runtime_input_bundle else None,
                     origin_main_sha=git_sha("origin/main") if not args.allow_short_smoke else "SHORT_SMOKE_NO_FORMAL_CREDIT",
                     origin_main_at_review_request_sha=permit.get("origin_main_at_review_request") if permit else "SHORT_SMOKE_NO_FORMAL_CREDIT",
                     effective_contract_sha256=live_effective_contract_sha,

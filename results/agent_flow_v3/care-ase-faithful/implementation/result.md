@@ -5,7 +5,7 @@
 - task_id: `care-ase-faithful`
 - request_nonce: `care-ase-20260806T090955Z`
 - frozen_contract_sha256: `a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d`
-- verifier_fingerprint_sha256: `a731eec931128a73fc32113048c49a5a8de5a7db2d877b6f8bb66732eebbb380`
+- verifier_fingerprint_sha256: `a833449fe2dd3de5041e740f1d6f4d32a0ffec592a157dd0178f6e6182819c81`
 - status: `IMPLEMENTATION_EVIDENCE_READY_PENDING_VERIFIER_RECHECK`
 - exit_code: `2`
 - runtime_asset_manifest: `results/agent_flow_v3/care-ase-faithful/implementation/runtime_asset_manifest.json`

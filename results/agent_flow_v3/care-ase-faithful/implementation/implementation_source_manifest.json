@@ -1,6 +1,6 @@
 {
   "file_hashes": {
-    "scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py": "eed954acc2dd5da97637baa1f96601424e30410571910dd5fb23906b8ea4089a",
+    "scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py": "1b4381cf0a2799464b52a0f739203587b1021ed3adb802fd3e9b55b67da65178",
     "scripts/training/care_ase/run_care_ase_r2_chunk.py": "078767a5c8c6b8c9fe6135efe2efa6ec49dc6daec7554e2f1a3b3625a338e812",
     "scripts/training/care_ase/run_care_ase_train.py": "d4a613bc6160267538de83b71bf615ea4d87c15c2b06240af126973428e540b6",
     "src/care_myocardium/evaluation/care_ase_r2_evaluator.py": "8161ddad6417018ce5b81ed0a2fad6764ef05f6d8c1626159ea177053ddf37e6",
@@ -9,18 +9,17 @@
     "src/care_myocardium/models/care_ase/__init__.py": "1754cf65f68d7853a4ad393737404a1d339f745566beb15849d3272302b0d4d9",
     "src/care_myocardium/models/care_ase/core.py": "94b104add2a6df5a5b851f5e04e9a420541699f2cbefa60f3f9f05f23b27e6aa",
     "src/care_myocardium/training/care_ase_augmentation.py": "85a208a3a886babe0ec2927a1babced2b24ff91188d577585e65d4e38c27b283",
-    "src/care_myocardium/training/care_ase_runtime.py": "e0a430036768fc571a804340b162f2238c1b0adb47b657c1a7e84c7718e446fb",
+    "src/care_myocardium/training/care_ase_runtime.py": "3a6d74231ae7ec7adca5a2b91e54298634060f89158be62b1fbc106d27076ad7",
     "src/care_myocardium/training/care_ase_sampler.py": "9cefdfad87bbab08424a6ecdd4d2ec410a3749722f7a769725061b928c93012d",
-    "src/care_myocardium/training/care_ase_trainer.py": "38605c7163dc2c425f31e719be8a236bb8d3a9879795cbfcefc648c7ed17241f"
+    "src/care_myocardium/training/care_ase_trainer.py": "3a0e46eb12349a0bab462c5ea0037cf19523e96fdb58183ee5edc6cd5bc953c8"
   },
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
   "git_branch": "local/executor/care-ase-faithful",
-  "git_head": "d400c003ff6d15617ae96566e285f79a71a1d8b5",
+  "git_head": "79371a812b48bfada1f702b9be4f86231d54fcd8",
   "missing_files": [],
   "request_nonce": "care-ase-20260806T090955Z",
   "schema": "CARE_ASE_FAITHFUL_IMPLEMENTATION_SOURCE_MANIFEST_V1",
-  "source_manifest_sha256": "053f8116f064afb7e5b29d63cb03af2ead9d9327e7c756451b92038ed2447e2e",
+  "source_manifest_sha256": "de1c5ab27929fda6a6e193db1e0633a2f7dba5310c2ab560cc8fdeb4f2eccadc",
   "source_root": ".",
-  "task_id": "care-ase-faithful",
-  "verifier_fingerprint_sha256": "a731eec931128a73fc32113048c49a5a8de5a7db2d877b6f8bb66732eebbb380"
+  "task_id": "care-ase-faithful"
 }
