@@ -1,0 +1,163 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_PLANNER_REVIEW",
+  "task_id": "care-ase-faithful",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "review_round": 1,
+  "review_reentry": "round_001_reentry_008",
+  "observed_state": "WAITING_FOR_EXTERNAL_GPT",
+  "review_mode": "IMPLEMENTATION_REVIEW_STABLE_REVIEW_SNAPSHOT",
+  "decision": "PLANNER_REVISE_BOTH",
+  "created_utc": "2026-08-11T09:05:48Z",
+  "binding": {
+    "review_identity_model": "STABLE_REVIEW_SNAPSHOT",
+    "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+    "requirement_ledger_sha256": "376dbc8b1c8f1af585e0ca3c2b451b788ade164221805871fca5dfefd98fbcb7",
+    "review_target_id": "6c4440864230eab587326ad68bd95991040fdaf030ecfd46f734d36ee7e013be",
+    "source_snapshot_path": "automation/agent_flow_v3/tasks/care-ase-faithful/SOURCE_SNAPSHOT.json",
+    "source_snapshot_sha256": "27fc2afedabe8796df3091987169d991f983aaadba6f16ea64a62d34d4d7462d",
+    "review_bundle_path": "results/agent_flow_v3/care-ase-faithful/REVIEW_BUNDLE.json",
+    "review_bundle_sha256": "e05a34336aae2cff6905b246474297d7b047f55c21c01cf5f2ecd96c406502f9",
+    "stable_review_ci_run_id": 31472188826,
+    "stable_review_ci_status": "PASS",
+    "git_shas_are_locators_only": true,
+    "receipt_state_doc_only_changes_do_not_invalidate_review_target": true
+  },
+  "independent_review_order": "CURRENT_IMPLEMENTATION_AND_VERIFIER_REVIEWED_BEFORE_PRIOR_FINDINGS",
+  "evidence_reviewed": {
+    "protocol": [
+      "automation/agent_flow_v3/schema.json",
+      "automation/agent_flow_v3/ROLE_AUTHORITY_POLICY.md",
+      "automation/agent_flow_v3/planner_scheduled_task_prompt.md",
+      "automation/agent_flow_v3/tasks/care-ase-faithful/REQUEST.json",
+      "automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json",
+      "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+      "automation/agent_flow_v3/tasks/care-ase-faithful/REQUIREMENT_LEDGER.json",
+      "automation/agent_flow_v3/tasks/care-ase-faithful/SOURCE_SNAPSHOT.json",
+      "results/agent_flow_v3/care-ase-faithful/REVIEW_BUNDLE.json"
+    ],
+    "implementation": [
+      "src/care_myocardium/models/care_ase/core.py",
+      "src/care_myocardium/training/care_ase_trainer.py",
+      "src/care_myocardium/training/care_ase_runtime.py",
+      "src/care_myocardium/inference/care_ase_r2_decode.py",
+      "src/care_myocardium/inference/care_ase_r2_full_volume.py",
+      "results/agent_flow_v3/care-ase-faithful/implementation/implementation_source_manifest.json",
+      "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json"
+    ],
+    "verification": [
+      "tests/care_ase_faithful/test_verifier_package.py",
+      "validators/care_ase_faithful/run_executable_verifier.py",
+      "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json"
+    ],
+    "prior_findings_read_after_independent_review": [
+      "results/agent_flow_v3/care-ase-faithful/planner_reviews/round_001_reentry_007.json",
+      "results/agent_flow_v3/care-ase-faithful/planner_reviews/round_001_reentry_007_final.json"
+    ]
+  },
+  "independent_review_summary": {
+    "closed_or_accepted": [
+      "Stable Review Snapshot 已替代旧 moving-SHA transaction；旧 executable verifier 中仅由旧 runtime-manifest / exact-integration transaction 产生的 failures 视为 superseded provenance gate，不重新作为科学实现 blocker。",
+      "核心模型路径仍保持独立 scar/edema 最高两尺度 decoder、具名 evidence projections、T2-present 行级 edema 子图执行、no-T2 class-4 五类竞争移除、dilation 1/2/4、一次性 post-aggregation global extent bias。",
+      "当前 canonical full-volume inference 确实逐 tile 调用普通模型路径并在聚合后统一施加 global bias；未发现 full-support pseudo-tiling 或固定 scar-priority overwrite。",
+      "当前实现证据显示 formal training 未启动、outer 未访问、Docker/upload 未发生，仍在授权边界内。",
+      "此前 runtime identity 自引用/moving target 问题已经通过 stable content snapshot 设计在控制层解决，不应继续要求 receipt-only rebind heavy verification。"
+    ],
+    "remaining_blockers": [
+      "REQ_LOSS_001 的 eligible-row normalization 在实际 loss 代码中仍不成立：binary_dice_focal 与 binary_dice_bce 对全 batch 的 dice_values 做 mean；no-T2 行虽然 mask 为 0，仍以 0 值进入 batch mean，从而稀释 T2-present edema/injury Dice。",
+      "conditional final competition 在 T2-present 与 no-T2 两个条件子组都存在时，对两个 subgroup scalar 固定等权平均；当组大小不等时，不是按实际 eligible rows/voxels 归一化。",
+      "Verifier 当前 mixed-T2/no-T2 probe 只验证 class-4 competition、edema-owned call/gradient isolation；loss semantic oracle 未验证 no-T2 行对 edema/injury loss 的不变性，也未用不等组 mixed batch 验证 conditional final competition 的 eligible-count reduction。",
+      "Stable SOURCE_SNAPSHOT 当前只绑定 5 个 implementation files，但已有 implementation_source_manifest 与 Verifier 自身 CRITICAL_SOURCE_PATHS 都把 sampler、augmentation、canonical decode/full-volume inference 等视为语义关键代码。当前 review_target 因此不会在这些语义文件变化时失效；这属于 Controller 的最小 provenance coverage gap，应在本轮重建 snapshot 时用已有 semantic source manifest/closure 修复，而不是增加 receipt hash 层。"
+    ]
+  },
+  "blocking_findings": [
+    {
+      "finding_id": "ASE_R1_REENTRY8_EXECUTOR_EDema_INJURY_DICE_INELIGIBLE_ROW_DILUTION",
+      "classification": "IMPLEMENTATION_BUG",
+      "target_role": "executor",
+      "requirement_ids": ["REQ_LOSS_001", "REQ_MODALITY_001"],
+      "contract_source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+      "contract_clause_or_field": "sections 9-10: each loss normalized by its eligible rows/voxels; no-T2 edema-exclusive losses/gradients are zero",
+      "affected_files_functions": [
+        "src/care_myocardium/training/care_ase_trainer.py::binary_dice_focal",
+        "src/care_myocardium/training/care_ase_trainer.py::binary_dice_bce"
+      ],
+      "observed_violation": "Both helpers build per-row Dice values and then call mean() across the complete batch. Rows with an all-zero edema_valid mask therefore contribute zero Dice values but remain in the divisor. Adding no-T2 rows changes T2-present edema_binary_dice_focal and injury_dice_bce even though those rows are ineligible.",
+      "why_blocking": "The frozen objective explicitly requires eligible-row normalization. This changes the effective scientific loss weighting in any mixed batch and contradicts the implementation evidence claim that eligible-row normalization is satisfied.",
+      "required_repair": "Average the Dice component only across rows eligible under that loss mask, while preserving the existing scientific treatment of eligible T2-present rows with empty pathology. Do not change loss weights or add new objectives.",
+      "required_regression_evidence": "Independent Verifier must show edema/injury unweighted loss is invariant when unchanged T2-present rows are augmented with one or more no-T2 rows.",
+      "forbidden_workaround": "No test-aware branch, no hard-coded batch-size correction, no fixture-ID logic, no dropping the Dice term."
+    },
+    {
+      "finding_id": "ASE_R1_REENTRY8_EXECUTOR_CONDITIONAL_FINAL_FIXED_SUBGROUP_WEIGHT",
+      "classification": "IMPLEMENTATION_BUG",
+      "target_role": "executor",
+      "requirement_ids": ["REQ_LOSS_001", "REQ_MODALITY_001"],
+      "contract_source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+      "contract_clause_or_field": "sections 9-10: T2-present six-class and no-T2 five-class competition with eligible row/voxel normalization",
+      "affected_files_functions": [
+        "src/care_myocardium/training/care_ase_trainer.py::care_ase_loss"
+      ],
+      "observed_violation": "The function computes one scalar for the T2-present subgroup and one scalar for the no-T2 subgroup, then uses torch.stack(final_terms).mean(). When both groups exist this forces 1:1 subgroup weighting regardless of the actual number of eligible rows/voxels.",
+      "why_blocking": "A 1+3 mixed batch and a 3+1 mixed batch receive the same subgroup weighting even though the frozen contract requires the loss to be normalized by the actual eligible population.",
+      "required_repair": "Keep the conditional class sets unchanged, but combine CE/Dice using explicit eligible voxel/row counts rather than a fixed average of subgroup means.",
+      "required_regression_evidence": "Independent reference oracle on an unequal mixed batch, e.g. 1 T2-present + 3 no-T2, must match the implementation.",
+      "forbidden_workaround": "Do not introduce a new scientific weight between complete and partial cases; this is a reduction/normalization repair only."
+    },
+    {
+      "finding_id": "ASE_R1_REENTRY8_VERIFIER_MISSES_ELIGIBLE_ROW_LOSS_DILUTION",
+      "classification": "VERIFIER_BUG",
+      "target_role": "verifier",
+      "requirement_ids": ["REQ_LOSS_001", "REQ_VERIFIER_001"],
+      "contract_source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+      "contract_clause_or_field": "sections 9-10 eligible-row normalization and section 16 independent verification",
+      "observed_violation": "Current mixed_t2_no_t2_batch probe verifies no-T2 graph/class competition but does not compare loss values under added ineligible rows. Current loss semantic oracle checks injury formula and Tversky semantics but does not test the eligible-row reduction or unequal conditional-group reduction, so the implementation bugs above pass the semantic Verifier.",
+      "why_blocking": "REQ_LOSS_001 is already frozen and verifier-authorized. Missing this mechanical oracle allows a real change in effective loss weighting to pass.",
+      "required_repair": "Add independent eligible-row invariance/reference probes and executed known-bad mutations for full-batch Dice dilution and fixed subgroup averaging.",
+      "required_regression_evidence": "Both known-bads must fail; current implementation must fail before Executor repair and pass after repair.",
+      "forbidden_workaround": "Do not copy or call the implementation helper as the reference calculation."
+    },
+    {
+      "finding_id": "ASE_R1_REENTRY8_CONTROLLER_STABLE_SNAPSHOT_SEMANTIC_SOURCE_COVERAGE",
+      "classification": "PROVENANCE_BINDING_GAP",
+      "target_role": "controller",
+      "requirement_ids": ["REQ_INFERENCE_001", "REQ_LOSS_001", "REQ_RUNTIME_001"],
+      "policy_source_path": "automation/agent_flow_v3/ROLE_AUTHORITY_POLICY.md",
+      "observed_violation": "SOURCE_SNAPSHOT implementation_critical_source currently includes only evidence builder, care_ase package init/core, care_ase_runtime and care_ase_trainer. The existing implementation_source_manifest additionally treats run scripts, evaluator, canonical decode/full-volume inference, augmentation and sampler as semantic source; Verifier tests also declare sampler/decode/full-volume critical. A change to those omitted files would not change review_target_id.",
+      "why_blocking": "Stable Review Snapshot is only meaningful if the one semantic digest covers the code that determines the reviewed training/inference behavior. This is a minimal content-coverage issue, not a request for more receipt hashes.",
+      "required_repair": "When rebuilding the snapshot after Verifier/Executor source repairs, derive the implementation semantic digest from the existing implementation_source_manifest or equivalent declared semantic source closure. Keep one digest; do not add receipt/state hashes to review_target_id.",
+      "required_regression_evidence": "A semantic source change in sampler or canonical inference must change review_target_id; receipt/CURRENT/doc-only changes must not."
+    }
+  ],
+  "prior_finding_closure": {
+    "ASE_R1_REENTRY7_EXECUTOR_CURRENT_RUNTIME_IDENTITY_STALE_AND_SELF_REFERENTIAL": "CLOSED_BY_STABLE_REVIEW_SNAPSHOT_POLICY; do not reopen old self-hashing transaction",
+    "ASE_R1_REENTRY7_VERIFIER_DOES_NOT_GATE_CURRENT_RUNTIME_IDENTITY_TUPLE": "SUPERSEDED_BY_STABLE_REVIEW_SNAPSHOT_AND_LIGHTWEIGHT_BUNDLE_VALIDATION",
+    "ASE_R1_REENTRY7_CONTROLLER_FINAL_RUNTIME_TRANSACTION_STILL_STALE": "SUPERSEDED_BY_STABLE_REVIEW_SNAPSHOT; current CI/review bundle accepted as DAG children"
+  },
+  "repair_prompts": {
+    "verifier": "automation/agent_flow_v3/tasks/care-ase-faithful/repairs/round_001_reentry_008_verifier.md",
+    "executor": "automation/agent_flow_v3/tasks/care-ase-faithful/repairs/round_001_reentry_008_executor.md"
+  },
+  "required_role_order": [
+    "VERIFIER_FIRST_ADD_ELIGIBLE_NORMALIZATION_ORACLES_AND_KNOWN_BADS",
+    "EXECUTOR_SECOND_REPAIR_LOSS_REDUCTIONS",
+    "CONTROLLER_REINTEGRATE_AND_REBUILD_ONE_SEMANTIC_SOURCE_SNAPSHOT_DIGEST",
+    "RUN_ONLY_REQUIRED_HEAVY_VERIFIER_AND_ONE_HOSTED_CI_FOR_CHANGED_SEMANTIC_SOURCES",
+    "LIGHTWEIGHT_REVIEW_BUNDLE_VALIDATION",
+    "RETURN_TO_PLANNER"
+  ],
+  "control_plane_observation": {
+    "final_critic_lifecycle_in_schema": false,
+    "planner_repo_prompt_still_mentions_legacy_exact_transaction_inputs": true,
+    "blocking_for_this_revision_decision": false,
+    "required_before_eventual_pass": "Before a future all-clear can become final PLANNER_PASS, synchronize the repository control plane with the intended Final Critic lifecycle. Do not invent unsupported states in this review."
+  },
+  "forbidden_actions_confirmed": [
+    "no Planner implementation edits",
+    "no Planner verifier edits",
+    "no formal training",
+    "no outer access",
+    "no develop-to-main merge",
+    "no Docker build/upload",
+    "no organizer email"
+  ]
+}
