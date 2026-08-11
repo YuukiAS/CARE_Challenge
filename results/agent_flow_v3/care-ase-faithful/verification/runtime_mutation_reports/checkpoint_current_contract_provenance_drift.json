@@ -1,12 +1,12 @@
 {
-  "created_utc": "2026-08-11T04:11:15Z",
+  "created_utc": "2026-08-11T05:14:20Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
     "kb16.checkpoint_resume.current_contract_provenance"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "ce4e2d72b72cd1f4506c4d2119a0677a2411e78ecdae9ca9c2a3c05e8a9abbcd",
+  "mutated_fingerprint_sha256": "45b10afa5599993d8110e3f91dadcfbe6cab1c159b15142951b5ea1837cd431e",
   "mutation_applied": "schema_v4_checkpoint_payload_mutated_to_old_request_nonce_and_frozen_contract",
   "mutation_executed": true,
   "mutation_id": "checkpoint_current_contract_provenance_drift",
@@ -15,7 +15,7 @@
     "current_request_nonce_bound": false,
     "observed_frozen_contract_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
     "observed_request_nonce": "old-request-nonce",
-    "source_manifest_sha256_before_mutation": "9c00dcf67188fff01a77f11b2eff47b33a17fbac5437a96bf00c51015315124d"
+    "source_manifest_sha256_before_mutation": "b4981affabaf8234879f17a05ad6cc258334f478195d89f91bdf30fdb0ed9d0e"
   },
   "passed": false,
   "request_nonce": "care-ase-20260806T090955Z",
