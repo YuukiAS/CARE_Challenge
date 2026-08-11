@@ -264,7 +264,12 @@ def cmd_audit_visual_sources(args: argparse.Namespace) -> int:
         rows.append(row)
 
     post_ci_recheck = current.get("state") in {"POST_CI_VERIFIER_RECHECK_REQUIRED", "POST_CI_VERIFIER_RECHECK_RUNNING"}
-    state_after = "READY_FOR_PLANNER_REVIEW" if post_ci_recheck else "CI_RUNNING"
+    post_ci_transaction_pending = post_ci_recheck and completion.get("pre_ci_transaction_pending") is True
+    state_after = (
+        "PROVENANCE_REBIND_REQUIRED"
+        if post_ci_transaction_pending
+        else ("READY_FOR_PLANNER_REVIEW" if post_ci_recheck else "CI_RUNNING")
+    )
     receipt = {
         "schema": VISUAL_RECEIPT_SCHEMA,
         "task_id": manifest.get("task_id"),
@@ -4564,13 +4569,29 @@ def apply_care_ase_verifier_recheck_controller_update(
             "controller_ci_receipt_path": str(ci_receipt_path.relative_to(repo)),
             "controller_ci_receipt_sha256": sha_file(ci_receipt_path),
             "controller_local_gates_status": "PASS",
-            "ci_status": "POST_CI_VERIFIER_RECHECK_PASS" if post_ci_recheck else "PENDING_AFTER_PUSH",
+            "ci_status": (
+                "POST_CI_VERIFIER_RECHECK_FAIL_CLOSED_PROVENANCE_REBIND_REQUIRED"
+                if post_ci_transaction_pending
+                else ("POST_CI_VERIFIER_RECHECK_PASS" if post_ci_recheck else "PENDING_AFTER_PUSH")
+            ),
             "ci_checked_commit_sha": integration_merge_sha,
-            "next_action": "READY_FOR_PLANNER_CONTROL_PLANE_ENABLEMENT" if post_ci_recheck else "WAIT_FOR_GITHUB_ACTIONS_THEN_RUN_POST_CI_VERIFIER_RECHECK",
+            "next_action": (
+                "START_EXECUTOR_PROVENANCE_RUNTIME_REBIND_EXACT_SESSION"
+                if post_ci_transaction_pending
+                else (
+                    "READY_FOR_PLANNER_CONTROL_PLANE_ENABLEMENT"
+                    if post_ci_recheck
+                    else "WAIT_FOR_GITHUB_ACTIONS_THEN_RUN_POST_CI_VERIFIER_RECHECK"
+                )
+            ),
             "expected_state_or_artifact": (
+                "Executor/Controller refresh runtime manifest, current runtime/checkpoint tuple receipts, artifact SHA bindings, and CI conclusion for the exact post-CI transaction."
+                if post_ci_transaction_pending
+                else (
                 "Controller may notify the user that Planner/Critic control-plane can be enabled for the fresh transaction."
                 if post_ci_recheck
                 else "GitHub Actions PASS for the integrated implementation and Verifier recheck receipts, followed by post-CI Verifier transaction recheck."
+                )
             ),
             "last_observed_remote_sha": remote_sha,
             "last_poll_utc": now(),

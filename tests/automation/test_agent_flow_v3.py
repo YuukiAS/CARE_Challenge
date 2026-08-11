@@ -1016,19 +1016,21 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             )
 
     def test_care_ase_verifier_recheck_complete_routes_to_controller_update(self) -> None:
-        receipt = RUNTIME.evaluate_stage_event(
-            task_id="care-ase-faithful",
-            request={"enabled": True},
-            current={"request_nonce": "nonce", "review_round": 1, "state": "VERIFIER_RECHECK_REQUIRED"},
-            visual_final=None,
-            remote_sha="b" * 40,
-            processed=set(),
-            default_wait_hours=4,
-            care_ase_verifier_recheck_complete=True,
-        )
+        for state in ("VERIFIER_RECHECK_REQUIRED", "POST_CI_VERIFIER_RECHECK_REQUIRED"):
+            with self.subTest(state=state):
+                receipt = RUNTIME.evaluate_stage_event(
+                    task_id="care-ase-faithful",
+                    request={"enabled": True},
+                    current={"request_nonce": "nonce", "review_round": 1, "state": state},
+                    visual_final=None,
+                    remote_sha="b" * 40,
+                    processed=set(),
+                    default_wait_hours=4,
+                    care_ase_verifier_recheck_complete=True,
+                )
 
-        self.assertEqual(receipt["decision"], "CONTROLLER_UPDATE_REQUIRED")
-        self.assertIn("Verifier recheck receipts", receipt["action"])
+                self.assertEqual(receipt["decision"], "CONTROLLER_UPDATE_REQUIRED")
+                self.assertIn("Verifier recheck receipts", receipt["action"])
 
     def test_care_ase_verifier_recheck_local_artifacts_prevent_duplicate_start(self) -> None:
         receipt = RUNTIME.evaluate_stage_event(
