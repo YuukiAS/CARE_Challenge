@@ -1709,7 +1709,7 @@ def evaluate_stage_event(
     elif state == "CI_RUNNING":
         if task_id == "care-ase-faithful" and ci_pass_allows_planner_wait_transaction(current, remote_sha):
             decision = "CONTROLLER_UPDATE_REQUIRED"
-            action = "authorized CI_PASS -> POST_CI_VERIFIER_RECHECK_REQUIRED transaction"
+            action = "authorized CI_PASS -> WAITING_FOR_EXTERNAL_GPT stable review transaction"
         else:
             decision = "WAITING_FOR_CI"
             action = str(current.get("expected_state_or_artifact") or "hosted CI result")
@@ -4186,9 +4186,10 @@ def apply_care_ase_ci_pass_planner_wait_update(
             "github_actions_run_url": ci_run_url,
             "github_actions_head_sha": ci_run_actual_head_sha,
             "github_actions_workflow_name": ci_workflow_name,
-            "state_transition_after_ci": "POST_CI_VERIFIER_RECHECK_REQUIRED",
+            "state_transition_after_ci": "WAITING_FOR_EXTERNAL_GPT",
             "human_approval_required_for_wait_transaction": False,
-            "approval_scope": "current_frozen_contract_and_request_nonce_ci_pass_to_post_ci_verifier_recheck",
+            "approval_scope": "current_frozen_contract_and_request_nonce_ci_pass_to_waiting_for_external_gpt",
+            "stable_review_snapshot_policy": "CI PASS does not trigger a second heavy Verifier run when review_target_id is unchanged.",
         }
     )
     write_json(ci_receipt_path, ci_receipt)
@@ -4198,10 +4199,10 @@ def apply_care_ase_ci_pass_planner_wait_update(
         "task_id": "care-ase-faithful",
         "request_nonce": current.get("request_nonce"),
         "created_utc": wait_started,
-        "controller_decision": "ENTER_POST_CI_VERIFIER_RECHECK_AFTER_AUTHORIZED_CI_PASS",
+        "controller_decision": "ENTER_WAITING_FOR_EXTERNAL_GPT_AFTER_AUTHORIZED_CI_PASS",
         "state_before": "CI_RUNNING",
-        "ready_state_reached_before_wait": "POST_CI_VERIFIER_RECHECK_REQUIRED",
-        "state_after": "POST_CI_VERIFIER_RECHECK_REQUIRED",
+        "ready_state_reached_before_wait": "READY_FOR_PLANNER_REVIEW",
+        "state_after": "WAITING_FOR_EXTERNAL_GPT",
         "review_round": current.get("review_round"),
         "checked_remote_develop_sha": remote_sha,
         "ci_receipt": str(ci_receipt_path.relative_to(repo)),
@@ -4213,7 +4214,7 @@ def apply_care_ase_ci_pass_planner_wait_update(
         "executor_integration_merge_sha": current.get("executor_integration_merge_sha"),
         "verifier_freeze_receipt_commit_sha": current.get("verifier_freeze_receipt_commit_sha"),
         "verifier_integration_merge_sha": current.get("verifier_integration_merge_sha"),
-        "planner_expected_artifact": "none until post-CI Verifier recheck and fresh transaction complete",
+        "planner_expected_artifact": "Scheduled Planner returns PLANNER_PASS or bound PLANNER_REVISE_* artifact for the stable review target.",
         "wait_transaction_ci_policy": {
             "status_commit_may_trigger_ci_after_wait_starts": True,
             "planner_review_binding": "implementation_and_integration_sha_that_already_passed_ci",
@@ -4238,10 +4239,15 @@ def apply_care_ase_ci_pass_planner_wait_update(
         "request_nonce": current.get("request_nonce"),
         "created_utc": wait_started,
         "decision_requested": "PLANNER_REVIEW",
-        "current_state_after_commit": "POST_CI_VERIFIER_RECHECK_REQUIRED",
-        "ready_state_reached_before_wait": "POST_CI_VERIFIER_RECHECK_REQUIRED",
+        "current_state_after_commit": "WAITING_FOR_EXTERNAL_GPT",
+        "ready_state_reached_before_wait": "READY_FOR_PLANNER_REVIEW",
         "review_round": current.get("review_round"),
+        "review_identity_model": "STABLE_REVIEW_SNAPSHOT",
         "frozen_contract_sha256": current.get("frozen_contract_sha256"),
+        "requirement_ledger_sha256": current.get("requirement_ledger_sha256"),
+        "source_snapshot_sha256": current.get("source_snapshot_sha256"),
+        "review_target_id": current.get("review_target_id"),
+        "review_bundle_sha256": current.get("review_bundle_sha256"),
         "integration_commit_sha": remote_sha,
         "verifier_fingerprint_sha256": current.get("verifier_fingerprint_sha256"),
         "implementation_fingerprint_sha256": current.get("implementation_fingerprint_sha256"),
@@ -4278,8 +4284,8 @@ def apply_care_ase_ci_pass_planner_wait_update(
     updated_current = load_json(current_path)
     updated_current.update(
         {
-            "state": "POST_CI_VERIFIER_RECHECK_REQUIRED",
-            "ready_state_reached_before_wait": None,
+            "state": "WAITING_FOR_EXTERNAL_GPT",
+            "ready_state_reached_before_wait": "READY_FOR_PLANNER_REVIEW",
             "implementation_complete": True,
             "integration_commit_sha": remote_sha,
             "controller_local_gates_status": "PASS",
@@ -4306,12 +4312,12 @@ def apply_care_ase_ci_pass_planner_wait_update(
             "controller_ready_for_planner_review_receipt_sha256": sha_file(ready_receipt_path),
             "planner_review_packet_path": str(planner_packet_path.relative_to(repo)),
             "planner_review_packet_sha256": sha_file(planner_packet_path),
-            "expected_state_or_artifact": "Production Verifier exact thread reruns post-CI executable verifier and transaction gates for the exact CI-passing integration SHA.",
-            "external_wait_started_utc": None,
-            "external_wait_deadline_utc": None,
+            "expected_state_or_artifact": "Scheduled Planner returns PLANNER_PASS or PLANNER_REVISE_* bound to review_target_id and review_bundle_sha256.",
+            "external_wait_started_utc": wait_started,
+            "external_wait_deadline_utc": wait_deadline_value,
             "last_observed_remote_sha": remote_sha,
             "last_poll_utc": now(),
-            "next_action": "START_POST_CI_VERIFIER_RECHECK_EXACT_SESSION",
+            "next_action": "WAIT_FOR_SCHEDULED_PLANNER_REVIEW_ON_ORIGIN_DEVELOP",
             "blocked_failures": [],
             "blocked_or_failure_reason": None,
             "review_binding_audit": {
@@ -4323,7 +4329,7 @@ def apply_care_ase_ci_pass_planner_wait_update(
                 "tracked_ci_receipt_is_stale": False,
                 "tracked_planner_review_packet_is_stale": False,
                 "tracked_runtime_receipt_manifest_is_stale": False,
-                "wait_transaction_status_commit_ci_policy": "not_started_until_post_ci_verifier_recheck_and_fresh_transaction_complete",
+                "wait_transaction_status_commit_ci_policy": "stable_review_snapshot_ci_pass_allows_planner_wait_without_second_heavy_verifier",
             },
             "updated_utc": now(),
         }
@@ -4338,7 +4344,7 @@ def apply_care_ase_ci_pass_planner_wait_update(
             "results/agent_flow_v3/care-ase-faithful/controller_ready_for_planner_review_receipt.json",
             "results/agent_flow_v3/care-ase-faithful/planner_review_packet.json",
         ],
-        "automation: require care ase post-ci verifier recheck",
+        "automation: publish care ase stable planner wait",
     )
     return {
         "status": "APPLIED",
