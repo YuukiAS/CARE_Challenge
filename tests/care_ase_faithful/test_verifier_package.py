@@ -422,15 +422,28 @@ class VerifierPackageTests(unittest.TestCase):
         spec.loader.exec_module(module)
 
         self.assertIn("loss_semantic_oracle", module.REQUIRED_PROBES)
+        self.assertIn("eligible_loss_normalization_oracle", module.REQUIRED_PROBES)
         threshold_names = {item["name"] for item in module.BLOCKING_NUMERIC_THRESHOLDS}
         self.assertIn("loss_semantic_oracle_reference_match", threshold_names)
+        self.assertIn("eligible_loss_normalization_reference_match", threshold_names)
         probes = {probe["name"]: probe for probe in module.fixture_probe_results()}
         semantic = probes["loss_semantic_oracle"]
         self.assertEqual(semantic["status"], "PASS")
         self.assertIs(semantic["reference_uses_implementation_loss_helper"], False)
+        self.assertTrue(semantic["conditional_final_dice_ce"]["matches_reference"])
+        self.assertTrue(semantic["edema_binary_dice_focal"]["matches_reference"])
         self.assertTrue(semantic["injury_dice_bce"]["matches_reference"])
         self.assertTrue(semantic["scar_component_adaptive_tversky"]["matches_reference"])
         self.assertTrue(semantic["unique_allowed_loss_set"]["no_extra_weighted_auxiliary_objective"])
+        eligible = probes["eligible_loss_normalization_oracle"]
+        self.assertEqual(eligible["status"], "PASS")
+        self.assertIs(eligible["reference_uses_implementation_loss_helper"], False)
+        self.assertTrue(eligible["edema_binary_dice_focal"]["no_t2_row_invariant"])
+        self.assertTrue(eligible["edema_binary_dice_focal"]["dice_part_no_t2_row_invariant"])
+        self.assertTrue(eligible["injury_dice_bce"]["no_t2_row_invariant"])
+        self.assertTrue(eligible["injury_dice_bce"]["dice_part_no_t2_row_invariant"])
+        self.assertTrue(eligible["conditional_final_dice_ce"]["unequal_group_reference_matches_actual"])
+        self.assertTrue(eligible["conditional_final_dice_ce"]["reference_rejects_fixed_subgroup_equal_mean"])
 
     def test_loss_formula_runtime_mutations_are_required(self) -> None:
         runner_spec = importlib.util.spec_from_file_location("care_ase_executable_verifier", EXECUTABLE_VERIFIER)
@@ -457,6 +470,8 @@ class VerifierPackageTests(unittest.TestCase):
 
         required = {
             "injury_dice_bce_replaced_by_focal",
+            "eligible_loss_full_batch_mean_no_t2_dilution",
+            "conditional_final_fixed_subgroup_equal_mean",
             "scar_component_tversky_plus_occupancy_lambda025",
             "scar_component_tversky_blended_occupancy_half",
             "partial_hw_cross_z_presequence_mask_removed",

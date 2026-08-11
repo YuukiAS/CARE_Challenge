@@ -65,6 +65,8 @@ EXECUTABLE_MUTATION_IDS = [
     "partial_hw_straight_through_zero_loss",
     "partial_hw_cross_z_presequence_mask_removed",
     "injury_dice_bce_replaced_by_focal",
+    "eligible_loss_full_batch_mean_no_t2_dilution",
+    "conditional_final_fixed_subgroup_equal_mean",
     "scar_component_tversky_plus_occupancy_lambda025",
     "scar_component_tversky_blended_occupancy_half",
     "full_support_pseudo_tiling",
@@ -275,17 +277,9 @@ def check_only() -> int:
     )
     _record_error(errors, len(str(transaction_receipt.get("verifier_source_fingerprint_sha256", ""))) == 64, "transaction_receipt.verifier_source_fingerprint")
     _record_error(errors, len(str(transaction_receipt.get("executable_verifier_receipt_sha256", ""))) == 64, "transaction_receipt.executable_receipt_sha")
-    _record_error(
-        errors,
-        transaction_receipt.get("status") == ("FAIL_CLOSED" if CURRENT_REVIEWED_IMPLEMENTATION_EXPECTED_FAIL_CLOSED else "PASS"),
-        "transaction_receipt.expected_status",
-    )
+    _record_error(errors, transaction_receipt.get("status") == "PASS", "transaction_receipt.expected_status")
     transaction_failure_count = int(transaction_receipt.get("failure_count", 1))
-    _record_error(
-        errors,
-        transaction_failure_count > 0 if CURRENT_REVIEWED_IMPLEMENTATION_EXPECTED_FAIL_CLOSED else transaction_failure_count == 0,
-        "transaction_receipt.failure_count",
-    )
+    _record_error(errors, transaction_failure_count == 0, "transaction_receipt.failure_count")
 
     _record_error(errors, executable_receipt.get("schema") == "CARE_ASE_FAITHFUL_EXECUTABLE_VERIFIER_RECEIPT_V1", "executable_receipt.schema")
     _record_error(errors, executable_receipt.get("review_round") == REVIEW_ROUND, "executable_receipt.review_round")

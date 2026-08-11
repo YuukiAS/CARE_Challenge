@@ -1,0 +1,130 @@
+{
+  "created_utc": "2026-08-11T10:00:35Z",
+  "exit_code": 2,
+  "failure_count": 1,
+  "failures": [
+    "kb13.eligible_loss_normalization.rejected:conditional_final_fixed_subgroup_equal_mean"
+  ],
+  "fixture_mode": false,
+  "mutated_fingerprint_sha256": "2bdc499c299ba732945978fd85478fc7be26ab914a1334e99a6b72af4f4622a5",
+  "mutation_applied": "conditional_final_term_name_preserved_but_t2_present_and_no_t2_subgroups_are_averaged_1_to_1",
+  "mutation_executed": true,
+  "mutation_id": "conditional_final_fixed_subgroup_equal_mean",
+  "observations": {
+    "eligible_normalization_mutation": {
+      "batch_sha256": "edca1afae5d9a147135b01afefb83bc1b47777097e3d55c825ba7d12e046b00f",
+      "contract_requirement_id": "REQ_LOSS_001",
+      "reference_uses_implementation_loss_helper": false,
+      "semantic_oracle_failures": [
+        "edema_binary_dice_focal.t2_plus_one_no_t2.reference_mismatch",
+        "injury_dice_bce.t2_plus_one_no_t2.reference_mismatch",
+        "edema_binary_dice_focal.t2_plus_three_no_t2.reference_mismatch",
+        "injury_dice_bce.t2_plus_three_no_t2.reference_mismatch",
+        "conditional_final_dice_ce.t2_plus_three_no_t2.reference_mismatch"
+      ],
+      "semantic_oracle_status": "FAIL"
+    },
+    "eligible_normalization_probe": {
+      "conditional_final_dice_ce": {
+        "one_t2_three_no_t2_reference_minus_fixed_equal_mean_abs": 0.08153104782104492,
+        "reference_normalization": "mean over four eligible rows for the 1 T2 + 3 no-T2 deterministic mixed batch",
+        "reference_rejects_fixed_subgroup_equal_mean": true,
+        "unequal_group_reference_matches_actual": false
+      },
+      "contract_field_or_exact_clause": "REQ_LOSS_001: each loss term is normalized by its own eligible rows/voxels; no-T2 rows must not dilute edema-exclusive losses.",
+      "contract_source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+      "edema_binary_dice_focal": {
+        "dice_part_no_t2_row_invariant": true,
+        "no_t2_row_invariant": false
+      },
+      "injury_dice_bce": {
+        "dice_part_no_t2_row_invariant": true,
+        "no_t2_row_invariant": false
+      },
+      "name": "eligible_loss_normalization_oracle",
+      "no_t2_rows_added": [
+        1,
+        3
+      ],
+      "reference_uses_implementation_loss_helper": false,
+      "semantic_failures": [
+        "edema_binary_dice_focal.t2_plus_one_no_t2.reference_mismatch",
+        "injury_dice_bce.t2_plus_one_no_t2.reference_mismatch",
+        "edema_binary_dice_focal.t2_plus_three_no_t2.reference_mismatch",
+        "injury_dice_bce.t2_plus_three_no_t2.reference_mismatch",
+        "conditional_final_dice_ce.t2_plus_three_no_t2.reference_mismatch"
+      ],
+      "status": "FAIL",
+      "t2_present_tensor_identity_held": true,
+      "tolerance": 1e-05,
+      "variants": {
+        "t2_only": {
+          "actual_total_loss": 11.866701126098633,
+          "conditional_final_dice_ce_actual_unweighted": 5.396744728088379,
+          "conditional_final_dice_ce_reference_unweighted": 5.396744728088379,
+          "conditional_final_fixed_subgroup_equal_mean_unweighted": 5.396744728088379,
+          "conditional_final_reference_abs_diff": 0.0,
+          "edema_binary_dice_focal_actual_unweighted": 0.8878018856048584,
+          "edema_binary_dice_focal_reference_dice_part": 0.8210810422897339,
+          "edema_binary_dice_focal_reference_unweighted": 0.8878018856048584,
+          "injury_dice_bce_actual_unweighted": 1.3789098262786865,
+          "injury_dice_bce_reference_dice_part": 0.8964206576347351,
+          "injury_dice_bce_reference_unweighted": 1.3789098262786865,
+          "mutation_applied": "conditional_final_t2_present_and_no_t2_subgroups_averaged_1_to_1",
+          "no_t2_rows": 0,
+          "row_indices": [
+            0
+          ],
+          "t2_present_rows": 1
+        },
+        "t2_plus_one_no_t2": {
+          "actual_total_loss": 11.455842971801758,
+          "conditional_final_dice_ce_actual_unweighted": 5.559807300567627,
+          "conditional_final_dice_ce_reference_unweighted": 5.559807300567627,
+          "conditional_final_fixed_subgroup_equal_mean_unweighted": 5.559807300567627,
+          "conditional_final_reference_abs_diff": 0.0,
+          "edema_binary_dice_focal_actual_unweighted": 0.47726136445999146,
+          "edema_binary_dice_focal_reference_dice_part": 0.8210810422897339,
+          "edema_binary_dice_focal_reference_unweighted": 0.8878018856048584,
+          "injury_dice_bce_actual_unweighted": 0.9306994676589966,
+          "injury_dice_bce_reference_dice_part": 0.8964206576347351,
+          "injury_dice_bce_reference_unweighted": 1.3789098262786865,
+          "mutation_applied": "conditional_final_t2_present_and_no_t2_subgroups_averaged_1_to_1",
+          "no_t2_rows": 1,
+          "row_indices": [
+            0,
+            1
+          ],
+          "t2_present_rows": 1
+        },
+        "t2_plus_three_no_t2": {
+          "actual_total_loss": 11.168013572692871,
+          "conditional_final_dice_ce_actual_unweighted": 5.559807300567627,
+          "conditional_final_dice_ce_reference_unweighted": 5.641338348388672,
+          "conditional_final_fixed_subgroup_equal_mean_unweighted": 5.559807300567627,
+          "conditional_final_reference_abs_diff": 0.08153104782104492,
+          "edema_binary_dice_focal_actual_unweighted": 0.2719910740852356,
+          "edema_binary_dice_focal_reference_dice_part": 0.8210810422897339,
+          "edema_binary_dice_focal_reference_unweighted": 0.8878018856048584,
+          "injury_dice_bce_actual_unweighted": 0.7065942883491516,
+          "injury_dice_bce_reference_dice_part": 0.8964206576347351,
+          "injury_dice_bce_reference_unweighted": 1.3789098262786865,
+          "mutation_applied": "conditional_final_t2_present_and_no_t2_subgroups_averaged_1_to_1",
+          "no_t2_rows": 3,
+          "row_indices": [
+            0,
+            1,
+            1,
+            1
+          ],
+          "t2_present_rows": 1
+        }
+      }
+    },
+    "source_manifest_sha256_before_mutation": "b4981affabaf8234879f17a05ad6cc258334f478195d89f91bdf30fdb0ed9d0e"
+  },
+  "passed": false,
+  "request_nonce": "care-ase-20260806T090955Z",
+  "schema": "CARE_ASE_FAITHFUL_EXECUTABLE_MUTATION_RESULT_V1",
+  "task_id": "care-ase-faithful"
+}
