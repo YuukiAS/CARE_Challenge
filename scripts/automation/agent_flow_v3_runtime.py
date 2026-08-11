@@ -3101,7 +3101,10 @@ def validate_care_ase_executor_completion(
         result_status = care_ase_implementation_result_status(implementation_dir / "result.md")
         pending_verifier_recheck = bool(
             allow_verifier_recheck
-            and result_status == "IMPLEMENTATION_EVIDENCE_READY_PENDING_VERIFIER_RECHECK"
+            and result_status in {
+                "IMPLEMENTATION_EVIDENCE_READY_PENDING_VERIFIER_RECHECK",
+                "EXECUTOR_PROVENANCE_REBIND_READY_PENDING_CONTROLLER_VERIFIER_RECHECK",
+            }
             and care_ase_validation_failures_require_verifier_recheck(validation)
             and fingerprint.get("frozen_contract_sha256") == current.get("frozen_contract_sha256")
             and fingerprint.get("request_nonce") == current.get("request_nonce")
