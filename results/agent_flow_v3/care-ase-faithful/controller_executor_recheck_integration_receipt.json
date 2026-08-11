@@ -1,73 +1,67 @@
 {
-  "created_utc": "2026-08-11T07:29:04Z",
+  "schema": "CARE_ASE_FAITHFUL_CONTROLLER_EXECUTOR_RECHECK_INTEGRATION_RECEIPT_V1",
+  "task_id": "care-ase-faithful",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "created_utc": "2026-08-11T10:45:28Z",
+  "state_transition": {
+    "from": "VERIFIER_FROZEN",
+    "through": [
+      "INTEGRATION_RUNNING"
+    ],
+    "to": "VERIFIER_RECHECK_REQUIRED"
+  },
+  "origin_develop_before_integration_sha": "99bef881c8b8424bb66e1948a66f45eef1808536",
+  "last_observed_remote_sha_before_integration": "99bef881c8b8424bb66e1948a66f45eef1808536",
+  "executor_thread_id": "019fd7c1-8358-7632-9022-367e62ecfbd1",
+  "executor_local_commit_sha": "29f6677e8430c358cc93b2486c6865b663b1e901",
+  "executor_local_commit_subject": "fix care ase eligible loss normalization",
+  "executor_merge_base": "844b54faa96f3746ce1ddedb91bbf9cca284574e",
   "executor_goal_complete": {
     "rollout_path": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_EXECUTOR/sessions/2026/08/06/rollout-2026-08-06T11-46-51-019fd7c1-8358-7632-9022-367e62ecfbd1.jsonl",
-    "status": "complete",
     "thread_id": "019fd7c1-8358-7632-9022-367e62ecfbd1",
-    "time_used_seconds": 3252,
+    "status": "complete",
     "tokens_used": 473313,
+    "time_used_seconds": 3252,
     "updated_at": 1786037419
   },
-  "executor_local_commit_sha": "b2c6043a4e67f8dc1f79fb53a6837612231f11dc",
-  "executor_local_commit_subject": "care-ase executor provenance rebind current integration",
-  "executor_merge_base": "68b81e31ae4ff2856d3701d29e2f76fdc684a7c3",
-  "executor_thread_id": "019fd7c1-8358-7632-9022-367e62ecfbd1",
+  "integration_merge_sha": "386b3d6514b67817621f510b399b7b0ed0799a21",
+  "reviewed_integration_sha": "386b3d6514b67817621f510b399b7b0ed0799a21",
+  "integration_target_preserved_for_provenance_rebind": false,
+  "implementation_fingerprint_sha256": "2542e6e69cf5c1edd85c83cf4c70f55d7c87f928da5aa7b938838cd155fc5b4c",
+  "implementation_evidence_payload_sha256": "5d57125aeaef47ba6261dd456316eb251d0633fa1a9cb61cb36de75a6d9941e8",
+  "verifier_fingerprint_sha256": "bda682e16508eed941e8ec92cc6fae2597dc409a92c63216e40d790887c35244",
+  "requires_independent_verifier_recheck": true,
+  "verifier_recheck_basis": "implementation_evidence_ready_pending_verifier_recheck",
   "fail_closed_receipt_file_sha256": null,
+  "local_controller_gates": [
+    {
+      "name": "agent_flow_v3_contract_validation",
+      "command": "/usr/bin/python scripts/automation/validate_agent_flow_v3.py --repo-root .",
+      "exit_code": 0,
+      "stdout_tail": "CARE Agent-Flow v3 contract validation: PASS\n",
+      "stderr_tail": ""
+    },
+    {
+      "name": "py_compile_integrated_sources",
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m py_compile scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py src/care_myocardium/models/care_ase/__init__.py src/care_myocardium/models/care_ase/core.py src/care_myocardium/training/care_ase_runtime.py src/care_myocardium/training/care_ase_trainer.py",
+      "exit_code": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+    },
+    {
+      "name": "public_verifier_pytest",
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m pytest tests/care_ase_faithful/test_verifier_package.py -q",
+      "exit_code": 0,
+      "stdout_tail": ".................                                                 [100%]\n17 passed, 7 subtests passed in 8.58s\n",
+      "stderr_tail": ""
+    }
+  ],
   "forbidden_actions_confirmed": [
     "no Planner/Critic decision generated",
     "no Controller edit to Verifier source or Executor implementation source",
     "no implementation_complete claim before Verifier recheck",
     "no training, outer, Docker, upload, organizer email or develop-to-main merge"
   ],
-  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
-  "implementation_evidence_payload_sha256": "dcf8cd2a4b1d5f4cb86095b4553f86eb3b92765e6b2d5f01aba2352756adc457",
-  "implementation_fingerprint_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
-  "integration_merge_sha": "e55061cfb6e3aa529b75d5d4c3ff4342efc199ef",
-  "integration_target_correction": {
-    "actual_executor_integration_merge_sha": "e55061cfb6e3aa529b75d5d4c3ff4342efc199ef",
-    "corrected_utc": "2026-08-11T07:32:56Z",
-    "reason": "Executor provenance rebind receipts bind the prior reviewed integration target; controller merge commit must not become a moving target for Verifier.",
-    "reviewed_integration_sha": "b41e25827329a14ed8b77ae7e7b1fb1711fc8110"
-  },
-  "integration_target_preserved_for_provenance_rebind": true,
-  "last_observed_remote_sha_before_integration": "68b81e31ae4ff2856d3701d29e2f76fdc684a7c3",
-  "local_controller_gates": [
-    {
-      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/automation/validate_agent_flow_v3.py --repo-root .",
-      "exit_code": 0,
-      "name": "agent_flow_v3_contract_validation",
-      "stderr_tail": "",
-      "stdout_tail": "CARE Agent-Flow v3 contract validation: PASS\n"
-    },
-    {
-      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m py_compile scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py src/care_myocardium/models/care_ase/__init__.py src/care_myocardium/models/care_ase/core.py src/care_myocardium/training/care_ase_runtime.py src/care_myocardium/training/care_ase_trainer.py",
-      "exit_code": 0,
-      "name": "py_compile_integrated_sources",
-      "stderr_tail": "",
-      "stdout_tail": ""
-    },
-    {
-      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m pytest tests/care_ase_faithful/test_verifier_package.py -q",
-      "exit_code": 0,
-      "name": "public_verifier_pytest",
-      "stderr_tail": "",
-      "stdout_tail": ".................                                                 [100%]\n17 passed, 7 subtests passed in 8.59s\n"
-    }
-  ],
-  "origin_develop_before_integration_sha": "68b81e31ae4ff2856d3701d29e2f76fdc684a7c3",
-  "request_nonce": "care-ase-20260806T090955Z",
-  "requires_independent_verifier_recheck": true,
-  "reviewed_integration_sha": "b41e25827329a14ed8b77ae7e7b1fb1711fc8110",
-  "schema": "CARE_ASE_FAITHFUL_CONTROLLER_EXECUTOR_RECHECK_INTEGRATION_RECEIPT_V1",
-  "state_transition": {
-    "from": "PROVENANCE_REBIND_REQUIRED",
-    "through": [
-      "INTEGRATION_RUNNING"
-    ],
-    "to": "VERIFIER_RECHECK_REQUIRED"
-  },
-  "task_id": "care-ase-faithful",
-  "updated_utc": "2026-08-11T07:32:56Z",
-  "verifier_fingerprint_sha256": "a833449fe2dd3de5041e740f1d6f4d32a0ffec592a157dd0178f6e6182819c81",
-  "verifier_recheck_basis": "implementation_evidence_ready_pending_verifier_recheck"
+  "updated_utc": "2026-08-11T10:45:28Z"
 }
