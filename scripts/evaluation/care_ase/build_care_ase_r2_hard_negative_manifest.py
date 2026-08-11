@@ -25,7 +25,7 @@ from src.care_myocardium.data.care_ase_splits import PREPROCESSED_REL, SPLITS_RE
 
 
 DEFAULT_STOCK_OOF_ANCHOR_MANIFEST = REPO_ROOT / "results/20260727_care_dg_dual_pathology_validation/nnunet_oof_anchor_manifest.json"
-TASK_KEY = "20260804_care_ase_r2_emergency_9h_training_docker"
+TASK_KEY = "care-ase-faithful-formal-training-20260812"
 
 
 def sha256_file(path: Path) -> str:
@@ -354,7 +354,7 @@ def build_case(case_id: str, gt: np.ndarray, pred: np.ndarray, *, spacing: tuple
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--fold", type=int, required=True, choices=(1, 4))
+    parser.add_argument("--fold", type=int, required=True, choices=(2, 3))
     parser.add_argument("--output", type=Path, default=None)
     parser.add_argument("--anchor-manifest", type=Path, default=DEFAULT_STOCK_OOF_ANCHOR_MANIFEST)
     parser.add_argument("--stock-pred-root", type=Path, action="append", default=[])

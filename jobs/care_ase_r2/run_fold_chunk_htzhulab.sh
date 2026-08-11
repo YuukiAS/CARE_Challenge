@@ -38,7 +38,7 @@ TS="$(date +%Y%m%d_%H%M%S)"
 LOG_FILE="${LOG_FILE:-${CARE_ROOT}/logs/CareASER2_${SLURM_JOB_ID:-local}_${TS}.log}"
 exec > >(tee -a "${LOG_FILE}") 2>&1
 
-FOLD="${FOLD:?FOLD is required and must be 1 or 4}"
+FOLD="${FOLD:?FOLD is required and must be 2 or 3}"
 START_STEP="${START_STEP:?START_STEP is required}"
 END_STEP="${END_STEP:?END_STEP is required}"
 OUTPUT_DIR="${OUTPUT_DIR:-${CARE_ROOT}/results/20260804_care_ase_r2_formal_training_${CURRENT_SOURCE_SHA:0:12}/runtime/fold_${FOLD}}"

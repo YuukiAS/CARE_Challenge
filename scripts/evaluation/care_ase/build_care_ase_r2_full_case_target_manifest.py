@@ -22,7 +22,7 @@ from src.care_myocardium.data.care_ase_splits import PREPROCESSED_REL, build_car
 from src.care_myocardium.training.care_ase_trainer import build_full_case_target_cache
 
 
-TASK_KEY = "20260804_care_ase_r2_emergency_9h_training_docker"
+TASK_KEY = "care-ase-faithful-formal-training-20260812"
 
 
 def sha256_array(array: np.ndarray) -> str:
@@ -54,7 +54,7 @@ def spacing_for_case(preprocessed: Path, case_id: str) -> tuple[float, float, fl
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--fold", type=int, required=True, choices=(1, 4))
+    parser.add_argument("--fold", type=int, required=True, choices=(2, 3))
     parser.add_argument("--output", type=Path, default=None)
     args = parser.parse_args()
 

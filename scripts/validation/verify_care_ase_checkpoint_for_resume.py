@@ -21,7 +21,7 @@ from src.care_myocardium.training.care_ase_runtime import sha256_file, write_jso
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--checkpoint", type=Path, required=True)
-    parser.add_argument("--fold", type=int, required=True, choices=(1, 4))
+    parser.add_argument("--fold", type=int, required=True, choices=(2, 3))
     parser.add_argument("--output", type=Path, default=None)
     args = parser.parse_args()
 

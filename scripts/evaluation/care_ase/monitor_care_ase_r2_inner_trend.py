@@ -37,7 +37,7 @@ from src.care_myocardium.inference.care_ase_r2_full_volume import (
 from src.care_myocardium.training.care_ase_trainer import load_care_ase_checkpoint_for_inference
 
 
-TASK_KEY = "20260804_care_ase_r2_emergency_9h_training_docker"
+TASK_KEY = "care-ase-faithful-formal-training-20260812"
 RESULT_ROOT = REPO_ROOT / "results" / TASK_KEY
 OLD_RESULT_ROOT_MARKER = "20260803_care_ase_r2_" + "full_fidelity_execution"
 PREPROCESSED = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans_3d_fullres"
@@ -66,10 +66,10 @@ def read_b2nd(path: Path) -> np.ndarray:
     return np.asarray(blosc2.open(str(path), mode="r")[:])
 
 
-def load_inner_rows(fold: int) -> list[dict[str, str]]:
-    if not SPLIT_CASE_LISTS.is_file():
-        raise FileNotFoundError(f"missing frozen split case list: {SPLIT_CASE_LISTS}")
-    with SPLIT_CASE_LISTS.open(newline="", encoding="utf-8") as f:
+def load_inner_rows(fold: int, split_case_lists: Path = SPLIT_CASE_LISTS) -> list[dict[str, str]]:
+    if not split_case_lists.is_file():
+        raise FileNotFoundError(f"missing frozen split case list: {split_case_lists}")
+    with split_case_lists.open(newline="", encoding="utf-8") as f:
         rows = [row for row in csv.DictReader(f) if int(row["fold"]) == int(fold)]
     outer = [row["case_id"] for row in rows if row["role"] == "outer"]
     inner = [row for row in rows if row["role"] == "inner"]
@@ -216,12 +216,13 @@ def help_harm_neutral(rows: list[dict[str, Any]], pathology: str, baseline_key: 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--fold", type=int, required=True, choices=(1, 4))
+    parser.add_argument("--fold", type=int, required=True, choices=(2, 3))
     parser.add_argument("--checkpoint", type=Path, required=True)
     parser.add_argument("--checkpoint-step", type=int, required=True)
     parser.add_argument("--output-dir", type=Path, default=None)
     parser.add_argument("--patch-size", default="20,256,256")
     parser.add_argument("--baseline-casewise", type=Path, default=BASELINE_CASEWISE)
+    parser.add_argument("--split-case-lists", type=Path, default=SPLIT_CASE_LISTS)
     parser.add_argument("--max-cases", type=int, default=0, help="debug only; 0 means all frozen inner cases")
     args = parser.parse_args()
 
@@ -236,7 +237,7 @@ def main() -> int:
     if packet_path.exists() or casewise_path.exists():
         raise FileExistsError(f"immutable monitor output already exists: {out_dir}")
 
-    inner_rows = load_inner_rows(args.fold)
+    inner_rows = load_inner_rows(args.fold, args.split_case_lists)
     if args.max_cases > 0:
         inner_rows = inner_rows[: args.max_cases]
     inner_cases = [row["case_id"] for row in inner_rows]
@@ -367,8 +368,8 @@ def main() -> int:
         "checkpoint_payload_global_optimizer_step": int(payload["global_optimizer_step"]),
         "decode": "fixed_argmax_t2_present_0_1_2_3_4_5_no_t2_0_1_2_3_5",
         "full_volume_inference_settings": inference_settings.to_json_dict(),
-        "split_case_lists_path": str(SPLIT_CASE_LISTS.relative_to(REPO_ROOT)),
-        "split_case_lists_sha256": sha256_file(SPLIT_CASE_LISTS),
+        "split_case_lists_path": str(args.split_case_lists.resolve().relative_to(REPO_ROOT)),
+        "split_case_lists_sha256": sha256_file(args.split_case_lists.resolve()),
         "inner_case_count": len(inner_cases),
         "inner_cases_sha256": hashlib.sha256(json.dumps(inner_cases, sort_keys=True).encode("utf-8")).hexdigest(),
         "outer_access_count_delta": 0,

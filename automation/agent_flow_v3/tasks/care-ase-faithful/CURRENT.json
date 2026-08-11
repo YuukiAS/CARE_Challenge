@@ -78,7 +78,7 @@
     "planner_critic_enablement": "NOT_READY",
     "restored_reviewed_integration_sha": "b41e25827329a14ed8b77ae7e7b1fb1711fc8110"
   },
-  "next_action": "CONTROLLER_MECHANICALLY_ROUTE_CRITIC_FINAL_PASS_TO_AWAIT_HUMAN_DECISION",
+  "next_action": "START_AUTHORIZED_FORMAL_INNER_TRAINING_GOAL",
   "notification_brief_path": "results/agent_flow_v3/care-ase-faithful/notification_brief.json",
   "notification_brief_sha256": "f9529e86131cc00b2d6450518f7933e7969b616a3e0f80daccc42fd772064101",
   "open_scientific_choices": [],
@@ -187,14 +187,14 @@
   "runtime_binding_sha256": "1365a5b9ea6c4f2cb07389c4de8abb1a384fbe082bfa2b07bab3ad98717c2bf3",
   "schema": "CARE_AGENT_FLOW_V3",
   "scientific_choice_required": false,
-  "scientific_resolution_status": "FINAL_CRITIC_PASS_PENDING_CONTROLLER_HUMAN_GATE_TRANSITION",
+  "scientific_resolution_status": "FINAL_CRITIC_PASS_AWAITING_AUTHORIZED_FORMAL_TRAINING",
   "source_snapshot_path": "automation/agent_flow_v3/tasks/care-ase-faithful/SOURCE_SNAPSHOT.json",
   "source_snapshot_sha256": "b3b6e27d24f389f76762db7b21c2e37b8c590b26a33050dea01d5757464c9fd2",
   "stable_review_ci_receipt_path": "results/agent_flow_v3/care-ase-faithful/stable_review_ci_receipt.json",
   "stable_review_ci_receipt_sha256": "cce9bbb75abb200664d6cb9ab2b55d9fe6e0a0a7a7d8650c1076d94f521591fc",
   "stable_review_snapshot_transition_receipt_path": "results/agent_flow_v3/care-ase-faithful/stable_review_snapshot_transition_receipt.json",
   "stable_review_snapshot_transition_receipt_sha256": "c30cf1d315e2729838a1036cc5b41bb83b2d4ac61d6e628704a1073a0f44856d",
-  "state": "READY_FOR_CRITIC_FINAL_AUDIT",
+  "state": "AWAIT_HUMAN_DECISION",
   "status_receipt_commit_check_suites": 0,
   "status_receipt_commit_ci_policy": "Stable Review Snapshot supersedes moving-SHA transaction identity. Current Planner decision is bound to review_target_id/review_bundle; receipt/state-only changes do not invalidate it.",
   "status_receipt_commit_github_actions_status": "NOT_APPLICABLE_REPAIR_ROUTE",
@@ -257,5 +257,14 @@
   "grandfathered_planner_pass_candidate": true,
   "control_plane_change_class": "CONTROL_PLANE_ONLY_CHANGED",
   "control_plane_defect": "FINAL_CRITIC_LIFECYCLE_MISSING_FROM_CONTROL_PLANE",
-  "final_critic_lifecycle_enabled": true
+  "final_critic_lifecycle_enabled": true,
+  "mechanical_closure": {
+    "closed_utc": "2026-08-11T17:14:14Z",
+    "from_state": "READY_FOR_CRITIC_FINAL_AUDIT",
+    "to_state": "AWAIT_HUMAN_DECISION",
+    "basis": "CRITIC_FINAL_PASS with blocking findings empty; control-plane-only transition before separate formal training task",
+    "reran_verifier": false,
+    "reran_model_probe": false,
+    "reran_ci": false
+  }
 }

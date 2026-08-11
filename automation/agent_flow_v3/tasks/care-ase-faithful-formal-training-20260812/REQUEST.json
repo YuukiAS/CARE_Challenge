@@ -1,0 +1,22 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_FORMAL_TRAINING_REQUEST_V1",
+  "task_id": "care-ase-faithful-formal-training-20260812",
+  "source_task_id": "care-ase-faithful",
+  "formal_training_authorized": true,
+  "inner_evaluation_authorized": true,
+  "outer_access_authorized": false,
+  "validation_upload_authorized": false,
+  "docker_build_or_upload_authorized": false,
+  "organizer_email_authorized": false,
+  "develop_to_main_promotion_authorized": false,
+  "required_folds": [2, 3],
+  "required_optimizer_steps_per_fold": 14000,
+  "review_target_id": "49856d71280eeb3c52921ceb02a131d7fb689d5c2e66a3e9ee37efd32eec3ac2",
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "requirement_ledger_sha256": "376dbc8b1c8f1af585e0ca3c2b451b788ade164221805871fca5dfefd98fbcb7",
+  "reviewed_implementation_fingerprint_sha256": "2542e6e69cf5c1edd85c83cf4c70f55d7c87f928da5aa7b938838cd155fc5b4c",
+  "stable_ci_run_id": 31485266746,
+  "stable_ci_status": "PASS",
+  "goal_objective_path": "/users/a/e/aereinh/.codex-homes/CARE/attachments/aafc3b03-c1cc-4a4e-8b24-fab9d3d9acfe/goal-objective.md",
+  "created_utc": "2026-08-11T17:14:14Z"
+}

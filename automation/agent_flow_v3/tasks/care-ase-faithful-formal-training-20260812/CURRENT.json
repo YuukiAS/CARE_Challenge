@@ -1,0 +1,19 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_FORMAL_TRAINING_CURRENT_V1",
+  "task_id": "care-ase-faithful-formal-training-20260812",
+  "state": "PRE_INTERACTIVE_GPU_PREFLIGHT",
+  "controller_verification_decision": "NEEDS_REPAIR",
+  "formal_training_authorized": true,
+  "inner_evaluation_authorized": true,
+  "outer_access_authorized": false,
+  "current_phase": "source_freeze_split_fair_panel_and_interactive_gpu_setup",
+  "required_folds": [2, 3],
+  "completed_optimizer_steps": {
+    "fold2": 0,
+    "fold3": 0
+  },
+  "runtime_result_root": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812",
+  "latest_issue": "direct preprocessed-grid stock OOF manifests must be generated on GPU before hard-negative manifests can be frozen; legacy non-direct OOF anchor was correctly rejected",
+  "next_action": "REQUEST_HTZHULAB_INTERACTIVE_GPU_AND_RUN_COMPUTE_NODE_PREFLIGHT",
+  "updated_utc": "2026-08-11T17:14:14Z"
+}

@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 from dataclasses import asdict
@@ -52,7 +53,11 @@ def summarize(rows: list[Any], fold: int) -> dict[str, Any]:
 
 
 def main() -> int:
-    out_dir = RESULT_DIR
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--output-dir", type=Path, default=RESULT_DIR)
+    args = parser.parse_args()
+
+    out_dir = args.output_dir
     all_rows = []
     fold_summaries = []
     for fold in (2, 3):
@@ -60,6 +65,7 @@ def main() -> int:
         all_rows.extend(rows)
         write_case_roles_csv(out_dir / f"split_authority_fold{fold}.csv", rows)
         fold_summaries.append(summarize(rows, fold))
+    write_case_roles_csv(out_dir / "split_case_lists.csv", all_rows)
     receipt = {
         "status": "PASS" if all(row["status"] == "PASS" for row in fold_summaries) else "FAIL",
         "split_source": str(SPLITS_REL),

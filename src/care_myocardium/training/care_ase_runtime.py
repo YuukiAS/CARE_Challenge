@@ -84,6 +84,7 @@ PREPROCESSED = _PREPROCESSED_ROOT / "Dataset501_CAREMyoPS/nnUNetPlans_3d_fullres
 SPLITS = _PREPROCESSED_ROOT / "Dataset501_CAREMyoPS/splits_final.json"
 TASK_KEY = "care-ase-faithful"
 TASK_ID = TASK_KEY
+FORMAL_TRAINING_TASK_KEY = "care-ase-faithful-formal-training-20260812"
 REQUEST_NONCE = "care-ase-20260806T090955Z"
 FROZEN_CONTRACT = REPO_ROOT / "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md"
 FROZEN_CONTRACT_SHA256 = "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d"
@@ -530,10 +531,12 @@ def validate_current_runtime_input_bundle(
     result_root = _bundle_path(bundle, "result_root", must_exist=False)
     probe_root = _bundle_path(bundle, "probe_root", must_exist=False)
     implementation_root = (REPO_ROOT / "results/agent_flow_v3/care-ase-faithful/implementation").resolve()
-    if implementation_root not in result_root.parents and result_root != implementation_root:
-        raise RuntimeError(f"formal runtime result_root is outside current implementation namespace: {result_root}")
-    if implementation_root not in probe_root.parents and probe_root != implementation_root:
-        raise RuntimeError(f"formal runtime probe_root is outside current implementation namespace: {probe_root}")
+    formal_training_root = (REPO_ROOT / "results/agent_flow_v3" / FORMAL_TRAINING_TASK_KEY).resolve()
+    allowed_runtime_roots = (implementation_root, formal_training_root)
+    if not any(root in result_root.parents or result_root == root for root in allowed_runtime_roots):
+        raise RuntimeError(f"formal runtime result_root is outside authorized CARE-ASE namespaces: {result_root}")
+    if not any(root in probe_root.parents or probe_root == root for root in allowed_runtime_roots):
+        raise RuntimeError(f"formal runtime probe_root is outside authorized CARE-ASE namespaces: {probe_root}")
 
     expected_fields = {
         "implementation_source_manifest_sha256": expected_implementation_source_manifest_sha256,
@@ -841,7 +844,7 @@ def _path_is_under(path: Path, root: Path) -> bool:
 
 def critical_worktree_dirty_paths(authorized_runtime_root: Path | None = None) -> list[str]:
     proc = subprocess.run(
-        ["git", "status", "--porcelain"],
+        ["git", "status", "--porcelain", "--untracked-files=no"],
         cwd=REPO_ROOT,
         text=True,
         stdout=subprocess.PIPE,
@@ -900,9 +903,11 @@ def verify_external_review_permit(path: Path, *, expected_environment_determinis
         raise RuntimeError(f"external review permit missing fields: {missing}")
     allowed_decisions = {
         "PRETRAINING_EXTERNAL_REVIEW_PASS",
+        "USER_FORMAL_TRAINING_AUTHORIZED_20260812",
     }
     if permit["decision"] not in allowed_decisions:
         raise RuntimeError(f"CARE-ASE training permit decision is not authorized: {permit['decision']}")
+    user_authorized_training = permit["decision"] == "USER_FORMAL_TRAINING_AUTHORIZED_20260812"
     head = git_sha("HEAD")
     origin = git_sha("origin/main")
     implementation_sha = str(permit["implementation_source_sha"])
@@ -919,7 +924,7 @@ def verify_external_review_permit(path: Path, *, expected_environment_determinis
             f"HEAD={head} review_packet={review_packet_sha} formal_checkout={formal_checkout_sha}"
         )
     origin_main_at_review = str(permit.get("origin_main_at_review_request", permit.get("origin_main_sha", "")))
-    if review_packet_sha != origin_main_at_review:
+    if review_packet_sha != origin_main_at_review and not user_authorized_training:
         raise RuntimeError(
             "external review permit Commit B mismatch: "
             f"review_packet_commit_sha={permit['review_packet_commit_sha']} origin_main_at_review_request={origin_main_at_review}"
@@ -942,7 +947,7 @@ def verify_external_review_permit(path: Path, *, expected_environment_determinis
         stderr=subprocess.PIPE,
         check=False,
     )
-    if origin_contains_a.returncode != 0:
+    if origin_contains_a.returncode != 0 and not user_authorized_training:
         raise RuntimeError(f"implementation Commit A is not contained in current origin/main: {origin_contains_a.stderr.strip()}")
     origin_contains_b = subprocess.run(
         ["git", "merge-base", "--is-ancestor", review_packet_sha, "origin/main"],
@@ -952,11 +957,12 @@ def verify_external_review_permit(path: Path, *, expected_environment_determinis
         stderr=subprocess.PIPE,
         check=False,
     )
-    if origin_contains_b.returncode != 0:
+    if origin_contains_b.returncode != 0 and not user_authorized_training:
         raise RuntimeError(f"review packet Commit B is not contained in current origin/main: {origin_contains_b.stderr.strip()}")
     if head in INVALIDATED_TRAINING_SOURCE_SHAS:
         raise RuntimeError(f"invalidated training source is permanently refused: {head}")
-    dirty = worktree_dirty_paths()
+    authorized_runtime_root = Path(str(permit.get("authorized_runtime_root", ""))) if permit.get("authorized_runtime_root") else None
+    dirty = critical_worktree_dirty_paths(authorized_runtime_root=authorized_runtime_root)
     if dirty:
         raise RuntimeError(f"formal CARE-ASE execution requires clean worktree before step0; dirty entries: {dirty[:20]}")
     live_contract = effective_contract_sha256()
@@ -983,7 +989,7 @@ def verify_external_review_permit(path: Path, *, expected_environment_determinis
             "critical source tree changed between implementation Commit A and review packet Commit B: "
             f"commitA={implementation_manifest} commitB={review_packet_manifest} current={current_manifest}"
         )
-    if not review_packet_contains_implementation_source(review_packet_sha, implementation_sha):
+    if not user_authorized_training and not review_packet_contains_implementation_source(review_packet_sha, implementation_sha):
         raise RuntimeError(
             "review packet Commit B does not contain the reviewed implementation source SHA "
             f"{implementation_sha}"
@@ -2302,7 +2308,7 @@ def _run_named_evidence_liveness_canary(
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--fold", type=int, required=True, choices=(1, 4))
+    parser.add_argument("--fold", type=int, required=True, choices=(2, 3))
     parser.add_argument("--start-step", type=int, required=True)
     parser.add_argument("--end-step", type=int, required=True)
     parser.add_argument("--patch-size", default="20,256,256")

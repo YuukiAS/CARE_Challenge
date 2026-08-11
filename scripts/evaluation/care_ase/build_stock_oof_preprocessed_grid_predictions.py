@@ -30,7 +30,7 @@ if str(REPO_ROOT) not in sys.path:
 from src.care_myocardium.data.care_ase_splits import PREPROCESSED_REL, SPLITS_REL, build_care_ase_case_roles
 
 
-RESULT_TASK = "20260803_care_ase_r2_final_pretraining_closure_v8"
+RESULT_TASK = "care-ase-faithful-formal-training-20260812"
 STOCK_ROOT = REPO_ROOT / "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres"
 
 
@@ -207,7 +207,7 @@ def predict_case(
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--fold", type=int, required=True, choices=(1, 4))
+    parser.add_argument("--fold", type=int, required=True, choices=(2, 3))
     parser.add_argument("--output", type=Path, default=None)
     parser.add_argument("--array-dir", type=Path, default=None)
     parser.add_argument("--case-limit", type=int, default=None)
