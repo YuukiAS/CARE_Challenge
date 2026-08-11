@@ -517,6 +517,14 @@ def validate_current_runtime_input_bundle(
     if declared_payload_sha:
         tmp = dict(bundle)
         tmp.pop("bundle_payload_sha256", None)
+        for runtime_key in (
+            "path",
+            "sha256",
+            "verified_for_fold",
+            "current_runtime_identity_validation",
+            "target_builder_provenance",
+        ):
+            tmp.pop(runtime_key, None)
         observed_payload_sha = json_sha(tmp)
         if declared_payload_sha != observed_payload_sha:
             raise RuntimeError("formal runtime input bundle payload SHA mismatch")
