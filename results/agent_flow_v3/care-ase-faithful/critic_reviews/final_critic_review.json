@@ -1,0 +1,101 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_FINAL_CRITIC_REVIEW_V1",
+  "task_id": "care-ase-faithful",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "review_target_id": "49856d71280eeb3c52921ceb02a131d7fb689d5c2e66a3e9ee37efd32eec3ac2",
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "requirement_ledger_sha256": "376dbc8b1c8f1af585e0ca3c2b451b788ade164221805871fca5dfefd98fbcb7",
+  "source_snapshot_sha256": "b3b6e27d24f389f76762db7b21c2e37b8c590b26a33050dea01d5757464c9fd2",
+  "review_bundle_sha256": "bf88d40eda80abba49767e760ee025cfc6220a19947ca1cd57e42fe10b38220b",
+  "planner_review_artifact": "results/agent_flow_v3/care-ase-faithful/planner_reviews/round_001_reentry_009_final.json",
+  "planner_decision": "PLANNER_PASS",
+  "critic_mode": "REQUIRED_FINAL_AUDIT",
+  "critic_decision": "CRITIC_FINAL_PASS",
+  "blocking_findings": [],
+  "audit_checks": {
+    "frozen_contract_silently_weakened": false,
+    "requirement_ledger_incomplete_or_expanded_by_runtime_roles": false,
+    "planner_missed_existing_blocking_requirement": false,
+    "verifier_created_uncited_blocking_scientific_requirement_or_threshold": false,
+    "executor_test_or_known_bad_aware_special_business_logic_found": false,
+    "planner_prior_blocking_findings_lack_closure_evidence": false,
+    "review_bundle_not_bound_to_current_review_target": false,
+    "stable_review_ci_pass": true,
+    "unresolved_contract_ambiguity_or_contradiction": false
+  },
+  "audit_basis": {
+    "frozen_contract_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+    "requirement_ledger_path": "automation/agent_flow_v3/tasks/care-ase-faithful/REQUIREMENT_LEDGER.json",
+    "source_snapshot_path": "automation/agent_flow_v3/tasks/care-ase-faithful/SOURCE_SNAPSHOT.json",
+    "review_bundle_path": "results/agent_flow_v3/care-ase-faithful/REVIEW_BUNDLE.json",
+    "planner_detailed_review": "results/agent_flow_v3/care-ase-faithful/planner_reviews/round_001_reentry_009.json",
+    "implementation_source_manifest": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_source_manifest.json",
+    "implementation_fingerprint": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_fingerprint.json",
+    "implementation_evidence": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json",
+    "verification_contract": "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json",
+    "executable_verifier_receipt": "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json",
+    "protected_known_bad_manifest": "results/agent_flow_v3/care-ase-faithful/verification/protected_known_bad_manifest.json",
+    "stable_review_ci_run_id": 31485266746,
+    "stable_review_ci_status": "PASS",
+    "integration_locator_sha": "00cd86428b02ae9d58eb4e8e4c7609362e7d50ea"
+  },
+  "requirement_closure_summary": {
+    "REQ_PROCESS_001": "PASS: formal training, outer access, Docker/upload, organizer email and develop-to-main promotion remain unauthorized and were not performed.",
+    "REQ_ARCH_001": "PASS: stock-compatible trunk inheritance and independent anatomy/scar/edema high-resolution paths are bound by implementation evidence and source fingerprint.",
+    "REQ_PARITY_001": "PASS: stock-compatible parity evidence reports max absolute error 0.0 and zero changed argmax voxels.",
+    "REQ_MODALITY_001": "PASS: no-T2 class-4 competition is removed and no-T2 edema-owned calls/supervision/gradients are zero; scar/edema modality ownership remains contract-faithful.",
+    "REQ_INFERENCE_001": "PASS: canonical tile-local full-volume inference aggregates base evidence and applies global extent/wall bias once; full-support pseudo-tiling is rejected.",
+    "REQ_LOSS_001": "PASS: fixed loss set and weights are present with eligible-row/voxel normalization; independent verifier oracles close prior dilution findings.",
+    "REQ_RUNTIME_001": "PASS: zero-credit runtime probes are finite and checkpoint schema-v4 exact-resume evidence restores optimizer/scheduler/RNG/next-step state without formal training.",
+    "REQ_VERIFIER_001": "PASS: Controller, Verifier and Executor authority/session separation remains intact; verifier findings are contract-bound rather than self-authored scientific requirements."
+  },
+  "verifier_threshold_audit": {
+    "decision": "NO_VERIFIER_SCIENTIFIC_OVERREACH_FOUND",
+    "note": "The executable verifier's 1e-6/1e-5 comparison tolerances are deterministic numerical tolerances used to test contract-stated parity/zero/formula semantics, not new model-quality or scientific thresholds. The real-CNN single-context versus forced-tile-context difference is explicitly diagnostic-only."
+  },
+  "executor_test_awareness_audit": {
+    "decision": "NO_TEST_AWARE_BUSINESS_LOGIC_FOUND",
+    "note": "The implementation exposes named evidence-disable hooks for verifier interventions, but they zero/remove the same ordinary-path evidence contributions and are independently checked against verifier-owned source removal; no known-bad ID, mutation name, fixture ID or alternate test-only output path was found in the reviewed implementation/runtime sources."
+  },
+  "nonblocking_observations": [
+    {
+      "observation_id": "FINAL_CRITIC_SOURCE_SNAPSHOT_COVERAGE_DEBT",
+      "classification": "PROVENANCE_BINDING_GAP",
+      "blocking": false,
+      "owner_role": "controller",
+      "observation": "SOURCE_SNAPSHOT uses a narrower implementation critical-source list than the semantic implementation_source_manifest. For this review target, REVIEW_BUNDLE -> implementation_fingerprint -> source_manifest binds the wider semantic source set, Planner independently inspected the omitted high-risk files, and the Final Critic found no semantic source change requiring heavy re-verification. Future reusable v3 should derive the review-target implementation digest from one canonical semantic source manifest."
+    },
+    {
+      "observation_id": "FINAL_CRITIC_FROZEN_CONTRACT_PRECEDES_FINAL_CRITIC_CONTROL_PLANE",
+      "classification": "OPERATIONAL_FAILURE",
+      "blocking": false,
+      "owner_role": "controller",
+      "observation": "FROZEN_CONTRACT section 17 reflects the older Planner-PASS-to-human-gate lifecycle. The later Final Critic control-plane overlay tightens process without changing scientific architecture, data, loss, evaluation or resource authorization, so it is not treated as silent scientific contract weakening or a reason to invalidate the stable review target."
+    }
+  ],
+  "visual_review": {
+    "status": "PASS",
+    "sources_reviewed": [
+      "SRR-v2",
+      "SRR-v2.5",
+      "SRR-v3",
+      "CARE-MMRD",
+      "CARE-SRR-Cascade",
+      "CARE-DG",
+      "CARE-ARC",
+      "CARE-PRISM",
+      "CARE-MyoWall-IF",
+      "MoSAIC",
+      "CARE-ASE"
+    ],
+    "current_design_consistency": "CARE-ASE remains the asymmetric final design: a stock-compatible full-volume trunk with LGE-driven scar localization/reconstruction, T2-dependent edema reconstruction, soft anatomy/context support, conditional six-/five-class competition, and no resurrection of the older dictionary/prototype/hard-ROI designs forbidden by the frozen contract."
+  },
+  "review_target_identity_unchanged": true,
+  "heavy_verifier_rerun_requested": false,
+  "runtime_or_model_probe_rerun_requested": false,
+  "formal_training_authorized": false,
+  "outer_access_authorized": false,
+  "deployment_authorized": false,
+  "next_action": "CONTROLLER_MECHANICALLY_ROUTE_CRITIC_FINAL_PASS_TO_AWAIT_HUMAN_DECISION",
+  "created_utc": "2026-08-11T15:36:35Z"
+}
