@@ -427,10 +427,11 @@ def validate_logical_chunk_invocation(
         raise ValueError("CARE-ASE R2 chunk must satisfy 0 <= start < end <= 14000")
     logical_chunk_start = (int(start_step) // 2000) * 2000
     logical_chunk_end = logical_chunk_start + 2000
+    initial_span = int(end_step) - int(start_step)
     if not allow_short_smoke and not resume_checkpoint_present and (
-        int(start_step) % 2000 != 0 or (int(end_step) - int(start_step)) != 2000
+        int(start_step) % 2000 != 0 or initial_span not in {1000, 2000}
     ):
-        raise ValueError("initial formal CARE-ASE R2 chunk must start on a 2000-step boundary and span 2000 steps")
+        raise ValueError("initial formal CARE-ASE chunk must start on a 2000-step boundary and span 1000 or 2000 steps")
     if not allow_short_smoke and resume_checkpoint_present and int(end_step) != int(logical_chunk_end):
         raise ValueError("formal resume must continue the original logical 2000-step chunk remainder")
     return {"logical_chunk_start": int(logical_chunk_start), "logical_chunk_end": int(logical_chunk_end)}
@@ -2694,7 +2695,7 @@ def main() -> int:
             refresh_chunk_lock(lock_dir)
             heartbeat.check()
 
-            if (step + 1) % 250 == 0 or (step + 1) == int(args.end_step):
+            if (step + 1) % 1000 == 0 or (step + 1) == int(args.end_step):
                 next_descriptor = sampler.peek_descriptor_bundle_for_step(step + 1) if (step + 1) < 14000 else None
                 sampler_state = sampler.state_dict(next_descriptor=next_descriptor)
                 ckpt_name = "checkpoint_step14000.pt" if (step + 1) == 14000 else f"checkpoint_step{step + 1:05d}.pt"
@@ -2710,7 +2711,7 @@ def main() -> int:
                     logical_chunk_start=int(logical_chunk_start),
                     logical_chunk_end=int(logical_chunk_end),
                     resume_invocation_start=int(args.start_step),
-                    checkpoint_reason="chunk_terminal" if (step + 1) == int(args.end_step) else "periodic_250",
+                    checkpoint_reason="chunk_terminal" if (step + 1) == int(args.end_step) else "periodic_1000",
                     next_batch_hash=sampler_state.get("next_batch_descriptor_sha256", "TRAINING_COMPLETE"),
                     loss_history_tail=history,
                     sampler_state=sampler_state,
