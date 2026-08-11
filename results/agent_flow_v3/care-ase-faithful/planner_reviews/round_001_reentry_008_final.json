@@ -1,0 +1,62 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_PLANNER_REVIEW",
+  "task_id": "care-ase-faithful",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "review_round": 1,
+  "review_reentry": "round_001_reentry_008",
+  "observed_state": "WAITING_FOR_EXTERNAL_GPT",
+  "decision": "PLANNER_REVISE_BOTH",
+  "review_identity_model": "STABLE_REVIEW_SNAPSHOT",
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "requirement_ledger_sha256": "376dbc8b1c8f1af585e0ca3c2b451b788ade164221805871fca5dfefd98fbcb7",
+  "review_target_id": "6c4440864230eab587326ad68bd95991040fdaf030ecfd46f734d36ee7e013be",
+  "source_snapshot_sha256": "27fc2afedabe8796df3091987169d991f983aaadba6f16ea64a62d34d4d7462d",
+  "review_bundle_sha256": "e05a34336aae2cff6905b246474297d7b047f55c21c01cf5f2ecd96c406502f9",
+  "stable_review_ci_run_id": 31472188826,
+  "stable_review_ci_status": "PASS",
+  "detailed_review_artifact": "results/agent_flow_v3/care-ase-faithful/planner_reviews/round_001_reentry_008.json",
+  "detailed_review_artifact_commit_sha": "ce76526bcd5a7b1261305057cd48fcc51975cd59",
+  "blocking_finding_ids": [
+    "ASE_R1_REENTRY8_EXECUTOR_EDema_INJURY_DICE_INELIGIBLE_ROW_DILUTION",
+    "ASE_R1_REENTRY8_EXECUTOR_CONDITIONAL_FINAL_FIXED_SUBGROUP_WEIGHT",
+    "ASE_R1_REENTRY8_VERIFIER_MISSES_ELIGIBLE_ROW_LOSS_DILUTION",
+    "ASE_R1_REENTRY8_CONTROLLER_STABLE_SNAPSHOT_SEMANTIC_SOURCE_COVERAGE"
+  ],
+  "prior_finding_closure": {
+    "ASE_R1_REENTRY7_EXECUTOR_CURRENT_RUNTIME_IDENTITY_STALE_AND_SELF_REFERENTIAL": "CLOSED_BY_STABLE_REVIEW_SNAPSHOT_POLICY",
+    "ASE_R1_REENTRY7_VERIFIER_DOES_NOT_GATE_CURRENT_RUNTIME_IDENTITY_TUPLE": "SUPERSEDED_BY_STABLE_REVIEW_SNAPSHOT_AND_LIGHTWEIGHT_BUNDLE_VALIDATION",
+    "ASE_R1_REENTRY7_CONTROLLER_FINAL_RUNTIME_TRANSACTION_STILL_STALE": "SUPERSEDED_BY_STABLE_REVIEW_SNAPSHOT"
+  },
+  "repair_prompts": {
+    "verifier": "automation/agent_flow_v3/tasks/care-ase-faithful/repairs/round_001_reentry_008_verifier.md",
+    "executor": "automation/agent_flow_v3/tasks/care-ase-faithful/repairs/round_001_reentry_008_executor.md"
+  },
+  "repair_prompt_commits": {
+    "verifier": "afd852733c4c6400d64a742fc23289470f1e5f34",
+    "executor": "a88404db32e198aaa3d3377eef5e7364d0b913fa"
+  },
+  "required_role_order": [
+    "VERIFIER_FIRST_ADD_ELIGIBLE_NORMALIZATION_ORACLES_AND_KNOWN_BADS",
+    "EXECUTOR_SECOND_REPAIR_LOSS_REDUCTIONS",
+    "CONTROLLER_REINTEGRATE_AND_REBUILD_ONE_SEMANTIC_SOURCE_SNAPSHOT_DIGEST",
+    "RUN_ONLY_REQUIRED_HEAVY_VERIFIER_AND_ONE_HOSTED_CI_FOR_CHANGED_SEMANTIC_SOURCES",
+    "LIGHTWEIGHT_REVIEW_BUNDLE_VALIDATION",
+    "RETURN_TO_PLANNER"
+  ],
+  "control_plane_observation": {
+    "final_critic_lifecycle_in_schema": false,
+    "planner_repo_prompt_still_legacy_transaction_oriented": true,
+    "blocking_for_current_repair": false,
+    "required_before_eventual_final_pass": true
+  },
+  "forbidden_actions_confirmed": [
+    "no Planner implementation edits",
+    "no Planner verifier edits",
+    "no formal training",
+    "no outer access",
+    "no develop-to-main merge",
+    "no Docker build/upload",
+    "no organizer email"
+  ],
+  "created_utc": "2026-08-11T09:05:48Z"
+}
