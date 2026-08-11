@@ -1638,6 +1638,7 @@ def save_care_ase_checkpoint(
     implementation_source_manifest_sha256: str | None = None,
     implementation_fingerprint_sha256: str | None = None,
     integration_commit_sha: str | None = None,
+    verifier_fingerprint_sha256: str | None = None,
     origin_main_sha: str | None = None,
     origin_main_at_review_request_sha: str | None = None,
     effective_contract_sha256: str | None = None,
@@ -1682,6 +1683,7 @@ def save_care_ase_checkpoint(
         "implementation_source_manifest_sha256": implementation_source_manifest_sha256 or critical_source_manifest_sha256 or code_hash or "UNSET",
         "implementation_fingerprint_sha256": implementation_fingerprint_sha256 or "UNSET",
         "integration_commit_sha": integration_commit_sha or formal_execution_checkout_commit_sha or review_packet_commit_sha or "UNSET",
+        "verifier_fingerprint_sha256": verifier_fingerprint_sha256 or "UNSET",
         "origin_main_sha": origin_main_sha or "UNSET",
         "origin_main_at_review_request_sha": origin_main_at_review_request_sha or origin_main_sha or "UNSET",
         "effective_contract_sha256": effective_contract_sha256 or "UNSET",
@@ -1831,7 +1833,9 @@ def load_care_ase_checkpoint(
     expected_request_nonce: str | None = None,
     expected_frozen_contract_sha256: str | None = None,
     expected_implementation_source_manifest_sha256: str | None = None,
+    expected_implementation_fingerprint_sha256: str | None = None,
     expected_integration_commit_sha: str | None = None,
+    expected_verifier_fingerprint_sha256: str | None = None,
 ) -> tuple[CAREASE, dict[str, Any]]:
     sidecar = path.with_suffix(path.suffix + ".sha256")
     if not sidecar.is_file():
@@ -1856,7 +1860,9 @@ def load_care_ase_checkpoint(
         "request_nonce": expected_request_nonce,
         "frozen_contract_sha256": expected_frozen_contract_sha256,
         "implementation_source_manifest_sha256": expected_implementation_source_manifest_sha256,
+        "implementation_fingerprint_sha256": expected_implementation_fingerprint_sha256,
         "integration_commit_sha": expected_integration_commit_sha,
+        "verifier_fingerprint_sha256": expected_verifier_fingerprint_sha256,
     }
     mismatched = [
         f"{field}:expected={expected} observed={payload.get(field)}"
@@ -1888,7 +1894,9 @@ def load_care_ase_checkpoint_for_training_resume(
     expected_request_nonce: str | None = None,
     expected_frozen_contract_sha256: str | None = None,
     expected_implementation_source_manifest_sha256: str | None = None,
+    expected_implementation_fingerprint_sha256: str | None = None,
     expected_integration_commit_sha: str | None = None,
+    expected_verifier_fingerprint_sha256: str | None = None,
 ) -> tuple[CAREASE, dict[str, Any]]:
     model, payload = load_care_ase_checkpoint(
         path,
@@ -1898,7 +1906,9 @@ def load_care_ase_checkpoint_for_training_resume(
         expected_request_nonce=expected_request_nonce,
         expected_frozen_contract_sha256=expected_frozen_contract_sha256,
         expected_implementation_source_manifest_sha256=expected_implementation_source_manifest_sha256,
+        expected_implementation_fingerprint_sha256=expected_implementation_fingerprint_sha256,
         expected_integration_commit_sha=expected_integration_commit_sha,
+        expected_verifier_fingerprint_sha256=expected_verifier_fingerprint_sha256,
     )
     if int(payload.get("fold", -1)) != int(requested_fold) or int(model.config.fold) != int(requested_fold):
         raise ValueError(f"training resume fold mismatch: requested={requested_fold} payload={payload.get('fold')} config={model.config.fold}")

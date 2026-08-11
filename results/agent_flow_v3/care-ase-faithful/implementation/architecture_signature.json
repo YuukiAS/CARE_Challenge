@@ -1,5 +1,5 @@
 {
-  "architecture_signature_sha256": "40bd0f0afd3e2f666b28639955befe8c1ed9a4033fe68b6833838113dd0f41a5",
+  "architecture_signature_sha256": "1b27f73118197b52728b418d69d8a663a3b609e3a40136d781561b0003dfc5e3",
   "canonical_module": "src.care_myocardium.models.care_ase.core",
   "canonical_package": "src/care_myocardium/models/care_ase",
   "contract_summary": {
@@ -1293,7 +1293,7 @@
   },
   "request_nonce": "care-ase-20260806T090955Z",
   "schema": "CARE_ASE_FAITHFUL_ARCHITECTURE_SIGNATURE_V1",
-  "source_manifest_sha256": "053f8116f064afb7e5b29d63cb03af2ead9d9327e7c756451b92038ed2447e2e",
+  "source_manifest_sha256": "de1c5ab27929fda6a6e193db1e0633a2f7dba5310c2ab560cc8fdeb4f2eccadc",
   "stock_checkpoint_path": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_final.pth",
   "stock_checkpoint_sha256": "8bceb20cae8920e87d43b14665a0db9dfd4f1204533d25a3cd6e40ad9de74111",
   "stock_parameter_byte_coverage": 1.0,

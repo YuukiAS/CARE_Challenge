@@ -172,7 +172,7 @@
     256
   ],
   "single_tile_path": "predict_care_ase_r2_full_volume_logits",
-  "single_vs_forced_multi_tile_decode_changed_voxels": 609,
+  "single_vs_forced_multi_tile_decode_changed_voxels": 613,
   "single_vs_forced_multi_tile_diff_policy": {
     "blocking": false,
     "contract_field_or_exact_clause": null,
@@ -181,14 +181,14 @@
     "logical_derivation": "The frozen contract requires one public inference API/settings, genuine tile-local forwards, and one post-aggregation global bias; it does not require real CNN logits under different receptive-field contexts to match at 1e-6.",
     "name": "real_care_ase_single_full_context_vs_forced_tile_local_diff"
   },
-  "single_vs_forced_multi_tile_max_abs_diff": 6.500570774078369,
-  "single_vs_forced_multi_tile_mean_abs_diff": 0.2816790044307709,
+  "single_vs_forced_multi_tile_max_abs_diff": 6.504088878631592,
+  "single_vs_forced_multi_tile_mean_abs_diff": 0.2816654443740845,
   "single_vs_forced_multi_tile_per_class_changed_voxels": {
-    "0": 247,
-    "1": 278,
+    "0": 249,
+    "1": 282,
     "2": 148,
     "3": 148,
-    "4": 302,
+    "4": 304,
     "5": 95
   },
   "split_sha256": "9c3e9f3b7e4565a5c3c2589ddbb913c78c0ad423f4265370585841c93c6f880a",

@@ -1651,6 +1651,9 @@ def evaluate_stage_event(
                 expected=action,
                 default_hours=default_wait_hours,
             )
+    elif task_id == "care-ase-faithful" and state in REVISION_STATES and care_ase_executor_needs_verifier_recheck:
+        decision = "CONTROLLER_UPDATE_REQUIRED"
+        action = "integrate scope-valid same-round Executor commit, then require independent Verifier receipt recheck"
     elif state in REVISION_STATES:
         decision = "HANDOFF_TO_WATCHER"
         action = "existing watcher resumes exact role sessions"
@@ -2511,7 +2514,11 @@ def validate_care_ase_verifier_frozen_for_executor_start(
     failures: list[str] = []
     if request.get("enabled") is not True:
         failures.append("request_enabled")
-    if current.get("state") != "VERIFIER_FROZEN":
+    current_state_allows_executor_integration = (
+        current.get("state") == "VERIFIER_FROZEN"
+        or care_ase_executor_after_integrated_verifier_repair_state(current)
+    )
+    if not current_state_allows_executor_integration:
         failures.append("current_state")
     if current.get("request_nonce") != request.get("request_nonce"):
         failures.append("request_nonce")
@@ -3020,7 +3027,11 @@ def validate_care_ase_executor_completion(
     failures = validate_role_plan_push_authority(role_plan)
     if request.get("enabled") is not True:
         failures.append("request_enabled")
-    if current.get("state") != "VERIFIER_FROZEN":
+    current_state_allows_executor_integration = (
+        current.get("state") == "VERIFIER_FROZEN"
+        or care_ase_executor_after_integrated_verifier_repair_state(current)
+    )
+    if not current_state_allows_executor_integration:
         failures.append("current_state")
     if current.get("request_nonce") != request.get("request_nonce"):
         failures.append("request_nonce")
@@ -3068,7 +3079,7 @@ def validate_care_ase_executor_completion(
             and care_ase_validation_failures_require_verifier_recheck(validation)
             and fingerprint.get("frozen_contract_sha256") == current.get("frozen_contract_sha256")
             and fingerprint.get("request_nonce") == current.get("request_nonce")
-            and fingerprint.get("verifier_fingerprint_sha256") == current.get("verifier_fingerprint_sha256")
+            and care_ase_implementation_verifier_binding_matches(fingerprint, evidence, current)
             and evidence.get("source_manifest_sha256") == fingerprint.get("source_manifest_sha256")
             and source_manifest.get("frozen_contract_sha256") == current.get("frozen_contract_sha256")
             and source_manifest.get("request_nonce") == current.get("request_nonce")
@@ -3108,7 +3119,7 @@ def validate_care_ase_executor_completion(
             scope_failures.append("fingerprint_frozen_contract_sha256")
         if fingerprint.get("request_nonce") != current.get("request_nonce"):
             scope_failures.append("fingerprint_request_nonce")
-        if fingerprint.get("verifier_fingerprint_sha256") != current.get("verifier_fingerprint_sha256"):
+        if not care_ase_implementation_verifier_binding_matches(fingerprint, evidence, current):
             scope_failures.append("fingerprint_verifier_fingerprint_sha256")
         if evidence.get("source_manifest_sha256") != fingerprint.get("source_manifest_sha256"):
             scope_failures.append("evidence_source_manifest_sha256")
@@ -3183,6 +3194,27 @@ def care_ase_executor_local_commit_pending_controller(args: argparse.Namespace, 
     return validate_role_commit_scope(changed_paths, executor) == []
 
 
+def care_ase_executor_after_integrated_verifier_repair_state(current: dict[str, Any]) -> bool:
+    """Allow same-round Executor integration after a PLANNER_REVISE_BOTH Verifier repair lands.
+
+    Reentry loops may require Verifier and Executor changes in the same Planner
+    round. Once Controller has integrated the Verifier repair and recorded a new
+    Verifier fingerprint, the state can still carry the Planner revision token so
+    the round remains attributable. That must not route back to the watcher or
+    relaunch Verifier when Executor has already produced a scope-valid commit.
+    """
+    state = current.get("state")
+    verifier_status = str(current.get("verifier_status") or "")
+    return bool(
+        state in {"PLANNER_REVISE_BOTH", "PLANNER_REVISE_EXECUTOR"}
+        and "VERIFIER_REPAIR_INTEGRATED" in verifier_status
+        and "PENDING_EXECUTOR" in verifier_status
+        and isinstance(current.get("verifier_branch_head_sha"), str)
+        and isinstance(current.get("verifier_fingerprint_sha256"), str)
+        and current.get("scientific_choice_required") is False
+    )
+
+
 def care_ase_fail_closed_requires_verifier_recheck(
     fail_closed: dict[str, Any],
     current: dict[str, Any],
@@ -3227,6 +3259,29 @@ def care_ase_implementation_result_status(result_path: Path) -> str | None:
         raw_status = stripped.split(":", 1)[1].strip()
         return raw_status.strip("`").strip()
     return None
+
+
+def care_ase_implementation_verifier_binding_matches(
+    fingerprint: dict[str, Any],
+    evidence: dict[str, Any],
+    current: dict[str, Any],
+) -> bool:
+    expected = current.get("verifier_fingerprint_sha256")
+    if not isinstance(expected, str) or not expected:
+        return False
+    if fingerprint.get("verifier_fingerprint_sha256") == expected:
+        return True
+    current_runtime = evidence.get("current_runtime_identity")
+    if not isinstance(current_runtime, dict):
+        current_runtime = {}
+    return bool(
+        fingerprint.get("fingerprint_scope") == "immutable_source_only_excludes_post_integration_runtime_artifacts"
+        and evidence.get("verifier_fingerprint_sha256") == expected
+        and current_runtime.get("verifier_fingerprint_sha256") == expected
+        and evidence.get("implementation_fingerprint_sha256") == fingerprint.get("implementation_fingerprint_sha256")
+        and evidence.get("immutable_implementation_fingerprint_sha256")
+        == fingerprint.get("immutable_implementation_fingerprint_sha256")
+    )
 
 
 def care_ase_validation_failures_require_verifier_recheck(validation: dict[str, Any]) -> bool:
@@ -3602,7 +3657,7 @@ def apply_care_ase_executor_scope_completion_verifier_recheck_update(
         "frozen_contract_sha256": current.get("frozen_contract_sha256"),
         "created_utc": now(),
         "state_transition": {
-            "from": "VERIFIER_FROZEN",
+            "from": current.get("state"),
             "through": ["INTEGRATION_RUNNING"],
             "to": "VERIFIER_RECHECK_REQUIRED",
         },
@@ -4215,7 +4270,6 @@ def validate_care_ase_verifier_recheck_completion(
     required = {
         "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json",
         "results/agent_flow_v3/care-ase-faithful/verification/transaction_gate_receipt.json",
-        "results/agent_flow_v3/care-ase-faithful/verification/integrated_implementation_validation_result.json",
     }
     missing = sorted(required.difference(changed_paths))
     if missing:
@@ -4649,7 +4703,14 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
         care_ase_executor_local_commit_pending_controller_update = False
         care_ase_verifier_recheck_complete = False
         care_ase_verifier_recheck_local_artifacts = False
-        if task_id == "care-ase-faithful" and current.get("state") == "VERIFIER_FROZEN":
+        care_ase_executor_integration_state = (
+            task_id == "care-ase-faithful"
+            and (
+                current.get("state") == "VERIFIER_FROZEN"
+                or care_ase_executor_after_integrated_verifier_repair_state(current)
+            )
+        )
+        if care_ase_executor_integration_state:
             care_ase_executor_complete = care_ase_executor_completion_available(args, current)
             if not care_ase_executor_complete:
                 care_ase_executor_needs_verifier_recheck = care_ase_executor_scope_complete_pending_verifier_recheck_available(args, current)
@@ -4744,7 +4805,7 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
                 request=request,
                 current=current,
             )
-            if ready:
+            if ready or care_ase_executor_needs_verifier_recheck:
                 processed = remove_stage_processed_event(event_key, processed)
         visual_final = None
         visual_final_path = f"results/agent_flow_v3/{task_id}/visual_smoke_final.json"
@@ -4853,6 +4914,7 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
             event["decision"] == "CONTROLLER_UPDATE_REQUIRED"
             and task_id == "care-ase-faithful"
             and event["state"] in {"VERIFIER_RUNNING", "PLANNER_REVISE_VERIFIER", "PLANNER_REVISE_BOTH"}
+            and not care_ase_executor_needs_verifier_recheck
         ):
             try:
                 event["action_result"] = apply_care_ase_verifier_freeze_controller_update(
@@ -4875,7 +4937,10 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
         elif (
             event["decision"] == "CONTROLLER_UPDATE_REQUIRED"
             and task_id == "care-ase-faithful"
-            and event["state"] == "VERIFIER_FROZEN"
+            and (
+                event["state"] == "VERIFIER_FROZEN"
+                or (event["state"] in REVISION_STATES and care_ase_executor_needs_verifier_recheck)
+            )
             and care_ase_executor_needs_verifier_recheck
         ):
             try:
