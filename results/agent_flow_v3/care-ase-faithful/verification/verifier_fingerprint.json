@@ -1,5 +1,5 @@
 {
-  "created_utc": "2026-08-11T06:27:03Z",
+  "created_utc": "2026-08-11T07:00:10Z",
   "current_reviewed_implementation_expected_fail_closed": true,
   "excluded_runtime_evidence": [
     "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json",
@@ -12,7 +12,7 @@
     "results/agent_flow_v3/care-ase-faithful/verification/verifier_local_commands_recorded_in_manifests.json"
   ],
   "executable_verifier_production_exit_code": 2,
-  "executable_verifier_receipt_sha256": "1bc71758e4a31f2c6af2500bf0a5410a63cbc82ecc12d8b0e96309a863f6c39d",
+  "executable_verifier_receipt_sha256": "1eaa4671be77aa558859da8a9ac3feb42a3e1b7c7df0d291c4ead909c08cd024",
   "file_hashes": {
     "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
     "tests/care_ase_faithful/test_verifier_package.py": "870558fe647cbc42bc0fb1f37bd753aa97baf788e39d42f43c20f6ba685d2bf4",
@@ -40,13 +40,13 @@
     "same_frozen_verifier_fingerprint_for_distinct_runtime_tuple": true
   },
   "request_nonce": "care-ase-20260806T090955Z",
-  "reviewed_integration_sha": "cbafd7aa18b89c11f10e9663fa3cc1683192fa48",
+  "reviewed_integration_sha": "23ae44523fae133e3e52d8347d8a2445475f604b",
   "runtime_evidence_excluded_from_fingerprint": true,
   "runtime_mutation_all_nonzero": true,
   "runtime_mutation_count": 36,
   "schema": "CARE_ASE_FAITHFUL_VERIFIER_FINGERPRINT_V1",
   "task_id": "care-ase-faithful",
-  "transaction_fingerprint_sha256": "a89a8bdd527bf9d216628e830ba9ae5fa9cde5d3a014172afb9d9cf4b2969822",
+  "transaction_fingerprint_sha256": "b4c6a299e306ebadf7d044bc536721fffc27e745ec7f7b8e3dc4da34b3293e13",
   "verifier_source_file_hashes": {
     "tests/care_ase_faithful/test_verifier_package.py": "870558fe647cbc42bc0fb1f37bd753aa97baf788e39d42f43c20f6ba685d2bf4",
     "validators/care_ase_faithful/build_verification_artifacts.py": "575eae28a20992fa62d649e39ea965d4d863f96f51069e7b3489d9f745431219",
