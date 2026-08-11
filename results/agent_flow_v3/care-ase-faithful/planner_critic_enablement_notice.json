@@ -1,0 +1,21 @@
+{
+  "ci_run_id": 31472188826,
+  "ci_run_url": "https://github.com/YuukiAS/CARE_Challenge/actions/runs/31472188826",
+  "ci_status": "PASS",
+  "created_utc": "2026-08-11T08:16:34Z",
+  "develop_sha": "2ec2b9f12cbd050edac2ae84f156d5379572ce2b",
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "notifier_terminal_email_not_sent_reason": "Existing goal notifier only sends complete/blocked terminal events; this is a nonterminal Planner/Critic enablement notice.",
+  "notifier_terminal_email_sent": false,
+  "planner_critic_enablement": "READY_TO_OPEN",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "review_bundle_path": "results/agent_flow_v3/care-ase-faithful/REVIEW_BUNDLE.json",
+  "review_bundle_sha256": "e05a34336aae2cff6905b246474297d7b047f55c21c01cf5f2ecd96c406502f9",
+  "review_identity_model": "STABLE_REVIEW_SNAPSHOT",
+  "review_target_id": "6c4440864230eab587326ad68bd95991040fdaf030ecfd46f734d36ee7e013be",
+  "schema": "CARE_ASE_FAITHFUL_PLANNER_CRITIC_ENABLEMENT_NOTICE_V1",
+  "source_snapshot_path": "automation/agent_flow_v3/tasks/care-ase-faithful/SOURCE_SNAPSHOT.json",
+  "source_snapshot_sha256": "27fc2afedabe8796df3091987169d991f983aaadba6f16ea64a62d34d4d7462d",
+  "state": "WAITING_FOR_EXTERNAL_GPT",
+  "task_id": "care-ase-faithful"
+}
