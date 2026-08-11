@@ -1,5 +1,5 @@
 {
-  "bundle_payload_sha256": "6c0312c819b80686e08af549d3e4ec2690b17455c4375462620bcd3c17270a83",
+  "bundle_payload_sha256": "e3807f22c155a3045bdae4698129975632c3638537f0b476c8d22dc13f9ca5c6",
   "fold": 0,
   "formal_user_decision_permit_provenance": {
     "decision": "NO_FORMAL_TRAINING_AUTHORIZED_FOR_CARE_ASE_FAITHFUL",
@@ -15,7 +15,7 @@
   "immutable_implementation_fingerprint_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
   "implementation_fingerprint_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
   "implementation_source_manifest_sha256": "de1c5ab27929fda6a6e193db1e0633a2f7dba5310c2ab560cc8fdeb4f2eccadc",
-  "integration_commit_sha": "8c3bf85655d6008d2e64c9534f40bb0e6f629f33",
+  "integration_commit_sha": "b41e25827329a14ed8b77ae7e7b1fb1711fc8110",
   "probe_root": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor/results/agent_flow_v3/care-ase-faithful/implementation/runtime_zero_credit",
   "request_nonce": "care-ase-20260806T090955Z",
   "result_root": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor/results/agent_flow_v3/care-ase-faithful/implementation/formal_runtime",
