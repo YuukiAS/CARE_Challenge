@@ -608,6 +608,15 @@ def prompt_candidate_paths(repo: Path, task_id: str, role: str, current: dict[st
     return [repo / rel_path for rel_path in prompt_candidate_rel_paths(task_id, role, current)]
 
 
+def planner_review_binding_value(review: dict[str, Any], key: str) -> Any:
+    if key in review:
+        return review.get(key)
+    binding = review.get("binding")
+    if isinstance(binding, dict):
+        return binding.get(key)
+    return None
+
+
 def planner_review_artifact_event(
     *,
     repo: Path,
@@ -641,9 +650,10 @@ def planner_review_artifact_event(
             continue
         if review.get("review_round") != current.get("review_round"):
             continue
-        if review.get("frozen_contract_sha256") != current.get("frozen_contract_sha256"):
+        review_contract_sha = planner_review_binding_value(review, "frozen_contract_sha256")
+        if review_contract_sha != current.get("frozen_contract_sha256"):
             continue
-        if review.get("frozen_contract_sha256") != request.get("frozen_contract_sha256"):
+        if review_contract_sha != request.get("frozen_contract_sha256"):
             continue
         if current.get("review_identity_model") == "STABLE_REVIEW_SNAPSHOT":
             required_stable_bindings = (
@@ -651,19 +661,23 @@ def planner_review_artifact_event(
                 "review_target_id",
                 "review_bundle_sha256",
             )
-            if any(not isinstance(current.get(key), str) or review.get(key) != current.get(key) for key in required_stable_bindings):
+            if any(
+                not isinstance(current.get(key), str) or planner_review_binding_value(review, key) != current.get(key)
+                for key in required_stable_bindings
+            ):
                 continue
-            if not SHA256_RE.fullmatch(str(review.get("requirement_ledger_sha256"))):
+            if not SHA256_RE.fullmatch(str(planner_review_binding_value(review, "requirement_ledger_sha256"))):
                 continue
-            if not SHA256_RE.fullmatch(str(review.get("review_target_id"))):
+            if not SHA256_RE.fullmatch(str(planner_review_binding_value(review, "review_target_id"))):
                 continue
-            if not SHA256_RE.fullmatch(str(review.get("review_bundle_sha256"))):
+            if not SHA256_RE.fullmatch(str(planner_review_binding_value(review, "review_bundle_sha256"))):
                 continue
-            if review.get("ci_pass") is not True and review.get("ci_status") not in {"PASS", "SUCCESS", "success"}:
+            ci_status = review.get("ci_status") or planner_review_binding_value(review, "stable_review_ci_status")
+            if review.get("ci_pass") is not True and ci_status not in {"PASS", "SUCCESS", "success"}:
                 continue
         else:
             if any(
-                current.get(key) is not None and review.get(key) != current.get(key)
+                current.get(key) is not None and planner_review_binding_value(review, key) != current.get(key)
                 for key in (
                     "integration_commit_sha",
                     "implementation_fingerprint_sha256",
@@ -686,21 +700,21 @@ def planner_review_artifact_event(
             "planner_decision": decision,
             "planner_review_artifact": review_path,
             "planner_review_artifact_commit_sha": remote_sha,
-            "planner_review_input_integration_sha": review.get("integration_commit_sha"),
-            "planner_review_input_implementation_fingerprint_sha256": review.get("implementation_fingerprint_sha256"),
-            "planner_review_input_verifier_fingerprint_sha256": review.get("verifier_fingerprint_sha256"),
-            "planner_review_input_requirement_ledger_sha256": review.get("requirement_ledger_sha256"),
-            "planner_review_input_review_target_id": review.get("review_target_id"),
-            "planner_review_input_review_bundle_sha256": review.get("review_bundle_sha256"),
+            "planner_review_input_integration_sha": planner_review_binding_value(review, "integration_commit_sha"),
+            "planner_review_input_implementation_fingerprint_sha256": planner_review_binding_value(review, "implementation_fingerprint_sha256"),
+            "planner_review_input_verifier_fingerprint_sha256": planner_review_binding_value(review, "verifier_fingerprint_sha256"),
+            "planner_review_input_requirement_ledger_sha256": planner_review_binding_value(review, "requirement_ledger_sha256"),
+            "planner_review_input_review_target_id": planner_review_binding_value(review, "review_target_id"),
+            "planner_review_input_review_bundle_sha256": planner_review_binding_value(review, "review_bundle_sha256"),
             "external_wait_closed_utc": now(),
         }
     )
     if current.get("review_identity_model") != "STABLE_REVIEW_SNAPSHOT":
         overlay.update(
             {
-                "integration_commit_sha": review.get("integration_commit_sha"),
-                "implementation_fingerprint_sha256": review.get("implementation_fingerprint_sha256"),
-                "verifier_fingerprint_sha256": review.get("verifier_fingerprint_sha256"),
+                "integration_commit_sha": planner_review_binding_value(review, "integration_commit_sha"),
+                "implementation_fingerprint_sha256": planner_review_binding_value(review, "implementation_fingerprint_sha256"),
+                "verifier_fingerprint_sha256": planner_review_binding_value(review, "verifier_fingerprint_sha256"),
             }
         )
     if decision in REVISION_STATES:

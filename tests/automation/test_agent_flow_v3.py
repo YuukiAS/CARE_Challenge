@@ -2303,6 +2303,85 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             self.assertEqual(receipt["target_roles"], ["executor"])
             self.assertIn("round_001_reentry_002.json", receipt["event_key"])
 
+    def test_waiting_watcher_accepts_stable_review_snapshot_nested_binding(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            repo = root / "repo"
+            repo.mkdir()
+            subprocess.check_call(["git", "init"], cwd=repo, stdout=subprocess.DEVNULL)
+            subprocess.check_call(["git", "config", "user.email", "test@example.invalid"], cwd=repo)
+            subprocess.check_call(["git", "config", "user.name", "Agent Flow Test"], cwd=repo)
+            review_dir = repo / "results/agent_flow_v3/portable-task/planner_reviews"
+            repair_dir = repo / "automation/agent_flow_v3/tasks/portable-task/repairs"
+            review_dir.mkdir(parents=True)
+            repair_dir.mkdir(parents=True)
+            (repair_dir / "round_001_reentry_003_verifier.md").write_text("verifier repair\n", encoding="utf-8")
+            review_path = review_dir / "round_001_reentry_003.json"
+            review_path.write_text(
+                json.dumps(
+                    {
+                        "schema": "CARE_AGENT_FLOW_V3_PLANNER_REVIEW",
+                        "task_id": "portable-task",
+                        "request_nonce": "nonce-1",
+                        "review_round": 1,
+                        "review_reentry": "round_001_reentry_003",
+                        "decision": "PLANNER_REVISE_VERIFIER",
+                        "binding": {
+                            "review_identity_model": "STABLE_REVIEW_SNAPSHOT",
+                            "frozen_contract_sha256": "a" * 64,
+                            "requirement_ledger_sha256": "b" * 64,
+                            "review_target_id": "c" * 64,
+                            "review_bundle_sha256": "d" * 64,
+                            "stable_review_ci_status": "PASS",
+                        },
+                        "created_utc": "2026-08-11T09:05:48Z",
+                    }
+                ),
+                encoding="utf-8",
+            )
+            subprocess.check_call(["git", "add", "."], cwd=repo)
+            subprocess.check_call(["git", "commit", "-m", "nested stable planner review"], cwd=repo, stdout=subprocess.DEVNULL)
+            request = {
+                "schema": RUNTIME.SCHEMA,
+                "enabled": True,
+                "task_id": "portable-task",
+                "integration_branch": "develop",
+                "request_nonce": "nonce-1",
+                "frozen_contract_sha256": "a" * 64,
+            }
+            current = {
+                "schema": RUNTIME.SCHEMA,
+                "task_id": "portable-task",
+                "state": "WAITING_FOR_EXTERNAL_GPT",
+                "review_identity_model": "STABLE_REVIEW_SNAPSHOT",
+                "review_round": 1,
+                "request_nonce": "nonce-1",
+                "frozen_contract_sha256": "a" * 64,
+                "requirement_ledger_sha256": "b" * 64,
+                "review_target_id": "c" * 64,
+                "review_bundle_sha256": "d" * 64,
+                "integration_commit_sha": "e" * 40,
+            }
+            overlay = RUNTIME.planner_review_artifact_event(
+                repo=repo,
+                ref="HEAD",
+                task_id="portable-task",
+                request=request,
+                current=current,
+                remote_sha="2" * 40,
+            )
+            self.assertIsNotNone(overlay)
+            assert overlay is not None
+            self.assertEqual(overlay["state"], "PLANNER_REVISE_VERIFIER")
+            self.assertEqual(overlay["integration_commit_sha"], "e" * 40)
+            self.assertEqual(overlay["planner_review_input_requirement_ledger_sha256"], "b" * 64)
+            self.assertEqual(overlay["planner_review_input_review_target_id"], "c" * 64)
+            self.assertEqual(overlay["planner_review_input_review_bundle_sha256"], "d" * 64)
+            self.assertEqual(
+                overlay["repair_prompts"]["verifier"],
+                "automation/agent_flow_v3/tasks/portable-task/repairs/round_001_reentry_003_verifier.md",
+            )
+
     def test_waiting_watcher_rejects_wrong_stable_review_target(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
