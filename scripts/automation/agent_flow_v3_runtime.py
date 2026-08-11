@@ -645,18 +645,36 @@ def planner_review_artifact_event(
             continue
         if review.get("frozen_contract_sha256") != request.get("frozen_contract_sha256"):
             continue
-        for key in (
-            "integration_commit_sha",
-            "implementation_fingerprint_sha256",
-            "verifier_fingerprint_sha256",
-        ):
-            if current.get(key) is not None and review.get(key) != current.get(key):
-                break
-        else:
-            decision = review.get("decision")
-            if decision not in {*REVISION_STATES.keys(), "PLANNER_PASS"}:
+        if current.get("review_identity_model") == "STABLE_REVIEW_SNAPSHOT":
+            required_stable_bindings = (
+                "requirement_ledger_sha256",
+                "review_target_id",
+                "review_bundle_sha256",
+            )
+            if any(not isinstance(current.get(key), str) or review.get(key) != current.get(key) for key in required_stable_bindings):
                 continue
-            candidates.append((str(review.get("created_utc") or ""), rel_path, review))
+            if not SHA256_RE.fullmatch(str(review.get("requirement_ledger_sha256"))):
+                continue
+            if not SHA256_RE.fullmatch(str(review.get("review_target_id"))):
+                continue
+            if not SHA256_RE.fullmatch(str(review.get("review_bundle_sha256"))):
+                continue
+            if review.get("ci_pass") is not True and review.get("ci_status") not in {"PASS", "SUCCESS", "success"}:
+                continue
+        else:
+            if any(
+                current.get(key) is not None and review.get(key) != current.get(key)
+                for key in (
+                    "integration_commit_sha",
+                    "implementation_fingerprint_sha256",
+                    "verifier_fingerprint_sha256",
+                )
+            ):
+                continue
+        decision = review.get("decision")
+        if decision not in {*REVISION_STATES.keys(), "PLANNER_PASS"}:
+            continue
+        candidates.append((str(review.get("created_utc") or ""), rel_path, review))
     if not candidates:
         return None
     _, review_path, review = sorted(candidates, key=lambda item: (item[0], item[1]))[-1]
@@ -671,12 +689,20 @@ def planner_review_artifact_event(
             "planner_review_input_integration_sha": review.get("integration_commit_sha"),
             "planner_review_input_implementation_fingerprint_sha256": review.get("implementation_fingerprint_sha256"),
             "planner_review_input_verifier_fingerprint_sha256": review.get("verifier_fingerprint_sha256"),
-            "integration_commit_sha": review.get("integration_commit_sha"),
-            "implementation_fingerprint_sha256": review.get("implementation_fingerprint_sha256"),
-            "verifier_fingerprint_sha256": review.get("verifier_fingerprint_sha256"),
+            "planner_review_input_requirement_ledger_sha256": review.get("requirement_ledger_sha256"),
+            "planner_review_input_review_target_id": review.get("review_target_id"),
+            "planner_review_input_review_bundle_sha256": review.get("review_bundle_sha256"),
             "external_wait_closed_utc": now(),
         }
     )
+    if current.get("review_identity_model") != "STABLE_REVIEW_SNAPSHOT":
+        overlay.update(
+            {
+                "integration_commit_sha": review.get("integration_commit_sha"),
+                "implementation_fingerprint_sha256": review.get("implementation_fingerprint_sha256"),
+                "verifier_fingerprint_sha256": review.get("verifier_fingerprint_sha256"),
+            }
+        )
     if decision in REVISION_STATES:
         review_reentry = review.get("review_reentry")
         repair_prompts: dict[str, str] = {}
@@ -951,7 +977,10 @@ def evaluate_watcher_event(
     if not isinstance(current.get("review_round"), int) or current.get("review_round") < 0:
         failures.append("review_round")
     state = current.get("state")
-    event_binding = current.get("planner_review_artifact") or integration_sha
+    if current.get("review_identity_model") == "STABLE_REVIEW_SNAPSHOT":
+        event_binding = current.get("planner_review_artifact") or current.get("review_target_id")
+    else:
+        event_binding = current.get("planner_review_artifact") or integration_sha
     event_key = f"{args.task_id}:{current.get('request_nonce')}:{current.get('review_round')}:{state}:{event_binding}"
     processed = set(local_state.get("processed_events", []))
     target_override = current.get("watcher_target_roles_override")

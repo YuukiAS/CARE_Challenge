@@ -2130,6 +2130,172 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             self.assertEqual(receipt["resume_commands"][0]["role"], "verifier")
             self.assertIn("round_001_reentry_001.json", receipt["event_key"])
 
+    def test_waiting_watcher_accepts_stable_review_snapshot_artifact_without_integration_sha(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            repo = root / "repo"
+            repo.mkdir()
+            subprocess.check_call(["git", "init"], cwd=repo, stdout=subprocess.DEVNULL)
+            subprocess.check_call(["git", "config", "user.email", "test@example.invalid"], cwd=repo)
+            subprocess.check_call(["git", "config", "user.name", "Agent Flow Test"], cwd=repo)
+            task_dir = repo / "automation/agent_flow_v3/tasks/portable-task"
+            review_dir = repo / "results/agent_flow_v3/portable-task/planner_reviews"
+            repair_dir = task_dir / "repairs"
+            review_dir.mkdir(parents=True)
+            repair_dir.mkdir(parents=True)
+            (repair_dir / "round_001_reentry_002_executor.md").write_text("executor repair\n", encoding="utf-8")
+            review_path = review_dir / "round_001_reentry_002.json"
+            review_path.write_text(
+                json.dumps(
+                    {
+                        "schema": "CARE_AGENT_FLOW_V3_PLANNER_REVIEW",
+                        "task_id": "portable-task",
+                        "request_nonce": "nonce-1",
+                        "review_round": 1,
+                        "review_reentry": "round_001_reentry_002",
+                        "decision": "PLANNER_REVISE_EXECUTOR",
+                        "frozen_contract_sha256": "a" * 64,
+                        "requirement_ledger_sha256": "b" * 64,
+                        "review_target_id": "c" * 64,
+                        "review_bundle_sha256": "d" * 64,
+                        "ci_pass": True,
+                        "created_utc": "2026-08-11T08:30:00Z",
+                    }
+                ),
+                encoding="utf-8",
+            )
+            subprocess.check_call(["git", "add", "."], cwd=repo)
+            subprocess.check_call(["git", "commit", "-m", "stable planner review"], cwd=repo, stdout=subprocess.DEVNULL)
+            request = {
+                "schema": RUNTIME.SCHEMA,
+                "enabled": True,
+                "task_id": "portable-task",
+                "integration_branch": "develop",
+                "request_nonce": "nonce-1",
+                "frozen_contract_sha256": "a" * 64,
+            }
+            current = {
+                "schema": RUNTIME.SCHEMA,
+                "task_id": "portable-task",
+                "state": "WAITING_FOR_EXTERNAL_GPT",
+                "review_identity_model": "STABLE_REVIEW_SNAPSHOT",
+                "review_round": 1,
+                "request_nonce": "nonce-1",
+                "frozen_contract_sha256": "a" * 64,
+                "requirement_ledger_sha256": "b" * 64,
+                "review_target_id": "c" * 64,
+                "review_bundle_sha256": "d" * 64,
+                "integration_commit_sha": "e" * 40,
+                "implementation_fingerprint_sha256": "f" * 64,
+                "verifier_fingerprint_sha256": "1" * 64,
+            }
+            overlay = RUNTIME.planner_review_artifact_event(
+                repo=repo,
+                ref="HEAD",
+                task_id="portable-task",
+                request=request,
+                current=current,
+                remote_sha="2" * 40,
+            )
+            self.assertIsNotNone(overlay)
+            assert overlay is not None
+            self.assertEqual(overlay["state"], "PLANNER_REVISE_EXECUTOR")
+            self.assertEqual(overlay["integration_commit_sha"], "e" * 40)
+            self.assertEqual(overlay["planner_review_input_review_target_id"], "c" * 64)
+            self.assertEqual(overlay["planner_review_input_review_bundle_sha256"], "d" * 64)
+
+            thread_file = root / "executor_thread_id"
+            thread_file.write_text("executor-thread\n", encoding="utf-8")
+            role_plan = root / "role_plan.json"
+            role_plan.write_text(
+                json.dumps(
+                    {
+                        "roles": {
+                            "executor": {
+                                "thread_id_file": str(thread_file),
+                                "codex_home": str(root / "executor_home"),
+                                "worktree": str(root / "executor_worktree"),
+                            }
+                        }
+                    }
+                ),
+                encoding="utf-8",
+            )
+            args = argparse.Namespace(
+                task_id="portable-task",
+                branch="develop",
+                role_plan=str(role_plan),
+                codex_bin="/opt/codex",
+                state_root=root / "state",
+                session_receipt_root=str(root / "missing_receipts"),
+                dry_run=True,
+                thread_id_override="",
+            )
+            receipt = RUNTIME.evaluate_watcher_event(args, request, overlay, {"processed_events": []})
+            self.assertEqual(receipt["decision"], "DRY_RUN_RESUME")
+            self.assertEqual(receipt["target_roles"], ["executor"])
+            self.assertIn("round_001_reentry_002.json", receipt["event_key"])
+
+    def test_waiting_watcher_rejects_wrong_stable_review_target(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            repo = root / "repo"
+            repo.mkdir()
+            subprocess.check_call(["git", "init"], cwd=repo, stdout=subprocess.DEVNULL)
+            subprocess.check_call(["git", "config", "user.email", "test@example.invalid"], cwd=repo)
+            subprocess.check_call(["git", "config", "user.name", "Agent Flow Test"], cwd=repo)
+            review_dir = repo / "results/agent_flow_v3/portable-task/planner_reviews"
+            review_dir.mkdir(parents=True)
+            (review_dir / "round_001.json").write_text(
+                json.dumps(
+                    {
+                        "schema": "CARE_AGENT_FLOW_V3_PLANNER_REVIEW",
+                        "task_id": "portable-task",
+                        "request_nonce": "nonce-1",
+                        "review_round": 1,
+                        "decision": "PLANNER_PASS",
+                        "frozen_contract_sha256": "a" * 64,
+                        "requirement_ledger_sha256": "b" * 64,
+                        "review_target_id": "9" * 64,
+                        "review_bundle_sha256": "d" * 64,
+                        "ci_pass": True,
+                        "created_utc": "2026-08-11T08:31:00Z",
+                    }
+                ),
+                encoding="utf-8",
+            )
+            subprocess.check_call(["git", "add", "."], cwd=repo)
+            subprocess.check_call(["git", "commit", "-m", "wrong stable target"], cwd=repo, stdout=subprocess.DEVNULL)
+            request = {
+                "schema": RUNTIME.SCHEMA,
+                "enabled": True,
+                "task_id": "portable-task",
+                "integration_branch": "develop",
+                "request_nonce": "nonce-1",
+                "frozen_contract_sha256": "a" * 64,
+            }
+            current = {
+                "schema": RUNTIME.SCHEMA,
+                "task_id": "portable-task",
+                "state": "WAITING_FOR_EXTERNAL_GPT",
+                "review_identity_model": "STABLE_REVIEW_SNAPSHOT",
+                "review_round": 1,
+                "request_nonce": "nonce-1",
+                "frozen_contract_sha256": "a" * 64,
+                "requirement_ledger_sha256": "b" * 64,
+                "review_target_id": "c" * 64,
+                "review_bundle_sha256": "d" * 64,
+            }
+            overlay = RUNTIME.planner_review_artifact_event(
+                repo=repo,
+                ref="HEAD",
+                task_id="portable-task",
+                request=request,
+                current=current,
+                remote_sha="2" * 40,
+            )
+            self.assertIsNone(overlay)
+
     def test_reentry_event_without_exact_prompt_uses_planner_artifact_not_old_round_prompt(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
