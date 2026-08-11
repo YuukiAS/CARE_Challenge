@@ -6,7 +6,7 @@
     "zero_credit": true
   },
   "command_sha256": "424e3dad4d3810be87717ce1168e75868a6dcc80e532715a6e138e540b3704d4",
-  "created_utc": "2026-08-11T05:32:20Z",
+  "created_utc": "2026-08-11T06:55:04Z",
   "docker_or_upload": false,
   "executed": true,
   "exit_code": 0,
@@ -38,8 +38,8 @@
       "wrong_verifier_fingerprint_rejected_before_forward": true
     },
     "bundle_path": "results/agent_flow_v3/care-ase-faithful/implementation/current_runtime_input_bundle.json",
-    "bundle_payload_sha256": "0aeeafed637e258b35842660047e0509ad21af52d81e41148860593bfd6ebc5b",
-    "bundle_sha256": "dd7ec002c03616d603b7fdc96d6d408003b38b3a56b344b719214ed4d62fede2",
+    "bundle_payload_sha256": "6c0312c819b80686e08af549d3e4ec2690b17455c4375462620bcd3c17270a83",
+    "bundle_sha256": "711041a60167dc26aab4e0bcdd3bc8ffaa684a8ca7c3bbc208fb3b811ade0174",
     "docker_or_upload": false,
     "fold": 0,
     "formal_training_started": false,
@@ -68,7 +68,7 @@
     "immutable_implementation_fingerprint_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
     "implementation_fingerprint_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
     "implementation_source_manifest_sha256": "de1c5ab27929fda6a6e193db1e0633a2f7dba5310c2ab560cc8fdeb4f2eccadc",
-    "integration_commit_sha": "c763346768501b20cd2401c34c5be1b78a34b299",
+    "integration_commit_sha": "8c3bf85655d6008d2e64c9534f40bb0e6f629f33",
     "outer_accessed": false,
     "probe_type": "zero_credit_current_runtime_identity_bundle_validation",
     "request_nonce": "care-ase-20260806T090955Z",
@@ -80,7 +80,7 @@
   "request_nonce": "care-ase-20260806T090955Z",
   "schema": "CARE_ASE_FAITHFUL_ZERO_CREDIT_PROBE_RECEIPT_V1",
   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "stdout_sha256": "3c718d77a4fcb15964c7f46dd51599f4808d7edfb9dfa4aed716f8cfa041451e",
+  "stdout_sha256": "91715f8e7758b627ce2c9ea3cc4fa743b36c4b28414250fade751d40ea22d77c",
   "task_id": "care-ase-faithful",
   "zero_credit": true
 }
