@@ -2536,7 +2536,12 @@ def validate_care_ase_verifier_frozen_for_executor_start(
         failures.append("verifier_freeze_receipt_missing")
         return failures
     freeze_sha = sha_bytes(freeze_raw.encode("utf-8"))
-    if current.get("verifier_freeze_receipt_sha256") and freeze_sha != current.get("verifier_freeze_receipt_sha256"):
+    provenance_rebind_start = current.get("state") == "PROVENANCE_REBIND_REQUIRED"
+    if (
+        current.get("verifier_freeze_receipt_sha256")
+        and freeze_sha != current.get("verifier_freeze_receipt_sha256")
+        and not provenance_rebind_start
+    ):
         failures.append("verifier_freeze_receipt_sha256")
     try:
         freeze = json.loads(freeze_raw)
