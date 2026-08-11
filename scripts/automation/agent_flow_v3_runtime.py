@@ -4988,6 +4988,7 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
             and task_id == "care-ase-faithful"
             and (
                 event["state"] == "VERIFIER_FROZEN"
+                or event["state"] == "PROVENANCE_REBIND_REQUIRED"
                 or (event["state"] in REVISION_STATES and care_ase_executor_needs_verifier_recheck)
             )
             and care_ase_executor_needs_verifier_recheck
