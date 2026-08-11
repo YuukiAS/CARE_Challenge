@@ -37,7 +37,7 @@ Only Controller pushes `develop`. No role merges `develop` to `main` automatical
 - `schema.json`: state and request requirements.
 - `task_template.json`: reusable request template.
 - `ROLE_AUTHORITY_POLICY.md`: portable role authority, routing, human gate and
-  immutable transaction policy.
+  stable review snapshot policy.
 - `templates/`: portable project adapter templates for authority, requirement
   ledger, task profile and routing policy.
 - `tasks/<task_id>/REQUEST.json`: exact frozen task request.
@@ -49,6 +49,8 @@ Only Controller pushes `develop`. No role merges `develop` to `main` automatical
 - `scripts/automation/agent_flow_v3_runtime.py`: server-local helper for visual URL/SHA audit,
   role-session receipt validation, exact-session watcher checks, and the production
   watcher process.
+- `scripts/automation/agent_flow_v3_snapshot.py`: stable source snapshot,
+  review-bundle builder and lightweight review-bundle validator.
 - `.github/workflows/agent-flow-v3-ci.yml`: GitHub-hosted deterministic CI.
 
 ## Required session receipt
@@ -95,12 +97,47 @@ repair routes.
 
 GitHub Actions validates tracked state, role separation, SHA bindings, JSON structure, Python syntax and repository-safe unit tests. GPU, private data, hidden adversarial fixtures and Slurm checks remain server-local and must be represented by exact receipts for Planner review.
 
+CI is evidence for a stable review target, not part of the target identity.
+Controller merge commits, `CURRENT` commits and receipt commits are locators.
+They must not force a new heavy Verifier run when the source snapshot is
+unchanged.
+
+## Stable review snapshot
+
+Planner review binds to:
+
+```text
+request_nonce
+frozen_contract_sha
+requirement_ledger_sha
+review_target_id
+review_bundle_sha
+CI PASS
+```
+
+`review_target_id` is computed only from stable content: nonce, frozen contract
+SHA, requirement ledger SHA, implementation critical-source digest and verifier
+critical-source digest. Runtime evidence, verifier receipts and CI receipts are
+DAG children collected in `REVIEW_BUNDLE.json`.
+
+Incremental invalidation is required:
+
+```text
+IMPLEMENTATION_SOURCE_CHANGED -> runtime probes + heavy Verifier + CI
+VERIFIER_SOURCE_CHANGED -> Verifier tests/mutations, affected runtime probes, CI if repository-safe source changed
+CI_WORKFLOW_CHANGED -> CI only
+RECEIPT_OR_MANIFEST_ONLY_CHANGED -> lightweight bundle validator only
+CURRENT_OR_ROUTING_ONLY_CHANGED -> no heavy Verifier and no model/runtime probe
+DOC_ONLY_CHANGED -> no scientific evidence invalidation
+```
+
 Server-local v3 checks may run:
 
 ```bash
 python scripts/automation/agent_flow_v3_runtime.py audit-visual-sources --repo-root .
 python scripts/automation/agent_flow_v3_runtime.py validate-role-receipts --receipt <controller> --receipt <verifier> --receipt <executor>
 python scripts/automation/agent_flow_v3_runtime.py watcher-once --repo-root . --task-id <task_id> --dry-run
+python scripts/automation/agent_flow_v3_snapshot.py validate-review-bundle --repo-root . --bundle results/<task_id>/REVIEW_BUNDLE.json
 ```
 
 The watcher uses exact thread IDs and must not use `--last`. A dry-run receipt proves

@@ -1,0 +1,46 @@
+{
+  "created_utc": "2026-08-11T08:08:53Z",
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "git_locators": {
+    "branch": "local/controller/care-ase-faithful",
+    "head_sha": "f361cae38d2292b739df43a2bc38de0713be3f34",
+    "origin_develop_sha": "f361cae38d2292b739df43a2bc38de0713be3f34"
+  },
+  "identity_policy": {
+    "controller_merge_current_receipt_ci_commits_do_not_change_review_target_id": true,
+    "git_commits_are_locators_only": true,
+    "review_target_changes_only_when_contract_ledger_or_critical_source_content_changes": true
+  },
+  "implementation_critical_source": {
+    "digest_sha256": "1aca1e785d5b009278bb1a0a0c50186e2397086ed941b3f2d4e86f7c77265db7",
+    "file_hashes": {
+      "scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py": "1b4381cf0a2799464b52a0f739203587b1021ed3adb802fd3e9b55b67da65178",
+      "src/care_myocardium/models/care_ase/__init__.py": "1754cf65f68d7853a4ad393737404a1d339f745566beb15849d3272302b0d4d9",
+      "src/care_myocardium/models/care_ase/core.py": "94b104add2a6df5a5b851f5e04e9a420541699f2cbefa60f3f9f05f23b27e6aa",
+      "src/care_myocardium/training/care_ase_runtime.py": "3a6d74231ae7ec7adca5a2b91e54298634060f89158be62b1fbc106d27076ad7",
+      "src/care_myocardium/training/care_ase_trainer.py": "3a0e46eb12349a0bab462c5ea0037cf19523e96fdb58183ee5edc6cd5bc953c8"
+    }
+  },
+  "request_nonce": "care-ase-20260806T090955Z",
+  "requirement_ledger_path": "automation/agent_flow_v3/tasks/care-ase-faithful/REQUIREMENT_LEDGER.json",
+  "requirement_ledger_sha256": "376dbc8b1c8f1af585e0ca3c2b451b788ade164221805871fca5dfefd98fbcb7",
+  "review_target_id": "6c4440864230eab587326ad68bd95991040fdaf030ecfd46f734d36ee7e013be",
+  "review_target_inputs": {
+    "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+    "implementation_critical_source_digest_sha256": "1aca1e785d5b009278bb1a0a0c50186e2397086ed941b3f2d4e86f7c77265db7",
+    "request_nonce": "care-ase-20260806T090955Z",
+    "requirement_ledger_sha256": "376dbc8b1c8f1af585e0ca3c2b451b788ade164221805871fca5dfefd98fbcb7",
+    "verifier_critical_source_digest_sha256": "c67eda8ca71e1c60eb318f1aab90eb88820a3e32456927fde64694231299767c"
+  },
+  "schema": "AGENT_FLOW_V3_SOURCE_SNAPSHOT_V1",
+  "task_id": "care-ase-faithful",
+  "verifier_critical_source": {
+    "digest_sha256": "c67eda8ca71e1c60eb318f1aab90eb88820a3e32456927fde64694231299767c",
+    "file_hashes": {
+      "tests/care_ase_faithful/test_verifier_package.py": "870558fe647cbc42bc0fb1f37bd753aa97baf788e39d42f43c20f6ba685d2bf4",
+      "validators/care_ase_faithful/build_verification_artifacts.py": "575eae28a20992fa62d649e39ea965d4d863f96f51069e7b3489d9f745431219",
+      "validators/care_ase_faithful/run_executable_verifier.py": "ffcce9b0b38b47608befc7885af762ebc1376cb3257ba27a663932426528a78a",
+      "validators/care_ase_faithful/validate_contract_evidence.py": "048de587c5ac3b362dfef196116bca215d1c5839064774bcf51a55e853a60a0e"
+    }
+  }
+}

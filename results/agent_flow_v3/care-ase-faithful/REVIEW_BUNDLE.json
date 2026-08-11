@@ -1,0 +1,36 @@
+{
+  "ci_pass": true,
+  "created_utc": "2026-08-11T08:10:07Z",
+  "evidence_sha256s": {
+    "results/agent_flow_v3/care-ase-faithful/implementation/checkpoint_resume_probe_receipt.json": "8a0e50ed1a079f6ce10f62ca4d3ff4135b6bd92f88a7c1aa7a0f5a9605d5504a",
+    "results/agent_flow_v3/care-ase-faithful/implementation/current_runtime_identity_receipt.json": "a90eb62af70b3035085a76f0bde2074e29cd4c19b9bfb49c141ed238d6890e01",
+    "results/agent_flow_v3/care-ase-faithful/implementation/current_runtime_input_bundle.json": "4d3e0732be8f362ded328fb744a4fad1eee55a75c7b17c60aee6b2a959a08160",
+    "results/agent_flow_v3/care-ase-faithful/implementation/deployment_load_probe_receipt.json": "2155ebcf2a9229b66af52f8d25bcce16fb23e87120ccd97494160c13557a5620",
+    "results/agent_flow_v3/care-ase-faithful/implementation/evaluator_smoke_receipt.json": "3baacdba32aa64af0c2a93ff863519735a8be43bb9a497638d2efdd7db58bb73",
+    "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json": "d7f9e5faaa1b74c237952f46ff729748bab5191a26373fd43011431caf41facb",
+    "results/agent_flow_v3/care-ase-faithful/implementation/implementation_fingerprint.json": "f12da99165ed8d1b5a6a10afc2a6820a4d3bbf5a61b15b6791541d829d951525",
+    "results/agent_flow_v3/care-ase-faithful/implementation/inference_probe_receipt.json": "54e17c98bf524f018abd1e4009fc41db248628e6751444b4e98559ea6f7c02c9",
+    "results/agent_flow_v3/care-ase-faithful/implementation/provenance_runtime_rebind_receipt.json": "c098e6090bb9a3e5f6bed617b673371ed499c7ba928a00f39cceb9786f49a9af",
+    "results/agent_flow_v3/care-ase-faithful/stable_review_ci_receipt.json": "64f635c8d690e01f7594f0bea5623a51f87fc338d269b1bc34f8ba5aa5f89980",
+    "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json": "1eaa4671be77aa558859da8a9ac3feb42a3e1b7c7df0d291c4ead909c08cd024",
+    "results/agent_flow_v3/care-ase-faithful/verification/protected_known_bad_manifest.json": "c28089654058673f71970eda75cf19fba12bca19d43284cd23d0340217fb0cdf",
+    "results/agent_flow_v3/care-ase-faithful/verification/public_test_manifest.json": "1b17e7e98402af9543104de2e426af37fa2211f8a59c3f235ea6962b10a773df",
+    "results/agent_flow_v3/care-ase-faithful/verification/transaction_gate_receipt.json": "50e567386daf6fd7b820a4f0dcb1c48787a986ca31a24f14e185cd9d56950602",
+    "results/agent_flow_v3/care-ase-faithful/verification/verifier_fingerprint.json": "69fd3d8b0026e8cce7765df877f099c727ad7a98d5ed278c306ef44162745ae7"
+  },
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "heavy_verifier_status": "PASS_SEMANTIC_PROBES_WITH_SUPERSEDED_PROVENANCE_GATE",
+  "provenance_policy": {
+    "evidence_bound_to_stable_source_snapshot": true,
+    "receipt_only_changes_do_not_invalidate_heavy_verification": true,
+    "runtime_and_ci_receipts_are_dag_children_not_identity_inputs": true
+  },
+  "request_nonce": "care-ase-20260806T090955Z",
+  "requirement_ledger_sha256": "376dbc8b1c8f1af585e0ca3c2b451b788ade164221805871fca5dfefd98fbcb7",
+  "review_bundle_sha256": "3edcdf9651e478dcceb8c12ec503e7576098ea8c00e28fae84159f7a89f5441d",
+  "review_target_id": "6c4440864230eab587326ad68bd95991040fdaf030ecfd46f734d36ee7e013be",
+  "schema": "AGENT_FLOW_V3_REVIEW_BUNDLE_V1",
+  "source_snapshot_path": "automation/agent_flow_v3/tasks/care-ase-faithful/SOURCE_SNAPSHOT.json",
+  "source_snapshot_sha256": "27fc2afedabe8796df3091987169d991f983aaadba6f16ea64a62d34d4d7462d",
+  "task_id": "care-ase-faithful"
+}

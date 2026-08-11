@@ -1,0 +1,33 @@
+{
+  "schema": "AGENT_FLOW_V3_SOURCE_SNAPSHOT_V1",
+  "task_id": "replace_me",
+  "request_nonce": "replace_me",
+  "frozen_contract_sha256": "replace_me",
+  "requirement_ledger_path": "automation/agent_flow_v3/tasks/<task_id>/REQUIREMENT_LEDGER.json",
+  "requirement_ledger_sha256": "replace_me",
+  "implementation_critical_source": {
+    "digest_sha256": "replace_me",
+    "file_hashes": {}
+  },
+  "verifier_critical_source": {
+    "digest_sha256": "replace_me",
+    "file_hashes": {}
+  },
+  "review_target_id": "replace_me",
+  "review_target_inputs": {
+    "request_nonce": "replace_me",
+    "frozen_contract_sha256": "replace_me",
+    "requirement_ledger_sha256": "replace_me",
+    "implementation_critical_source_digest_sha256": "replace_me",
+    "verifier_critical_source_digest_sha256": "replace_me"
+  },
+  "git_locators": {
+    "head_sha": null,
+    "origin_develop_sha": null
+  },
+  "identity_policy": {
+    "git_commits_are_locators_only": true,
+    "controller_merge_current_receipt_ci_commits_do_not_change_review_target_id": true,
+    "review_target_changes_only_when_contract_ledger_or_critical_source_content_changes": true
+  }
+}

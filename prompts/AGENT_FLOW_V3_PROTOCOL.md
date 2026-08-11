@@ -278,20 +278,30 @@ A green GitHub Actions run is necessary but never sufficient for `PLANNER_PASS`.
 
 ## 10. Planner implementation review
 
-Planner review is bound to exact immutable inputs:
+Planner review is bound to a stable source snapshot and a review bundle:
 
 ```text
-frozen_contract_sha256
-integration_commit_sha
-implementation_fingerprint_sha256
-verifier_fingerprint_sha256
-ci_run_id_and_status
-runtime_receipt_manifest_sha256
-review_round
 request_nonce
+frozen_contract_sha256
+requirement_ledger_sha256
+review_target_id
+review_bundle_sha256
+CI PASS
 ```
 
-Any new critical implementation or verifier commit invalidates the previous Planner decision. Planner must review the current full implementation before reading previous findings, then use previous findings only to verify closure.
+`review_target_id` is derived only from stable content: request nonce, frozen
+contract SHA, requirement ledger SHA, implementation critical-source content
+digest and verifier critical-source content digest. Controller merge commits,
+`CURRENT` commits, receipt commits, runtime manifests and CI-record commits are
+provenance locators; they must not change the review target identity by
+themselves.
+
+Any new critical implementation source, verifier source, frozen contract or
+requirement ledger content invalidates the previous Planner decision. Receipt-
+only, routing-only, `CURRENT`-only, CI-record-only and doc-only changes do not
+rerun heavy scientific verification when `review_target_id` is unchanged.
+Planner must review the current full implementation before reading previous
+findings, then use previous findings only to verify closure.
 
 Planner PASS means the implementation is sufficiently faithful to the frozen contract to return to the user. It does not prove scientific superiority and does not authorize training or protected evaluation.
 
@@ -428,23 +438,38 @@ fingerprint and repair-prompt fields. If those fields are useful provenance,
 move them under an explicit superseded-prior-review object instead of leaving
 them as active routing inputs.
 
-Review transactions are immutable and must bind one exact set:
+Review transactions use a stable DAG:
 
 ```text
 request_nonce
 frozen_contract_sha
 requirement_ledger_sha
-integration_sha
-implementation_fingerprint
-verifier_source_fingerprint
-verifier_runtime_fingerprint
-runtime_receipt_manifest_sha
-CI exact head SHA
-review_round
+source_snapshot
+runtime/verifier/CI evidence
+review_bundle
+Planner decision
 ```
 
+Evidence provenance is a DAG, never a hash cycle. Implementation fingerprints
+must not include runtime bundle hashes when runtime bundles must also cite the
+implementation fingerprint. CI and receipt commits are evidence locators only.
 Stale CI/fingerprint/receipt bindings are `PROVENANCE_BINDING_GAP` routed to
-Controller repair. They are not scientific choices.
+Controller repair. They are not scientific choices and must not trigger
+maximal re-execution when the stable source snapshot is unchanged.
+
+Heavy verification runs only when semantic inputs change:
+
+```text
+IMPLEMENTATION_SOURCE_CHANGED -> runtime probes + heavy Verifier + CI
+VERIFIER_SOURCE_CHANGED -> Verifier tests/mutations, plus only affected runtime probes, then CI if repository-safe source changed
+CI_WORKFLOW_CHANGED -> CI only
+RECEIPT_OR_MANIFEST_ONLY_CHANGED -> lightweight review-bundle validator only
+CURRENT_OR_ROUTING_ONLY_CHANGED -> no heavy Verifier and no model/runtime probe
+DOC_ONLY_CHANGED -> no scientific evidence invalidation
+```
+
+Fail-closed prevents a false PASS; it does not justify rerunning every expensive
+scientific check after receipt-only or locator-only changes.
 
 Agent-Flow v3 has only three stop categories:
 

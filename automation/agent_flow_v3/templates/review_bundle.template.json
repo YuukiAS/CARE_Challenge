@@ -1,0 +1,19 @@
+{
+  "schema": "AGENT_FLOW_V3_REVIEW_BUNDLE_V1",
+  "task_id": "replace_me",
+  "request_nonce": "replace_me",
+  "frozen_contract_sha256": "replace_me",
+  "requirement_ledger_sha256": "replace_me",
+  "review_target_id": "replace_me",
+  "source_snapshot_path": "automation/agent_flow_v3/tasks/<task_id>/SOURCE_SNAPSHOT.json",
+  "source_snapshot_sha256": "replace_me",
+  "evidence_sha256s": {},
+  "ci_pass": false,
+  "heavy_verifier_status": "replace_me",
+  "review_bundle_sha256": "replace_me",
+  "provenance_policy": {
+    "evidence_bound_to_stable_source_snapshot": true,
+    "receipt_only_changes_do_not_invalidate_heavy_verification": true,
+    "runtime_and_ci_receipts_are_dag_children_not_identity_inputs": true
+  }
+}

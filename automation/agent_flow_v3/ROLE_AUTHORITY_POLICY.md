@@ -141,22 +141,47 @@ Fail-closed means "do not falsely claim PASS." It does not mean "terminate the
 goal on the first problem." Same-scope repair must continue under the current
 task, frozen contract and nonce when repair is authorized.
 
-## Immutable Review Transaction
+## Stable Review Snapshot
 
-Planner review transactions bind one exact set:
+Planner review identity is a stable content snapshot, not a moving Git-history
+tuple. A `SOURCE_SNAPSHOT.json` must bind:
 
 ```text
 request_nonce
 frozen_contract_sha
 requirement_ledger_sha
-integration_sha
-implementation_fingerprint
-verifier_source_fingerprint
-verifier_runtime_fingerprint
-runtime_receipt_manifest_sha
-CI exact head SHA
-review_round
+implementation critical-source content digest
+verifier critical-source content digest
 ```
 
-Stale or cross-round bindings are `PROVENANCE_BINDING_GAP`, never a scientific
-choice.
+The derived `review_target_id` must not include Controller merge commits,
+`CURRENT` commits, receipt commits, runtime manifest hashes or CI-record commits.
+Those are provenance locators and DAG children of the source snapshot.
+
+Planner review then binds:
+
+```text
+request_nonce
+frozen_contract_sha
+requirement_ledger_sha
+review_target_id
+review_bundle_sha
+CI PASS
+```
+
+Evidence provenance is a DAG, never a hash cycle. Receipt-only changes are
+`PROVENANCE_BINDING_GAP` or `RECEIPT_OR_MANIFEST_ONLY_CHANGED`; they must route
+to lightweight review-bundle validation, not to heavy Verifier or Executor
+re-execution. Stale or cross-round evidence bindings are never scientific
+choices.
+
+Incremental invalidation is mandatory:
+
+```text
+IMPLEMENTATION_SOURCE_CHANGED -> runtime probes + heavy Verifier + CI
+VERIFIER_SOURCE_CHANGED -> Verifier tests/mutations, affected runtime probes, CI if repository-safe source changed
+CI_WORKFLOW_CHANGED -> CI only
+RECEIPT_OR_MANIFEST_ONLY_CHANGED -> lightweight bundle validator only
+CURRENT_OR_ROUTING_ONLY_CHANGED -> no heavy Verifier and no model/runtime probe
+DOC_ONLY_CHANGED -> no scientific evidence invalidation
+```

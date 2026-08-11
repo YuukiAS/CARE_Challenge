@@ -27,6 +27,7 @@ automation/agent_flow_v3/planner_scheduled_task_prompt.md
 automation/agent_flow_v3/critic_scheduled_task_prompt.md
 scripts/automation/validate_agent_flow_v3.py
 scripts/automation/agent_flow_v3_runtime.py
+scripts/automation/agent_flow_v3_snapshot.py
 tests/automation/test_agent_flow_v3.py
 .github/workflows/agent-flow-v3-ci.yml
 ```
@@ -40,7 +41,9 @@ prompts/tasks/20260805_care_ase_develop_faithful_reimplementation_controller.md
 automation/agent_flow_v3/tasks/care-ase-faithful/REQUEST.json
 automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json
 automation/agent_flow_v3/tasks/care-ase-faithful/REQUIREMENT_LEDGER.json
+automation/agent_flow_v3/tasks/care-ase-faithful/SOURCE_SNAPSHOT.json
 automation/agent_flow_v3/tasks/care-ase-faithful/VISUAL_SOURCES.json
+results/agent_flow_v3/care-ase-faithful/REVIEW_BUNDLE.json
 ```
 
 ## Activation prerequisites
@@ -89,3 +92,27 @@ The review is bound to the implementation/integration SHA and CI evidence that
 already passed. CI for the later status commit may run after Planner wait begins;
 if that status-commit CI fails, the Controller must repair or republish the
 transaction instead of blocking before the asynchronous Planner wait.
+
+## 2026-08-11 Stable Review Snapshot simplification
+
+Agent-Flow v3 now binds Planner review identity to stable content snapshots, not
+moving Git history. `SOURCE_SNAPSHOT.json` computes `review_target_id` only from
+request nonce, frozen contract SHA, requirement ledger SHA, implementation
+critical-source digest and verifier critical-source digest. Controller merge
+commits, `CURRENT` commits, receipt commits, runtime manifests and CI-record
+commits are provenance locators and must not change `review_target_id`.
+
+Current review evidence is collected in `REVIEW_BUNDLE.json`. Historical visual
+smoke, session smoke, watcher smoke, bootstrap and retired final-state receipts
+remain as provenance but are not Planner-blocking bundle inputs unless the task
+explicitly requires them.
+
+Permanent portability principles:
+
+```text
+Bind evidence to stable content snapshots, not moving Git history.
+Evidence provenance is a DAG, never a hash cycle.
+Receipt-only changes must not invalidate expensive scientific execution.
+Heavy verification runs only when semantic inputs change.
+Fail-closed prevents false PASS; it does not justify maximal re-execution.
+```

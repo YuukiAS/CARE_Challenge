@@ -24,6 +24,12 @@ assert RUNTIME_SPEC and RUNTIME_SPEC.loader
 RUNTIME = importlib.util.module_from_spec(RUNTIME_SPEC)
 RUNTIME_SPEC.loader.exec_module(RUNTIME)
 
+SNAPSHOT_SCRIPT = ROOT / "scripts" / "automation" / "agent_flow_v3_snapshot.py"
+SNAPSHOT_SPEC = importlib.util.spec_from_file_location("agent_flow_v3_snapshot", SNAPSHOT_SCRIPT)
+assert SNAPSHOT_SPEC and SNAPSHOT_SPEC.loader
+SNAPSHOT = importlib.util.module_from_spec(SNAPSHOT_SPEC)
+SNAPSHOT_SPEC.loader.exec_module(SNAPSHOT)
+
 
 class AgentFlowV3ValidationTests(unittest.TestCase):
     @classmethod
@@ -37,6 +43,78 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
 
     def test_template_is_valid(self) -> None:
         self.assertEqual(MODULE.validate_request(self.template, self.schema), [])
+
+    def test_stable_review_target_ignores_git_and_receipt_locators(self) -> None:
+        stable_inputs = {
+            "request_nonce": "nonce",
+            "frozen_contract_sha256": "f" * 64,
+            "requirement_ledger_sha256": "l" * 64,
+            "implementation_critical_source_digest_sha256": "i" * 64,
+            "verifier_critical_source_digest_sha256": "v" * 64,
+        }
+        first = SNAPSHOT.compute_review_target_id(stable_inputs)
+        with_locator_noise = dict(stable_inputs)
+        with_locator_noise.update(
+            {
+                "controller_merge_commit_sha": "a" * 40,
+                "current_commit_sha": "b" * 40,
+                "runtime_receipt_manifest_sha256": "r" * 64,
+                "ci_receipt_commit_sha": "c" * 40,
+            }
+        )
+        self.assertEqual(first, SNAPSHOT.compute_review_target_id(stable_inputs))
+        self.assertEqual(first, SNAPSHOT.compute_review_target_id(with_locator_noise))
+        self.assertNotIn("controller_merge_commit_sha", stable_inputs)
+
+    def test_review_bundle_is_dag_child_not_snapshot_identity_input(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = Path(tmpdir)
+            for rel_path, payload in {
+                "automation/agent_flow_v3/tasks/demo/CURRENT.json": {
+                    "task_id": "demo",
+                    "request_nonce": "nonce",
+                    "frozen_contract_sha256": "f" * 64,
+                },
+                "automation/agent_flow_v3/tasks/demo/REQUIREMENT_LEDGER.json": {"requirements": []},
+                "src/impl.py": {"impl": 1},
+                "validators/verifier.py": {"verifier": 1},
+                "results/demo/runtime.json": {"runtime": 1},
+                "results/demo/verifier.json": {"verifier_receipt": 1},
+                "results/demo/ci.json": {"ci": "success"},
+            }.items():
+                path = repo / rel_path
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(json.dumps(payload, sort_keys=True), encoding="utf-8")
+            args = argparse.Namespace(
+                repo_root=repo,
+                task_id="demo",
+                current="automation/agent_flow_v3/tasks/demo/CURRENT.json",
+                requirement_ledger="automation/agent_flow_v3/tasks/demo/REQUIREMENT_LEDGER.json",
+                implementation_path=["src/impl.py"],
+                verifier_path=["validators/verifier.py"],
+                output="automation/agent_flow_v3/tasks/demo/SOURCE_SNAPSHOT.json",
+            )
+            snapshot = SNAPSHOT.build_source_snapshot(args)
+            bundle_args = argparse.Namespace(
+                repo_root=repo,
+                snapshot="automation/agent_flow_v3/tasks/demo/SOURCE_SNAPSHOT.json",
+                evidence=["results/demo/runtime.json", "results/demo/verifier.json", "results/demo/ci.json"],
+                ci_pass=True,
+                heavy_verifier_status="PASS",
+                output="results/demo/REVIEW_BUNDLE.json",
+            )
+            bundle = SNAPSHOT.build_review_bundle(bundle_args)
+
+            self.assertEqual(bundle["review_target_id"], snapshot["review_target_id"])
+            self.assertEqual(0, SNAPSHOT.validate_snapshot(argparse.Namespace(repo_root=repo, snapshot=args.output)))
+            self.assertEqual(0, SNAPSHOT.validate_bundle(argparse.Namespace(repo_root=repo, bundle=bundle_args.output)))
+
+            old_target = snapshot["review_target_id"]
+            (repo / "results/demo/ci.json").write_text(json.dumps({"ci": "success", "rerun": 2}), encoding="utf-8")
+            updated_bundle = SNAPSHOT.build_review_bundle(bundle_args)
+            reread_snapshot = json.loads((repo / args.output).read_text(encoding="utf-8"))
+            self.assertEqual(old_target, reread_snapshot["review_target_id"])
+            self.assertNotEqual(bundle["review_bundle_sha256"], updated_bundle["review_bundle_sha256"])
 
     def test_scheduled_planner_prompt_reviews_waiting_for_external_gpt(self) -> None:
         prompt = (ROOT / "automation" / "agent_flow_v3" / "planner_scheduled_task_prompt.md").read_text(
