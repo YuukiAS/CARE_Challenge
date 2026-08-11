@@ -3406,6 +3406,7 @@ def care_ase_validation_failures_require_verifier_recheck(validation: dict[str, 
         "verifier_owned.executable.runtime_binding_sha:",
         "verifier_owned.executable.runtime_binding_missing:",
         "verifier_owned.loss_semantic.",
+        "verifier_owned.eligible_normalization.",
     )
     return all(
         str(item) in allowed_exact or any(str(item).startswith(prefix) for prefix in allowed_prefixes)
