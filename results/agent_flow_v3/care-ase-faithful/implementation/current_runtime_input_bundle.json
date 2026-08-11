@@ -1,5 +1,5 @@
 {
-  "bundle_payload_sha256": "b1549f3ecd982038ba5193a421769b6f3d024d63066124a6f9760dc63c928ca8",
+  "bundle_payload_sha256": "efa77f1f0955a71c000304d30c7f643eee504e8f486ada579dea92b7f6422625",
   "fold": 0,
   "formal_user_decision_permit_provenance": {
     "decision": "NO_FORMAL_TRAINING_AUTHORIZED_FOR_CARE_ASE_FAITHFUL",
@@ -12,9 +12,10 @@
   "hard_negative_manifest_fold0_sha256": "6d793249e3c6fc42aa29ff97f84fa75431cece9c8a4e08d243ed1cf96ce4da21",
   "hard_negative_manifest_path": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor/results/20260804_care_ase_r2_emergency_9h_training_docker/hard_negative_manifest_fold1.json",
   "hard_negative_manifest_sha256": "6d793249e3c6fc42aa29ff97f84fa75431cece9c8a4e08d243ed1cf96ce4da21",
-  "implementation_fingerprint_sha256": "e7a6bfe00336354da7debf7321966c8a72c7ce43ee0bb00c316387c72659b7e3",
-  "implementation_source_manifest_sha256": "053f8116f064afb7e5b29d63cb03af2ead9d9327e7c756451b92038ed2447e2e",
-  "integration_commit_sha": "965b0aadaf436e11abdf37dfe3ce6699e928b7b0",
+  "immutable_implementation_fingerprint_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
+  "implementation_fingerprint_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
+  "implementation_source_manifest_sha256": "de1c5ab27929fda6a6e193db1e0633a2f7dba5310c2ab560cc8fdeb4f2eccadc",
+  "integration_commit_sha": "ed2e3097386bd322968936eb30fd434e621b51ce",
   "probe_root": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor/results/agent_flow_v3/care-ase-faithful/implementation/runtime_zero_credit",
   "request_nonce": "care-ase-20260806T090955Z",
   "result_root": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor/results/agent_flow_v3/care-ase-faithful/implementation/formal_runtime",
@@ -22,5 +23,5 @@
   "secondary_effective_contract_path": "prompts/blueprints/CARE_ASE_R2_effective_contract_v9_20260803.yaml",
   "secondary_effective_contract_sha256": "1b02fb37fa30054b74f7b73b7bd15617d74ab931b4a12965ea1d700bb7fa3c1e",
   "task_id": "care-ase-faithful",
-  "verifier_fingerprint_sha256": "a731eec931128a73fc32113048c49a5a8de5a7db2d877b6f8bb66732eebbb380"
+  "verifier_fingerprint_sha256": "a833449fe2dd3de5041e740f1d6f4d32a0ffec592a157dd0178f6e6182819c81"
 }

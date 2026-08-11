@@ -29,7 +29,7 @@ from typing import Any
 TASK_ID = "care-ase-faithful"
 REQUEST_NONCE = "care-ase-20260806T090955Z"
 FROZEN_CONTRACT_SHA256 = "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d"
-VERIFIER_FINGERPRINT_SHA256 = "a731eec931128a73fc32113048c49a5a8de5a7db2d877b6f8bb66732eebbb380"
+VERIFIER_FINGERPRINT_SHA256 = "a833449fe2dd3de5041e740f1d6f4d32a0ffec592a157dd0178f6e6182819c81"
 
 ROOT = Path(__file__).resolve().parents[3]
 if str(ROOT) not in sys.path:
@@ -142,7 +142,6 @@ def source_manifest() -> dict[str, Any]:
         "task_id": TASK_ID,
         "request_nonce": REQUEST_NONCE,
         "frozen_contract_sha256": FROZEN_CONTRACT_SHA256,
-        "verifier_fingerprint_sha256": VERIFIER_FINGERPRINT_SHA256,
         "source_root": ".",
         "git_head": git_value("rev-parse", "HEAD"),
         "git_branch": git_value("branch", "--show-current"),
@@ -253,6 +252,38 @@ def _current_binding() -> dict[str, Any]:
         return {}
     binding = payload.get("binding", payload)
     return binding if isinstance(binding, dict) else {}
+
+
+def reviewed_integration_sha() -> str:
+    binding = _current_binding()
+    value = str(binding.get("integration_commit_sha") or "")
+    if len(value) == 40 and all(ch in "0123456789abcdef" for ch in value):
+        return value
+    head = git_value("rev-parse", "HEAD") or ""
+    return head if len(head) == 40 else "0" * 40
+
+
+def immutable_implementation_identity(
+    *,
+    manifest: dict[str, Any],
+    static_checks: dict[str, Any],
+    architecture: dict[str, Any],
+    parameter_registry: dict[str, Any],
+) -> dict[str, Any]:
+    payload = {
+        "schema": "CARE_ASE_FAITHFUL_IMMUTABLE_IMPLEMENTATION_IDENTITY_V1",
+        "task_id": TASK_ID,
+        "request_nonce": REQUEST_NONCE,
+        "frozen_contract_sha256": FROZEN_CONTRACT_SHA256,
+        "fingerprint_scope": "immutable_source_only_excludes_post_integration_runtime_artifacts",
+        "source_manifest_sha256": manifest["source_manifest_sha256"],
+        "static_architecture_checks_sha256": static_checks["static_architecture_checks_sha256"],
+        "architecture_signature_sha256": architecture["architecture_signature_sha256"],
+        "parameter_owner_registry_sha256": parameter_registry["parameter_owner_registry_sha256"],
+    }
+    payload["implementation_fingerprint_sha256"] = json_sha(payload)
+    payload["immutable_implementation_fingerprint_sha256"] = payload["implementation_fingerprint_sha256"]
+    return payload
 
 
 def environment_gate() -> tuple[bool, list[str], dict[str, Any]]:
@@ -1161,7 +1192,7 @@ def run_inference_probe() -> dict[str, Any]:
     return payload
 
 
-def run_checkpoint_resume_probe() -> dict[str, Any]:
+def run_checkpoint_resume_probe(implementation_identity: dict[str, Any]) -> dict[str, Any]:
     import torch
 
     from src.care_myocardium.data.case_metadata import load_myops_case_metadata
@@ -1225,6 +1256,8 @@ def run_checkpoint_resume_probe() -> dict[str, Any]:
     rng_before_save = {"torch": _state_value_digest(torch.random.get_rng_state())}
     source = source_manifest()
     git_head = git_value("rev-parse", "HEAD") or "UNSET"
+    integration_sha = reviewed_integration_sha()
+    implementation_fingerprint = implementation_identity["implementation_fingerprint_sha256"]
     with tempfile.TemporaryDirectory(prefix="care_ase_resume_probe_") as tmp:
         checkpoint_path = Path(tmp) / "care_ase_schema_v4_zero_credit_probe.pth"
         save_care_ase_checkpoint(
@@ -1249,7 +1282,9 @@ def run_checkpoint_resume_probe() -> dict[str, Any]:
             request_nonce=REQUEST_NONCE,
             frozen_contract_sha256=FROZEN_CONTRACT_SHA256,
             implementation_source_manifest_sha256=source["source_manifest_sha256"],
-            integration_commit_sha=git_head,
+            implementation_fingerprint_sha256=implementation_fingerprint,
+            integration_commit_sha=integration_sha,
+            verifier_fingerprint_sha256=VERIFIER_FINGERPRINT_SHA256,
             origin_main_sha=git_head,
             origin_main_at_review_request_sha=git_head,
             effective_contract_sha256=FROZEN_CONTRACT_SHA256,
@@ -1281,13 +1316,16 @@ def run_checkpoint_resume_probe() -> dict[str, Any]:
             expected_request_nonce=REQUEST_NONCE,
             expected_frozen_contract_sha256=FROZEN_CONTRACT_SHA256,
             expected_implementation_source_manifest_sha256=source["source_manifest_sha256"],
-            expected_integration_commit_sha=git_head,
+            expected_implementation_fingerprint_sha256=implementation_fingerprint,
+            expected_integration_commit_sha=integration_sha,
+            expected_verifier_fingerprint_sha256=VERIFIER_FINGERPRINT_SHA256,
         )
         mismatch_rejections: dict[str, bool] = {}
         mismatch_specs = {
             "request_nonce": {"expected_request_nonce": "wrong-nonce"},
             "frozen_contract_sha256": {"expected_frozen_contract_sha256": "0" * 64},
             "implementation_source_manifest_sha256": {"expected_implementation_source_manifest_sha256": "1" * 64},
+            "implementation_fingerprint_sha256": {"expected_implementation_fingerprint_sha256": "1" * 64},
             "integration_commit_sha": {"expected_integration_commit_sha": "0" * 40},
         }
         for field, kwargs in mismatch_specs.items():
@@ -1345,7 +1383,9 @@ def run_checkpoint_resume_probe() -> dict[str, Any]:
     current_request_nonce_bound = reloaded_payload.get("request_nonce") == REQUEST_NONCE
     current_frozen_contract_bound = reloaded_payload.get("frozen_contract_sha256") == FROZEN_CONTRACT_SHA256
     source_binding_matches = reloaded_payload.get("implementation_source_manifest_sha256") == source["source_manifest_sha256"]
-    integration_binding_matches = reloaded_payload.get("integration_commit_sha") == git_head
+    implementation_fingerprint_matches = reloaded_payload.get("implementation_fingerprint_sha256") == implementation_fingerprint
+    integration_binding_matches = reloaded_payload.get("integration_commit_sha") == integration_sha
+    verifier_binding_matches = reloaded_payload.get("verifier_fingerprint_sha256") == VERIFIER_FINGERPRINT_SHA256
     payload = {
         "status": "PASS"
         if int(CHECKPOINT_SCHEMA_VERSION) == 4
@@ -1353,7 +1393,9 @@ def run_checkpoint_resume_probe() -> dict[str, Any]:
         and current_request_nonce_bound
         and current_frozen_contract_bound
         and source_binding_matches
+        and implementation_fingerprint_matches
         and integration_binding_matches
+        and verifier_binding_matches
         and all(mismatch_rejections.values())
         and next_step_matches
         and optimizer_state_matches
@@ -1367,11 +1409,16 @@ def run_checkpoint_resume_probe() -> dict[str, Any]:
         "request_nonce": reloaded_payload.get("request_nonce"),
         "frozen_contract_sha256": reloaded_payload.get("frozen_contract_sha256"),
         "implementation_source_manifest_sha256": reloaded_payload.get("implementation_source_manifest_sha256"),
+        "implementation_fingerprint_sha256": reloaded_payload.get("implementation_fingerprint_sha256"),
+        "immutable_implementation_fingerprint_sha256": implementation_fingerprint,
         "integration_commit_sha": reloaded_payload.get("integration_commit_sha"),
+        "verifier_fingerprint_sha256": reloaded_payload.get("verifier_fingerprint_sha256"),
         "current_request_nonce_bound": current_request_nonce_bound,
         "current_frozen_contract_sha256_bound": current_frozen_contract_bound,
         "implementation_source_manifest_bound": source_binding_matches,
+        "implementation_fingerprint_bound": implementation_fingerprint_matches,
         "integration_commit_bound": integration_binding_matches,
+        "verifier_fingerprint_bound": verifier_binding_matches,
         "current_binding_mismatch_rejections": mismatch_rejections,
         "contract_manifest_environment_drift_rejected": all(mismatch_rejections.values()),
         "train_case_ids": {
@@ -1414,7 +1461,14 @@ def run_checkpoint_resume_probe() -> dict[str, Any]:
     return payload
 
 
-def _save_zero_credit_inference_checkpoint(path: Path, model: Any, architecture: dict[str, Any], *, case_ids: dict[str, Any]) -> None:
+def _save_zero_credit_inference_checkpoint(
+    path: Path,
+    model: Any,
+    architecture: dict[str, Any],
+    *,
+    case_ids: dict[str, Any],
+    implementation_identity: dict[str, Any],
+) -> None:
     from src.care_myocardium.training.care_ase_trainer import (
         CAREASEStageScheduler,
         CHECKPOINT_SCHEMA_VERSION,
@@ -1426,6 +1480,8 @@ def _save_zero_credit_inference_checkpoint(path: Path, model: Any, architecture:
     scheduler = CAREASEStageScheduler(optimizer)
     source = source_manifest()
     git_head = git_value("rev-parse", "HEAD") or "UNSET"
+    integration_sha = reviewed_integration_sha()
+    implementation_fingerprint = implementation_identity["implementation_fingerprint_sha256"]
     save_care_ase_checkpoint(
         path,
         model=model,
@@ -1448,7 +1504,9 @@ def _save_zero_credit_inference_checkpoint(path: Path, model: Any, architecture:
         request_nonce=REQUEST_NONCE,
         frozen_contract_sha256=FROZEN_CONTRACT_SHA256,
         implementation_source_manifest_sha256=source["source_manifest_sha256"],
-        integration_commit_sha=git_head,
+        implementation_fingerprint_sha256=implementation_fingerprint,
+        integration_commit_sha=integration_sha,
+        verifier_fingerprint_sha256=VERIFIER_FINGERPRINT_SHA256,
         origin_main_sha=git_head,
         origin_main_at_review_request_sha=git_head,
         effective_contract_sha256=FROZEN_CONTRACT_SHA256,
@@ -1474,7 +1532,7 @@ def _save_zero_credit_inference_checkpoint(path: Path, model: Any, architecture:
     )
 
 
-def run_deployment_load_probe(architecture: dict[str, Any]) -> dict[str, Any]:
+def run_deployment_load_probe(architecture: dict[str, Any], implementation_identity: dict[str, Any]) -> dict[str, Any]:
     import shutil
     import torch
 
@@ -1499,7 +1557,13 @@ def run_deployment_load_probe(architecture: dict[str, Any]) -> dict[str, Any]:
         shutil.copy2(plans_src, plans_dst)
         model = build_care_ase_for_fold(0, map_location="cpu")
         checkpoint_path = deploy_dir / "care_ase_zero_credit_inference.pth"
-        _save_zero_credit_inference_checkpoint(checkpoint_path, model, architecture, case_ids=case_ids)
+        _save_zero_credit_inference_checkpoint(
+            checkpoint_path,
+            model,
+            architecture,
+            case_ids=case_ids,
+            implementation_identity=implementation_identity,
+        )
 
         original_open = builtins.open
         original_path_open = Path.open
@@ -1732,27 +1796,25 @@ def run_hard_negative_binding_probe(architecture: dict[str, Any]) -> dict[str, A
     return payload
 
 
-def run_current_runtime_identity_probe(manifest: dict[str, Any], hard_negative_payload: dict[str, Any]) -> dict[str, Any]:
+def run_current_runtime_identity_probe(
+    manifest: dict[str, Any],
+    hard_negative_payload: dict[str, Any],
+    implementation_identity: dict[str, Any],
+) -> dict[str, Any]:
     from src.care_myocardium.training.care_ase_runtime import (
         build_current_runtime_input_bundle,
         validate_current_runtime_input_bundle,
     )
 
-    binding = _current_binding()
-    integration_sha = str(binding.get("integration_commit_sha") or git_value("rev-parse", "HEAD") or "")
-    if len(integration_sha) != 40:
-        integration_sha = git_value("rev-parse", "HEAD") or "0" * 40
-    implementation_fingerprint = str(
-        binding.get("implementation_fingerprint_sha256")
-        or manifest.get("source_manifest_sha256")
-        or "0" * 64
-    )
+    integration_sha = reviewed_integration_sha()
+    implementation_fingerprint = implementation_identity["implementation_fingerprint_sha256"]
     hard_negative_path = ROOT / str(hard_negative_payload["manifest_path"])
     bundle = build_current_runtime_input_bundle(
         fold=0,
         hard_negative_manifest_path=hard_negative_path,
         implementation_source_manifest_sha256=manifest["source_manifest_sha256"],
         implementation_fingerprint_sha256=implementation_fingerprint,
+        immutable_implementation_fingerprint_sha256=implementation_fingerprint,
         integration_commit_sha=integration_sha,
         verifier_fingerprint_sha256=VERIFIER_FINGERPRINT_SHA256,
         result_root=IMPLEMENTATION_DIR / "formal_runtime",
@@ -1767,6 +1829,7 @@ def run_current_runtime_identity_probe(manifest: dict[str, Any], hard_negative_p
         expected_frozen_contract_sha256=FROZEN_CONTRACT_SHA256,
         expected_implementation_source_manifest_sha256=manifest["source_manifest_sha256"],
         expected_implementation_fingerprint_sha256=implementation_fingerprint,
+        expected_immutable_implementation_fingerprint_sha256=implementation_fingerprint,
         expected_integration_commit_sha=integration_sha,
         expected_verifier_fingerprint_sha256=VERIFIER_FINGERPRINT_SHA256,
     )
@@ -1787,6 +1850,10 @@ def run_current_runtime_identity_probe(manifest: dict[str, Any], hard_negative_p
         "wrong_frozen_contract_rejected_before_forward": ("frozen_contract_sha256", "0" * 64),
         "wrong_integration_rejected_before_forward": ("integration_commit_sha", "0" * 40),
         "wrong_implementation_fingerprint_rejected_before_forward": ("implementation_fingerprint_sha256", "1" * 64),
+        "wrong_immutable_implementation_fingerprint_rejected_before_forward": (
+            "immutable_implementation_fingerprint_sha256",
+            "1" * 64,
+        ),
         "wrong_verifier_fingerprint_rejected_before_forward": ("verifier_fingerprint_sha256", "2" * 64),
     }
     rejections: dict[str, bool] = {}
@@ -1807,6 +1874,7 @@ def run_current_runtime_identity_probe(manifest: dict[str, Any], hard_negative_p
                 expected_frozen_contract_sha256=FROZEN_CONTRACT_SHA256,
                 expected_implementation_source_manifest_sha256=manifest["source_manifest_sha256"],
                 expected_implementation_fingerprint_sha256=implementation_fingerprint,
+                expected_immutable_implementation_fingerprint_sha256=implementation_fingerprint,
                 expected_integration_commit_sha=integration_sha,
                 expected_verifier_fingerprint_sha256=VERIFIER_FINGERPRINT_SHA256,
             )
@@ -1830,6 +1898,7 @@ def run_current_runtime_identity_probe(manifest: dict[str, Any], hard_negative_p
         "bundle_payload_sha256": bundle["bundle_payload_sha256"],
         "implementation_source_manifest_sha256": manifest["source_manifest_sha256"],
         "implementation_fingerprint_sha256": implementation_fingerprint,
+        "immutable_implementation_fingerprint_sha256": implementation_fingerprint,
         "integration_commit_sha": integration_sha,
         "hard_negative_manifest_path": hard_negative_payload["manifest_path"],
         "hard_negative_manifest_sha256": hard_negative_payload["manifest_sha256"],
@@ -1895,6 +1964,7 @@ def implementation_evidence(
     evaluator_smoke_receipt: dict[str, Any],
     hard_negative_binding_receipt: dict[str, Any],
     current_runtime_identity_receipt: dict[str, Any],
+    implementation_identity: dict[str, Any],
 ) -> dict[str, Any]:
     controller = json.loads((ROOT / "results/agent_flow_v3/care-ase-faithful/controller_session_receipt.json").read_text(encoding="utf-8"))
     verifier = json.loads((ROOT / "results/agent_flow_v3/care-ase-faithful/verification/verifier_session_receipt.json").read_text(encoding="utf-8"))
@@ -1908,6 +1978,10 @@ def implementation_evidence(
         "task_id": TASK_ID,
         "request_nonce": REQUEST_NONCE,
         "frozen_contract_sha256": FROZEN_CONTRACT_SHA256,
+        "integration_commit_sha": reviewed_integration_sha(),
+        "implementation_fingerprint_sha256": implementation_identity["implementation_fingerprint_sha256"],
+        "immutable_implementation_fingerprint_sha256": implementation_identity["immutable_implementation_fingerprint_sha256"],
+        "verifier_fingerprint_sha256": VERIFIER_FINGERPRINT_SHA256,
         "role_receipts": {
             "controller": {key: controller[key] for key in ("thread_id", "codex_home", "worktree")},
             "verifier": {key: verifier[key] for key in ("thread_id", "codex_home", "worktree")},
@@ -2036,6 +2110,11 @@ def implementation_evidence(
             "task_id": current_runtime_identity_receipt["payload"]["task_id"],
             "request_nonce": current_runtime_identity_receipt["payload"]["request_nonce"],
             "frozen_contract_sha256": current_runtime_identity_receipt["payload"]["frozen_contract_sha256"],
+            "integration_commit_sha": current_runtime_identity_receipt["payload"]["integration_commit_sha"],
+            "implementation_fingerprint_sha256": current_runtime_identity_receipt["payload"]["implementation_fingerprint_sha256"],
+            "immutable_implementation_fingerprint_sha256": current_runtime_identity_receipt["payload"][
+                "immutable_implementation_fingerprint_sha256"
+            ],
             "verifier_fingerprint_sha256": current_runtime_identity_receipt["payload"]["verifier_fingerprint_sha256"],
             "bundle_path": current_runtime_identity_receipt["payload"]["bundle_path"],
             "bundle_sha256": current_runtime_identity_receipt["payload"]["bundle_sha256"],
@@ -2197,6 +2276,12 @@ def build_runtime_receipts() -> int:
     model = build_care_ase_for_fold(0, map_location="cpu")
     arch = architecture_signature(model, manifest, static_checks)
     registry = parameter_owner_registry(model)
+    implementation_identity = immutable_implementation_identity(
+        manifest=manifest,
+        static_checks=static_checks,
+        architecture=arch,
+        parameter_registry=registry,
+    )
     write_json(IMPLEMENTATION_DIR / "architecture_signature.json", arch)
     write_json(IMPLEMENTATION_DIR / "parameter_owner_registry.json", registry)
 
@@ -2248,7 +2333,7 @@ def build_runtime_receipts() -> int:
         write_json(IMPLEMENTATION_DIR / "fail_closed_implementation_receipt.json", payload)
         write_summary(2, status="FAIL_CLOSED")
         return 2
-    checkpoint_payload = run_checkpoint_resume_probe()
+    checkpoint_payload = run_checkpoint_resume_probe(implementation_identity)
     checkpoint_receipt = _receipt_for_probe(
         "checkpoint_resume_probe",
         checkpoint_payload,
@@ -2264,7 +2349,7 @@ def build_runtime_receipts() -> int:
         write_json(IMPLEMENTATION_DIR / "fail_closed_implementation_receipt.json", payload)
         write_summary(2, status="FAIL_CLOSED")
         return 2
-    deployment_payload = run_deployment_load_probe(arch)
+    deployment_payload = run_deployment_load_probe(arch, implementation_identity)
     deployment_receipt = _receipt_for_probe(
         "deployment_load_probe",
         deployment_payload,
@@ -2282,7 +2367,7 @@ def build_runtime_receipts() -> int:
         hard_negative_payload,
         {"entrypoint": "run_hard_negative_binding_probe", "fold": 0, "zero_credit": True},
     )
-    current_runtime_identity_payload = run_current_runtime_identity_probe(manifest, hard_negative_payload)
+    current_runtime_identity_payload = run_current_runtime_identity_probe(manifest, hard_negative_payload, implementation_identity)
     current_runtime_identity_receipt = _receipt_for_probe(
         "current_runtime_identity",
         current_runtime_identity_payload,
@@ -2312,36 +2397,10 @@ def build_runtime_receipts() -> int:
         evaluator_smoke_receipt=evaluator_receipt,
         hard_negative_binding_receipt=hard_negative_receipt,
         current_runtime_identity_receipt=current_runtime_identity_receipt,
+        implementation_identity=implementation_identity,
     )
     write_json(IMPLEMENTATION_DIR / "implementation_evidence.json", evidence)
-    fingerprint = {
-        "schema": "CARE_ASE_FAITHFUL_IMPLEMENTATION_FINGERPRINT_V1",
-        "task_id": TASK_ID,
-        "request_nonce": REQUEST_NONCE,
-        "frozen_contract_sha256": FROZEN_CONTRACT_SHA256,
-        "verifier_fingerprint_sha256": VERIFIER_FINGERPRINT_SHA256,
-        "source_manifest_sha256": manifest["source_manifest_sha256"],
-        "runtime_asset_manifest_sha256": runtime_manifest["runtime_asset_manifest_sha256"],
-        "architecture_signature_sha256": arch["architecture_signature_sha256"],
-        "parameter_owner_registry_sha256": registry["parameter_owner_registry_sha256"],
-        "implementation_evidence_sha256": evidence["implementation_evidence_sha256"],
-        "step0_parity_probe_receipt_sha256": json_sha(step0_receipt),
-        "forward_backward_probe_receipt_sha256": json_sha(fb_receipt),
-        "inference_probe_receipt_sha256": json_sha(inf_receipt),
-        "checkpoint_resume_probe_receipt_sha256": json_sha(checkpoint_receipt),
-        "deployment_load_probe_receipt_sha256": json_sha(deployment_receipt),
-        "evaluator_smoke_receipt_sha256": json_sha(evaluator_receipt),
-        "hard_negative_binding_receipt_sha256": json_sha(hard_negative_receipt),
-        "current_runtime_identity_receipt_sha256": json_sha(current_runtime_identity_receipt),
-        "current_runtime_input_bundle_sha256": sha256_file(IMPLEMENTATION_DIR / "current_runtime_input_bundle.json"),
-        "no_training_started": True,
-        "outer_accessed": False,
-        "docker_built_or_uploaded": False,
-        "validation_or_challenge_uploaded": False,
-        "created_utc": utc_now(),
-    }
-    fingerprint["implementation_fingerprint_sha256"] = json_sha(fingerprint)
-    write_json(IMPLEMENTATION_DIR / "implementation_fingerprint.json", fingerprint)
+    write_json(IMPLEMENTATION_DIR / "implementation_fingerprint.json", implementation_identity)
     validation_report = IMPLEMENTATION_DIR / "implementation_evidence_validation_result.json"
     completed = subprocess.run(
         [
