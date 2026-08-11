@@ -1,0 +1,119 @@
+{
+  "schema": "CARE_AGENT_FLOW_V3_PLANNER_REVIEW",
+  "task_id": "care-ase-faithful",
+  "request_nonce": "care-ase-20260806T090955Z",
+  "review_round": 1,
+  "review_reentry": "round_001_reentry_009",
+  "observed_state": "WAITING_FOR_EXTERNAL_GPT",
+  "review_mode": "IMPLEMENTATION_REVIEW_STABLE_REVIEW_SNAPSHOT",
+  "decision": "PLANNER_PASS",
+  "created_utc": "2026-08-11T12:10:04Z",
+  "binding": {
+    "review_identity_model": "STABLE_REVIEW_SNAPSHOT",
+    "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+    "requirement_ledger_sha256": "376dbc8b1c8f1af585e0ca3c2b451b788ade164221805871fca5dfefd98fbcb7",
+    "review_target_id": "49856d71280eeb3c52921ceb02a131d7fb689d5c2e66a3e9ee37efd32eec3ac2",
+    "source_snapshot_path": "automation/agent_flow_v3/tasks/care-ase-faithful/SOURCE_SNAPSHOT.json",
+    "source_snapshot_sha256": "b3b6e27d24f389f76762db7b21c2e37b8c590b26a33050dea01d5757464c9fd2",
+    "review_bundle_path": "results/agent_flow_v3/care-ase-faithful/REVIEW_BUNDLE.json",
+    "review_bundle_sha256": "bf88d40eda80abba49767e760ee025cfc6220a19947ca1cd57e42fe10b38220b",
+    "stable_review_ci_run_id": 31485266746,
+    "stable_review_ci_status": "PASS",
+    "implementation_locator_sha": "00cd86428b02ae9d58eb4e8e4c7609362e7d50ea",
+    "implementation_fingerprint_sha256": "2542e6e69cf5c1edd85c83cf4c70f55d7c87f928da5aa7b938838cd155fc5b4c",
+    "verifier_fingerprint_sha256": "bda682e16508eed941e8ec92cc6fae2597dc409a92c63216e40d790887c35244",
+    "git_shas_are_locators_only": true,
+    "receipt_state_doc_only_changes_do_not_invalidate_review_target": true
+  },
+  "independent_review_order": "CURRENT_IMPLEMENTATION_VERIFIER_RUNTIME_AND_SEMANTIC_SOURCES_REVIEWED_BEFORE_PRIOR_FINDINGS",
+  "evidence_reviewed": {
+    "protocol": [
+      "automation/agent_flow_v3/schema.json",
+      "automation/agent_flow_v3/ROLE_AUTHORITY_POLICY.md",
+      "automation/agent_flow_v3/planner_scheduled_task_prompt.md",
+      "automation/agent_flow_v3/tasks/care-ase-faithful/REQUEST.json",
+      "automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json",
+      "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+      "automation/agent_flow_v3/tasks/care-ase-faithful/REQUIREMENT_LEDGER.json",
+      "automation/agent_flow_v3/tasks/care-ase-faithful/SOURCE_SNAPSHOT.json",
+      "results/agent_flow_v3/care-ase-faithful/REVIEW_BUNDLE.json"
+    ],
+    "implementation": [
+      "src/care_myocardium/models/care_ase/core.py",
+      "src/care_myocardium/training/care_ase_trainer.py",
+      "src/care_myocardium/training/care_ase_runtime.py",
+      "src/care_myocardium/training/care_ase_sampler.py",
+      "src/care_myocardium/training/care_ase_augmentation.py",
+      "src/care_myocardium/inference/care_ase_r2_decode.py",
+      "src/care_myocardium/inference/care_ase_r2_full_volume.py",
+      "src/care_myocardium/evaluation/care_ase_r2_evaluator.py",
+      "results/agent_flow_v3/care-ase-faithful/implementation/implementation_source_manifest.json",
+      "results/agent_flow_v3/care-ase-faithful/implementation/implementation_fingerprint.json",
+      "results/agent_flow_v3/care-ase-faithful/implementation/checkpoint_resume_probe_receipt.json"
+    ],
+    "verification": [
+      "tests/care_ase_faithful/test_verifier_package.py",
+      "validators/care_ase_faithful/run_executable_verifier.py",
+      "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json",
+      "results/agent_flow_v3/care-ase-faithful/verification/protected_known_bad_manifest.json"
+    ],
+    "prior_findings_read_after_independent_review": [
+      "results/agent_flow_v3/care-ase-faithful/planner_reviews/round_001_reentry_008.json",
+      "results/agent_flow_v3/care-ase-faithful/planner_reviews/round_001_reentry_008_final.json"
+    ]
+  },
+  "independent_review_summary": {
+    "all_scientific_and_implementation_blockers_closed": true,
+    "accepted_findings": [
+      "当前 loss helper 已只在各自 eligible rows 上聚合 Dice，并保持 eligible T2-present 空病灶行的正常监督语义；新增 no-T2 行不会稀释 edema/injury Dice。",
+      "conditional final competition 已改为逐行按该行 T2 可用性选择六类或五类竞争，再对实际 eligible rows 归一化；不存在固定 T2/no-T2 子组 1:1 权重。",
+      "独立 Verifier 已新增 eligible_loss_normalization_oracle，并使用不调用实现 loss helper 的参考计算验证 no-T2 行不变性和 1 T2 + 3 no-T2 非等组归一化；对应两个 known-bad mutation 已纳入执行验证。",
+      "no-T2 行仍不执行 edema-owned quarter/half/full 子图，class 4 从 no-T2 loss/decode competition 中排除而非映射为背景；实测 no-T2 edema-owned module call count 为 0。",
+      "模型仍保持 stock-compatible trunk、独立 scar/edema 最高两尺度 decoder、具名 evidence projections、dilation 1/2/4 与 post-aggregation global extent bias；未发现 test-aware 分支或固定优先级解码替代。",
+      "canonical full-volume inference 对每个 tile 调用普通模型并关闭 tile-local extent bias，聚合 base logits/wall/extent evidence 后只统一施加一次 global bias；no-T2 decode 使用固定类别集合 0/1/2/3/5。",
+      "checkpoint/resume zero-credit probe 恢复 optimizer、scheduler、RNG/cursor 和 next-step 行为；next loss/gradient 与 uninterrupted control 一致，且没有启动 formal training、outer、Docker 或 upload。",
+      "当前 CI 绑定的 implementation locator 之后只有 CURRENT/controller receipt/planner packet 等状态性文件发生变化，没有新的语义实现源码变更，因此不触发第二次 heavy Verifier。"
+    ]
+  },
+  "prior_finding_closure": {
+    "ASE_R1_REENTRY8_EXECUTOR_EDema_INJURY_DICE_INELIGIBLE_ROW_DILUTION": "CLOSED: binary_dice_focal/binary_dice_bce now average Dice only over rows with eligible mask support; independent eligible normalization oracle passes.",
+    "ASE_R1_REENTRY8_EXECUTOR_CONDITIONAL_FINAL_FIXED_SUBGROUP_WEIGHT": "CLOSED: conditional_final_dice_ce now performs row-specific class mapping and eligible-row mean; independent 1+3 unequal-group reference matches implementation and rejects fixed subgroup equal mean.",
+    "ASE_R1_REENTRY8_VERIFIER_MISSES_ELIGIBLE_ROW_LOSS_DILUTION": "CLOSED: Verifier requires independent eligible_loss_normalization_oracle and executed mutations eligible_loss_full_batch_mean_no_t2_dilution plus conditional_final_fixed_subgroup_equal_mean.",
+    "ASE_R1_REENTRY8_CONTROLLER_STABLE_SNAPSHOT_SEMANTIC_SOURCE_COVERAGE": "RECLASSIFIED_NONBLOCKING_CONTROL_PLANE_DEBT_FOR_THIS_REVIEW: SOURCE_SNAPSHOT itself still lists a narrower implementation critical-source set than the existing semantic source manifest, but the current REVIEW_BUNDLE binds implementation_fingerprint_sha256, which binds source_manifest_sha256 covering trainer/runtime/sampler/augmentation/decode/full-volume inference/evaluator/train entrypoints. Planner independently reviewed the omitted high-risk semantic files, and the only commit after the CI-bound implementation locator changes CURRENT/controller receipts/planner packet. Therefore the current reviewed implementation cannot silently drift through this gap. Future generic v3 should derive review_target implementation digest directly from the semantic source manifest rather than retain duplicate coverage paths. No extra receipt hashes or heavy rerun are justified."
+  },
+  "blocking_findings": [],
+  "nonblocking_observations": [
+    {
+      "observation_id": "ASE_R1_REENTRY9_CONTROL_PLANE_SOURCE_SNAPSHOT_COVERAGE_DEBT",
+      "classification": "PROVENANCE_BINDING_GAP",
+      "owner_role": "controller",
+      "blocking": false,
+      "observation": "SOURCE_SNAPSHOT.review_target_id uses a narrower implementation file set than implementation_source_manifest. Current review remains safely bound through REVIEW_BUNDLE -> implementation_fingerprint -> source_manifest plus direct Planner inspection and no semantic post-CI drift, so this is not a reason to rerun Verifier or reopen implementation. Simplify the future generic flow by using one semantic source manifest as the review-target implementation digest."
+    },
+    {
+      "observation_id": "ASE_R1_REENTRY9_FINAL_CRITIC_LIFECYCLE_SCHEMA_MISMATCH",
+      "classification": "OPERATIONAL_FAILURE",
+      "owner_role": "controller",
+      "blocking": false,
+      "observation": "Repository schema and Planner/Critic repo prompts do not yet implement the intended Final Critic lifecycle. Under the current repository protocol PLANNER_PASS is a legal Planner decision, so no unsupported PASS_CANDIDATE/CRITIC_FINAL_PASS state is invented and no Critic decision is fabricated. The mismatch is explicitly recorded for control-plane synchronization before the reusable Agent-Flow v3 extraction or any policy that requires Final Critic as a hard promotion gate."
+    }
+  ],
+  "final_critic_control_plane": {
+    "final_critic_lifecycle_in_schema": false,
+    "unsupported_states_not_invented": true,
+    "critic_decision_fabricated": false,
+    "current_repo_protocol_followed": true,
+    "human_gate_still_required": true,
+    "recommended_control_plane_followup": "Add the intended Final Critic lifecycle only as a separate control-plane change; do not invalidate this semantic review or rerun heavy scientific verification solely for that protocol update."
+  },
+  "forbidden_actions_confirmed": [
+    "no Planner implementation edits",
+    "no Planner verifier edits",
+    "no formal training",
+    "no outer access",
+    "no develop-to-main merge",
+    "no Docker build/upload",
+    "no organizer email"
+  ],
+  "next_action": "AWAIT_HUMAN_DECISION"
+}
