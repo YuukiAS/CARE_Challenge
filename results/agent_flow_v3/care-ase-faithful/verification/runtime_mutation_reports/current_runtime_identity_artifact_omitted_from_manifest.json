@@ -1,12 +1,12 @@
 {
-  "created_utc": "2026-08-11T06:03:53Z",
+  "created_utc": "2026-08-11T06:38:45Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
     "transaction.runtime_manifest.artifact_missing:current_runtime_input_bundle.rejected"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "9c36a50e005138665e9ef347000465967cb5a0dd168a08766d1a0bc706d6690f",
+  "mutated_fingerprint_sha256": "2d3acf5c0fed3ef4f77ddc9ed462494c3eb796f95eab96acf39c02d1ec18476a",
   "mutation_applied": "runtime_manifest_omits_current_runtime_identity_artifacts",
   "mutation_executed": true,
   "mutation_id": "current_runtime_identity_artifact_omitted_from_manifest",
@@ -22,6 +22,7 @@
       "critical_source_or_receipt_changed_after_reviewed_integration": [
         "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_local_fail_closed_receipt.json",
         "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json",
+        "results/agent_flow_v3/care-ase-faithful/verification/integrated_implementation_validation_result.json",
         "results/agent_flow_v3/care-ase-faithful/verification/protected_known_bad_manifest.json",
         "results/agent_flow_v3/care-ase-faithful/verification/public_test_manifest.json",
         "results/agent_flow_v3/care-ase-faithful/verification/runtime_mutation_reports/checkpoint_current_contract_provenance_drift.json",
@@ -60,11 +61,11 @@
         "results/agent_flow_v3/care-ase-faithful/verification/verification_contract.json"
       ],
       "current_binding": {
-        "ci_checked_commit_sha": "d393af710da6aabd9c31fe63f6ff9225775a4ed5",
-        "ci_run_actual_head_sha": "d393af710da6aabd9c31fe63f6ff9225775a4ed5",
+        "ci_checked_commit_sha": "cbafd7aa18b89c11f10e9663fa3cc1683192fa48",
+        "ci_run_actual_head_sha": "cbafd7aa18b89c11f10e9663fa3cc1683192fa48",
         "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
         "implementation_fingerprint_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
-        "integration_commit_sha": "d393af710da6aabd9c31fe63f6ff9225775a4ed5",
+        "integration_commit_sha": "cbafd7aa18b89c11f10e9663fa3cc1683192fa48",
         "request_nonce": "care-ase-20260806T090955Z",
         "review_round": 1,
         "task_id": "care-ase-faithful",
@@ -75,7 +76,7 @@
           "expected_fields": {
             "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
             "implementation_identity_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
-            "integration_commit_sha": "d393af710da6aabd9c31fe63f6ff9225775a4ed5",
+            "integration_commit_sha": "cbafd7aa18b89c11f10e9663fa3cc1683192fa48",
             "request_nonce": "care-ase-20260806T090955Z",
             "task_id": "care-ase-faithful",
             "verifier_fingerprint_sha256": "a833449fe2dd3de5041e740f1d6f4d32a0ffec592a157dd0178f6e6182819c81"
@@ -84,22 +85,22 @@
           "observed_fields": {
             "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
             "implementation_identity_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
-            "integration_commit_sha": "d393af710da6aabd9c31fe63f6ff9225775a4ed5",
+            "integration_commit_sha": "cbafd7aa18b89c11f10e9663fa3cc1683192fa48",
             "request_nonce": "care-ase-20260806T090955Z",
             "task_id": "care-ase-faithful",
             "verifier_fingerprint_sha256": "a833449fe2dd3de5041e740f1d6f4d32a0ffec592a157dd0178f6e6182819c81"
           },
-          "path": "care_ase_mutation_runtime_identity_scuiahxt/results/agent_flow_v3/care-ase-faithful/implementation/checkpoint_resume_probe_receipt.json",
+          "path": "care_ase_mutation_runtime_identity_hgkxmkxt/results/agent_flow_v3/care-ase-faithful/implementation/checkpoint_resume_probe_receipt.json",
           "schema": "CARE_ASE_FAITHFUL_ZERO_CREDIT_PROBE_RECEIPT_V1",
-          "sha256": "91b85fbec57c1dffc702bd11d140d74d64a8ce510e7bf50bcbc60977deba6c74"
+          "sha256": "a75796c485b5049024c5f0b44dbb5d7aa90d769a14677630bd756238446f8dc2"
         },
         "current_runtime_identity_receipt": {
-          "declared_bundle_sha256": "2a9e962064b72067ff5f6182011f2db3413d50750d406c0cb35cd57c2bf2c096",
-          "expected_bundle_sha256": "2a9e962064b72067ff5f6182011f2db3413d50750d406c0cb35cd57c2bf2c096",
+          "declared_bundle_sha256": "034b1d1f28cee8a0d772684910620d81872b60e68aa0c1aca0ae71062de8fd0d",
+          "expected_bundle_sha256": "034b1d1f28cee8a0d772684910620d81872b60e68aa0c1aca0ae71062de8fd0d",
           "expected_fields": {
             "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
             "implementation_identity_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
-            "integration_commit_sha": "d393af710da6aabd9c31fe63f6ff9225775a4ed5",
+            "integration_commit_sha": "cbafd7aa18b89c11f10e9663fa3cc1683192fa48",
             "request_nonce": "care-ase-20260806T090955Z",
             "task_id": "care-ase-faithful",
             "verifier_fingerprint_sha256": "a833449fe2dd3de5041e740f1d6f4d32a0ffec592a157dd0178f6e6182819c81"
@@ -108,20 +109,20 @@
           "observed_fields": {
             "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
             "implementation_identity_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
-            "integration_commit_sha": "d393af710da6aabd9c31fe63f6ff9225775a4ed5",
+            "integration_commit_sha": "cbafd7aa18b89c11f10e9663fa3cc1683192fa48",
             "request_nonce": "care-ase-20260806T090955Z",
             "task_id": "care-ase-faithful",
             "verifier_fingerprint_sha256": "a833449fe2dd3de5041e740f1d6f4d32a0ffec592a157dd0178f6e6182819c81"
           },
-          "path": "care_ase_mutation_runtime_identity_scuiahxt/results/agent_flow_v3/care-ase-faithful/implementation/current_runtime_identity_receipt.json",
+          "path": "care_ase_mutation_runtime_identity_hgkxmkxt/results/agent_flow_v3/care-ase-faithful/implementation/current_runtime_identity_receipt.json",
           "schema": "CARE_ASE_FAITHFUL_ZERO_CREDIT_PROBE_RECEIPT_V1",
-          "sha256": "bdc694b1e857bc0f2530b9b3826c1203b96832dcd5ccb572a40473c1187e4c57"
+          "sha256": "56f4b350c8dd44fd9b36f3a132d5008072a15c1398aadad9bb10f23aa2f0ec11"
         },
         "current_runtime_input_bundle": {
           "expected_fields": {
             "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
             "implementation_identity_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
-            "integration_commit_sha": "d393af710da6aabd9c31fe63f6ff9225775a4ed5",
+            "integration_commit_sha": "cbafd7aa18b89c11f10e9663fa3cc1683192fa48",
             "request_nonce": "care-ase-20260806T090955Z",
             "task_id": "care-ase-faithful",
             "verifier_fingerprint_sha256": "a833449fe2dd3de5041e740f1d6f4d32a0ffec592a157dd0178f6e6182819c81"
@@ -130,19 +131,19 @@
           "observed_fields": {
             "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
             "implementation_identity_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
-            "integration_commit_sha": "d393af710da6aabd9c31fe63f6ff9225775a4ed5",
+            "integration_commit_sha": "cbafd7aa18b89c11f10e9663fa3cc1683192fa48",
             "request_nonce": "care-ase-20260806T090955Z",
             "task_id": "care-ase-faithful",
             "verifier_fingerprint_sha256": "a833449fe2dd3de5041e740f1d6f4d32a0ffec592a157dd0178f6e6182819c81"
           },
-          "path": "care_ase_mutation_runtime_identity_scuiahxt/results/agent_flow_v3/care-ase-faithful/implementation/current_runtime_input_bundle.json",
+          "path": "care_ase_mutation_runtime_identity_hgkxmkxt/results/agent_flow_v3/care-ase-faithful/implementation/current_runtime_input_bundle.json",
           "schema": "CARE_ASE_FAITHFUL_CURRENT_RUNTIME_INPUT_BUNDLE_V1",
-          "sha256": "2a9e962064b72067ff5f6182011f2db3413d50750d406c0cb35cd57c2bf2c096"
+          "sha256": "034b1d1f28cee8a0d772684910620d81872b60e68aa0c1aca0ae71062de8fd0d"
         },
         "implementation_fingerprint": {
           "file_exists": true,
           "immutable_implementation_identity_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
-          "path": "care_ase_mutation_runtime_identity_scuiahxt/results/agent_flow_v3/care-ase-faithful/implementation/implementation_fingerprint.json",
+          "path": "care_ase_mutation_runtime_identity_hgkxmkxt/results/agent_flow_v3/care-ase-faithful/implementation/implementation_fingerprint.json",
           "reported_implementation_fingerprint_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
           "runtime_artifact_hash_keys_present": [],
           "schema": "CARE_ASE_FAITHFUL_IMPLEMENTATION_FINGERPRINT_V1",
@@ -151,26 +152,26 @@
       },
       "expected_review_round": 1,
       "fixture_mode": false,
-      "hosted_ci_checked_commit_sha": "d393af710da6aabd9c31fe63f6ff9225775a4ed5",
+      "hosted_ci_checked_commit_sha": "cbafd7aa18b89c11f10e9663fa3cc1683192fa48",
       "hosted_ci_conclusion": "success",
-      "hosted_ci_head_sha": "d393af710da6aabd9c31fe63f6ff9225775a4ed5",
-      "hosted_ci_receipt_path": "care_ase_mutation_runtime_identity_scuiahxt/controller_ci_receipt.json",
+      "hosted_ci_head_sha": "cbafd7aa18b89c11f10e9663fa3cc1683192fa48",
+      "hosted_ci_receipt_path": "care_ase_mutation_runtime_identity_hgkxmkxt/controller_ci_receipt.json",
       "implementation_fingerprint_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
-      "integration_sha": "d393af710da6aabd9c31fe63f6ff9225775a4ed5",
+      "integration_sha": "cbafd7aa18b89c11f10e9663fa3cc1683192fa48",
       "integration_sha_is_ancestor_of_observed_git_head": true,
-      "observed_git_head": "edf786a2cf8b05aad523e36083f18179ee99768f",
-      "planner_review_commit": "a0b893f21604fd6b74f86ff6f9029ed07039bb70",
+      "observed_git_head": "8e25ca94a9900bebaef98bfd44f71f400ec94e5a",
+      "planner_review_commit": "d96415ae0b48ae856854e475e624907392a4d7b9",
       "post_ci_gate_requires_exact_hosted_ci_success": true,
       "review_round": 1,
       "reviewed_verifier_fingerprint_sha256_at_repair_start": "a833449fe2dd3de5041e740f1d6f4d32a0ffec592a157dd0178f6e6182819c81",
-      "runtime_manifest_path": "care_ase_mutation_runtime_identity_scuiahxt/runtime_receipt_manifest.json",
+      "runtime_manifest_path": "care_ase_mutation_runtime_identity_hgkxmkxt/runtime_receipt_manifest.json",
       "runtime_manifest_review_round": 1,
-      "runtime_manifest_sha256": "3f8e1b64febd5a6c7308c8defb6a5bfcf0d8e8e5f4d939cf67abea9bd3d64f10",
+      "runtime_manifest_sha256": "1fde8908a1d64d67e3a312b8c24c100a149c3917e3e2470157fbf3609c631b57",
       "runtime_manifest_strict_binding": {
         "expected_fields": {
           "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
           "implementation_fingerprint_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
-          "integration_commit_sha": "d393af710da6aabd9c31fe63f6ff9225775a4ed5",
+          "integration_commit_sha": "cbafd7aa18b89c11f10e9663fa3cc1683192fa48",
           "request_nonce": "care-ase-20260806T090955Z",
           "review_round": 1,
           "task_id": "care-ase-faithful",
@@ -179,7 +180,7 @@
         "observed_fields": {
           "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
           "implementation_fingerprint_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
-          "integration_commit_sha": "d393af710da6aabd9c31fe63f6ff9225775a4ed5",
+          "integration_commit_sha": "cbafd7aa18b89c11f10e9663fa3cc1683192fa48",
           "request_nonce": "care-ase-20260806T090955Z",
           "review_round": 1,
           "task_id": "care-ase-faithful",
@@ -187,88 +188,88 @@
         },
         "required_artifacts": {
           "checkpoint_resume": {
-            "declared_sha256": "91b85fbec57c1dffc702bd11d140d74d64a8ce510e7bf50bcbc60977deba6c74",
-            "expected_sha256": "91b85fbec57c1dffc702bd11d140d74d64a8ce510e7bf50bcbc60977deba6c74",
+            "declared_sha256": "a75796c485b5049024c5f0b44dbb5d7aa90d769a14677630bd756238446f8dc2",
+            "expected_sha256": "a75796c485b5049024c5f0b44dbb5d7aa90d769a14677630bd756238446f8dc2",
             "file_exists": true,
             "listed": true,
-            "path": "care_ase_mutation_runtime_identity_scuiahxt/results/agent_flow_v3/care-ase-faithful/implementation/checkpoint_resume_probe_receipt.json"
+            "path": "care_ase_mutation_runtime_identity_hgkxmkxt/results/agent_flow_v3/care-ase-faithful/implementation/checkpoint_resume_probe_receipt.json"
           },
           "current_runtime_identity_receipt": {
             "declared_sha256": null,
-            "expected_sha256": "bdc694b1e857bc0f2530b9b3826c1203b96832dcd5ccb572a40473c1187e4c57",
+            "expected_sha256": "56f4b350c8dd44fd9b36f3a132d5008072a15c1398aadad9bb10f23aa2f0ec11",
             "file_exists": true,
             "listed": false,
-            "path": "care_ase_mutation_runtime_identity_scuiahxt/results/agent_flow_v3/care-ase-faithful/implementation/current_runtime_identity_receipt.json"
+            "path": "care_ase_mutation_runtime_identity_hgkxmkxt/results/agent_flow_v3/care-ase-faithful/implementation/current_runtime_identity_receipt.json"
           },
           "current_runtime_input_bundle": {
             "declared_sha256": null,
-            "expected_sha256": "2a9e962064b72067ff5f6182011f2db3413d50750d406c0cb35cd57c2bf2c096",
+            "expected_sha256": "034b1d1f28cee8a0d772684910620d81872b60e68aa0c1aca0ae71062de8fd0d",
             "file_exists": true,
             "listed": false,
-            "path": "care_ase_mutation_runtime_identity_scuiahxt/results/agent_flow_v3/care-ase-faithful/implementation/current_runtime_input_bundle.json"
+            "path": "care_ase_mutation_runtime_identity_hgkxmkxt/results/agent_flow_v3/care-ase-faithful/implementation/current_runtime_input_bundle.json"
           },
           "deployment_load": {
-            "declared_sha256": "07e4a44361316daa67429c035e821dede608eb3cd0cf294ce27f473b8e7ff850",
-            "expected_sha256": "07e4a44361316daa67429c035e821dede608eb3cd0cf294ce27f473b8e7ff850",
+            "declared_sha256": "1519d7e94897da661a4ccf79537992c07e65516b23e652f133aba5495d137d5e",
+            "expected_sha256": "1519d7e94897da661a4ccf79537992c07e65516b23e652f133aba5495d137d5e",
             "file_exists": true,
             "listed": true,
-            "path": "care_ase_mutation_runtime_identity_scuiahxt/results/agent_flow_v3/care-ase-faithful/implementation/deployment_load_probe_receipt.json"
+            "path": "care_ase_mutation_runtime_identity_hgkxmkxt/results/agent_flow_v3/care-ase-faithful/implementation/deployment_load_probe_receipt.json"
           },
           "evaluator_smoke": {
-            "declared_sha256": "07e4a44361316daa67429c035e821dede608eb3cd0cf294ce27f473b8e7ff850",
-            "expected_sha256": "07e4a44361316daa67429c035e821dede608eb3cd0cf294ce27f473b8e7ff850",
+            "declared_sha256": "1519d7e94897da661a4ccf79537992c07e65516b23e652f133aba5495d137d5e",
+            "expected_sha256": "1519d7e94897da661a4ccf79537992c07e65516b23e652f133aba5495d137d5e",
             "file_exists": true,
             "listed": true,
-            "path": "care_ase_mutation_runtime_identity_scuiahxt/results/agent_flow_v3/care-ase-faithful/implementation/evaluator_smoke_receipt.json"
+            "path": "care_ase_mutation_runtime_identity_hgkxmkxt/results/agent_flow_v3/care-ase-faithful/implementation/evaluator_smoke_receipt.json"
           },
           "executable_verifier": {
-            "declared_sha256": "07e4a44361316daa67429c035e821dede608eb3cd0cf294ce27f473b8e7ff850",
-            "expected_sha256": "07e4a44361316daa67429c035e821dede608eb3cd0cf294ce27f473b8e7ff850",
+            "declared_sha256": "1519d7e94897da661a4ccf79537992c07e65516b23e652f133aba5495d137d5e",
+            "expected_sha256": "1519d7e94897da661a4ccf79537992c07e65516b23e652f133aba5495d137d5e",
             "file_exists": true,
             "listed": true,
-            "path": "care_ase_mutation_runtime_identity_scuiahxt/results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json"
+            "path": "care_ase_mutation_runtime_identity_hgkxmkxt/results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json"
           },
           "frozen_verifier_validation": {
-            "declared_sha256": "07e4a44361316daa67429c035e821dede608eb3cd0cf294ce27f473b8e7ff850",
-            "expected_sha256": "07e4a44361316daa67429c035e821dede608eb3cd0cf294ce27f473b8e7ff850",
+            "declared_sha256": "1519d7e94897da661a4ccf79537992c07e65516b23e652f133aba5495d137d5e",
+            "expected_sha256": "1519d7e94897da661a4ccf79537992c07e65516b23e652f133aba5495d137d5e",
             "file_exists": true,
             "listed": true,
-            "path": "care_ase_mutation_runtime_identity_scuiahxt/results/agent_flow_v3/care-ase-faithful/implementation/frozen_verifier_validation_result.json"
+            "path": "care_ase_mutation_runtime_identity_hgkxmkxt/results/agent_flow_v3/care-ase-faithful/implementation/frozen_verifier_validation_result.json"
           },
           "hosted_ci": {
-            "declared_sha256": "07e4a44361316daa67429c035e821dede608eb3cd0cf294ce27f473b8e7ff850",
-            "expected_sha256": "07e4a44361316daa67429c035e821dede608eb3cd0cf294ce27f473b8e7ff850",
+            "declared_sha256": "1519d7e94897da661a4ccf79537992c07e65516b23e652f133aba5495d137d5e",
+            "expected_sha256": "1519d7e94897da661a4ccf79537992c07e65516b23e652f133aba5495d137d5e",
             "file_exists": true,
             "listed": true,
-            "path": "care_ase_mutation_runtime_identity_scuiahxt/results/agent_flow_v3/care-ase-faithful/controller_ci_receipt.json"
+            "path": "care_ase_mutation_runtime_identity_hgkxmkxt/results/agent_flow_v3/care-ase-faithful/controller_ci_receipt.json"
           },
           "implementation_evidence": {
-            "declared_sha256": "07e4a44361316daa67429c035e821dede608eb3cd0cf294ce27f473b8e7ff850",
-            "expected_sha256": "07e4a44361316daa67429c035e821dede608eb3cd0cf294ce27f473b8e7ff850",
+            "declared_sha256": "1519d7e94897da661a4ccf79537992c07e65516b23e652f133aba5495d137d5e",
+            "expected_sha256": "1519d7e94897da661a4ccf79537992c07e65516b23e652f133aba5495d137d5e",
             "file_exists": true,
             "listed": true,
-            "path": "care_ase_mutation_runtime_identity_scuiahxt/results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json"
+            "path": "care_ase_mutation_runtime_identity_hgkxmkxt/results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json"
           },
           "implementation_fingerprint": {
             "declared_sha256": "c2d213bdd6839291b6042f5653d085628f3e6256142ecdb185e714d1416deba5",
             "expected_sha256": "c2d213bdd6839291b6042f5653d085628f3e6256142ecdb185e714d1416deba5",
             "file_exists": true,
             "listed": true,
-            "path": "care_ase_mutation_runtime_identity_scuiahxt/results/agent_flow_v3/care-ase-faithful/implementation/implementation_fingerprint.json"
+            "path": "care_ase_mutation_runtime_identity_hgkxmkxt/results/agent_flow_v3/care-ase-faithful/implementation/implementation_fingerprint.json"
           },
           "inference": {
-            "declared_sha256": "07e4a44361316daa67429c035e821dede608eb3cd0cf294ce27f473b8e7ff850",
-            "expected_sha256": "07e4a44361316daa67429c035e821dede608eb3cd0cf294ce27f473b8e7ff850",
+            "declared_sha256": "1519d7e94897da661a4ccf79537992c07e65516b23e652f133aba5495d137d5e",
+            "expected_sha256": "1519d7e94897da661a4ccf79537992c07e65516b23e652f133aba5495d137d5e",
             "file_exists": true,
             "listed": true,
-            "path": "care_ase_mutation_runtime_identity_scuiahxt/results/agent_flow_v3/care-ase-faithful/implementation/inference_probe_receipt.json"
+            "path": "care_ase_mutation_runtime_identity_hgkxmkxt/results/agent_flow_v3/care-ase-faithful/implementation/inference_probe_receipt.json"
           },
           "transaction_gate": {
-            "declared_sha256": "07e4a44361316daa67429c035e821dede608eb3cd0cf294ce27f473b8e7ff850",
-            "expected_sha256": "07e4a44361316daa67429c035e821dede608eb3cd0cf294ce27f473b8e7ff850",
+            "declared_sha256": "1519d7e94897da661a4ccf79537992c07e65516b23e652f133aba5495d137d5e",
+            "expected_sha256": "1519d7e94897da661a4ccf79537992c07e65516b23e652f133aba5495d137d5e",
             "file_exists": true,
             "listed": true,
-            "path": "care_ase_mutation_runtime_identity_scuiahxt/results/agent_flow_v3/care-ase-faithful/verification/transaction_gate_receipt.json"
+            "path": "care_ase_mutation_runtime_identity_hgkxmkxt/results/agent_flow_v3/care-ase-faithful/verification/transaction_gate_receipt.json"
           }
         }
       },
