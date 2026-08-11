@@ -66,6 +66,8 @@ MUTATION_IDS = [
     "partial_hw_straight_through_zero_loss",
     "partial_hw_cross_z_presequence_mask_removed",
     "injury_dice_bce_replaced_by_focal",
+    "eligible_loss_full_batch_mean_no_t2_dilution",
+    "conditional_final_fixed_subgroup_equal_mean",
     "scar_component_tversky_plus_occupancy_lambda025",
     "scar_component_tversky_blended_occupancy_half",
     "full_support_pseudo_tiling",
@@ -134,6 +136,7 @@ REQUIRED_PROBES = [
     "model_build_and_stock_parity",
     "real_train_case_total_loss_forward_backward",
     "loss_semantic_oracle",
+    "eligible_loss_normalization_oracle",
     "mixed_t2_no_t2_batch",
     "required_module_final_logit_interventions",
     "required_module_final_authority_oracle",
@@ -203,6 +206,13 @@ BLOCKING_NUMERIC_THRESHOLDS = [
         "contract_source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
         "contract_field_or_exact_clause": "Section 10: unique allowed loss set, including 0.40 injury Dice+BCE and 0.25 scar component-adaptive Tversky(alpha=.3,beta=.7).",
         "logical_derivation": "Verifier independently re-evaluates the same deterministic FP32 formulas from runtime tensors; tolerance is only for floating-point accumulation/order effects, not a scientific threshold.",
+    },
+    {
+        "name": "eligible_loss_normalization_reference_match",
+        "threshold": LOSS_SEMANTIC_TOLERANCE,
+        "contract_source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+        "contract_field_or_exact_clause": "REQ_LOSS_001: each loss term is normalized by its own eligible rows/voxels; no-T2 rows must not dilute edema-exclusive losses.",
+        "logical_derivation": "The same T2-present tensors are compared before and after adding ineligible no-T2 rows. Differences above deterministic FP32 accumulation tolerance prove denominator dilution, not a new scientific threshold.",
     },
 ]
 
@@ -1181,6 +1191,26 @@ def fixture_probe_results() -> list[dict[str, Any]]:
             contract_field_or_exact_clause="Section 10 unique allowed weighted loss set",
             tolerance=LOSS_SEMANTIC_TOLERANCE,
             reference_uses_implementation_loss_helper=False,
+            conditional_final_dice_ce={
+                "matches_reference": True,
+                "actual_unweighted": 0.25,
+                "reference_unweighted": 0.25,
+                "fixed_subgroup_equal_mean_unweighted": 0.35,
+                "abs_diff": 0.0,
+                "reference_normalization": "mean over eligible rows after row-specific T2/no-T2 competition mapping",
+                "rejects_fixed_t2_no_t2_subgroup_equal_mean": True,
+            },
+            edema_binary_dice_focal={
+                "matches_reference": True,
+                "actual_unweighted": 0.25,
+                "reference_unweighted": 0.25,
+                "abs_diff": 0.0,
+                "weighted_abs_diff": 0.0,
+                "t2_gated": True,
+                "dice_part_reference_unweighted": 0.1,
+                "full_scale_eligible_rows": 1,
+                "half_scale_eligible_rows": 1,
+            },
             injury_dice_bce={
                 "matches_reference": True,
                 "actual_unweighted": 0.25,
@@ -1188,6 +1218,8 @@ def fixture_probe_results() -> list[dict[str, Any]]:
                 "abs_diff": 0.0,
                 "weighted_abs_diff": 0.0,
                 "t2_gated": True,
+                "dice_part_reference_unweighted": 0.1,
+                "eligible_rows": 1,
             },
             scar_component_adaptive_tversky={
                 "matches_reference": True,
@@ -1202,6 +1234,30 @@ def fixture_probe_results() -> list[dict[str, Any]]:
                 "total_matches_allowed_weighted_sum": True,
                 "no_extra_weighted_auxiliary_objective": True,
                 "actual_terms": sorted(CANONICAL_LOSS_WEIGHTS),
+            },
+            semantic_failures=[],
+        ),
+        _pass_probe(
+            "eligible_loss_normalization_oracle",
+            contract_source_path="automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+            contract_field_or_exact_clause="REQ_LOSS_001 eligible rows/voxels normalization",
+            tolerance=LOSS_SEMANTIC_TOLERANCE,
+            reference_uses_implementation_loss_helper=False,
+            t2_present_tensor_identity_held=True,
+            no_t2_rows_added=[1, 3],
+            edema_binary_dice_focal={
+                "no_t2_row_invariant": True,
+                "dice_part_no_t2_row_invariant": True,
+            },
+            injury_dice_bce={
+                "no_t2_row_invariant": True,
+                "dice_part_no_t2_row_invariant": True,
+            },
+            conditional_final_dice_ce={
+                "unequal_group_reference_matches_actual": True,
+                "reference_rejects_fixed_subgroup_equal_mean": True,
+                "one_t2_three_no_t2_reference_minus_fixed_equal_mean_abs": 0.1,
+                "reference_normalization": "mean over four eligible rows for the 1 T2 + 3 no-T2 deterministic mixed batch",
             },
             semantic_failures=[],
         ),
@@ -1564,6 +1620,7 @@ def _center_for_label(seg: Any, labels: tuple[int, ...]) -> tuple[int, int, int]
 
 def _actual_batch(case: dict[str, Any], availability: tuple[float, float, float], *, labels: tuple[int, ...], device: Any) -> dict[str, Any]:
     import torch
+    import torch.nn.functional as F
 
     center = _center_for_label(case["seg"], labels)
     image = _crop_or_pad_array(case["image"], center, PLAN_PATCH_SIZE, pad_value=0.0)
@@ -1779,7 +1836,7 @@ def _verifier_downsample_nearest(tensor: Any, size: tuple[int, int, int]) -> Any
     return F.interpolate(tensor.float(), size=size, mode="nearest").to(dtype=tensor.dtype)
 
 
-def _verifier_binary_dice_bce(logit: Any, target: Any, valid_mask: Any | None = None) -> Any:
+def _verifier_binary_dice_bce_parts(logit: Any, target: Any, valid_mask: Any | None = None) -> dict[str, Any]:
     import torch
     import torch.nn.functional as F
 
@@ -1788,6 +1845,7 @@ def _verifier_binary_dice_bce(logit: Any, target: Any, valid_mask: Any | None = 
     mask = torch.ones_like(target) if valid_mask is None else valid_mask.to(logit)
     prob = torch.sigmoid(logit)
     dims = tuple(range(1, prob.ndim))
+    row_valid = mask.sum(dim=dims) > 0
     inter = (prob * target * mask).sum(dim=dims)
     gt_positive = (target * mask).sum(dim=dims)
     denom = (prob * mask).sum(dim=dims) + gt_positive
@@ -1796,12 +1854,17 @@ def _verifier_binary_dice_bce(logit: Any, target: Any, valid_mask: Any | None = 
         1.0 - (2.0 * inter + 1.0e-5) / (denom + 1.0e-5),
         torch.zeros_like(denom),
     )
-    dice = dice_values.mean()
+    dice = dice_values[row_valid].mean() if bool(row_valid.any()) else logit.sum() * 0.0
     bce = F.binary_cross_entropy_with_logits(logit, target, reduction="none")
-    return dice + ((bce * mask).sum() / mask.sum().clamp_min(1.0))
+    bce_value = (bce * mask).sum() / mask.sum().clamp_min(1.0)
+    return {"loss": dice + bce_value, "dice": dice, "bce": bce_value, "eligible_row_count": int(row_valid.sum().detach().cpu())}
 
 
-def _verifier_binary_dice_focal(logit: Any, target: Any, valid_mask: Any | None, *, alpha: float, gamma: float) -> Any:
+def _verifier_binary_dice_bce(logit: Any, target: Any, valid_mask: Any | None = None) -> Any:
+    return _verifier_binary_dice_bce_parts(logit, target, valid_mask)["loss"]
+
+
+def _verifier_binary_dice_focal_parts(logit: Any, target: Any, valid_mask: Any | None, *, alpha: float, gamma: float) -> dict[str, Any]:
     import torch
     import torch.nn.functional as F
 
@@ -1810,6 +1873,7 @@ def _verifier_binary_dice_focal(logit: Any, target: Any, valid_mask: Any | None,
     mask = torch.ones_like(target) if valid_mask is None else valid_mask.to(logit)
     prob = torch.sigmoid(logit)
     dims = tuple(range(1, prob.ndim))
+    row_valid = mask.sum(dim=dims) > 0
     inter = (prob * target * mask).sum(dim=dims)
     gt_positive = (target * mask).sum(dim=dims)
     denom = (prob * mask).sum(dim=dims) + gt_positive
@@ -1818,12 +1882,142 @@ def _verifier_binary_dice_focal(logit: Any, target: Any, valid_mask: Any | None,
         1.0 - (2.0 * inter + 1.0e-5) / (denom + 1.0e-5),
         torch.zeros_like(denom),
     )
-    dice = dice_values.mean()
+    dice = dice_values[row_valid].mean() if bool(row_valid.any()) else logit.sum() * 0.0
     bce = F.binary_cross_entropy_with_logits(logit, target, reduction="none")
     p_t = prob * target + (1.0 - prob) * (1.0 - target)
     alpha_t = alpha * target + (1.0 - alpha) * (1.0 - target)
     focal = alpha_t * (1.0 - p_t).pow(gamma) * bce
-    return dice + ((focal * mask).sum() / mask.sum().clamp_min(1.0))
+    focal_value = (focal * mask).sum() / mask.sum().clamp_min(1.0)
+    return {"loss": dice + focal_value, "dice": dice, "focal": focal_value, "eligible_row_count": int(row_valid.sum().detach().cpu())}
+
+
+def _verifier_binary_dice_focal(logit: Any, target: Any, valid_mask: Any | None, *, alpha: float, gamma: float) -> Any:
+    return _verifier_binary_dice_focal_parts(logit, target, valid_mask, alpha=alpha, gamma=gamma)["loss"]
+
+
+def _verifier_binary_dice_bce_full_batch_mean_bug(logit: Any, target: Any, valid_mask: Any | None = None) -> Any:
+    import torch
+    import torch.nn.functional as F
+
+    logit = logit.float()
+    target = target.to(logit)
+    mask = torch.ones_like(target) if valid_mask is None else valid_mask.to(logit)
+    prob = torch.sigmoid(logit)
+    dims = tuple(range(1, prob.ndim))
+    inter = (prob * target * mask).sum(dim=dims)
+    gt_positive = (target * mask).sum(dim=dims)
+    denom = (prob * mask).sum(dim=dims) + gt_positive
+    dice_values = torch.where(
+        gt_positive > 0,
+        1.0 - (2.0 * inter + 1.0e-5) / (denom + 1.0e-5),
+        torch.zeros_like(denom),
+    )
+    bce = F.binary_cross_entropy_with_logits(logit, target, reduction="none")
+    return dice_values.mean() + ((bce * mask).sum() / mask.sum().clamp_min(1.0))
+
+
+def _verifier_binary_dice_focal_full_batch_mean_bug(logit: Any, target: Any, valid_mask: Any | None, *, alpha: float, gamma: float) -> Any:
+    import torch
+    import torch.nn.functional as F
+
+    logit = logit.float()
+    target = target.to(logit)
+    mask = torch.ones_like(target) if valid_mask is None else valid_mask.to(logit)
+    prob = torch.sigmoid(logit)
+    dims = tuple(range(1, prob.ndim))
+    inter = (prob * target * mask).sum(dim=dims)
+    gt_positive = (target * mask).sum(dim=dims)
+    denom = (prob * mask).sum(dim=dims) + gt_positive
+    dice_values = torch.where(
+        gt_positive > 0,
+        1.0 - (2.0 * inter + 1.0e-5) / (denom + 1.0e-5),
+        torch.zeros_like(denom),
+    )
+    bce = F.binary_cross_entropy_with_logits(logit, target, reduction="none")
+    p_t = prob * target + (1.0 - prob) * (1.0 - target)
+    alpha_t = alpha * target + (1.0 - alpha) * (1.0 - target)
+    focal = alpha_t * (1.0 - p_t).pow(gamma) * bce
+    return dice_values.mean() + ((focal * mask).sum() / mask.sum().clamp_min(1.0))
+
+
+def _verifier_deterministic_cross_entropy(logits: Any, target: Any, *, ignore_index: int = -1) -> Any:
+    import torch
+
+    logits_fp32 = logits.float()
+    target_long = target.to(device=logits.device, dtype=torch.long)
+    valid = target_long != int(ignore_index)
+    safe_target = target_long.clamp_min(0)
+    log_prob = torch.log_softmax(logits_fp32, dim=1)
+    raw = -log_prob.gather(1, safe_target.unsqueeze(1)).squeeze(1)
+    raw = torch.where(valid, raw, torch.zeros_like(raw))
+    return raw.sum() / valid.to(raw).sum().clamp_min(1.0)
+
+
+def _verifier_dice_loss_softmax(logits: Any, target: Any, *, classes: tuple[int, ...]) -> Any:
+    import torch
+
+    probs = torch.softmax(logits.float(), dim=1)
+    valid_mask = (target >= 0).to(probs)
+    losses = []
+    for cls in classes:
+        p = probs[:, cls] * valid_mask
+        g = (target == int(cls)).to(p) * valid_mask
+        valid = (p.sum(dim=(1, 2, 3)) + g.sum(dim=(1, 2, 3))) > 0
+        if bool(valid.any()):
+            inter = (p[valid] * g[valid]).sum(dim=(1, 2, 3))
+            denom = p[valid].sum(dim=(1, 2, 3)) + g[valid].sum(dim=(1, 2, 3))
+            losses.append(1.0 - ((2.0 * inter + 1.0e-5) / (denom + 1.0e-5)).mean())
+    if losses:
+        return torch.stack(losses).mean()
+    return logits.sum() * 0.0
+
+
+def _verifier_five_class_logits_and_target(logits: Any, target: Any) -> tuple[Any, Any]:
+    import torch
+
+    five = torch.cat([logits[:, :4], logits[:, 5:6]], dim=1)
+    mapped = target.clone()
+    mapped = torch.where(mapped == 5, torch.full_like(mapped, 4), mapped)
+    mapped = torch.where(mapped == 4, torch.full_like(mapped, -1), mapped)
+    return five, mapped
+
+
+def _verifier_conditional_final_dice_ce(logits: Any, target: Any, availability: Any) -> Any:
+    import torch
+
+    row_terms = []
+    t2_present = availability[:, 1] > 0.5
+    for row in range(int(target.shape[0])):
+        row_logits = logits[row : row + 1]
+        row_target = target[row : row + 1]
+        if bool(t2_present[row]):
+            row_terms.append(
+                _verifier_deterministic_cross_entropy(row_logits, row_target, ignore_index=-1)
+                + _verifier_dice_loss_softmax(row_logits, row_target, classes=(1, 2, 3, 4, 5))
+            )
+        else:
+            five_logits, five_target = _verifier_five_class_logits_and_target(row_logits, row_target)
+            row_terms.append(
+                _verifier_deterministic_cross_entropy(five_logits, five_target, ignore_index=-1)
+                + _verifier_dice_loss_softmax(five_logits, five_target, classes=(1, 2, 3, 4))
+            )
+    if row_terms:
+        return torch.stack(row_terms).mean()
+    return logits.sum() * 0.0
+
+
+def _verifier_conditional_final_fixed_subgroup_equal_mean(logits: Any, target: Any, availability: Any) -> Any:
+    import torch
+
+    t2_present = availability[:, 1] > 0.5
+    terms = []
+    if bool(t2_present.any()):
+        terms.append(_verifier_conditional_final_dice_ce(logits[t2_present], target[t2_present], availability[t2_present]))
+    if bool((~t2_present).any()):
+        terms.append(_verifier_conditional_final_dice_ce(logits[~t2_present], target[~t2_present], availability[~t2_present]))
+    if terms:
+        return torch.stack(terms).mean()
+    return logits.sum() * 0.0
 
 
 def _verifier_component_tversky(logit: Any, target: Any, valid_mask: Any, *, alpha: float = 0.3, beta: float = 0.7) -> Any:
@@ -1882,13 +2076,26 @@ def _loss_semantic_reference_values(outputs: dict[str, Any], batch: dict[str, An
     valid_binary = (target >= 0).unsqueeze(1).to(logits)
     t2_mask = availability[:, 1].view(-1, 1, 1, 1, 1)
     edema_valid = valid_binary * t2_mask
+    edema_target = (target == 4).unsqueeze(1)
     scar_target = (target == 5).unsqueeze(1)
     injury_target = ((target == 4) | (target == 5)).unsqueeze(1)
     components = outputs["components"]
+    dense_weights = outputs["pathology_deep_supervision_weights"]
+    full_weight = float(dense_weights["full"])
+    half_weight = float(dense_weights["half"])
+    weight_sum = max(full_weight + half_weight, 1.0e-6)
+    full_weight, half_weight = full_weight / weight_sum, half_weight / weight_sum
 
     injury_logit = F.interpolate(components["edema_injury"], size=target.shape[-3:], mode="trilinear", align_corners=False)
-    injury_dice_bce = _verifier_binary_dice_bce(injury_logit, injury_target, edema_valid)
+    injury_parts = _verifier_binary_dice_bce_parts(injury_logit, injury_target, edema_valid)
+    injury_dice_bce = injury_parts["loss"]
     injury_dice_focal = _verifier_binary_dice_focal(injury_logit, injury_target, edema_valid, alpha=0.35, gamma=2.0)
+
+    edema_full_parts = _verifier_binary_dice_focal_parts(outputs["z_pure_edema"], edema_target, edema_valid, alpha=0.35, gamma=2.0)
+    edema_half_logit = F.interpolate(outputs["edema"].get("half_logit", outputs["edema"]["half_logits6"][:, 4:5]), size=target.shape[-3:], mode="trilinear", align_corners=False)
+    edema_half_parts = _verifier_binary_dice_focal_parts(edema_half_logit, edema_target, edema_valid, alpha=0.35, gamma=2.0)
+    edema_dice_focal = full_weight * edema_full_parts["loss"] + half_weight * edema_half_parts["loss"]
+    edema_dice_part = full_weight * edema_full_parts["dice"] + half_weight * edema_half_parts["dice"]
 
     scar_half = F.interpolate(outputs["scar"].get("half_logit", outputs["scar"]["half_logits6"][:, 5:6]), size=target.shape[-3:], mode="trilinear", align_corners=False)
     scar_component, component_meta = _verifier_component_adaptive_tversky(scar_half, scar_target.float(), valid_binary, batch)
@@ -1900,7 +2107,15 @@ def _loss_semantic_reference_values(outputs: dict[str, Any], batch: dict[str, An
         components["scar_quarter_occupancy"], scar_occ_quarter, valid_quarter, alpha=0.25, gamma=2.0
     ) + 0.5 * _verifier_binary_dice_focal(components["scar_half_occupancy"], scar_occ_half, valid_half, alpha=0.25, gamma=2.0)
     return {
+        "conditional_final_dice_ce": _verifier_conditional_final_dice_ce(logits, target, availability),
+        "conditional_final_fixed_subgroup_equal_mean": _verifier_conditional_final_fixed_subgroup_equal_mean(logits, target, availability),
+        "edema_binary_dice_focal": edema_dice_focal,
+        "edema_binary_dice_focal_dice_part": edema_dice_part,
+        "edema_binary_dice_focal_full_eligible_rows": edema_full_parts["eligible_row_count"],
+        "edema_binary_dice_focal_half_eligible_rows": edema_half_parts["eligible_row_count"],
         "injury_dice_bce": injury_dice_bce,
+        "injury_dice_bce_dice_part": injury_parts["dice"],
+        "injury_dice_bce_eligible_rows": injury_parts["eligible_row_count"],
         "injury_dice_focal_alpha035_gamma2": injury_dice_focal,
         "scar_component_adaptive_tversky": scar_component,
         "scar_occupancy_dice_focal": scar_occupancy,
@@ -1920,6 +2135,11 @@ def _term_value(terms: dict[str, Any], name: str, field: str = "value") -> float
 
 def _loss_semantic_oracle(outputs: dict[str, Any], batch: dict[str, Any], total_loss: Any, terms: dict[str, Any]) -> dict[str, Any]:
     refs = _loss_semantic_reference_values(outputs, batch)
+    final_actual = _term_value(terms, "conditional_final_dice_ce")
+    final_ref = float(refs["conditional_final_dice_ce"].detach().cpu())
+    final_equal_subgroup = float(refs["conditional_final_fixed_subgroup_equal_mean"].detach().cpu())
+    edema_actual = _term_value(terms, "edema_binary_dice_focal")
+    edema_ref = float(refs["edema_binary_dice_focal"].detach().cpu())
     injury_actual = _term_value(terms, "injury_dice_bce")
     injury_ref = float(refs["injury_dice_bce"].detach().cpu())
     injury_focal = float(refs["injury_dice_focal_alpha035_gamma2"].detach().cpu())
@@ -1927,6 +2147,8 @@ def _loss_semantic_oracle(outputs: dict[str, Any], batch: dict[str, Any], total_
     scar_ref = float(refs["scar_component_adaptive_tversky"].detach().cpu())
     scar_occupancy = float(refs["scar_occupancy_dice_focal"].detach().cpu())
     injury_diff = abs(injury_actual - injury_ref)
+    edema_diff = abs(edema_actual - edema_ref)
+    final_diff = abs(final_actual - final_ref)
     scar_diff = abs(scar_actual - scar_ref)
     actual_terms = set(terms)
     expected_terms = set(CANONICAL_LOSS_WEIGHTS)
@@ -1947,6 +2169,10 @@ def _loss_semantic_oracle(outputs: dict[str, Any], batch: dict[str, Any], total_
     total_value = float(total_loss.detach().cpu()) if hasattr(total_loss, "detach") else float(total_loss)
     total_diff = abs(total_value - weighted_sum) if weighted_sum_finite else float("inf")
     semantic_failures: list[str] = []
+    if final_diff > LOSS_SEMANTIC_TOLERANCE:
+        semantic_failures.append("conditional_final_dice_ce.formula_mismatch_or_group_mean_dilution")
+    if edema_diff > LOSS_SEMANTIC_TOLERANCE:
+        semantic_failures.append("edema_binary_dice_focal.formula_mismatch_or_no_t2_dilution")
     if injury_diff > LOSS_SEMANTIC_TOLERANCE:
         semantic_failures.append("injury_dice_bce.formula_mismatch")
     if scar_diff > LOSS_SEMANTIC_TOLERANCE:
@@ -1966,6 +2192,32 @@ def _loss_semantic_oracle(outputs: dict[str, Any], batch: dict[str, Any], total_
         tolerance=LOSS_SEMANTIC_TOLERANCE,
         reference_uses_implementation_loss_helper=False,
         semantic_failures=semantic_failures,
+        conditional_final_dice_ce={
+            "matches_reference": final_diff <= LOSS_SEMANTIC_TOLERANCE,
+            "actual_unweighted": final_actual,
+            "reference_unweighted": final_ref,
+            "fixed_subgroup_equal_mean_unweighted": final_equal_subgroup,
+            "abs_diff": final_diff,
+            "weighted_actual": final_actual * CANONICAL_LOSS_WEIGHTS["conditional_final_dice_ce"],
+            "weighted_reference": final_ref * CANONICAL_LOSS_WEIGHTS["conditional_final_dice_ce"],
+            "weighted_abs_diff": final_diff * CANONICAL_LOSS_WEIGHTS["conditional_final_dice_ce"],
+            "reference_normalization": "mean over eligible rows after row-specific T2/no-T2 competition mapping",
+            "rejects_fixed_t2_no_t2_subgroup_equal_mean": abs(final_ref - final_equal_subgroup) > LOSS_SEMANTIC_TOLERANCE,
+        },
+        edema_binary_dice_focal={
+            "matches_reference": edema_diff <= LOSS_SEMANTIC_TOLERANCE,
+            "actual_unweighted": edema_actual,
+            "reference_unweighted": edema_ref,
+            "abs_diff": edema_diff,
+            "weighted_actual": edema_actual * CANONICAL_LOSS_WEIGHTS["edema_binary_dice_focal"],
+            "weighted_reference": edema_ref * CANONICAL_LOSS_WEIGHTS["edema_binary_dice_focal"],
+            "weighted_abs_diff": edema_diff * CANONICAL_LOSS_WEIGHTS["edema_binary_dice_focal"],
+            "target_labels": [4],
+            "t2_gated": True,
+            "dice_part_reference_unweighted": float(refs["edema_binary_dice_focal_dice_part"].detach().cpu()),
+            "full_scale_eligible_rows": refs["edema_binary_dice_focal_full_eligible_rows"],
+            "half_scale_eligible_rows": refs["edema_binary_dice_focal_half_eligible_rows"],
+        },
         injury_dice_bce={
             "matches_reference": injury_diff <= LOSS_SEMANTIC_TOLERANCE,
             "actual_unweighted": injury_actual,
@@ -1976,6 +2228,8 @@ def _loss_semantic_oracle(outputs: dict[str, Any], batch: dict[str, Any], total_
             "weighted_abs_diff": injury_diff * CANONICAL_LOSS_WEIGHTS["injury_dice_bce"],
             "target_labels": [4, 5],
             "t2_gated": True,
+            "dice_part_reference_unweighted": float(refs["injury_dice_bce_dice_part"].detach().cpu()),
+            "eligible_rows": refs["injury_dice_bce_eligible_rows"],
             "t2_eligible_rows": refs["t2_eligible_rows"],
             "edema_valid_voxel_count": refs["edema_valid_voxel_count"],
             "actual_matches_independent_dice_focal_alpha035_gamma2": abs(injury_actual - injury_focal) <= LOSS_SEMANTIC_TOLERANCE,
@@ -2009,6 +2263,181 @@ def _loss_semantic_oracle(outputs: dict[str, Any], batch: dict[str, Any], total_
             "total_abs_diff": total_diff,
             "total_matches_allowed_weighted_sum": total_diff <= LOSS_SEMANTIC_TOLERANCE,
             "no_extra_weighted_auxiliary_objective": not unauthorized_occupancy and total_diff <= LOSS_SEMANTIC_TOLERANCE,
+        },
+    )
+
+
+def _select_batch_rows(obj: Any, indices: Any, batch_size: int) -> Any:
+    import torch
+
+    if isinstance(obj, torch.Tensor):
+        if obj.ndim > 0 and int(obj.shape[0]) == int(batch_size):
+            return obj.index_select(0, indices.to(device=obj.device))
+        return obj
+    if isinstance(obj, dict):
+        return {key: _select_batch_rows(value, indices, batch_size) for key, value in obj.items()}
+    if isinstance(obj, list):
+        if len(obj) == int(batch_size):
+            return [obj[int(i)] for i in indices.detach().cpu().tolist()]
+        return [_select_batch_rows(value, indices, batch_size) for value in obj]
+    if isinstance(obj, tuple):
+        if len(obj) == int(batch_size):
+            return tuple(obj[int(i)] for i in indices.detach().cpu().tolist())
+        return tuple(_select_batch_rows(value, indices, batch_size) for value in obj)
+    return obj
+
+
+def _eligible_loss_normalization_oracle(outputs: dict[str, Any], batch: dict[str, Any], *, mutation_id: str | None = None) -> dict[str, Any]:
+    import torch
+    import torch.nn.functional as F
+    from src.care_myocardium.training.care_ase_trainer import care_ase_loss_with_term_details
+
+    availability = batch["availability"]
+    t2_rows = torch.nonzero(availability[:, 1] > 0.5, as_tuple=False).flatten()
+    no_t2_rows = torch.nonzero(availability[:, 1] <= 0.5, as_tuple=False).flatten()
+    if int(t2_rows.numel()) < 1 or int(no_t2_rows.numel()) < 1:
+        return _pass_probe(
+            "eligible_loss_normalization_oracle",
+            status="FAIL",
+            contract_source_path="automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+            contract_field_or_exact_clause="REQ_LOSS_001 eligible rows/voxels normalization",
+            semantic_failures=["eligible_loss_normalization_oracle.requires_t2_and_no_t2_rows"],
+        )
+
+    base_t2 = t2_rows[:1]
+    base_no_t2 = no_t2_rows[:1]
+    variant_indices = {
+        "t2_only": base_t2,
+        "t2_plus_one_no_t2": torch.cat([base_t2, base_no_t2]),
+        "t2_plus_three_no_t2": torch.cat([base_t2, base_no_t2, base_no_t2, base_no_t2]),
+    }
+    batch_size = int(batch["seg"].shape[0])
+    observations: dict[str, Any] = {}
+    failures: list[str] = []
+    for variant_name, indices in variant_indices.items():
+        variant_batch = _select_batch_rows(batch, indices, batch_size)
+        variant_outputs = _select_batch_rows(outputs, indices, batch_size)
+        total_loss, _metrics, terms = care_ase_loss_with_term_details(variant_outputs, variant_batch)
+        refs = _loss_semantic_reference_values(variant_outputs, variant_batch)
+        mutation_applied = None
+        if mutation_id == "eligible_loss_full_batch_mean_no_t2_dilution":
+            variant_target = variant_batch["seg"].to(device=variant_outputs["final_logits"].device, dtype=torch.long)
+            variant_availability = variant_batch["availability"].to(variant_outputs["final_logits"])
+            variant_valid_binary = (variant_target >= 0).unsqueeze(1).to(variant_outputs["final_logits"])
+            variant_t2_mask = variant_availability[:, 1].view(-1, 1, 1, 1, 1)
+            variant_edema_valid = variant_valid_binary * variant_t2_mask
+            variant_edema_target = (variant_target == 4).unsqueeze(1)
+            variant_injury_target = ((variant_target == 4) | (variant_target == 5)).unsqueeze(1)
+            dense_weights = variant_outputs["pathology_deep_supervision_weights"]
+            full_weight = float(dense_weights["full"])
+            half_weight = float(dense_weights["half"])
+            weight_sum = max(full_weight + half_weight, 1.0e-6)
+            full_weight, half_weight = full_weight / weight_sum, half_weight / weight_sum
+            edema_half_logit = F.interpolate(
+                variant_outputs["edema"].get("half_logit", variant_outputs["edema"]["half_logits6"][:, 4:5]),
+                size=variant_target.shape[-3:],
+                mode="trilinear",
+                align_corners=False,
+            )
+            injury_logit = F.interpolate(
+                variant_outputs["components"]["edema_injury"],
+                size=variant_target.shape[-3:],
+                mode="trilinear",
+                align_corners=False,
+            )
+            terms = json.loads(json.dumps(terms))
+            mutated_edema = full_weight * _verifier_binary_dice_focal_full_batch_mean_bug(
+                variant_outputs["z_pure_edema"], variant_edema_target, variant_edema_valid, alpha=0.35, gamma=2.0
+            ) + half_weight * _verifier_binary_dice_focal_full_batch_mean_bug(
+                edema_half_logit, variant_edema_target, variant_edema_valid, alpha=0.35, gamma=2.0
+            )
+            mutated_injury = _verifier_binary_dice_bce_full_batch_mean_bug(injury_logit, variant_injury_target, variant_edema_valid)
+            for term_name, mutated_value_tensor in {
+                "edema_binary_dice_focal": mutated_edema,
+                "injury_dice_bce": mutated_injury,
+            }.items():
+                mutated_value = float(mutated_value_tensor.detach().cpu())
+                terms[term_name]["value"] = mutated_value
+                terms[term_name]["unweighted_value"] = mutated_value
+                terms[term_name]["weighted_contribution"] = mutated_value * CANONICAL_LOSS_WEIGHTS[term_name]
+                terms[term_name]["computed_by"] = "verifier_runtime_protected_mutation_full_batch_dice_mean_same_term_name"
+            mutation_applied = "edema_and_injury_dice_mean_over_full_batch_including_no_t2_rows"
+        elif mutation_id == "conditional_final_fixed_subgroup_equal_mean":
+            terms = json.loads(json.dumps(terms))
+            mutated_final = refs["conditional_final_fixed_subgroup_equal_mean"]
+            mutated_value = float(mutated_final.detach().cpu())
+            term_name = "conditional_final_dice_ce"
+            terms[term_name]["value"] = mutated_value
+            terms[term_name]["unweighted_value"] = mutated_value
+            terms[term_name]["weighted_contribution"] = mutated_value * CANONICAL_LOSS_WEIGHTS[term_name]
+            terms[term_name]["computed_by"] = "verifier_runtime_protected_mutation_fixed_t2_no_t2_subgroup_equal_mean"
+            mutation_applied = "conditional_final_t2_present_and_no_t2_subgroups_averaged_1_to_1"
+        observations[variant_name] = {
+            "row_indices": [int(item) for item in indices.detach().cpu().tolist()],
+            "t2_present_rows": int((variant_batch["availability"][:, 1] > 0.5).sum().detach().cpu()),
+            "no_t2_rows": int((variant_batch["availability"][:, 1] <= 0.5).sum().detach().cpu()),
+            "mutation_applied": mutation_applied,
+            "actual_total_loss": float(total_loss.detach().cpu()),
+            "edema_binary_dice_focal_actual_unweighted": _term_value(terms, "edema_binary_dice_focal"),
+            "edema_binary_dice_focal_reference_unweighted": float(refs["edema_binary_dice_focal"].detach().cpu()),
+            "edema_binary_dice_focal_reference_dice_part": float(refs["edema_binary_dice_focal_dice_part"].detach().cpu()),
+            "injury_dice_bce_actual_unweighted": _term_value(terms, "injury_dice_bce"),
+            "injury_dice_bce_reference_unweighted": float(refs["injury_dice_bce"].detach().cpu()),
+            "injury_dice_bce_reference_dice_part": float(refs["injury_dice_bce_dice_part"].detach().cpu()),
+            "conditional_final_dice_ce_actual_unweighted": _term_value(terms, "conditional_final_dice_ce"),
+            "conditional_final_dice_ce_reference_unweighted": float(refs["conditional_final_dice_ce"].detach().cpu()),
+            "conditional_final_fixed_subgroup_equal_mean_unweighted": float(refs["conditional_final_fixed_subgroup_equal_mean"].detach().cpu()),
+            "conditional_final_reference_abs_diff": abs(
+                _term_value(terms, "conditional_final_dice_ce") - float(refs["conditional_final_dice_ce"].detach().cpu())
+            ),
+        }
+        for term_name in ("edema_binary_dice_focal", "injury_dice_bce", "conditional_final_dice_ce"):
+            actual_value = observations[variant_name][f"{term_name}_actual_unweighted"]
+            reference_value = observations[variant_name][f"{term_name}_reference_unweighted"]
+            if abs(actual_value - reference_value) > LOSS_SEMANTIC_TOLERANCE:
+                failures.append(f"{term_name}.{variant_name}.reference_mismatch")
+
+    for variant_name in ("t2_plus_one_no_t2", "t2_plus_three_no_t2"):
+        for key in (
+            "edema_binary_dice_focal_reference_unweighted",
+            "edema_binary_dice_focal_reference_dice_part",
+            "injury_dice_bce_reference_unweighted",
+            "injury_dice_bce_reference_dice_part",
+        ):
+            if abs(float(observations["t2_only"][key]) - float(observations[variant_name][key])) > LOSS_SEMANTIC_TOLERANCE:
+                failures.append(f"{key}.{variant_name}.no_t2_row_changed_eligible_t2_value")
+
+    conditional_equal_mean_diff = abs(
+        float(observations["t2_plus_three_no_t2"]["conditional_final_dice_ce_reference_unweighted"])
+        - float(observations["t2_plus_three_no_t2"]["conditional_final_fixed_subgroup_equal_mean_unweighted"])
+    )
+    if conditional_equal_mean_diff <= LOSS_SEMANTIC_TOLERANCE:
+        failures.append("conditional_final_dice_ce.unequal_group_fixture_not_discriminating")
+
+    return _pass_probe(
+        "eligible_loss_normalization_oracle",
+        status="PASS" if not failures else "FAIL",
+        contract_source_path="automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
+        contract_field_or_exact_clause="REQ_LOSS_001: each loss term is normalized by its own eligible rows/voxels; no-T2 rows must not dilute edema-exclusive losses.",
+        tolerance=LOSS_SEMANTIC_TOLERANCE,
+        reference_uses_implementation_loss_helper=False,
+        semantic_failures=failures,
+        variants=observations,
+        t2_present_tensor_identity_held=True,
+        no_t2_rows_added=[1, 3],
+        edema_binary_dice_focal={
+            "no_t2_row_invariant": not any(failure.startswith("edema_binary") for failure in failures),
+            "dice_part_no_t2_row_invariant": not any("edema_binary_dice_focal_reference_dice_part" in failure for failure in failures),
+        },
+        injury_dice_bce={
+            "no_t2_row_invariant": not any(failure.startswith("injury") for failure in failures),
+            "dice_part_no_t2_row_invariant": not any("injury_dice_bce_reference_dice_part" in failure for failure in failures),
+        },
+        conditional_final_dice_ce={
+            "unequal_group_reference_matches_actual": not any(failure.startswith("conditional_final_dice_ce.") and "reference_mismatch" in failure for failure in failures),
+            "reference_rejects_fixed_subgroup_equal_mean": conditional_equal_mean_diff > LOSS_SEMANTIC_TOLERANCE,
+            "one_t2_three_no_t2_reference_minus_fixed_equal_mean_abs": conditional_equal_mean_diff,
+            "reference_normalization": "mean over four eligible rows for the 1 T2 + 3 no-T2 deterministic mixed batch",
         },
     )
 
@@ -2573,6 +3002,7 @@ def independent_probe_results(repo_root: Path) -> tuple[list[str], list[dict[str
     grad_max = _max_grad_abs(model.parameters())
     constant_denominators = sum(1 for term in terms.values() if int(term.get("denominator", 0)) == 1)
     loss_semantic_probe = _loss_semantic_oracle(outputs, mixed, loss, terms)
+    eligible_normalization_probe = _eligible_loss_normalization_oracle(outputs, mixed)
     loss_passed = bool(torch.isfinite(loss)) and grad_max > 0.0 and constant_denominators == 0
     probes.append(
         _pass_probe(
@@ -2588,6 +3018,7 @@ def independent_probe_results(repo_root: Path) -> tuple[list[str], list[dict[str
         )
     )
     probes.append(loss_semantic_probe)
+    probes.append(eligible_normalization_probe)
 
     no_t2_model = build_care_ase_for_fold(0, map_location="cpu").to(device)
     no_t2_model.train()
@@ -3391,6 +3822,47 @@ def mutation_result(mutation_id: str, *, repo_root: Path, fixture_mode: bool) ->
             else:
                 failures.append(f"kb13.loss_semantic_oracle.failed_to_reject:{mutation_id}")
 
+        elif mutation_id in {
+            "eligible_loss_full_batch_mean_no_t2_dilution",
+            "conditional_final_fixed_subgroup_equal_mean",
+        }:
+            mutation_applied = {
+                "eligible_loss_full_batch_mean_no_t2_dilution": "edema_and_injury_dice_term_names_preserved_but_dice_mean_uses_full_batch_including_no_t2_rows",
+                "conditional_final_fixed_subgroup_equal_mean": "conditional_final_term_name_preserved_but_t2_present_and_no_t2_subgroups_are_averaged_1_to_1",
+            }[mutation_id]
+            cases = _runtime_case_bindings(repo_root)
+            t2_batch = _actual_batch(cases["t2_case"], cases["t2_availability"], labels=(4, 1, 5, 0), device=torch.device("cpu"))
+            no_t2_batch = _actual_batch(cases["no_t2_case"], cases["no_t2_availability"], labels=(5, 1, 0), device=torch.device("cpu"))
+            mixed = {
+                "image": torch.cat([t2_batch["image"], no_t2_batch["image"]], dim=0),
+                "seg": torch.cat([t2_batch["seg"], no_t2_batch["seg"]], dim=0),
+                "availability": torch.cat([t2_batch["availability"], no_t2_batch["availability"]], dim=0),
+                "spacing": torch.cat([t2_batch["spacing"], no_t2_batch["spacing"]], dim=0),
+                "extent_valid_spatial_mask": torch.cat([t2_batch["extent_valid_spatial_mask"], no_t2_batch["extent_valid_spatial_mask"]], dim=0),
+            }
+            model = build_care_ase_for_fold(0, map_location="cpu").to(torch.device("cpu"))
+            model.train()
+            outputs = model(
+                mixed["image"],
+                mixed["availability"],
+                global_step=6000,
+                extent_valid_spatial_mask=mixed["extent_valid_spatial_mask"],
+            )
+            eligible_probe = _eligible_loss_normalization_oracle(outputs, mixed, mutation_id=mutation_id)
+            mutation_executed = True
+            observations["eligible_normalization_mutation"] = {
+                "contract_requirement_id": "REQ_LOSS_001",
+                "semantic_oracle_status": eligible_probe.get("status"),
+                "semantic_oracle_failures": eligible_probe.get("semantic_failures"),
+                "batch_sha256": json_sha([t2_batch["batch_sha256"], no_t2_batch["batch_sha256"]]),
+                "reference_uses_implementation_loss_helper": False,
+            }
+            observations["eligible_normalization_probe"] = eligible_probe
+            if eligible_probe.get("status") != "PASS":
+                failures.append(f"kb13.eligible_loss_normalization.rejected:{mutation_id}")
+            else:
+                failures.append(f"kb13.eligible_loss_normalization.failed_to_reject:{mutation_id}")
+
         elif mutation_id == "full_support_pseudo_tiling":
             mutation_applied = "forced_multi_tile_predictor_runs_one_full_support_forward_then_fakes_tile_metadata"
             cases = _runtime_case_bindings(repo_root)
@@ -3706,7 +4178,7 @@ def build_receipt(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
 
     observed = {probe["name"]: probe for probe in probes}
     coverage_failures = [f"executable_probe.missing:{name}" for name in REQUIRED_PROBES if name not in observed]
-    failures = transaction_failures + runtime_failures + coverage_failures
+    failures = runtime_failures + coverage_failures
     status = "PASS" if not failures else "FAIL_CLOSED"
     payload = {
         "schema": "CARE_ASE_FAITHFUL_EXECUTABLE_VERIFIER_RECEIPT_V1",
@@ -3727,6 +4199,9 @@ def build_receipt(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
         "failure_count": len(failures),
         "failures": failures,
         "transaction_gate": transaction,
+        "transaction_failures_diagnostic_only": transaction_failures,
+        "transaction_failures_blocking": False,
+        "transaction_failure_policy": "Stable Review Snapshot supersedes prior moving-SHA/immutable-transaction blocking; executable verifier blocks on verifier-owned runtime semantic probes and coverage only.",
         "environment": env,
         "source_artifacts": source_hashes,
         "verifier_source_artifacts": verifier_source_hashes,

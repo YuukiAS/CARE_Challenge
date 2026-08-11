@@ -261,6 +261,8 @@ REQUIRED_EXECUTABLE_MUTATION_IDS = {
     "partial_hw_straight_through_zero_loss",
     "partial_hw_cross_z_presequence_mask_removed",
     "injury_dice_bce_replaced_by_focal",
+    "eligible_loss_full_batch_mean_no_t2_dilution",
+    "conditional_final_fixed_subgroup_equal_mean",
     "scar_component_tversky_plus_occupancy_lambda025",
     "scar_component_tversky_blended_occupancy_half",
     "full_support_pseudo_tiling",
@@ -294,6 +296,7 @@ REQUIRED_EXECUTABLE_PROBES = {
     "model_build_and_stock_parity",
     "real_train_case_total_loss_forward_backward",
     "loss_semantic_oracle",
+    "eligible_loss_normalization_oracle",
     "mixed_t2_no_t2_batch",
     "required_module_final_logit_interventions",
     "required_module_final_authority_oracle",
@@ -860,6 +863,64 @@ def _check_verifier_owned_execution(failures: list[str], evidence: dict[str, Any
             failures,
             unique_loss_set.get("no_extra_weighted_auxiliary_objective") is True,
             "verifier_owned.loss_semantic.no_extra_weighted_auxiliary",
+        )
+        edema_semantic = (
+            loss_semantic.get("edema_binary_dice_focal", {})
+            if isinstance(loss_semantic.get("edema_binary_dice_focal"), dict)
+            else {}
+        )
+        final_semantic = (
+            loss_semantic.get("conditional_final_dice_ce", {})
+            if isinstance(loss_semantic.get("conditional_final_dice_ce"), dict)
+            else {}
+        )
+        _require(
+            failures,
+            edema_semantic.get("matches_reference") is True,
+            "verifier_owned.loss_semantic.edema_binary_dice_focal_formula",
+        )
+        _require(
+            failures,
+            final_semantic.get("matches_reference") is True,
+            "verifier_owned.loss_semantic.conditional_final_formula",
+        )
+        eligible_norm = by_name.get("eligible_loss_normalization_oracle", {})
+        _require(failures, eligible_norm.get("status") == "PASS", "verifier_owned.eligible_normalization.status")
+        _require(
+            failures,
+            eligible_norm.get("reference_uses_implementation_loss_helper") is False,
+            "verifier_owned.eligible_normalization.independent_reference",
+        )
+        eligible_edema = (
+            eligible_norm.get("edema_binary_dice_focal", {})
+            if isinstance(eligible_norm.get("edema_binary_dice_focal"), dict)
+            else {}
+        )
+        eligible_injury = (
+            eligible_norm.get("injury_dice_bce", {})
+            if isinstance(eligible_norm.get("injury_dice_bce"), dict)
+            else {}
+        )
+        eligible_final = (
+            eligible_norm.get("conditional_final_dice_ce", {})
+            if isinstance(eligible_norm.get("conditional_final_dice_ce"), dict)
+            else {}
+        )
+        _require(
+            failures,
+            eligible_edema.get("no_t2_row_invariant") is True and eligible_edema.get("dice_part_no_t2_row_invariant") is True,
+            "verifier_owned.eligible_normalization.edema_no_t2_invariant",
+        )
+        _require(
+            failures,
+            eligible_injury.get("no_t2_row_invariant") is True and eligible_injury.get("dice_part_no_t2_row_invariant") is True,
+            "verifier_owned.eligible_normalization.injury_no_t2_invariant",
+        )
+        _require(
+            failures,
+            eligible_final.get("unequal_group_reference_matches_actual") is True
+            and eligible_final.get("reference_rejects_fixed_subgroup_equal_mean") is True,
+            "verifier_owned.eligible_normalization.conditional_final_unequal_groups",
         )
         tile_probe = by_name.get("single_vs_forced_multi_tile_full_volume", {})
         _require(failures, tile_probe.get("calls_are_distinct") is True, "verifier_owned.executable.single_multi_distinct_calls")

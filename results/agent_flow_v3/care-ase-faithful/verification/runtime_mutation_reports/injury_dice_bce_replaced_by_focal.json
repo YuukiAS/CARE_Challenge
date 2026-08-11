@@ -1,51 +1,82 @@
 {
-  "created_utc": "2026-08-11T07:10:49Z",
+  "created_utc": "2026-08-11T09:59:58Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
     "kb13.loss_semantic_oracle.rejected:injury_dice_bce_replaced_by_focal"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "23921bbe0274f246861427564ab315307ca436b69624b1b226dbdd2f17b61d47",
+  "mutated_fingerprint_sha256": "2d069e6a7f44b016269de45eea2ab9c08fed03a511f4d4ed0fcb371801ed6fec",
   "mutation_applied": "injury_dice_bce_term_name_preserved_but_formula_replaced_by_dice_focal",
   "mutation_executed": true,
   "mutation_id": "injury_dice_bce_replaced_by_focal",
   "observations": {
     "loss_semantic_mutation": {
       "batch_sha256": "edca1afae5d9a147135b01afefb83bc1b47777097e3d55c825ba7d12e046b00f",
-      "injury_reference_unweighted": 0.9306994676589966,
-      "mutated_unweighted_value": 0.5927544236183167,
-      "mutated_weighted_contribution": 0.23710176944732667,
+      "injury_reference_unweighted": 1.3789098262786865,
+      "mutated_unweighted_value": 1.0409647226333618,
+      "mutated_weighted_contribution": 0.4163858890533447,
       "original_unweighted_value": 0.9306994676589966,
       "reference_uses_implementation_loss_helper": false,
       "replacement_formula": "Dice+Focal(alpha=0.35,gamma=2.0)",
       "scar_component_reference_unweighted": 0.9412288665771484,
       "scar_occupancy_reference_unweighted": 1.0380148887634277,
       "semantic_oracle_failures": [
+        "edema_binary_dice_focal.formula_mismatch_or_no_t2_dilution",
         "injury_dice_bce.formula_mismatch"
       ],
       "semantic_oracle_status": "FAIL",
       "term_name_preserved": "injury_dice_bce"
     },
     "loss_semantic_probe": {
+      "conditional_final_dice_ce": {
+        "abs_diff": 0.0,
+        "actual_unweighted": 5.556319713592529,
+        "fixed_subgroup_equal_mean_unweighted": 5.556319713592529,
+        "matches_reference": true,
+        "reference_normalization": "mean over eligible rows after row-specific T2/no-T2 competition mapping",
+        "reference_unweighted": 5.556319713592529,
+        "rejects_fixed_t2_no_t2_subgroup_equal_mean": false,
+        "weighted_abs_diff": 0.0,
+        "weighted_actual": 5.556319713592529,
+        "weighted_reference": 5.556319713592529
+      },
       "contract_field_or_exact_clause": "Section 10 unique allowed weighted loss set",
       "contract_source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
-      "injury_dice_bce": {
-        "abs_diff": 0.33794504404067993,
-        "actual_matches_independent_dice_focal_alpha035_gamma2": true,
-        "actual_unweighted": 0.5927544236183167,
-        "edema_valid_voxel_count": 32768,
+      "edema_binary_dice_focal": {
+        "abs_diff": 0.4105318784713745,
+        "actual_unweighted": 0.4766937494277954,
+        "dice_part_reference_unweighted": 0.8210638761520386,
+        "full_scale_eligible_rows": 1,
+        "half_scale_eligible_rows": 1,
         "matches_reference": false,
-        "reference_unweighted": 0.9306994676589966,
+        "reference_unweighted": 0.8872256278991699,
+        "t2_gated": true,
+        "target_labels": [
+          4
+        ],
+        "weighted_abs_diff": 0.4105318784713745,
+        "weighted_actual": 0.4766937494277954,
+        "weighted_reference": 0.8872256278991699
+      },
+      "injury_dice_bce": {
+        "abs_diff": 0.3379451036453247,
+        "actual_matches_independent_dice_focal_alpha035_gamma2": true,
+        "actual_unweighted": 1.0409647226333618,
+        "dice_part_reference_unweighted": 0.8964206576347351,
+        "edema_valid_voxel_count": 32768,
+        "eligible_rows": 1,
+        "matches_reference": false,
+        "reference_unweighted": 1.3789098262786865,
         "t2_eligible_rows": 1,
         "t2_gated": true,
         "target_labels": [
           4,
           5
         ],
-        "weighted_abs_diff": 0.135178017616272,
-        "weighted_actual": 0.23710176944732667,
-        "weighted_reference": 0.37227978706359866
+        "weighted_abs_diff": 0.1351780414581299,
+        "weighted_actual": 0.4163858890533447,
+        "weighted_reference": 0.5515639305114747
       },
       "name": "loss_semantic_oracle",
       "reference_uses_implementation_loss_helper": false,
@@ -66,6 +97,7 @@
         "weighted_reference": 0.2353072166442871
       },
       "semantic_failures": [
+        "edema_binary_dice_focal.formula_mismatch_or_no_t2_dilution",
         "injury_dice_bce.formula_mismatch"
       ],
       "status": "FAIL",
@@ -109,9 +141,9 @@
         "matches_contract_terms": true,
         "missing_terms": [],
         "no_extra_weighted_auxiliary_objective": true,
-        "reported_allowed_weighted_sum": 11.320255654305218,
-        "total_abs_diff": 3.7476420189364035e-07,
-        "total_loss": 11.320255279541016,
+        "reported_allowed_weighted_sum": 11.499539773911236,
+        "total_abs_diff": 3.9860606015906797e-07,
+        "total_loss": 11.499539375305176,
         "total_matches_allowed_weighted_sum": true,
         "weight_failures": [],
         "weights_match_contract": true
