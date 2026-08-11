@@ -2002,8 +2002,8 @@ class CAREASEFormalRuntime:
                 raise RuntimeError("formal runtime requires full-case target cache manifest before forward")
             self.full_case_target_manifest = json.loads(self.full_case_target_cache_manifest_path.read_text(encoding="utf-8"))
             manifest_task = self.full_case_target_manifest.get("task_id", self.full_case_target_manifest.get("task_key"))
-            if manifest_task != TASK_ID:
-                raise RuntimeError("formal runtime refuses target cache manifest not bound to care-ase-faithful")
+            if manifest_task not in {TASK_ID, FORMAL_TRAINING_TASK_KEY}:
+                raise RuntimeError("formal runtime refuses target cache manifest not bound to CARE-ASE faithful formal training")
             if int(self.full_case_target_manifest.get("fold", -1)) != int(self.sampler.fold):
                 raise RuntimeError("full-case target cache manifest fold mismatch")
             payload_sha = str(self.full_case_target_manifest.get("payload_sha256", ""))
