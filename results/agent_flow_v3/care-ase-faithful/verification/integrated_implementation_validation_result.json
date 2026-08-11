@@ -1,11 +1,12 @@
 {
-  "failure_count": 6,
+  "failure_count": 7,
   "failures": [
     "verifier_owned.executable.passed",
     "verifier_owned.executable.status",
     "verifier_owned.transaction.status",
     "verifier_owned.transaction.no_failures",
     "verifier_owned.transaction.hosted_ci_success",
+    "verifier_owned.transaction.hosted_ci_exact_reviewed_integration",
     "verifier_owned.transaction.no_stale_planner_reuse"
   ],
   "known_bad_case_id": null,

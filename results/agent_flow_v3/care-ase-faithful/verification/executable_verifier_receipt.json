@@ -36,7 +36,7 @@
       "threshold": 1e-05
     }
   ],
-  "created_utc": "2026-08-11T06:29:16Z",
+  "created_utc": "2026-08-11T07:03:03Z",
   "diagnostic_numeric_observations": [
     {
       "blocking": false,
@@ -51,7 +51,7 @@
   "environment": {
     "cwd": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/verifier",
     "git_branch": "local/verifier/care-ase-faithful",
-    "git_head": "8e25ca94a9900bebaef98bfd44f71f400ec94e5a",
+    "git_head": "5f75e9a7050434afbc3ca97632adba4b40e18135",
     "nnunetv2_available": true,
     "platform": "Linux-5.14.0-611.16.1.el9_7.x86_64-x86_64-with-glibc2.34",
     "python_executable": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
@@ -64,10 +64,11 @@
     },
     "torch_available": true
   },
-  "executable_verifier_receipt_sha256": "2d0017eb6c4d00b17e4a33e8b2d0b1c83b75abf3a4747f7c5db75b6795d7c913",
+  "executable_verifier_receipt_sha256": "ddc1e15c16c7e96dd8f3bcd3b2b55c2c38a26b9aba997b2d74f0c95cee22a5c5",
   "executor_receipts_used_as_runtime_conclusion": false,
-  "failure_count": 33,
+  "failure_count": 35,
   "failures": [
+    "transaction.current.hosted_ci_actual_head_sha_not_exact_integration",
     "transaction.runtime_manifest.request_nonce",
     "transaction.runtime_manifest.frozen_contract_sha256",
     "transaction.runtime_manifest.review_round",
@@ -100,6 +101,7 @@
     "transaction.current_runtime_input_bundle.integration_commit_sha",
     "transaction.current_runtime_identity_receipt.integration_commit_sha",
     "transaction.checkpoint_resume.integration_commit_sha",
+    "transaction.hosted_ci.head_sha_not_exact_integration",
     "transaction.hosted_ci.conclusion"
   ],
   "fixture_mode": false,
@@ -119,10 +121,10 @@
   ],
   "formal_training_started": false,
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
-  "implementation_evidence_file_sha256": "1ffe5350f68d7139e6233f55666a01e1e72f04779d66f370f258f214c486b197",
+  "implementation_evidence_file_sha256": "c021a8626b5acea090e69b0af214c7a530f889afebf3c3b3ff83b70621ebdaeb",
   "implementation_evidence_path": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json",
   "implementation_fingerprint_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
-  "integration_sha": "cbafd7aa18b89c11f10e9663fa3cc1683192fa48",
+  "integration_sha": "23ae44523fae133e3e52d8347d8a2445475f604b",
   "outer_accessed": false,
   "passed": false,
   "planner_review_commit": "d96415ae0b48ae856854e475e624907392a4d7b9",
@@ -1056,19 +1058,19 @@
       "declared_path": "results/agent_flow_v3/care-ase-faithful/implementation/checkpoint_resume_probe_receipt.json",
       "exists": true,
       "resolved_path": "results/agent_flow_v3/care-ase-faithful/implementation/checkpoint_resume_probe_receipt.json",
-      "sha256": "cd96f502cc5513c24099d772f9fddd93ef7c6325ada577be02a6684f61af6ea7"
+      "sha256": "3d872d62c87e77b9651ae6dab96e3deaa4791a9a0c161df052e4a141590dd20e"
     },
     "current_runtime_identity": {
       "declared_path": "results/agent_flow_v3/care-ase-faithful/implementation/current_runtime_identity_receipt.json",
       "exists": true,
       "resolved_path": "results/agent_flow_v3/care-ase-faithful/implementation/current_runtime_identity_receipt.json",
-      "sha256": "0e7afff3834f5922360305c68ceb9db5313347eb01dd0c9b42914aa9e48a3545"
+      "sha256": "15277ede823da3a58072f9d53cf4c2f1618f3dd4d660af0d612bd659051d6abb"
     },
     "current_runtime_input_bundle": {
       "declared_path": "results/agent_flow_v3/care-ase-faithful/implementation/current_runtime_input_bundle.json",
       "exists": true,
       "resolved_path": "results/agent_flow_v3/care-ase-faithful/implementation/current_runtime_input_bundle.json",
-      "sha256": "dd7ec002c03616d603b7fdc96d6d408003b38b3a56b344b719214ed4d62fede2"
+      "sha256": "711041a60167dc26aab4e0bcdd3bc8ffaa684a8ca7c3bbc208fb3b811ade0174"
     },
     "deployment_load_probe": {
       "declared_path": "results/agent_flow_v3/care-ase-faithful/implementation/deployment_load_probe_receipt.json",
@@ -1156,20 +1158,20 @@
     "current_binding": {
       "blocked_failures": [],
       "blocked_or_failure_reason": null,
-      "ci_checked_commit_sha": "cbafd7aa18b89c11f10e9663fa3cc1683192fa48",
+      "ci_checked_commit_sha": "8c3bf85655d6008d2e64c9534f40bb0e6f629f33",
       "ci_run_actual_head_sha": "cbafd7aa18b89c11f10e9663fa3cc1683192fa48",
       "ci_run_id": 31464272753,
       "ci_run_url": "https://github.com/YuukiAS/CARE_Challenge/actions/runs/31464272753",
-      "ci_status": "PASS",
+      "ci_status": null,
       "ci_workflow_name": "CARE Agent-Flow v3 deterministic CI",
       "controller_ci_receipt_path": "results/agent_flow_v3/care-ase-faithful/controller_ci_receipt.json",
-      "controller_ci_receipt_sha256": "a1cb05db0d2e604fd28f5bc216ee9999bb43dae6b7631a8ae41a27cb537c1d3b",
+      "controller_ci_receipt_sha256": "cf6af5293a83fefe2b93af3788aa8a37330f05c1c8f7c2ed1f8f721025b17aa7",
       "controller_executor_needs_user_choice_receipt_path": "results/agent_flow_v3/care-ase-faithful/controller_executor_needs_user_choice_receipt.json",
       "controller_executor_needs_user_choice_receipt_sha256": "77026c66c0efc16b5fcb946075c726a1d81cb57164f6d74a03b4d1c2071bdad4",
       "controller_executor_recheck_integration_receipt_path": "results/agent_flow_v3/care-ase-faithful/controller_executor_recheck_integration_receipt.json",
-      "controller_executor_recheck_integration_receipt_sha256": "b016ca752ba5db00db062b92c3a319299a38d1dc38f9cc490fbb80a053c71bbe",
+      "controller_executor_recheck_integration_receipt_sha256": "c429d1753eee744cd8017dd1312b3fa37fc1d9ba6ac6149c4ac4449e02627860",
       "controller_integration_receipt_path": "results/agent_flow_v3/care-ase-faithful/controller_integration_receipt.json",
-      "controller_local_gates_status": "PASS",
+      "controller_local_gates_status": "PASS_FOR_VERIFIER_RECHECK",
       "controller_post_ci_verifier_recheck_required_receipt_path": "results/agent_flow_v3/care-ase-faithful/controller_post_ci_verifier_recheck_required_receipt.json",
       "controller_post_ci_verifier_recheck_required_receipt_sha256": "d21551babff852c3f3fc649a0e060554ea001897286e79d236de48cd6912cd61",
       "controller_production_thread_id": "019fd7c0-2979-7061-94d3-99577ba9c834",
@@ -1181,7 +1183,7 @@
       "controller_same_scope_verifier_contract_drift_repair_receipt_sha256": "5b67a4fd52eb6998dd178995c1ad93a1fb03d664e58407edfaf2b16eece72af9",
       "controller_thread_id": "019fd7c0-2979-7061-94d3-99577ba9c834",
       "controller_verifier_recheck_integration_receipt_path": "results/agent_flow_v3/care-ase-faithful/controller_verifier_recheck_integration_receipt.json",
-      "controller_verifier_recheck_integration_receipt_sha256": "d2887969ee3b1262146c3e8c6b30ad0318a9cf4a4c537e16d754d770ecdef919",
+      "controller_verifier_recheck_integration_receipt_sha256": "ad4e7b1a9f8aad6a73bb3d45424468f7f7262330c79efc5e41c435c603fbe077",
       "controller_verifier_reentry_007_integration_receipt_path": "results/agent_flow_v3/care-ase-faithful/controller_verifier_reentry_007_integration_receipt.json",
       "controller_verifier_reentry_007_integration_receipt_sha256": "9f4f59e5b2f51665bb7dad63de62ab84ff096a407db173acbc40dd7e8da29e3e",
       "critic_decision": "PLAN_FROZEN",
@@ -1190,25 +1192,25 @@
       "executor_fail_closed_receipt_path": "results/agent_flow_v3/care-ase-faithful/implementation/fail_closed_implementation_receipt.json",
       "executor_fail_closed_receipt_sha256": "045f635fa93f5f7dbb7dc585bc380764853b611afe0c1be255456e805a92fe45",
       "executor_historical_thread_id": "019fd2ea-30f3-7d72-b605-2fc7a2d901ba",
-      "executor_integration_merge_sha": "d393af710da6aabd9c31fe63f6ff9225775a4ed5",
-      "executor_local_commit_sha": "e0460f6fce525636ffc5732e99a68bb0679db6ff",
+      "executor_integration_merge_sha": "23ae44523fae133e3e52d8347d8a2445475f604b",
+      "executor_local_commit_sha": "fbcf62426e448d9b7c0533e7e8e428008c561278",
       "executor_production_thread_id": "019fd7c1-8358-7632-9022-367e62ecfbd1",
       "executor_status": "REPAIR_REQUESTED_ROUND_1_REENTRY_007_READY_AFTER_VERIFIER_REPAIR",
       "executor_thread_id": "019fd7c1-8358-7632-9022-367e62ecfbd1",
-      "expected_state_or_artifact": "Production Verifier exact thread reruns post-CI executable verifier and transaction gates for the exact CI-passing integration SHA before any Planner/Critic control-plane enablement.",
+      "expected_state_or_artifact": "Independent Verifier production thread commits executable verifier and transaction receipts bound to the current implementation fingerprint.",
       "external_wait_closed_utc": "2026-08-11T06:21:17Z",
       "external_wait_deadline_utc": null,
       "external_wait_started_utc": null,
       "frozen_contract_commit_sha": "6806b38c215f8b644b86da5275b20832bb9a7d50",
       "frozen_contract_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
       "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
-      "implementation_complete": true,
-      "implementation_evidence_sha256": "b891844ec99dede058a01aed49daa2aebf47c1baff65d9274811c6c2c75f77cd",
+      "implementation_complete": false,
+      "implementation_evidence_sha256": "4438558b4a6235ea6245cd4a0db50ef0eab4396f1646067f36aa8a8c9ad9fdd5",
       "implementation_fingerprint_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
-      "integration_commit_sha": "cbafd7aa18b89c11f10e9663fa3cc1683192fa48",
-      "last_observed_remote_sha": "cbafd7aa18b89c11f10e9663fa3cc1683192fa48",
-      "last_poll_utc": "2026-08-11T06:21:17Z",
-      "next_action": "START_POST_CI_VERIFIER_RECHECK_EXACT_SESSION",
+      "integration_commit_sha": "23ae44523fae133e3e52d8347d8a2445475f604b",
+      "last_observed_remote_sha": "9058715ff072714487f571748f5cc6477571df6e",
+      "last_poll_utc": "2026-08-11T06:56:54Z",
+      "next_action": "START_INDEPENDENT_VERIFIER_RECHECK_FOR_CURRENT_IMPLEMENTATION_FINGERPRINT",
       "open_scientific_choices": [],
       "planner_decision": null,
       "planner_draft_commit_sha": "abf549e57452e0047a767332e786ea3a06c214cb",
@@ -1222,6 +1224,15 @@
       "planner_review_packet_sha256": "7aec3aa92998bb998359e75e7fda971aa5a02f4138bb3266ab1b71f0350e5658",
       "planner_visual_receipt_commit_sha": "0e4030ed92ea6d72bc3b5e37e9fc97253b690d85",
       "planner_visual_receipt_path": "results/agent_flow_v3/care-ase-faithful/planner_visual_receipt.json",
+      "post_ci_verifier_recheck": {
+        "classification": "PROVENANCE_BINDING_GAP",
+        "executable_status": "FAIL_CLOSED",
+        "integration_merge_sha": "8c3bf85655d6008d2e64c9534f40bb0e6f629f33",
+        "planner_critic_enablement": "NOT_READY",
+        "transaction_failure_count": 33,
+        "transaction_status": "FAIL_CLOSED",
+        "verifier_local_commit_sha": "ac2b7422436566f19b53490fe7d7d54c088a0bd7"
+      },
       "production_role_session_receipt_path": "results/agent_flow_v3/care-ase-faithful/production_role_session_receipt.json",
       "production_role_sessions_verified": true,
       "ready_state_reached_before_wait": null,
@@ -1253,7 +1264,7 @@
       "runtime_binding_sha256": "1365a5b9ea6c4f2cb07389c4de8abb1a384fbe082bfa2b07bab3ad98717c2bf3",
       "schema": "CARE_AGENT_FLOW_V3",
       "scientific_choice_required": false,
-      "state": "POST_CI_VERIFIER_RECHECK_REQUIRED",
+      "state": "VERIFIER_RECHECK_REQUIRED",
       "status_receipt_commit_check_suites": 0,
       "status_receipt_commit_ci_policy": "Planner decision is bound to integration ed2e3097386bd322968936eb30fd434e621b51ce and exact CI run 31264109315. Verifier/Executor repairs plus Controller runtime-transaction rebinding require a fresh immutable transaction and fresh hosted CI before the next Planner review.",
       "status_receipt_commit_github_actions_status": "NOT_APPLICABLE_REPAIR_ROUTE",
@@ -1287,18 +1298,18 @@
         "superseded_reason": "CI_PASS must be followed by post-CI Verifier and fresh transaction before Planner/Critic control-plane enablement"
       },
       "task_id": "care-ase-faithful",
-      "updated_utc": "2026-08-11T06:21:17Z",
-      "verifier_branch_head_sha": "a4702ca7b0cec13e36bd2a4e59ade6d5daf1ca6c",
+      "updated_utc": "2026-08-11T06:56:54Z",
+      "verifier_branch_head_sha": "ac2b7422436566f19b53490fe7d7d54c088a0bd7",
       "verifier_fingerprint_sha256": "a833449fe2dd3de5041e740f1d6f4d32a0ffec592a157dd0178f6e6182819c81",
       "verifier_freeze_receipt_commit_sha": "4ebd155b9194548162b4dc98fcf2cd206aa2771f",
       "verifier_freeze_receipt_path": "results/agent_flow_v3/care-ase-faithful/verification/verifier_freeze_receipt.json",
       "verifier_freeze_receipt_sha256": "d1b56e440ad508b0da1e2938c018e37eb7508b3b09ddc04bfa9241f383b45ce7",
       "verifier_integration_merge_sha": "ad537168c8169399c8edf2657ee09659f1f2cf62",
       "verifier_production_thread_id": "019fda33-10c3-70e1-aa41-684b46d2cbda",
-      "verifier_recheck_integration_merge_sha": "e7b3520f601eb381d7d5071262c04e8581962c7e",
+      "verifier_recheck_integration_merge_sha": "8c3bf85655d6008d2e64c9534f40bb0e6f629f33",
       "verifier_recheck_local_commit_sha": "cd3468b0695e16ef37102a190918e8cdfdb805fa",
       "verifier_recheck_reason": "executor_scope_completed_but_verifier_owned_executable_and_transaction_receipts_need_reexecution",
-      "verifier_recheck_required": false,
+      "verifier_recheck_required": true,
       "verifier_recheck_status": "FAIL_CLOSED_PROVENANCE_BINDING_GAP",
       "verifier_reentry_007_integration_commit_sha": "4ebd155b9194548162b4dc98fcf2cd206aa2771f",
       "verifier_status": "REENTRY_007_VERIFIER_REPAIR_INTEGRATED_FAIL_CLOSED_PENDING_EXECUTOR",
@@ -1309,7 +1320,7 @@
         "expected_fields": {
           "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
           "implementation_identity_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
-          "integration_commit_sha": "cbafd7aa18b89c11f10e9663fa3cc1683192fa48",
+          "integration_commit_sha": "23ae44523fae133e3e52d8347d8a2445475f604b",
           "request_nonce": "care-ase-20260806T090955Z",
           "task_id": "care-ase-faithful",
           "verifier_fingerprint_sha256": "a833449fe2dd3de5041e740f1d6f4d32a0ffec592a157dd0178f6e6182819c81"
@@ -1318,22 +1329,22 @@
         "observed_fields": {
           "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
           "implementation_identity_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
-          "integration_commit_sha": "c763346768501b20cd2401c34c5be1b78a34b299",
+          "integration_commit_sha": "8c3bf85655d6008d2e64c9534f40bb0e6f629f33",
           "request_nonce": "care-ase-20260806T090955Z",
           "task_id": "care-ase-faithful",
           "verifier_fingerprint_sha256": "a833449fe2dd3de5041e740f1d6f4d32a0ffec592a157dd0178f6e6182819c81"
         },
         "path": "results/agent_flow_v3/care-ase-faithful/implementation/checkpoint_resume_probe_receipt.json",
         "schema": "CARE_ASE_FAITHFUL_ZERO_CREDIT_PROBE_RECEIPT_V1",
-        "sha256": "cd96f502cc5513c24099d772f9fddd93ef7c6325ada577be02a6684f61af6ea7"
+        "sha256": "3d872d62c87e77b9651ae6dab96e3deaa4791a9a0c161df052e4a141590dd20e"
       },
       "current_runtime_identity_receipt": {
-        "declared_bundle_sha256": "dd7ec002c03616d603b7fdc96d6d408003b38b3a56b344b719214ed4d62fede2",
-        "expected_bundle_sha256": "dd7ec002c03616d603b7fdc96d6d408003b38b3a56b344b719214ed4d62fede2",
+        "declared_bundle_sha256": "711041a60167dc26aab4e0bcdd3bc8ffaa684a8ca7c3bbc208fb3b811ade0174",
+        "expected_bundle_sha256": "711041a60167dc26aab4e0bcdd3bc8ffaa684a8ca7c3bbc208fb3b811ade0174",
         "expected_fields": {
           "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
           "implementation_identity_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
-          "integration_commit_sha": "cbafd7aa18b89c11f10e9663fa3cc1683192fa48",
+          "integration_commit_sha": "23ae44523fae133e3e52d8347d8a2445475f604b",
           "request_nonce": "care-ase-20260806T090955Z",
           "task_id": "care-ase-faithful",
           "verifier_fingerprint_sha256": "a833449fe2dd3de5041e740f1d6f4d32a0ffec592a157dd0178f6e6182819c81"
@@ -1342,20 +1353,20 @@
         "observed_fields": {
           "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
           "implementation_identity_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
-          "integration_commit_sha": "c763346768501b20cd2401c34c5be1b78a34b299",
+          "integration_commit_sha": "8c3bf85655d6008d2e64c9534f40bb0e6f629f33",
           "request_nonce": "care-ase-20260806T090955Z",
           "task_id": "care-ase-faithful",
           "verifier_fingerprint_sha256": "a833449fe2dd3de5041e740f1d6f4d32a0ffec592a157dd0178f6e6182819c81"
         },
         "path": "results/agent_flow_v3/care-ase-faithful/implementation/current_runtime_identity_receipt.json",
         "schema": "CARE_ASE_FAITHFUL_ZERO_CREDIT_PROBE_RECEIPT_V1",
-        "sha256": "0e7afff3834f5922360305c68ceb9db5313347eb01dd0c9b42914aa9e48a3545"
+        "sha256": "15277ede823da3a58072f9d53cf4c2f1618f3dd4d660af0d612bd659051d6abb"
       },
       "current_runtime_input_bundle": {
         "expected_fields": {
           "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
           "implementation_identity_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
-          "integration_commit_sha": "cbafd7aa18b89c11f10e9663fa3cc1683192fa48",
+          "integration_commit_sha": "23ae44523fae133e3e52d8347d8a2445475f604b",
           "request_nonce": "care-ase-20260806T090955Z",
           "task_id": "care-ase-faithful",
           "verifier_fingerprint_sha256": "a833449fe2dd3de5041e740f1d6f4d32a0ffec592a157dd0178f6e6182819c81"
@@ -1364,14 +1375,14 @@
         "observed_fields": {
           "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
           "implementation_identity_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
-          "integration_commit_sha": "c763346768501b20cd2401c34c5be1b78a34b299",
+          "integration_commit_sha": "8c3bf85655d6008d2e64c9534f40bb0e6f629f33",
           "request_nonce": "care-ase-20260806T090955Z",
           "task_id": "care-ase-faithful",
           "verifier_fingerprint_sha256": "a833449fe2dd3de5041e740f1d6f4d32a0ffec592a157dd0178f6e6182819c81"
         },
         "path": "results/agent_flow_v3/care-ase-faithful/implementation/current_runtime_input_bundle.json",
         "schema": "CARE_ASE_FAITHFUL_CURRENT_RUNTIME_INPUT_BUNDLE_V1",
-        "sha256": "dd7ec002c03616d603b7fdc96d6d408003b38b3a56b344b719214ed4d62fede2"
+        "sha256": "711041a60167dc26aab4e0bcdd3bc8ffaa684a8ca7c3bbc208fb3b811ade0174"
       },
       "implementation_fingerprint": {
         "file_exists": true,
@@ -1385,14 +1396,14 @@
     },
     "expected_review_round": 1,
     "fixture_mode": false,
-    "hosted_ci_checked_commit_sha": "cbafd7aa18b89c11f10e9663fa3cc1683192fa48",
+    "hosted_ci_checked_commit_sha": "8c3bf85655d6008d2e64c9534f40bb0e6f629f33",
     "hosted_ci_conclusion": null,
-    "hosted_ci_head_sha": "cbafd7aa18b89c11f10e9663fa3cc1683192fa48",
+    "hosted_ci_head_sha": "8c3bf85655d6008d2e64c9534f40bb0e6f629f33",
     "hosted_ci_receipt_path": "results/agent_flow_v3/care-ase-faithful/controller_ci_receipt.json",
     "implementation_fingerprint_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
-    "integration_sha": "cbafd7aa18b89c11f10e9663fa3cc1683192fa48",
+    "integration_sha": "23ae44523fae133e3e52d8347d8a2445475f604b",
     "integration_sha_is_ancestor_of_observed_git_head": true,
-    "observed_git_head": "8e25ca94a9900bebaef98bfd44f71f400ec94e5a",
+    "observed_git_head": "5f75e9a7050434afbc3ca97632adba4b40e18135",
     "planner_review_commit": "d96415ae0b48ae856854e475e624907392a4d7b9",
     "post_ci_gate_requires_exact_hosted_ci_success": true,
     "review_round": 1,
@@ -1404,7 +1415,7 @@
       "expected_fields": {
         "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
         "implementation_fingerprint_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
-        "integration_commit_sha": "cbafd7aa18b89c11f10e9663fa3cc1683192fa48",
+        "integration_commit_sha": "23ae44523fae133e3e52d8347d8a2445475f604b",
         "request_nonce": "care-ase-20260806T090955Z",
         "review_round": 1,
         "task_id": "care-ase-faithful",
@@ -1422,21 +1433,21 @@
       "required_artifacts": {
         "checkpoint_resume": {
           "declared_sha256": null,
-          "expected_sha256": "cd96f502cc5513c24099d772f9fddd93ef7c6325ada577be02a6684f61af6ea7",
+          "expected_sha256": "3d872d62c87e77b9651ae6dab96e3deaa4791a9a0c161df052e4a141590dd20e",
           "file_exists": true,
           "listed": false,
           "path": "results/agent_flow_v3/care-ase-faithful/implementation/checkpoint_resume_probe_receipt.json"
         },
         "current_runtime_identity_receipt": {
           "declared_sha256": null,
-          "expected_sha256": "0e7afff3834f5922360305c68ceb9db5313347eb01dd0c9b42914aa9e48a3545",
+          "expected_sha256": "15277ede823da3a58072f9d53cf4c2f1618f3dd4d660af0d612bd659051d6abb",
           "file_exists": true,
           "listed": false,
           "path": "results/agent_flow_v3/care-ase-faithful/implementation/current_runtime_identity_receipt.json"
         },
         "current_runtime_input_bundle": {
           "declared_sha256": null,
-          "expected_sha256": "dd7ec002c03616d603b7fdc96d6d408003b38b3a56b344b719214ed4d62fede2",
+          "expected_sha256": "711041a60167dc26aab4e0bcdd3bc8ffaa684a8ca7c3bbc208fb3b811ade0174",
           "file_exists": true,
           "listed": false,
           "path": "results/agent_flow_v3/care-ase-faithful/implementation/current_runtime_input_bundle.json"
@@ -1457,28 +1468,28 @@
         },
         "executable_verifier": {
           "declared_sha256": null,
-          "expected_sha256": "3181f570a45a9d544cb63b8aced1d4ce4890e259e9714f3a33fd98d0bfecde7d",
+          "expected_sha256": "553f3fd4d786a1be790c6e3690522332a5d0da30982f5598bb91c7b6ea6e3af4",
           "file_exists": true,
           "listed": false,
           "path": "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json"
         },
         "frozen_verifier_validation": {
           "declared_sha256": null,
-          "expected_sha256": "f5895516d6c67fa298dfe24121348fe60a9c079bb9fb7bb63866a665fa0a5014",
+          "expected_sha256": "988b4bba97774f55e16d5079a9a57503b1c51c9419600ffb8241416e3c3fe779",
           "file_exists": true,
           "listed": false,
           "path": "results/agent_flow_v3/care-ase-faithful/implementation/frozen_verifier_validation_result.json"
         },
         "hosted_ci": {
           "declared_sha256": null,
-          "expected_sha256": "a1cb05db0d2e604fd28f5bc216ee9999bb43dae6b7631a8ae41a27cb537c1d3b",
+          "expected_sha256": "cf6af5293a83fefe2b93af3788aa8a37330f05c1c8f7c2ed1f8f721025b17aa7",
           "file_exists": true,
           "listed": true,
           "path": "results/agent_flow_v3/care-ase-faithful/controller_ci_receipt.json"
         },
         "implementation_evidence": {
           "declared_sha256": null,
-          "expected_sha256": "1ffe5350f68d7139e6233f55666a01e1e72f04779d66f370f258f214c486b197",
+          "expected_sha256": "c021a8626b5acea090e69b0af214c7a530f889afebf3c3b3ff83b70621ebdaeb",
           "file_exists": true,
           "listed": false,
           "path": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json"
@@ -1499,7 +1510,7 @@
         },
         "transaction_gate": {
           "declared_sha256": null,
-          "expected_sha256": "3e4d084c2bf16edb5ad270d8edd1acacadd9af4e82370ada8e7ca76f6e09b7c8",
+          "expected_sha256": "e0c62d8250a5ea00f4524c9b26e72fe3e0e9ae069668405e6bff7d340098edd2",
           "file_exists": true,
           "listed": false,
           "path": "results/agent_flow_v3/care-ase-faithful/verification/transaction_gate_receipt.json"
