@@ -3530,6 +3530,7 @@ def care_ase_integrated_validation_pre_ci_acceptable(integrated: dict[str, Any])
         "verifier_owned.transaction.no_failures",
         "verifier_owned.transaction.hosted_ci_success",
         "verifier_owned.transaction.hosted_ci_exact_reviewed_integration",
+        "verifier_owned.transaction.planner_packet_bound_to_reviewed_integration",
         "verifier_owned.transaction.no_stale_planner_reuse",
     }
     failures = integrated.get("failures")
