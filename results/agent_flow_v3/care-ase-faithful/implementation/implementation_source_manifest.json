@@ -1,6 +1,6 @@
 {
   "file_hashes": {
-    "scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py": "1b4381cf0a2799464b52a0f739203587b1021ed3adb802fd3e9b55b67da65178",
+    "scripts/training/care_ase/build_care_ase_faithful_implementation_evidence.py": "2ec5652238c8b0ef0221750a420cf58159b6164eb709ba9302234f9a86d552be",
     "scripts/training/care_ase/run_care_ase_r2_chunk.py": "078767a5c8c6b8c9fe6135efe2efa6ec49dc6daec7554e2f1a3b3625a338e812",
     "scripts/training/care_ase/run_care_ase_train.py": "d4a613bc6160267538de83b71bf615ea4d87c15c2b06240af126973428e540b6",
     "src/care_myocardium/evaluation/care_ase_r2_evaluator.py": "8161ddad6417018ce5b81ed0a2fad6764ef05f6d8c1626159ea177053ddf37e6",
@@ -11,15 +11,15 @@
     "src/care_myocardium/training/care_ase_augmentation.py": "85a208a3a886babe0ec2927a1babced2b24ff91188d577585e65d4e38c27b283",
     "src/care_myocardium/training/care_ase_runtime.py": "3a6d74231ae7ec7adca5a2b91e54298634060f89158be62b1fbc106d27076ad7",
     "src/care_myocardium/training/care_ase_sampler.py": "9cefdfad87bbab08424a6ecdd4d2ec410a3749722f7a769725061b928c93012d",
-    "src/care_myocardium/training/care_ase_trainer.py": "3a0e46eb12349a0bab462c5ea0037cf19523e96fdb58183ee5edc6cd5bc953c8"
+    "src/care_myocardium/training/care_ase_trainer.py": "69a8b4e4cac2d14863ba48300ed4236289ca776e1ae9617e0a20a7f8a6b9a21e"
   },
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
   "git_branch": "local/executor/care-ase-faithful",
-  "git_head": "79371a812b48bfada1f702b9be4f86231d54fcd8",
+  "git_head": "844b54faa96f3746ce1ddedb91bbf9cca284574e",
   "missing_files": [],
   "request_nonce": "care-ase-20260806T090955Z",
   "schema": "CARE_ASE_FAITHFUL_IMPLEMENTATION_SOURCE_MANIFEST_V1",
-  "source_manifest_sha256": "de1c5ab27929fda6a6e193db1e0633a2f7dba5310c2ab560cc8fdeb4f2eccadc",
+  "source_manifest_sha256": "8fd779e9383614feb6dfb063682ce0c34235d2236c8b7fc7d39db0c989e9c82b",
   "source_root": ".",
   "task_id": "care-ase-faithful"
 }
