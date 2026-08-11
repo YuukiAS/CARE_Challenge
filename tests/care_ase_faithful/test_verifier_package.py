@@ -468,6 +468,13 @@ class VerifierPackageTests(unittest.TestCase):
             "runtime_manifest_old_implementation_fingerprint",
             "runtime_manifest_old_verifier_fingerprint",
             "runtime_manifest_receipt_sha_drift",
+            "current_runtime_bundle_old_integration",
+            "current_runtime_bundle_old_implementation_identity",
+            "current_runtime_bundle_old_verifier_fingerprint",
+            "current_runtime_identity_receipt_old_tuple",
+            "current_runtime_identity_artifact_omitted_from_manifest",
+            "current_checkpoint_receipt_old_integration_tuple",
+            "post_integration_bundle_self_reference_or_previous_fingerprint_reuse",
         }
         self.assertTrue(required.issubset(set(runner.MUTATION_IDS)))
         self.assertTrue(required.issubset(set(validator.REQUIRED_EXECUTABLE_MUTATION_IDS)))
@@ -719,6 +726,36 @@ class VerifierPackageTests(unittest.TestCase):
                 runner.CURRENT_PATH = original_current
                 runner.RUNTIME_MANIFEST_PATH = original_manifest
                 runner.CONTROLLER_CI_RECEIPT_PATH = original_ci
+
+    def test_transaction_gate_requires_current_runtime_identity_artifacts(self) -> None:
+        runner_spec = importlib.util.spec_from_file_location("care_ase_executable_verifier", EXECUTABLE_VERIFIER)
+        if runner_spec is None or runner_spec.loader is None:
+            self.fail("cannot import executable verifier")
+        runner = importlib.util.module_from_spec(runner_spec)
+        runner_spec.loader.exec_module(runner)
+
+        required_artifacts = runner.REQUIRED_RUNTIME_MANIFEST_ARTIFACTS
+        self.assertIn("current_runtime_input_bundle", required_artifacts)
+        self.assertIn("current_runtime_identity_receipt", required_artifacts)
+        self.assertIn("implementation_fingerprint", required_artifacts)
+        self.assertIn("checkpoint_resume", required_artifacts)
+
+        expected = {
+            "current_runtime_bundle_old_integration": "transaction.current_runtime_input_bundle.integration_commit_sha",
+            "current_runtime_bundle_old_implementation_identity": "transaction.current_runtime_input_bundle.implementation_identity_sha256",
+            "current_runtime_bundle_old_verifier_fingerprint": "transaction.current_runtime_input_bundle.verifier_fingerprint_sha256",
+            "current_runtime_identity_receipt_old_tuple": "transaction.current_runtime_identity_receipt.integration_commit_sha",
+            "current_runtime_identity_artifact_omitted_from_manifest": "transaction.runtime_manifest.artifact_missing:current_runtime_input_bundle",
+            "current_checkpoint_receipt_old_integration_tuple": "transaction.checkpoint_resume.integration_commit_sha",
+            "post_integration_bundle_self_reference_or_previous_fingerprint_reuse": "transaction.implementation_fingerprint.self_referential_runtime_artifact_hashes",
+        }
+        for mutation_id, expected_failure in expected.items():
+            with self.subTest(mutation_id=mutation_id):
+                result = runner.mutation_result(mutation_id, repo_root=ROOT, fixture_mode=False)
+                self.assertTrue(result["mutation_executed"])
+                self.assertEqual(result["exit_code"], 2)
+                transaction_failures = result["observations"]["transaction_failures"]
+                self.assertIn(expected_failure, transaction_failures)
 
     def test_public_reference_fixture_requires_explicit_override(self) -> None:
         reference = _run_validator("--emit-reference")

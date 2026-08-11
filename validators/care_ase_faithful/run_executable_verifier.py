@@ -85,6 +85,13 @@ MUTATION_IDS = [
     "runtime_manifest_old_implementation_fingerprint",
     "runtime_manifest_old_verifier_fingerprint",
     "runtime_manifest_receipt_sha_drift",
+    "current_runtime_bundle_old_integration",
+    "current_runtime_bundle_old_implementation_identity",
+    "current_runtime_bundle_old_verifier_fingerprint",
+    "current_runtime_identity_receipt_old_tuple",
+    "current_runtime_identity_artifact_omitted_from_manifest",
+    "current_checkpoint_receipt_old_integration_tuple",
+    "post_integration_bundle_self_reference_or_previous_fingerprint_reuse",
     "artifact_sha_mismatch",
 ]
 
@@ -98,8 +105,21 @@ RUNTIME_MANIFEST_MUTATION_IDS = {
     "runtime_manifest_receipt_sha_drift",
 }
 
+CURRENT_RUNTIME_IDENTITY_MUTATION_IDS = {
+    "current_runtime_bundle_old_integration",
+    "current_runtime_bundle_old_implementation_identity",
+    "current_runtime_bundle_old_verifier_fingerprint",
+    "current_runtime_identity_receipt_old_tuple",
+    "current_runtime_identity_artifact_omitted_from_manifest",
+    "current_checkpoint_receipt_old_integration_tuple",
+    "post_integration_bundle_self_reference_or_previous_fingerprint_reuse",
+}
+
 REQUIRED_RUNTIME_MANIFEST_ARTIFACTS = {
+    "implementation_fingerprint": f"results/agent_flow_v3/{TASK_ID}/implementation/implementation_fingerprint.json",
     "implementation_evidence": f"results/agent_flow_v3/{TASK_ID}/implementation/implementation_evidence.json",
+    "current_runtime_input_bundle": f"results/agent_flow_v3/{TASK_ID}/implementation/current_runtime_input_bundle.json",
+    "current_runtime_identity_receipt": f"results/agent_flow_v3/{TASK_ID}/implementation/current_runtime_identity_receipt.json",
     "executable_verifier": f"results/agent_flow_v3/{TASK_ID}/verification/executable_verifier_receipt.json",
     "transaction_gate": f"results/agent_flow_v3/{TASK_ID}/verification/transaction_gate_receipt.json",
     "checkpoint_resume": f"results/agent_flow_v3/{TASK_ID}/implementation/checkpoint_resume_probe_receipt.json",
@@ -375,6 +395,158 @@ def _collect_sha_bindings(value: Any) -> dict[str, str]:
     return bindings
 
 
+def _artifact_value(payload: dict[str, Any], *keys: str) -> Any:
+    """Read verifier-relevant binding fields without trusting status booleans."""
+    for key in keys:
+        value = payload.get(key)
+        if value is not None:
+            return value
+    for container_key in (
+        "payload",
+        "binding",
+        "runtime_binding",
+        "current_runtime_binding",
+        "transaction_binding",
+        "expected_binding",
+        "observed_binding",
+        "provenance",
+        "implementation_identity",
+        "runtime_identity",
+        "checkpoint_binding",
+    ):
+        nested = payload.get(container_key)
+        if isinstance(nested, dict):
+            value = _artifact_value(nested, *keys)
+            if value is not None:
+                return value
+    return None
+
+
+def _implementation_identity_value(payload: dict[str, Any]) -> Any:
+    return _artifact_value(
+        payload,
+        "immutable_implementation_fingerprint_sha256",
+        "implementation_identity_sha256",
+        "source_implementation_fingerprint_sha256",
+        "implementation_fingerprint_sha256",
+    )
+
+
+def _current_runtime_identity_failures(
+    *,
+    repo_root: Path,
+    integration_sha: str,
+    implementation_fingerprint: str,
+    expected_verifier_fingerprint: str,
+) -> tuple[list[str], dict[str, Any]]:
+    failures: list[str] = []
+    observations: dict[str, Any] = {}
+
+    rels = {
+        "implementation_fingerprint": REQUIRED_RUNTIME_MANIFEST_ARTIFACTS["implementation_fingerprint"],
+        "current_runtime_input_bundle": REQUIRED_RUNTIME_MANIFEST_ARTIFACTS["current_runtime_input_bundle"],
+        "current_runtime_identity_receipt": REQUIRED_RUNTIME_MANIFEST_ARTIFACTS["current_runtime_identity_receipt"],
+        "checkpoint_resume": REQUIRED_RUNTIME_MANIFEST_ARTIFACTS["checkpoint_resume"],
+    }
+    artifacts: dict[str, dict[str, Any]] = {}
+    for name, rel_path in rels.items():
+        path = repo_root / rel_path
+        payload = _load_optional_json(path)
+        artifacts[name] = payload
+        observations[name] = {
+            "path": rel_path,
+            "file_exists": path.is_file(),
+            "sha256": sha256_file(path) if path.is_file() else None,
+            "schema": payload.get("schema") if payload else None,
+        }
+        if not payload:
+            failures.append(f"transaction.{name}.missing")
+
+    def check_tuple(name: str, payload: dict[str, Any], *, require_verifier: bool = True) -> dict[str, Any]:
+        observed = {
+            "task_id": _artifact_value(payload, "task_id"),
+            "request_nonce": _artifact_value(payload, "request_nonce"),
+            "frozen_contract_sha256": _artifact_value(payload, "frozen_contract_sha256", "contract_sha256"),
+            "integration_commit_sha": _artifact_value(payload, "integration_commit_sha", "integration_sha", "reviewed_integration_commit_sha"),
+            "implementation_identity_sha256": _implementation_identity_value(payload),
+            "verifier_fingerprint_sha256": _artifact_value(payload, "verifier_fingerprint_sha256"),
+        }
+        expected = {
+            "task_id": TASK_ID,
+            "request_nonce": REQUEST_NONCE,
+            "frozen_contract_sha256": FROZEN_CONTRACT_SHA256,
+            "integration_commit_sha": integration_sha,
+            "implementation_identity_sha256": implementation_fingerprint,
+            "verifier_fingerprint_sha256": expected_verifier_fingerprint,
+        }
+        for field, expected_value in expected.items():
+            if field == "verifier_fingerprint_sha256" and not require_verifier:
+                continue
+            if observed.get(field) != expected_value:
+                failures.append(f"transaction.{name}.{field}")
+        return {"observed_fields": observed, "expected_fields": expected}
+
+    for name in ("current_runtime_input_bundle", "current_runtime_identity_receipt"):
+        payload = artifacts.get(name) or {}
+        if payload:
+            observations[name].update(check_tuple(name, payload))
+
+    checkpoint_payload = artifacts.get("checkpoint_resume") or {}
+    if checkpoint_payload:
+        observations["checkpoint_resume"].update(check_tuple("checkpoint_resume", checkpoint_payload))
+
+    bundle_path = repo_root / rels["current_runtime_input_bundle"]
+    identity_payload = artifacts.get("current_runtime_identity_receipt") or {}
+    if identity_payload and bundle_path.is_file():
+        actual_bundle_sha = sha256_file(bundle_path)
+        declared_bundle_sha = _artifact_value(
+            identity_payload,
+            "bundle_sha256",
+            "current_runtime_input_bundle_sha256",
+            "runtime_input_bundle_sha256",
+        )
+        observations["current_runtime_identity_receipt"]["declared_bundle_sha256"] = declared_bundle_sha
+        observations["current_runtime_identity_receipt"]["expected_bundle_sha256"] = actual_bundle_sha
+        if declared_bundle_sha != actual_bundle_sha:
+            failures.append("transaction.current_runtime_identity_receipt.bundle_sha256")
+
+    fingerprint_payload = artifacts.get("implementation_fingerprint") or {}
+    if fingerprint_payload:
+        reported = _artifact_value(fingerprint_payload, "implementation_fingerprint_sha256")
+        immutable = _artifact_value(
+            fingerprint_payload,
+            "immutable_implementation_fingerprint_sha256",
+            "implementation_identity_sha256",
+            "source_implementation_fingerprint_sha256",
+        )
+        runtime_hash_keys = sorted(
+            key
+            for key in fingerprint_payload
+            if key in {
+                "current_runtime_input_bundle_sha256",
+                "current_runtime_identity_receipt_sha256",
+                "runtime_receipt_manifest_sha256",
+                "executable_verifier_receipt_sha256",
+                "transaction_gate_receipt_sha256",
+            }
+        )
+        observations["implementation_fingerprint"].update(
+            {
+                "reported_implementation_fingerprint_sha256": reported,
+                "immutable_implementation_identity_sha256": immutable,
+                "runtime_artifact_hash_keys_present": runtime_hash_keys,
+            }
+        )
+        if reported != implementation_fingerprint:
+            failures.append("transaction.implementation_fingerprint.implementation_fingerprint_sha256")
+        if immutable is not None and immutable != implementation_fingerprint:
+            failures.append("transaction.implementation_fingerprint.immutable_implementation_identity_sha256")
+        if immutable is None and runtime_hash_keys:
+            failures.append("transaction.implementation_fingerprint.self_referential_runtime_artifact_hashes")
+
+    return failures, observations
+
+
 def _runtime_manifest_failures(
     *,
     repo_root: Path,
@@ -573,6 +745,237 @@ def _runtime_manifest_mutation_result(mutation_id: str, *, repo_root: Path, fixt
     }
 
 
+def _write_runtime_identity_fixture_artifacts(
+    repo_root: Path,
+    artifact_map: dict[str, str],
+    *,
+    mutation_id: str,
+) -> tuple[dict[str, Any], str]:
+    old_integration = "0" * 40
+    old_implementation = "1" * 64
+    old_verifier = "2" * 64
+    mutation_applied = mutation_id
+    base_tuple = {
+        "task_id": TASK_ID,
+        "request_nonce": REQUEST_NONCE,
+        "frozen_contract_sha256": FROZEN_CONTRACT_SHA256,
+        "integration_commit_sha": REVIEWED_INTEGRATION_COMMIT,
+        "implementation_fingerprint_sha256": REVIEWED_IMPLEMENTATION_FINGERPRINT,
+        "verifier_fingerprint_sha256": REVIEWED_VERIFIER_FINGERPRINT,
+    }
+    bundle = {
+        "schema": "CARE_ASE_FAITHFUL_CURRENT_RUNTIME_INPUT_BUNDLE_V1",
+        **base_tuple,
+        "immutable_implementation_fingerprint_sha256": REVIEWED_IMPLEMENTATION_FINGERPRINT,
+    }
+    identity_receipt = {
+        "schema": "CARE_ASE_FAITHFUL_ZERO_CREDIT_PROBE_RECEIPT_V1",
+        "task_id": TASK_ID,
+        "request_nonce": REQUEST_NONCE,
+        "probe": "current_runtime_identity",
+        "payload": {
+            **base_tuple,
+            "immutable_implementation_fingerprint_sha256": REVIEWED_IMPLEMENTATION_FINGERPRINT,
+            "status": "PASS",
+            "happy_path_validation": {"status": "PASS"},
+        },
+    }
+    checkpoint = {
+        "schema": "CARE_ASE_FAITHFUL_ZERO_CREDIT_PROBE_RECEIPT_V1",
+        "task_id": TASK_ID,
+        "request_nonce": REQUEST_NONCE,
+        "probe": "checkpoint_resume_probe",
+        "payload": {
+            **base_tuple,
+            "immutable_implementation_fingerprint_sha256": REVIEWED_IMPLEMENTATION_FINGERPRINT,
+            "status": "PASS",
+        },
+    }
+    implementation_fingerprint = {
+        "schema": "CARE_ASE_FAITHFUL_IMPLEMENTATION_FINGERPRINT_V1",
+        "task_id": TASK_ID,
+        "request_nonce": REQUEST_NONCE,
+        "frozen_contract_sha256": FROZEN_CONTRACT_SHA256,
+        "implementation_fingerprint_sha256": REVIEWED_IMPLEMENTATION_FINGERPRINT,
+        "immutable_implementation_fingerprint_sha256": REVIEWED_IMPLEMENTATION_FINGERPRINT,
+        "verifier_fingerprint_sha256": REVIEWED_VERIFIER_FINGERPRINT,
+        "fingerprint_scope": "immutable_source_only_excludes_post_integration_runtime_artifacts",
+    }
+    other_artifacts = {
+        name: {
+            "schema": "CARE_ASE_FAITHFUL_VERIFIER_RUNTIME_IDENTITY_FIXTURE_V1",
+            "task_id": TASK_ID,
+            "request_nonce": REQUEST_NONCE,
+            "frozen_contract_sha256": FROZEN_CONTRACT_SHA256,
+            "integration_commit_sha": REVIEWED_INTEGRATION_COMMIT,
+            "implementation_fingerprint_sha256": REVIEWED_IMPLEMENTATION_FINGERPRINT,
+            "verifier_fingerprint_sha256": REVIEWED_VERIFIER_FINGERPRINT,
+            "status": "PASS",
+            "passed": True,
+        }
+        for name in artifact_map
+    }
+    payloads = {
+        **other_artifacts,
+        "implementation_fingerprint": implementation_fingerprint,
+        "current_runtime_input_bundle": bundle,
+        "current_runtime_identity_receipt": identity_receipt,
+        "checkpoint_resume": checkpoint,
+    }
+
+    if mutation_id == "current_runtime_bundle_old_integration":
+        bundle["integration_commit_sha"] = old_integration
+        mutation_applied = "current_runtime_input_bundle.integration_commit_sha_mutated_to_old_value"
+    elif mutation_id == "current_runtime_bundle_old_implementation_identity":
+        bundle["implementation_fingerprint_sha256"] = old_implementation
+        bundle["immutable_implementation_fingerprint_sha256"] = old_implementation
+        mutation_applied = "current_runtime_input_bundle.implementation_identity_mutated_to_old_value"
+    elif mutation_id == "current_runtime_bundle_old_verifier_fingerprint":
+        bundle["verifier_fingerprint_sha256"] = old_verifier
+        mutation_applied = "current_runtime_input_bundle.verifier_fingerprint_sha256_mutated_to_old_value"
+    elif mutation_id == "current_runtime_identity_receipt_old_tuple":
+        identity_receipt["payload"]["integration_commit_sha"] = old_integration
+        identity_receipt["payload"]["implementation_fingerprint_sha256"] = old_implementation
+        identity_receipt["payload"]["immutable_implementation_fingerprint_sha256"] = old_implementation
+        identity_receipt["payload"]["verifier_fingerprint_sha256"] = old_verifier
+        mutation_applied = "current_runtime_identity_receipt.payload_tuple_mutated_to_old_values"
+    elif mutation_id == "current_checkpoint_receipt_old_integration_tuple":
+        checkpoint["payload"]["integration_commit_sha"] = old_integration
+        mutation_applied = "checkpoint_resume_probe_receipt.payload.integration_commit_sha_mutated_to_old_value"
+    elif mutation_id == "post_integration_bundle_self_reference_or_previous_fingerprint_reuse":
+        bundle.pop("immutable_implementation_fingerprint_sha256", None)
+        identity_receipt["payload"].pop("immutable_implementation_fingerprint_sha256", None)
+        implementation_fingerprint.pop("immutable_implementation_fingerprint_sha256", None)
+        implementation_fingerprint["current_runtime_input_bundle_sha256"] = "filled_after_write"
+        implementation_fingerprint["current_runtime_identity_receipt_sha256"] = "filled_after_write"
+        mutation_applied = "implementation_fingerprint_hashes_runtime_artifacts_while_bundle_embeds_same_fingerprint"
+    elif mutation_id != "current_runtime_identity_artifact_omitted_from_manifest":
+        raise KeyError(f"not a current runtime identity mutation: {mutation_id}")
+
+    for name, payload in payloads.items():
+        write_json(repo_root / artifact_map[name], payload)
+
+    bundle_sha = sha256_file(repo_root / artifact_map["current_runtime_input_bundle"])
+    identity_receipt["payload"]["bundle_sha256"] = bundle_sha
+    write_json(repo_root / artifact_map["current_runtime_identity_receipt"], identity_receipt)
+    if mutation_id == "post_integration_bundle_self_reference_or_previous_fingerprint_reuse":
+        implementation_fingerprint["current_runtime_input_bundle_sha256"] = bundle_sha
+        implementation_fingerprint["current_runtime_identity_receipt_sha256"] = sha256_file(
+            repo_root / artifact_map["current_runtime_identity_receipt"]
+        )
+        write_json(repo_root / artifact_map["implementation_fingerprint"], implementation_fingerprint)
+
+    return payloads, mutation_applied
+
+
+def _current_runtime_identity_mutation_result(mutation_id: str, *, repo_root: Path, fixture_mode: bool) -> dict[str, Any]:
+    expected_failure = {
+        "current_runtime_bundle_old_integration": "transaction.current_runtime_input_bundle.integration_commit_sha",
+        "current_runtime_bundle_old_implementation_identity": "transaction.current_runtime_input_bundle.implementation_identity_sha256",
+        "current_runtime_bundle_old_verifier_fingerprint": "transaction.current_runtime_input_bundle.verifier_fingerprint_sha256",
+        "current_runtime_identity_receipt_old_tuple": "transaction.current_runtime_identity_receipt.integration_commit_sha",
+        "current_runtime_identity_artifact_omitted_from_manifest": "transaction.runtime_manifest.artifact_missing:current_runtime_input_bundle",
+        "current_checkpoint_receipt_old_integration_tuple": "transaction.checkpoint_resume.integration_commit_sha",
+        "post_integration_bundle_self_reference_or_previous_fingerprint_reuse": "transaction.implementation_fingerprint.self_referential_runtime_artifact_hashes",
+    }[mutation_id]
+    failures: list[str] = []
+    observations: dict[str, Any] = {"expected_failure": expected_failure}
+    with tempfile.TemporaryDirectory(prefix="care_ase_mutation_runtime_identity_", dir=repo_root) as tmp:
+        tmp_path = Path(tmp)
+        artifact_map = {
+            name: str((tmp_path / rel_path).relative_to(repo_root))
+            for name, rel_path in REQUIRED_RUNTIME_MANIFEST_ARTIFACTS.items()
+        }
+        original_artifact_map = REQUIRED_RUNTIME_MANIFEST_ARTIFACTS.copy()
+        original_current = CURRENT_PATH
+        original_manifest = RUNTIME_MANIFEST_PATH
+        original_ci = CONTROLLER_CI_RECEIPT_PATH
+        current_path = tmp_path / "CURRENT.json"
+        manifest_path = tmp_path / "runtime_receipt_manifest.json"
+        ci_path = tmp_path / "controller_ci_receipt.json"
+        current = {
+            "task_id": TASK_ID,
+            "request_nonce": REQUEST_NONCE,
+            "frozen_contract_sha256": FROZEN_CONTRACT_SHA256,
+            "review_round": REVIEW_ROUND,
+            "integration_commit_sha": REVIEWED_INTEGRATION_COMMIT,
+            "implementation_fingerprint_sha256": REVIEWED_IMPLEMENTATION_FINGERPRINT,
+            "verifier_fingerprint_sha256": REVIEWED_VERIFIER_FINGERPRINT,
+            "ci_checked_commit_sha": REVIEWED_INTEGRATION_COMMIT,
+            "ci_run_actual_head_sha": REVIEWED_INTEGRATION_COMMIT,
+        }
+        ci_receipt = {
+            "checked_commit_sha": REVIEWED_INTEGRATION_COMMIT,
+            "github_actions_head_sha": REVIEWED_INTEGRATION_COMMIT,
+            "github_actions_conclusion": "success",
+        }
+        evidence = {
+            "task_id": TASK_ID,
+            "request_nonce": REQUEST_NONCE,
+            "frozen_contract_sha256": FROZEN_CONTRACT_SHA256,
+            "implementation_fingerprint_sha256": REVIEWED_IMPLEMENTATION_FINGERPRINT,
+        }
+        try:
+            globals()["REQUIRED_RUNTIME_MANIFEST_ARTIFACTS"] = artifact_map
+            _payloads, mutation_applied = _write_runtime_identity_fixture_artifacts(
+                repo_root,
+                artifact_map,
+                mutation_id=mutation_id,
+            )
+            manifest = _valid_runtime_manifest_payload(repo_root)
+            if mutation_id == "current_runtime_identity_artifact_omitted_from_manifest":
+                omitted = {
+                    artifact_map["current_runtime_input_bundle"],
+                    artifact_map["current_runtime_identity_receipt"],
+                }
+                manifest["receipts"] = [path for path in manifest["receipts"] if path not in omitted]
+                for path in omitted:
+                    manifest["receipt_sha256s"].pop(path, None)
+                mutation_applied = "runtime_manifest_omits_current_runtime_identity_artifacts"
+            current_path.write_text(json.dumps(current, indent=2, sort_keys=True), encoding="utf-8")
+            manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8")
+            ci_path.write_text(json.dumps(ci_receipt, indent=2, sort_keys=True), encoding="utf-8")
+            globals()["CURRENT_PATH"] = current_path
+            globals()["RUNTIME_MANIFEST_PATH"] = manifest_path
+            globals()["CONTROLLER_CI_RECEIPT_PATH"] = ci_path
+            gate_failures, transaction = transaction_gate(
+                repo_root=repo_root,
+                evidence=evidence,
+                review_round=REVIEW_ROUND,
+                integration_sha=REVIEWED_INTEGRATION_COMMIT,
+                implementation_fingerprint=REVIEWED_IMPLEMENTATION_FINGERPRINT,
+                expected_verifier_fingerprint=REVIEWED_VERIFIER_FINGERPRINT,
+                fixture_mode=fixture_mode,
+            )
+        finally:
+            globals()["REQUIRED_RUNTIME_MANIFEST_ARTIFACTS"] = original_artifact_map
+            globals()["CURRENT_PATH"] = original_current
+            globals()["RUNTIME_MANIFEST_PATH"] = original_manifest
+            globals()["CONTROLLER_CI_RECEIPT_PATH"] = original_ci
+    observations["transaction_failures"] = gate_failures
+    observations["transaction_gate"] = transaction
+    if expected_failure in gate_failures:
+        failures.append(f"{expected_failure}.rejected")
+    if not failures:
+        failures.append(f"mutation.expected_rejection_missing:{mutation_id}")
+    return {
+        "schema": "CARE_ASE_FAITHFUL_EXECUTABLE_MUTATION_RESULT_V1",
+        "task_id": TASK_ID,
+        "request_nonce": REQUEST_NONCE,
+        "mutation_id": mutation_id,
+        "fixture_mode": fixture_mode,
+        "passed": False,
+        "failure_count": len(failures),
+        "failures": failures,
+        "mutation_executed": True,
+        "mutation_applied": mutation_applied,
+        "mutated_fingerprint_sha256": json_sha({"mutation_id": mutation_id, "mutation_applied": mutation_applied, "observations": observations}),
+        "observations": observations,
+        "exit_code": 2,
+        "created_utc": utc_now(),
+    }
+
+
 def transaction_gate(
     *,
     repo_root: Path,
@@ -590,6 +993,7 @@ def transaction_gate(
     runtime_manifest = _load_optional_json(RUNTIME_MANIFEST_PATH)
     ci_receipt = _load_optional_json(CONTROLLER_CI_RECEIPT_PATH)
     manifest_observations: dict[str, Any] | None = None
+    runtime_identity_observations: dict[str, Any] | None = None
     integration_is_ancestor = git_value(repo_root, "merge-base", "--is-ancestor", integration_sha, "HEAD") == ""
     if not fixture_mode and not integration_is_ancestor:
         failures.append("transaction.integration_sha.not_ancestor_of_verifier_head")
@@ -652,6 +1056,13 @@ def transaction_gate(
                 expected_verifier_fingerprint=expected_verifier_fingerprint,
             )
             failures.extend(manifest_failures)
+            identity_failures, runtime_identity_observations = _current_runtime_identity_failures(
+                repo_root=repo_root,
+                integration_sha=integration_sha,
+                implementation_fingerprint=implementation_fingerprint,
+                expected_verifier_fingerprint=expected_verifier_fingerprint,
+            )
+            failures.extend(identity_failures)
         if not ci_receipt:
             failures.append("transaction.hosted_ci_receipt_missing")
         else:
@@ -703,6 +1114,9 @@ def transaction_gate(
         "runtime_manifest_sha256": sha256_file(RUNTIME_MANIFEST_PATH) if RUNTIME_MANIFEST_PATH.is_file() else None,
         "runtime_manifest_strict_binding": (
             manifest_observations if runtime_manifest and not fixture_mode else None
+        ),
+        "current_runtime_identity_strict_binding": (
+            runtime_identity_observations if runtime_manifest and not fixture_mode else None
         ),
         "hosted_ci_receipt_path": str(CONTROLLER_CI_RECEIPT_PATH.relative_to(repo_root)),
         "hosted_ci_head_sha": (
@@ -2705,11 +3119,56 @@ def _loss_semantic_mutation_probe(repo_root: Path, mutation_id: str) -> tuple[di
     return probe, mutation_observations
 
 
+def _artifact_sha_mismatch_mutation_result(*, repo_root: Path, fixture_mode: bool) -> dict[str, Any]:
+    failures: list[str] = []
+    observations: dict[str, Any] = {}
+    mutation_applied = "tracked_runtime_artifact_bytes_changed_after_receipt_sha_recording"
+    mutation_executed = False
+    try:
+        source_path = repo_root / "results" / "agent_flow_v3" / TASK_ID / "implementation" / "forward_backward_probe_receipt.json"
+        before = sha256_file(source_path)
+        with tempfile.TemporaryDirectory(prefix="care_ase_mutation_artifact_") as tmp:
+            mutated_path = Path(tmp) / source_path.name
+            mutated_path.write_bytes(source_path.read_bytes() + b"\n")
+            after = sha256_file(mutated_path)
+        mutation_executed = True
+        observations["declared_sha256"] = before
+        observations["mutated_file_sha256"] = after
+        if before != after:
+            failures.append("artifact_binding.forward_backward_probe.stdout_file_sha")
+    except Exception as exc:
+        failures.append(f"mutation.runtime_error:{type(exc).__name__}:{exc}")
+        observations["runtime_error"] = f"{type(exc).__name__}:{exc}"
+    if not failures:
+        failures.append("mutation.expected_rejection_missing:artifact_sha_mismatch")
+    return {
+        "schema": "CARE_ASE_FAITHFUL_EXECUTABLE_MUTATION_RESULT_V1",
+        "task_id": TASK_ID,
+        "request_nonce": REQUEST_NONCE,
+        "mutation_id": "artifact_sha_mismatch",
+        "fixture_mode": fixture_mode,
+        "passed": False,
+        "failure_count": len(failures),
+        "failures": failures,
+        "mutation_executed": mutation_executed,
+        "mutation_applied": mutation_applied,
+        "mutated_fingerprint_sha256": json_sha({"mutation_id": "artifact_sha_mismatch", "mutation_applied": mutation_applied, "observations": observations}),
+        "observations": observations,
+        "receipts": list(REQUIRED_RUNTIME_MANIFEST_ARTIFACTS.values()),
+        "exit_code": 2,
+        "created_utc": utc_now(),
+    }
+
+
 def mutation_result(mutation_id: str, *, repo_root: Path, fixture_mode: bool) -> dict[str, Any]:
     if mutation_id not in MUTATION_IDS:
         raise KeyError(mutation_id)
     if mutation_id in RUNTIME_MANIFEST_MUTATION_IDS:
         return _runtime_manifest_mutation_result(mutation_id, repo_root=repo_root, fixture_mode=fixture_mode)
+    if mutation_id in CURRENT_RUNTIME_IDENTITY_MUTATION_IDS:
+        return _current_runtime_identity_mutation_result(mutation_id, repo_root=repo_root, fixture_mode=fixture_mode)
+    if mutation_id == "artifact_sha_mismatch":
+        return _artifact_sha_mismatch_mutation_result(repo_root=repo_root, fixture_mode=fixture_mode)
     failures: list[str] = []
     observations: dict[str, Any] = {}
     mutation_applied = "not_applied"

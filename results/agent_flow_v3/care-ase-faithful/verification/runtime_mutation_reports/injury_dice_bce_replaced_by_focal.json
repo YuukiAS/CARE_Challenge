@@ -1,25 +1,25 @@
 {
-  "created_utc": "2026-08-08T15:06:04Z",
+  "created_utc": "2026-08-11T04:08:47Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
     "kb13.loss_semantic_oracle.rejected:injury_dice_bce_replaced_by_focal"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "3f51296c2ed4d78197026558a102dddf3fcdb7be0f323cdb27d0922781b449e3",
+  "mutated_fingerprint_sha256": "6d95c57f27aa63aadea1fcddaef61a15bdd8ac7cb3672624e0162a2f33e211d7",
   "mutation_applied": "injury_dice_bce_term_name_preserved_but_formula_replaced_by_dice_focal",
   "mutation_executed": true,
   "mutation_id": "injury_dice_bce_replaced_by_focal",
   "observations": {
     "loss_semantic_mutation": {
       "batch_sha256": "edca1afae5d9a147135b01afefb83bc1b47777097e3d55c825ba7d12e046b00f",
-      "injury_reference_unweighted": 0.930699348449707,
-      "mutated_unweighted_value": 0.5927543044090271,
-      "mutated_weighted_contribution": 0.23710172176361086,
-      "original_unweighted_value": 0.930699348449707,
+      "injury_reference_unweighted": 0.9306994676589966,
+      "mutated_unweighted_value": 0.5927544236183167,
+      "mutated_weighted_contribution": 0.23710176944732667,
+      "original_unweighted_value": 0.9306994676589966,
       "reference_uses_implementation_loss_helper": false,
       "replacement_formula": "Dice+Focal(alpha=0.35,gamma=2.0)",
-      "scar_component_reference_unweighted": 0.941228985786438,
+      "scar_component_reference_unweighted": 0.9412288665771484,
       "scar_occupancy_reference_unweighted": 1.0380148887634277,
       "semantic_oracle_failures": [
         "injury_dice_bce.formula_mismatch"
@@ -33,10 +33,10 @@
       "injury_dice_bce": {
         "abs_diff": 0.33794504404067993,
         "actual_matches_independent_dice_focal_alpha035_gamma2": true,
-        "actual_unweighted": 0.5927543044090271,
+        "actual_unweighted": 0.5927544236183167,
         "edema_valid_voxel_count": 32768,
         "matches_reference": false,
-        "reference_unweighted": 0.930699348449707,
+        "reference_unweighted": 0.9306994676589966,
         "t2_eligible_rows": 1,
         "t2_gated": true,
         "target_labels": [
@@ -44,26 +44,26 @@
           5
         ],
         "weighted_abs_diff": 0.135178017616272,
-        "weighted_actual": 0.23710172176361086,
-        "weighted_reference": 0.37227973937988285
+        "weighted_actual": 0.23710176944732667,
+        "weighted_reference": 0.37227978706359866
       },
       "name": "loss_semantic_oracle",
       "reference_uses_implementation_loss_helper": false,
       "scar_component_adaptive_tversky": {
         "abs_diff": 0.0,
-        "actual_unweighted": 0.941228985786438,
+        "actual_unweighted": 0.9412288665771484,
         "adaptive_weight_sum": 2.0,
         "alpha": 0.3,
         "beta": 0.7,
         "component_count": 2,
         "matches_reference": true,
-        "reference_unweighted": 0.941228985786438,
+        "reference_unweighted": 0.9412288665771484,
         "scar_occupancy_dice_focal_reference_unweighted": 1.0380148887634277,
         "small_component_weight_formula": "clip(sqrt(1000mm3/component_volume_mm3),1,4)",
         "unauthorized_occupancy_objective_detected": false,
         "weighted_abs_diff": 0.0,
-        "weighted_actual": 0.2353072464466095,
-        "weighted_reference": 0.2353072464466095
+        "weighted_actual": 0.2353072166442871,
+        "weighted_reference": 0.2353072166442871
       },
       "semantic_failures": [
         "injury_dice_bce.formula_mismatch"
@@ -109,9 +109,9 @@
         "matches_contract_terms": true,
         "missing_terms": [],
         "no_extra_weighted_auxiliary_objective": true,
-        "reported_allowed_weighted_sum": 11.320255278050901,
-        "total_abs_diff": 9.551644311045493e-07,
-        "total_loss": 11.320256233215332,
+        "reported_allowed_weighted_sum": 11.320255654305218,
+        "total_abs_diff": 3.7476420189364035e-07,
+        "total_loss": 11.320255279541016,
         "total_matches_allowed_weighted_sum": true,
         "weight_failures": [],
         "weights_match_contract": true

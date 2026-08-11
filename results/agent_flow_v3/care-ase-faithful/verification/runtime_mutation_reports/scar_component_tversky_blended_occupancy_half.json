@@ -1,25 +1,25 @@
 {
-  "created_utc": "2026-08-08T15:06:25Z",
+  "created_utc": "2026-08-11T04:09:16Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
     "kb13.loss_semantic_oracle.rejected:scar_component_tversky_blended_occupancy_half"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "5cbd821c5ea79174ce3c9de9b57e4784a4659014e79541288a743f1714a619b2",
+  "mutated_fingerprint_sha256": "891d906e79b93e50f91995b8fa89546d80dccae804ab29d06ae28fda033ca42c",
   "mutation_applied": "scar_component_term_name_preserved_but_formula_blends_half_occupancy_objective",
   "mutation_executed": true,
   "mutation_id": "scar_component_tversky_blended_occupancy_half",
   "observations": {
     "loss_semantic_mutation": {
       "batch_sha256": "edca1afae5d9a147135b01afefb83bc1b47777097e3d55c825ba7d12e046b00f",
-      "injury_reference_unweighted": 0.930699348449707,
-      "mutated_unweighted_value": 0.9896219372749329,
-      "mutated_weighted_contribution": 0.24740548431873322,
-      "original_unweighted_value": 0.941228985786438,
+      "injury_reference_unweighted": 0.9306994676589966,
+      "mutated_unweighted_value": 0.9896218776702881,
+      "mutated_weighted_contribution": 0.24740546941757202,
+      "original_unweighted_value": 0.9412288665771484,
       "reference_uses_implementation_loss_helper": false,
       "replacement_formula": "0.5*Tversky(alpha=0.3,beta=0.7)+0.5*occupancy Dice/Focal",
-      "scar_component_reference_unweighted": 0.941228985786438,
+      "scar_component_reference_unweighted": 0.9412288665771484,
       "scar_occupancy_reference_unweighted": 1.0380148887634277,
       "semantic_oracle_failures": [
         "scar_component_adaptive_tversky.formula_mismatch_or_hidden_auxiliary"
@@ -33,10 +33,10 @@
       "injury_dice_bce": {
         "abs_diff": 0.0,
         "actual_matches_independent_dice_focal_alpha035_gamma2": false,
-        "actual_unweighted": 0.930699348449707,
+        "actual_unweighted": 0.9306994676589966,
         "edema_valid_voxel_count": 32768,
         "matches_reference": true,
-        "reference_unweighted": 0.930699348449707,
+        "reference_unweighted": 0.9306994676589966,
         "t2_eligible_rows": 1,
         "t2_gated": true,
         "target_labels": [
@@ -44,26 +44,26 @@
           5
         ],
         "weighted_abs_diff": 0.0,
-        "weighted_actual": 0.37227973937988285,
-        "weighted_reference": 0.37227973937988285
+        "weighted_actual": 0.37227978706359866,
+        "weighted_reference": 0.37227978706359866
       },
       "name": "loss_semantic_oracle",
       "reference_uses_implementation_loss_helper": false,
       "scar_component_adaptive_tversky": {
-        "abs_diff": 0.04839295148849487,
-        "actual_unweighted": 0.9896219372749329,
+        "abs_diff": 0.04839301109313965,
+        "actual_unweighted": 0.9896218776702881,
         "adaptive_weight_sum": 2.0,
         "alpha": 0.3,
         "beta": 0.7,
         "component_count": 2,
         "matches_reference": false,
-        "reference_unweighted": 0.941228985786438,
+        "reference_unweighted": 0.9412288665771484,
         "scar_occupancy_dice_focal_reference_unweighted": 1.0380148887634277,
         "small_component_weight_formula": "clip(sqrt(1000mm3/component_volume_mm3),1,4)",
         "unauthorized_occupancy_objective_detected": true,
-        "weighted_abs_diff": 0.012098237872123718,
-        "weighted_actual": 0.24740548431873322,
-        "weighted_reference": 0.2353072464466095
+        "weighted_abs_diff": 0.012098252773284912,
+        "weighted_actual": 0.24740546941757202,
+        "weighted_reference": 0.2353072166442871
       },
       "semantic_failures": [
         "scar_component_adaptive_tversky.formula_mismatch_or_hidden_auxiliary"
@@ -109,9 +109,9 @@
         "matches_contract_terms": true,
         "missing_terms": [],
         "no_extra_weighted_auxiliary_objective": false,
-        "reported_allowed_weighted_sum": 11.467531533539296,
-        "total_abs_diff": 6.243586536669454e-07,
-        "total_loss": 11.46753215789795,
+        "reported_allowed_weighted_sum": 11.467531924694775,
+        "total_abs_diff": 7.204711423014487e-07,
+        "total_loss": 11.467531204223633,
         "total_matches_allowed_weighted_sum": true,
         "weight_failures": [],
         "weights_match_contract": true

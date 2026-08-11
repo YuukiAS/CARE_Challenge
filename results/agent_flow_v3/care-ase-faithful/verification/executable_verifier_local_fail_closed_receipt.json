@@ -36,7 +36,7 @@
       "threshold": 1e-05
     }
   ],
-  "created_utc": "2026-08-08T15:03:04Z",
+  "created_utc": "2026-08-11T04:04:57Z",
   "diagnostic_numeric_observations": [
     {
       "blocking": false,
@@ -51,7 +51,7 @@
   "environment": {
     "cwd": "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/verifier",
     "git_branch": "local/verifier/care-ase-faithful",
-    "git_head": "a2eceac1dfe296f34732fa43f11f3b4cb65472c8",
+    "git_head": "cd90a37202b1f560cac8cf4c7aea1c107be68119",
     "nnunetv2_available": true,
     "platform": "Linux-5.14.0-611.16.1.el9_7.x86_64-x86_64-with-glibc2.34",
     "python_executable": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
@@ -64,18 +64,28 @@
     },
     "torch_available": true
   },
-  "executable_verifier_receipt_sha256": "6f00ef848c599bc5cdfd2ff545ffe0905bd0a7f8b8fd7b0bcc0a8a1294eca436",
+  "executable_verifier_receipt_sha256": "e4a5fc7d5bd55ad176f6a05bbe359a30e5ef5c89345fe7dc2249d7f8ab3d528b",
   "executor_receipts_used_as_runtime_conclusion": false,
-  "failure_count": 26,
+  "failure_count": 44,
   "failures": [
+    "transaction.integration_sha.not_ancestor_of_verifier_head",
+    "transaction.integration_sha.not_exact_reviewed_integration",
+    "transaction.verifier_source_changed_after_reviewed_integration",
+    "transaction.current.binding.integration_sha",
     "transaction.runtime_manifest.request_nonce",
     "transaction.runtime_manifest.frozen_contract_sha256",
     "transaction.runtime_manifest.review_round",
     "transaction.runtime_manifest.integration_commit_sha",
     "transaction.runtime_manifest.implementation_fingerprint_sha256",
     "transaction.runtime_manifest.verifier_fingerprint_sha256",
+    "transaction.runtime_manifest.artifact_missing:implementation_fingerprint",
+    "transaction.runtime_manifest.artifact_sha256:implementation_fingerprint",
     "transaction.runtime_manifest.artifact_missing:implementation_evidence",
     "transaction.runtime_manifest.artifact_sha256:implementation_evidence",
+    "transaction.runtime_manifest.artifact_missing:current_runtime_input_bundle",
+    "transaction.runtime_manifest.artifact_sha256:current_runtime_input_bundle",
+    "transaction.runtime_manifest.artifact_missing:current_runtime_identity_receipt",
+    "transaction.runtime_manifest.artifact_sha256:current_runtime_identity_receipt",
     "transaction.runtime_manifest.artifact_missing:executable_verifier",
     "transaction.runtime_manifest.artifact_sha256:executable_verifier",
     "transaction.runtime_manifest.artifact_missing:transaction_gate",
@@ -91,6 +101,14 @@
     "transaction.runtime_manifest.artifact_missing:frozen_verifier_validation",
     "transaction.runtime_manifest.artifact_sha256:frozen_verifier_validation",
     "transaction.runtime_manifest.artifact_sha256:hosted_ci",
+    "transaction.current_runtime_input_bundle.integration_commit_sha",
+    "transaction.current_runtime_input_bundle.implementation_identity_sha256",
+    "transaction.current_runtime_identity_receipt.integration_commit_sha",
+    "transaction.current_runtime_identity_receipt.implementation_identity_sha256",
+    "transaction.checkpoint_resume.integration_commit_sha",
+    "transaction.checkpoint_resume.implementation_identity_sha256",
+    "transaction.checkpoint_resume.verifier_fingerprint_sha256",
+    "transaction.implementation_fingerprint.self_referential_runtime_artifact_hashes",
     "transaction.hosted_ci.head_sha_not_exact_integration",
     "transaction.hosted_ci.conclusion",
     "transaction.evidence.missing"
@@ -115,7 +133,7 @@
   "implementation_evidence_file_sha256": null,
   "implementation_evidence_path": null,
   "implementation_fingerprint_sha256": "d4b60e96a46603a19acf19d9a040a84005f046b1252aceca844edf9f75eb28b6",
-  "integration_sha": "b4d836cf65adf2be0ccf1a1f2106e3046e2b2f48",
+  "integration_sha": "ed2e3097386bd322968936eb30fd434e621b51ce",
   "outer_accessed": false,
   "passed": false,
   "planner_review_commit": "c6b867ba9e688f595bad013e2972b2574d014a14",
@@ -180,12 +198,12 @@
     {
       "batch_sha256": "edca1afae5d9a147135b01afefb83bc1b47777097e3d55c825ba7d12e046b00f",
       "constant_denominator_count": 0,
-      "gradient_max_abs": 3.796072006225586,
+      "gradient_max_abs": 3.7960352897644043,
       "input_origin": "verifier_loaded_train_split_preprocessed_case_crop",
       "name": "real_train_case_total_loss_forward_backward",
       "random_tensor_used": false,
       "status": "PASS",
-      "total_loss": 11.45543384552002,
+      "total_loss": 11.455432891845703,
       "total_loss_terms": {
         "anatomy_deep_supervision_dice_ce": {
           "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
@@ -208,10 +226,10 @@
           "eligible_voxel_or_count_denominator": 65536,
           "exclusion_reason": null,
           "included_in_total": true,
-          "unweighted_value": 5.556319236755371,
-          "value": 5.556319236755371,
+          "unweighted_value": 5.556319713592529,
+          "value": 5.556319713592529,
           "weight": 1.0,
-          "weighted_contribution": 5.556319236755371
+          "weighted_contribution": 5.556319713592529
         },
         "distance_rho_masked_smooth_l1": {
           "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
@@ -221,10 +239,10 @@
           "eligible_voxel_or_count_denominator": 8685,
           "exclusion_reason": null,
           "included_in_total": true,
-          "unweighted_value": 0.435943603515625,
-          "value": 0.435943603515625,
+          "unweighted_value": 0.43594351410865784,
+          "value": 0.43594351410865784,
           "weight": 0.1,
-          "weighted_contribution": 0.0435943603515625
+          "weighted_contribution": 0.04359435141086579
         },
         "edema_binary_dice_focal": {
           "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
@@ -234,10 +252,10 @@
           "eligible_voxel_or_count_denominator": 32768,
           "exclusion_reason": null,
           "included_in_total": true,
-          "unweighted_value": 0.47669363021850586,
-          "value": 0.47669363021850586,
+          "unweighted_value": 0.4766937494277954,
+          "value": 0.4766937494277954,
           "weight": 1.0,
-          "weighted_contribution": 0.47669363021850586
+          "weighted_contribution": 0.4766937494277954
         },
         "edema_boundary_smooth_l1": {
           "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
@@ -286,10 +304,10 @@
           "eligible_voxel_or_count_denominator": 32768,
           "exclusion_reason": null,
           "included_in_total": true,
-          "unweighted_value": 0.930699348449707,
-          "value": 0.930699348449707,
+          "unweighted_value": 0.9306994676589966,
+          "value": 0.9306994676589966,
           "weight": 0.4,
-          "weighted_contribution": 0.37227973937988285
+          "weighted_contribution": 0.37227978706359866
         },
         "relation_loss": {
           "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
@@ -299,10 +317,10 @@
           "eligible_voxel_or_count_denominator": 32768,
           "exclusion_reason": null,
           "included_in_total": true,
-          "unweighted_value": 0.15543270111083984,
-          "value": 0.15543270111083984,
+          "unweighted_value": 0.15543271601200104,
+          "value": 0.15543271601200104,
           "weight": 0.05,
-          "weighted_contribution": 0.007771635055541993
+          "weighted_contribution": 0.007771635800600052
         },
         "scar_binary_dice_focal": {
           "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
@@ -312,10 +330,10 @@
           "eligible_voxel_or_count_denominator": 65536,
           "exclusion_reason": null,
           "included_in_total": true,
-          "unweighted_value": 0.973680853843689,
-          "value": 0.973680853843689,
+          "unweighted_value": 0.9736806154251099,
+          "value": 0.9736806154251099,
           "weight": 1.0,
-          "weighted_contribution": 0.973680853843689
+          "weighted_contribution": 0.9736806154251099
         },
         "scar_center_focal_bce": {
           "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
@@ -338,10 +356,10 @@
           "eligible_voxel_or_count_denominator": 65536,
           "exclusion_reason": null,
           "included_in_total": true,
-          "unweighted_value": 0.941228985786438,
-          "value": 0.941228985786438,
+          "unweighted_value": 0.9412288665771484,
+          "value": 0.9412288665771484,
           "weight": 0.25,
-          "weighted_contribution": 0.2353072464466095
+          "weighted_contribution": 0.2353072166442871
         },
         "scar_context_ce": {
           "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
@@ -364,10 +382,10 @@
           "eligible_voxel_or_count_denominator": 32,
           "exclusion_reason": null,
           "included_in_total": true,
-          "unweighted_value": 0.379143625497818,
-          "value": 0.379143625497818,
+          "unweighted_value": 0.37914368510246277,
+          "value": 0.37914368510246277,
           "weight": 0.15,
-          "weighted_contribution": 0.056871543824672695
+          "weighted_contribution": 0.05687155276536941
         },
         "wall_dice_bce": {
           "computed_by": "src.care_myocardium.training.care_ase_trainer.care_ase_loss_with_term_details",
@@ -390,10 +408,10 @@
       "injury_dice_bce": {
         "abs_diff": 0.0,
         "actual_matches_independent_dice_focal_alpha035_gamma2": false,
-        "actual_unweighted": 0.930699348449707,
+        "actual_unweighted": 0.9306994676589966,
         "edema_valid_voxel_count": 32768,
         "matches_reference": true,
-        "reference_unweighted": 0.930699348449707,
+        "reference_unweighted": 0.9306994676589966,
         "t2_eligible_rows": 1,
         "t2_gated": true,
         "target_labels": [
@@ -401,26 +419,26 @@
           5
         ],
         "weighted_abs_diff": 0.0,
-        "weighted_actual": 0.37227973937988285,
-        "weighted_reference": 0.37227973937988285
+        "weighted_actual": 0.37227978706359866,
+        "weighted_reference": 0.37227978706359866
       },
       "name": "loss_semantic_oracle",
       "reference_uses_implementation_loss_helper": false,
       "scar_component_adaptive_tversky": {
         "abs_diff": 0.0,
-        "actual_unweighted": 0.941228985786438,
+        "actual_unweighted": 0.9412288665771484,
         "adaptive_weight_sum": 2.0,
         "alpha": 0.3,
         "beta": 0.7,
         "component_count": 2,
         "matches_reference": true,
-        "reference_unweighted": 0.941228985786438,
+        "reference_unweighted": 0.9412288665771484,
         "scar_occupancy_dice_focal_reference_unweighted": 1.0380148887634277,
         "small_component_weight_formula": "clip(sqrt(1000mm3/component_volume_mm3),1,4)",
         "unauthorized_occupancy_objective_detected": false,
         "weighted_abs_diff": 0.0,
-        "weighted_actual": 0.2353072464466095,
-        "weighted_reference": 0.2353072464466095
+        "weighted_actual": 0.2353072166442871,
+        "weighted_reference": 0.2353072166442871
       },
       "semantic_failures": [],
       "status": "PASS",
@@ -464,9 +482,9 @@
         "matches_contract_terms": true,
         "missing_terms": [],
         "no_extra_weighted_auxiliary_objective": true,
-        "reported_allowed_weighted_sum": 11.455433295667172,
-        "total_abs_diff": 5.498528476977071e-07,
-        "total_loss": 11.45543384552002,
+        "reported_allowed_weighted_sum": 11.45543367192149,
+        "total_abs_diff": 7.800757870768393e-07,
+        "total_loss": 11.455432891845703,
         "total_matches_allowed_weighted_sum": true,
         "weight_failures": [],
         "weights_match_contract": true
@@ -486,7 +504,7 @@
         "anatomy_dice": 0.9907661080360413,
         "anatomy_half_ce": 4.883634090423584,
         "anatomy_half_dice": 0.9941102862358093,
-        "distance": 0.3495974540710449,
+        "distance": 0.3495974838733673,
         "edema_binary_t2_gated": 0.0,
         "edema_boundary": 0.0,
         "edema_context": 0.0,
@@ -495,21 +513,21 @@
         "edema_extent_area": 0.0,
         "edema_extent_presence": 0.0,
         "final_competition": 5.722827911376953,
-        "five_class_ce_without_class4": 4.729770660400391,
+        "five_class_ce_without_class4": 4.729770183563232,
         "five_class_dice_without_class4": 0.9930574893951416,
         "injury": 0.0,
         "loss": 10.552472114562988,
         "no_t2_edema_exclusive_total_loss": -0.0,
         "relation": 0.0,
         "scar_center": 0.17737144231796265,
-        "scar_component": 0.9093414545059204,
-        "scar_component_adaptive_tversky": 0.9093414545059204,
-        "scar_context": 1.461878776550293,
+        "scar_component": 0.9093415141105652,
+        "scar_component_adaptive_tversky": 0.9093415141105652,
+        "scar_context": 1.4618788957595825,
         "scar_dense": 0.927537202835083,
         "scar_extent": 0.3384794592857361,
         "scar_extent_area": 0.00761099299415946,
         "scar_extent_presence": 0.6693479418754578,
-        "wall": 1.781177043914795
+        "wall": 1.7811769247055054
       },
       "status": "PASS"
     },
@@ -524,7 +542,7 @@
         "edema_boundary": 0.0,
         "edema_context_and_dilation": 0.0,
         "edema_injury": 0.0,
-        "extent_wall": 1.9293804168701172,
+        "extent_wall": 1.9293806552886963,
         "scar_context": 0.0,
         "scar_proposal": 0.0
       },
@@ -547,22 +565,22 @@
         "scar_proposal_occupancy_center": 0.0
       },
       "intervention_max_abs_by_required_source": {
-        "all_named_evidence_projection": 9.794549942016602,
-        "edema_boundary": 0.14630889892578125,
-        "edema_context_and_dilation_1_2_4": 0.9815607070922852,
-        "edema_injury": 0.777562141418457,
-        "scar_context": 1.6677217483520508,
-        "scar_edema_extent_and_wall_bias": 1.9293804168701172,
-        "scar_proposal_occupancy_center": 1.1576104164123535
+        "all_named_evidence_projection": 9.794548034667969,
+        "edema_boundary": 0.14630603790283203,
+        "edema_context_and_dilation_1_2_4": 0.9815568923950195,
+        "edema_injury": 0.7775611877441406,
+        "scar_context": 1.6677002906799316,
+        "scar_edema_extent_and_wall_bias": 1.9293806552886963,
+        "scar_proposal_occupancy_center": 1.1576465368270874
       },
       "intervention_mean_abs_by_required_source": {
-        "all_named_evidence_projection": 0.8226857781410217,
-        "edema_boundary": 0.009844839572906494,
-        "edema_context_and_dilation_1_2_4": 0.057093702256679535,
-        "edema_injury": 0.03494282811880112,
-        "scar_context": 0.07806909829378128,
+        "all_named_evidence_projection": 0.8226856589317322,
+        "edema_boundary": 0.009844853542745113,
+        "edema_context_and_dilation_1_2_4": 0.05709376186132431,
+        "edema_injury": 0.0349428653717041,
+        "scar_context": 0.0780690461397171,
         "scar_edema_extent_and_wall_bias": 0.5991086959838867,
-        "scar_proposal_occupancy_center": 0.08131677657365799
+        "scar_proposal_occupancy_center": 0.08131679892539978
       },
       "missing_named_projection_gradient_sources": [],
       "missing_named_projection_sources": [],
@@ -577,53 +595,53 @@
       "named_projection_final_logit_gradient_nonzero": true,
       "named_projection_final_logit_gradient_sources_present": true,
       "named_projection_gradient_abs_by_source": {
-        "edema_full:edema_boundary_to_full": 406107.125,
-        "edema_full:edema_c0_to_full": 406107.125,
-        "edema_full:edema_context_to_full": 406107.125,
-        "edema_full:edema_dilation1_to_full": 406107.125,
-        "edema_full:edema_dilation2_to_full": 406107.125,
-        "edema_full:edema_dilation4_to_full": 406107.125,
-        "edema_full:edema_injury_to_full": 406107.125,
-        "edema_full:edema_lge_to_full": 406107.125,
-        "edema_full:edema_p_lv_to_full": 406107.125,
-        "edema_full:edema_p_rv_to_full": 406107.125,
-        "edema_full:edema_p_wall_to_full": 406107.125,
-        "edema_full:edema_rho_to_full": 406107.125,
-        "edema_full:edema_signed_endo_to_full": 406107.125,
-        "edema_full:edema_signed_epi_to_full": 406107.125,
-        "edema_full:edema_t2_to_full": 406107.125,
-        "edema_half:edema_c0_to_half": 673862.375,
-        "edema_half:edema_context_to_half": 673862.375,
-        "edema_half:edema_lge_to_half": 673862.375,
-        "edema_half:edema_p_lv_to_half": 673862.375,
-        "edema_half:edema_p_rv_to_half": 673862.375,
-        "edema_half:edema_p_wall_to_half": 673862.375,
-        "edema_half:edema_rho_to_half": 673862.375,
-        "edema_half:edema_signed_endo_to_half": 673862.375,
-        "edema_half:edema_signed_epi_to_half": 673862.375,
-        "edema_half:edema_t2_to_half": 673862.375,
-        "scar_full:scar_c0_to_full": 523888.03125,
-        "scar_full:scar_context_to_full": 523888.03125,
-        "scar_full:scar_half_center_to_full": 523888.03125,
-        "scar_full:scar_half_occupancy_to_full": 523888.03125,
-        "scar_full:scar_lge_to_full": 523888.03125,
-        "scar_full:scar_p_lv_to_full": 523888.03125,
-        "scar_full:scar_p_rv_to_full": 523888.03125,
-        "scar_full:scar_p_wall_to_full": 523888.03125,
-        "scar_full:scar_rho_to_full": 523888.03125,
-        "scar_full:scar_signed_endo_to_full": 523888.03125,
-        "scar_full:scar_signed_epi_to_full": 523888.03125,
-        "scar_half:scar_c0_to_half": 767320.375,
-        "scar_half:scar_context_to_half": 767320.375,
-        "scar_half:scar_lge_to_half": 767320.375,
-        "scar_half:scar_p_lv_to_half": 767320.375,
-        "scar_half:scar_p_rv_to_half": 767320.375,
-        "scar_half:scar_p_wall_to_half": 767320.375,
-        "scar_half:scar_quarter_center_to_half": 767320.375,
-        "scar_half:scar_quarter_occupancy_to_half": 767320.375,
-        "scar_half:scar_rho_to_half": 767320.375,
-        "scar_half:scar_signed_endo_to_half": 767320.375,
-        "scar_half:scar_signed_epi_to_half": 767320.375
+        "edema_full:edema_boundary_to_full": 406103.90625,
+        "edema_full:edema_c0_to_full": 406103.90625,
+        "edema_full:edema_context_to_full": 406103.90625,
+        "edema_full:edema_dilation1_to_full": 406103.90625,
+        "edema_full:edema_dilation2_to_full": 406103.90625,
+        "edema_full:edema_dilation4_to_full": 406103.90625,
+        "edema_full:edema_injury_to_full": 406103.90625,
+        "edema_full:edema_lge_to_full": 406103.90625,
+        "edema_full:edema_p_lv_to_full": 406103.90625,
+        "edema_full:edema_p_rv_to_full": 406103.90625,
+        "edema_full:edema_p_wall_to_full": 406103.90625,
+        "edema_full:edema_rho_to_full": 406103.90625,
+        "edema_full:edema_signed_endo_to_full": 406103.90625,
+        "edema_full:edema_signed_epi_to_full": 406103.90625,
+        "edema_full:edema_t2_to_full": 406103.90625,
+        "edema_half:edema_c0_to_half": 673857.0,
+        "edema_half:edema_context_to_half": 673857.0,
+        "edema_half:edema_lge_to_half": 673857.0,
+        "edema_half:edema_p_lv_to_half": 673857.0,
+        "edema_half:edema_p_rv_to_half": 673857.0,
+        "edema_half:edema_p_wall_to_half": 673857.0,
+        "edema_half:edema_rho_to_half": 673857.0,
+        "edema_half:edema_signed_endo_to_half": 673857.0,
+        "edema_half:edema_signed_epi_to_half": 673857.0,
+        "edema_half:edema_t2_to_half": 673857.0,
+        "scar_full:scar_c0_to_full": 523885.4375,
+        "scar_full:scar_context_to_full": 523885.4375,
+        "scar_full:scar_half_center_to_full": 523885.4375,
+        "scar_full:scar_half_occupancy_to_full": 523885.4375,
+        "scar_full:scar_lge_to_full": 523885.4375,
+        "scar_full:scar_p_lv_to_full": 523885.4375,
+        "scar_full:scar_p_rv_to_full": 523885.4375,
+        "scar_full:scar_p_wall_to_full": 523885.4375,
+        "scar_full:scar_rho_to_full": 523885.4375,
+        "scar_full:scar_signed_endo_to_full": 523885.4375,
+        "scar_full:scar_signed_epi_to_full": 523885.4375,
+        "scar_half:scar_c0_to_half": 767315.25,
+        "scar_half:scar_context_to_half": 767315.25,
+        "scar_half:scar_lge_to_half": 767315.25,
+        "scar_half:scar_p_lv_to_half": 767315.25,
+        "scar_half:scar_p_rv_to_half": 767315.25,
+        "scar_half:scar_p_wall_to_half": 767315.25,
+        "scar_half:scar_quarter_center_to_half": 767315.25,
+        "scar_half:scar_quarter_occupancy_to_half": 767315.25,
+        "scar_half:scar_rho_to_half": 767315.25,
+        "scar_half:scar_signed_endo_to_half": 767315.25,
+        "scar_half:scar_signed_epi_to_half": 767315.25
       },
       "named_projection_source_count": 94,
       "no_disable_flag_final_logit_contribution": true,
@@ -642,13 +660,13 @@
         "scar_proposal_occupancy_center": 4
       },
       "verifier_owned_removal_max_abs_by_required_source": {
-        "all_named_evidence_projection": 9.794549942016602,
-        "edema_boundary": 0.14630889892578125,
-        "edema_context_and_dilation_1_2_4": 0.9815607070922852,
-        "edema_injury": 0.777562141418457,
-        "scar_context": 1.6677217483520508,
-        "scar_edema_extent_and_wall_bias": 1.9293804168701172,
-        "scar_proposal_occupancy_center": 1.1576104164123535
+        "all_named_evidence_projection": 9.794548034667969,
+        "edema_boundary": 0.14630603790283203,
+        "edema_context_and_dilation_1_2_4": 0.9815568923950195,
+        "edema_injury": 0.7775611877441406,
+        "scar_context": 1.6677002906799316,
+        "scar_edema_extent_and_wall_bias": 1.9293806552886963,
+        "scar_proposal_occupancy_center": 1.1576465368270874
       },
       "zero_named_projection_gradient_sources": []
     },
@@ -680,7 +698,7 @@
       "forced_multi_tile_count": 9,
       "full_support_pseudo_tiling_detected": false,
       "global_bias_application_count": 1,
-      "max_abs_diff_without_context_override": 19.57863426208496,
+      "max_abs_diff_without_context_override": 19.578638076782227,
       "max_abs_diff_without_context_override_policy": {
         "blocking": false,
         "contract_field_or_exact_clause": null,
@@ -803,7 +821,7 @@
       "forced_multi_tile_count": 9,
       "full_support_pseudo_tiling_detected": false,
       "global_bias_application_count": 1,
-      "max_abs_diff_without_context_override": 19.57863426208496,
+      "max_abs_diff_without_context_override": 19.578638076782227,
       "max_abs_diff_without_context_override_policy": {
         "blocking": false,
         "contract_field_or_exact_clause": null,
@@ -1006,7 +1024,7 @@
       "contract_source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
       "cross_z_partial_feature_gradient_zero": true,
       "full_neighbor_gradient_nonzero": true,
-      "full_neighbor_input_feature_grad_abs_sum": 0.3895042836666107,
+      "full_neighbor_input_feature_grad_abs_sum": 0.38950422406196594,
       "fully_valid_neighbor_slice_index": 2,
       "logical_derivation": "The real SliceExtentHead pooling plus Conv1d sequence is executed, and only a fully-valid neighbor slice objective is backpropagated. Any gradient on the adjacent partial-H/W input feature is forbidden cross-z leakage from a masked-out slice.",
       "loss_applied_only_to_fully_valid_neighbor": true,
@@ -1095,7 +1113,11 @@
       "results/agent_flow_v3/care-ase-faithful/verification/verifier_fingerprint.json",
       "results/agent_flow_v3/care-ase-faithful/verification/verifier_freeze_receipt.json",
       "results/agent_flow_v3/care-ase-faithful/verification/verifier_local_commands_recorded_in_manifests.json",
-      "results/agent_flow_v3/care-ase-faithful/verification/verifier_session_receipt.json"
+      "results/agent_flow_v3/care-ase-faithful/verification/verifier_session_receipt.json",
+      "tests/care_ase_faithful/test_verifier_package.py",
+      "validators/care_ase_faithful/build_verification_artifacts.py",
+      "validators/care_ase_faithful/run_executable_verifier.py",
+      "validators/care_ase_faithful/validate_contract_evidence.py"
     ],
     "current_binding": {
       "blocked_failures": [],
@@ -1235,6 +1257,88 @@
       "verifier_status": "REPAIR_REQUESTED_ROUND_1_REENTRY_006",
       "verifier_thread_id": "019fda33-10c3-70e1-aa41-684b46d2cbda"
     },
+    "current_runtime_identity_strict_binding": {
+      "checkpoint_resume": {
+        "expected_fields": {
+          "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+          "implementation_identity_sha256": "d4b60e96a46603a19acf19d9a040a84005f046b1252aceca844edf9f75eb28b6",
+          "integration_commit_sha": "ed2e3097386bd322968936eb30fd434e621b51ce",
+          "request_nonce": "care-ase-20260806T090955Z",
+          "task_id": "care-ase-faithful",
+          "verifier_fingerprint_sha256": "a731eec931128a73fc32113048c49a5a8de5a7db2d877b6f8bb66732eebbb380"
+        },
+        "file_exists": true,
+        "observed_fields": {
+          "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+          "implementation_identity_sha256": null,
+          "integration_commit_sha": "d400c003ff6d15617ae96566e285f79a71a1d8b5",
+          "request_nonce": "care-ase-20260806T090955Z",
+          "task_id": "care-ase-faithful",
+          "verifier_fingerprint_sha256": null
+        },
+        "path": "results/agent_flow_v3/care-ase-faithful/implementation/checkpoint_resume_probe_receipt.json",
+        "schema": "CARE_ASE_FAITHFUL_ZERO_CREDIT_PROBE_RECEIPT_V1",
+        "sha256": "389d2bcf66b58e23e367eff3e3af4031c70b6d8d2ed5064eaf7df479785d7365"
+      },
+      "current_runtime_identity_receipt": {
+        "declared_bundle_sha256": "0b6acc78ac5844b73dc3141141ca2f36717e37cc547d9239705daa0802a5e972",
+        "expected_bundle_sha256": "0b6acc78ac5844b73dc3141141ca2f36717e37cc547d9239705daa0802a5e972",
+        "expected_fields": {
+          "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+          "implementation_identity_sha256": "d4b60e96a46603a19acf19d9a040a84005f046b1252aceca844edf9f75eb28b6",
+          "integration_commit_sha": "ed2e3097386bd322968936eb30fd434e621b51ce",
+          "request_nonce": "care-ase-20260806T090955Z",
+          "task_id": "care-ase-faithful",
+          "verifier_fingerprint_sha256": "a731eec931128a73fc32113048c49a5a8de5a7db2d877b6f8bb66732eebbb380"
+        },
+        "file_exists": true,
+        "observed_fields": {
+          "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+          "implementation_identity_sha256": "e7a6bfe00336354da7debf7321966c8a72c7ce43ee0bb00c316387c72659b7e3",
+          "integration_commit_sha": "965b0aadaf436e11abdf37dfe3ce6699e928b7b0",
+          "request_nonce": "care-ase-20260806T090955Z",
+          "task_id": "care-ase-faithful",
+          "verifier_fingerprint_sha256": "a731eec931128a73fc32113048c49a5a8de5a7db2d877b6f8bb66732eebbb380"
+        },
+        "path": "results/agent_flow_v3/care-ase-faithful/implementation/current_runtime_identity_receipt.json",
+        "schema": "CARE_ASE_FAITHFUL_ZERO_CREDIT_PROBE_RECEIPT_V1",
+        "sha256": "ec051dcf1850304ac2dfa35c82ac5c708291aacf8ff39eb3fa9357c6b09af714"
+      },
+      "current_runtime_input_bundle": {
+        "expected_fields": {
+          "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+          "implementation_identity_sha256": "d4b60e96a46603a19acf19d9a040a84005f046b1252aceca844edf9f75eb28b6",
+          "integration_commit_sha": "ed2e3097386bd322968936eb30fd434e621b51ce",
+          "request_nonce": "care-ase-20260806T090955Z",
+          "task_id": "care-ase-faithful",
+          "verifier_fingerprint_sha256": "a731eec931128a73fc32113048c49a5a8de5a7db2d877b6f8bb66732eebbb380"
+        },
+        "file_exists": true,
+        "observed_fields": {
+          "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+          "implementation_identity_sha256": "e7a6bfe00336354da7debf7321966c8a72c7ce43ee0bb00c316387c72659b7e3",
+          "integration_commit_sha": "965b0aadaf436e11abdf37dfe3ce6699e928b7b0",
+          "request_nonce": "care-ase-20260806T090955Z",
+          "task_id": "care-ase-faithful",
+          "verifier_fingerprint_sha256": "a731eec931128a73fc32113048c49a5a8de5a7db2d877b6f8bb66732eebbb380"
+        },
+        "path": "results/agent_flow_v3/care-ase-faithful/implementation/current_runtime_input_bundle.json",
+        "schema": "CARE_ASE_FAITHFUL_CURRENT_RUNTIME_INPUT_BUNDLE_V1",
+        "sha256": "0b6acc78ac5844b73dc3141141ca2f36717e37cc547d9239705daa0802a5e972"
+      },
+      "implementation_fingerprint": {
+        "file_exists": true,
+        "immutable_implementation_identity_sha256": null,
+        "path": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_fingerprint.json",
+        "reported_implementation_fingerprint_sha256": "d4b60e96a46603a19acf19d9a040a84005f046b1252aceca844edf9f75eb28b6",
+        "runtime_artifact_hash_keys_present": [
+          "current_runtime_identity_receipt_sha256",
+          "current_runtime_input_bundle_sha256"
+        ],
+        "schema": "CARE_ASE_FAITHFUL_IMPLEMENTATION_FINGERPRINT_V1",
+        "sha256": "90b4e34454249350a97068ca4c53a64479bc795b0ece8aa4a88bad60fe199c27"
+      }
+    },
     "expected_review_round": 1,
     "fixture_mode": false,
     "hosted_ci_checked_commit_sha": "965b0aadaf436e11abdf37dfe3ce6699e928b7b0",
@@ -1242,9 +1346,9 @@
     "hosted_ci_head_sha": "965b0aadaf436e11abdf37dfe3ce6699e928b7b0",
     "hosted_ci_receipt_path": "results/agent_flow_v3/care-ase-faithful/controller_ci_receipt.json",
     "implementation_fingerprint_sha256": "d4b60e96a46603a19acf19d9a040a84005f046b1252aceca844edf9f75eb28b6",
-    "integration_sha": "b4d836cf65adf2be0ccf1a1f2106e3046e2b2f48",
-    "integration_sha_is_ancestor_of_observed_git_head": true,
-    "observed_git_head": "a2eceac1dfe296f34732fa43f11f3b4cb65472c8",
+    "integration_sha": "ed2e3097386bd322968936eb30fd434e621b51ce",
+    "integration_sha_is_ancestor_of_observed_git_head": false,
+    "observed_git_head": "cd90a37202b1f560cac8cf4c7aea1c107be68119",
     "planner_review_commit": "c6b867ba9e688f595bad013e2972b2574d014a14",
     "post_ci_gate_requires_exact_hosted_ci_success": true,
     "review_round": 1,
@@ -1256,7 +1360,7 @@
       "expected_fields": {
         "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
         "implementation_fingerprint_sha256": "d4b60e96a46603a19acf19d9a040a84005f046b1252aceca844edf9f75eb28b6",
-        "integration_commit_sha": "b4d836cf65adf2be0ccf1a1f2106e3046e2b2f48",
+        "integration_commit_sha": "ed2e3097386bd322968936eb30fd434e621b51ce",
         "request_nonce": "care-ase-20260806T090955Z",
         "review_round": 1,
         "task_id": "care-ase-faithful",
@@ -1279,6 +1383,20 @@
           "listed": false,
           "path": "results/agent_flow_v3/care-ase-faithful/implementation/checkpoint_resume_probe_receipt.json"
         },
+        "current_runtime_identity_receipt": {
+          "declared_sha256": null,
+          "expected_sha256": "ec051dcf1850304ac2dfa35c82ac5c708291aacf8ff39eb3fa9357c6b09af714",
+          "file_exists": true,
+          "listed": false,
+          "path": "results/agent_flow_v3/care-ase-faithful/implementation/current_runtime_identity_receipt.json"
+        },
+        "current_runtime_input_bundle": {
+          "declared_sha256": null,
+          "expected_sha256": "0b6acc78ac5844b73dc3141141ca2f36717e37cc547d9239705daa0802a5e972",
+          "file_exists": true,
+          "listed": false,
+          "path": "results/agent_flow_v3/care-ase-faithful/implementation/current_runtime_input_bundle.json"
+        },
         "deployment_load": {
           "declared_sha256": null,
           "expected_sha256": "930ccff87ec0e2a094c998fcca375be34b9bab6b5ad887b4ca384985b7445f69",
@@ -1295,7 +1413,7 @@
         },
         "executable_verifier": {
           "declared_sha256": null,
-          "expected_sha256": "898ec8d20923b432bf4c70413276594933b6105ceeee5bad58d4c0865aca53fe",
+          "expected_sha256": "6a026bf1d47a626a1770987d74490b8dfe31d3ad9ce297d199c6984e88c11356",
           "file_exists": true,
           "listed": false,
           "path": "results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json"
@@ -1321,6 +1439,13 @@
           "listed": false,
           "path": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence.json"
         },
+        "implementation_fingerprint": {
+          "declared_sha256": null,
+          "expected_sha256": "90b4e34454249350a97068ca4c53a64479bc795b0ece8aa4a88bad60fe199c27",
+          "file_exists": true,
+          "listed": false,
+          "path": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_fingerprint.json"
+        },
         "inference": {
           "declared_sha256": null,
           "expected_sha256": "eaae874c6ffe375a2c998532ed30dfe72b109fb061b679ba1a3d9232ea928c3e",
@@ -1330,7 +1455,7 @@
         },
         "transaction_gate": {
           "declared_sha256": null,
-          "expected_sha256": "ae59092b40f2695fce2e97f1ac5a6a76f12b8de6d9c8d9d39ebfb50fdd52eb50",
+          "expected_sha256": "a538eff7c2130718943e90d7cca90c2ff832b6c73a42cb2ff4eb08fb72338d0d",
           "file_exists": true,
           "listed": false,
           "path": "results/agent_flow_v3/care-ase-faithful/verification/transaction_gate_receipt.json"
@@ -1340,25 +1465,30 @@
     "transaction_closure_phase": "post_ci_exact_transaction_gate",
     "verifier_source_artifacts": {
       "file_hashes": {
-        "tests/care_ase_faithful/test_verifier_package.py": "2df15b95750181095b17c9c6a2921d8b822572ce236fbdb08d262c9f23b2879f",
-        "validators/care_ase_faithful/build_verification_artifacts.py": "fba3ddbb597bf1a91554fe05afb7b916903e3b83ddd486aa6958e70492e1fa92",
-        "validators/care_ase_faithful/run_executable_verifier.py": "b68c39f8bc2fac55731f0791a75e726ca6612dd0367fe28ce25f14319cfb1ce6",
-        "validators/care_ase_faithful/validate_contract_evidence.py": "9e84e90a6bf1868d8d25429e9152009d53618286ffea144e159c0f8606ec7ad7"
+        "tests/care_ase_faithful/test_verifier_package.py": "870558fe647cbc42bc0fb1f37bd753aa97baf788e39d42f43c20f6ba685d2bf4",
+        "validators/care_ase_faithful/build_verification_artifacts.py": "575eae28a20992fa62d649e39ea965d4d863f96f51069e7b3489d9f745431219",
+        "validators/care_ase_faithful/run_executable_verifier.py": "ffcce9b0b38b47608befc7885af762ebc1376cb3257ba27a663932426528a78a",
+        "validators/care_ase_faithful/validate_contract_evidence.py": "048de587c5ac3b362dfef196116bca215d1c5839064774bcf51a55e853a60a0e"
       },
-      "verifier_source_fingerprint_sha256": "aaad2dd420dd141e19e7c12ec1db2f5b238927199266276ecade00cd2c6966f8"
+      "verifier_source_fingerprint_sha256": "c67eda8ca71e1c60eb318f1aab90eb88820a3e32456927fde64694231299767c"
     },
-    "verifier_source_changed_after_reviewed_integration": [],
-    "verifier_source_fingerprint_sha256": "aaad2dd420dd141e19e7c12ec1db2f5b238927199266276ecade00cd2c6966f8"
+    "verifier_source_changed_after_reviewed_integration": [
+      "tests/care_ase_faithful/test_verifier_package.py",
+      "validators/care_ase_faithful/build_verification_artifacts.py",
+      "validators/care_ase_faithful/run_executable_verifier.py",
+      "validators/care_ase_faithful/validate_contract_evidence.py"
+    ],
+    "verifier_source_fingerprint_sha256": "c67eda8ca71e1c60eb318f1aab90eb88820a3e32456927fde64694231299767c"
   },
   "verifier_source_artifacts": {
     "file_hashes": {
-      "tests/care_ase_faithful/test_verifier_package.py": "2df15b95750181095b17c9c6a2921d8b822572ce236fbdb08d262c9f23b2879f",
-      "validators/care_ase_faithful/build_verification_artifacts.py": "fba3ddbb597bf1a91554fe05afb7b916903e3b83ddd486aa6958e70492e1fa92",
-      "validators/care_ase_faithful/run_executable_verifier.py": "b68c39f8bc2fac55731f0791a75e726ca6612dd0367fe28ce25f14319cfb1ce6",
-      "validators/care_ase_faithful/validate_contract_evidence.py": "9e84e90a6bf1868d8d25429e9152009d53618286ffea144e159c0f8606ec7ad7"
+      "tests/care_ase_faithful/test_verifier_package.py": "870558fe647cbc42bc0fb1f37bd753aa97baf788e39d42f43c20f6ba685d2bf4",
+      "validators/care_ase_faithful/build_verification_artifacts.py": "575eae28a20992fa62d649e39ea965d4d863f96f51069e7b3489d9f745431219",
+      "validators/care_ase_faithful/run_executable_verifier.py": "ffcce9b0b38b47608befc7885af762ebc1376cb3257ba27a663932426528a78a",
+      "validators/care_ase_faithful/validate_contract_evidence.py": "048de587c5ac3b362dfef196116bca215d1c5839064774bcf51a55e853a60a0e"
     },
-    "verifier_source_fingerprint_sha256": "aaad2dd420dd141e19e7c12ec1db2f5b238927199266276ecade00cd2c6966f8"
+    "verifier_source_fingerprint_sha256": "c67eda8ca71e1c60eb318f1aab90eb88820a3e32456927fde64694231299767c"
   },
-  "verifier_source_fingerprint_sha256": "aaad2dd420dd141e19e7c12ec1db2f5b238927199266276ecade00cd2c6966f8",
+  "verifier_source_fingerprint_sha256": "c67eda8ca71e1c60eb318f1aab90eb88820a3e32456927fde64694231299767c",
   "zero_credit": true
 }

@@ -1,6 +1,7 @@
 {
-  "failure_count": 7,
+  "failure_count": 8,
   "failures": [
+    "verifier_owned.executable.planner_review_commit",
     "verifier_owned.executable.passed",
     "verifier_owned.executable.status",
     "verifier_owned.transaction.status",

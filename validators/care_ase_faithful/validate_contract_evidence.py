@@ -7,6 +7,7 @@ import hashlib
 import json
 import math
 import re
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any, Callable
@@ -26,11 +27,36 @@ VERIFICATION_DIR = ROOT / "results" / "agent_flow_v3" / TASK_ID / "verification"
 CURRENT_PATH = ROOT / "automation" / "agent_flow_v3" / "tasks" / TASK_ID / "CURRENT.json"
 
 
-def _current_binding_value(field: str, fallback: str) -> str:
+def _load_current_payload() -> dict[str, Any]:
+    # Verifier role worktrees can lag behind origin/develop while preserving dirty
+    # verifier-owned repairs. Use the already-fetched remote-tracking task state as
+    # machine truth, then fall back to the local file for offline/package tests.
+    rel_current = "automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json"
     try:
-        current = json.loads(CURRENT_PATH.read_text(encoding="utf-8"))
+        result = subprocess.run(
+            ["git", "show", f"origin/develop:{rel_current}"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            payload = json.loads(result.stdout)
+            if isinstance(payload, dict):
+                return payload
     except Exception:
-        return fallback
+        pass
+    try:
+        payload = json.loads(CURRENT_PATH.read_text(encoding="utf-8"))
+        if isinstance(payload, dict):
+            return payload
+    except Exception:
+        pass
+    return {}
+
+
+def _current_binding_value(field: str, fallback: str) -> str:
+    current = _load_current_payload()
     binding = current.get("binding", current) if isinstance(current, dict) else {}
     value = binding.get(field) if isinstance(binding, dict) else None
     if value is None and isinstance(current, dict):
@@ -254,6 +280,13 @@ REQUIRED_EXECUTABLE_MUTATION_IDS = {
     "runtime_manifest_old_implementation_fingerprint",
     "runtime_manifest_old_verifier_fingerprint",
     "runtime_manifest_receipt_sha_drift",
+    "current_runtime_bundle_old_integration",
+    "current_runtime_bundle_old_implementation_identity",
+    "current_runtime_bundle_old_verifier_fingerprint",
+    "current_runtime_identity_receipt_old_tuple",
+    "current_runtime_identity_artifact_omitted_from_manifest",
+    "current_checkpoint_receipt_old_integration_tuple",
+    "post_integration_bundle_self_reference_or_previous_fingerprint_reuse",
     "artifact_sha_mismatch",
 }
 

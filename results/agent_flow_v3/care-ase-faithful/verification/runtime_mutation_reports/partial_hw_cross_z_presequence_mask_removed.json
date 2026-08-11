@@ -1,12 +1,12 @@
 {
-  "created_utc": "2026-08-08T15:05:53Z",
+  "created_utc": "2026-08-11T04:08:33Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
     "kb11.partial_hw.cross_z_presequence_mask"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "48cf3476dc887694598f8e2b1785d158d725b69e31f7629ce92300644047b5c5",
+  "mutated_fingerprint_sha256": "212caa6d22075df541a629a3f2df9831b483d64f71cf742134df55aa4d070fbb",
   "mutation_applied": "slice_extent_head_partial_hw_only_pixel_pooling_allows_cross_z_conv1d_leakage",
   "mutation_executed": true,
   "mutation_id": "partial_hw_cross_z_presequence_mask_removed",
@@ -16,12 +16,12 @@
       "contract_source_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
       "cross_z_partial_feature_gradient_zero": false,
       "full_neighbor_gradient_nonzero": true,
-      "full_neighbor_input_feature_grad_abs_sum": 0.3039824664592743,
+      "full_neighbor_input_feature_grad_abs_sum": 0.3039824366569519,
       "fully_valid_neighbor_slice_index": 2,
       "logical_derivation": "The real SliceExtentHead pooling plus Conv1d sequence is executed, and only a fully-valid neighbor slice objective is backpropagated. Any gradient on the adjacent partial-H/W input feature is forbidden cross-z leakage from a masked-out slice.",
       "loss_applied_only_to_fully_valid_neighbor": true,
       "name": "partial_hw_slice_extent_head_cross_z_gradient",
-      "partial_hw_input_feature_grad_abs_sum": 0.3571208417415619,
+      "partial_hw_input_feature_grad_abs_sum": 0.3571208119392395,
       "partial_slice_index": 1,
       "status": "FAIL",
       "uses_real_slice_extent_head": true
