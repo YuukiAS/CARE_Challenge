@@ -3461,6 +3461,12 @@ def care_ase_transaction_failures_require_provenance_rebind(failures: Any) -> bo
     return any(str(item).startswith(rebind_prefixes) for item in failures)
 
 
+def care_ase_reviewed_integration_sha_after_executor_merge(current: dict[str, Any], integration_merge_sha: str) -> str:
+    if current.get("state") == "PROVENANCE_REBIND_REQUIRED" and current.get("integration_commit_sha"):
+        return str(current.get("integration_commit_sha"))
+    return integration_merge_sha
+
+
 def care_ase_integrated_validation_pre_ci_acceptable(integrated: dict[str, Any]) -> bool:
     if integrated.get("passed") is True and int(integrated.get("failure_count", 0)) == 0:
         return True
@@ -3674,6 +3680,7 @@ def apply_care_ase_executor_scope_completion_verifier_recheck_update(
         cwd=repo,
     )
     integration_merge_sha = git(repo, "rev-parse", "HEAD")
+    reviewed_integration_sha = care_ase_reviewed_integration_sha_after_executor_merge(current, integration_merge_sha)
     env = os.environ.copy()
     env["PYTHONDONTWRITEBYTECODE"] = "1"
     env["CARE_ROOT"] = str(repo)
@@ -3731,6 +3738,8 @@ def apply_care_ase_executor_scope_completion_verifier_recheck_update(
         "executor_merge_base": completion.get("merge_base"),
         "executor_goal_complete": completion.get("goal_complete"),
         "integration_merge_sha": integration_merge_sha,
+        "reviewed_integration_sha": reviewed_integration_sha,
+        "integration_target_preserved_for_provenance_rebind": reviewed_integration_sha != integration_merge_sha,
         "implementation_fingerprint_sha256": completion.get("implementation_fingerprint_sha256"),
         "implementation_evidence_payload_sha256": completion.get("implementation_evidence_sha256"),
         "verifier_fingerprint_sha256": current.get("verifier_fingerprint_sha256"),
@@ -3752,7 +3761,7 @@ def apply_care_ase_executor_scope_completion_verifier_recheck_update(
     updated_current.update(
         {
             "state": "VERIFIER_RECHECK_REQUIRED",
-            "integration_commit_sha": integration_merge_sha,
+            "integration_commit_sha": reviewed_integration_sha,
             "executor_thread_id": completion.get("thread_id"),
             "executor_production_thread_id": completion.get("thread_id"),
             "executor_local_commit_sha": completion.get("executor_head"),

@@ -1233,6 +1233,22 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         ]
         self.assertFalse(RUNTIME.care_ase_transaction_failures_require_provenance_rebind(hosted_ci_only))
 
+    def test_care_ase_provenance_rebind_preserves_reviewed_integration_target(self) -> None:
+        self.assertEqual(
+            RUNTIME.care_ase_reviewed_integration_sha_after_executor_merge(
+                {"state": "PROVENANCE_REBIND_REQUIRED", "integration_commit_sha": "reviewed"},
+                "new-merge",
+            ),
+            "reviewed",
+        )
+        self.assertEqual(
+            RUNTIME.care_ase_reviewed_integration_sha_after_executor_merge(
+                {"state": "VERIFIER_FROZEN", "integration_commit_sha": "old"},
+                "new-merge",
+            ),
+            "new-merge",
+        )
+
     def test_github_actions_success_payload_requires_exact_head_and_success(self) -> None:
         payload = {
             "workflow_runs": [
