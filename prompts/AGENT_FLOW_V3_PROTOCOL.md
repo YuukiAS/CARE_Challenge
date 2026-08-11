@@ -409,6 +409,8 @@ contract reserves for the user.
 
 `VERIFIER_RECHECK_REQUIRED` and `VERIFIER_RECHECK_RUNNING` are Controller-internal states for the case where an Executor commit is clean, scope-valid, and bound to the current frozen contract/nonce, but its fail-closed receipt correctly says only Verifier-owned executable or transaction receipts remain stale. The Controller may integrate that Executor commit, but it must not mark implementation complete or enter Planner wait until the independent Verifier production thread reruns and commits those receipts. This is not a Planner decision, not a human approval point, and not permission for the Controller to edit Verifier source or fabricate Verifier evidence.
 
+`PROVENANCE_REBIND_REQUIRED` and `PROVENANCE_REBIND_RUNNING` are Controller-internal repair states for same-scope transaction/runtime binding gaps found by Verifier recheck. They mean the Verifier has produced real fail-closed receipts showing stale or incomplete runtime manifests, artifact hashes, CI head bindings, current-runtime tuple fields, or checkpoint tuple fields. These states route to Controller/Executor provenance rebind only. They are not Planner/Critic review states, not human scientific-choice states, and not permission to change the frozen scientific contract or model design. Planner/Critic must stay closed until a fresh transaction and exact CI are available.
+
 `WAITING_FOR_EXTERNAL_GPT` is a non-terminal orchestration state for asynchronous
 GitHub-mediated Scheduled GPT work. It must record
 `external_wait_started_utc`, `external_wait_deadline_utc`,

@@ -1725,6 +1725,12 @@ def evaluate_stage_event(
         else:
             decision = "MONITOR_ONLY"
             action = "wait for independent Verifier receipt recheck commit"
+    elif task_id == "care-ase-faithful" and state == "PROVENANCE_REBIND_REQUIRED":
+        decision = "STAGE_READY"
+        action = "start persistent CARE-ASE Executor exact session for provenance/runtime transaction rebind"
+    elif task_id == "care-ase-faithful" and state == "PROVENANCE_REBIND_RUNNING":
+        decision = "MONITOR_ONLY"
+        action = "wait for Executor provenance/runtime rebind commit"
     else:
         decision = "MONITOR_ONLY"
         action = f"observed state {state}"
@@ -2582,7 +2588,18 @@ Current verified binding:
 - CURRENT.state: {current.get("state")}
 {sync_note}
 
-Implement CARE-ASE faithfully against the frozen contract and the Verifier package. You may edit only the Executor role write scope: src, scripts/training, scripts/inference, jobs, configs, and results/agent_flow_v3/care-ase-faithful/implementation. You must not edit tests, validators, automation schema, blueprints, Planner/Critic artifacts, or the frozen contract.
+{("""This is a narrow same-scope provenance/runtime transaction rebind turn, not a new architecture implementation turn. The Verifier recheck has already committed fail-closed receipts showing stale or incomplete transaction bindings. Your task is to repair only Executor-owned runtime evidence and implementation receipt files so they bind the current Controller integration tuple exactly.
+
+Required rebind scope:
+- read results/agent_flow_v3/care-ase-faithful/verification/executable_verifier_receipt.json;
+- read results/agent_flow_v3/care-ase-faithful/verification/transaction_gate_receipt.json;
+- update/regenerate only Executor-owned implementation evidence under results/agent_flow_v3/care-ase-faithful/implementation and any necessary Executor-owned source that generates those receipts;
+- bind request_nonce, frozen_contract_sha256, review_round, current integration_commit_sha, implementation_fingerprint_sha256, verifier_fingerprint_sha256, and artifact SHA manifest consistently;
+- rerun only zero-credit probes needed to refresh those receipts;
+- leave the scientific design and frozen contract unchanged.
+
+Do not change model architecture or training logic unless it is strictly necessary to make the existing receipt generator write the correct provenance tuple. Do not claim implementation PASS; the expected result is fresh Executor-owned evidence that is ready for another independent Verifier recheck.
+""" if current.get("state") == "PROVENANCE_REBIND_REQUIRED" else """Implement CARE-ASE faithfully against the frozen contract and the Verifier package.""")} You may edit only the Executor role write scope: src, scripts/training, scripts/inference, jobs, configs, and results/agent_flow_v3/care-ase-faithful/implementation. You must not edit tests, validators, automation schema, blueprints, Planner/Critic artifacts, or the frozen contract.
 
 Do not train, access outer data, build or upload Docker, upload validation/challenge results, send organizer email, hand-write Planner/Critic decisions, use --last, or use TUI key injection. Commit implementation-only changes on the local Executor branch. Do not push develop; Controller owns integration and push.
 
@@ -3205,6 +3222,8 @@ def care_ase_executor_after_integrated_verifier_repair_state(current: dict[str, 
     """
     state = current.get("state")
     verifier_status = str(current.get("verifier_status") or "")
+    if state == "PROVENANCE_REBIND_REQUIRED":
+        return True
     return bool(
         state in {"PLANNER_REVISE_BOTH", "PLANNER_REVISE_EXECUTOR"}
         and "VERIFIER_REPAIR_INTEGRATED" in verifier_status
@@ -5085,7 +5104,7 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
         elif (
             event["decision"] == "STAGE_READY"
             and task_id == "care-ase-faithful"
-            and event["state"] == "VERIFIER_FROZEN"
+            and event["state"] in {"VERIFIER_FROZEN", "PROVENANCE_REBIND_REQUIRED"}
         ):
             try:
                 event["action_result"] = start_care_ase_executor_from_verifier_freeze(
