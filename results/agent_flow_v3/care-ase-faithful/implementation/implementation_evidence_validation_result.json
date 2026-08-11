@@ -1,15 +1,18 @@
 {
-  "failure_count": 10,
+  "failure_count": 13,
   "failures": [
+    "verifier_owned.executable.integration_sha",
     "verifier_owned.executable.passed",
     "verifier_owned.executable.status",
     "verifier_owned.executable.runtime_binding_sha:checkpoint_resume_probe",
     "verifier_owned.executable.runtime_binding_sha:current_runtime_identity",
     "verifier_owned.executable.runtime_binding_sha:current_runtime_input_bundle",
+    "verifier_owned.transaction.integration_sha",
     "verifier_owned.transaction.status",
     "verifier_owned.transaction.no_failures",
     "verifier_owned.transaction.hosted_ci_success",
     "verifier_owned.transaction.hosted_ci_exact_reviewed_integration",
+    "verifier_owned.transaction.planner_packet_bound_to_reviewed_integration",
     "verifier_owned.transaction.no_stale_planner_reuse"
   ],
   "known_bad_case_id": null,
