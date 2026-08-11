@@ -1,17 +1,10 @@
 {
-  "failure_count": 11,
+  "failure_count": 4,
   "failures": [
-    "verifier_owned.executable.planner_review_commit",
-    "verifier_owned.executable.passed",
-    "verifier_owned.executable.status",
-    "verifier_owned.loss_semantic.status",
-    "verifier_owned.loss_semantic.injury_dice_bce_formula",
-    "verifier_owned.loss_semantic.edema_binary_dice_focal_formula",
-    "verifier_owned.eligible_normalization.status",
-    "verifier_owned.eligible_normalization.edema_no_t2_invariant",
-    "verifier_owned.eligible_normalization.injury_no_t2_invariant",
-    "verifier_owned.eligible_normalization.conditional_final_unequal_groups",
-    "verifier_owned.transaction.hosted_ci_success"
+    "verifier_owned.transaction.hosted_ci_success",
+    "verifier_owned.transaction.hosted_ci_exact_reviewed_integration",
+    "verifier_owned.transaction.planner_packet_bound_to_reviewed_integration",
+    "verifier_owned.transaction.no_stale_planner_reuse"
   ],
   "known_bad_case_id": null,
   "passed": false,
