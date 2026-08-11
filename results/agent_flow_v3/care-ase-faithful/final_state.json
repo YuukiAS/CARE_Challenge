@@ -1,6 +1,6 @@
 {
   "blocking_finding_ids": [],
-  "care_ase_current_state": "AWAIT_HUMAN_DECISION",
+  "care_ase_current_state": "READY_FOR_CRITIC_FINAL_AUDIT",
   "care_ase_request_enabled": true,
   "ci_checked_commit_sha": "00cd86428b02ae9d58eb4e8e4c7609362e7d50ea",
   "ci_run_id": 31485266746,
@@ -8,8 +8,8 @@
   "control_plane_observation": {
     "blocking_for_current_implementation_fidelity": false,
     "critic_decision_fabricated": false,
-    "final_critic_lifecycle_in_schema": false,
-    "required_followup": "Synchronize the intended Final Critic lifecycle and simplify review_target semantic-source coverage as a separate control-plane change. Do not rerun heavy verification solely for receipt/state/control-plane-only edits.",
+    "final_critic_lifecycle_in_schema": true,
+    "required_followup": "Real Scheduled Critic must perform final independent audit for the current stable review target before AWAIT_HUMAN_DECISION.",
     "source_snapshot_semantic_coverage_debt_recorded": true,
     "unsupported_final_critic_states_not_invented": true
   },
@@ -20,7 +20,7 @@
   "detailed_review_artifact_commit_sha": "b8b477e34b99aecb652a2ca46b0e932807ea0d08",
   "develop_push_status": "terminal_state_transaction_committed_and_pushed_to_develop",
   "develop_sha_at_planner_pass": "ff12c67e1d4fb4fccfd6254d95c014d1b46f8ede",
-  "final_status": "complete",
+  "final_status": "CONTROL_PLANE_FIXED_WAITING_FOR_REAL_FINAL_CRITIC",
   "forbidden_actions_observed": {
     "develop_to_main_merge_started": false,
     "docker_started": false,
@@ -29,7 +29,10 @@
     "organizer_email_sent": false,
     "outer_access_started": false,
     "planner_or_critic_decision_fabricated": false,
-    "validation_or_challenge_upload_started": false
+    "validation_or_challenge_upload_started": false,
+    "executor_restarted_for_final_critic_migration": false,
+    "verifier_restarted_for_final_critic_migration": false,
+    "heavy_verifier_rerun_for_final_critic_migration": false
   },
   "frozen_contract_path": "automation/agent_flow_v3/tasks/care-ase-faithful/FROZEN_CONTRACT.md",
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
@@ -37,7 +40,7 @@
   "integration_commit_sha": "00cd86428b02ae9d58eb4e8e4c7609362e7d50ea",
   "main_merge_status": "not_performed_forbidden_by_goal",
   "main_push_status": "not_applicable_no_main_update",
-  "next_action": "AWAIT_HUMAN_DECISION",
+  "next_action": "SCHEDULED_CRITIC_FINAL_AUDIT_CURRENT_STABLE_REVIEW_TARGET",
   "notifier_failure_reason": "Existing notifier found the GOAL_COMPLETE event, but local notification config/env expanded the recipient list to an empty address. No custom SMTP sender was used.",
   "notifier_status": "attempted_failed_empty_recipient",
   "notifier_status_path": "controller_notifications/state/notify_goal_watcher_status.json",
@@ -59,6 +62,13 @@
   "schema": "CARE_AGENT_FLOW_V3_FINAL_STATE",
   "source_snapshot_sha256": "b3b6e27d24f389f76762db7b21c2e37b8c590b26a33050dea01d5757464c9fd2",
   "task_id": "care-ase-faithful",
-  "updated_utc": "2026-08-11T12:36:44Z",
-  "verifier_fingerprint_sha256": "bda682e16508eed941e8ec92cc6fae2597dc409a92c63216e40d790887c35244"
+  "updated_utc": "2026-08-11T14:56:21Z",
+  "verifier_fingerprint_sha256": "bda682e16508eed941e8ec92cc6fae2597dc409a92c63216e40d790887c35244",
+  "previous_final_status": "complete",
+  "previous_care_ase_current_state": "AWAIT_HUMAN_DECISION",
+  "critic_mode": "REQUIRED_FINAL_AUDIT",
+  "grandfathered_planner_pass_candidate": true,
+  "control_plane_change_class": "CONTROL_PLANE_ONLY_CHANGED",
+  "superseded_by_final_critic_lifecycle_migration": true,
+  "final_critic_lifecycle_migration_receipt_path": "results/agent_flow_v3/care-ase-faithful/final_critic_lifecycle_migration_receipt.json"
 }

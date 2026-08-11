@@ -8,9 +8,9 @@ authority of the five LLM roles.
 
 | Role | Authority | May Decide | Must Not Decide |
 | --- | --- | --- | --- |
-| Planner | Scientific/task intent owner and contract adjudicator | Initial intent, implementation review findings, Executor/Verifier interpretation disputes, `PLANNER_PASS` | Runtime repair mechanics, implementation edits, verifier source edits, hidden test details |
-| Critic | Frozen-contract completeness and ambiguity auditor | Whether a draft contract is complete enough to freeze, requirement ledger completeness, numeric-threshold provenance, deterministic ambiguity repair | Implementation details for convenience, runtime code, new science after freeze without Planner/user path |
-| Controller | Orchestration and transaction owner | Session launch/resume, binding checks, commit integration, CI/runtime receipt routing, retry and state transitions | Scientific interpretation, new thresholds, implementation edits, verifier oracle edits, user escalation without Planner-classified science choice |
+| Planner | Scientific/task intent owner and contract adjudicator | Initial intent, implementation review findings, Executor/Verifier interpretation disputes, `PLANNER_PASS_CANDIDATE` | Runtime repair mechanics, implementation edits, verifier source edits, hidden test details |
+| Critic | Initial contract auditor, contract ambiguity auditor, and final independent closure auditor | Whether a draft contract is complete enough to freeze, requirement ledger completeness, numeric-threshold provenance, deterministic ambiguity repair, and final closure audit after Planner pass candidate | Implementation details for convenience, runtime code, new science after freeze without Planner/user path |
+| Controller | Orchestration and transaction owner | Session launch/resume, binding checks, commit integration, CI/runtime receipt routing, retry and state transitions, mechanical Final Critic routing and CRITIC_FINAL_PASS -> AWAIT_HUMAN_DECISION | Scientific interpretation, new thresholds, implementation edits, verifier oracle edits, user escalation without Planner-classified science choice |
 | Verifier | Contract-conformance oracle builder | Tests, known-bads, mutation probes, diagnostic measurements, verification receipts | New scientific requirements, uncited blocking thresholds, diagnostic-to-fail promotion, implementation changes |
 | Executor | Implementation owner | Contract-faithful implementation, implementation receipts and runtime evidence | Verifier edits, contract edits, test-aware behavior, fake receipts, changing normal semantics to satisfy tests |
 
@@ -185,3 +185,9 @@ RECEIPT_OR_MANIFEST_ONLY_CHANGED -> lightweight bundle validator only
 CURRENT_OR_ROUTING_ONLY_CHANGED -> no heavy Verifier and no model/runtime probe
 DOC_ONLY_CHANGED -> no scientific evidence invalidation
 ```
+
+## Final Critic Lifecycle
+
+Planner is the primary implementation-fidelity reviewer and may produce `PLANNER_PASS_CANDIDATE` when no blocking findings remain. Critic is then the final independent closure auditor. Final Critic is not a second Planner and not a new Verifier: it audits whether the frozen blocking requirements, ledger, Planner closure evidence, Verifier authority, Executor behavior, stable review target and CI binding are self-consistent.
+
+Controller may mechanically route `PLANNER_PASS_CANDIDATE` to `READY_FOR_CRITIC_FINAL_AUDIT`, and may mechanically route `CRITIC_FINAL_PASS` to `AWAIT_HUMAN_DECISION`. Controller must not fabricate Planner or Critic decisions, and must not use a historical initial `PLAN_FROZEN` receipt as Final Critic evidence. Ordinary implementation, verifier, runtime and provenance repair loops keep `critic_mode=STANDBY`; Critic is invoked mid-loop only for Planner-routed contract ambiguity or contradiction.

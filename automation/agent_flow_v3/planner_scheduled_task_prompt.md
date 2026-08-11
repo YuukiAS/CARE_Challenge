@@ -33,7 +33,9 @@ current `planner_review_packet_path`:
    - `PLANNER_REVISE_EXECUTOR`;
    - `PLANNER_REVISE_VERIFIER`;
    - `PLANNER_REVISE_BOTH`;
-   - `PLANNER_PASS`.
+   - `PLANNER_PASS_CANDIDATE` when Final Critic lifecycle is enabled and no blocking findings remain.
+
+Legacy `PLANNER_PASS` artifacts remain valid historical evidence when produced before Final Critic lifecycle existed, but new implementation reviews must not use `PLANNER_PASS` to skip the final independent Critic audit.
 
 Each blocking finding must identify target role, affected files/functions, why it matters, required repair, required regression evidence and forbidden workaround.
 
@@ -55,4 +57,4 @@ Any new critical commit invalidates the old decision.
 
 Planner must not modify implementation or verifier source, merge `develop` to `main`, start training, access protected outer data, build/upload Docker, send organizer email or decide the next scientific stage.
 
-On `PLANNER_PASS`, set `next_action` to `AWAIT_HUMAN_DECISION` and stop.
+When Final Critic lifecycle is enabled, do not set `AWAIT_HUMAN_DECISION` yourself. A no-blocking implementation review returns `PLANNER_PASS_CANDIDATE`; Controller routes it to `READY_FOR_CRITIC_FINAL_AUDIT`; Final Critic PASS then lets Controller mechanically enter `AWAIT_HUMAN_DECISION`. Final Critic PASS does not require a duplicate Planner finalization pass.

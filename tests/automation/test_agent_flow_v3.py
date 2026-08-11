@@ -3767,6 +3767,230 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         failures = MODULE.validate_fail_closed_routing({"status": "BLOCKED", "reason": "unclear"}, self.schema)
         self.assertIn("generic_blocked_missing_classification", failures)
 
+    def test_final_critic_lifecycle_candidate_routes_to_final_critic(self) -> None:
+        request = copy.deepcopy(self.template)
+        request["frozen_contract_sha256"] = "a" * 64
+        current = {
+            "schema": "CARE_AGENT_FLOW_V3",
+            "task_id": request["task_id"],
+            "state": "PLANNER_PASS_CANDIDATE",
+            "review_round": 1,
+            "request_nonce": "nonce",
+            "frozen_contract_sha256": request["frozen_contract_sha256"],
+            "integration_commit_sha": "b" * 40,
+            "implementation_fingerprint_sha256": "c" * 64,
+            "verifier_fingerprint_sha256": "d" * 64,
+            "critic_mode": "REQUIRED_FINAL_AUDIT",
+            "next_action": "AWAIT_HUMAN_DECISION",
+            "updated_utc": "2026-08-11T00:00:00Z",
+        }
+        self.assertIn("planner_pass_candidate_cannot_enter_human_gate", MODULE.validate_current(current, request, self.schema))
+        current["next_action"] = "SCHEDULED_CRITIC_FINAL_AUDIT_CURRENT_STABLE_REVIEW_TARGET"
+        self.assertNotIn("planner_pass_candidate_cannot_enter_human_gate", MODULE.validate_current(current, request, self.schema))
+
+    def test_final_critic_ready_requires_candidate_and_preserves_grandfathered_planner_pass(self) -> None:
+        request = copy.deepcopy(self.template)
+        request["frozen_contract_sha256"] = "a" * 64
+        current = {
+            "schema": "CARE_AGENT_FLOW_V3",
+            "task_id": request["task_id"],
+            "state": "READY_FOR_CRITIC_FINAL_AUDIT",
+            "review_round": 1,
+            "request_nonce": "nonce",
+            "frozen_contract_sha256": request["frozen_contract_sha256"],
+            "integration_commit_sha": "b" * 40,
+            "implementation_fingerprint_sha256": "c" * 64,
+            "verifier_fingerprint_sha256": "d" * 64,
+            "critic_mode": "REQUIRED_FINAL_AUDIT",
+            "planner_decision": "PLANNER_PASS",
+            "planner_review_artifact": "results/agent_flow_v3/demo/planner_reviews/round_001_final.json",
+            "review_target_id": "e" * 64,
+            "review_bundle_sha256": "f" * 64,
+            "requirement_ledger_sha256": "1" * 64,
+            "next_action": "SCHEDULED_CRITIC_FINAL_AUDIT_CURRENT_STABLE_REVIEW_TARGET",
+            "updated_utc": "2026-08-11T00:00:00Z",
+        }
+        self.assertIn("planner_pass_grandfather_marker_required", MODULE.validate_current(current, request, self.schema))
+        current["grandfathered_planner_pass_candidate"] = True
+        self.assertEqual(MODULE.validate_current(current, request, self.schema), [])
+
+    def test_final_critic_pass_required_for_human_gate_and_controller_cannot_forge_it(self) -> None:
+        request = copy.deepcopy(self.template)
+        request["frozen_contract_sha256"] = "a" * 64
+        current = {
+            "schema": "CARE_AGENT_FLOW_V3",
+            "task_id": request["task_id"],
+            "state": "AWAIT_HUMAN_DECISION",
+            "review_round": 1,
+            "request_nonce": "nonce",
+            "frozen_contract_sha256": request["frozen_contract_sha256"],
+            "integration_commit_sha": "b" * 40,
+            "implementation_fingerprint_sha256": "c" * 64,
+            "verifier_fingerprint_sha256": "d" * 64,
+            "critic_mode": "REQUIRED_FINAL_AUDIT",
+            "critic_final_decision": "CRITIC_FINAL_PASS",
+            "next_action": "AWAIT_HUMAN_DECISION",
+            "updated_utc": "2026-08-11T00:00:00Z",
+        }
+        failures = MODULE.validate_current(current, request, self.schema)
+        self.assertIn("await_human_requires_final_critic_complete", failures)
+        self.assertIn("await_human_requires_critic_final_artifact", failures)
+        current["critic_mode"] = "COMPLETE"
+        current["critic_final_review_artifact"] = "results/agent_flow_v3/demo/critic_reviews/final_critic_review.json"
+        self.assertEqual(MODULE.validate_current(current, request, self.schema), [])
+
+    def test_final_critic_revise_cannot_enter_human_gate(self) -> None:
+        request = copy.deepcopy(self.template)
+        request["frozen_contract_sha256"] = "a" * 64
+        current = {
+            "schema": "CARE_AGENT_FLOW_V3",
+            "task_id": request["task_id"],
+            "state": "CRITIC_FINAL_REVISE",
+            "review_round": 1,
+            "request_nonce": "nonce",
+            "frozen_contract_sha256": request["frozen_contract_sha256"],
+            "integration_commit_sha": "b" * 40,
+            "implementation_fingerprint_sha256": "c" * 64,
+            "verifier_fingerprint_sha256": "d" * 64,
+            "critic_mode": "STANDBY",
+            "next_action": "AWAIT_HUMAN_DECISION",
+            "updated_utc": "2026-08-11T00:00:00Z",
+        }
+        self.assertIn("final_critic_revise_cannot_enter_human_gate", MODULE.validate_current(current, request, self.schema))
+
+    def test_ordinary_repair_keeps_critic_standby_and_bypasses_final_critic(self) -> None:
+        receipt = RUNTIME.evaluate_stage_event(
+            task_id="care-ase-faithful",
+            request={"enabled": True},
+            current={"request_nonce": "nonce", "review_round": 1, "state": "PLANNER_REVISE_EXECUTOR", "critic_mode": "STANDBY"},
+            visual_final=None,
+            remote_sha="b" * 40,
+            processed=set(),
+            default_wait_hours=4,
+        )
+        self.assertEqual(receipt["decision"], "HANDOFF_TO_WATCHER")
+        self.assertNotIn("Critic", receipt["action"])
+
+    def test_final_critic_ready_waits_for_external_critic_without_changing_target(self) -> None:
+        current = {
+            "task_id": "care-ase-faithful",
+            "request_nonce": "nonce",
+            "review_round": 1,
+            "state": "READY_FOR_CRITIC_FINAL_AUDIT",
+            "critic_mode": "REQUIRED_FINAL_AUDIT",
+            "review_target_id": "a" * 64,
+            "next_action": "SCHEDULED_CRITIC_FINAL_AUDIT_CURRENT_STABLE_REVIEW_TARGET",
+        }
+        receipt = RUNTIME.evaluate_stage_event(
+            task_id="care-ase-faithful",
+            request={"enabled": True},
+            current=current,
+            visual_final=None,
+            remote_sha="b" * 40,
+            processed=set(),
+            default_wait_hours=4,
+        )
+        self.assertEqual(receipt["decision"], "WAITING_FOR_EXTERNAL_GPT")
+        self.assertEqual(receipt["state"], "READY_FOR_CRITIC_FINAL_AUDIT")
+        self.assertIn("Final Critic", receipt["action"])
+        self.assertEqual(current["review_target_id"], "a" * 64)
+
+    def test_critic_prompt_standby_or_complete_modes_are_noop(self) -> None:
+        prompt = (ROOT / "automation/agent_flow_v3/critic_scheduled_task_prompt.md").read_text(encoding="utf-8")
+        self.assertIn("critic_mode", prompt)
+        self.assertIn("STANDBY", prompt)
+        self.assertIn("COMPLETE", prompt)
+        self.assertIn("exit with no side effects", prompt)
+        self.assertIn("do not write a commit", prompt)
+
+    def test_historical_initial_freeze_receipt_cannot_satisfy_final_critic(self) -> None:
+        request = {"task_id": "demo", "request_nonce": "nonce", "frozen_contract_sha256": "a" * 64}
+        current = {
+            "task_id": "demo",
+            "request_nonce": "nonce",
+            "frozen_contract_sha256": "a" * 64,
+            "requirement_ledger_sha256": "b" * 64,
+            "review_target_id": "c" * 64,
+            "review_bundle_sha256": "d" * 64,
+            "planner_review_artifact": "results/agent_flow_v3/demo/planner_reviews/final.json",
+            "planner_decision": "PLANNER_PASS",
+        }
+        initial_freeze = {
+            "schema": "CARE_AGENT_FLOW_V3_CRITIC_FREEZE_RECEIPT",
+            "task_id": "demo",
+            "request_nonce": "nonce",
+            "frozen_contract_sha256": "a" * 64,
+            "requirement_ledger_sha256": "b" * 64,
+            "review_target_id": "c" * 64,
+            "review_bundle_sha256": "d" * 64,
+            "planner_review_artifact": "results/agent_flow_v3/demo/planner_reviews/final.json",
+            "planner_decision": "PLANNER_PASS",
+            "critic_mode": "REQUIRED_FINAL_AUDIT",
+            "critic_decision": "PLAN_FROZEN",
+            "blocking_findings": [],
+            "created_utc": "2026-08-06T00:00:00Z",
+        }
+        failures = MODULE.validate_final_critic_review(initial_freeze, current, request)
+        self.assertIn("final_critic:schema", failures)
+        self.assertIn("final_critic:critic_decision", failures)
+
+    def test_final_critic_receipt_rejects_heavy_verifier_rerun_requirement(self) -> None:
+        request = {"task_id": "demo", "request_nonce": "nonce", "frozen_contract_sha256": "a" * 64}
+        current = {
+            "task_id": "demo",
+            "request_nonce": "nonce",
+            "frozen_contract_sha256": "a" * 64,
+            "requirement_ledger_sha256": "b" * 64,
+            "review_target_id": "c" * 64,
+            "review_bundle_sha256": "d" * 64,
+            "planner_review_artifact": "results/agent_flow_v3/demo/planner_reviews/final.json",
+            "planner_decision": "PLANNER_PASS",
+        }
+        review = {
+            "schema": "CARE_AGENT_FLOW_V3_CRITIC_FINAL_REVIEW",
+            "task_id": "demo",
+            "request_nonce": "nonce",
+            "frozen_contract_sha256": "a" * 64,
+            "requirement_ledger_sha256": "b" * 64,
+            "review_target_id": "c" * 64,
+            "review_bundle_sha256": "d" * 64,
+            "planner_review_artifact": "results/agent_flow_v3/demo/planner_reviews/final.json",
+            "planner_decision": "PLANNER_PASS",
+            "critic_mode": "REQUIRED_FINAL_AUDIT",
+            "critic_decision": "CRITIC_FINAL_PASS",
+            "blocking_findings": [],
+            "heavy_verifier_rerun_required": True,
+            "created_utc": "2026-08-11T00:00:00Z",
+        }
+        self.assertIn("final_critic_must_not_require_heavy_verifier_rerun", MODULE.validate_final_critic_review(review, current, request))
+
+    def test_control_plane_only_changes_do_not_invalidate_stable_review_snapshot(self) -> None:
+        before = {
+            "review_target_id": "a" * 64,
+            "source_snapshot_sha256": "b" * 64,
+            "review_bundle_sha256": "c" * 64,
+            "frozen_contract_sha256": "d" * 64,
+            "requirement_ledger_sha256": "e" * 64,
+            "implementation_fingerprint_sha256": "f" * 64,
+            "verifier_fingerprint_sha256": "1" * 64,
+        }
+        after = dict(before)
+        after.update({"state": "READY_FOR_CRITIC_FINAL_AUDIT", "control_plane_change_class": "CONTROL_PLANE_ONLY_CHANGED"})
+        self.assertEqual(MODULE.control_plane_only_preserves_review_target(before, after), [])
+        after["review_target_id"] = "2" * 64
+        self.assertIn("control_plane_changed_stable_identity:review_target_id", MODULE.control_plane_only_preserves_review_target(before, after))
+
+    def test_current_care_migration_preserves_planner_pass_artifact_and_review_target(self) -> None:
+        current = json.loads((ROOT / "automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json").read_text(encoding="utf-8"))
+        self.assertEqual(current["state"], "READY_FOR_CRITIC_FINAL_AUDIT")
+        self.assertEqual(current["critic_mode"], "REQUIRED_FINAL_AUDIT")
+        self.assertEqual(current["planner_decision"], "PLANNER_PASS")
+        self.assertTrue(current["grandfathered_planner_pass_candidate"])
+        self.assertEqual(current["planner_review_artifact"], "results/agent_flow_v3/care-ase-faithful/planner_reviews/round_001_reentry_009_final.json")
+        self.assertEqual(current["review_target_id"], "49856d71280eeb3c52921ceb02a131d7fb689d5c2e66a3e9ee37efd32eec3ac2")
+        self.assertEqual(current["next_action"], "SCHEDULED_CRITIC_FINAL_AUDIT_CURRENT_STABLE_REVIEW_TARGET")
+
+
 
 if __name__ == "__main__":
     unittest.main()

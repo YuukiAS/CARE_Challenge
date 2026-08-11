@@ -22,6 +22,9 @@ CODEX_ROLES = ("controller", "verifier", "executor")
 LLM_ROLES = ("planner", "critic", "controller", "verifier", "executor")
 REQUIREMENT_ID_RE = re.compile(r"^REQ_[A-Z0-9]+_[0-9]{3}$")
 REQUIREMENT_LEDGER_SCHEMA = "AGENT_FLOW_V3_REQUIREMENT_LEDGER"
+FINAL_CRITIC_REVIEW_SCHEMA = "CARE_AGENT_FLOW_V3_CRITIC_FINAL_REVIEW"
+FINAL_CRITIC_ACTION = "SCHEDULED_CRITIC_FINAL_AUDIT_CURRENT_STABLE_REVIEW_TARGET"
+
 
 DEFAULT_CLASSIFICATION_ROUTES = {
     "IMPLEMENTATION_BUG": "executor",
@@ -168,7 +171,14 @@ def validate_current(
         elif not SHA256_RE.fullmatch(str(value)):
             errors.append(key)
 
-    if current.get("state") in {"PLANNER_PASS", "AWAIT_HUMAN_DECISION"}:
+    state = current.get("state")
+    final_critic_lifecycle_enabled = (
+        state in {"PLANNER_PASS_CANDIDATE", "READY_FOR_CRITIC_FINAL_AUDIT", "CRITIC_FINAL_REVISE"}
+        or current.get("critic_mode") in {"REQUIRED_FINAL_AUDIT", "COMPLETE"}
+        or current.get("final_critic_lifecycle_enabled") is True
+    )
+
+    if state == "PLANNER_PASS":
         if current.get("next_action") != "AWAIT_HUMAN_DECISION":
             errors.append("planner_pass_must_stop_at_human_gate")
         if any(current.get(key) is None for key in (
@@ -177,6 +187,47 @@ def validate_current(
             "verifier_fingerprint_sha256",
         )):
             errors.append("planner_pass_missing_exact_bindings")
+        if final_critic_lifecycle_enabled and current.get("grandfathered_planner_pass_candidate") is not True:
+            errors.append("planner_pass_requires_final_critic_candidate_route")
+
+    if state == "PLANNER_PASS_CANDIDATE":
+        if current.get("critic_mode") != "REQUIRED_FINAL_AUDIT":
+            errors.append("planner_pass_candidate_requires_final_critic_mode")
+        if current.get("next_action") == "AWAIT_HUMAN_DECISION":
+            errors.append("planner_pass_candidate_cannot_enter_human_gate")
+
+    if state == "READY_FOR_CRITIC_FINAL_AUDIT":
+        if current.get("critic_mode") != "REQUIRED_FINAL_AUDIT":
+            errors.append("final_critic_ready_requires_required_final_audit_mode")
+        if current.get("next_action") != FINAL_CRITIC_ACTION:
+            errors.append("final_critic_ready_next_action")
+        planner_decision = current.get("planner_decision")
+        if planner_decision == "PLANNER_PASS" and current.get("grandfathered_planner_pass_candidate") is not True:
+            errors.append("planner_pass_grandfather_marker_required")
+        elif planner_decision not in {"PLANNER_PASS", "PLANNER_PASS_CANDIDATE"}:
+            errors.append("final_critic_ready_requires_planner_pass_candidate")
+        for key in (
+            "planner_review_artifact",
+            "review_target_id",
+            "review_bundle_sha256",
+            "requirement_ledger_sha256",
+        ):
+            if not isinstance(current.get(key), str) or not str(current.get(key)).strip():
+                errors.append(f"final_critic_ready_missing:{key}")
+
+    if state == "CRITIC_FINAL_REVISE":
+        if current.get("critic_mode") != "STANDBY":
+            errors.append("final_critic_revise_returns_to_standby")
+        if current.get("next_action") == "AWAIT_HUMAN_DECISION":
+            errors.append("final_critic_revise_cannot_enter_human_gate")
+
+    if state == "AWAIT_HUMAN_DECISION" and final_critic_lifecycle_enabled:
+        if current.get("critic_mode") != "COMPLETE":
+            errors.append("await_human_requires_final_critic_complete")
+        if current.get("critic_final_decision") != "CRITIC_FINAL_PASS":
+            errors.append("await_human_requires_critic_final_pass")
+        if not isinstance(current.get("critic_final_review_artifact"), str) or not current.get("critic_final_review_artifact"):
+            errors.append("await_human_requires_critic_final_artifact")
 
     if current.get("state") == "WAITING_FOR_EXTERNAL_GPT":
         for key in (
@@ -437,6 +488,84 @@ def validate_contract_interpretation_review(review: dict[str, Any], schema: dict
         errors.append("contract_review:decision")
     if not isinstance(review.get("planner_read_set"), list) or not review.get("planner_read_set"):
         errors.append("contract_review:planner_read_set")
+    return errors
+
+
+def validate_final_critic_review(
+    review: dict[str, Any], current: dict[str, Any], request: dict[str, Any]
+) -> list[str]:
+    errors = _missing(
+        review,
+        [
+            "schema",
+            "task_id",
+            "request_nonce",
+            "review_target_id",
+            "frozen_contract_sha256",
+            "requirement_ledger_sha256",
+            "review_bundle_sha256",
+            "planner_review_artifact",
+            "planner_decision",
+            "critic_mode",
+            "critic_decision",
+            "blocking_findings",
+            "created_utc",
+        ],
+    )
+    if review.get("schema") != FINAL_CRITIC_REVIEW_SCHEMA:
+        errors.append("final_critic:schema")
+    for key in (
+        "task_id",
+        "request_nonce",
+        "review_target_id",
+        "frozen_contract_sha256",
+        "requirement_ledger_sha256",
+        "review_bundle_sha256",
+        "planner_review_artifact",
+        "planner_decision",
+    ):
+        if review.get(key) != current.get(key) and not (key == "task_id" and review.get(key) == request.get(key)):
+            errors.append(f"final_critic:binding:{key}")
+    if review.get("task_id") != request.get("task_id"):
+        errors.append("final_critic:binding:request_task_id")
+    if review.get("request_nonce") != request.get("request_nonce"):
+        errors.append("final_critic:binding:request_nonce")
+    if review.get("frozen_contract_sha256") != request.get("frozen_contract_sha256"):
+        errors.append("final_critic:binding:request_contract")
+    if review.get("critic_mode") != "REQUIRED_FINAL_AUDIT":
+        errors.append("final_critic:critic_mode")
+    decision = review.get("critic_decision")
+    if decision not in {"CRITIC_FINAL_PASS", "CRITIC_FINAL_REVISE", "NEEDS_USER_SCIENTIFIC_CHOICE"}:
+        errors.append("final_critic:critic_decision")
+    if decision == "PLAN_FROZEN":
+        errors.append("historical_initial_freeze_cannot_satisfy_final_critic")
+    findings = review.get("blocking_findings")
+    if not isinstance(findings, list):
+        errors.append("final_critic:blocking_findings")
+    elif decision == "CRITIC_FINAL_PASS" and findings:
+        errors.append("final_critic_pass_requires_no_blocking_findings")
+    elif decision == "CRITIC_FINAL_REVISE" and not findings:
+        errors.append("final_critic_revise_requires_blocking_findings")
+    if review.get("heavy_verifier_rerun_required") is True or review.get("requires_heavy_verifier_rerun") is True:
+        errors.append("final_critic_must_not_require_heavy_verifier_rerun")
+    return errors
+
+
+def control_plane_only_preserves_review_target(before: dict[str, Any], after: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    if after.get("control_plane_change_class") != "CONTROL_PLANE_ONLY_CHANGED":
+        errors.append("control_plane_change_class")
+    for key in (
+        "review_target_id",
+        "source_snapshot_sha256",
+        "review_bundle_sha256",
+        "frozen_contract_sha256",
+        "requirement_ledger_sha256",
+        "implementation_fingerprint_sha256",
+        "verifier_fingerprint_sha256",
+    ):
+        if before.get(key) != after.get(key):
+            errors.append(f"control_plane_changed_stable_identity:{key}")
     return errors
 
 

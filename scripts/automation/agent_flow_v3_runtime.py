@@ -32,6 +32,8 @@ WATCHER_STATE_SCHEMA = "CARE_AGENT_FLOW_V3_WATCHER_STATE"
 RESUME_RECEIPT_SCHEMA = "CARE_AGENT_FLOW_V3_EXACT_RESUME_RECEIPT"
 VISUAL_RECEIPT_SCHEMA = "CARE_AGENT_FLOW_V3_VISUAL_SOURCE_ACCESS_RECEIPT"
 VISUAL_SMOKE_FINAL_SCHEMA = "CARE_AGENT_FLOW_V3_VISUAL_SMOKE_FINAL"
+FINAL_CRITIC_REVIEW_SCHEMA = "CARE_AGENT_FLOW_V3_CRITIC_FINAL_REVIEW"
+FINAL_CRITIC_ACTION = "SCHEDULED_CRITIC_FINAL_AUDIT_CURRENT_STABLE_REVIEW_TARGET"
 ORCHESTRATOR_STATE_SCHEMA = "CARE_AGENT_FLOW_V3_STAGE_ORCHESTRATOR_STATE"
 ORCHESTRATOR_RECEIPT_SCHEMA = "CARE_AGENT_FLOW_V3_STAGE_ORCHESTRATOR_RECEIPT"
 CONTROLLER_START_RECEIPT_SCHEMA = "CARE_AGENT_FLOW_V3_CONTROLLER_START_RECEIPT"
@@ -686,7 +688,7 @@ def planner_review_artifact_event(
             ):
                 continue
         decision = review.get("decision")
-        if decision not in {*REVISION_STATES.keys(), "PLANNER_PASS"}:
+        if decision not in {*REVISION_STATES.keys(), "PLANNER_PASS", "PLANNER_PASS_CANDIDATE"}:
             continue
         candidates.append((str(review.get("created_utc") or ""), rel_path, review))
     if not candidates:
@@ -735,6 +737,95 @@ def planner_review_artifact_event(
             overlay["watcher_target_roles_override"] = ["verifier"]
             overlay["watcher_deferred_target_roles"] = ["executor"]
     return overlay
+
+
+def final_critic_review_artifact_event(
+    *,
+    repo: Path,
+    ref: str,
+    task_id: str,
+    request: dict[str, Any],
+    current: dict[str, Any],
+    remote_sha: str,
+) -> dict[str, Any] | None:
+    if current.get("state") != "READY_FOR_CRITIC_FINAL_AUDIT":
+        return None
+    if current.get("critic_mode") != "REQUIRED_FINAL_AUDIT":
+        return None
+    review_dir = f"results/agent_flow_v3/{task_id}/critic_reviews"
+    candidates: list[tuple[str, str, dict[str, Any]]] = []
+    for rel_path in git_ls_tree_files(repo, ref, review_dir):
+        if not rel_path.endswith(".json"):
+            continue
+        raw = git_show_text_or_none(repo, ref, rel_path)
+        if raw is None:
+            continue
+        try:
+            review = json.loads(raw)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(review, dict):
+            continue
+        if review.get("schema") != FINAL_CRITIC_REVIEW_SCHEMA:
+            continue
+        if review.get("task_id") != task_id or review.get("task_id") != request.get("task_id"):
+            continue
+        if review.get("request_nonce") != current.get("request_nonce") or review.get("request_nonce") != request.get("request_nonce"):
+            continue
+        for key in (
+            "review_target_id",
+            "frozen_contract_sha256",
+            "requirement_ledger_sha256",
+            "review_bundle_sha256",
+            "planner_review_artifact",
+            "planner_decision",
+        ):
+            if review.get(key) != current.get(key):
+                break
+        else:
+            decision = review.get("critic_decision")
+            if decision in {"CRITIC_FINAL_PASS", "CRITIC_FINAL_REVISE", "NEEDS_USER_SCIENTIFIC_CHOICE"}:
+                candidates.append((str(review.get("created_utc") or ""), rel_path, review))
+    if not candidates:
+        return None
+    _, review_path, review = sorted(candidates, key=lambda item: (item[0], item[1]))[-1]
+    decision = str(review["critic_decision"])
+    overlay = dict(current)
+    overlay.update(
+        {
+            "critic_final_decision": decision,
+            "critic_final_review_artifact": review_path,
+            "critic_final_review_artifact_commit_sha": remote_sha,
+            "external_wait_closed_utc": now(),
+        }
+    )
+    if decision == "CRITIC_FINAL_PASS":
+        overlay.update(
+            {
+                "state": "AWAIT_HUMAN_DECISION",
+                "critic_mode": "COMPLETE",
+                "next_action": "AWAIT_HUMAN_DECISION",
+            }
+        )
+    elif decision == "CRITIC_FINAL_REVISE":
+        overlay.update(
+            {
+                "state": "CRITIC_FINAL_REVISE",
+                "critic_mode": "STANDBY",
+                "next_action": "ROUTE_CRITIC_FINAL_REVISE_BY_FINDING_CLASSIFICATION",
+            }
+        )
+    else:
+        overlay.update(
+            {
+                "state": "NEEDS_USER_SCIENTIFIC_CHOICE",
+                "critic_mode": "COMPLETE",
+                "next_action": "AWAIT_HUMAN_DECISION_ON_PLANNER_AND_FINAL_CRITIC_CLASSIFIED_SCIENCE_CHOICE",
+            }
+        )
+    return overlay
+
+
 
 
 def load_exact_repair_prompt(
@@ -870,6 +961,16 @@ def cmd_watcher_once(args: argparse.Namespace) -> int:
             )
             if planner_event is not None:
                 current = planner_event
+            final_critic_event = final_critic_review_artifact_event(
+                repo=repo,
+                ref=ref,
+                task_id=args.task_id,
+                request=request,
+                current=current,
+                remote_sha=remote_sha,
+            )
+            if final_critic_event is not None:
+                current = final_critic_event
         else:
             request = load_json(repo / args.request_path)
             current = load_json(repo / args.current_path)
@@ -1152,6 +1253,16 @@ def run_watch_cycle_without_lock(args: argparse.Namespace) -> dict[str, Any]:
     )
     if planner_event is not None:
         current = planner_event
+    final_critic_event = final_critic_review_artifact_event(
+        repo=repo,
+        ref=ref,
+        task_id=args.task_id,
+        request=request,
+        current=current,
+        remote_sha=remote_sha,
+    )
+    if final_critic_event is not None:
+        current = final_critic_event
     state_path = args.state_root.resolve() / args.task_id / "watcher_state.json"
     local_state = load_json(state_path) if state_path.is_file() else {
         "schema": WATCHER_STATE_SCHEMA,
@@ -1719,9 +1830,26 @@ def evaluate_stage_event(
         wait_current = update_wait_fields(
             current,
             remote_sha=remote_sha,
-            expected="Scheduled Planner returns PLANNER_PASS or a bound PLANNER_REVISE_* artifact for the current integration SHA.",
+            expected="Scheduled Planner returns PLANNER_PASS_CANDIDATE or a bound PLANNER_REVISE_* artifact for the current stable review target.",
             default_hours=default_wait_hours,
         )
+    elif state == "PLANNER_PASS_CANDIDATE":
+        decision = "CONTROLLER_UPDATE_REQUIRED"
+        action = "route Planner pass candidate to READY_FOR_CRITIC_FINAL_AUDIT without changing the stable review target"
+    elif state == "READY_FOR_CRITIC_FINAL_AUDIT":
+        decision = "WAITING_FOR_EXTERNAL_GPT"
+        action = "scheduled Final Critic audit"
+        wait_current = update_wait_fields(
+            current,
+            remote_sha=remote_sha,
+            expected="Scheduled Critic writes CRITIC_FINAL_PASS or CRITIC_FINAL_REVISE bound to the current stable review target.",
+            default_hours=default_wait_hours,
+        )
+        wait_current["state"] = "READY_FOR_CRITIC_FINAL_AUDIT"
+        wait_current["next_action"] = FINAL_CRITIC_ACTION
+    elif state == "CRITIC_FINAL_REVISE":
+        decision = "CONTROLLER_UPDATE_REQUIRED"
+        action = "route Final Critic findings by typed classification without entering the human final gate"
     elif task_id == "gpt-loop-smoke-b" and state == "PLANNER_PASS":
         decision = "CONTROLLER_UPDATE_REQUIRED"
         action = "validate Smoke B Planner PASS artifact, write gpt_loop_smoke_final PASS, then arm care-ase-faithful"

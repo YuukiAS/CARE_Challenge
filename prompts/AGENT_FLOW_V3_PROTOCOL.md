@@ -24,13 +24,13 @@ weaken or redefine Planner, Critic, Controller, Verifier or Executor authority.
 
 Agent-Flow v3 uses exactly five LLM roles.
 
-1. `planner` — a persistent scheduled GPT task. It authors the initial scientific contract and later re-enters after implementation to review the exact contract, implementation, verifier fingerprint, CI evidence and runtime receipts. It returns implementation or verification findings, or `PLANNER_PASS`.
+1. `planner` — a persistent scheduled GPT task. It authors the initial scientific contract and later re-enters after implementation to review the exact contract, implementation, verifier fingerprint, CI evidence and runtime receipts. It returns implementation or verification findings, or `PLANNER_PASS_CANDIDATE` when Final Critic lifecycle is enabled.
 2. `critic` — a separate persistent scheduled GPT task. It reviews the Planner draft once per contract revision cycle, directly repairs omissions and ambiguity, and freezes one exact contract SHA. It does not execute code. It returns to the Planner only when a scientific choice genuinely requires user judgment.
 3. `controller` — a persistent Codex session. It is only a coordinator and state owner. It launches/resumes the Verifier and Executor, maintains exact thread/session receipts, merges their commits into `develop`, runs deterministic orchestration, routes Planner findings, and stops at the human gate. It must not edit implementation or verification source.
 4. `verifier` — a separate persistent Codex session with its own worktree, `CODEX_HOME`, exact thread ID and write scope. It writes validators, tests, mutation cases, known-bad fixtures and verification receipts. It must not edit model, training, inference or deployment implementation.
 5. `executor` — a separate persistent Codex session with its own worktree, `CODEX_HOME`, exact thread ID and write scope. It writes model, training, inference and deployment implementation. It must not edit frozen verification source or weaken verification gates.
 
-There is no separate Reviewer role in v3. After deterministic CI passes, the Planner performs the implementation review and drives the repair loop. The only human action required during the loop is resolving an explicitly blocked scientific choice; otherwise the first normal human gate is after `PLANNER_PASS`.
+There is no separate Reviewer role in v3. After deterministic CI passes, the Planner performs the implementation review and drives the repair loop. The only human action required during the loop is resolving an explicitly blocked scientific choice; otherwise the first normal human gate is after Planner pass candidate plus Final Critic PASS.
 
 Deterministic `validator` and `finalizer` scripts remain tools, not additional LLM roles.
 
@@ -135,6 +135,32 @@ Concrete server values belong in ignored local config or shell environment, not 
    - `PLANNER_PASS`.
 13. On revision, Controller resumes only the named exact session or both sessions in the declared order, integrates new commits, reruns CI and returns to Planner.
 14. On `PLANNER_PASS`, Controller writes `AWAIT_HUMAN_DECISION`, sends the existing notifier and stops.
+
+## Final Critic lifecycle
+
+Final Critic adds independent closure judgment without adding another execution pipeline. The minimal states are:
+
+```text
+PLANNER_PASS_CANDIDATE
+READY_FOR_CRITIC_FINAL_AUDIT
+CRITIC_FINAL_REVISE
+```
+
+`CRITIC_FINAL_PASS` is a Critic decision, not a required long-lived intermediate state. Final normal state remains `AWAIT_HUMAN_DECISION`.
+
+`critic_mode` is one of:
+
+```text
+REQUIRED_INITIAL
+STANDBY
+REQUIRED_CONTRACT_REVIEW
+REQUIRED_FINAL_AUDIT
+COMPLETE
+```
+
+Ordinary implementation, verifier, runtime and provenance repairs keep `critic_mode=STANDBY`; Critic is not part of every repair round. Planner-routed contract ambiguity or contradiction may set `critic_mode=REQUIRED_CONTRACT_REVIEW`. When Planner finds no implementation blockers, it returns `PLANNER_PASS_CANDIDATE`; Controller mechanically routes to `READY_FOR_CRITIC_FINAL_AUDIT`; Final Critic returns `CRITIC_FINAL_PASS` or `CRITIC_FINAL_REVISE`. Final Critic PASS goes directly to `AWAIT_HUMAN_DECISION` without a duplicate Planner relay.
+
+Final Critic must not rerun heavy Verifier, rerun runtime/model probes, add new requirements, require receipt-only SHA equality, or change the stable review target. It audits closure against the frozen contract, Requirement Ledger, stable review snapshot, Review Bundle, Planner closure evidence, Verifier authority, Executor anti-test-awareness, and exact CI PASS evidence.
 
 ## 6. Critic behavior
 
@@ -492,7 +518,7 @@ A task may satisfy this through ChatGPT Project files, a public repository, a pu
 
 The v3 loop requires no manual independent acceptance between Critic freeze and Planner PASS. It may continue through repeated Verifier/Executor repair rounds while the user is offline.
 
-After `PLANNER_PASS`, all automated roles stop at `AWAIT_HUMAN_DECISION`. The loop must not automatically:
+After `CRITIC_FINAL_PASS`, Controller stops at `AWAIT_HUMAN_DECISION`. The loop must not automatically:
 
 - merge `develop` into `main`;
 - start formal training;
