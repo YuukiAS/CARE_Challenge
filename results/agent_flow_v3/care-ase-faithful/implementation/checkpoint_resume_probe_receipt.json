@@ -2,19 +2,20 @@
   "command": {
     "entrypoint": "run_checkpoint_resume_probe",
     "fold": 0,
+    "rebind_only": true,
     "zero_credit": true
   },
-  "command_sha256": "fe3ccdb34c1d7ae3527dd96a65a3916a0c0b1bc712c0401d065b6f089096d180",
-  "created_utc": "2026-08-11T04:39:45Z",
+  "command_sha256": "bee1b8fb8d025f6d8b99ddef41e9117f4a9697fdfdd5128f951f98e33cc835c6",
+  "created_utc": "2026-08-11T05:32:20Z",
   "docker_or_upload": false,
   "executed": true,
   "exit_code": 0,
   "formal_training_started": false,
   "outer_accessed": false,
   "payload": {
-    "checkpoint_sha256": "f792e2c14f9ef673114e0bd05db3fab3e0ad3a51e6067c7326235406d28aedcf",
+    "checkpoint_sha256": "39733b2987a103ee38dcc8bf97aed85780128ef8d1bffdc69b115c190a7af026",
     "checkpoint_sidecar_matches": true,
-    "checkpoint_sidecar_sha256": "f792e2c14f9ef673114e0bd05db3fab3e0ad3a51e6067c7326235406d28aedcf",
+    "checkpoint_sidecar_sha256": "39733b2987a103ee38dcc8bf97aed85780128ef8d1bffdc69b115c190a7af026",
     "checkpoint_storage": "temporary_directory_removed_after_hashing",
     "checkpoint_written": true,
     "contract_manifest_environment_drift_rejected": true,
@@ -128,7 +129,7 @@
     "implementation_source_manifest_bound": true,
     "implementation_source_manifest_sha256": "de1c5ab27929fda6a6e193db1e0633a2f7dba5310c2ab560cc8fdeb4f2eccadc",
     "integration_commit_bound": true,
-    "integration_commit_sha": "ed2e3097386bd322968936eb30fd434e621b51ce",
+    "integration_commit_sha": "c763346768501b20cd2401c34c5be1b78a34b299",
     "next_descriptor_sha256": "d9b931dff5ed689359047a6529273be0300964d897f545ac5a79ad2dd2ef37d0",
     "next_gradient_matches_uninterrupted": true,
     "next_loss_matches_uninterrupted": true,
@@ -222,7 +223,7 @@
   "request_nonce": "care-ase-20260806T090955Z",
   "schema": "CARE_ASE_FAITHFUL_ZERO_CREDIT_PROBE_RECEIPT_V1",
   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "stdout_sha256": "b598f2a8a78729e08530fe0ffcf351156cfb40f173635feec9097738106180e3",
+  "stdout_sha256": "552cab531e8ad9111ac3b8662ccd644e7b631e5f8f3a087deccad13abb76f36b",
   "task_id": "care-ase-faithful",
   "zero_credit": true
 }

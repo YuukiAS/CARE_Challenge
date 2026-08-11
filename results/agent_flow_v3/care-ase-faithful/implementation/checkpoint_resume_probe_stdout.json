@@ -1,7 +1,7 @@
 {
-  "checkpoint_sha256": "f792e2c14f9ef673114e0bd05db3fab3e0ad3a51e6067c7326235406d28aedcf",
+  "checkpoint_sha256": "39733b2987a103ee38dcc8bf97aed85780128ef8d1bffdc69b115c190a7af026",
   "checkpoint_sidecar_matches": true,
-  "checkpoint_sidecar_sha256": "f792e2c14f9ef673114e0bd05db3fab3e0ad3a51e6067c7326235406d28aedcf",
+  "checkpoint_sidecar_sha256": "39733b2987a103ee38dcc8bf97aed85780128ef8d1bffdc69b115c190a7af026",
   "checkpoint_storage": "temporary_directory_removed_after_hashing",
   "checkpoint_written": true,
   "contract_manifest_environment_drift_rejected": true,
@@ -115,7 +115,7 @@
   "implementation_source_manifest_bound": true,
   "implementation_source_manifest_sha256": "de1c5ab27929fda6a6e193db1e0633a2f7dba5310c2ab560cc8fdeb4f2eccadc",
   "integration_commit_bound": true,
-  "integration_commit_sha": "ed2e3097386bd322968936eb30fd434e621b51ce",
+  "integration_commit_sha": "c763346768501b20cd2401c34c5be1b78a34b299",
   "next_descriptor_sha256": "d9b931dff5ed689359047a6529273be0300964d897f545ac5a79ad2dd2ef37d0",
   "next_gradient_matches_uninterrupted": true,
   "next_loss_matches_uninterrupted": true,
