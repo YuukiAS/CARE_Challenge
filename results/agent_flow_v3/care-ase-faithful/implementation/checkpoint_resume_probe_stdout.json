@@ -1,7 +1,7 @@
 {
-  "checkpoint_sha256": "d2ed09433c8b0ab34559265831739b9d031fb3f5bdd396700aee4d352d5817ee",
+  "checkpoint_sha256": "e5d7a7130cc461a17fbd965759e5a53b5433c534ad59d3cf71749c12e06eab5f",
   "checkpoint_sidecar_matches": true,
-  "checkpoint_sidecar_sha256": "d2ed09433c8b0ab34559265831739b9d031fb3f5bdd396700aee4d352d5817ee",
+  "checkpoint_sidecar_sha256": "e5d7a7130cc461a17fbd965759e5a53b5433c534ad59d3cf71749c12e06eab5f",
   "checkpoint_storage": "temporary_directory_removed_after_hashing",
   "checkpoint_written": true,
   "contract_manifest_environment_drift_rejected": true,
@@ -109,11 +109,11 @@
   "formal_optimizer_step_executed": false,
   "formal_training_started": false,
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
-  "immutable_implementation_fingerprint_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
+  "immutable_implementation_fingerprint_sha256": "2542e6e69cf5c1edd85c83cf4c70f55d7c87f928da5aa7b938838cd155fc5b4c",
   "implementation_fingerprint_bound": true,
-  "implementation_fingerprint_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
+  "implementation_fingerprint_sha256": "2542e6e69cf5c1edd85c83cf4c70f55d7c87f928da5aa7b938838cd155fc5b4c",
   "implementation_source_manifest_bound": true,
-  "implementation_source_manifest_sha256": "de1c5ab27929fda6a6e193db1e0633a2f7dba5310c2ab560cc8fdeb4f2eccadc",
+  "implementation_source_manifest_sha256": "8fd779e9383614feb6dfb063682ce0c34235d2236c8b7fc7d39db0c989e9c82b",
   "integration_commit_bound": true,
   "integration_commit_sha": "b41e25827329a14ed8b77ae7e7b1fb1711fc8110",
   "next_descriptor_sha256": "d9b931dff5ed689359047a6529273be0300964d897f545ac5a79ad2dd2ef37d0",
@@ -202,6 +202,6 @@
     "scar": "Case1001"
   },
   "verifier_fingerprint_bound": true,
-  "verifier_fingerprint_sha256": "a833449fe2dd3de5041e740f1d6f4d32a0ffec592a157dd0178f6e6182819c81",
+  "verifier_fingerprint_sha256": "bda682e16508eed941e8ec92cc6fae2597dc409a92c63216e40d790887c35244",
   "zero_credit_real_total_loss_optimizer_steps": 2
 }

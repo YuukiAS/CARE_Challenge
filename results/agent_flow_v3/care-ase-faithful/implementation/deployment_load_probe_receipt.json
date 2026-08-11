@@ -5,7 +5,7 @@
     "zero_credit": true
   },
   "command_sha256": "4d63aa253f31cfc1d47e65546003a89a2b7088c58efb422b74157c30aa317eb5",
-  "created_utc": "2026-08-11T04:40:35Z",
+  "created_utc": "2026-08-11T10:25:02Z",
   "docker_or_upload": false,
   "executed": true,
   "exit_code": 0,
@@ -60,7 +60,7 @@
       256
     ],
     "opened_file_count": 6,
-    "opened_file_manifest_sha256": "1b6398f5ba6676c0e1a9100f95db13c0e208b23a691608d7d010d210632b7044",
+    "opened_file_manifest_sha256": "1a0b318861e3a23e10359602b0bb2ad4a3a817f8728a34e691b35ac5dc40508c",
     "opened_stock_checkpoint_after_deployment_load": false,
     "outer_accessed": false,
     "probe_type": "zero_credit_deployment_manifest_probe",
@@ -74,7 +74,7 @@
   "request_nonce": "care-ase-20260806T090955Z",
   "schema": "CARE_ASE_FAITHFUL_ZERO_CREDIT_PROBE_RECEIPT_V1",
   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "stdout_sha256": "fb39678781c873a36ce26ddc603fadfbd012fbe66ccbb515ee4811b8c18e6370",
+  "stdout_sha256": "cab8473e8c78f90608cd98066129ebe0bae30c45b65cfc9ea502589b9415c50d",
   "task_id": "care-ase-faithful",
   "zero_credit": true
 }

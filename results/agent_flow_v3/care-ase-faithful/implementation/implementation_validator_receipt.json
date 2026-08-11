@@ -9,18 +9,14 @@
     "--report-json",
     "/users/a/e/aereinh/CARE_agent_flow/care-ase-faithful/executor/results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence_validation_result.json"
   ],
-  "created_utc": "2026-08-11T07:26:52Z",
-  "docker_or_upload": false,
+  "created_utc": "2026-08-11T10:26:50Z",
   "exit_code": 2,
-  "formal_training_started": false,
-  "outer_accessed": false,
-  "rebind_only": true,
   "report_path": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence_validation_result.json",
   "request_nonce": "care-ase-20260806T090955Z",
   "schema": "CARE_ASE_FAITHFUL_IMPLEMENTATION_VALIDATOR_RECEIPT_V1",
   "stderr": "",
   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "stdout": "{\n  \"failure_count\": 13,\n  \"failures\": [\n    \"verifier_owned.executable.integration_sha\",\n    \"verifier_owned.executable.passed\",\n    \"verifier_owned.executable.status\",\n    \"verifier_owned.executable.runtime_binding_sha:checkpoint_resume_probe\",\n    \"verifier_owned.executable.runtime_binding_sha:current_runtime_identity\",\n    \"verifier_owned.executable.runtime_binding_sha:current_runtime_input_bundle\",\n    \"verifier_owned.transaction.integration_sha\",\n    \"verifier_owned.transaction.status\",\n    \"verifier_owned.transaction.no_failures\",\n    \"verifier_owned.transaction.hosted_ci_success\",\n    \"verifier_owned.transaction.hosted_ci_exact_reviewed_integration\",\n    \"verifier_owned.transaction.planner_packet_bound_to_reviewed_integration\",\n    \"verifier_owned.transaction.no_stale_planner_reuse\"\n  ],\n  \"known_bad_case_id\": null,\n  \"passed\": false,\n  \"schema\": \"CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1\",\n  \"task_id\": \"care-ase-faithful\"\n}\n",
-  "stdout_sha256": "c55f856baea53eeb19c65846aa42f586cc7571f4dfc5ebc64ef85a942b46bc20",
+  "stdout": "{\n  \"failure_count\": 26,\n  \"failures\": [\n    \"verifier_owned.executable.planner_review_commit\",\n    \"verifier_owned.executable.reviewed_verifier_fingerprint\",\n    \"verifier_owned.executable.passed\",\n    \"verifier_owned.executable.status\",\n    \"verifier_owned.executable.runtime_binding_sha:architecture_signature\",\n    \"verifier_owned.executable.runtime_binding_sha:checkpoint_resume_probe\",\n    \"verifier_owned.executable.runtime_binding_sha:current_runtime_identity\",\n    \"verifier_owned.executable.runtime_binding_sha:current_runtime_input_bundle\",\n    \"verifier_owned.executable.runtime_binding_sha:deployment_load_probe\",\n    \"verifier_owned.executable.runtime_binding_sha:evaluator_smoke\",\n    \"verifier_owned.executable.runtime_binding_sha:forward_backward_probe\",\n    \"verifier_owned.executable.runtime_binding_sha:hard_negative_binding\",\n    \"verifier_owned.executable.runtime_binding_sha:inference_probe\",\n    \"verifier_owned.executable.runtime_binding_sha:parameter_owner_registry\",\n    \"verifier_owned.executable.runtime_binding_sha:runtime_asset_manifest\",\n    \"verifier_owned.executable.runtime_binding_sha:source_manifest\",\n    \"verifier_owned.executable.runtime_binding_sha:step0_parity_probe\",\n    \"verifier_owned.loss_semantic.status\",\n    \"verifier_owned.loss_semantic.injury_dice_bce_formula\",\n    \"verifier_owned.loss_semantic.edema_binary_dice_focal_formula\",\n    \"verifier_owned.eligible_normalization.status\",\n    \"verifier_owned.eligible_normalization.edema_no_t2_invariant\",\n    \"verifier_owned.eligible_normalization.injury_no_t2_invariant\",\n    \"verifier_owned.eligible_normalization.conditional_final_unequal_groups\",\n    \"verifier_owned.transaction.reviewed_verifier_fingerprint\",\n    \"verifier_owned.transaction.hosted_ci_success\"\n  ],\n  \"known_bad_case_id\": null,\n  \"passed\": false,\n  \"schema\": \"CARE_ASE_FAITHFUL_VALIDATION_RESULT_V1\",\n  \"task_id\": \"care-ase-faithful\"\n}\n",
+  "stdout_sha256": "06d7e770d6a285f66cb175d31af2b76c53b900de4086eccad7356d340c42a756",
   "task_id": "care-ase-faithful"
 }

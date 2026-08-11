@@ -207,11 +207,12 @@ def binary_dice_bce(logit: torch.Tensor, target: torch.Tensor, valid_mask: torch
     mask = torch.ones_like(target) if valid_mask is None else valid_mask.to(logit)
     prob = torch.sigmoid(logit)
     dims = tuple(range(1, prob.ndim))
+    row_valid = mask.sum(dim=dims) > 0
     inter = (prob * target * mask).sum(dim=dims)
     gt_positive = (target * mask).sum(dim=dims)
     denom = (prob * mask).sum(dim=dims) + gt_positive
     dice_values = torch.where(gt_positive > 0, 1.0 - (2.0 * inter + 1.0e-5) / (denom + 1.0e-5), torch.zeros_like(denom))
-    dice = dice_values.mean()
+    dice = dice_values[row_valid].mean() if bool(row_valid.any()) else logit.sum() * 0.0
     bce = F.binary_cross_entropy_with_logits(logit, target, reduction="none")
     return dice + ((bce * mask).sum() / mask.sum().clamp_min(1.0))
 
@@ -222,6 +223,28 @@ def _five_class_logits_and_target(logits: torch.Tensor, target: torch.Tensor) ->
     mapped = torch.where(mapped == 5, torch.full_like(mapped, 4), mapped)
     mapped = torch.where(mapped == 4, torch.full_like(mapped, -1), mapped)
     return five, mapped
+
+
+def conditional_final_dice_ce(logits: torch.Tensor, target: torch.Tensor, availability: torch.Tensor) -> torch.Tensor:
+    """Row-normalized final competition with no-T2 class-4 exclusion."""
+
+    t2_present = availability[:, 1] > 0.5
+    row_terms: list[torch.Tensor] = []
+    for row in range(int(target.shape[0])):
+        row_logits = logits[row : row + 1]
+        row_target = target[row : row + 1]
+        if bool(t2_present[row]):
+            row_terms.append(
+                deterministic_cross_entropy(row_logits, row_target, ignore_index=-1)
+                + dice_loss_softmax(row_logits, row_target, classes=(1, 2, 3, 4, 5))
+            )
+        else:
+            five_logits, five_target = _five_class_logits_and_target(row_logits, row_target)
+            row_terms.append(
+                deterministic_cross_entropy(five_logits, five_target, ignore_index=-1)
+                + dice_loss_softmax(five_logits, five_target, classes=(1, 2, 3, 4))
+            )
+    return torch.stack(row_terms).mean() if row_terms else logits.sum() * 0.0
 
 
 def binary_dice_focal(
@@ -237,11 +260,12 @@ def binary_dice_focal(
     mask = torch.ones_like(target) if valid_mask is None else valid_mask.to(logit)
     prob = torch.sigmoid(logit)
     dims = tuple(range(1, prob.ndim))
+    row_valid = mask.sum(dim=dims) > 0
     inter = (prob * target * mask).sum(dim=dims)
     gt_positive = (target * mask).sum(dim=dims)
     denom = (prob * mask).sum(dim=dims) + gt_positive
     dice_values = torch.where(gt_positive > 0, 1.0 - (2.0 * inter + 1.0e-5) / (denom + 1.0e-5), torch.zeros_like(denom))
-    dice = dice_values.mean()
+    dice = dice_values[row_valid].mean() if bool(row_valid.any()) else logit.sum() * 0.0
     bce = F.binary_cross_entropy_with_logits(logit, target, reduction="none")
     p_t = prob * target + (1.0 - prob) * (1.0 - target)
     alpha_t = alpha * target + (1.0 - alpha) * (1.0 - target)
@@ -898,7 +922,6 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor], *, co
     target = batch["seg"].to(device=logits.device, dtype=torch.long)
     availability = batch["availability"].to(logits)
     t2_present = availability[:, 1] > 0.5
-    final_terms: list[torch.Tensor] = []
     metrics: dict[str, torch.Tensor] = {}
     if bool(t2_present.any()):
         idx = t2_present
@@ -907,7 +930,6 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor], *, co
         if collect_metrics:
             metrics["six_class_ce"] = ce6
             metrics["six_class_dice"] = dice6
-        final_terms.append(ce6 + dice6)
     if bool((~t2_present).any()):
         idx = ~t2_present
         five_logits, five_target = _five_class_logits_and_target(logits[idx], target[idx])
@@ -916,7 +938,7 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor], *, co
         if collect_metrics:
             metrics["five_class_ce_without_class4"] = ce5
             metrics["five_class_dice_without_class4"] = dice5
-        final_terms.append(ce5 + dice5)
+    final_competition = conditional_final_dice_ce(logits, target, availability)
     if "pathology_deep_supervision_weights" not in outputs:
         raise KeyError("CARE-ASE loss requires pathology_deep_supervision_weights from the model forward output")
     dense_weights = outputs["pathology_deep_supervision_weights"]
@@ -999,9 +1021,6 @@ def care_ase_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor], *, co
     edema_context = context_cross_entropy_valid_mean(components["edema_context"], edema_context_target, edema_valid_context)
     relation = F.relu(torch.maximum(outputs["z_scar"].detach().sigmoid(), outputs["z_pure_edema"].detach().sigmoid()) - torch.sigmoid(injury_logit.float())).mul(edema_valid).sum() / edema_valid.sum().clamp_min(1.0)
     zero = logits.sum() * 0.0
-    if not final_terms:
-        final_terms.append(zero)
-    final_competition = torch.stack(final_terms).mean()
     scar_extent = 0.5 * scar_presence + 0.5 * scar_area
     edema_extent = 0.5 * edema_presence + 0.5 * edema_area
     weighted_terms = {

@@ -1,13 +1,13 @@
 {
-  "architecture_signature_sha256": "1b27f73118197b52728b418d69d8a663a3b609e3a40136d781561b0003dfc5e3",
+  "architecture_signature_sha256": "46c3d80bc952d372f3996e1d7e582754c9cad946183265bd5bfb639bec897c96",
   "fingerprint_scope": "immutable_source_only_excludes_post_integration_runtime_artifacts",
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
-  "immutable_implementation_fingerprint_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
-  "implementation_fingerprint_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
-  "parameter_owner_registry_sha256": "ac2b77638049a46af988a17ef974e94459b69d2fcb1008547c548b68003c48f7",
+  "immutable_implementation_fingerprint_sha256": "2542e6e69cf5c1edd85c83cf4c70f55d7c87f928da5aa7b938838cd155fc5b4c",
+  "implementation_fingerprint_sha256": "2542e6e69cf5c1edd85c83cf4c70f55d7c87f928da5aa7b938838cd155fc5b4c",
+  "parameter_owner_registry_sha256": "108d400fcb63ac1d06c543aeb242a0713e35826aac1cae63cb503a31a79470d3",
   "request_nonce": "care-ase-20260806T090955Z",
   "schema": "CARE_ASE_FAITHFUL_IMMUTABLE_IMPLEMENTATION_IDENTITY_V1",
-  "source_manifest_sha256": "de1c5ab27929fda6a6e193db1e0633a2f7dba5310c2ab560cc8fdeb4f2eccadc",
+  "source_manifest_sha256": "8fd779e9383614feb6dfb063682ce0c34235d2236c8b7fc7d39db0c989e9c82b",
   "static_architecture_checks_sha256": "7e970f141b72fb660542a52de6e3f1ac3b6ad34112c420ec7c206c1b4bce8acc",
   "task_id": "care-ase-faithful"
 }

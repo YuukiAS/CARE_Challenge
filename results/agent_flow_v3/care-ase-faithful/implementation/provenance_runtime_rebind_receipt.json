@@ -1,48 +1,67 @@
 {
-  "schema": "CARE_ASE_FAITHFUL_EXECUTOR_PROVENANCE_RUNTIME_REBIND_RECEIPT_V1",
-  "task_id": "care-ase-faithful",
-  "request_nonce": "care-ase-20260806T090955Z",
-  "review_round": 1,
-  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
-  "integration_commit_sha": "b41e25827329a14ed8b77ae7e7b1fb1711fc8110",
-  "implementation_fingerprint_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
-  "immutable_implementation_fingerprint_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
-  "verifier_fingerprint_sha256": "a833449fe2dd3de5041e740f1d6f4d32a0ffec592a157dd0178f6e6182819c81",
+  "artifact_sha256": {
+    "architecture_signature": "30ce9d8a70cfb8201d6ad89d033747e458706cfae299e3713a62ebb3a9340461",
+    "checkpoint_resume_probe_receipt": "fcd0650a94b2d2e9ff45115696cc2351c56beb99e11ec6777ff3c61c8ead583c",
+    "current_runtime_identity_receipt": "1cc422b5eb124b149e64b0ff495969fb02e56f8e913b97915b340bb5ac12d590",
+    "current_runtime_input_bundle": "a59df1d19c4b00ef8ea1ef0c25eb41d3df1851c52d33e98f3f49606bbedc0be7",
+    "deployment_load_probe_receipt": "00317e6c6b4ebf27cadd0755a76a046aced14c01553af7bc19be72e72733b55c",
+    "evaluator_smoke_receipt": "04b0737c2614d2b5392ba8932664a8110b9d5af9f7b07fd0cf9d41308a29cf82",
+    "forward_backward_probe_receipt": "e24354dcbd1bbda5b5f80d518fa45d916a856aa9a6748cfc1824ebd5aa1512f1",
+    "hard_negative_binding_receipt": "dd5a800d781d977b8f83e2981592bc91f45f1caeb13663a8322addc0e43826ad",
+    "implementation_evidence": "e2098c54166f99bffb89e75704d02f5506aff791e12d0a1ccf6565e05d83527b",
+    "implementation_evidence_validation_result": "06d7e770d6a285f66cb175d31af2b76c53b900de4086eccad7356d340c42a756",
+    "implementation_fingerprint": "7e79bf8f5717f5fb519fe68c0c16572d39ae5ce596983cf888f8fb1172ab3591",
+    "implementation_validator_receipt": "6f7b7082c9a78e9bde4e3e35dc7b858e8bd3ecfba33183764ea4891a46dc98d2",
+    "inference_probe_receipt": "22568f5ab7b25cb74b1b03b73b8c7c719e9f777af89600c89fe7997f3e19373e",
+    "parameter_owner_registry": "8a20bba690fbc5b790d488ddf995bc9bcd2e3aace136f90834ac5ea7bbae26e2",
+    "runtime_asset_manifest": "e39468c07779b8a90aa8bdf88d641d117a32f318efef5bbef4e0b9989159c266",
+    "source_manifest": "2df86df956cdf307b9c83bd6e7cdf859f25f552c4fd2f8e3d46496a2e31ce2b0",
+    "step0_parity_probe_receipt": "6bbef957c9e61bdbaa3e379fb5db2d19d6530a2f2421a6edb1d2053bbfb1eef8"
+  },
   "created_utc": "2026-08-11T07:27:04Z",
-  "scope": "executor_owned_runtime_evidence_rebind_only",
-  "scientific_design_changed": false,
-  "source_changed": false,
-  "formal_training_started": false,
-  "outer_accessed": false,
+  "current_binding_refresh_note": "metadata refresh after reentry008 loss-normalization source repair; no implementation PASS claimed; active receipts are regenerated separately",
+  "current_binding_refresh_utc": "2026-08-11T10:28:47Z",
   "docker_built_or_uploaded": false,
-  "validation_or_challenge_uploaded": false,
+  "formal_training_started": false,
+  "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
+  "immutable_implementation_fingerprint_sha256": "2542e6e69cf5c1edd85c83cf4c70f55d7c87f928da5aa7b938838cd155fc5b4c",
+  "implementation_fingerprint_sha256": "2542e6e69cf5c1edd85c83cf4c70f55d7c87f928da5aa7b938838cd155fc5b4c",
   "implementation_pass_claimed": false,
+  "integration_commit_sha": "b41e25827329a14ed8b77ae7e7b1fb1711fc8110",
+  "next_required_owner": "controller_then_independent_verifier_recheck",
+  "outer_accessed": false,
   "rebound_zero_credit_probes": {
     "checkpoint_resume_probe": {
       "path": "results/agent_flow_v3/care-ase-faithful/implementation/checkpoint_resume_probe_receipt.json",
-      "sha256": "8a0e50ed1a079f6ce10f62ca4d3ff4135b6bd92f88a7c1aa7a0f5a9605d5504a",
+      "sha256": "fcd0650a94b2d2e9ff45115696cc2351c56beb99e11ec6777ff3c61c8ead583c",
       "status": "PASS"
     },
     "current_runtime_identity": {
       "path": "results/agent_flow_v3/care-ase-faithful/implementation/current_runtime_identity_receipt.json",
-      "sha256": "a90eb62af70b3035085a76f0bde2074e29cd4c19b9bfb49c141ed238d6890e01",
+      "sha256": "1cc422b5eb124b149e64b0ff495969fb02e56f8e913b97915b340bb5ac12d590",
+      "status": "PASS"
+    },
+    "forward_backward_probe": {
+      "path": "results/agent_flow_v3/care-ase-faithful/implementation/forward_backward_probe_receipt.json",
+      "sha256": "e24354dcbd1bbda5b5f80d518fa45d916a856aa9a6748cfc1824ebd5aa1512f1",
       "status": "PASS"
     }
   },
-  "artifact_sha256": {
-    "implementation_evidence": "d7f9e5faaa1b74c237952f46ff729748bab5191a26373fd43011431caf41facb",
-    "implementation_fingerprint": "f12da99165ed8d1b5a6a10afc2a6820a4d3bbf5a61b15b6791541d829d951525",
-    "current_runtime_input_bundle": "4d3e0732be8f362ded328fb744a4fad1eee55a75c7b17c60aee6b2a959a08160",
-    "current_runtime_identity_receipt": "a90eb62af70b3035085a76f0bde2074e29cd4c19b9bfb49c141ed238d6890e01",
-    "checkpoint_resume_probe_receipt": "8a0e50ed1a079f6ce10f62ca4d3ff4135b6bd92f88a7c1aa7a0f5a9605d5504a",
-    "implementation_evidence_validation_result": "c55f856baea53eeb19c65846aa42f586cc7571f4dfc5ebc64ef85a942b46bc20",
-    "implementation_validator_receipt": "750db4ef006a773967c01a421a969ca4ced7e20fe7745a53b1c316b7e40b8ffe"
-  },
+  "request_nonce": "care-ase-20260806T090955Z",
+  "review_round": 1,
+  "schema": "CARE_ASE_FAITHFUL_EXECUTOR_PROVENANCE_RUNTIME_REBIND_RECEIPT_V1",
+  "scientific_design_changed": false,
+  "scope": "executor_owned_loss_normalization_repair_and_runtime_evidence_refresh",
+  "source_changed": true,
+  "superseded_implementation_fingerprint_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
+  "superseded_verifier_fingerprint_sha256": "a833449fe2dd3de5041e740f1d6f4d32a0ffec592a157dd0178f6e6182819c81",
+  "task_id": "care-ase-faithful",
+  "validation_or_challenge_uploaded": false,
   "validator_result": {
-    "path": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence_validation_result.json",
     "exit_code": 2,
-    "failure_count": 13,
+    "failure_count": 26,
+    "path": "results/agent_flow_v3/care-ase-faithful/implementation/implementation_evidence_validation_result.json",
     "remaining_failure_scope": "verifier_owned_receipts_and_hosted_ci_only"
   },
-  "next_required_owner": "controller_then_independent_verifier_recheck"
+  "verifier_fingerprint_sha256": "bda682e16508eed941e8ec92cc6fae2597dc409a92c63216e40d790887c35244"
 }
