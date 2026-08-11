@@ -3,7 +3,7 @@
   "task_id": "care-ase-faithful",
   "request_nonce": "care-ase-20260806T090955Z",
   "frozen_contract_sha256": "a4758fd3125cdfaac4cf044fd4fa948472558cca231c0429a26e63e5d7d1e11d",
-  "created_utc": "2026-08-11T06:56:54Z",
+  "created_utc": "2026-08-11T07:29:04Z",
   "state_transition": {
     "from": "PROVENANCE_REBIND_REQUIRED",
     "through": [
@@ -11,12 +11,12 @@
     ],
     "to": "VERIFIER_RECHECK_REQUIRED"
   },
-  "origin_develop_before_integration_sha": "9058715ff072714487f571748f5cc6477571df6e",
-  "last_observed_remote_sha_before_integration": "9058715ff072714487f571748f5cc6477571df6e",
+  "origin_develop_before_integration_sha": "68b81e31ae4ff2856d3701d29e2f76fdc684a7c3",
+  "last_observed_remote_sha_before_integration": "68b81e31ae4ff2856d3701d29e2f76fdc684a7c3",
   "executor_thread_id": "019fd7c1-8358-7632-9022-367e62ecfbd1",
-  "executor_local_commit_sha": "fbcf62426e448d9b7c0533e7e8e428008c561278",
-  "executor_local_commit_subject": "care-ase executor provenance rebind current tuple",
-  "executor_merge_base": "9058715ff072714487f571748f5cc6477571df6e",
+  "executor_local_commit_sha": "b2c6043a4e67f8dc1f79fb53a6837612231f11dc",
+  "executor_local_commit_subject": "care-ase executor provenance rebind current integration",
+  "executor_merge_base": "68b81e31ae4ff2856d3701d29e2f76fdc684a7c3",
   "executor_goal_complete": {
     "rollout_path": "/users/a/e/aereinh/.codex-homes/CARE_care-ase-faithful_EXECUTOR/sessions/2026/08/06/rollout-2026-08-06T11-46-51-019fd7c1-8358-7632-9022-367e62ecfbd1.jsonl",
     "thread_id": "019fd7c1-8358-7632-9022-367e62ecfbd1",
@@ -25,9 +25,9 @@
     "time_used_seconds": 3252,
     "updated_at": 1786037419
   },
-  "integration_merge_sha": "23ae44523fae133e3e52d8347d8a2445475f604b",
+  "integration_merge_sha": "e55061cfb6e3aa529b75d5d4c3ff4342efc199ef",
   "implementation_fingerprint_sha256": "41d9a11728e48257c515ac763f5095e77dbb294190ed61b87c02ededa5204355",
-  "implementation_evidence_payload_sha256": "4438558b4a6235ea6245cd4a0db50ef0eab4396f1646067f36aa8a8c9ad9fdd5",
+  "implementation_evidence_payload_sha256": "dcf8cd2a4b1d5f4cb86095b4553f86eb3b92765e6b2d5f01aba2352756adc457",
   "verifier_fingerprint_sha256": "a833449fe2dd3de5041e740f1d6f4d32a0ffec592a157dd0178f6e6182819c81",
   "requires_independent_verifier_recheck": true,
   "verifier_recheck_basis": "implementation_evidence_ready_pending_verifier_recheck",
@@ -51,7 +51,7 @@
       "name": "public_verifier_pytest",
       "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m pytest tests/care_ase_faithful/test_verifier_package.py -q",
       "exit_code": 0,
-      "stdout_tail": ".................                                                 [100%]\n17 passed, 7 subtests passed in 8.31s\n",
+      "stdout_tail": ".................                                                 [100%]\n17 passed, 7 subtests passed in 8.59s\n",
       "stderr_tail": ""
     }
   ],
@@ -61,5 +61,5 @@
     "no implementation_complete claim before Verifier recheck",
     "no training, outer, Docker, upload, organizer email or develop-to-main merge"
   ],
-  "updated_utc": "2026-08-11T06:56:54Z"
+  "updated_utc": "2026-08-11T07:29:04Z"
 }
