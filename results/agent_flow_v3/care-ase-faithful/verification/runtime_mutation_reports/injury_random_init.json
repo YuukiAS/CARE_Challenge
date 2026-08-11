@@ -1,18 +1,18 @@
 {
-  "created_utc": "2026-08-11T04:05:28Z",
+  "created_utc": "2026-08-11T05:08:02Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
     "kb07.injury_classifier.stock_mean_initializer"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "42c01fe779ee07abfcb37e652c858115de199a1fa580927c31ef383c833333a7",
+  "mutated_fingerprint_sha256": "225a9bf3738945f96268e73225c9e2eab76ad589b84081fe42de8bf07ca8188f",
   "mutation_applied": "component_heads.edema_injury_weights_overwritten_with_random_values",
   "mutation_executed": true,
   "mutation_id": "injury_random_init",
   "observations": {
     "injury_weight_delta_max_abs": 1.6745824813842773,
-    "source_manifest_sha256_before_mutation": "9c00dcf67188fff01a77f11b2eff47b33a17fbac5437a96bf00c51015315124d"
+    "source_manifest_sha256_before_mutation": "b4981affabaf8234879f17a05ad6cc258334f478195d89f91bdf30fdb0ed9d0e"
   },
   "passed": false,
   "request_nonce": "care-ase-20260806T090955Z",

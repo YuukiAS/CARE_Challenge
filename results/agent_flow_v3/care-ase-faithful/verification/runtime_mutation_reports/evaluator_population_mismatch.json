@@ -1,19 +1,19 @@
 {
-  "created_utc": "2026-08-11T04:10:45Z",
+  "created_utc": "2026-08-11T05:13:43Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
     "kb19.evaluator.same_cases"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "801d566547c496cacdb7f2e7cfb227a212bb68262c6f67c25c927cef734dc973",
+  "mutated_fingerprint_sha256": "8c97deea61504dd2eb4c1eec01e38eac0b535eba9a28150076b42d53cb96fa63",
   "mutation_applied": "evaluator_called_with_mismatched_prediction_population_shape",
   "mutation_executed": true,
   "mutation_id": "evaluator_population_mismatch",
   "observations": {
     "evaluator_rejected_mismatch": true,
     "observed_error": "ValueError:prediction/ground-truth shape mismatch: care=(2, 4, 4) baseline=(3, 4, 4) gt=(2, 4, 4)",
-    "source_manifest_sha256_before_mutation": "9c00dcf67188fff01a77f11b2eff47b33a17fbac5437a96bf00c51015315124d"
+    "source_manifest_sha256_before_mutation": "b4981affabaf8234879f17a05ad6cc258334f478195d89f91bdf30fdb0ed9d0e"
   },
   "passed": false,
   "request_nonce": "care-ase-20260806T090955Z",

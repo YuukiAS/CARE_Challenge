@@ -1,18 +1,18 @@
 {
-  "created_utc": "2026-08-11T04:11:19Z",
+  "created_utc": "2026-08-11T05:14:25Z",
   "exit_code": 2,
   "failure_count": 1,
   "failures": [
     "artifact_binding.forward_backward_probe.stdout_file_sha"
   ],
   "fixture_mode": false,
-  "mutated_fingerprint_sha256": "3975075d15e04957c2e87a13c03123cd0750aa00869b50395b570987a32586c0",
+  "mutated_fingerprint_sha256": "a5031ea0d2eb4f5c31dbc5f5a938bc6b481267a012aaf93d429ca2c709f42856",
   "mutation_applied": "tracked_runtime_artifact_bytes_changed_after_receipt_sha_recording",
   "mutation_executed": true,
   "mutation_id": "artifact_sha_mismatch",
   "observations": {
-    "declared_sha256": "4a12360e60ab4ebff90f712393ac0b62327da17087a821db018df7752ac4dab5",
-    "mutated_file_sha256": "c8e98a17946db4b19dad82b88e4fcefc06e2bc541d4c2f7ec3d92adc0bdf80c7"
+    "declared_sha256": "08532a096db7200e6c6f4690247f84d2c9455db0f4a3a37726b5b8cdccabd629",
+    "mutated_file_sha256": "c6ab6bdfb4a1fedbaa06f6eb91abb749a68b584f1b710e45db66e29c2e137433"
   },
   "passed": false,
   "receipts": [
