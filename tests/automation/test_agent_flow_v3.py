@@ -1371,7 +1371,7 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
         deadline = RUNTIME.parse_utc(receipt["external_wait_deadline_utc"])
         self.assertGreaterEqual((deadline - started).total_seconds(), 4 * 3600)
 
-    def test_care_ase_ci_pass_routes_to_authorized_wait_transaction(self) -> None:
+    def test_care_ase_ci_pass_routes_to_post_ci_verifier_recheck(self) -> None:
         current = {
             "task_id": "care-ase-faithful",
             "request_nonce": "care-ase-nonce",
@@ -1397,6 +1397,7 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
 
         self.assertEqual(receipt["decision"], "CONTROLLER_UPDATE_REQUIRED")
         self.assertIn("CI_PASS", receipt["action"])
+        self.assertIn("POST_CI_VERIFIER_RECHECK_REQUIRED", receipt["action"])
 
     def test_ci_pass_wait_transaction_is_not_human_approval_gate(self) -> None:
         current = {
@@ -1424,6 +1425,7 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
 
         self.assertEqual(receipt["decision"], "CONTROLLER_UPDATE_REQUIRED")
         self.assertIn("authorized", receipt["action"])
+        self.assertIn("POST_CI_VERIFIER_RECHECK_REQUIRED", receipt["action"])
         self.assertNotEqual(receipt["decision"], "OPERATIONALLY_BLOCKED")
         self.assertNotIn("human", receipt["action"].lower())
 
@@ -1544,7 +1546,7 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
                     / "results/agent_flow_v3/care-ase-faithful/planner_review_packet.json"
                 ).read_text(encoding="utf-8")
             )
-            self.assertEqual(updated["state"], "WAITING_FOR_EXTERNAL_GPT")
+            self.assertEqual(updated["state"], "POST_CI_VERIFIER_RECHECK_REQUIRED")
             self.assertEqual(updated["integration_commit_sha"], "e" * 40)
             self.assertEqual(planner_packet["integration_commit_sha"], "e" * 40)
             self.assertEqual(planner_packet["ci_checked_commit_sha"], "e" * 40)
@@ -1561,6 +1563,9 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             self.assertIsNone(updated["repair_prompt_sha256"])
             self.assertEqual(updated["repair_prompts"], {})
             self.assertIsNone(updated["external_wait_closed_utc"])
+            self.assertIsNone(updated["external_wait_started_utc"])
+            self.assertIsNone(updated["external_wait_deadline_utc"])
+            self.assertEqual(updated["next_action"], "START_POST_CI_VERIFIER_RECHECK_EXACT_SESSION")
             superseded = updated["superseded_planner_review_before_current_wait"]
             self.assertEqual(superseded["planner_decision"], "PLANNER_REVISE_BOTH")
             self.assertEqual(
@@ -1570,7 +1575,7 @@ class AgentFlowV3ValidationTests(unittest.TestCase):
             self.assertFalse(ci_receipt["human_approval_required_for_wait_transaction"])
             self.assertEqual(
                 ci_receipt["approval_scope"],
-                "current_frozen_contract_and_request_nonce_ci_pass_to_planner_wait_loop",
+                "current_frozen_contract_and_request_nonce_ci_pass_to_post_ci_verifier_recheck",
             )
             self.assertTrue(ready_receipt["wait_transaction_ci_policy"]["status_commit_may_trigger_ci_after_wait_starts"])
             self.assertEqual(

@@ -263,6 +263,8 @@ def cmd_audit_visual_sources(args: argparse.Namespace) -> int:
             failures.append(f"{name}:missing_raw_url")
         rows.append(row)
 
+    post_ci_recheck = current.get("state") in {"POST_CI_VERIFIER_RECHECK_REQUIRED", "POST_CI_VERIFIER_RECHECK_RUNNING"}
+    state_after = "READY_FOR_PLANNER_REVIEW" if post_ci_recheck else "CI_RUNNING"
     receipt = {
         "schema": VISUAL_RECEIPT_SCHEMA,
         "task_id": manifest.get("task_id"),
@@ -1277,7 +1279,13 @@ def care_ase_verifier_recheck_needs_exact_resume_retry(
     verifier_recheck_complete: bool,
 ) -> bool:
     return bool(
-        current.get("state") in {"VERIFIER_RECHECK_REQUIRED", "VERIFIER_RECHECK_RUNNING"}
+        current.get("state")
+        in {
+            "VERIFIER_RECHECK_REQUIRED",
+            "VERIFIER_RECHECK_RUNNING",
+            "POST_CI_VERIFIER_RECHECK_REQUIRED",
+            "POST_CI_VERIFIER_RECHECK_RUNNING",
+        }
         and stage_event_was_processed(event_key, processed)
         and not verifier_recheck_complete
         and not care_ase_role_launch_satisfied(stage_state_root, current, "verifier")
@@ -1660,7 +1668,7 @@ def evaluate_stage_event(
     elif state == "CI_RUNNING":
         if task_id == "care-ase-faithful" and ci_pass_allows_planner_wait_transaction(current, remote_sha):
             decision = "CONTROLLER_UPDATE_REQUIRED"
-            action = "authorized CI_PASS -> WAITING_FOR_EXTERNAL_GPT Planner review transaction"
+            action = "authorized CI_PASS -> POST_CI_VERIFIER_RECHECK_REQUIRED transaction"
         else:
             decision = "WAITING_FOR_CI"
             action = str(current.get("expected_state_or_artifact") or "hosted CI result")
@@ -1708,20 +1716,20 @@ def evaluate_stage_event(
         else:
             decision = "STAGE_READY"
             action = "start persistent CARE-ASE Executor exact session after Verifier freeze"
-    elif task_id == "care-ase-faithful" and state == "VERIFIER_RECHECK_REQUIRED":
+    elif task_id == "care-ase-faithful" and state in {"VERIFIER_RECHECK_REQUIRED", "POST_CI_VERIFIER_RECHECK_REQUIRED"}:
         if care_ase_verifier_recheck_complete:
             decision = "CONTROLLER_UPDATE_REQUIRED"
-            action = "validate and integrate independent Verifier recheck receipts, then enter CI_RUNNING"
+            action = "validate and integrate independent Verifier recheck receipts"
         elif care_ase_verifier_recheck_local_artifacts:
             decision = "MONITOR_ONLY"
             action = "independent Verifier recheck artifacts exist; wait for exact role finalization instead of launching a duplicate"
         else:
             decision = "STAGE_READY"
             action = "start persistent CARE-ASE Verifier recheck exact session"
-    elif task_id == "care-ase-faithful" and state == "VERIFIER_RECHECK_RUNNING":
+    elif task_id == "care-ase-faithful" and state in {"VERIFIER_RECHECK_RUNNING", "POST_CI_VERIFIER_RECHECK_RUNNING"}:
         if care_ase_verifier_recheck_complete:
             decision = "CONTROLLER_UPDATE_REQUIRED"
-            action = "validate and integrate independent Verifier recheck receipts, then enter CI_RUNNING"
+            action = "validate and integrate independent Verifier recheck receipts"
         else:
             decision = "MONITOR_ONLY"
             action = "wait for independent Verifier receipt recheck commit"
@@ -2729,7 +2737,7 @@ def start_care_ase_verifier_recheck(
     failures: list[str] = []
     if request.get("enabled") is not True:
         failures.append("request_enabled")
-    if current.get("state") != "VERIFIER_RECHECK_REQUIRED":
+    if current.get("state") not in {"VERIFIER_RECHECK_REQUIRED", "POST_CI_VERIFIER_RECHECK_REQUIRED"}:
         failures.append("current_state")
     if current.get("request_nonce") != request.get("request_nonce"):
         failures.append("request_nonce")
@@ -4105,9 +4113,9 @@ def apply_care_ase_ci_pass_planner_wait_update(
             "github_actions_run_url": ci_run_url,
             "github_actions_head_sha": ci_run_actual_head_sha,
             "github_actions_workflow_name": ci_workflow_name,
-            "state_transition_after_ci": "READY_FOR_PLANNER_REVIEW_TO_WAITING_FOR_EXTERNAL_GPT",
+            "state_transition_after_ci": "POST_CI_VERIFIER_RECHECK_REQUIRED",
             "human_approval_required_for_wait_transaction": False,
-            "approval_scope": "current_frozen_contract_and_request_nonce_ci_pass_to_planner_wait_loop",
+            "approval_scope": "current_frozen_contract_and_request_nonce_ci_pass_to_post_ci_verifier_recheck",
         }
     )
     write_json(ci_receipt_path, ci_receipt)
@@ -4117,10 +4125,10 @@ def apply_care_ase_ci_pass_planner_wait_update(
         "task_id": "care-ase-faithful",
         "request_nonce": current.get("request_nonce"),
         "created_utc": wait_started,
-        "controller_decision": "ENTER_WAITING_FOR_EXTERNAL_GPT_AFTER_AUTHORIZED_CI_PASS",
+        "controller_decision": "ENTER_POST_CI_VERIFIER_RECHECK_AFTER_AUTHORIZED_CI_PASS",
         "state_before": "CI_RUNNING",
-        "ready_state_reached_before_wait": "READY_FOR_PLANNER_REVIEW",
-        "state_after": "WAITING_FOR_EXTERNAL_GPT",
+        "ready_state_reached_before_wait": "POST_CI_VERIFIER_RECHECK_REQUIRED",
+        "state_after": "POST_CI_VERIFIER_RECHECK_REQUIRED",
         "review_round": current.get("review_round"),
         "checked_remote_develop_sha": remote_sha,
         "ci_receipt": str(ci_receipt_path.relative_to(repo)),
@@ -4132,7 +4140,7 @@ def apply_care_ase_ci_pass_planner_wait_update(
         "executor_integration_merge_sha": current.get("executor_integration_merge_sha"),
         "verifier_freeze_receipt_commit_sha": current.get("verifier_freeze_receipt_commit_sha"),
         "verifier_integration_merge_sha": current.get("verifier_integration_merge_sha"),
-        "planner_expected_artifact": "Scheduled Planner returns PLANNER_PASS or a bound PLANNER_REVISE_* artifact for current review inputs.",
+        "planner_expected_artifact": "none until post-CI Verifier recheck and fresh transaction complete",
         "wait_transaction_ci_policy": {
             "status_commit_may_trigger_ci_after_wait_starts": True,
             "planner_review_binding": "implementation_and_integration_sha_that_already_passed_ci",
@@ -4157,8 +4165,8 @@ def apply_care_ase_ci_pass_planner_wait_update(
         "request_nonce": current.get("request_nonce"),
         "created_utc": wait_started,
         "decision_requested": "PLANNER_REVIEW",
-        "current_state_after_commit": "WAITING_FOR_EXTERNAL_GPT",
-        "ready_state_reached_before_wait": "READY_FOR_PLANNER_REVIEW",
+        "current_state_after_commit": "POST_CI_VERIFIER_RECHECK_REQUIRED",
+        "ready_state_reached_before_wait": "POST_CI_VERIFIER_RECHECK_REQUIRED",
         "review_round": current.get("review_round"),
         "frozen_contract_sha256": current.get("frozen_contract_sha256"),
         "integration_commit_sha": remote_sha,
@@ -4197,8 +4205,8 @@ def apply_care_ase_ci_pass_planner_wait_update(
     updated_current = load_json(current_path)
     updated_current.update(
         {
-            "state": "WAITING_FOR_EXTERNAL_GPT",
-            "ready_state_reached_before_wait": "READY_FOR_PLANNER_REVIEW",
+            "state": "POST_CI_VERIFIER_RECHECK_REQUIRED",
+            "ready_state_reached_before_wait": None,
             "implementation_complete": True,
             "integration_commit_sha": remote_sha,
             "controller_local_gates_status": "PASS",
@@ -4225,12 +4233,12 @@ def apply_care_ase_ci_pass_planner_wait_update(
             "controller_ready_for_planner_review_receipt_sha256": sha_file(ready_receipt_path),
             "planner_review_packet_path": str(planner_packet_path.relative_to(repo)),
             "planner_review_packet_sha256": sha_file(planner_packet_path),
-            "expected_state_or_artifact": "Scheduled Planner returns PLANNER_PASS or a bound PLANNER_REVISE_* artifact for the current frozen contract, implementation fingerprint, verifier fingerprint, integration SHA and CI evidence.",
-            "external_wait_started_utc": wait_started,
-            "external_wait_deadline_utc": wait_deadline_value,
+            "expected_state_or_artifact": "Production Verifier exact thread reruns post-CI executable verifier and transaction gates for the exact CI-passing integration SHA.",
+            "external_wait_started_utc": None,
+            "external_wait_deadline_utc": None,
             "last_observed_remote_sha": remote_sha,
             "last_poll_utc": now(),
-            "next_action": "WAIT_FOR_SCHEDULED_PLANNER_REVIEW_ON_ORIGIN_DEVELOP",
+            "next_action": "START_POST_CI_VERIFIER_RECHECK_EXACT_SESSION",
             "blocked_failures": [],
             "blocked_or_failure_reason": None,
             "review_binding_audit": {
@@ -4242,7 +4250,7 @@ def apply_care_ase_ci_pass_planner_wait_update(
                 "tracked_ci_receipt_is_stale": False,
                 "tracked_planner_review_packet_is_stale": False,
                 "tracked_runtime_receipt_manifest_is_stale": False,
-                "wait_transaction_status_commit_ci_policy": "post_wait_ci_failure_repairs_transaction_not_pre_wait_block",
+                "wait_transaction_status_commit_ci_policy": "not_started_until_post_ci_verifier_recheck_and_fresh_transaction_complete",
             },
             "updated_utc": now(),
         }
@@ -4257,7 +4265,7 @@ def apply_care_ase_ci_pass_planner_wait_update(
             "results/agent_flow_v3/care-ase-faithful/controller_ready_for_planner_review_receipt.json",
             "results/agent_flow_v3/care-ase-faithful/planner_review_packet.json",
         ],
-        "automation: request care ase planner review",
+        "automation: require care ase post-ci verifier recheck",
     )
     return {
         "status": "APPLIED",
@@ -4284,7 +4292,12 @@ def validate_care_ase_verifier_recheck_completion(
     failures = validate_role_plan_push_authority(role_plan)
     if request.get("enabled") is not True:
         failures.append("request_enabled")
-    if current.get("state") not in {"VERIFIER_RECHECK_REQUIRED", "VERIFIER_RECHECK_RUNNING"}:
+    if current.get("state") not in {
+        "VERIFIER_RECHECK_REQUIRED",
+        "VERIFIER_RECHECK_RUNNING",
+        "POST_CI_VERIFIER_RECHECK_REQUIRED",
+        "POST_CI_VERIFIER_RECHECK_RUNNING",
+    }:
         failures.append("current_state")
     if current.get("request_nonce") != request.get("request_nonce"):
         failures.append("request_nonce")
@@ -4371,7 +4384,12 @@ def care_ase_verifier_recheck_local_artifacts_present(args: argparse.Namespace, 
         return False
     verifier = dict(role_plan.get("roles", {}).get("verifier", {}))
     verifier_worktree = Path(str(verifier.get("worktree", "")))
-    if current.get("state") not in {"VERIFIER_RECHECK_REQUIRED", "VERIFIER_RECHECK_RUNNING"}:
+    if current.get("state") not in {
+        "VERIFIER_RECHECK_REQUIRED",
+        "VERIFIER_RECHECK_RUNNING",
+        "POST_CI_VERIFIER_RECHECK_REQUIRED",
+        "POST_CI_VERIFIER_RECHECK_RUNNING",
+    }:
         return False
     if not verifier_worktree.is_dir():
         return False
@@ -4492,7 +4510,7 @@ def apply_care_ase_verifier_recheck_controller_update(
         "state_transition": {
             "from": current.get("state"),
             "through": ["INTEGRATION_RUNNING"],
-            "to": "CI_RUNNING",
+            "to": state_after,
         },
         "origin_develop_before_integration_sha": head_before,
         "last_observed_remote_sha_before_integration": remote_sha,
@@ -4532,7 +4550,7 @@ def apply_care_ase_verifier_recheck_controller_update(
     updated_current = load_json(current_path)
     updated_current.update(
         {
-            "state": "CI_RUNNING",
+            "state": state_after,
             "integration_commit_sha": integration_merge_sha,
             "verifier_thread_id": completion.get("thread_id"),
             "verifier_production_thread_id": completion.get("thread_id"),
@@ -4546,10 +4564,14 @@ def apply_care_ase_verifier_recheck_controller_update(
             "controller_ci_receipt_path": str(ci_receipt_path.relative_to(repo)),
             "controller_ci_receipt_sha256": sha_file(ci_receipt_path),
             "controller_local_gates_status": "PASS",
-            "ci_status": "PENDING_AFTER_PUSH",
+            "ci_status": "POST_CI_VERIFIER_RECHECK_PASS" if post_ci_recheck else "PENDING_AFTER_PUSH",
             "ci_checked_commit_sha": integration_merge_sha,
-            "next_action": "WAIT_FOR_GITHUB_ACTIONS_THEN_ENTER_AUTHORIZED_PLANNER_WAIT_TRANSACTION",
-            "expected_state_or_artifact": "GitHub Actions PASS for the integrated implementation and Verifier recheck receipts, followed by authorized WAITING_FOR_EXTERNAL_GPT transaction.",
+            "next_action": "READY_FOR_PLANNER_CONTROL_PLANE_ENABLEMENT" if post_ci_recheck else "WAIT_FOR_GITHUB_ACTIONS_THEN_RUN_POST_CI_VERIFIER_RECHECK",
+            "expected_state_or_artifact": (
+                "Controller may notify the user that Planner/Critic control-plane can be enabled for the fresh transaction."
+                if post_ci_recheck
+                else "GitHub Actions PASS for the integrated implementation and Verifier recheck receipts, followed by post-CI Verifier transaction recheck."
+            ),
             "last_observed_remote_sha": remote_sha,
             "last_poll_utc": now(),
             "updated_utc": now(),
@@ -4592,7 +4614,7 @@ def apply_care_ase_verifier_recheck_controller_update(
         "integration_receipt_path": str(receipt_path),
         "ci_receipt_path": str(ci_receipt_path),
         "commit": commit_result,
-        "state_after": "CI_RUNNING",
+        "state_after": state_after,
         "updated_utc": now(),
     }
 
@@ -4604,7 +4626,14 @@ def stage_event_should_mark_processed(event: dict[str, Any]) -> bool:
         return False
     return not (
         event.get("task_id") == "care-ase-faithful"
-        and event.get("state") in {"PLAN_FROZEN", "VERIFIER_FROZEN", "VERIFIER_RECHECK_REQUIRED", "PROVENANCE_REBIND_REQUIRED"}
+        and event.get("state")
+        in {
+            "PLAN_FROZEN",
+            "VERIFIER_FROZEN",
+            "VERIFIER_RECHECK_REQUIRED",
+            "POST_CI_VERIFIER_RECHECK_REQUIRED",
+            "PROVENANCE_REBIND_REQUIRED",
+        }
     )
 
 
@@ -4768,7 +4797,12 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
                     args,
                     current,
                 )
-        if task_id == "care-ase-faithful" and current.get("state") in {"VERIFIER_RECHECK_REQUIRED", "VERIFIER_RECHECK_RUNNING"}:
+        if task_id == "care-ase-faithful" and current.get("state") in {
+            "VERIFIER_RECHECK_REQUIRED",
+            "VERIFIER_RECHECK_RUNNING",
+            "POST_CI_VERIFIER_RECHECK_REQUIRED",
+            "POST_CI_VERIFIER_RECHECK_RUNNING",
+        }:
             care_ase_verifier_recheck_complete = care_ase_verifier_recheck_completion_available(args, request, current)
             if not care_ase_verifier_recheck_complete:
                 care_ase_verifier_recheck_local_artifacts = care_ase_verifier_recheck_local_artifacts_present(args, current)
@@ -4820,7 +4854,13 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
             processed = remove_stage_processed_event(event_key, processed)
         if (
             task_id == "care-ase-faithful"
-            and current.get("state") in {"VERIFIER_RECHECK_REQUIRED", "VERIFIER_RECHECK_RUNNING"}
+            and current.get("state")
+            in {
+                "VERIFIER_RECHECK_REQUIRED",
+                "VERIFIER_RECHECK_RUNNING",
+                "POST_CI_VERIFIER_RECHECK_REQUIRED",
+                "POST_CI_VERIFIER_RECHECK_RUNNING",
+            }
             and stage_event_was_processed(event_key, processed)
             and care_ase_verifier_recheck_complete
         ):
@@ -5069,7 +5109,13 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
         elif (
             event["decision"] == "CONTROLLER_UPDATE_REQUIRED"
             and task_id == "care-ase-faithful"
-            and event["state"] in {"VERIFIER_RECHECK_REQUIRED", "VERIFIER_RECHECK_RUNNING"}
+            and event["state"]
+            in {
+                "VERIFIER_RECHECK_REQUIRED",
+                "VERIFIER_RECHECK_RUNNING",
+                "POST_CI_VERIFIER_RECHECK_REQUIRED",
+                "POST_CI_VERIFIER_RECHECK_RUNNING",
+            }
         ):
             try:
                 event["action_result"] = apply_care_ase_verifier_recheck_controller_update(
@@ -5080,7 +5126,7 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
                     remote_sha=remote_sha,
                 )
                 event["decision"] = "CONTROLLER_UPDATE_APPLIED"
-                event["action"] = "Verifier recheck validated, integrated, pushed, and CURRENT moved to CI_RUNNING"
+                event["action"] = f"Verifier recheck validated, integrated, pushed, and CURRENT moved to {event['action_result'].get('state_after')}"
                 processed.add(event["event_key"])
                 event["remote_sha_after_controller_update"] = remote_head(repo, args.branch)
             except Exception as exc:  # noqa: BLE001 - keep polling; do not fake Verifier recheck completion.
@@ -5116,7 +5162,7 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
         elif (
             event["decision"] == "STAGE_READY"
             and task_id == "care-ase-faithful"
-            and event["state"] == "VERIFIER_RECHECK_REQUIRED"
+            and event["state"] in {"VERIFIER_RECHECK_REQUIRED", "POST_CI_VERIFIER_RECHECK_REQUIRED"}
         ):
             try:
                 event["action_result"] = start_care_ase_verifier_recheck(
@@ -5135,7 +5181,7 @@ def run_orchestrator_cycle_without_lock(args: argparse.Namespace) -> dict[str, A
                 event["failures"] = list(event.get("failures", [])) + ["verifier_recheck_start_failed"]
             if care_ase_role_launch_satisfied(args.state_root, current, "verifier"):
                 event["decision"] = "VERIFIER_RECHECK_START_APPLIED"
-                event["action"] = "VERIFIER_RECHECK_REQUIRED validated; Verifier exact session active"
+                event["action"] = f"{event['state']} validated; Verifier exact session active"
                 processed.add(event["event_key"])
         elif (
             event["decision"] == "STAGE_READY"
