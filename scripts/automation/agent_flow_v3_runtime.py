@@ -3079,7 +3079,7 @@ def validate_care_ase_executor_completion(
             and care_ase_validation_failures_require_verifier_recheck(validation)
             and fingerprint.get("frozen_contract_sha256") == current.get("frozen_contract_sha256")
             and fingerprint.get("request_nonce") == current.get("request_nonce")
-            and fingerprint.get("verifier_fingerprint_sha256") == current.get("verifier_fingerprint_sha256")
+            and care_ase_implementation_verifier_binding_matches(fingerprint, evidence, current)
             and evidence.get("source_manifest_sha256") == fingerprint.get("source_manifest_sha256")
             and source_manifest.get("frozen_contract_sha256") == current.get("frozen_contract_sha256")
             and source_manifest.get("request_nonce") == current.get("request_nonce")
@@ -3119,7 +3119,7 @@ def validate_care_ase_executor_completion(
             scope_failures.append("fingerprint_frozen_contract_sha256")
         if fingerprint.get("request_nonce") != current.get("request_nonce"):
             scope_failures.append("fingerprint_request_nonce")
-        if fingerprint.get("verifier_fingerprint_sha256") != current.get("verifier_fingerprint_sha256"):
+        if not care_ase_implementation_verifier_binding_matches(fingerprint, evidence, current):
             scope_failures.append("fingerprint_verifier_fingerprint_sha256")
         if evidence.get("source_manifest_sha256") != fingerprint.get("source_manifest_sha256"):
             scope_failures.append("evidence_source_manifest_sha256")
@@ -3259,6 +3259,29 @@ def care_ase_implementation_result_status(result_path: Path) -> str | None:
         raw_status = stripped.split(":", 1)[1].strip()
         return raw_status.strip("`").strip()
     return None
+
+
+def care_ase_implementation_verifier_binding_matches(
+    fingerprint: dict[str, Any],
+    evidence: dict[str, Any],
+    current: dict[str, Any],
+) -> bool:
+    expected = current.get("verifier_fingerprint_sha256")
+    if not isinstance(expected, str) or not expected:
+        return False
+    if fingerprint.get("verifier_fingerprint_sha256") == expected:
+        return True
+    current_runtime = evidence.get("current_runtime_identity")
+    if not isinstance(current_runtime, dict):
+        current_runtime = {}
+    return bool(
+        fingerprint.get("fingerprint_scope") == "immutable_source_only_excludes_post_integration_runtime_artifacts"
+        and evidence.get("verifier_fingerprint_sha256") == expected
+        and current_runtime.get("verifier_fingerprint_sha256") == expected
+        and evidence.get("implementation_fingerprint_sha256") == fingerprint.get("implementation_fingerprint_sha256")
+        and evidence.get("immutable_implementation_fingerprint_sha256")
+        == fingerprint.get("immutable_implementation_fingerprint_sha256")
+    )
 
 
 def care_ase_validation_failures_require_verifier_recheck(validation: dict[str, Any]) -> bool:
