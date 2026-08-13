@@ -1,13 +1,14 @@
 {
   "schema": "CARE_ASE_NO_T2_MATCHED_DIAGNOSTIC_JOB_STATUS_V1",
-  "status": "PENDING_NO_RESULT_REPORTED",
-  "checked_utc": "2026-08-13T07:39:18Z",
+  "status": "COMPLETED_RESULT_REPORTED_DIAGNOSTIC_ONLY",
+  "checked_utc": "2026-08-13T08:04:35Z",
   "job": {
     "job_id": "63509936",
     "job_name": "ASEOUTNT2",
     "partition": "a100-gpu",
-    "state": "PENDING",
-    "reason": "Resources",
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "elapsed": "00:11:11",
     "time_limit": "02:00:00"
   },
   "purpose": "read-only diagnostic rerun to generate no-T2 matched nnU-Net class-set columns and volume-ratio fields without overwriting the original outer diagnostic",
@@ -17,5 +18,15 @@
     "fold2_casewise": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/fold_2/step05000_no_t2_matched_20260813/outer_casewise_metrics.csv",
     "fold3_casewise": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/fold_3/step04000_no_t2_matched_20260813/outer_casewise_metrics.csv"
   },
-  "reporting_boundary": "No matched-no-T2-class-set numeric baseline is reported in the current subgroup tables because the diagnostic job has not completed."
+  "result": {
+    "combined_partial_modality_scar": {
+      "care_scar_dice": 0.3203595370391111,
+      "nnunet_direct_six_class_scar_dice": 0.48986283814032994,
+      "nnunet_matched_no_t2_class_set_scar_dice": 0.48986283814032994,
+      "care_minus_direct_delta": -0.16950330110121886,
+      "care_minus_matched_delta": -0.16950330110121886,
+      "nnunet_matched_minus_direct": 0.0
+    }
+  },
+  "reporting_boundary": "Matched no-T2 class-set numeric baseline is diagnostic-only, does not replace the original outer headline, and must not drive checkpoint selection."
 }

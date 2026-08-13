@@ -38,12 +38,15 @@
 - 当前 faithful 的 all-scar delta 为 -0.105394，但 complete tri-modal scar delta 为 +0.006775；不能把 mixed all-scar headline 直接写成目标域 complete tri-modal scar 失败。
 - 当前 faithful 的 partial-modality scar delta 为 -0.169491，是 all-scar headline 被拉低的主要来源。
 - pure edema combined delta 为 -0.024865，不能因为 scar 被分层解释后就声称模型整体已经胜过 nnU-Net。
+- no-T2 matched class-set diagnostic rerun 已完成：partial-modality scar 上 nnU-Net matched class set 与 direct six-class argmax 的 Dice 相同，combined `matched_minus_direct = 0.000000`。因此 no-T2 class-set asymmetry 已被审计，但不是本次 partial scar deficit 的来源；该结果仍是 diagnostic-only。
 - inner/same-exposure 接近 0.9 的旧表仍然只能作为 diagnostic-only，不是 fair held-out comparison。
 
 ## 证据路径
 
 - Current faithful subgroup summary: `results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/outer_diagnostic_subgroup_summary.json`
 - Current faithful subgroup report: `results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/OUTER_DIAGNOSTIC_SUBGROUP_REPORT.md`
+- Current faithful no-T2 matched diagnostic summary: `results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/outer_diagnostic_no_t2_matched_subgroup_summary.json`
+- Current faithful no-T2 matched diagnostic report: `results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/outer_diagnostic_no_t2_matched_subgroup_report.md`
 - Current faithful combined summary: `results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/outer_diagnostic_latest_combined_summary.json`
 - Current faithful report: `results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/REPORT_FOR_GPT.md`
 - Old erroneous final step6000 summary: `results/20260804_care_ase_r2_deadline_recovery_training_docker/outer_diagnostic_step06000_combined_summary.json`

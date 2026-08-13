@@ -193,6 +193,59 @@ def summarize(rows: list[dict[str, Any]], prefix: str) -> dict[str, Any]:
     return summary
 
 
+def summarize_no_t2_matched_baseline(rows: list[dict[str, Any]], fold: int | None) -> dict[str, Any]:
+    subset = [
+        row
+        for row in rows
+        if not bool(row["t2_present_metadata"]) and (fold is None or int(row["fold"]) == int(fold))
+    ]
+    care = [parse_float(row.get("care_scar_dice")) for row in subset]
+    direct = [parse_float(row.get("nnunet_scar_dice")) for row in subset]
+    matched = [parse_float(row.get("nnunet_no_t2_matched_scar_dice")) for row in subset]
+    pairs_direct = [(c, n) for c, n in zip(care, direct) if c is not None and n is not None]
+    pairs_matched = [(c, n) for c, n in zip(care, matched) if c is not None and n is not None]
+    care_mean = mean(care)
+    direct_mean = mean(direct)
+    matched_mean = mean(matched)
+    return {
+        "case_count": len(subset),
+        "care_scar_dice": care_mean,
+        "nnunet_direct_six_class_scar_dice": direct_mean,
+        "nnunet_matched_no_t2_class_set_scar_dice": matched_mean,
+        "delta_care_minus_nnunet_direct_six_class": None
+        if care_mean is None or direct_mean is None
+        else care_mean - direct_mean,
+        "delta_care_minus_nnunet_matched_no_t2_class_set": None
+        if care_mean is None or matched_mean is None
+        else care_mean - matched_mean,
+        "nnunet_matched_minus_direct": None if direct_mean is None or matched_mean is None else matched_mean - direct_mean,
+        "help_vs_direct": sum(1 for c, n in pairs_direct if c > n + 1e-12),
+        "harm_vs_direct": sum(1 for c, n in pairs_direct if c < n - 1e-12),
+        "help_vs_matched_no_t2": sum(1 for c, n in pairs_matched if c > n + 1e-12),
+        "harm_vs_matched_no_t2": sum(1 for c, n in pairs_matched if c < n - 1e-12),
+        "care_scar_sensitivity": mean(parse_float(row.get("care_scar_sensitivity")) for row in subset),
+        "nnunet_direct_six_class_scar_sensitivity": mean(parse_float(row.get("nnunet_scar_sensitivity")) for row in subset),
+        "nnunet_matched_no_t2_class_set_scar_sensitivity": mean(
+            parse_float(row.get("nnunet_no_t2_matched_scar_sensitivity")) for row in subset
+        ),
+        "care_scar_precision": mean(parse_float(row.get("care_scar_precision")) for row in subset),
+        "nnunet_direct_six_class_scar_precision": mean(parse_float(row.get("nnunet_scar_precision")) for row in subset),
+        "nnunet_matched_no_t2_class_set_scar_precision": mean(
+            parse_float(row.get("nnunet_no_t2_matched_scar_precision")) for row in subset
+        ),
+        "care_scar_hd95": mean(parse_float(row.get("care_scar_hd95")) for row in subset),
+        "nnunet_direct_six_class_scar_hd95": mean(parse_float(row.get("nnunet_scar_hd95")) for row in subset),
+        "nnunet_matched_no_t2_class_set_scar_hd95": mean(
+            parse_float(row.get("nnunet_no_t2_matched_scar_hd95")) for row in subset
+        ),
+        "care_scar_volume_ratio": mean(parse_float(row.get("care_scar_volume_ratio")) for row in subset),
+        "nnunet_direct_six_class_scar_volume_ratio": mean(parse_float(row.get("nnunet_scar_volume_ratio")) for row in subset),
+        "nnunet_matched_no_t2_class_set_scar_volume_ratio": mean(
+            parse_float(row.get("nnunet_no_t2_matched_scar_volume_ratio")) for row in subset
+        ),
+    }
+
+
 def build_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
     group_summaries: dict[str, Any] = {}
     for spec in GROUPS:
@@ -203,7 +256,7 @@ def build_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
             "fold3": summarize(filter_rows(rows, spec, 3), spec.metric_prefix),
             "combined": summarize(filter_rows(rows, spec, None), spec.metric_prefix),
         }
-    return {
+    summary = {
         "status": "PASS",
         "task_key": TASK_KEY,
         "source": "existing_user_authorized_outer_casewise_csv_plus_myops_metadata_join",
@@ -221,6 +274,15 @@ def build_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
             }
         },
     }
+    if rows and "nnunet_no_t2_matched_scar_dice" in rows[0]:
+        summary["diagnostic_no_t2_matched_class_set_baseline"] = {
+            "status": "PASS",
+            "boundary": "diagnostic-only; does not replace original six-class nnU-Net outer headline and must not drive checkpoint selection",
+            "fold2_partial_modality_scar": summarize_no_t2_matched_baseline(rows, 2),
+            "fold3_partial_modality_scar": summarize_no_t2_matched_baseline(rows, 3),
+            "combined_partial_modality_scar": summarize_no_t2_matched_baseline(rows, None),
+        }
+    return summary
 
 
 def write_csv(summary: dict[str, Any], path: Path) -> None:
@@ -242,10 +304,12 @@ def write_csv(summary: dict[str, Any], path: Path) -> None:
         "nnunet_hd95",
         "care_empty_prediction_count_from_blank_precision",
         "nnunet_empty_prediction_count_from_blank_precision",
+        "care_volume_ratio",
+        "nnunet_volume_ratio",
         "volume_ratio_status",
     ]
     with path.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=fields)
+        writer = csv.DictWriter(f, fieldnames=fields, lineterminator="\n")
         writer.writeheader()
         for group_key, group in summary["subgroups"].items():
             for split in ("fold2", "fold3", "combined"):
@@ -328,10 +392,36 @@ def render_markdown(summary: dict[str, Any], provenance: dict[str, Any]) -> str:
     lines.append("")
     lines.append("## Diagnostic Boundaries")
     lines.append("")
-    lines.append("- `volume_ratio`: not reported from the current CSV because prediction/GT voxel-count columns were not written by the original outer runner; no value is invented here.")
+    if sg["all_outer_scar"]["combined"].get("care_volume_ratio") is None:
+        lines.append("- `volume_ratio`: not reported from the current CSV because prediction/GT voxel-count columns were not written by the original outer runner; no value is invented here.")
+    else:
+        lines.append("- `volume_ratio`: reported from explicit prediction/GT voxel-count fields in this diagnostic CSV; these are diagnostic-only and do not alter Dice denominators or checkpoint selection.")
     lines.append("- `empty pred`: counted from blank precision in the existing CSV, which is emitted when there are zero predicted voxels for that class.")
     lines.append("- `Case2012`: fold3 complete/T2-present case with CARE scar Dice 0 and edema Dice 0; retained in the official subgroup means.")
     lines.append("- `no-T2 baseline asymmetry`: CARE no-T2 decode excludes class 4 (`0,1,2,3,5`), while the current matched nnU-Net baseline row in `run_current_user_authorized_outer_diagnostic.py` uses direct six-class argmax. This is a diagnostic comparison asymmetry, not checkpoint-selection evidence.")
+    if "diagnostic_no_t2_matched_class_set_baseline" in summary:
+        lines.append("")
+        lines.append("## no-T2 Matched Class-Set Diagnostic")
+        lines.append("")
+        lines.append("| Split | Cases | CARE scar | nnU-Net direct | nnU-Net no-T2 matched | CARE-direct delta | CARE-matched delta | matched-direct | CARE vol ratio | nnU-Net matched vol ratio |")
+        lines.append("|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|")
+        diag = summary["diagnostic_no_t2_matched_class_set_baseline"]
+        for key, label in (
+            ("fold2_partial_modality_scar", "fold2 partial scar"),
+            ("fold3_partial_modality_scar", "fold3 partial scar"),
+            ("combined_partial_modality_scar", "combined partial scar"),
+        ):
+            item = diag[key]
+            lines.append(
+                f"| {label} | {item['case_count']} | {fmt(item['care_scar_dice'])} | "
+                f"{fmt(item['nnunet_direct_six_class_scar_dice'])} | {fmt(item['nnunet_matched_no_t2_class_set_scar_dice'])} | "
+                f"{fmt(item['delta_care_minus_nnunet_direct_six_class'])} | "
+                f"{fmt(item['delta_care_minus_nnunet_matched_no_t2_class_set'])} | "
+                f"{fmt(item['nnunet_matched_minus_direct'])} | {fmt(item['care_scar_volume_ratio'])} | "
+                f"{fmt(item['nnunet_matched_no_t2_class_set_scar_volume_ratio'])} |"
+            )
+        lines.append("")
+        lines.append("Interpretation: matched no-T2 class-set argmax produced the same scar Dice as direct six-class argmax on the partial-modality rows in this diagnostic rerun. The code asymmetry is real and now audited, but it is not the cause of the observed partial-scar deficit.")
     lines.append("")
     lines.append("## Provenance Snapshot")
     lines.append("")
@@ -357,9 +447,12 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--metadata-repo-root", type=Path, default=None)
     parser.add_argument("--output-root", type=Path, default=DEFAULT_OUTER_ROOT)
+    parser.add_argument("--casewise-fold2", type=Path, default=CASEWISE_BY_FOLD[2])
+    parser.add_argument("--casewise-fold3", type=Path, default=CASEWISE_BY_FOLD[3])
+    parser.add_argument("--output-prefix", default="outer_diagnostic_subgroup")
     args = parser.parse_args()
 
-    casewise_by_fold = CASEWISE_BY_FOLD
+    casewise_by_fold = {2: args.casewise_fold2, 3: args.casewise_fold3}
     rows = load_rows(casewise_by_fold, metadata_root(REPO_ROOT, args.metadata_repo_root))
     summary = build_summary(rows)
     provenance = load_checkpoint_provenance(CHECKPOINTS_BY_FOLD)
@@ -367,9 +460,10 @@ def main() -> int:
     summary["casewise_csvs"] = {f"fold{fold}": rel(path) for fold, path in sorted(casewise_by_fold.items())}
 
     args.output_root.mkdir(parents=True, exist_ok=True)
-    json_path = args.output_root / "outer_diagnostic_subgroup_summary.json"
-    csv_path = args.output_root / "outer_diagnostic_subgroup_table.csv"
-    md_path = args.output_root / "OUTER_DIAGNOSTIC_SUBGROUP_REPORT.md"
+    json_path = args.output_root / f"{args.output_prefix}_summary.json"
+    csv_path = args.output_root / f"{args.output_prefix}_table.csv"
+    md_name = "OUTER_DIAGNOSTIC_SUBGROUP_REPORT.md" if args.output_prefix == "outer_diagnostic_subgroup" else f"{args.output_prefix}_report.md"
+    md_path = args.output_root / md_name
     json_path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     write_csv(summary, csv_path)
     md_path.write_text(render_markdown(summary, provenance), encoding="utf-8")

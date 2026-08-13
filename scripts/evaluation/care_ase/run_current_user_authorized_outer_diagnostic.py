@@ -275,7 +275,7 @@ def run_fold(fold: int, step: int, *, force: bool, decision: str, output_suffix:
 
     casewise_path = out_dir / "outer_casewise_metrics.csv"
     with casewise_path.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=list(rows[0]))
+        writer = csv.DictWriter(f, fieldnames=list(rows[0]), lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
     summary = {

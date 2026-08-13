@@ -2,6 +2,17 @@
   "case_count_total": 88,
   "comparison_contract": "USER_AUTHORIZED_OUTER_DIAGNOSTIC_OLD_ASE_LOGIC",
   "decision": "USER_AUTHORIZED_CURRENT_OUTER_DIAGNOSTIC",
+  "decode_asymmetry_audit": {
+    "care_no_t2_decode_classes": [
+      0,
+      1,
+      2,
+      3,
+      5
+    ],
+    "diagnostic_nnunet_no_t2_matched_baseline": "available only when the casewise CSV was generated after this audit patch; diagnostic-only and must not replace the original outer headline",
+    "original_nnunet_baseline_decode": "direct_six_class_argmax"
+  },
   "edema_t2_case_count_total": 32,
   "fold_steps": {
     "fold_2": 5000,
@@ -10,13 +21,25 @@
   "folds": [
     {
       "case_count": 44,
-      "casewise_csv": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/fold_2/step05000/outer_casewise_metrics.csv",
-      "casewise_csv_sha256": "1907193dbe6b730424d6a6c9e4f7a9d3b2b9570973dba96f67a9e4a950d2e16f",
+      "casewise_csv": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/fold_2/step05000_no_t2_matched_20260813/outer_casewise_metrics.csv",
+      "casewise_csv_sha256": "8c334544add2572afb08b7668b78c6f07cabc8b63e2be09bb5cad1914736472a",
       "checkpoint": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/checkpoint_step05000.pt",
       "checkpoint_sha256": "87e3c6a9b4c4339c3c676247cf8b0d520dc87e669c7bdd0084b9ce042c633e8d",
       "checkpoint_step": 5000,
       "comparison_contract": "USER_AUTHORIZED_OUTER_DIAGNOSTIC_OLD_ASE_LOGIC",
+      "data_repo_root": "/users/a/e/aereinh/CARE",
       "decision": "USER_AUTHORIZED_CURRENT_OUTER_DIAGNOSTIC",
+      "decode_asymmetry_audit": {
+        "care_no_t2_decode_classes": [
+          0,
+          1,
+          2,
+          3,
+          5
+        ],
+        "diagnostic_nnunet_no_t2_matched_columns": "nnunet_no_t2_matched_scar_* for no-T2 rows only; diagnostic-only, not checkpoint selection",
+        "original_nnunet_baseline_decode": "direct_six_class_argmax"
+      },
       "edema_t2_case_count": 16,
       "fold": 2,
       "inference_settings": {
@@ -39,26 +62,38 @@
         "use_mirroring": true
       },
       "status": "PASS",
-      "stock_checkpoint": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_2/checkpoint_final.pth",
+      "stock_checkpoint": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_2/checkpoint_final.pth",
       "stock_checkpoint_sha256": "31470ab242055b0af5c783f0f522bc8e490199cb2b4d42f5d0cefffb41de019b",
       "summary": {
-        "care_minus_nnunet_pure_edema_mean": 0.0008216838466537091,
-        "care_minus_nnunet_scar_mean": -0.061272205671055735,
+        "care_minus_nnunet_pure_edema_mean": 0.0009276150316502862,
+        "care_minus_nnunet_scar_mean": -0.06128023768497515,
         "care_pure_edema_mean": 0.5074194166598365,
         "care_scar_mean": 0.5295093412652232,
-        "nnunet_pure_edema_mean": 0.5065977328131828,
-        "nnunet_scar_mean": 0.5907815469362789
+        "nnunet_pure_edema_mean": 0.5064918016281862,
+        "nnunet_scar_mean": 0.5907895789501983
       }
     },
     {
       "case_count": 44,
-      "casewise_csv": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/fold_3/step04000/outer_casewise_metrics.csv",
-      "casewise_csv_sha256": "35f2984f384d47396239d05284675c0017da100393b0166e343e6fe70eca7b17",
+      "casewise_csv": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/fold_3/step04000_no_t2_matched_20260813/outer_casewise_metrics.csv",
+      "casewise_csv_sha256": "ec85f17413f070df5702f16c3dd21e687c08f4c959d9273ce42f4bf4246f6f9d",
       "checkpoint": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/checkpoint_step04000.pt",
       "checkpoint_sha256": "4b3a42e096ea1af6a98a1f257a4dc824986360b3253041e61487be2f13829395",
       "checkpoint_step": 4000,
       "comparison_contract": "USER_AUTHORIZED_OUTER_DIAGNOSTIC_OLD_ASE_LOGIC",
+      "data_repo_root": "/users/a/e/aereinh/CARE",
       "decision": "USER_AUTHORIZED_CURRENT_OUTER_DIAGNOSTIC",
+      "decode_asymmetry_audit": {
+        "care_no_t2_decode_classes": [
+          0,
+          1,
+          2,
+          3,
+          5
+        ],
+        "diagnostic_nnunet_no_t2_matched_columns": "nnunet_no_t2_matched_scar_* for no-T2 rows only; diagnostic-only, not checkpoint selection",
+        "original_nnunet_baseline_decode": "direct_six_class_argmax"
+      },
       "edema_t2_case_count": 16,
       "fold": 3,
       "inference_settings": {
@@ -81,15 +116,15 @@
         "use_mirroring": true
       },
       "status": "PASS",
-      "stock_checkpoint": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_3/checkpoint_final.pth",
+      "stock_checkpoint": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_3/checkpoint_final.pth",
       "stock_checkpoint_sha256": "0c27009930261c93a4890c66aa7f88f226a5f8b32a3358e43dd10d357b6fdeb8",
       "summary": {
-        "care_minus_nnunet_pure_edema_mean": -0.05055119798539054,
-        "care_minus_nnunet_scar_mean": -0.14951629460011034,
+        "care_minus_nnunet_pure_edema_mean": -0.05052658480630878,
+        "care_minus_nnunet_scar_mean": -0.14948655894518975,
         "care_pure_edema_mean": 0.39324223035262673,
         "care_scar_mean": 0.3722464024206817,
-        "nnunet_pure_edema_mean": 0.44379342833801727,
-        "nnunet_scar_mean": 0.521762697020792
+        "nnunet_pure_edema_mean": 0.4437688151589355,
+        "nnunet_scar_mean": 0.5217329613658714
       }
     }
   ],
@@ -97,43 +132,16 @@
     "reason": "old ASE thread established that inner/same-exposure panels inherited stock in-sample exposure and overstate held-out performance",
     "same_exposure_or_inner_in_sample_0_9_tables": "diagnostic_only_not_primary_fair_comparison"
   },
-  "interpretation_correction": {
-    "decision": "MIXED_SCAR_HEADLINE_REQUIRES_SUBGROUP_INTERPRETATION",
-    "complete_tri_modal_scar": {
-      "care_mean": 0.6792849577496748,
-      "delta_care_minus_nnunet": 0.006775227154323549,
-      "nnunet_mean": 0.6725097305953512
-    },
-    "edema_boundary": "pure edema is already restricted to T2-present cases; its negative combined delta remains a real diagnostic issue",
-    "partial_modality_scar": {
-      "care_mean": 0.3203595370391111,
-      "delta_care_minus_nnunet": -0.16949109430124398,
-      "nnunet_mean": 0.48985063134035506
-    },
-    "no_t2_matched_class_set_diagnostic": {
-      "combined_partial_modality_scar": {
-        "care_mean": 0.3203595370391111,
-        "care_minus_nnunet_matched_no_t2_class_set": -0.16950330110121886,
-        "nnunet_direct_six_class_mean": 0.48986283814032994,
-        "nnunet_matched_minus_direct": 0.0,
-        "nnunet_matched_no_t2_class_set_mean": 0.48986283814032994
-      },
-      "status": "COMPLETED_DIAGNOSTIC_ONLY"
-    },
-    "subgroup_report": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/OUTER_DIAGNOSTIC_SUBGROUP_REPORT.md",
-    "subgroup_summary": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/outer_diagnostic_subgroup_summary.json",
-    "warning": "The all-scar headline mixes complete tri-modal and partial-modality scar cases and must not be used alone to declare faithful CARE-ASE failed before the frozen 14000-step schedule completes."
-  },
   "outer_access_authorization": "explicit_user_authorized_in_chat_2026-08-13",
   "pure_edema": {
     "care_mean": 0.4503308235062316,
-    "delta_care_minus_nnunet": -0.024864757069368415,
-    "nnunet_mean": 0.4751955805756
+    "delta_care_minus_nnunet": -0.02479948488732925,
+    "nnunet_mean": 0.47513030839356085
   },
   "scar": {
     "care_mean": 0.45087787184295247,
-    "delta_care_minus_nnunet": -0.10539425013558301,
-    "nnunet_mean": 0.5562721219785355
+    "delta_care_minus_nnunet": -0.10538339831508237,
+    "nnunet_mean": 0.5562612701580348
   },
   "status": "PASS"
 }

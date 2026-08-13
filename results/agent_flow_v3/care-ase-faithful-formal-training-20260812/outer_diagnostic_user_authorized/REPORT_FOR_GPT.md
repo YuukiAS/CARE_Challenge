@@ -67,8 +67,8 @@
 ## 诊断边界
 
 - `Case2012` 是 fold3 complete/T2-present 灾难性空预测病例，CARE scar Dice 和 edema Dice 都为 0；它只作为诊断说明，仍保留在正式均值中。
-- 当前 casewise CSV 没有 prediction/GT voxel-count 字段，因此本报告不编造 volume ratio；runner 已补充后续只读 rerun 可记录 volume ratio。
-- CARE no-T2 decode 使用 class set `0,1,2,3,5`，当前 nnU-Net baseline runner 原始口径使用六类 logits 直接 argmax。这是 comparison asymmetry；已在 runner 中补 diagnostic no-T2 matched class-set 字段供后续只读重算，但不得覆盖原始报告，也不得用于 checkpoint selection。
+- 原始 casewise CSV 没有 prediction/GT voxel-count 字段，因此原始 subgroup 表不编造 volume ratio。后续只读 no-T2 matched diagnostic rerun 已完成，独立 CSV 中记录了 volume ratio。
+- CARE no-T2 decode 使用 class set `0,1,2,3,5`，当前 nnU-Net baseline runner 原始口径使用六类 logits 直接 argmax。这是 comparison asymmetry；已完成 diagnostic no-T2 matched class-set rerun。结果显示 partial-modality scar 上 matched no-T2 class-set nnU-Net Dice 与 direct six-class nnU-Net Dice 完全相同，combined `matched_minus_direct = 0.000000`，因此该 asymmetry 不是本次 partial scar deficit 的来源。该结果仍是 diagnostic-only，不覆盖原始报告，也不得用于 checkpoint selection。
 - `automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json` 是 implementation-fidelity control-plane 状态，不是 formal-training live step state；当前 formal-training live state 应看 `results/agent_flow_v3/care-ase-faithful-formal-training-20260812/CURRENT_LIVE_MONITOR.json`。
 
 ## Provenance 判断
@@ -91,6 +91,8 @@ Diff audit from Planner/Critic PASS to training source commit shows formal runti
 - Subgroup summary JSON: `results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/outer_diagnostic_subgroup_summary.json`
 - Subgroup table CSV: `results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/outer_diagnostic_subgroup_table.csv`
 - Subgroup report: `results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/OUTER_DIAGNOSTIC_SUBGROUP_REPORT.md`
+- no-T2 matched subgroup summary: `results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/outer_diagnostic_no_t2_matched_subgroup_summary.json`
+- no-T2 matched subgroup report: `results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/outer_diagnostic_no_t2_matched_subgroup_report.md`
 - Combined summary: `results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/outer_diagnostic_latest_combined_summary.json`
 - Fold2 casewise CSV: `results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/fold_2/step05000/outer_casewise_metrics.csv`
 - Fold3 casewise CSV: `results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/fold_3/step04000/outer_casewise_metrics.csv`
