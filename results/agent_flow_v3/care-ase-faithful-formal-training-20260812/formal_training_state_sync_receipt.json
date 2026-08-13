@@ -1,0 +1,35 @@
+{
+  "schema": "CARE_ASE_FORMAL_TRAINING_STATE_SYNC_RECEIPT_V1",
+  "status": "PASS_WITH_STALE_CONTROL_PLANE_NOTE",
+  "checked_utc": "2026-08-13T07:39:18Z",
+  "task_key": "care-ase-faithful-formal-training-20260812",
+  "stale_or_misaligned_state": {
+    "path": "automation/agent_flow_v3/tasks/care-ase-faithful-formal-training-20260812/CURRENT.json",
+    "state": "PRE_INTERACTIVE_GPU_PREFLIGHT",
+    "completed_optimizer_steps": {
+      "fold2": 0,
+      "fold3": 0
+    },
+    "interpretation": "This automation CURRENT file is stale for live formal-training progress and must not be used as checkpoint/runtime truth."
+  },
+  "live_state_source_of_truth": {
+    "path": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/CURRENT_LIVE_MONITOR.json",
+    "goal_status": "RUNNING_NOT_COMPLETE",
+    "last_verified_snapshot_utc": "2026-08-13T07:17:03Z",
+    "training_progress": {
+      "fold2": {
+        "job_id": "63244446",
+        "latest_checkpoint_step": 5000,
+        "last_completed_optimizer_step": 5844,
+        "target_step": 14000
+      },
+      "fold3": {
+        "job_id": "63247953",
+        "latest_checkpoint_step": 4000,
+        "last_completed_optimizer_step": 4813,
+        "target_step": 14000
+      }
+    }
+  },
+  "model_performance_interpretation": "stale control-plane state is an operational synchronization issue, not evidence of model, loss, sampler, inference, or checkpoint regression"
+}

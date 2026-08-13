@@ -12,6 +12,7 @@ import argparse
 import csv
 import hashlib
 import json
+import os
 import pickle
 import statistics
 import sys
@@ -39,9 +40,10 @@ from src.care_myocardium.training.care_ase_trainer import load_care_ase_checkpoi
 
 TASK_KEY = "care-ase-faithful-formal-training-20260812"
 RESULT_ROOT = REPO_ROOT / "results/agent_flow_v3" / TASK_KEY
-PREPROCESSED = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans_3d_fullres"
-STOCK_ROOT = REPO_ROOT / "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres"
-SPLITS = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/splits_final.json"
+DATA_REPO_ROOT = Path(os.environ.get("CARE_DATA_REPO_ROOT", REPO_ROOT)).resolve()
+PREPROCESSED = DATA_REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans_3d_fullres"
+STOCK_ROOT = DATA_REPO_ROOT / "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres"
+SPLITS = DATA_REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/splits_final.json"
 
 
 def sha256_file(path: Path) -> str:
@@ -81,6 +83,13 @@ def precision_for_class(pred: np.ndarray, gt: np.ndarray, cls: int) -> float | N
     return float(np.logical_and(p, gt == cls).sum() / total)
 
 
+def volume_ratio_for_class(pred: np.ndarray, gt: np.ndarray, cls: int) -> float | None:
+    gt_count = int((gt == cls).sum())
+    if gt_count == 0:
+        return None
+    return float(int((pred == cls).sum()) / gt_count)
+
+
 def hd95_for_class(pred: np.ndarray, gt: np.ndarray, cls: int, spacing: tuple[float, float, float]) -> float:
     p = pred == cls
     g = gt == cls
@@ -102,6 +111,12 @@ def hd95_for_class(pred: np.ndarray, gt: np.ndarray, cls: int, spacing: tuple[fl
 def mean(values: list[Any]) -> float | None:
     clean = [float(v) for v in values if v not in ("", None)]
     return statistics.fmean(clean) if clean else None
+
+
+def restricted_argmax(logits: torch.Tensor, allowed_classes: tuple[int, ...]) -> np.ndarray:
+    allowed = torch.as_tensor(allowed_classes, device=logits.device, dtype=torch.long)
+    local = torch.argmax(logits.index_select(0, allowed).float(), dim=0)
+    return allowed[local].detach().cpu().numpy().astype(np.uint8)
 
 
 def runtime_dir_for_fold(fold: int) -> Path:
@@ -132,9 +147,10 @@ def checkpoint_for(fold: int, step: int) -> Path:
     return ckpt
 
 
-def run_fold(fold: int, step: int, *, force: bool, decision: str) -> dict[str, Any]:
+def run_fold(fold: int, step: int, *, force: bool, decision: str, output_suffix: str) -> dict[str, Any]:
     ckpt = checkpoint_for(fold, step)
-    out_dir = RESULT_ROOT / "outer_diagnostic_user_authorized" / f"fold_{fold}" / f"step{step:05d}"
+    step_dir = f"step{step:05d}{output_suffix}"
+    out_dir = RESULT_ROOT / "outer_diagnostic_user_authorized" / f"fold_{fold}" / step_dir
     summary_path = out_dir / "outer_diagnostic_summary.json"
     if summary_path.is_file() and not force:
         return json.loads(summary_path.read_text(encoding="utf-8"))
@@ -170,7 +186,7 @@ def run_fold(fold: int, step: int, *, force: bool, decision: str) -> dict[str, A
         checkpoint_name="checkpoint_final.pth",
     )
     cases = [str(case_id) for case_id in json.loads(SPLITS.read_text(encoding="utf-8"))[int(fold)]["val"]]
-    metadata = load_myops_case_metadata(REPO_ROOT)
+    metadata = load_myops_case_metadata(DATA_REPO_ROOT)
     rows: list[dict[str, Any]] = []
     for case_id in cases:
         image_np = read_b2nd(PREPROCESSED / f"{case_id}.b2nd").astype(np.float32, copy=False)
@@ -195,20 +211,35 @@ def run_fold(fold: int, step: int, *, force: bool, decision: str) -> dict[str, A
                 torch.from_numpy(image_np).to(device=device, dtype=torch.float32)
             )
             stock_pred = torch.argmax(stock_logits.float(), dim=0).cpu().numpy().astype(np.uint8)
+            stock_pred_no_t2_matched = restricted_argmax(stock_logits, (0, 1, 2, 3, 5))
         t2_present = bool(metadata[case_id].t2_present)
         row: dict[str, Any] = {
             "case_id": case_id,
             "fold": int(fold),
             "role": "outer",
             "t2_present": t2_present,
+            "center": metadata[case_id].center,
+            "modality_group": metadata[case_id].modality_group,
+            "availability": "".join("1" if flag else "0" for flag in metadata[case_id].availability),
             "care_scar_dice": dice_for_class(care_pred, seg, 5),
             "nnunet_scar_dice": dice_for_class(stock_pred, seg, 5),
+            "nnunet_no_t2_matched_scar_dice": "" if t2_present else dice_for_class(stock_pred_no_t2_matched, seg, 5),
             "care_scar_hd95": hd95_for_class(care_pred, seg, 5, spacing),
             "nnunet_scar_hd95": hd95_for_class(stock_pred, seg, 5, spacing),
+            "nnunet_no_t2_matched_scar_hd95": "" if t2_present else hd95_for_class(stock_pred_no_t2_matched, seg, 5, spacing),
             "care_scar_sensitivity": sensitivity_for_class(care_pred, seg, 5),
             "nnunet_scar_sensitivity": sensitivity_for_class(stock_pred, seg, 5),
+            "nnunet_no_t2_matched_scar_sensitivity": ""
+            if t2_present
+            else sensitivity_for_class(stock_pred_no_t2_matched, seg, 5),
             "care_scar_precision": precision_for_class(care_pred, seg, 5),
             "nnunet_scar_precision": precision_for_class(stock_pred, seg, 5),
+            "nnunet_no_t2_matched_scar_precision": "" if t2_present else precision_for_class(stock_pred_no_t2_matched, seg, 5),
+            "care_scar_volume_ratio": volume_ratio_for_class(care_pred, seg, 5),
+            "nnunet_scar_volume_ratio": volume_ratio_for_class(stock_pred, seg, 5),
+            "nnunet_no_t2_matched_scar_volume_ratio": ""
+            if t2_present
+            else volume_ratio_for_class(stock_pred_no_t2_matched, seg, 5),
         }
         if t2_present:
             row.update(
@@ -221,6 +252,8 @@ def run_fold(fold: int, step: int, *, force: bool, decision: str) -> dict[str, A
                     "nnunet_pure_edema_sensitivity": sensitivity_for_class(stock_pred, seg, 4),
                     "care_pure_edema_precision": precision_for_class(care_pred, seg, 4),
                     "nnunet_pure_edema_precision": precision_for_class(stock_pred, seg, 4),
+                    "care_pure_edema_volume_ratio": volume_ratio_for_class(care_pred, seg, 4),
+                    "nnunet_pure_edema_volume_ratio": volume_ratio_for_class(stock_pred, seg, 4),
                 }
             )
         else:
@@ -234,6 +267,8 @@ def run_fold(fold: int, step: int, *, force: bool, decision: str) -> dict[str, A
                     "nnunet_pure_edema_sensitivity": "",
                     "care_pure_edema_precision": "",
                     "nnunet_pure_edema_precision": "",
+                    "care_pure_edema_volume_ratio": "",
+                    "nnunet_pure_edema_volume_ratio": "",
                 }
             )
         rows.append(row)
@@ -260,11 +295,17 @@ def run_fold(fold: int, step: int, *, force: bool, decision: str) -> dict[str, A
         "checkpoint_step": int(step),
         "case_count": len(rows),
         "edema_t2_case_count": sum(1 for row in rows if row["t2_present"]),
+        "data_repo_root": str(DATA_REPO_ROOT),
         "checkpoint": str(ckpt.relative_to(REPO_ROOT)),
         "checkpoint_sha256": sha256_file(ckpt),
-        "stock_checkpoint": str(stock_checkpoint.relative_to(REPO_ROOT)),
+        "stock_checkpoint": str(stock_checkpoint),
         "stock_checkpoint_sha256": sha256_file(stock_checkpoint),
         "inference_settings": settings.to_json_dict(),
+        "decode_asymmetry_audit": {
+            "care_no_t2_decode_classes": [0, 1, 2, 3, 5],
+            "original_nnunet_baseline_decode": "direct_six_class_argmax",
+            "diagnostic_nnunet_no_t2_matched_columns": "nnunet_no_t2_matched_scar_* for no-T2 rows only; diagnostic-only, not checkpoint selection",
+        },
         "casewise_csv": str(casewise_path.relative_to(REPO_ROOT)),
         "casewise_csv_sha256": sha256_file(casewise_path),
         "summary": summary,
@@ -314,6 +355,11 @@ def combine(packets: list[dict[str, Any]], *, decision: str) -> dict[str, Any]:
             "same_exposure_or_inner_in_sample_0_9_tables": "diagnostic_only_not_primary_fair_comparison",
             "reason": "old ASE thread established that inner/same-exposure panels inherited stock in-sample exposure and overstate held-out performance",
         },
+        "decode_asymmetry_audit": {
+            "care_no_t2_decode_classes": [0, 1, 2, 3, 5],
+            "original_nnunet_baseline_decode": "direct_six_class_argmax",
+            "diagnostic_nnunet_no_t2_matched_baseline": "available only when the casewise CSV was generated after this audit patch; diagnostic-only and must not replace the original outer headline",
+        },
     }
 
 
@@ -331,7 +377,11 @@ def main() -> int:
     parser.add_argument("--latest", action="store_true", help="evaluate latest verified checkpoint for folds 2 and 3")
     parser.add_argument("--force", action="store_true")
     parser.add_argument("--output-name", default="outer_diagnostic_latest_combined_summary.json")
+    parser.add_argument("--diagnostic-output-suffix", default="", help="append to per-fold step directory, for non-overwriting diagnostic reruns")
     args = parser.parse_args()
+    output_suffix = str(args.diagnostic_output_suffix)
+    if output_suffix and not output_suffix.startswith("_"):
+        output_suffix = "_" + output_suffix
     if args.latest:
         fold_steps = {2: latest_verified_step(2), 3: latest_verified_step(3)}
     else:
@@ -339,7 +389,7 @@ def main() -> int:
     if sorted(fold_steps) != [2, 3]:
         raise RuntimeError(f"current outer diagnostic requires fold2 and fold3, got {sorted(fold_steps)}")
     decision = "USER_AUTHORIZED_CURRENT_OUTER_DIAGNOSTIC"
-    packets = [run_fold(fold, step, force=args.force, decision=decision) for fold, step in sorted(fold_steps.items())]
+    packets = [run_fold(fold, step, force=args.force, decision=decision, output_suffix=output_suffix) for fold, step in sorted(fold_steps.items())]
     packet = combine(packets, decision=decision)
     out = RESULT_ROOT / "outer_diagnostic_user_authorized" / args.output_name
     out.parent.mkdir(parents=True, exist_ok=True)

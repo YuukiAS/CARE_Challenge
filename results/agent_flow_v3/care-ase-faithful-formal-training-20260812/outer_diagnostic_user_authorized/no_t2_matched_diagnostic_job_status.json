@@ -1,0 +1,21 @@
+{
+  "schema": "CARE_ASE_NO_T2_MATCHED_DIAGNOSTIC_JOB_STATUS_V1",
+  "status": "PENDING_NO_RESULT_REPORTED",
+  "checked_utc": "2026-08-13T07:39:18Z",
+  "job": {
+    "job_id": "63509936",
+    "job_name": "ASEOUTNT2",
+    "partition": "a100-gpu",
+    "state": "PENDING",
+    "reason": "Resources",
+    "time_limit": "02:00:00"
+  },
+  "purpose": "read-only diagnostic rerun to generate no-T2 matched nnU-Net class-set columns and volume-ratio fields without overwriting the original outer diagnostic",
+  "command_intent": "run_current_user_authorized_outer_diagnostic.py --fold-step 2:5000 --fold-step 3:4000 --force --diagnostic-output-suffix no_t2_matched_20260813 --output-name outer_diagnostic_no_t2_matched_20260813_combined_summary.json",
+  "output_if_completed": {
+    "combined_summary": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/outer_diagnostic_no_t2_matched_20260813_combined_summary.json",
+    "fold2_casewise": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/fold_2/step05000_no_t2_matched_20260813/outer_casewise_metrics.csv",
+    "fold3_casewise": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/fold_3/step04000_no_t2_matched_20260813/outer_casewise_metrics.csv"
+  },
+  "reporting_boundary": "No matched-no-T2-class-set numeric baseline is reported in the current subgroup tables because the diagnostic job has not completed."
+}

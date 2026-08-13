@@ -1,14 +1,25 @@
 # CARE-ASE 三模型 outer diagnostic 对照
 
-结论：按 held-out outer diagnostic 口径，当前 faithful CARE-ASE 仍然没有超过 nnU-Net。和之前那版错误/弱化 CARE-ASE 相比，当前 faithful 版本的 edema 明显更高；scar 只略高于旧错误实现 step6000 final 点，但低于旧错误实现早期 best-scar 点。下面的主表把 split/checkpoint 写清楚，避免把不同 fold 当成完全同一面板比较。
+结论需要分两层读：all-scar headline 下当前 faithful CARE-ASE 仍低于 matched nnU-Net，但这个 headline 混合了 complete tri-modal 和 partial-modality 病例，不能单独解释为目标域 scar 失败。重新分层后，当前 faithful CARE-ASE 在 complete tri-modal scar 上已经接近并轻微超过 matched nnU-Net；partial-modality scar 明显退化，pure edema 仍有真实负差，尤其 fold3。
 
-## 主表
+这张三模型表仍然保留旧错误实现的 outer diagnostic 参考，但它不是同病例 A/B test：当前 faithful 是 fold2+fold3，旧错误实现是 fold1+fold4。更稳妥的比较方式是看各自相对 matched nnU-Net 的差值和失败形态。
 
-| 模型/基线 | 口径 | Folds / checkpoint | Scar Dice | Pure edema Dice | Matched nnU-Net scar | Matched nnU-Net edema | Scar delta vs matched nnU-Net | Edema delta vs matched nnU-Net |
-|---|---|---|---:|---:|---:|---:|---:|---:|
-| nnU-Net matched baseline | current formal outer | fold2+fold3, matched to current checkpoints | 0.556272 | 0.475196 | NA | NA | NA | NA |
-| CARE-ASE faithful current | user-authorized outer diagnostic, old ASE logic | fold2 step5000 + fold3 step4000 | 0.450878 | 0.450331 | 0.556272 | 0.475196 | -0.105394 | -0.024865 |
-| CARE-ASE previous erroneous/weak implementation | user-authorized outer diagnostic, old ASE logic | fold1+fold4 step6000 final | 0.441313 | 0.400175 | 0.567296 | 0.403762 | -0.125983 | -0.003587 |
+## Current Faithful vs Matched nnU-Net
+
+| 指标/人群 | Folds / checkpoint | Cases | CARE-ASE Dice | Matched nnU-Net Dice | Delta |
+|---|---|---:|---:|---:|---:|
+| all outer scar | fold2 step5000 + fold3 step4000 | 88 | 0.450878 | 0.556272 | -0.105394 |
+| complete tri-modal scar | fold2 step5000 + fold3 step4000 | 32 | 0.679285 | 0.672510 | 0.006775 |
+| partial-modality scar | fold2 step5000 + fold3 step4000 | 56 | 0.320360 | 0.489851 | -0.169491 |
+| pure edema on T2-present | fold2 step5000 + fold3 step4000 | 32 | 0.450331 | 0.475196 | -0.024865 |
+
+## Three-Model Headline Table
+
+| 模型/基线 | 口径 | Folds / checkpoint | all scar Dice | complete scar Dice | partial scar Dice | pure edema Dice | matched nnU-Net all scar | matched nnU-Net edema | all scar delta | edema delta |
+|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| nnU-Net matched baseline | current formal outer | fold2+fold3, matched to current checkpoints | 0.556272 | 0.672510 | 0.489851 | 0.475196 | NA | NA | NA | NA |
+| CARE-ASE faithful current | user-authorized outer diagnostic, old ASE logic | fold2 step5000 + fold3 step4000 | 0.450878 | 0.679285 | 0.320360 | 0.450331 | 0.556272 | 0.475196 | -0.105394 | -0.024865 |
+| CARE-ASE previous erroneous/weak implementation | user-authorized outer diagnostic, old ASE logic | fold1+fold4 step6000 final | 0.441313 | NA | NA | 0.400175 | 0.567296 | 0.403762 | -0.125983 | -0.003587 |
 
 ## 旧错误实现的 best-checkpoint 参考
 
@@ -22,13 +33,17 @@
 
 ## 可比性边界
 
-- 当前 faithful 结果来自 fold2+fold3；旧错误实现结果来自 fold1+fold4。它们都使用 outer held-out diagnostic 和同类 decode/inference 设置，但不是同一 fold 面板。
-- 因为 split 不同，不能把旧错误实现和当前 faithful 的绝对 Dice 当作严格同病例 A/B test。更稳妥的读法是：分别看它们相对各自 matched nnU-Net 的差值。
-- 当前 faithful 版本在当前 fold2+fold3 上仍低于 matched nnU-Net：scar 低 0.105394，pure edema 低 0.024865。
-- 之前那些 inner/same-exposure 接近 0.9 的表仍然只能作为 diagnostic-only，不能作为这里的 fair comparison。
+- 当前 faithful 结果来自 fold2+fold3；旧错误实现结果来自 fold1+fold4。两者都使用 user-authorized outer diagnostic，但不是同一病例面板。
+- 旧错误实现的 historical summaries 没有当前新建的 complete/partial subgroup breakdown，因此三模型表不能给它补填 subgroup Dice。
+- 当前 faithful 的 all-scar delta 为 -0.105394，但 complete tri-modal scar delta 为 +0.006775；不能把 mixed all-scar headline 直接写成目标域 complete tri-modal scar 失败。
+- 当前 faithful 的 partial-modality scar delta 为 -0.169491，是 all-scar headline 被拉低的主要来源。
+- pure edema combined delta 为 -0.024865，不能因为 scar 被分层解释后就声称模型整体已经胜过 nnU-Net。
+- inner/same-exposure 接近 0.9 的旧表仍然只能作为 diagnostic-only，不是 fair held-out comparison。
 
 ## 证据路径
 
+- Current faithful subgroup summary: `results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/outer_diagnostic_subgroup_summary.json`
+- Current faithful subgroup report: `results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/OUTER_DIAGNOSTIC_SUBGROUP_REPORT.md`
 - Current faithful combined summary: `results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/outer_diagnostic_latest_combined_summary.json`
 - Current faithful report: `results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/REPORT_FOR_GPT.md`
 - Old erroneous final step6000 summary: `results/20260804_care_ase_r2_deadline_recovery_training_docker/outer_diagnostic_step06000_combined_summary.json`

@@ -97,6 +97,23 @@
     "reason": "old ASE thread established that inner/same-exposure panels inherited stock in-sample exposure and overstate held-out performance",
     "same_exposure_or_inner_in_sample_0_9_tables": "diagnostic_only_not_primary_fair_comparison"
   },
+  "interpretation_correction": {
+    "decision": "MIXED_SCAR_HEADLINE_REQUIRES_SUBGROUP_INTERPRETATION",
+    "complete_tri_modal_scar": {
+      "care_mean": 0.6792849577496748,
+      "delta_care_minus_nnunet": 0.006775227154323549,
+      "nnunet_mean": 0.6725097305953512
+    },
+    "edema_boundary": "pure edema is already restricted to T2-present cases; its negative combined delta remains a real diagnostic issue",
+    "partial_modality_scar": {
+      "care_mean": 0.3203595370391111,
+      "delta_care_minus_nnunet": -0.16949109430124398,
+      "nnunet_mean": 0.48985063134035506
+    },
+    "subgroup_report": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/OUTER_DIAGNOSTIC_SUBGROUP_REPORT.md",
+    "subgroup_summary": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/outer_diagnostic_subgroup_summary.json",
+    "warning": "The all-scar headline mixes complete tri-modal and partial-modality scar cases and must not be used alone to declare faithful CARE-ASE failed before the frozen 14000-step schedule completes."
+  },
   "outer_access_authorization": "explicit_user_authorized_in_chat_2026-08-13",
   "pure_edema": {
     "care_mean": 0.4503308235062316,

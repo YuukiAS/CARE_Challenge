@@ -280,6 +280,21 @@ When asked about **model performance** (metrics, Dice, fold CV results):
 
 Mirror this layout for non–nnU-Net models; answer in **Simplified Chinese** with English for paths/names as needed.
 
+### CARE-ASE outer diagnostic interpretation
+
+For CARE-ASE faithful formal-training reports, the all-scar outer headline is not sufficient scientific interpretation by itself. Always split MyoPS scar results into at least:
+
+- all outer scar;
+- complete tri-modal scar, meaning T2-present availability `111` / `C0+LGE+T2`;
+- partial-modality scar, meaning no-T2 `LGE-only` or `C0+LGE`;
+- pure edema on T2-present cases.
+
+Report case count, CARE Dice, matched nnU-Net Dice, delta, fold-level rows, and combined rows for each subgroup. If center metadata are available, also report CenterB complete scar/edema and CenterC complete scar/edema. Scar and edema must stay separate: scar subgroup decomposition can explain a mixed-scar headline, but it must not be used to dismiss a real pure-edema deficit because pure edema is already T2-present-only.
+
+When a current checkpoint has only partial formal-training progress, such as fold2/fold3 before the frozen 14000-step target, do not recommend stopping CARE-ASE faithful training solely from mixed all-scar outer Dice. Unless there is precise evidence of a new model/loss/sampler/inference semantic regression, the correct controller posture is to continue the frozen schedule and fix diagnostic reporting. Mark partial-modality scar failure, fold-specific edema under-activation or calibration, catastrophic empty-prediction cases, HD95, sensitivity, precision, and volume-ratio availability as diagnostics without deleting cases from formal metrics.
+
+For no-T2 comparisons, explicitly audit decode symmetry. CARE-ASE no-T2 decode excludes class 4 and uses class set `0,1,2,3,5`; if matched nnU-Net is evaluated by direct six-class argmax, label that as a diagnostic comparison asymmetry. A matched no-T2 class-set nnU-Net rerun may be reported only as diagnostic evidence and must not replace the original outer headline or drive checkpoint selection.
+
 ## Iterative model-improvement runs
 
 For CARE model-improvement work, use short, attributable experiment rounds instead of long speculative training runs.
