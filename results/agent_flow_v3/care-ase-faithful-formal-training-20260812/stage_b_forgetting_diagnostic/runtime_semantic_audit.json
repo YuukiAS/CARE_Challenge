@@ -1,5 +1,5 @@
 {
-  "audit_scope": "READ_ONLY_STATIC_AND_METADATA_FIRST_PASS",
+  "audit_scope": "READ_ONLY_STATIC_METADATA_AND_GPU_FORWARD_DIAGNOSTIC",
   "checkpoint_inventory": [
     {
       "exists": true,
@@ -60,10 +60,14 @@
   ],
   "disable_extent_wall_forward_arg_static_pass": true,
   "disabled_named_evidence_sources_static_pass": true,
-  "gpu_forward_runtime_semantic_checks": "PENDING_READ_ONLY_GPU_INFERENCE",
+  "gpu_diagnostic_run_dirs": [
+    "gpu_readonly_63560023",
+    "gpu_readonly_63587878_step4000"
+  ],
+  "gpu_forward_runtime_semantic_checks": "PASS",
   "no_t2_decode_class_set_0_1_2_3_5_static_pass": true,
   "outer_accessed": false,
-  "runtime_semantic_bug_status": "NO_PARTIAL_RUNTIME_SEMANTIC_BUG_FOUND_IN_STATIC_METADATA_FIRST_PASS_GPU_FORWARD_PENDING",
+  "runtime_semantic_bug_status": "NO_PARTIAL_RUNTIME_SEMANTIC_BUG_FOUND",
   "split_case_counts": {
     "fold2_actual-train_no_t2": 90,
     "fold2_actual-train_t2": 51,

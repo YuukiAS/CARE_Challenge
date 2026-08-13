@@ -5,25 +5,26 @@
 - mode: read-only diagnostic evidence
 - training_runtime_mutated: false
 - outer_accessed_by_this_script: false
+- updated_utc: `2026-08-13T18:45:37Z`
+- slurm_status: `63560023:a100-gpu:COMPLETED:0:0:00:02:15;63587878:a100-gpu:COMPLETED:0:0:00:02:57`
+
+## Completed GPU Diagnostic Runs
+
+- `gpu_readonly_63560023` status=`PASS` device=`NVIDIA A100-PCIE-40GB` steps=`[2000, 6000]` selected_case_counts_by_fold=`{'2': 7, '3': 7}`
+- `gpu_readonly_63587878_step4000` status=`PASS` device=`NVIDIA A100-PCIE-40GB` steps=`[4000]` selected_case_counts_by_fold=`{'2': 7, '3': 7}`
 
 ## Artifacts
 
-- `DIAGNOSTIC_REPORT_FOR_GPT.md` sha256=`ddd2f3ca0cc5d46bebf5987d3d7f953c2ab57d23de756f03bf5964d920df8c78`
-- `diagnostic_summary.json` sha256=`97c08a07f94540b22200881586febd95ea3d1776f95fe92298336dcd12bbfd69`
+- `DIAGNOSTIC_REPORT_FOR_GPT.md` sha256=`05f22b8e9b378abbf0757638c5b10a47b3517c225cf195d34f817631097bc63e`
+- `diagnostic_summary.json` sha256=`fb6d5e2cb7c34bfc6731899100a7c4a77b9364133dd1089e7bb5e5c634d79a94`
 - `subgroup_checkpoint_trend.csv` sha256=`70ccff96c6f9627007d559c1196259d45b5e880a6972f320efb3f625b34b5435`
-- `actual_train_vs_inner_partial.csv` sha256=`37faeedc2ff2d9b1d7e92963c0e4dce4f482c8eee0b27cd106388b251b38652d`
-- `logit_margin_trend.csv` sha256=`1d6b9fd95b77dccd9d91803c7ed55c294f7e0da33c02f8d9907bf269e9ecb870`
-- `extent_wall_intervention.csv` sha256=`1d6b9fd95b77dccd9d91803c7ed55c294f7e0da33c02f8d9907bf269e9ecb870`
-- `evidence_intervention.csv` sha256=`1d6b9fd95b77dccd9d91803c7ed55c294f7e0da33c02f8d9907bf269e9ecb870`
+- `actual_train_vs_inner_partial.csv` sha256=`df50dfeee48d8508a8f005a21882bcef7018a8e02c9990031ecbaf149d4a4eaa`
+- `logit_margin_trend.csv` sha256=`2526558251b1c1e18ea4e000172cf0db6feeb4b925edc4da845eb5afdcb76797`
+- `logit_margin_summary.csv` sha256=`9340f9a3b59f3a76a66a50c89c44edcf9f195eecb04396c7020921fdaac88ada`
+- `extent_wall_intervention.csv` sha256=`43720738ff342785494cee548d7be03c96d804524552629addbe817aa6047a87`
+- `extent_wall_intervention_summary.csv` sha256=`d53d62d36fab3d7dd22ac2bd62fce98b559cec5feaaeec32291ef82ca76503f3`
+- `evidence_intervention.csv` sha256=`9b20d00d636fe8be8c4075710ba79a152cc8d138ee02433deae5d5257e9e6b61`
+- `evidence_intervention_summary.csv` sha256=`f34744376b9e3eac9ae5623383f2bbc7f37a843111ee2a7195fcdc9261257288`
 - `parameter_drift.csv` sha256=`01b2a899236ba0c5f9c57539fdc7897af86de09823427be37157d7af0ec83ffe`
 - `sampler_effective_supervision.csv` sha256=`683492289f095a500139c21a85b2eadbc7d73bb16b6020e6a78c76a0fc94c641`
-- `runtime_semantic_audit.json` sha256=`4b9087a97d7dbfec93debe5f82bebe435d72604375a3ed516f60269f1452146d`
-- `gpu_readonly_submission_63560023.json` records the first non-interfering a100-gpu read-only diagnostic job submission.
-- `run_stage_b_gpu_forgetting_diagnostic_a100.sbatch` records the exact Slurm entrypoint used for job `63560023`.
-- `gpu_readonly_status_63560023_latest.json` records the terminal Slurm state for job `63560023`.
-- `GPU_READONLY_DIAGNOSTIC_SUMMARY.md` summarizes the completed GPU read-only diagnostic.
-- `gpu_readonly_63560023/actual_train_vs_inner_partial_gpu_casewise.csv` contains sampled actual-train vs inner casewise metrics.
-- `gpu_readonly_63560023/logit_margin_trend.csv` contains sampled GT-scar and myocardium margin statistics.
-- `gpu_readonly_63560023/extent_wall_intervention.csv` contains sampled normal-vs-disable-extent/wall inference deltas.
-- `gpu_readonly_63560023/evidence_intervention.csv` contains sampled one-source-off named evidence deltas.
-- `gpu_readonly_63560023/gpu_readonly_diagnostic_summary.json` contains the job-level PASS summary.
+- `runtime_semantic_audit.json` sha256=`ec31dd7e65605e0e0cc104c669469fbf507aacda34325ea3f2c5bc7446bb9cc1`

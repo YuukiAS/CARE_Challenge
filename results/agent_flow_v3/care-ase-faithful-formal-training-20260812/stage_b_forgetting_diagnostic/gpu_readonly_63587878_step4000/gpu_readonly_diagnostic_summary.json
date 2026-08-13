@@ -1,0 +1,19 @@
+{
+  "checkpoints_verified_before_read": true,
+  "device": "NVIDIA A100-PCIE-40GB",
+  "folds": [
+    2,
+    3
+  ],
+  "outer_accessed": false,
+  "selected_case_counts_by_fold": {
+    "2": 7,
+    "3": 7
+  },
+  "status": "PASS",
+  "steps": [
+    4000
+  ],
+  "task_name": "care-ase-faithful-formal-training-20260812",
+  "training_mutated": false
+}

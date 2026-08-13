@@ -1,11 +1,65 @@
 {
-  "first_pass_conclusion": "REAL_STAGE_B_PARTIAL_NO_T2_SCAR_FORGETTING_IN_FORMAL_INNER_GPU_CAUSAL_LOCALIZATION_PENDING",
+  "diagnostic_gpu_statuses": [
+    {
+      "checkpoints_verified_before_read": true,
+      "device": "NVIDIA A100-PCIE-40GB",
+      "folds": [
+        2,
+        3
+      ],
+      "outer_accessed": false,
+      "run_dir": "gpu_readonly_63560023",
+      "selected_case_counts_by_fold": {
+        "2": 7,
+        "3": 7
+      },
+      "status": "PASS",
+      "steps": [
+        2000,
+        6000
+      ],
+      "task_name": "care-ase-faithful-formal-training-20260812",
+      "training_mutated": false
+    },
+    {
+      "checkpoints_verified_before_read": true,
+      "device": "NVIDIA A100-PCIE-40GB",
+      "folds": [
+        2,
+        3
+      ],
+      "outer_accessed": false,
+      "run_dir": "gpu_readonly_63587878_step4000",
+      "selected_case_counts_by_fold": {
+        "2": 7,
+        "3": 7
+      },
+      "status": "PASS",
+      "steps": [
+        4000
+      ],
+      "task_name": "care-ase-faithful-formal-training-20260812",
+      "training_mutated": false
+    }
+  ],
+  "first_pass_conclusion": "REAL_STAGE_B_PARTIAL_NO_T2_SCAR_FORGETTING_WITH_GPU_CAUSAL_LOCALIZATION",
   "formal_training_should_continue": true,
   "implementation_blocker_candidate": false,
+  "new_implementation_regression_evidence": "NO_NEW_IMPLEMENTATION_REGRESSION_EVIDENCE",
   "outer_accessed_by_this_script": false,
-  "output_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/stage_b_forgetting_diagnostic",
-  "runtime_repo": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812",
-  "runtime_semantic_bug_status": "NO_PARTIAL_RUNTIME_SEMANTIC_BUG_FOUND_IN_STATIC_METADATA_FIRST_PASS_GPU_FORWARD_PENDING",
-  "task_name": "care-ase-faithful-formal-training-20260812",
-  "training_runtime_mutated": false
+  "primary_cause": "FINAL_CLASS_COMPETITION_COLLAPSE_WITH_SHARED_REPRESENTATION_DRIFT",
+  "ruled_out_or_weak_causes": [
+    "SAMPLER_EFFECTIVE_SUPERVISION_GAP",
+    "EXTENT_WALL_NEGATIVE_BIAS_AS_PRIMARY_CAUSE",
+    "PARTIAL_RUNTIME_SEMANTIC_BUG"
+  ],
+  "runtime_semantic_bug_status": "NO_PARTIAL_RUNTIME_SEMANTIC_BUG_FOUND",
+  "secondary_cause": "PARTIAL_MODALITY_TRAINING_DYNAMICS_COLLAPSE",
+  "slurm_status": "63560023:a100-gpu:COMPLETED:0:0:00:02:15;63587878:a100-gpu:COMPLETED:0:0:00:02:57",
+  "training_runtime_mutated": false,
+  "unresolved": [
+    "fold3_specific_destructive_myo_competition_strength",
+    "full_actual_train_population_not_exhaustively_inferred"
+  ],
+  "updated_utc": "2026-08-13T18:45:37Z"
 }

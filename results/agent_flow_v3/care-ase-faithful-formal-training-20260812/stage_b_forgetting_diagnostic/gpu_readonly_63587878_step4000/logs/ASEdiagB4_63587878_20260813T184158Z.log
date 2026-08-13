@@ -1,0 +1,9 @@
+started_utc=2026-08-13T18:41:58Z
+host=g141607.ll.unc.edu
+slurm_job_id=63587878
+runtime_repo=/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812
+develop_repo=/users/a/e/aereinh/.tmp/codex-CARE/care-ase-develop-rules-20260813
+output_dir=/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/stage_b_forgetting_diagnostic/gpu_readonly_63587878_step4000
+0b49b5edffeab6a87ce0de213d744a807dc77e3c
+{"output_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/stage_b_forgetting_diagnostic/gpu_readonly_63587878_step4000", "status": "PASS"}
+finished_utc=2026-08-13T18:44:54Z

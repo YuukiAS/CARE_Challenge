@@ -1,0 +1,13 @@
+fold,checkpoint_step,case_id,evidence_group,disabled_sources,changed_voxels,scar_dice_normal,scar_dice_disabled,scar_dice_delta_disabled_minus_normal,scar_sensitivity_delta,gt_scar_z_scar_delta_disabled_minus_normal
+2,4000,Case1031,scar_lge_adapter,scar_lge_to_full|scar_lge_to_half,414,0.6350404313,0.5667808219,-0.06825960935,-0.07779646762,-0.4242422739
+2,4000,Case1031,scar_c0_adapter,scar_c0_to_full|scar_c0_to_half,37,0.6350404313,0.639935631,0.004895199684,0.006307821699,0.04660804505
+2,4000,Case1031,scar_occupancy_proposal,scar_half_occupancy_to_full|scar_quarter_occupancy_to_half,382,0.6350404313,0.5751207043,-0.05991972692,-0.06959629941,-0.2907769701
+2,4000,Case1031,scar_center,scar_half_center_to_full|scar_quarter_center_to_half,412,0.6350404313,0.5694721826,-0.06556824867,-0.07569386039,-0.4017672088
+2,4000,Case1031,scar_context,scar_context_to_full|scar_context_to_half,270,0.6350404313,0.6723060906,0.03726565931,0.04772918419,0.2367307042
+2,4000,Case1031,soft_wall_geometry,scar_p_lv_to_full|scar_p_lv_to_half|scar_p_rv_to_full|scar_p_rv_to_half|scar_p_wall_to_full|scar_p_wall_to_half|scar_rho_to_full|scar_rho_to_half|scar_signed_endo_to_full|scar_signed_endo_to_half|scar_signed_epi_to_full|scar_signed_epi_to_half,516,0.6350404313,0.5564424173,-0.07859801394,-0.08494533221,-0.2023868815
+3,4000,Case1007,scar_lge_adapter,scar_lge_to_full|scar_lge_to_half,93,0.6386654751,0.6453317675,0.006666292343,0.01358832411,0.2057603136
+3,4000,Case1007,scar_c0_adapter,scar_c0_to_full|scar_c0_to_half,52,0.6386654751,0.6488706366,0.01020516142,0.01711122295,0.1190484213
+3,4000,Case1007,scar_occupancy_proposal,scar_half_occupancy_to_full|scar_quarter_occupancy_to_half,46,0.6386654751,0.6298408886,-0.008824586505,-0.01157523905,0.01023132912
+3,4000,Case1007,scar_center,scar_half_center_to_full|scar_quarter_center_to_half,55,0.6386654751,0.6452184179,0.006552942819,0.01056869653,0.07970337308
+3,4000,Case1007,scar_context,scar_context_to_full|scar_context_to_half,129,0.6386654751,0.6292537313,-0.009411743783,-0.009058882738,0.1239031677
+3,4000,Case1007,soft_wall_geometry,scar_p_lv_to_full|scar_p_lv_to_half|scar_p_rv_to_full|scar_p_rv_to_half|scar_p_wall_to_full|scar_p_wall_to_half|scar_rho_to_full|scar_rho_to_half|scar_signed_endo_to_full|scar_signed_endo_to_half|scar_signed_epi_to_full|scar_signed_epi_to_half,286,0.6386654751,0.6497549726,0.01108949749,0.02767991948,0.1246833836
