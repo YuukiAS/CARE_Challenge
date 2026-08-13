@@ -20,4 +20,10 @@
 - `runtime_semantic_audit.json` sha256=`4b9087a97d7dbfec93debe5f82bebe435d72604375a3ed516f60269f1452146d`
 - `gpu_readonly_submission_63560023.json` records the first non-interfering a100-gpu read-only diagnostic job submission.
 - `run_stage_b_gpu_forgetting_diagnostic_a100.sbatch` records the exact Slurm entrypoint used for job `63560023`.
-- `gpu_readonly_status_63560023_latest.json` records the current pending monitor state; it is not completion evidence.
+- `gpu_readonly_status_63560023_latest.json` records the terminal Slurm state for job `63560023`.
+- `GPU_READONLY_DIAGNOSTIC_SUMMARY.md` summarizes the completed GPU read-only diagnostic.
+- `gpu_readonly_63560023/actual_train_vs_inner_partial_gpu_casewise.csv` contains sampled actual-train vs inner casewise metrics.
+- `gpu_readonly_63560023/logit_margin_trend.csv` contains sampled GT-scar and myocardium margin statistics.
+- `gpu_readonly_63560023/extent_wall_intervention.csv` contains sampled normal-vs-disable-extent/wall inference deltas.
+- `gpu_readonly_63560023/evidence_intervention.csv` contains sampled one-source-off named evidence deltas.
+- `gpu_readonly_63560023/gpu_readonly_diagnostic_summary.json` contains the job-level PASS summary.
