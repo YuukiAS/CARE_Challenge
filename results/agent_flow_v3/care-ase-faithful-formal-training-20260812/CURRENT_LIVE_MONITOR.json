@@ -68,7 +68,7 @@
       ],
       "returncode": 0,
       "stderr": "",
-      "stdout": "JobID|JobName|Partition|State|ExitCode|Elapsed|Timelimit|NodeList\n63244446|ASEFULL|htzhulab|FAILED|1:0|1-06:18:44|10-00:00:00|g1807htzh01\n63244446.batch|batch||FAILED|1:0|1-06:18:44||g1807htzh01\n63244446.extern|extern||COMPLETED|0:0|1-06:18:44||g1807htzh01\n63247953|ASEF3P|htzhulab|RUNNING|0:0|1-11:13:42|5-00:00:00|g1807htzh01\n63247953.batch|batch||RUNNING|0:0|1-11:13:42||g1807htzh01\n63247953.extern|extern||RUNNING|0:0|1-11:13:42||g1807htzh01\n63248355|ASEFAIR|htzhulab|CANCELLED by 397557|0:0|00:00:00|3-00:00:00|None assigned\n63260064|ASEF2K1|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63297258|ASEF3K1|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63344579|ASEF2K2|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63344580|ASEF2K3|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63344581|ASEF3K2|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63357146|ASEF2K1A|a100-gpu|COMPLETED|0:0|00:06:38|08:00:00|g141602\n63357146.batch|batch||COMPLETED|0:0|00:06:38||g141602\n63357146.extern|extern||COMPLETED|0:0|00:06:38||g141602\n63357148|ASEF2K2A|a100-gpu|COMPLETED|0:0|00:31:55|08:00:00|g141606\n63357148.batch|batch||COMPLETED|0:0|00:31:55||g141606\n63357148.extern|extern||COMPLETED|0:0|00:31:55||g141606\n63357150|ASEF2K3A|a100-gpu|COMPLETED|0:0|00:28:51|08:00:00|g141607\n63357150.batch|batch||COMPLETED|0:0|00:28:51||g141607\n63357150.extern|extern||COMPLETED|0:0|00:28:52||g141607\n63357152|ASEF3K1A|a100-gpu|COMPLETED|0:0|00:26:28|08:00:00|g141607\n63357152.batch|batch||COMPLETED|0:0|00:26:28||g141607\n63357152.extern|extern||COMPLETED|0:0|00:26:28||g141607\n63357154|ASEF3K2A|a100-gpu|COMPLETED|0:0|00:02:59|08:00:00|g141603\n63357154.batch|batch||COMPLETED|0:0|00:02:59||g141603\n63357154.extern|extern||COMPLETED|0:0|00:02:59||g141603\n63398313|ASEF2K4|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63398316|ASEF2K4A|a100-gpu|COMPLETED|0:0|00:02:38|08:00:00|g141608\n63398316.batch|batch||COMPLETED|0:0|00:02:38||g141608\n63398316.extern|extern||COMPLETED|0:0|00:02:38||g141608\n63399995|ASEF3K3|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63399998|ASEF3K3A|a100-gpu|COMPLETED|0:0|00:01:33|08:00:00|g141602\n63399998.batch|batch||COMPLETED|0:0|00:01:33||g141602\n63399998.extern|extern||COMPLETED|0:0|00:01:33||g141602\n63469158|ASEF2K5|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63469233|ASEF2K5A|a100-gpu|COMPLETED|0:0|00:02:03|08:00:00|g141606\n63469233.batch|batch||COMPLETED|0:0|00:02:03||g141606\n63469233.extern|extern||COMPLETED|0:0|00:02:03||g141606\n63470808|ASEF3K4|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63470841|ASEF3K4A|a100-gpu|COMPLETED|0:0|00:00:31|08:00:00|g141606\n63470841.batch|batch||COMPLETED|0:0|00:00:31||g141606\n63470841.extern|extern||COMPLETED|0:0|00:00:31||g141606\n63514613|ASEF2K6|htzhulab|COMPLETED|0:0|00:00:13|08:00:00|g1807htzh01\n63514613.batch|batch||COMPLETED|0:0|00:00:13||g1807htzh01\n63514613.extern|extern||COMPLETED|0:0|00:00:14||g1807htzh01\n63514614|ASEF2R6|htzhulab|RUNNING|0:0|05:11:53|5-00:00:00|g1807htzh01\n63514614.batch|batch||RUNNING|0:0|05:11:53||g1807htzh01\n63514614.extern|extern||RUNNING|0:0|05:11:53||g1807htzh01\n63515339|ASEF3K5|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63522659|ASEF3K5A|a100-gpu|COMPLETED|0:0|00:02:24|08:00:00|g141601\n63522659.batch|batch||COMPLETED|0:0|00:02:24||g141601\n63522659.extern|extern||COMPLETED|0:0|00:02:24||g141601\n"
+      "stdout": "JobID|JobName|Partition|State|ExitCode|Elapsed|Timelimit|NodeList\n63244446|ASEFULL|htzhulab|FAILED|1:0|1-06:18:44|10-00:00:00|g1807htzh01\n63244446.batch|batch||FAILED|1:0|1-06:18:44||g1807htzh01\n63244446.extern|extern||COMPLETED|0:0|1-06:18:44||g1807htzh01\n63247953|ASEF3P|htzhulab|RUNNING|0:0|1-11:18:46|5-00:00:00|g1807htzh01\n63247953.batch|batch||RUNNING|0:0|1-11:18:46||g1807htzh01\n63247953.extern|extern||RUNNING|0:0|1-11:18:46||g1807htzh01\n63248355|ASEFAIR|htzhulab|CANCELLED by 397557|0:0|00:00:00|3-00:00:00|None assigned\n63260064|ASEF2K1|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63297258|ASEF3K1|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63344579|ASEF2K2|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63344580|ASEF2K3|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63344581|ASEF3K2|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63357146|ASEF2K1A|a100-gpu|COMPLETED|0:0|00:06:38|08:00:00|g141602\n63357146.batch|batch||COMPLETED|0:0|00:06:38||g141602\n63357146.extern|extern||COMPLETED|0:0|00:06:38||g141602\n63357148|ASEF2K2A|a100-gpu|COMPLETED|0:0|00:31:55|08:00:00|g141606\n63357148.batch|batch||COMPLETED|0:0|00:31:55||g141606\n63357148.extern|extern||COMPLETED|0:0|00:31:55||g141606\n63357150|ASEF2K3A|a100-gpu|COMPLETED|0:0|00:28:51|08:00:00|g141607\n63357150.batch|batch||COMPLETED|0:0|00:28:51||g141607\n63357150.extern|extern||COMPLETED|0:0|00:28:52||g141607\n63357152|ASEF3K1A|a100-gpu|COMPLETED|0:0|00:26:28|08:00:00|g141607\n63357152.batch|batch||COMPLETED|0:0|00:26:28||g141607\n63357152.extern|extern||COMPLETED|0:0|00:26:28||g141607\n63357154|ASEF3K2A|a100-gpu|COMPLETED|0:0|00:02:59|08:00:00|g141603\n63357154.batch|batch||COMPLETED|0:0|00:02:59||g141603\n63357154.extern|extern||COMPLETED|0:0|00:02:59||g141603\n63398313|ASEF2K4|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63398316|ASEF2K4A|a100-gpu|COMPLETED|0:0|00:02:38|08:00:00|g141608\n63398316.batch|batch||COMPLETED|0:0|00:02:38||g141608\n63398316.extern|extern||COMPLETED|0:0|00:02:38||g141608\n63399995|ASEF3K3|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63399998|ASEF3K3A|a100-gpu|COMPLETED|0:0|00:01:33|08:00:00|g141602\n63399998.batch|batch||COMPLETED|0:0|00:01:33||g141602\n63399998.extern|extern||COMPLETED|0:0|00:01:33||g141602\n63469158|ASEF2K5|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63469233|ASEF2K5A|a100-gpu|COMPLETED|0:0|00:02:03|08:00:00|g141606\n63469233.batch|batch||COMPLETED|0:0|00:02:03||g141606\n63469233.extern|extern||COMPLETED|0:0|00:02:03||g141606\n63470808|ASEF3K4|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63470841|ASEF3K4A|a100-gpu|COMPLETED|0:0|00:00:31|08:00:00|g141606\n63470841.batch|batch||COMPLETED|0:0|00:00:31||g141606\n63470841.extern|extern||COMPLETED|0:0|00:00:31||g141606\n63514613|ASEF2K6|htzhulab|COMPLETED|0:0|00:00:13|08:00:00|g1807htzh01\n63514613.batch|batch||COMPLETED|0:0|00:00:13||g1807htzh01\n63514613.extern|extern||COMPLETED|0:0|00:00:14||g1807htzh01\n63514614|ASEF2R6|htzhulab|RUNNING|0:0|05:16:57|5-00:00:00|g1807htzh01\n63514614.batch|batch||RUNNING|0:0|05:16:57||g1807htzh01\n63514614.extern|extern||RUNNING|0:0|05:16:57||g1807htzh01\n63515339|ASEF3K5|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63522659|ASEF3K5A|a100-gpu|COMPLETED|0:0|00:02:24|08:00:00|g141601\n63522659.batch|batch||COMPLETED|0:0|00:02:24||g141601\n63522659.extern|extern||COMPLETED|0:0|00:02:24||g141601\n"
     },
     "squeue": {
       "cmd": [
@@ -80,7 +80,7 @@
       ],
       "returncode": 0,
       "stderr": "",
-      "stdout": "JOBID|NAME|PARTITION|STATE|TIME|TIME_LEFT|NODELIST(REASON)|TRES_PER_NODE|NODES\n63514614|ASEF2R6|htzhulab|RUNNING|5:11:53|4-18:48:07|g1807htzh01|gres/gpu:1|1\n63247953|ASEF3P|htzhulab|RUNNING|1-11:13:42|3-12:46:18|g1807htzh01|gres/gpu:1|1\n"
+      "stdout": "JOBID|NAME|PARTITION|STATE|TIME|TIME_LEFT|NODELIST(REASON)|TRES_PER_NODE|NODES\n63514614|ASEF2R6|htzhulab|RUNNING|5:16:57|4-18:43:03|g1807htzh01|gres/gpu:1|1\n63247953|ASEF3P|htzhulab|RUNNING|1-11:18:46|3-12:41:14|g1807htzh01|gres/gpu:1|1\n"
     }
   },
   "task_key": "care-ase-faithful-formal-training-20260812",
@@ -88,26 +88,26 @@
     {
       "basis": "training_log_recent20_excludes_fair_eval",
       "fold": 2,
-      "projected_finish_utc": "2026-08-15T08:23:33.601932Z",
-      "recent20_median_sec_per_optimizer_step": 21.596926817437634,
-      "remaining_steps": 7144,
-      "updated_utc": "2026-08-13T13:32:03Z"
+      "projected_finish_utc": "2026-08-15T10:20:25.143117Z",
+      "recent20_median_sec_per_optimizer_step": 22.58015433140099,
+      "remaining_steps": 7130,
+      "updated_utc": "2026-08-13T13:37:08Z"
     },
     {
       "basis": "training_log_recent20_excludes_fair_eval",
       "fold": 3,
-      "projected_finish_utc": "2026-08-15T14:59:37.359882Z",
-      "recent20_median_sec_per_optimizer_step": 21.836119811050594,
-      "remaining_steps": 8154,
-      "updated_utc": "2026-08-13T13:32:03Z"
+      "projected_finish_utc": "2026-08-15T14:51:01.106048Z",
+      "recent20_median_sec_per_optimizer_step": 21.773009316297248,
+      "remaining_steps": 8140,
+      "updated_utc": "2026-08-13T13:37:08Z"
     }
   ],
   "training_progress": [
     {
-      "elapsed": "5:11:53",
+      "elapsed": "5:16:57",
       "fold": 2,
       "job_id": "63514614",
-      "last_completed_optimizer_step": 6856,
+      "last_completed_optimizer_step": 6870,
       "latest_checkpoint_step": 6000,
       "nan_or_inf_count": 0,
       "next_checkpoint_step": 7000,
@@ -116,14 +116,14 @@
       "slurm_state": "RUNNING",
       "stage": "B",
       "target_step": 14000,
-      "time_left": "4-18:48:07",
-      "updated_utc": "2026-08-13T13:32:03Z"
+      "time_left": "4-18:43:03",
+      "updated_utc": "2026-08-13T13:37:08Z"
     },
     {
-      "elapsed": "1-11:13:42",
+      "elapsed": "1-11:18:46",
       "fold": 3,
       "job_id": "63247953",
-      "last_completed_optimizer_step": 5846,
+      "last_completed_optimizer_step": 5860,
       "latest_checkpoint_step": 5000,
       "nan_or_inf_count": 0,
       "next_checkpoint_step": 6000,
@@ -132,11 +132,11 @@
       "slurm_state": "RUNNING",
       "stage": "B",
       "target_step": 14000,
-      "time_left": "3-12:46:18",
-      "updated_utc": "2026-08-13T13:32:03Z"
+      "time_left": "3-12:41:14",
+      "updated_utc": "2026-08-13T13:37:08Z"
     }
   ],
-  "updated_utc": "2026-08-13T13:32:03Z",
+  "updated_utc": "2026-08-13T13:37:08Z",
   "watchers": {
     "a100_mirror_ledger": {
       "created_utc": "2026-08-12T17:22:23Z",
@@ -1042,7 +1042,7 @@
       ],
       "status": "RUNNING",
       "submitted_this_scan": [],
-      "updated_utc": "2026-08-13T13:23:43Z"
+      "updated_utc": "2026-08-13T13:33:43Z"
     },
     "same_exposure_ledger": null,
     "same_exposure_watcher": null
