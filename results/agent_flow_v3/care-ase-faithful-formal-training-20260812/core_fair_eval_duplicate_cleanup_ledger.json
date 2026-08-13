@@ -200,6 +200,26 @@
       "state": "PENDING",
       "status": "SCANCEL_SUBMITTED",
       "step": 7000
+    },
+    {
+      "cancelled_utc": "2026-08-13T14:59:35Z",
+      "fold": 3,
+      "job_id": "63551514",
+      "job_name": "ASEF3K6",
+      "partition": "htzhulab",
+      "reason": "output_present",
+      "scancel": {
+        "cmd": [
+          "scancel",
+          "63551514"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "state": "PENDING",
+      "status": "SCANCEL_SUBMITTED",
+      "step": 6000
     }
   ],
   "outer_accessed": false,
@@ -210,5 +230,5 @@
     "63248355"
   ],
   "schema": "CARE_ASE_CORE_FAIR_EVAL_DUPLICATE_CLEANUP_LEDGER_V1",
-  "updated_utc": "2026-08-13T14:50:27Z"
+  "updated_utc": "2026-08-13T14:59:34Z"
 }

@@ -1,16 +1,16 @@
 {
   "cancelled": [
     {
-      "cancelled_utc": "2026-08-13T14:50:29Z",
-      "fold": 2,
-      "job_id": "63551512",
-      "job_name": "ASEF2K7",
+      "cancelled_utc": "2026-08-13T14:59:35Z",
+      "fold": 3,
+      "job_id": "63551514",
+      "job_name": "ASEF3K6",
       "partition": "htzhulab",
-      "reason": "same_fold_step_attempt_running",
+      "reason": "output_present",
       "scancel": {
         "cmd": [
           "scancel",
-          "63551512"
+          "63551514"
         ],
         "returncode": 0,
         "stderr": "",
@@ -18,24 +18,24 @@
       },
       "state": "PENDING",
       "status": "SCANCEL_SUBMITTED",
-      "step": 7000
+      "step": 6000
     }
   ],
   "candidates": [
     {
-      "fold": 2,
-      "job_id": "63551512",
-      "job_name": "ASEF2K7",
+      "fold": 3,
+      "job_id": "63551514",
+      "job_name": "ASEF3K6",
       "partition": "htzhulab",
-      "reason": "same_fold_step_attempt_running",
+      "reason": "output_present",
       "state": "PENDING",
-      "step": 7000
+      "step": 6000
     }
   ],
   "dry_run": false,
   "groups_seen": 13,
   "ledger_path": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_eval_duplicate_cleanup_ledger.json",
-  "live_jobs_seen": 4,
+  "live_jobs_seen": 1,
   "manifest_path": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_eval_job_manifest.json",
   "outer_accessed": false,
   "protected_job_ids": [
@@ -55,8 +55,8 @@
     ],
     "returncode": 0,
     "stderr": "",
-    "stdout": "63551625|ASEF3K6A|a100-gpu|PENDING|0:00|8:00:00|(Resources)|gres/gpu:nvidia_a100-pcie-40gb:1|1\n63551623|ASEF2K7A|a100-gpu|RUNNING|0:24|7:59:36|g141607|gres/gpu:nvidia_a100-pcie-40gb:1|1\n63551514|ASEF3K6|htzhulab|PENDING|0:00|8:00:00|(Priority)|gres/gpu:1|1\n63551512|ASEF2K7|htzhulab|PENDING|0:00|8:00:00|(Priority)|gres/gpu:1|1\n"
+    "stdout": "63551514|ASEF3K6|htzhulab|PENDING|0:00|8:00:00|(Priority)|gres/gpu:1|1\n"
   },
   "status": "RUNNING",
-  "updated_utc": "2026-08-13T14:50:27Z"
+  "updated_utc": "2026-08-13T14:59:34Z"
 }
