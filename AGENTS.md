@@ -305,6 +305,8 @@ For no-T2 comparisons, explicitly audit decode symmetry. CARE-ASE no-T2 decode e
 
 CARE-ASE outer subgroup tables must be recomputed from the raw casewise CSV plus immutable MyoPS case metadata, not copied from a headline summary. Keep a lightweight verification receipt when correcting these reports. If the original CSV lacks prediction/GT voxel-count fields, state that volume ratio is unavailable for that original table instead of inventing it; use a separate diagnostic rerun only when volume-ratio columns are explicitly present. Every such report must also include checkpoint provenance (`training_source_commit_sha`, `formal_execution_checkout_commit_sha`, source/config/split/plans/stock/contract hashes) and state whether there is precise evidence of a new faithfulness regression.
 
+For reporting-only checkpoint provenance, do not use unsafe checkpoint pickle deserialization merely to read scalar metadata. Prefer existing text receipts, sidecars, or a static string/metadata scan that does not execute checkpoint payload code. If provenance can only be read through an unsafe loader, report that limitation and ask for explicit approval rather than silently dropping the provenance table or executing an unsafe fallback.
+
 When comparing current faithful CARE-ASE, matched nnU-Net, and an earlier erroneous or deadline implementation, keep the fold/checkpoint/case-panel comparability boundary visible in the table. Historical weak/erroneous CARE-ASE numbers may be used to explain failure shape, but not as a same-case A/B result when folds differ. Old inner or same-exposure `0.9`-range tables remain diagnostic-only and must not be restored as the primary fair comparison.
 
 ## Iterative model-improvement runs

@@ -13,6 +13,7 @@ import argparse
 import csv
 import json
 import math
+import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -28,6 +29,7 @@ from src.care_myocardium.data.case_metadata import load_myops_case_metadata
 TASK_KEY = "care-ase-faithful-formal-training-20260812"
 DEFAULT_RESULT_ROOT = REPO_ROOT / "results/agent_flow_v3" / TASK_KEY
 DEFAULT_OUTER_ROOT = DEFAULT_RESULT_ROOT / "outer_diagnostic_user_authorized"
+DEFAULT_RUNTIME_WORKTREE_ROOT = Path("/users/a/e/aereinh/CARE/.worktrees") / TASK_KEY
 CASEWISE_BY_FOLD = {
     2: DEFAULT_OUTER_ROOT / "fold_2/step05000/outer_casewise_metrics.csv",
     3: DEFAULT_OUTER_ROOT / "fold_3/step04000/outer_casewise_metrics.csv",
@@ -351,30 +353,77 @@ def write_csv(summary: dict[str, Any], path: Path) -> None:
 
 
 def load_checkpoint_provenance(paths_by_fold: dict[int, Path]) -> dict[str, Any]:
-    try:
-        import torch
-    except Exception as exc:  # pragma: no cover - dependency availability is environment-specific.
-        return {"status": "UNAVAILABLE", "reason": f"torch import failed: {exc}"}
     out: dict[str, Any] = {"status": "PASS", "folds": {}}
     missing: list[str] = []
     for fold, path in sorted(paths_by_fold.items()):
-        if not path.is_file():
+        source_path = existing_checkpoint_path(path)
+        if not source_path.is_file():
             missing.append(f"fold{fold}:{path}")
             out["folds"][f"fold{fold}"] = {
                 "checkpoint": rel(path),
                 "status": "MISSING_CHECKPOINT_FOR_LIGHTWEIGHT_REPORTING_CHECKOUT",
             }
             continue
-        payload = torch.load(path, map_location="cpu", weights_only=False)
+        payload = static_checkpoint_provenance(source_path)
+        missing_fields = [field for field in PROVENANCE_FIELDS if payload.get(field) is None]
         out["folds"][f"fold{fold}"] = {
-            "checkpoint": rel(path),
-            "status": "PASS",
-            **{field: payload.get(field) for field in PROVENANCE_FIELDS},
+            "checkpoint": rel(source_path),
+            "read_method": "safe_static_checkpoint_string_scan_no_pickle",
+            "status": "PASS" if not missing_fields else "PARTIAL_STATIC_PROVENANCE",
+            "missing_fields": missing_fields,
+            **payload,
         }
     if missing:
         out["status"] = "PARTIAL_MISSING_CHECKPOINTS"
         out["missing"] = missing
+    elif any(item.get("status") != "PASS" for item in out["folds"].values()):
+        out["status"] = "PARTIAL_STATIC_PROVENANCE"
     return out
+
+
+def existing_checkpoint_path(path: Path) -> Path:
+    if path.is_file():
+        return path
+    try:
+        rel_path = path.resolve().relative_to(REPO_ROOT.resolve())
+    except ValueError:
+        return path
+    fallback = DEFAULT_RUNTIME_WORKTREE_ROOT / rel_path
+    return fallback if fallback.is_file() else path
+
+
+def static_checkpoint_provenance(path: Path) -> dict[str, Any]:
+    """Extract scalar provenance without unpickling checkpoint payloads."""
+    data = path.read_bytes()
+    aliases = {
+        "plans_hash": ("plans_hash", "plans_sha256"),
+        "stock_checkpoint_hash": ("stock_checkpoint_hash", "stock_checkpoint_sha256"),
+    }
+    payload: dict[str, Any] = {}
+    for field in PROVENANCE_FIELDS:
+        if field == "fold":
+            payload[field] = int(match.group(1)) if (match := re.search(r"fold_(\d+)", path.as_posix())) else None
+        elif field == "global_optimizer_step":
+            payload[field] = int(match.group(1)) if (match := re.search(r"checkpoint_step(\d+)", path.name)) else None
+        else:
+            payload[field] = find_hex_after_any_marker(data, aliases.get(field, (field,)))
+    return payload
+
+
+def find_hex_after_any_marker(data: bytes, markers: tuple[str, ...]) -> str | None:
+    for marker in markers:
+        start = 0
+        marker_b = marker.encode("ascii")
+        while True:
+            idx = data.find(marker_b, start)
+            if idx < 0:
+                break
+            window = data[idx + len(marker_b) : idx + len(marker_b) + 256]
+            for pattern in (rb"[0-9a-f]{64}", rb"[0-9a-f]{40}"):
+                if match := re.search(pattern, window):
+                    return match.group(0).decode("ascii")
+            start = idx + len(marker_b)
+    return None
 
 
 def render_markdown(summary: dict[str, Any], provenance: dict[str, Any]) -> str:
