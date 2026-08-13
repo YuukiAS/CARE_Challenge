@@ -1,5 +1,5 @@
 {
-  "checkpoint_count": 11,
+  "checkpoint_count": 13,
   "checkpoints": [
     {
       "checkpoint_path": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/checkpoint_step01000.pt",
@@ -172,6 +172,59 @@
       "verified_status": "PASS"
     },
     {
+      "checkpoint_path": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/checkpoint_step07000.pt",
+      "checkpoint_sha256": "fc125d699f1fa11e0b908d6cd962aa36b71dc8698a1b2c08510c1f09415b469e",
+      "core_fair_eval_bound_partitions": [
+        "a100-gpu",
+        "htzhulab"
+      ],
+      "core_fair_eval_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_panel_monitor/fold_2/step07000",
+      "core_fair_eval_job_id": "63551512",
+      "core_fair_eval_job_ids": [
+        "63551512",
+        "63551623"
+      ],
+      "core_fair_eval_job_states": [
+        {
+          "elapsed": "0:00",
+          "job_id": "63551512",
+          "job_name": "ASEF2K7",
+          "node_or_reason": "(Priority)",
+          "nodes": "1",
+          "partition": "htzhulab",
+          "state": "PENDING",
+          "time_left": "8:00:00",
+          "tres_per_node": "gres/gpu:1"
+        },
+        {
+          "elapsed": "0:00",
+          "job_id": "63551623",
+          "job_name": "ASEF2K7A",
+          "node_or_reason": "(Resources)",
+          "nodes": "1",
+          "partition": "a100-gpu",
+          "state": "PENDING",
+          "time_left": "8:00:00",
+          "tres_per_node": "gres/gpu:nvidia_a100-pcie-40gb:1"
+        }
+      ],
+      "core_fair_eval_mirror_job_ids": [
+        "63551623"
+      ],
+      "core_fair_eval_output_present": false,
+      "core_fair_eval_status": "PENDING_SUBMITTED_EXTRA_JOBS",
+      "fold": 2,
+      "formal_inner_eval_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/inner_checkpoint_monitor/fold_2/step07000",
+      "formal_inner_eval_status": "NOT_FORMAL_BOUNDARY",
+      "full_reload_logit_parity": 0.0,
+      "full_reload_status": "PASS",
+      "required_fields_present": true,
+      "schema_version": 4,
+      "stage": "B",
+      "step": 7000,
+      "verified_status": "PASS"
+    },
+    {
       "checkpoint_path": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/checkpoint_step01000.pt",
       "checkpoint_sha256": "3fc7c153394dcd4070dd1dc643c390d6ce979b45a7783b69123e9f20a6f675a9",
       "core_fair_eval_bound_partitions": [
@@ -316,8 +369,61 @@
       "stage": "B",
       "step": 5000,
       "verified_status": "PASS"
+    },
+    {
+      "checkpoint_path": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/checkpoint_step06000.pt",
+      "checkpoint_sha256": "ba433477f7f72e6a81946404b81ea8a3557b5425cc54d28145f800efe0c7caf8",
+      "core_fair_eval_bound_partitions": [
+        "a100-gpu",
+        "htzhulab"
+      ],
+      "core_fair_eval_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_panel_monitor/fold_3/step06000",
+      "core_fair_eval_job_id": "63551514",
+      "core_fair_eval_job_ids": [
+        "63551514",
+        "63551625"
+      ],
+      "core_fair_eval_job_states": [
+        {
+          "elapsed": "0:00",
+          "job_id": "63551514",
+          "job_name": "ASEF3K6",
+          "node_or_reason": "(Priority)",
+          "nodes": "1",
+          "partition": "htzhulab",
+          "state": "PENDING",
+          "time_left": "8:00:00",
+          "tres_per_node": "gres/gpu:1"
+        },
+        {
+          "elapsed": "0:00",
+          "job_id": "63551625",
+          "job_name": "ASEF3K6A",
+          "node_or_reason": "(Priority)",
+          "nodes": "1",
+          "partition": "a100-gpu",
+          "state": "PENDING",
+          "time_left": "8:00:00",
+          "tres_per_node": "gres/gpu:nvidia_a100-pcie-40gb:1"
+        }
+      ],
+      "core_fair_eval_mirror_job_ids": [
+        "63551625"
+      ],
+      "core_fair_eval_output_present": false,
+      "core_fair_eval_status": "PENDING_SUBMITTED_EXTRA_JOBS",
+      "fold": 3,
+      "formal_inner_eval_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/inner_checkpoint_monitor/fold_3/step06000",
+      "formal_inner_eval_status": "JOB_RECORDED",
+      "full_reload_logit_parity": 0.0,
+      "full_reload_status": "PASS",
+      "required_fields_present": true,
+      "schema_version": 4,
+      "stage": "B",
+      "step": 6000,
+      "verified_status": "PASS"
     }
   ],
   "new_checkpoint_without_fair_eval_job": [],
-  "updated_utc": "2026-08-13T14:18:29Z"
+  "updated_utc": "2026-08-13T14:34:49Z"
 }
