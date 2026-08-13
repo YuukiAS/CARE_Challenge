@@ -368,7 +368,7 @@
       "core_fair_eval_status": "PRESENT",
       "fold": 3,
       "formal_inner_eval_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/inner_checkpoint_monitor/fold_3/step06000",
-      "formal_inner_eval_status": "JOB_RECORDED",
+      "formal_inner_eval_status": "PRESENT",
       "full_reload_logit_parity": 0.0,
       "full_reload_status": "PASS",
       "required_fields_present": true,
@@ -379,5 +379,5 @@
     }
   ],
   "new_checkpoint_without_fair_eval_job": [],
-  "updated_utc": "2026-08-13T14:59:59Z"
+  "updated_utc": "2026-08-13T15:07:50Z"
 }
