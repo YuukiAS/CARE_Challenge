@@ -185,6 +185,14 @@ scontrol show job <candidate_job_id>
 
 If the user provides an interactive job id, treat that id as authoritative enough to verify directly before making any resource conclusion. A controller must not write an `OPERATIONALLY_BLOCKED_EXISTING_INTERACTIVE_LOST` packet until the `htzhulab` partition-specific query and the specific job-id query both fail to show a usable RUNNING allocation, or `scontrol show job` proves it is no longer usable.
 
+### Formal training interactive allocation sizing
+
+For authorized CARE formal-training goals, do not fragment one continuous training objective into many short, loosely connected interactive or Slurm jobs unless the current user contract explicitly authorizes that fragmentation. Before requesting an interactive allocation, estimate the walltime needed to finish the authorized objective from measured or faithful-implementation throughput on the intended GPU class. Include training, checkpoint writing, required fair-comparison or inner-evaluation overhead, aggregation, and a reasonable recovery buffer.
+
+Default behavior is to request an interactive or long allocation sized to complete the full authorized objective in one run, then use checkpoint/resume boundaries inside that allocation for recovery. If the first allocation is explicitly only for throughput calibration, immediately convert the measured throughput into the next long allocation for the remaining objective. Do not replace one long formal-training run with a chain of scattered short jobs merely because checkpoints exist.
+
+If the authorized objective has multiple independent folds and resources permit, run those folds in parallel with isolated output, log, cache, and lock namespaces rather than serializing them into a longer wall-clock campaign. Fair-comparison and formal-inner evaluation jobs may be submitted as separate read-only jobs when authorized by the task; they must not cancel, mutate, fragment, or slow the active training allocation.
+
 For CARE model work, default to the lab partition first. If queue inspection suggests a materially long wait on `htzhulab`, school GPU partitions may be used as fallbacks. The priority order is:
 
 1. `htzhulab` — preferred/default for CARE jobs.

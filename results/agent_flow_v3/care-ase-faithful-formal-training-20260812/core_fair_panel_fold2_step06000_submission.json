@@ -1,0 +1,21 @@
+{
+  "created_utc": "2026-08-13T08:20:21Z",
+  "fair_eval_job": {
+    "elapsed": "00:00:13",
+    "exit_code": "0:0",
+    "job_id": "63514613",
+    "job_name": "ASEF2K6",
+    "node": "g1807htzh01",
+    "partition": "htzhulab",
+    "qos": "gpu_access",
+    "script": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold2_step06000_auto.sbatch",
+    "state": "COMPLETED"
+  },
+  "monitor_outputs": {
+    "casewise_metrics": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_panel_monitor/fold_2/step06000/casewise_metrics.csv",
+    "monitor_packet": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_panel_monitor/fold_2/step06000/monitor_packet.json"
+  },
+  "outer_accessed": false,
+  "read_only_checkpoint_input": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/checkpoint_step06000.pt",
+  "status": "COMPLETED_RESULT_REPORTED"
+}

@@ -1,0 +1,37 @@
+{
+  "created_utc": "2026-08-13T08:20:21Z",
+  "failed_prior_job": {
+    "exit_code": "1:0",
+    "job_id": "63244446",
+    "reason": "worktree HEAD drifted to control-plane develop commit before the next chunk; verified step06000 checkpoint itself passed reload validation",
+    "state": "FAILED"
+  },
+  "forbidden_changes": [
+    "model",
+    "loss",
+    "sampler",
+    "augmentation",
+    "schedule",
+    "checkpoint_selection",
+    "outer-driven_adaptation"
+  ],
+  "outer_accessed": false,
+  "recovery_basis": {
+    "checkpoint": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/checkpoint_step06000.pt",
+    "checkpoint_sha256": "078ccef15a707f822899edd1ce336aa16efe4af87e3e41542158ca58a7c55c93",
+    "checkpoint_verified_status": "PASS",
+    "full_reload_status": "PASS",
+    "resume_step": 6000
+  },
+  "retry_job": {
+    "job_id": "63514614",
+    "job_name": "ASEF2R6",
+    "partition": "htzhulab",
+    "qos": "gpu_access",
+    "requested_time": "5-00:00:00",
+    "script": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_fold2_resume_step06000_to_14000_htzhulab.sbatch",
+    "state_at_submission_check": "RUNNING"
+  },
+  "same_scope_retry": true,
+  "training_checkout_head_restored_to": "fdd45b5ee1c1abea352c318c66951910e565262f"
+}
