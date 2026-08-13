@@ -62,25 +62,25 @@
       "cmd": [
         "sacct",
         "-j",
-        "63244446,63247953,63248355,63260064,63297258,63344579,63344580,63344581,63357146,63357148,63357150,63357152,63357154,63398313,63398316,63399995,63399998,63469158,63469233,63470808,63470841,63514613,63514614,63515339",
+        "63244446,63247953,63248355,63260064,63297258,63344579,63344580,63344581,63357146,63357148,63357150,63357152,63357154,63398313,63398316,63399995,63399998,63469158,63469233,63470808,63470841,63514613,63514614,63515339,63522659",
         "--format=JobID,JobName,Partition,State,ExitCode,Elapsed,Timelimit,NodeList",
         "-P"
       ],
       "returncode": 0,
       "stderr": "",
-      "stdout": "JobID|JobName|Partition|State|ExitCode|Elapsed|Timelimit|NodeList\n63244446|ASEFULL|htzhulab|FAILED|1:0|1-06:18:44|10-00:00:00|g1807htzh01\n63244446.batch|batch||FAILED|1:0|1-06:18:44||g1807htzh01\n63244446.extern|extern||COMPLETED|0:0|1-06:18:44||g1807htzh01\n63247953|ASEF3P|htzhulab|RUNNING|0:0|1-07:00:38|5-00:00:00|g1807htzh01\n63247953.batch|batch||RUNNING|0:0|1-07:00:38||g1807htzh01\n63247953.extern|extern||RUNNING|0:0|1-07:00:38||g1807htzh01\n63248355|ASEFAIR|htzhulab|CANCELLED by 397557|0:0|00:00:00|3-00:00:00|None assigned\n63260064|ASEF2K1|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63297258|ASEF3K1|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63344579|ASEF2K2|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63344580|ASEF2K3|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63344581|ASEF3K2|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63357146|ASEF2K1A|a100-gpu|COMPLETED|0:0|00:06:38|08:00:00|g141602\n63357146.batch|batch||COMPLETED|0:0|00:06:38||g141602\n63357146.extern|extern||COMPLETED|0:0|00:06:38||g141602\n63357148|ASEF2K2A|a100-gpu|COMPLETED|0:0|00:31:55|08:00:00|g141606\n63357148.batch|batch||COMPLETED|0:0|00:31:55||g141606\n63357148.extern|extern||COMPLETED|0:0|00:31:55||g141606\n63357150|ASEF2K3A|a100-gpu|COMPLETED|0:0|00:28:51|08:00:00|g141607\n63357150.batch|batch||COMPLETED|0:0|00:28:51||g141607\n63357150.extern|extern||COMPLETED|0:0|00:28:52||g141607\n63357152|ASEF3K1A|a100-gpu|COMPLETED|0:0|00:26:28|08:00:00|g141607\n63357152.batch|batch||COMPLETED|0:0|00:26:28||g141607\n63357152.extern|extern||COMPLETED|0:0|00:26:28||g141607\n63357154|ASEF3K2A|a100-gpu|COMPLETED|0:0|00:02:59|08:00:00|g141603\n63357154.batch|batch||COMPLETED|0:0|00:02:59||g141603\n63357154.extern|extern||COMPLETED|0:0|00:02:59||g141603\n63398313|ASEF2K4|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63398316|ASEF2K4A|a100-gpu|COMPLETED|0:0|00:02:38|08:00:00|g141608\n63398316.batch|batch||COMPLETED|0:0|00:02:38||g141608\n63398316.extern|extern||COMPLETED|0:0|00:02:38||g141608\n63399995|ASEF3K3|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63399998|ASEF3K3A|a100-gpu|COMPLETED|0:0|00:01:33|08:00:00|g141602\n63399998.batch|batch||COMPLETED|0:0|00:01:33||g141602\n63399998.extern|extern||COMPLETED|0:0|00:01:33||g141602\n63469158|ASEF2K5|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63469233|ASEF2K5A|a100-gpu|COMPLETED|0:0|00:02:03|08:00:00|g141606\n63469233.batch|batch||COMPLETED|0:0|00:02:03||g141606\n63469233.extern|extern||COMPLETED|0:0|00:02:03||g141606\n63470808|ASEF3K4|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63470841|ASEF3K4A|a100-gpu|COMPLETED|0:0|00:00:31|08:00:00|g141606\n63470841.batch|batch||COMPLETED|0:0|00:00:31||g141606\n63470841.extern|extern||COMPLETED|0:0|00:00:31||g141606\n63514613|ASEF2K6|htzhulab|COMPLETED|0:0|00:00:13|08:00:00|g1807htzh01\n63514613.batch|batch||COMPLETED|0:0|00:00:13||g1807htzh01\n63514613.extern|extern||COMPLETED|0:0|00:00:14||g1807htzh01\n63514614|ASEF2R6|htzhulab|RUNNING|0:0|00:58:49|5-00:00:00|g1807htzh01\n63514614.batch|batch||RUNNING|0:0|00:58:49||g1807htzh01\n63514614.extern|extern||RUNNING|0:0|00:58:49||g1807htzh01\n63515339|ASEF3K5|htzhulab|PENDING|0:0|00:00:00|08:00:00|None assigned\n"
+      "stdout": "JobID|JobName|Partition|State|ExitCode|Elapsed|Timelimit|NodeList\n63244446|ASEFULL|htzhulab|FAILED|1:0|1-06:18:44|10-00:00:00|g1807htzh01\n63244446.batch|batch||FAILED|1:0|1-06:18:44||g1807htzh01\n63244446.extern|extern||COMPLETED|0:0|1-06:18:44||g1807htzh01\n63247953|ASEF3P|htzhulab|RUNNING|0:0|1-07:09:40|5-00:00:00|g1807htzh01\n63247953.batch|batch||RUNNING|0:0|1-07:09:40||g1807htzh01\n63247953.extern|extern||RUNNING|0:0|1-07:09:40||g1807htzh01\n63248355|ASEFAIR|htzhulab|CANCELLED by 397557|0:0|00:00:00|3-00:00:00|None assigned\n63260064|ASEF2K1|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63297258|ASEF3K1|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63344579|ASEF2K2|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63344580|ASEF2K3|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63344581|ASEF3K2|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63357146|ASEF2K1A|a100-gpu|COMPLETED|0:0|00:06:38|08:00:00|g141602\n63357146.batch|batch||COMPLETED|0:0|00:06:38||g141602\n63357146.extern|extern||COMPLETED|0:0|00:06:38||g141602\n63357148|ASEF2K2A|a100-gpu|COMPLETED|0:0|00:31:55|08:00:00|g141606\n63357148.batch|batch||COMPLETED|0:0|00:31:55||g141606\n63357148.extern|extern||COMPLETED|0:0|00:31:55||g141606\n63357150|ASEF2K3A|a100-gpu|COMPLETED|0:0|00:28:51|08:00:00|g141607\n63357150.batch|batch||COMPLETED|0:0|00:28:51||g141607\n63357150.extern|extern||COMPLETED|0:0|00:28:52||g141607\n63357152|ASEF3K1A|a100-gpu|COMPLETED|0:0|00:26:28|08:00:00|g141607\n63357152.batch|batch||COMPLETED|0:0|00:26:28||g141607\n63357152.extern|extern||COMPLETED|0:0|00:26:28||g141607\n63357154|ASEF3K2A|a100-gpu|COMPLETED|0:0|00:02:59|08:00:00|g141603\n63357154.batch|batch||COMPLETED|0:0|00:02:59||g141603\n63357154.extern|extern||COMPLETED|0:0|00:02:59||g141603\n63398313|ASEF2K4|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63398316|ASEF2K4A|a100-gpu|COMPLETED|0:0|00:02:38|08:00:00|g141608\n63398316.batch|batch||COMPLETED|0:0|00:02:38||g141608\n63398316.extern|extern||COMPLETED|0:0|00:02:38||g141608\n63399995|ASEF3K3|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63399998|ASEF3K3A|a100-gpu|COMPLETED|0:0|00:01:33|08:00:00|g141602\n63399998.batch|batch||COMPLETED|0:0|00:01:33||g141602\n63399998.extern|extern||COMPLETED|0:0|00:01:33||g141602\n63469158|ASEF2K5|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63469233|ASEF2K5A|a100-gpu|COMPLETED|0:0|00:02:03|08:00:00|g141606\n63469233.batch|batch||COMPLETED|0:0|00:02:03||g141606\n63469233.extern|extern||COMPLETED|0:0|00:02:03||g141606\n63470808|ASEF3K4|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63470841|ASEF3K4A|a100-gpu|COMPLETED|0:0|00:00:31|08:00:00|g141606\n63470841.batch|batch||COMPLETED|0:0|00:00:31||g141606\n63470841.extern|extern||COMPLETED|0:0|00:00:31||g141606\n63514613|ASEF2K6|htzhulab|COMPLETED|0:0|00:00:13|08:00:00|g1807htzh01\n63514613.batch|batch||COMPLETED|0:0|00:00:13||g1807htzh01\n63514613.extern|extern||COMPLETED|0:0|00:00:14||g1807htzh01\n63514614|ASEF2R6|htzhulab|RUNNING|0:0|01:07:51|5-00:00:00|g1807htzh01\n63514614.batch|batch||RUNNING|0:0|01:07:51||g1807htzh01\n63514614.extern|extern||RUNNING|0:0|01:07:51||g1807htzh01\n63515339|ASEF3K5|htzhulab|PENDING|0:0|00:00:00|08:00:00|None assigned\n63522659|ASEF3K5A|a100-gpu|PENDING|0:0|00:00:00|08:00:00|None assigned\n"
     },
     "squeue": {
       "cmd": [
         "squeue",
         "-j",
-        "63244446,63247953,63248355,63260064,63297258,63344579,63344580,63344581,63357146,63357148,63357150,63357152,63357154,63398313,63398316,63399995,63399998,63469158,63469233,63470808,63470841,63514613,63514614,63515339",
+        "63244446,63247953,63248355,63260064,63297258,63344579,63344580,63344581,63357146,63357148,63357150,63357152,63357154,63398313,63398316,63399995,63399998,63469158,63469233,63470808,63470841,63514613,63514614,63515339,63522659",
         "-o",
         "%i|%j|%P|%T|%M|%L|%R|%b|%D"
       ],
       "returncode": 0,
       "stderr": "",
-      "stdout": "JOBID|NAME|PARTITION|STATE|TIME|TIME_LEFT|NODELIST(REASON)|TRES_PER_NODE|NODES\n63515339|ASEF3K5|htzhulab|PENDING|0:00|8:00:00|(Resources)|gres/gpu:1|1\n63514614|ASEF2R6|htzhulab|RUNNING|58:49|4-23:01:11|g1807htzh01|gres/gpu:1|1\n63247953|ASEF3P|htzhulab|RUNNING|1-07:00:38|3-16:59:22|g1807htzh01|gres/gpu:1|1\n"
+      "stdout": "JOBID|NAME|PARTITION|STATE|TIME|TIME_LEFT|NODELIST(REASON)|TRES_PER_NODE|NODES\n63522659|ASEF3K5A|a100-gpu|PENDING|0:00|8:00:00|(Resources)|gres/gpu:nvidia_a100-pcie-40gb:1|1\n63515339|ASEF3K5|htzhulab|PENDING|0:00|8:00:00|(Resources)|gres/gpu:1|1\n63514614|ASEF2R6|htzhulab|RUNNING|1:07:51|4-22:52:09|g1807htzh01|gres/gpu:1|1\n63247953|ASEF3P|htzhulab|RUNNING|1-07:09:40|3-16:50:20|g1807htzh01|gres/gpu:1|1\n"
     }
   },
   "task_key": "care-ase-faithful-formal-training-20260812",
@@ -88,26 +88,26 @@
     {
       "basis": "training_log_recent20_excludes_fair_eval",
       "fold": 2,
-      "projected_finish_utc": "2026-08-15T09:46:21.069206Z",
-      "recent20_median_sec_per_optimizer_step": 22.23868248355575,
-      "remaining_steps": 7844,
-      "updated_utc": "2026-08-13T09:19:00Z"
+      "projected_finish_utc": "2026-08-15T08:27:33.293782Z",
+      "recent20_median_sec_per_optimizer_step": 21.63853460061364,
+      "remaining_steps": 7818,
+      "updated_utc": "2026-08-13T09:28:02Z"
     },
     {
       "basis": "training_log_recent20_excludes_fair_eval",
       "fold": 3,
-      "projected_finish_utc": "2026-08-15T15:02:42.830510Z",
-      "recent20_median_sec_per_optimizer_step": 21.853104792535305,
-      "remaining_steps": 8851,
-      "updated_utc": "2026-08-13T09:19:00Z"
+      "projected_finish_utc": "2026-08-15T15:07:10.167457Z",
+      "recent20_median_sec_per_optimizer_step": 21.883837276371196,
+      "remaining_steps": 8826,
+      "updated_utc": "2026-08-13T09:28:02Z"
     }
   ],
   "training_progress": [
     {
-      "elapsed": "58:49",
+      "elapsed": "1:07:51",
       "fold": 2,
       "job_id": "63514614",
-      "last_completed_optimizer_step": 6156,
+      "last_completed_optimizer_step": 6182,
       "latest_checkpoint_step": 6000,
       "nan_or_inf_count": 0,
       "next_checkpoint_step": 7000,
@@ -116,14 +116,14 @@
       "slurm_state": "RUNNING",
       "stage": "B",
       "target_step": 14000,
-      "time_left": "4-23:01:11",
-      "updated_utc": "2026-08-13T09:19:00Z"
+      "time_left": "4-22:52:09",
+      "updated_utc": "2026-08-13T09:28:02Z"
     },
     {
-      "elapsed": "1-07:00:38",
+      "elapsed": "1-07:09:40",
       "fold": 3,
       "job_id": "63247953",
-      "last_completed_optimizer_step": 5149,
+      "last_completed_optimizer_step": 5174,
       "latest_checkpoint_step": 5000,
       "nan_or_inf_count": 0,
       "next_checkpoint_step": 6000,
@@ -132,11 +132,11 @@
       "slurm_state": "RUNNING",
       "stage": "B",
       "target_step": 14000,
-      "time_left": "3-16:59:22",
-      "updated_utc": "2026-08-13T09:19:00Z"
+      "time_left": "3-16:50:20",
+      "updated_utc": "2026-08-13T09:28:02Z"
     }
   ],
-  "updated_utc": "2026-08-13T09:19:00Z",
+  "updated_utc": "2026-08-13T09:28:02Z",
   "watchers": {
     "a100_mirror_ledger": {
       "created_utc": "2026-08-12T17:22:23Z",
@@ -475,9 +475,51 @@
             "stderr": "sbatch: Job 63470840 to start at 2026-08-14T16:31:42 a using 8 processors on nodes g141602 in partition a100-gpu\n",
             "stdout": ""
           }
+        },
+        {
+          "checkpoint": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/checkpoint_step05000.pt",
+          "created_utc": "2026-08-13T09:27:41Z",
+          "fold": 3,
+          "job_id": "63522659",
+          "job_name": "ASEF3K5A",
+          "lock_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/core_fair_panel_step05000_eval.lock",
+          "non_interference": "a100 eval-only mirror; checkpoint is read-only input; shared output directory exists check and mkdir lock; does not touch active training jobs",
+          "outer_accessed": false,
+          "output_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_panel_monitor/fold_3/step05000",
+          "partition": "a100-gpu",
+          "qos": "gpu_access",
+          "resource_request": {
+            "cpus": 8,
+            "gres": "gpu:nvidia_a100-pcie-40gb:1",
+            "memory": "64G",
+            "time_limit": "08:00:00"
+          },
+          "sbatch": {
+            "cmd": [
+              "sbatch",
+              "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold3_step05000_a100_mirror_auto.sbatch"
+            ],
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "Submitted batch job 63522659\n"
+          },
+          "script": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold3_step05000_a100_mirror_auto.sbatch",
+          "slurm_job_id": "63522659",
+          "status": "SUBMITTED",
+          "step": 5000,
+          "test_only": {
+            "cmd": [
+              "sbatch",
+              "--test-only",
+              "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold3_step05000_a100_mirror_auto.sbatch"
+            ],
+            "returncode": 0,
+            "stderr": "sbatch: Job 63522581 to start at 2026-08-13T17:23:13 a using 8 processors on nodes g141605 in partition a100-gpu\n",
+            "stdout": ""
+          }
         }
       ],
-      "updated_utc": "2026-08-13T05:24:15Z",
+      "updated_utc": "2026-08-13T09:27:41Z",
       "user_authorization": "a100/htzhulab eval-only sbatch jobs are allowed for checkpoint fair comparison if read-only, isolated, and non-interfering with active interactive training jobs"
     },
     "a100_mirror_watcher": {
@@ -1000,7 +1042,7 @@
       ],
       "status": "RUNNING",
       "submitted_this_scan": [],
-      "updated_utc": "2026-08-13T09:13:42Z"
+      "updated_utc": "2026-08-13T09:23:42Z"
     },
     "same_exposure_ledger": null,
     "same_exposure_watcher": null

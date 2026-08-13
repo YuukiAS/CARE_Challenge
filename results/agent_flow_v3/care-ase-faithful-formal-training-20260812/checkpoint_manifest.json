@@ -291,14 +291,27 @@
       "checkpoint_path": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/checkpoint_step05000.pt",
       "checkpoint_sha256": "a7b040dc31735a56f7313a7b937eb3aa521cd64c3746bc80fe06f5acf19c8d0c",
       "core_fair_eval_bound_partitions": [
+        "a100-gpu",
         "htzhulab"
       ],
       "core_fair_eval_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_panel_monitor/fold_3/step05000",
       "core_fair_eval_job_id": "63515339",
       "core_fair_eval_job_ids": [
+        "63522659",
         "63515339"
       ],
       "core_fair_eval_job_states": [
+        {
+          "elapsed": "0:00",
+          "job_id": "63522659",
+          "job_name": "ASEF3K5A",
+          "node_or_reason": "(Resources)",
+          "nodes": "1",
+          "partition": "a100-gpu",
+          "state": "PENDING",
+          "time_left": "8:00:00",
+          "tres_per_node": "gres/gpu:nvidia_a100-pcie-40gb:1"
+        },
         {
           "elapsed": "0:00",
           "job_id": "63515339",
@@ -311,7 +324,9 @@
           "tres_per_node": "gres/gpu:1"
         }
       ],
-      "core_fair_eval_mirror_job_ids": [],
+      "core_fair_eval_mirror_job_ids": [
+        "63522659"
+      ],
       "core_fair_eval_output_present": false,
       "core_fair_eval_status": "PENDING_SUBMITTED_EXTRA_JOBS",
       "fold": 3,
@@ -327,5 +342,5 @@
     }
   ],
   "new_checkpoint_without_fair_eval_job": [],
-  "updated_utc": "2026-08-13T09:19:00Z"
+  "updated_utc": "2026-08-13T09:28:02Z"
 }

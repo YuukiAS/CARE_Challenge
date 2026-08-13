@@ -1,6 +1,7 @@
 {
   "a100_mirror_ledger": {
     "created_utc": "2026-08-12T17:22:23Z",
+    "latest_submission_job_id": "63522659",
     "outer_accessed": false,
     "schema": "CARE_ASE_CORE_FAIR_EVAL_A100_MIRROR_LEDGER_V1",
     "submissions": [
@@ -168,9 +169,51 @@
           "stderr": "sbatch: Job 63357153 to start at 2026-08-22T10:20:25 a using 8 processors on nodes g141601 in partition a100-gpu\n",
           "stdout": ""
         }
+      },
+      {
+        "checkpoint": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/checkpoint_step05000.pt",
+        "created_utc": "2026-08-13T09:27:41Z",
+        "fold": 3,
+        "job_id": "63522659",
+        "job_name": "ASEF3K5A",
+        "lock_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/core_fair_panel_step05000_eval.lock",
+        "non_interference": "a100 eval-only mirror; checkpoint is read-only input; shared output directory exists check and mkdir lock; does not touch active training jobs",
+        "outer_accessed": false,
+        "output_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_panel_monitor/fold_3/step05000",
+        "partition": "a100-gpu",
+        "qos": "gpu_access",
+        "resource_request": {
+          "cpus": 8,
+          "gres": "gpu:nvidia_a100-pcie-40gb:1",
+          "memory": "64G",
+          "time_limit": "08:00:00"
+        },
+        "sbatch": {
+          "cmd": [
+            "sbatch",
+            "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold3_step05000_a100_mirror_auto.sbatch"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "Submitted batch job 63522659\n"
+        },
+        "script": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold3_step05000_a100_mirror_auto.sbatch",
+        "slurm_job_id": "63522659",
+        "status": "SUBMITTED",
+        "step": 5000,
+        "test_only": {
+          "cmd": [
+            "sbatch",
+            "--test-only",
+            "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold3_step05000_a100_mirror_auto.sbatch"
+          ],
+          "returncode": 0,
+          "stderr": "sbatch: Job 63522581 to start at 2026-08-13T17:23:13 a using 8 processors on nodes g141605 in partition a100-gpu\n",
+          "stdout": ""
+        }
       }
     ],
-    "updated_utc": "2026-08-12T17:47:00Z",
+    "updated_utc": "2026-08-13T09:27:41Z",
     "user_authorization": "a100/htzhulab eval-only sbatch jobs are allowed for checkpoint fair comparison if read-only, isolated, and non-interfering with active interactive training jobs"
   },
   "a100_mirror_watcher": {
@@ -829,8 +872,42 @@
       "state_source": "squeue",
       "status": "SUBMITTED_NEEDS_MONITOR",
       "step": 5000
+    },
+    {
+      "checkpoint": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/checkpoint_step05000.pt",
+      "created_utc": "2026-08-13T09:27:41Z",
+      "fold": 3,
+      "job_id": "63522659",
+      "job_name": "ASEF3K5A",
+      "lock_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/core_fair_panel_step05000_eval.lock",
+      "non_interference": "a100 eval-only mirror; checkpoint is read-only input; shared output directory exists check and mkdir lock; does not touch active training jobs",
+      "outer_accessed": false,
+      "output_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_panel_monitor/fold_3/step05000",
+      "paired_htzhulab_job_id": "63515339",
+      "partition": "a100-gpu",
+      "qos": "gpu_access",
+      "resource_request": {
+        "cpus": 8,
+        "gres": "gpu:nvidia_a100-pcie-40gb:1",
+        "memory": "64G",
+        "time_limit": "08:00:00"
+      },
+      "script": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold3_step05000_a100_mirror_auto.sbatch",
+      "status": "SUBMITTED",
+      "step": 5000,
+      "submission_stdout": "Submitted batch job 63522659\n",
+      "test_only_stderr": "sbatch: Job 63522581 to start at 2026-08-13T17:23:13 a using 8 processors on nodes g141605 in partition a100-gpu\n"
     }
   ],
+  "latest_routing_action": {
+    "checkpoint_step": 5000,
+    "decision": "submit read-only a100 mirror for fold3 step5000 fair comparison; do not interfere with active training; shared lock/output prevents duplicate writes",
+    "fold": 3,
+    "job_id": "63522659",
+    "paired_htzhulab_job_id": "63515339",
+    "partition": "a100-gpu",
+    "status": "SUBMITTED_NEEDS_MONITOR"
+  },
   "outer_accessed": false,
   "routing_review_summary": "checkpoint fair comparison has htzhulab primary eval jobs plus a100 eval-only mirrors where current a100 queue estimates are useful; all attempts use read-only checkpoints, isolated output/lock, and do not interfere with training jobs",
   "sacct": {
@@ -896,6 +973,6 @@
     "stdout": "JOBID|NAME|PARTITION|ST|START_TIME|NODELIST(REASON)\n63260064|ASEF2K1|htzhulab|PD|2026-08-16T22:18:22|(Resources)\n63297258|ASEF3K1|htzhulab|PD|2026-08-17T06:20:00|(Priority)\n63344579|ASEF2K2|htzhulab|PD|2026-08-17T14:20:00|(Priority)\n63344580|ASEF2K3|htzhulab|PD|2026-08-17T22:20:00|(Priority)\n63344581|ASEF3K2|htzhulab|PD|2026-08-18T06:20:00|(Priority)\n"
   },
   "task_key": "care-ase-faithful-formal-training-20260812",
-  "updated_utc": "2026-08-13T08:32:09Z",
+  "updated_utc": "2026-08-13T09:27:41Z",
   "user_authorization": "extra checkpoint fair-comparison sbatch jobs may run on htzhulab/a100-gpu when needed and must not interfere with running interactive/training jobs"
 }
