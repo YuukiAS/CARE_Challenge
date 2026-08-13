@@ -1,3 +1,3 @@
 updated_utc,fold,job_id,slurm_state,node_or_reason,elapsed,time_left,last_completed_optimizer_step,stage,latest_checkpoint_step,next_checkpoint_step,target_step,nan_or_inf_count,outer_accessed
-2026-08-13T13:22:09Z,2,63514614,RUNNING,g1807htzh01,5:01:58,4-18:58:02,6828,B,6000,7000,14000,0,False
-2026-08-13T13:22:09Z,3,63247953,RUNNING,g1807htzh01,1-11:03:47,3-12:56:13,5819,B,5000,6000,14000,0,False
+2026-08-13T13:26:06Z,2,63514614,RUNNING,g1807htzh01,5:05:55,4-18:54:05,6839,B,6000,7000,14000,0,False
+2026-08-13T13:26:06Z,3,63247953,RUNNING,g1807htzh01,1-11:07:44,3-12:52:16,5830,B,5000,6000,14000,0,False
