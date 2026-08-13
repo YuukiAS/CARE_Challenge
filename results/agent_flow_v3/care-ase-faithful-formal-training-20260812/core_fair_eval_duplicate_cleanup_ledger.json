@@ -220,6 +220,46 @@
       "state": "PENDING",
       "status": "SCANCEL_SUBMITTED",
       "step": 6000
+    },
+    {
+      "cancelled_utc": "2026-08-13T21:19:05Z",
+      "fold": 2,
+      "job_id": "63613156",
+      "job_name": "ASEF2K8A",
+      "partition": "a100-gpu",
+      "reason": "same_fold_step_attempt_running",
+      "scancel": {
+        "cmd": [
+          "scancel",
+          "63613156"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "state": "PENDING",
+      "status": "SCANCEL_SUBMITTED",
+      "step": 8000
+    },
+    {
+      "cancelled_utc": "2026-08-13T21:19:05Z",
+      "fold": 3,
+      "job_id": "63614063",
+      "job_name": "ASEF3K7A",
+      "partition": "a100-gpu",
+      "reason": "same_fold_step_attempt_running",
+      "scancel": {
+        "cmd": [
+          "scancel",
+          "63614063"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "state": "PENDING",
+      "status": "SCANCEL_SUBMITTED",
+      "step": 7000
     }
   ],
   "outer_accessed": false,
@@ -230,5 +270,5 @@
     "63248355"
   ],
   "schema": "CARE_ASE_CORE_FAIR_EVAL_DUPLICATE_CLEANUP_LEDGER_V1",
-  "updated_utc": "2026-08-13T14:59:34Z"
+  "updated_utc": "2026-08-13T21:19:04Z"
 }
