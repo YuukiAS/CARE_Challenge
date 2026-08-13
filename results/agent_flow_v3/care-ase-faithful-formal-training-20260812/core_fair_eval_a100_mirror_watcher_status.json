@@ -40,6 +40,11 @@
       "step": 7000
     },
     {
+      "fold": 2,
+      "reason": "a100_ledger_has_submission",
+      "step": 8000
+    },
+    {
       "fold": 3,
       "reason": "output_present",
       "step": 1000
@@ -73,15 +78,15 @@
   "status": "RUNNING",
   "submitted_this_scan": [
     {
-      "checkpoint": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/checkpoint_step08000.pt",
-      "created_utc": "2026-08-13T20:32:22Z",
-      "fold": 2,
-      "job_id": "63613156",
-      "job_name": "ASEF2K8A",
-      "lock_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/core_fair_panel_step08000_eval.lock",
+      "checkpoint": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/checkpoint_step07000.pt",
+      "created_utc": "2026-08-13T20:51:02Z",
+      "fold": 3,
+      "job_id": "63614063",
+      "job_name": "ASEF3K7A",
+      "lock_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/core_fair_panel_step07000_eval.lock",
       "non_interference": "a100 eval-only mirror; checkpoint is read-only input; shared output directory exists check and mkdir lock; does not touch active training jobs",
       "outer_accessed": false,
-      "output_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_panel_monitor/fold_2/step08000",
+      "output_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_panel_monitor/fold_3/step07000",
       "partition": "a100-gpu",
       "qos": "gpu_access",
       "resource_request": {
@@ -93,27 +98,27 @@
       "sbatch": {
         "cmd": [
           "sbatch",
-          "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold2_step08000_a100_mirror_auto.sbatch"
+          "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold3_step07000_a100_mirror_auto.sbatch"
         ],
         "returncode": 0,
         "stderr": "",
-        "stdout": "Submitted batch job 63613156\n"
+        "stdout": "Submitted batch job 63614063\n"
       },
-      "script": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold2_step08000_a100_mirror_auto.sbatch",
-      "slurm_job_id": "63613156",
+      "script": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold3_step07000_a100_mirror_auto.sbatch",
+      "slurm_job_id": "63614063",
       "status": "SUBMITTED",
-      "step": 8000,
+      "step": 7000,
       "test_only": {
         "cmd": [
           "sbatch",
           "--test-only",
-          "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold2_step08000_a100_mirror_auto.sbatch"
+          "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold3_step07000_a100_mirror_auto.sbatch"
         ],
         "returncode": 0,
-        "stderr": "sbatch: Job 63613155 to start at 2026-08-23T14:03:36 a using 8 processors on nodes g141602 in partition a100-gpu\n",
+        "stderr": "sbatch: Job 63614062 to start at 2026-08-23T15:03:36 a using 8 processors on nodes g141602 in partition a100-gpu\n",
         "stdout": ""
       }
     }
   ],
-  "updated_utc": "2026-08-13T20:32:22Z"
+  "updated_utc": "2026-08-13T20:51:02Z"
 }
