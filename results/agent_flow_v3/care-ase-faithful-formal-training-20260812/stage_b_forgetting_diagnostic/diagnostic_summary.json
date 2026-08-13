@@ -1,0 +1,11 @@
+{
+  "first_pass_conclusion": "REAL_STAGE_B_PARTIAL_NO_T2_SCAR_FORGETTING_IN_FORMAL_INNER_GPU_CAUSAL_LOCALIZATION_PENDING",
+  "formal_training_should_continue": true,
+  "implementation_blocker_candidate": false,
+  "outer_accessed_by_this_script": false,
+  "output_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/stage_b_forgetting_diagnostic",
+  "runtime_repo": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812",
+  "runtime_semantic_bug_status": "NO_PARTIAL_RUNTIME_SEMANTIC_BUG_FOUND_IN_STATIC_METADATA_FIRST_PASS_GPU_FORWARD_PENDING",
+  "task_name": "care-ase-faithful-formal-training-20260812",
+  "training_runtime_mutated": false
+}

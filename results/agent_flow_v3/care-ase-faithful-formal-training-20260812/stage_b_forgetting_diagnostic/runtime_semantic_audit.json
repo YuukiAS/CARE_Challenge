@@ -1,0 +1,78 @@
+{
+  "audit_scope": "READ_ONLY_STATIC_AND_METADATA_FIRST_PASS",
+  "checkpoint_inventory": [
+    {
+      "exists": true,
+      "fold": 2,
+      "path": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/checkpoint_step02000.pt",
+      "sha256": "1cd7b30eb3ce38b69b2765cb953c6e4a4227342c2e219d5e4ea8346cae7f96f9",
+      "step": 2000
+    },
+    {
+      "exists": true,
+      "fold": 2,
+      "path": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/checkpoint_step04000.pt",
+      "sha256": "93eeac3d3a0124a7809ef5d3de7ed7172c61e03960d2fee33e25166a27993879",
+      "step": 4000
+    },
+    {
+      "exists": true,
+      "fold": 2,
+      "path": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/checkpoint_step06000.pt",
+      "sha256": "078ccef15a707f822899edd1ce336aa16efe4af87e3e41542158ca58a7c55c93",
+      "step": 6000
+    },
+    {
+      "exists": true,
+      "fold": 2,
+      "path": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/checkpoint_step07000.pt",
+      "sha256": "fc125d699f1fa11e0b908d6cd962aa36b71dc8698a1b2c08510c1f09415b469e",
+      "step": 7000
+    },
+    {
+      "exists": true,
+      "fold": 3,
+      "path": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/checkpoint_step02000.pt",
+      "sha256": "25054bb8fabb1822d74b5ffdaa2c044035056260a2e2653b72e2a7492252d151",
+      "step": 2000
+    },
+    {
+      "exists": true,
+      "fold": 3,
+      "path": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/checkpoint_step04000.pt",
+      "sha256": "4b3a42e096ea1af6a98a1f257a4dc824986360b3253041e61487be2f13829395",
+      "step": 4000
+    },
+    {
+      "exists": true,
+      "fold": 3,
+      "path": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/checkpoint_step06000.pt",
+      "sha256": "ba433477f7f72e6a81946404b81ea8a3557b5425cc54d28145f800efe0c7caf8",
+      "step": 6000
+    },
+    {
+      "exists": false,
+      "fold": 3,
+      "path": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/checkpoint_step07000.pt",
+      "sha256": null,
+      "step": 7000
+    }
+  ],
+  "disable_extent_wall_forward_arg_static_pass": true,
+  "disabled_named_evidence_sources_static_pass": true,
+  "gpu_forward_runtime_semantic_checks": "PENDING_READ_ONLY_GPU_INFERENCE",
+  "no_t2_decode_class_set_0_1_2_3_5_static_pass": true,
+  "outer_accessed": false,
+  "runtime_semantic_bug_status": "NO_PARTIAL_RUNTIME_SEMANTIC_BUG_FOUND_IN_STATIC_METADATA_FIRST_PASS_GPU_FORWARD_PENDING",
+  "split_case_counts": {
+    "fold2_actual-train_no_t2": 90,
+    "fold2_actual-train_t2": 51,
+    "fold2_inner_no_t2": 22,
+    "fold2_inner_t2": 13,
+    "fold3_actual-train_no_t2": 90,
+    "fold3_actual-train_t2": 51,
+    "fold3_inner_no_t2": 22,
+    "fold3_inner_t2": 13
+  },
+  "training_mutation": false
+}

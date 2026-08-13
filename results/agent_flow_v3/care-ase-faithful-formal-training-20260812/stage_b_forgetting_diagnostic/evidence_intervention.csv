@@ -1,0 +1,2 @@
+status,reason
+PENDING_READ_ONLY_GPU_INFERENCE,Requires full-volume logits/components without modifying training runtime
