@@ -1,0 +1,13 @@
+{
+  "active_eval_jobs": [],
+  "last_submission": null,
+  "missing_ready_outputs": [],
+  "outer_accessed": false,
+  "poll_seconds": 600,
+  "same_exposure_fair_index": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/same_exposure_fair_monitor/same_exposure_fair_index.json",
+  "schema": "CARE_ASE_SAME_EXPOSURE_FAIR_WATCHER_STATUS_V1",
+  "status": "STOPPED_SUPERSEDED_BY_USER_AUTHORIZED_OUTER_DIAGNOSTIC",
+  "superseded_reason": "Same-exposure or inner in-sample 0.9-range outputs are diagnostic only and must not be reported as the primary fair comparison; user explicitly authorized outer diagnostic on 2026-08-13.",
+  "training_interference": "none_read_only_checkpoint_inputs_isolated_output_lock",
+  "updated_utc": "2026-08-13T06:28:37Z"
+}

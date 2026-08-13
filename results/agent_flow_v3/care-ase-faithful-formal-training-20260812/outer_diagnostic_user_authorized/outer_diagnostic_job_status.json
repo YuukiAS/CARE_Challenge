@@ -1,0 +1,69 @@
+{
+  "active_job_id": "63501304",
+  "authorized_by_user": true,
+  "authorized_utc": "2026-08-13T06:28:37Z",
+  "comparison_contract": "USER_AUTHORIZED_OUTER_DIAGNOSTIC_OLD_ASE_LOGIC",
+  "fold_steps_requested": {
+    "fold_2": "latest_verified_step_currently_5000",
+    "fold_3": "latest_verified_step_currently_4000"
+  },
+  "invalidated_prior_reporting": {
+    "same_exposure_or_inner_in_sample_0_9_tables": "diagnostic_only_not_primary_fair_comparison",
+    "reason": "old ASE comparison thread showed these panels can inherit stock in-sample exposure and overstate held-out performance"
+  },
+  "job_name": "ASEOUTER",
+  "mirror_jobs": [
+    {
+      "cancellation": "cancelled_after_a100_started",
+      "job_id": "63501305",
+      "partition": "htzhulab",
+      "state_at_submission_check": "PENDING",
+      "reason_at_submission_check": "Resources",
+      "walltime": "08:00:00"
+    },
+    {
+      "job_id": "63501304",
+      "partition": "a100-gpu",
+      "state_at_submission_check": "RUNNING",
+      "reason_at_submission_check": "None",
+      "walltime": "06:00:00"
+    }
+  ],
+  "previous_failed_startup_job": {
+    "exit_code": "1:0",
+    "job_id": "63501069",
+    "reason": "source path pointed at training worktree-local env files that do not exist; fixed to source CARE_ENV_ROOT"
+  },
+  "previous_pending_job_cancelled_before_locking": {
+    "job_id": "63500701",
+    "reason": "submitted before shared mirror lock was added; cancelled while pending to prevent duplicate writes"
+  },
+  "previous_prefix_pending_job_cancelled": {
+    "job_id": "63501068",
+    "reason": "submitted before CARE_ENV_ROOT source-path repair; cancelled while pending"
+  },
+  "output_expected": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/outer_diagnostic_latest_combined_summary.json",
+  "partition": "htzhulab+a100-gpu_locked_mirror",
+  "result_summary": {
+    "case_count_total": 88,
+    "fold_2_step": 5000,
+    "fold_3_step": 4000,
+    "pure_edema_care_mean": 0.4503308235062316,
+    "pure_edema_delta_care_minus_nnunet": -0.024864757069368415,
+    "pure_edema_nnunet_mean": 0.4751955805756,
+    "scar_care_mean": 0.45087787184295247,
+    "scar_delta_care_minus_nnunet": -0.10539425013558301,
+    "scar_nnunet_mean": 0.5562721219785355
+  },
+  "slurm_terminal_accounting": {
+    "active_job_elapsed": "00:10:31",
+    "active_job_exit_code": "0:0",
+    "active_job_final_state": "COMPLETED",
+    "active_job_id": "63501304",
+    "cancelled_pending_mirror_job_id": "63501305",
+    "failed_startup_job_id": "63501069"
+  },
+  "status": "COMPLETED_PASS",
+  "training_interference": "none_eval_only_read_only_checkpoint_inputs_isolated_outer_output",
+  "updated_utc": "2026-08-13T06:45:52Z"
+}
