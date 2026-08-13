@@ -858,6 +858,6 @@
     "stdout": "JOBID|NAME|PARTITION|ST|START_TIME|NODELIST(REASON)\n63260064|ASEF2K1|htzhulab|PD|2026-08-16T22:18:22|(Resources)\n63297258|ASEF3K1|htzhulab|PD|2026-08-17T06:20:00|(Priority)\n63344579|ASEF2K2|htzhulab|PD|2026-08-17T14:20:00|(Priority)\n63344580|ASEF2K3|htzhulab|PD|2026-08-17T22:20:00|(Priority)\n63344581|ASEF3K2|htzhulab|PD|2026-08-18T06:20:00|(Priority)\n"
   },
   "task_key": "care-ase-faithful-formal-training-20260812",
-  "updated_utc": "2026-08-13T07:10:35Z",
+  "updated_utc": "2026-08-13T07:13:47Z",
   "user_authorization": "extra checkpoint fair-comparison sbatch jobs may run on htzhulab/a100-gpu when needed and must not interfere with running interactive/training jobs"
 }
