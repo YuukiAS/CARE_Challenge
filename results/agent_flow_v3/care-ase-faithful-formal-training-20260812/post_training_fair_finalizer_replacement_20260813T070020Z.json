@@ -1,0 +1,32 @@
+{
+  "status": "REPLACED_PENDING_FINALIZER",
+  "timestamp_utc": "2026-08-13T07:00:20Z",
+  "old_job_id": "63495759",
+  "old_job_state_before_cancel": "PENDING",
+  "old_dependency": "afterok:63247953",
+  "replacement_job_id": "63505241",
+  "replacement_job_state_after_submit": "PENDING",
+  "replacement_dependency": "afterok:63247953",
+  "partition": "htzhulab",
+  "qos": "gpu_access",
+  "script_path": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_post_training_fair_finalizer_one_job.sbatch",
+  "replacement_reason": "The pending finalizer script still contained same-exposure final-index logic and an invalid Python heredoc after prior edits. Same-exposure output is diagnostic-only and must not be the final fair-comparison path after the user's outer-diagnostic authorization.",
+  "fix_summary": [
+    "Removed same-exposure final-index call from the post-training finalizer.",
+    "Added final fold2/fold3 step14000 user-authorized outer diagnostic using the old ASE diagnostic logic.",
+    "Kept formal inner checkpoint selection as inner-only and recorded outer_accessed only for the explicit outer diagnostic phase."
+  ],
+  "validation": [
+    "bash -n run_post_training_fair_finalizer_one_job.sbatch",
+    "compiled embedded Python heredoc blocks with env_CARE python"
+  ],
+  "training_jobs_untouched": [
+    "63244446",
+    "63247953"
+  ],
+  "post_submit_squeue": [
+    "63505241|ASEFAIR|htzhulab|PENDING|0:00|3-00:00:00|(Dependency)|gres/gpu:1|1",
+    "63247953|ASEF3P|htzhulab|RUNNING|1-04:42:04|3-19:17:56|g1807htzh01|gres/gpu:1|1",
+    "63244446|ASEFULL|htzhulab|RUNNING|1-05:04:50|8-18:55:10|g1807htzh01|gres/gpu:1|1"
+  ]
+}
