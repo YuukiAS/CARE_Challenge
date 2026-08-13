@@ -20,3 +20,4 @@
 - `runtime_semantic_audit.json` sha256=`4b9087a97d7dbfec93debe5f82bebe435d72604375a3ed516f60269f1452146d`
 - `gpu_readonly_submission_63560023.json` records the first non-interfering a100-gpu read-only diagnostic job submission.
 - `run_stage_b_gpu_forgetting_diagnostic_a100.sbatch` records the exact Slurm entrypoint used for job `63560023`.
+- `gpu_readonly_status_63560023_latest.json` records the current pending monitor state; it is not completion evidence.
