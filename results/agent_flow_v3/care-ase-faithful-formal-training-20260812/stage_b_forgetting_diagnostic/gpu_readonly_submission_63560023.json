@@ -1,0 +1,21 @@
+{
+  "diagnostic_job_id": "63560023",
+  "job_name": "ASEdiagB",
+  "partition": "a100-gpu",
+  "qos": "gpu_access",
+  "gres": "gpu:nvidia_a100-pcie-40gb:1",
+  "cpus_per_task": 8,
+  "mem": "64G",
+  "time_limit": "08:00:00",
+  "submit_time_local": "2026-08-13T12:10:41",
+  "initial_state": "PENDING",
+  "initial_reason": "None",
+  "runtime_repo": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812",
+  "develop_diagnostic_commit": "e11a6da675779c1cec6ae8c7c191dd3e16d8f035",
+  "output_dir_template": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/stage_b_forgetting_diagnostic/gpu_readonly_${SLURM_JOB_ID}",
+  "script": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/stage_b_forgetting_diagnostic/run_stage_b_gpu_forgetting_diagnostic_a100.sbatch",
+  "outer_access_authorized": false,
+  "training_mutation_authorized": false,
+  "purpose": "READ_ONLY_DIAGNOSTIC_STAGE_B_PARTIAL_NO_T2_SCAR_FORGETTING",
+  "status": "SUBMITTED_PENDING"
+}

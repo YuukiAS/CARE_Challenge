@@ -18,3 +18,5 @@
 - `parameter_drift.csv` sha256=`01b2a899236ba0c5f9c57539fdc7897af86de09823427be37157d7af0ec83ffe`
 - `sampler_effective_supervision.csv` sha256=`683492289f095a500139c21a85b2eadbc7d73bb16b6020e6a78c76a0fc94c641`
 - `runtime_semantic_audit.json` sha256=`4b9087a97d7dbfec93debe5f82bebe435d72604375a3ed516f60269f1452146d`
+- `gpu_readonly_submission_63560023.json` records the first non-interfering a100-gpu read-only diagnostic job submission.
+- `run_stage_b_gpu_forgetting_diagnostic_a100.sbatch` records the exact Slurm entrypoint used for job `63560023`.
