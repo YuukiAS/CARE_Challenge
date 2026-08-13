@@ -323,12 +323,24 @@ def load_checkpoint_provenance(paths_by_fold: dict[int, Path]) -> dict[str, Any]
     except Exception as exc:  # pragma: no cover - dependency availability is environment-specific.
         return {"status": "UNAVAILABLE", "reason": f"torch import failed: {exc}"}
     out: dict[str, Any] = {"status": "PASS", "folds": {}}
+    missing: list[str] = []
     for fold, path in sorted(paths_by_fold.items()):
+        if not path.is_file():
+            missing.append(f"fold{fold}:{path}")
+            out["folds"][f"fold{fold}"] = {
+                "checkpoint": rel(path),
+                "status": "MISSING_CHECKPOINT_FOR_LIGHTWEIGHT_REPORTING_CHECKOUT",
+            }
+            continue
         payload = torch.load(path, map_location="cpu", weights_only=False)
         out["folds"][f"fold{fold}"] = {
             "checkpoint": rel(path),
+            "status": "PASS",
             **{field: payload.get(field) for field in PROVENANCE_FIELDS},
         }
+    if missing:
+        out["status"] = "PARTIAL_MISSING_CHECKPOINTS"
+        out["missing"] = missing
     return out
 
 
@@ -397,6 +409,7 @@ def render_markdown(summary: dict[str, Any], provenance: dict[str, Any]) -> str:
     else:
         lines.append("- `volume_ratio`: reported from explicit prediction/GT voxel-count fields in this diagnostic CSV; these are diagnostic-only and do not alter Dice denominators or checkpoint selection.")
     lines.append("- `empty pred`: counted from blank precision in the existing CSV, which is emitted when there are zero predicted voxels for that class.")
+    lines.append("- `subgroup verification`: `scripts/evaluation/care_ase/verify_outer_diagnostic_subgroup_summary.py` recomputes the key subgroup rows from raw outer casewise CSV plus MyoPS metadata and writes `outer_diagnostic_subgroup_verification_receipt.json`.")
     lines.append("- `Case2012`: fold3 complete/T2-present case with CARE scar Dice 0 and edema Dice 0; retained in the official subgroup means.")
     lines.append("- `no-T2 baseline asymmetry`: CARE no-T2 decode excludes class 4 (`0,1,2,3,5`), while the current matched nnU-Net baseline row in `run_current_user_authorized_outer_diagnostic.py` uses direct six-class argmax. This is a diagnostic comparison asymmetry, not checkpoint-selection evidence.")
     if "diagnostic_no_t2_matched_class_set_baseline" in summary:
@@ -449,13 +462,16 @@ def main() -> int:
     parser.add_argument("--output-root", type=Path, default=DEFAULT_OUTER_ROOT)
     parser.add_argument("--casewise-fold2", type=Path, default=CASEWISE_BY_FOLD[2])
     parser.add_argument("--casewise-fold3", type=Path, default=CASEWISE_BY_FOLD[3])
+    parser.add_argument("--checkpoint-fold2", type=Path, default=CHECKPOINTS_BY_FOLD[2])
+    parser.add_argument("--checkpoint-fold3", type=Path, default=CHECKPOINTS_BY_FOLD[3])
     parser.add_argument("--output-prefix", default="outer_diagnostic_subgroup")
     args = parser.parse_args()
 
     casewise_by_fold = {2: args.casewise_fold2, 3: args.casewise_fold3}
+    checkpoints_by_fold = {2: args.checkpoint_fold2, 3: args.checkpoint_fold3}
     rows = load_rows(casewise_by_fold, metadata_root(REPO_ROOT, args.metadata_repo_root))
     summary = build_summary(rows)
-    provenance = load_checkpoint_provenance(CHECKPOINTS_BY_FOLD)
+    provenance = load_checkpoint_provenance(checkpoints_by_fold)
     summary["checkpoint_provenance"] = provenance
     summary["casewise_csvs"] = {f"fold{fold}": rel(path) for fold, path in sorted(casewise_by_fold.items())}
 

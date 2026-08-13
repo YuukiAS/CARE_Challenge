@@ -56,7 +56,7 @@
 
 - `volume_ratio`: not reported from the current CSV because prediction/GT voxel-count columns were not written by the original outer runner; no value is invented here.
 - `empty pred`: counted from blank precision in the existing CSV, which is emitted when there are zero predicted voxels for that class.
-- `subgroup verification`: `scripts/evaluation/care_ase/verify_outer_diagnostic_subgroup_summary.py` recomputed the key subgroup rows from raw outer casewise CSV plus MyoPS metadata and wrote `outer_diagnostic_subgroup_verification_receipt.json`.
+- `subgroup verification`: `scripts/evaluation/care_ase/verify_outer_diagnostic_subgroup_summary.py` recomputes the key subgroup rows from raw outer casewise CSV plus MyoPS metadata and writes `outer_diagnostic_subgroup_verification_receipt.json`.
 - `Case2012`: fold3 complete/T2-present case with CARE scar Dice 0 and edema Dice 0; retained in the official subgroup means.
 - `no-T2 baseline asymmetry`: CARE no-T2 decode excludes class 4 (`0,1,2,3,5`), while the current matched nnU-Net baseline row in `run_current_user_authorized_outer_diagnostic.py` uses direct six-class argmax. This is a diagnostic comparison asymmetry, not checkpoint-selection evidence.
 

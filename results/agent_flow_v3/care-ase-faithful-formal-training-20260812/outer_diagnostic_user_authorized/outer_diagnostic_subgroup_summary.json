@@ -6,7 +6,7 @@
   "checkpoint_provenance": {
     "folds": {
       "fold2": {
-        "checkpoint": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/checkpoint_step05000.pt",
+        "checkpoint": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/checkpoint_step05000.pt",
         "code_hash": "33ec5151957f652467a18787e7f068abb368ab575697ba27dcef0cfc1a8c5831",
         "config_hash": "e9f9b60a10ac147d35521b8d90fc31773c09969a72f0888f0119e7c51d8819da",
         "critical_source_manifest_sha256": "33ec5151957f652467a18787e7f068abb368ab575697ba27dcef0cfc1a8c5831",
@@ -17,11 +17,12 @@
         "implementation_source_manifest_sha256": "33ec5151957f652467a18787e7f068abb368ab575697ba27dcef0cfc1a8c5831",
         "plans_hash": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
         "split_hash": "9c3e9f3b7e4565a5c3c2589ddbb913c78c0ad423f4265370585841c93c6f880a",
+        "status": "PASS",
         "stock_checkpoint_hash": "31470ab242055b0af5c783f0f522bc8e490199cb2b4d42f5d0cefffb41de019b",
         "training_source_commit_sha": "fdd45b5ee1c1abea352c318c66951910e565262f"
       },
       "fold3": {
-        "checkpoint": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/checkpoint_step04000.pt",
+        "checkpoint": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/checkpoint_step04000.pt",
         "code_hash": "33ec5151957f652467a18787e7f068abb368ab575697ba27dcef0cfc1a8c5831",
         "config_hash": "5ffefbc3d0df432efac993f522f7d275f3f2c71c3fab8a959acdbb78fe3da9f8",
         "critical_source_manifest_sha256": "33ec5151957f652467a18787e7f068abb368ab575697ba27dcef0cfc1a8c5831",
@@ -32,6 +33,7 @@
         "implementation_source_manifest_sha256": "33ec5151957f652467a18787e7f068abb368ab575697ba27dcef0cfc1a8c5831",
         "plans_hash": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
         "split_hash": "9c3e9f3b7e4565a5c3c2589ddbb913c78c0ad423f4265370585841c93c6f880a",
+        "status": "PASS",
         "stock_checkpoint_hash": "0c27009930261c93a4890c66aa7f88f226a5f8b32a3358e43dd10d357b6fdeb8",
         "training_source_commit_sha": "fdd45b5ee1c1abea352c318c66951910e565262f"
       }
