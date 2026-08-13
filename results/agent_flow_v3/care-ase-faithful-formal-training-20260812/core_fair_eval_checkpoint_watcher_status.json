@@ -6,12 +6,12 @@
     {
       "fold": 2,
       "reason": "ready",
-      "step": 7000
+      "step": 8000
     },
     {
       "fold": 3,
       "reason": "ready",
-      "step": 6000
+      "step": 7000
     }
   ],
   "schema": "CARE_ASE_CORE_FAIR_EVAL_CHECKPOINT_WATCHER_STATUS_V1",
@@ -47,6 +47,11 @@
       "step": 6000
     },
     {
+      "fold": 2,
+      "reason": "output_present",
+      "step": 7000
+    },
+    {
       "fold": 3,
       "reason": "output_present",
       "step": 1000
@@ -70,19 +75,24 @@
       "fold": 3,
       "reason": "output_present",
       "step": 5000
+    },
+    {
+      "fold": 3,
+      "reason": "output_present",
+      "step": 6000
     }
   ],
   "status": "RUNNING",
   "submitted_this_scan": [
     {
-      "checkpoint": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/checkpoint_step07000.pt",
-      "created_utc": "2026-08-13T14:33:20Z",
+      "checkpoint": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/checkpoint_step08000.pt",
+      "created_utc": "2026-08-13T20:57:02Z",
       "fold": 2,
-      "job_name": "ASEF2K7",
-      "lock_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/core_fair_panel_step07000_eval.lock",
+      "job_name": "ASEF2K8",
+      "lock_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/core_fair_panel_step08000_eval.lock",
       "non_interference": "eval-only job; checkpoint is read-only input; isolated output directory and mkdir lock; does not touch active training jobs",
       "outer_accessed": false,
-      "output_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_panel_monitor/fold_2/step07000",
+      "output_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_panel_monitor/fold_2/step08000",
       "partition": "htzhulab",
       "qos": "gpu_access",
       "resource_request": {
@@ -94,27 +104,27 @@
       "sbatch": {
         "cmd": [
           "sbatch",
-          "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold2_step07000_auto.sbatch"
+          "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold2_step08000_auto.sbatch"
         ],
         "returncode": 0,
         "stderr": "",
-        "stdout": "Submitted batch job 63551512\n"
+        "stdout": "Submitted batch job 63614367\n"
       },
-      "script": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold2_step07000_auto.sbatch",
-      "slurm_job_id": "63551512",
+      "script": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold2_step08000_auto.sbatch",
+      "slurm_job_id": "63614367",
       "status": "SUBMITTED",
-      "step": 7000,
-      "verified": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/checkpoint_step07000.pt.verified.json"
+      "step": 8000,
+      "verified": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/checkpoint_step08000.pt.verified.json"
     },
     {
-      "checkpoint": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/checkpoint_step06000.pt",
-      "created_utc": "2026-08-13T14:33:21Z",
+      "checkpoint": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/checkpoint_step07000.pt",
+      "created_utc": "2026-08-13T20:57:04Z",
       "fold": 3,
-      "job_name": "ASEF3K6",
-      "lock_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/core_fair_panel_step06000_eval.lock",
+      "job_name": "ASEF3K7",
+      "lock_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/core_fair_panel_step07000_eval.lock",
       "non_interference": "eval-only job; checkpoint is read-only input; isolated output directory and mkdir lock; does not touch active training jobs",
       "outer_accessed": false,
-      "output_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_panel_monitor/fold_3/step06000",
+      "output_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_panel_monitor/fold_3/step07000",
       "partition": "htzhulab",
       "qos": "gpu_access",
       "resource_request": {
@@ -126,18 +136,18 @@
       "sbatch": {
         "cmd": [
           "sbatch",
-          "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold3_step06000_auto.sbatch"
+          "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold3_step07000_auto.sbatch"
         ],
         "returncode": 0,
         "stderr": "",
-        "stdout": "Submitted batch job 63551514\n"
+        "stdout": "Submitted batch job 63614368\n"
       },
-      "script": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold3_step06000_auto.sbatch",
-      "slurm_job_id": "63551514",
+      "script": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold3_step07000_auto.sbatch",
+      "slurm_job_id": "63614368",
       "status": "SUBMITTED",
-      "step": 6000,
-      "verified": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/checkpoint_step06000.pt.verified.json"
+      "step": 7000,
+      "verified": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/checkpoint_step07000.pt.verified.json"
     }
   ],
-  "updated_utc": "2026-08-13T14:33:21Z"
+  "updated_utc": "2026-08-13T20:57:04Z"
 }
