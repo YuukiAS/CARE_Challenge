@@ -1,0 +1,20 @@
+{
+  "created_utc": "2026-08-13T08:29:46Z",
+  "fair_eval_job": {
+    "exit_code": "0:0",
+    "job_id": "63515339",
+    "job_name": "ASEF3K5",
+    "partition": "htzhulab",
+    "qos": "gpu_access",
+    "script": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold3_step05000_auto.sbatch",
+    "state_at_submission_check": "PENDING",
+    "state_reason_at_submission_check": "Resources"
+  },
+  "monitor_outputs_expected": {
+    "casewise_metrics": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_panel_monitor/fold_3/step05000/casewise_metrics.csv",
+    "monitor_packet": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_panel_monitor/fold_3/step05000/monitor_packet.json"
+  },
+  "outer_accessed": false,
+  "read_only_checkpoint_input": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/checkpoint_step05000.pt",
+  "status": "SUBMITTED_NEEDS_MONITOR"
+}
