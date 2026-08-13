@@ -303,6 +303,8 @@ When a current checkpoint has only partial formal-training progress, such as fol
 
 For no-T2 comparisons, explicitly audit decode symmetry. CARE-ASE no-T2 decode excludes class 4 and uses class set `0,1,2,3,5`; if matched nnU-Net is evaluated by direct six-class argmax, label that as a diagnostic comparison asymmetry. A matched no-T2 class-set nnU-Net rerun may be reported only as diagnostic evidence and must not replace the original outer headline or drive checkpoint selection.
 
+CARE-ASE outer subgroup tables must be recomputed from the raw casewise CSV plus immutable MyoPS case metadata, not copied from a headline summary. Keep a lightweight verification receipt when correcting these reports. If the original CSV lacks prediction/GT voxel-count fields, state that volume ratio is unavailable for that original table instead of inventing it; use a separate diagnostic rerun only when volume-ratio columns are explicitly present. Every such report must also include checkpoint provenance (`training_source_commit_sha`, `formal_execution_checkout_commit_sha`, source/config/split/plans/stock/contract hashes) and state whether there is precise evidence of a new faithfulness regression.
+
 ## Iterative model-improvement runs
 
 For CARE model-improvement work, use short, attributable experiment rounds instead of long speculative training runs.

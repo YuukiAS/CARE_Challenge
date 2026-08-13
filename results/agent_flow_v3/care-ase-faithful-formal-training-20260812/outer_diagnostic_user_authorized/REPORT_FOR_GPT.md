@@ -91,6 +91,7 @@ Diff audit from Planner/Critic PASS to training source commit shows formal runti
 - Subgroup summary JSON: `results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/outer_diagnostic_subgroup_summary.json`
 - Subgroup table CSV: `results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/outer_diagnostic_subgroup_table.csv`
 - Subgroup report: `results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/OUTER_DIAGNOSTIC_SUBGROUP_REPORT.md`
+- Subgroup verification receipt: `results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/outer_diagnostic_subgroup_verification_receipt.json`
 - no-T2 matched subgroup summary: `results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/outer_diagnostic_no_t2_matched_subgroup_summary.json`
 - no-T2 matched subgroup report: `results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/outer_diagnostic_no_t2_matched_subgroup_report.md`
 - Combined summary: `results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/outer_diagnostic_latest_combined_summary.json`
@@ -100,3 +101,4 @@ Diff audit from Planner/Critic PASS to training source commit shows formal runti
 - State sync receipt: `results/agent_flow_v3/care-ase-faithful-formal-training-20260812/formal_training_state_sync_receipt.json`
 - Runner: `scripts/evaluation/care_ase/run_current_user_authorized_outer_diagnostic.py`
 - Subgroup summarizer: `scripts/evaluation/care_ase/summarize_outer_diagnostic_subgroups.py`
+- Subgroup verifier: `scripts/evaluation/care_ase/verify_outer_diagnostic_subgroup_summary.py`

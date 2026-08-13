@@ -1,0 +1,73 @@
+{
+  "casewise_csvs": {
+    "fold2": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/fold_2/step05000/outer_casewise_metrics.csv",
+    "fold3": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/fold_3/step04000/outer_casewise_metrics.csv"
+  },
+  "checks": [
+    {
+      "care_dice": 0.45087787184295247,
+      "case_count": 88,
+      "delta_care_minus_nnunet": -0.10539425013558301,
+      "group": "all_outer_scar",
+      "matches_expected_and_artifacts": true,
+      "nnunet_dice": 0.5562721219785355,
+      "split": "combined"
+    },
+    {
+      "care_dice": 0.7041290341166848,
+      "case_count": 16,
+      "delta_care_minus_nnunet": 0.0061596783520124765,
+      "group": "complete_tri_modal_scar",
+      "matches_expected_and_artifacts": true,
+      "nnunet_dice": 0.6979693557646723,
+      "split": "fold2"
+    },
+    {
+      "care_dice": 0.6544408813826648,
+      "case_count": 16,
+      "delta_care_minus_nnunet": 0.00739077595663451,
+      "group": "complete_tri_modal_scar",
+      "matches_expected_and_artifacts": true,
+      "nnunet_dice": 0.6470501054260303,
+      "split": "fold3"
+    },
+    {
+      "care_dice": 0.6792849577496748,
+      "case_count": 32,
+      "delta_care_minus_nnunet": 0.006775227154323549,
+      "group": "complete_tri_modal_scar",
+      "matches_expected_and_artifacts": true,
+      "nnunet_dice": 0.6725097305953512,
+      "split": "combined"
+    },
+    {
+      "care_dice": 0.3203595370391111,
+      "case_count": 56,
+      "delta_care_minus_nnunet": -0.16949109430124398,
+      "group": "partial_modality_scar",
+      "matches_expected_and_artifacts": true,
+      "nnunet_dice": 0.48985063134035506,
+      "split": "combined"
+    },
+    {
+      "care_dice": 0.4503308235062316,
+      "case_count": 32,
+      "delta_care_minus_nnunet": -0.024864757069368415,
+      "group": "pure_edema_t2_present",
+      "matches_expected_and_artifacts": true,
+      "nnunet_dice": 0.4751955805756,
+      "split": "combined"
+    }
+  ],
+  "failures": [],
+  "interpretation_guard": {
+    "edema": "pure edema is already T2-present-only and remains a real fold-specific deficit when negative",
+    "scar": "mixed all-scar headline must be interpreted with complete tri-modal and partial-modality subgroup rows",
+    "training": "diagnostic outer subgroup results must not alter frozen schedule or checkpoint selection"
+  },
+  "schema": "CARE_ASE_OUTER_DIAGNOSTIC_SUBGROUP_VERIFICATION_V1",
+  "source": "raw_outer_casewise_csv_plus_myops_metadata_join",
+  "status": "PASS",
+  "summary": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/outer_diagnostic_subgroup_summary.json",
+  "table": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/outer_diagnostic_subgroup_table.csv"
+}
