@@ -1,0 +1,54 @@
+{
+  "created_utc": "2026-08-13T01:24:17Z",
+  "events": [
+    {
+      "cancelled_utc": "2026-08-13T01:48:24Z",
+      "fold": 3,
+      "job_id": "63393815",
+      "job_name": "ASEI3K2",
+      "partition": "htzhulab",
+      "reason": "same_fold_step_attempt_running",
+      "scancel": {
+        "cmd": [
+          "scancel",
+          "63393815"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "state": "PENDING",
+      "status": "SCANCEL_SUBMITTED",
+      "step": 2000
+    },
+    {
+      "cancelled_utc": "2026-08-13T03:03:52Z",
+      "fold": 3,
+      "job_id": "63470843",
+      "job_name": "ASEI3K4",
+      "partition": "htzhulab",
+      "reason": "output_present",
+      "scancel": {
+        "cmd": [
+          "scancel",
+          "63470843"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "state": "PENDING",
+      "status": "SCANCEL_SUBMITTED",
+      "step": 4000
+    }
+  ],
+  "outer_accessed": false,
+  "policy": "Cancel only pending formal-inner eval mirrors listed in formal_inner_eval_job_manifest.json after another same-fold/step attempt is running or after the shared output exists. Never cancel training or finalizer jobs.",
+  "protected_job_ids": [
+    "63244446",
+    "63247953",
+    "63248355"
+  ],
+  "schema": "CARE_ASE_FORMAL_INNER_EVAL_DUPLICATE_CLEANUP_LEDGER_V1",
+  "updated_utc": "2026-08-13T14:50:31Z"
+}

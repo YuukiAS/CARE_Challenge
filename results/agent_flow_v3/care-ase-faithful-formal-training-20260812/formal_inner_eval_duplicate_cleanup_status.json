@@ -1,0 +1,31 @@
+{
+  "cancelled": [],
+  "candidates": [],
+  "dry_run": false,
+  "groups_seen": 1,
+  "ledger_path": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/formal_inner_eval_duplicate_cleanup_ledger.json",
+  "live_jobs_seen": 2,
+  "manifest_path": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/formal_inner_eval_job_manifest.json",
+  "outer_accessed": false,
+  "protected_job_ids": [
+    "63244446",
+    "63247953",
+    "63248355"
+  ],
+  "schema": "CARE_ASE_FORMAL_INNER_EVAL_DUPLICATE_CLEANUP_STATUS_V1",
+  "squeue": {
+    "cmd": [
+      "squeue",
+      "-j",
+      "63551511,63553692",
+      "-h",
+      "-o",
+      "%i|%j|%P|%T|%M|%L|%R|%b|%D"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "63553692|ASEI3K6A|a100-gpu|PENDING|0:00|8:00:00|(Priority)|gres/gpu:nvidia_a100-pcie-40gb:1|1\n63551511|ASEI3K6|htzhulab|PENDING|0:00|8:00:00|(Resources)|gres/gpu:1|1\n"
+  },
+  "status": "RUNNING",
+  "updated_utc": "2026-08-13T14:50:31Z"
+}

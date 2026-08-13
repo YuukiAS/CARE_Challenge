@@ -598,6 +598,282 @@
     ],
     "updated_utc": "2026-08-13T14:33:21Z"
   },
+  "duplicate_cleanup_ledger_latest": {
+    "created_utc": "2026-08-12T17:57:10Z",
+    "events": [
+      {
+        "cancelled_utc": "2026-08-12T18:30:08Z",
+        "fold": 2,
+        "job_id": "63260064",
+        "job_name": "ASEF2K1",
+        "partition": "htzhulab",
+        "reason": "same_fold_step_attempt_running",
+        "scancel": {
+          "cmd": [
+            "scancel",
+            "63260064"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": ""
+        },
+        "state": "PENDING",
+        "status": "SCANCEL_SUBMITTED",
+        "step": 1000
+      },
+      {
+        "cancelled_utc": "2026-08-12T22:48:37Z",
+        "fold": 2,
+        "job_id": "63344579",
+        "job_name": "ASEF2K2",
+        "partition": "htzhulab",
+        "reason": "same_fold_step_attempt_running",
+        "scancel": {
+          "cmd": [
+            "scancel",
+            "63344579"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": ""
+        },
+        "state": "PENDING",
+        "status": "SCANCEL_SUBMITTED",
+        "step": 2000
+      },
+      {
+        "cancelled_utc": "2026-08-12T22:52:43Z",
+        "fold": 2,
+        "job_id": "63344580",
+        "job_name": "ASEF2K3",
+        "partition": "htzhulab",
+        "reason": "same_fold_step_attempt_running",
+        "scancel": {
+          "cmd": [
+            "scancel",
+            "63344580"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": ""
+        },
+        "state": "PENDING",
+        "status": "SCANCEL_SUBMITTED",
+        "step": 3000
+      },
+      {
+        "cancelled_utc": "2026-08-12T22:54:26Z",
+        "fold": 3,
+        "job_id": "63297258",
+        "job_name": "ASEF3K1",
+        "partition": "htzhulab",
+        "reason": "same_fold_step_attempt_running",
+        "scancel": {
+          "cmd": [
+            "scancel",
+            "63297258"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": ""
+        },
+        "state": "PENDING",
+        "status": "SCANCEL_SUBMITTED",
+        "step": 1000
+      },
+      {
+        "cancelled_utc": "2026-08-12T23:05:22Z",
+        "fold": 2,
+        "job_id": "63398313",
+        "job_name": "ASEF2K4",
+        "partition": "htzhulab",
+        "reason": "same_fold_step_attempt_running",
+        "scancel": {
+          "cmd": [
+            "scancel",
+            "63398313"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": ""
+        },
+        "state": "PENDING",
+        "status": "SCANCEL_SUBMITTED",
+        "step": 4000
+      },
+      {
+        "cancelled_utc": "2026-08-12T23:05:22Z",
+        "fold": 3,
+        "job_id": "63344581",
+        "job_name": "ASEF3K2",
+        "partition": "htzhulab",
+        "reason": "same_fold_step_attempt_running",
+        "scancel": {
+          "cmd": [
+            "scancel",
+            "63344581"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": ""
+        },
+        "state": "PENDING",
+        "status": "SCANCEL_SUBMITTED",
+        "step": 2000
+      },
+      {
+        "cancelled_utc": "2026-08-12T23:07:36Z",
+        "fold": 3,
+        "job_id": "63399995",
+        "job_name": "ASEF3K3",
+        "partition": "htzhulab",
+        "reason": "output_present",
+        "scancel": {
+          "cmd": [
+            "scancel",
+            "63399995"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": ""
+        },
+        "state": "PENDING",
+        "status": "SCANCEL_SUBMITTED",
+        "step": 3000
+      },
+      {
+        "cancelled_utc": "2026-08-13T02:48:08Z",
+        "fold": 2,
+        "job_id": "63469158",
+        "job_name": "ASEF2K5",
+        "partition": "htzhulab",
+        "reason": "output_present",
+        "scancel": {
+          "cmd": [
+            "scancel",
+            "63469158"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": ""
+        },
+        "state": "PENDING",
+        "status": "SCANCEL_SUBMITTED",
+        "step": 5000
+      },
+      {
+        "cancelled_utc": "2026-08-13T02:48:08Z",
+        "fold": 3,
+        "job_id": "63470808",
+        "job_name": "ASEF3K4",
+        "partition": "htzhulab",
+        "reason": "same_fold_step_attempt_running",
+        "scancel": {
+          "cmd": [
+            "scancel",
+            "63470808"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": ""
+        },
+        "state": "PENDING",
+        "status": "SCANCEL_SUBMITTED",
+        "step": 4000
+      },
+      {
+        "cancelled_utc": "2026-08-13T14:50:29Z",
+        "fold": 2,
+        "job_id": "63551512",
+        "job_name": "ASEF2K7",
+        "partition": "htzhulab",
+        "reason": "same_fold_step_attempt_running",
+        "scancel": {
+          "cmd": [
+            "scancel",
+            "63551512"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": ""
+        },
+        "state": "PENDING",
+        "status": "SCANCEL_SUBMITTED",
+        "step": 7000
+      }
+    ],
+    "outer_accessed": false,
+    "policy": "Cancel only pending fair-eval duplicate mirrors listed in core_fair_eval_job_manifest.json after another same-fold/step attempt is running or after the shared output exists. Never cancel training or finalizer jobs.",
+    "protected_job_ids": [
+      "63244446",
+      "63247953",
+      "63248355"
+    ],
+    "schema": "CARE_ASE_CORE_FAIR_EVAL_DUPLICATE_CLEANUP_LEDGER_V1",
+    "updated_utc": "2026-08-13T14:50:27Z"
+  },
+  "duplicate_cleanup_watcher_status_latest": {
+    "cancelled": [
+      {
+        "cancelled_utc": "2026-08-13T14:50:29Z",
+        "fold": 2,
+        "job_id": "63551512",
+        "job_name": "ASEF2K7",
+        "partition": "htzhulab",
+        "reason": "same_fold_step_attempt_running",
+        "scancel": {
+          "cmd": [
+            "scancel",
+            "63551512"
+          ],
+          "returncode": 0,
+          "stderr": "",
+          "stdout": ""
+        },
+        "state": "PENDING",
+        "status": "SCANCEL_SUBMITTED",
+        "step": 7000
+      }
+    ],
+    "candidates": [
+      {
+        "fold": 2,
+        "job_id": "63551512",
+        "job_name": "ASEF2K7",
+        "partition": "htzhulab",
+        "reason": "same_fold_step_attempt_running",
+        "state": "PENDING",
+        "step": 7000
+      }
+    ],
+    "dry_run": false,
+    "groups_seen": 13,
+    "ledger_path": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_eval_duplicate_cleanup_ledger.json",
+    "live_jobs_seen": 4,
+    "manifest_path": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_eval_job_manifest.json",
+    "outer_accessed": false,
+    "protected_job_ids": [
+      "63244446",
+      "63247953",
+      "63248355"
+    ],
+    "schema": "CARE_ASE_CORE_FAIR_EVAL_DUPLICATE_CLEANUP_STATUS_V1",
+    "squeue": {
+      "cmd": [
+        "squeue",
+        "-j",
+        "63357146,63357148,63357150,63357152,63357154,63398313,63398316,63399995,63399998,63469158,63469233,63470808,63470841,63514613,63515339,63522659,63551512,63551514,63551623,63551625",
+        "-h",
+        "-o",
+        "%i|%j|%P|%T|%M|%L|%R|%b|%D"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "63551625|ASEF3K6A|a100-gpu|PENDING|0:00|8:00:00|(Resources)|gres/gpu:nvidia_a100-pcie-40gb:1|1\n63551623|ASEF2K7A|a100-gpu|RUNNING|0:24|7:59:36|g141607|gres/gpu:nvidia_a100-pcie-40gb:1|1\n63551514|ASEF3K6|htzhulab|PENDING|0:00|8:00:00|(Priority)|gres/gpu:1|1\n63551512|ASEF2K7|htzhulab|PENDING|0:00|8:00:00|(Priority)|gres/gpu:1|1\n"
+    },
+    "status": "RUNNING",
+    "updated_utc": "2026-08-13T14:50:27Z"
+  },
   "jobs": [
     {
       "aggregation_status": "OUTPUT_PRESENT",
@@ -765,6 +1041,7 @@
       },
       "state": "COMPLETED",
       "state_source": "sacct",
+      "status": "SUBMITTED",
       "step": 1000,
       "test_only_start_estimate": "sbatch: Job 63357145 to start at 2026-08-22T06:20:25 a using 8 processors on nodes g141601 in partition a100-gpu",
       "time_left": "8:00:00"
@@ -795,6 +1072,7 @@
       },
       "state": "COMPLETED",
       "state_source": "sacct",
+      "status": "SUBMITTED",
       "step": 2000,
       "test_only_start_estimate": "sbatch: Job 63357147 to start at 2026-08-22T07:20:25 a using 8 processors on nodes g141601 in partition a100-gpu",
       "time_left": "8:00:00"
@@ -825,6 +1103,7 @@
       },
       "state": "COMPLETED",
       "state_source": "sacct",
+      "status": "SUBMITTED",
       "step": 3000,
       "test_only_start_estimate": "sbatch: Job 63357149 to start at 2026-08-22T08:20:25 a using 8 processors on nodes g141601 in partition a100-gpu",
       "time_left": "8:00:00"
@@ -855,6 +1134,7 @@
       },
       "state": "COMPLETED",
       "state_source": "sacct",
+      "status": "SUBMITTED",
       "step": 1000,
       "test_only_start_estimate": "sbatch: Job 63357151 to start at 2026-08-22T09:20:25 a using 8 processors on nodes g141601 in partition a100-gpu",
       "time_left": "8:00:00"
@@ -885,6 +1165,7 @@
       },
       "state": "COMPLETED",
       "state_source": "sacct",
+      "status": "SUBMITTED",
       "step": 2000,
       "test_only_start_estimate": "sbatch: Job 63357153 to start at 2026-08-22T10:20:25 a using 8 processors on nodes g141601 in partition a100-gpu",
       "time_left": "8:00:00"
@@ -1143,13 +1424,23 @@
       "qos": "gpu_access",
       "script": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold2_step06000_auto.sbatch",
       "slurm_job_id": "63514613",
+      "slurm_state": {
+        "elapsed": "00:00:13",
+        "exit_code": "0:0",
+        "job_id": "63514613",
+        "job_name": "ASEF2K6",
+        "node_or_reason": "g1807htzh01",
+        "partition": "htzhulab",
+        "state": "COMPLETED",
+        "time_limit": "08:00:00"
+      },
       "state": "COMPLETED",
       "state_source": "sacct",
       "status": "COMPLETED_RESULT_REPORTED",
       "step": 6000
     },
     {
-      "aggregation_status": "PENDING_OR_NONTERMINAL",
+      "aggregation_status": "OUTPUT_PRESENT",
       "checkpoint": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/checkpoint_step05000.pt",
       "created_utc": "2026-08-13T08:29:46Z",
       "fold": 3,
@@ -1157,17 +1448,28 @@
       "job_name": "ASEF3K5",
       "outer_accessed": false,
       "output_dir": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_panel_monitor/fold_3/step05000",
-      "output_present": false,
+      "output_present": true,
       "partition": "htzhulab",
       "qos": "gpu_access",
       "script": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold3_step05000_auto.sbatch",
       "slurm_job_id": "63515339",
-      "state": "PENDING",
-      "state_source": "squeue",
+      "slurm_state": {
+        "elapsed": "00:00:00",
+        "exit_code": "0:0",
+        "job_id": "63515339",
+        "job_name": "ASEF3K5",
+        "node_or_reason": "None assigned",
+        "partition": "htzhulab",
+        "state": "CANCELLED by 397557",
+        "time_limit": "08:00:00"
+      },
+      "state": "CANCELLED by 397557",
+      "state_source": "sacct",
       "status": "SUBMITTED_NEEDS_MONITOR",
       "step": 5000
     },
     {
+      "aggregation_status": "OUTPUT_PRESENT",
       "checkpoint": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/checkpoint_step05000.pt",
       "created_utc": "2026-08-13T09:27:41Z",
       "fold": 3,
@@ -1177,6 +1479,7 @@
       "non_interference": "a100 eval-only mirror; checkpoint is read-only input; shared output directory exists check and mkdir lock; does not touch active training jobs",
       "outer_accessed": false,
       "output_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_panel_monitor/fold_3/step05000",
+      "output_present": true,
       "paired_htzhulab_job_id": "63515339",
       "partition": "a100-gpu",
       "qos": "gpu_access",
@@ -1187,13 +1490,25 @@
         "time_limit": "08:00:00"
       },
       "script": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold3_step05000_a100_mirror_auto.sbatch",
+      "slurm_state": {
+        "elapsed": "00:02:24",
+        "exit_code": "0:0",
+        "job_id": "63522659",
+        "job_name": "ASEF3K5A",
+        "node_or_reason": "g141601",
+        "partition": "a100-gpu",
+        "state": "COMPLETED",
+        "time_limit": "08:00:00"
+      },
+      "state": "COMPLETED",
+      "state_source": "sacct",
       "status": "SUBMITTED",
       "step": 5000,
       "submission_stdout": "Submitted batch job 63522659\n",
       "test_only_stderr": "sbatch: Job 63522581 to start at 2026-08-13T17:23:13 a using 8 processors on nodes g141605 in partition a100-gpu\n"
     },
     {
-      "aggregation_status": "PENDING_OR_NONTERMINAL",
+      "aggregation_status": "OUTPUT_PRESENT",
       "checkpoint": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/checkpoint_step07000.pt",
       "created_utc": "2026-08-13T14:33:20Z",
       "fold": 2,
@@ -1202,24 +1517,23 @@
       "lock_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/core_fair_panel_step07000_eval.lock",
       "outer_accessed": false,
       "output_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_panel_monitor/fold_2/step07000",
-      "output_present": false,
+      "output_present": true,
       "partition": "htzhulab",
       "qos": "gpu_access",
       "script": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold2_step07000_auto.sbatch",
       "slurm_job_id": "63551512",
       "slurm_state": {
-        "elapsed": "0:00",
+        "elapsed": "00:00:00",
+        "exit_code": "0:0",
         "job_id": "63551512",
         "job_name": "ASEF2K7",
-        "node_or_reason": "(Priority)",
-        "nodes": "1",
+        "node_or_reason": "None assigned",
         "partition": "htzhulab",
-        "state": "PENDING",
-        "time_left": "8:00:00",
-        "tres_per_node": "gres/gpu:1"
+        "state": "CANCELLED by 397557",
+        "time_limit": "08:00:00"
       },
-      "state": "PENDING",
-      "state_source": "squeue",
+      "state": "CANCELLED by 397557",
+      "state_source": "sacct",
       "status": "SUBMITTED",
       "step": 7000
     },
@@ -1255,7 +1569,7 @@
       "step": 6000
     },
     {
-      "aggregation_status": "PENDING_OR_NONTERMINAL",
+      "aggregation_status": "OUTPUT_PRESENT",
       "checkpoint": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/checkpoint_step07000.pt",
       "created_utc": "2026-08-13T14:34:05Z",
       "fold": 2,
@@ -1264,24 +1578,23 @@
       "lock_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/core_fair_panel_step07000_eval.lock",
       "outer_accessed": false,
       "output_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_panel_monitor/fold_2/step07000",
-      "output_present": false,
+      "output_present": true,
       "partition": "a100-gpu",
       "qos": "gpu_access",
       "script": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold2_step07000_a100_mirror_auto.sbatch",
       "slurm_job_id": "63551623",
       "slurm_state": {
-        "elapsed": "0:00",
+        "elapsed": "00:02:01",
+        "exit_code": "0:0",
         "job_id": "63551623",
         "job_name": "ASEF2K7A",
-        "node_or_reason": "(Resources)",
-        "nodes": "1",
+        "node_or_reason": "g141607",
         "partition": "a100-gpu",
-        "state": "PENDING",
-        "time_left": "8:00:00",
-        "tres_per_node": "gres/gpu:nvidia_a100-pcie-40gb:1"
+        "state": "COMPLETED",
+        "time_limit": "08:00:00"
       },
-      "state": "PENDING",
-      "state_source": "squeue",
+      "state": "COMPLETED",
+      "state_source": "sacct",
       "status": "SUBMITTED",
       "step": 7000
     },
@@ -1304,7 +1617,7 @@
         "elapsed": "0:00",
         "job_id": "63551625",
         "job_name": "ASEF3K6A",
-        "node_or_reason": "(Priority)",
+        "node_or_reason": "(Resources)",
         "nodes": "1",
         "partition": "a100-gpu",
         "state": "PENDING",
@@ -1383,6 +1696,6 @@
     "stdout": "JOBID|NAME|PARTITION|ST|START_TIME|NODELIST(REASON)\n63260064|ASEF2K1|htzhulab|PD|2026-08-16T22:18:22|(Resources)\n63297258|ASEF3K1|htzhulab|PD|2026-08-17T06:20:00|(Priority)\n63344579|ASEF2K2|htzhulab|PD|2026-08-17T14:20:00|(Priority)\n63344580|ASEF2K3|htzhulab|PD|2026-08-17T22:20:00|(Priority)\n63344581|ASEF3K2|htzhulab|PD|2026-08-18T06:20:00|(Priority)\n"
   },
   "task_key": "care-ase-faithful-formal-training-20260812",
-  "updated_utc": "2026-08-13T14:34:49Z",
+  "updated_utc": "2026-08-13T14:54:16Z",
   "user_authorization": "extra checkpoint fair-comparison sbatch jobs may run on htzhulab/a100-gpu when needed and must not interfere with running interactive/training jobs"
 }

@@ -184,35 +184,12 @@
         "63551512",
         "63551623"
       ],
-      "core_fair_eval_job_states": [
-        {
-          "elapsed": "0:00",
-          "job_id": "63551512",
-          "job_name": "ASEF2K7",
-          "node_or_reason": "(Priority)",
-          "nodes": "1",
-          "partition": "htzhulab",
-          "state": "PENDING",
-          "time_left": "8:00:00",
-          "tres_per_node": "gres/gpu:1"
-        },
-        {
-          "elapsed": "0:00",
-          "job_id": "63551623",
-          "job_name": "ASEF2K7A",
-          "node_or_reason": "(Resources)",
-          "nodes": "1",
-          "partition": "a100-gpu",
-          "state": "PENDING",
-          "time_left": "8:00:00",
-          "tres_per_node": "gres/gpu:nvidia_a100-pcie-40gb:1"
-        }
-      ],
+      "core_fair_eval_job_states": [],
       "core_fair_eval_mirror_job_ids": [
         "63551623"
       ],
-      "core_fair_eval_output_present": false,
-      "core_fair_eval_status": "PENDING_SUBMITTED_EXTRA_JOBS",
+      "core_fair_eval_output_present": true,
+      "core_fair_eval_status": "PRESENT",
       "fold": 2,
       "formal_inner_eval_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/inner_checkpoint_monitor/fold_2/step07000",
       "formal_inner_eval_status": "NOT_FORMAL_BOUNDARY",
@@ -399,7 +376,7 @@
           "elapsed": "0:00",
           "job_id": "63551625",
           "job_name": "ASEF3K6A",
-          "node_or_reason": "(Priority)",
+          "node_or_reason": "(Resources)",
           "nodes": "1",
           "partition": "a100-gpu",
           "state": "PENDING",
@@ -425,5 +402,5 @@
     }
   ],
   "new_checkpoint_without_fair_eval_job": [],
-  "updated_utc": "2026-08-13T14:46:16Z"
+  "updated_utc": "2026-08-13T14:54:16Z"
 }

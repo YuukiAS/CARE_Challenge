@@ -1,0 +1,214 @@
+{
+  "created_utc": "2026-08-12T17:57:10Z",
+  "events": [
+    {
+      "cancelled_utc": "2026-08-12T18:30:08Z",
+      "fold": 2,
+      "job_id": "63260064",
+      "job_name": "ASEF2K1",
+      "partition": "htzhulab",
+      "reason": "same_fold_step_attempt_running",
+      "scancel": {
+        "cmd": [
+          "scancel",
+          "63260064"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "state": "PENDING",
+      "status": "SCANCEL_SUBMITTED",
+      "step": 1000
+    },
+    {
+      "cancelled_utc": "2026-08-12T22:48:37Z",
+      "fold": 2,
+      "job_id": "63344579",
+      "job_name": "ASEF2K2",
+      "partition": "htzhulab",
+      "reason": "same_fold_step_attempt_running",
+      "scancel": {
+        "cmd": [
+          "scancel",
+          "63344579"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "state": "PENDING",
+      "status": "SCANCEL_SUBMITTED",
+      "step": 2000
+    },
+    {
+      "cancelled_utc": "2026-08-12T22:52:43Z",
+      "fold": 2,
+      "job_id": "63344580",
+      "job_name": "ASEF2K3",
+      "partition": "htzhulab",
+      "reason": "same_fold_step_attempt_running",
+      "scancel": {
+        "cmd": [
+          "scancel",
+          "63344580"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "state": "PENDING",
+      "status": "SCANCEL_SUBMITTED",
+      "step": 3000
+    },
+    {
+      "cancelled_utc": "2026-08-12T22:54:26Z",
+      "fold": 3,
+      "job_id": "63297258",
+      "job_name": "ASEF3K1",
+      "partition": "htzhulab",
+      "reason": "same_fold_step_attempt_running",
+      "scancel": {
+        "cmd": [
+          "scancel",
+          "63297258"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "state": "PENDING",
+      "status": "SCANCEL_SUBMITTED",
+      "step": 1000
+    },
+    {
+      "cancelled_utc": "2026-08-12T23:05:22Z",
+      "fold": 2,
+      "job_id": "63398313",
+      "job_name": "ASEF2K4",
+      "partition": "htzhulab",
+      "reason": "same_fold_step_attempt_running",
+      "scancel": {
+        "cmd": [
+          "scancel",
+          "63398313"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "state": "PENDING",
+      "status": "SCANCEL_SUBMITTED",
+      "step": 4000
+    },
+    {
+      "cancelled_utc": "2026-08-12T23:05:22Z",
+      "fold": 3,
+      "job_id": "63344581",
+      "job_name": "ASEF3K2",
+      "partition": "htzhulab",
+      "reason": "same_fold_step_attempt_running",
+      "scancel": {
+        "cmd": [
+          "scancel",
+          "63344581"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "state": "PENDING",
+      "status": "SCANCEL_SUBMITTED",
+      "step": 2000
+    },
+    {
+      "cancelled_utc": "2026-08-12T23:07:36Z",
+      "fold": 3,
+      "job_id": "63399995",
+      "job_name": "ASEF3K3",
+      "partition": "htzhulab",
+      "reason": "output_present",
+      "scancel": {
+        "cmd": [
+          "scancel",
+          "63399995"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "state": "PENDING",
+      "status": "SCANCEL_SUBMITTED",
+      "step": 3000
+    },
+    {
+      "cancelled_utc": "2026-08-13T02:48:08Z",
+      "fold": 2,
+      "job_id": "63469158",
+      "job_name": "ASEF2K5",
+      "partition": "htzhulab",
+      "reason": "output_present",
+      "scancel": {
+        "cmd": [
+          "scancel",
+          "63469158"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "state": "PENDING",
+      "status": "SCANCEL_SUBMITTED",
+      "step": 5000
+    },
+    {
+      "cancelled_utc": "2026-08-13T02:48:08Z",
+      "fold": 3,
+      "job_id": "63470808",
+      "job_name": "ASEF3K4",
+      "partition": "htzhulab",
+      "reason": "same_fold_step_attempt_running",
+      "scancel": {
+        "cmd": [
+          "scancel",
+          "63470808"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "state": "PENDING",
+      "status": "SCANCEL_SUBMITTED",
+      "step": 4000
+    },
+    {
+      "cancelled_utc": "2026-08-13T14:50:29Z",
+      "fold": 2,
+      "job_id": "63551512",
+      "job_name": "ASEF2K7",
+      "partition": "htzhulab",
+      "reason": "same_fold_step_attempt_running",
+      "scancel": {
+        "cmd": [
+          "scancel",
+          "63551512"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "state": "PENDING",
+      "status": "SCANCEL_SUBMITTED",
+      "step": 7000
+    }
+  ],
+  "outer_accessed": false,
+  "policy": "Cancel only pending fair-eval duplicate mirrors listed in core_fair_eval_job_manifest.json after another same-fold/step attempt is running or after the shared output exists. Never cancel training or finalizer jobs.",
+  "protected_job_ids": [
+    "63244446",
+    "63247953",
+    "63248355"
+  ],
+  "schema": "CARE_ASE_CORE_FAIR_EVAL_DUPLICATE_CLEANUP_LEDGER_V1",
+  "updated_utc": "2026-08-13T14:50:27Z"
+}

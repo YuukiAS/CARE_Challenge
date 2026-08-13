@@ -1,0 +1,62 @@
+{
+  "cancelled": [
+    {
+      "cancelled_utc": "2026-08-13T14:50:29Z",
+      "fold": 2,
+      "job_id": "63551512",
+      "job_name": "ASEF2K7",
+      "partition": "htzhulab",
+      "reason": "same_fold_step_attempt_running",
+      "scancel": {
+        "cmd": [
+          "scancel",
+          "63551512"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "state": "PENDING",
+      "status": "SCANCEL_SUBMITTED",
+      "step": 7000
+    }
+  ],
+  "candidates": [
+    {
+      "fold": 2,
+      "job_id": "63551512",
+      "job_name": "ASEF2K7",
+      "partition": "htzhulab",
+      "reason": "same_fold_step_attempt_running",
+      "state": "PENDING",
+      "step": 7000
+    }
+  ],
+  "dry_run": false,
+  "groups_seen": 13,
+  "ledger_path": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_eval_duplicate_cleanup_ledger.json",
+  "live_jobs_seen": 4,
+  "manifest_path": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_eval_job_manifest.json",
+  "outer_accessed": false,
+  "protected_job_ids": [
+    "63244446",
+    "63247953",
+    "63248355"
+  ],
+  "schema": "CARE_ASE_CORE_FAIR_EVAL_DUPLICATE_CLEANUP_STATUS_V1",
+  "squeue": {
+    "cmd": [
+      "squeue",
+      "-j",
+      "63357146,63357148,63357150,63357152,63357154,63398313,63398316,63399995,63399998,63469158,63469233,63470808,63470841,63514613,63515339,63522659,63551512,63551514,63551623,63551625",
+      "-h",
+      "-o",
+      "%i|%j|%P|%T|%M|%L|%R|%b|%D"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "63551625|ASEF3K6A|a100-gpu|PENDING|0:00|8:00:00|(Resources)|gres/gpu:nvidia_a100-pcie-40gb:1|1\n63551623|ASEF2K7A|a100-gpu|RUNNING|0:24|7:59:36|g141607|gres/gpu:nvidia_a100-pcie-40gb:1|1\n63551514|ASEF3K6|htzhulab|PENDING|0:00|8:00:00|(Priority)|gres/gpu:1|1\n63551512|ASEF2K7|htzhulab|PENDING|0:00|8:00:00|(Priority)|gres/gpu:1|1\n"
+  },
+  "status": "RUNNING",
+  "updated_utc": "2026-08-13T14:50:27Z"
+}
