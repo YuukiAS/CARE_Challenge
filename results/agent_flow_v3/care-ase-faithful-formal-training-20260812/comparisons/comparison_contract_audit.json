@@ -1,0 +1,186 @@
+{
+  "allowed_use": [
+    "learning trend with caveat",
+    "implementation anomaly detection",
+    "legacy diagnostic curve with stock-exposure warning"
+  ],
+  "fair_panel_manifest": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/fair_panel_manifest.json",
+  "fair_panel_manifest_sha256": "16561a5c8e72259287950c97a28109d49fc536039f90f81a4a998b78efc35f28",
+  "fold_audits": [
+    {
+      "baseline_oof": {
+        "all_baseline_rows_held_out": true,
+        "baseline_rows": [
+          {
+            "case_id": "Case1031",
+            "case_in_oof_source_train": false,
+            "case_in_oof_source_val": true,
+            "oof_source_fold": 3,
+            "prediction_path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_3/validation/Case1031.nii.gz",
+            "prediction_sha256": "80919d9416a5f38d5dac2f18233d0ec5cb2be0d6aeff776ef3260b59934a93ca",
+            "status": "PASS"
+          },
+          {
+            "case_id": "Case2001",
+            "case_in_oof_source_train": false,
+            "case_in_oof_source_val": true,
+            "oof_source_fold": 1,
+            "prediction_path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/validation/Case2001.nii.gz",
+            "prediction_sha256": "39353e0fa22d6564a2068e9a704199fcb4e9ab85226527d0d42d3f2716047af1",
+            "status": "PASS"
+          },
+          {
+            "case_id": "Case2025",
+            "case_in_oof_source_train": false,
+            "case_in_oof_source_val": true,
+            "oof_source_fold": 4,
+            "prediction_path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_4/validation/Case2025.nii.gz",
+            "prediction_sha256": "340dd2756063ecd7fe75df2946d4d17b9b6c23790bcd19f71d4cf43e6dcb9753",
+            "status": "PASS"
+          },
+          {
+            "case_id": "Case3020",
+            "case_in_oof_source_train": false,
+            "case_in_oof_source_val": true,
+            "oof_source_fold": 3,
+            "prediction_path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_3/validation/Case3020.nii.gz",
+            "prediction_sha256": "343eb518d79cc4f36f9a75db4009c383e133bb45819306504afd965ca1b70969",
+            "status": "PASS"
+          },
+          {
+            "case_id": "Case5010",
+            "case_in_oof_source_train": false,
+            "case_in_oof_source_val": true,
+            "oof_source_fold": 1,
+            "prediction_path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/validation/Case5010.nii.gz",
+            "prediction_sha256": "2ab0d69d80b188bdf83564839bcbaca25c135adc101a9cd7479e1a49fc3d60cd",
+            "status": "PASS"
+          },
+          {
+            "case_id": "Case8021",
+            "case_in_oof_source_train": false,
+            "case_in_oof_source_val": true,
+            "oof_source_fold": 0,
+            "prediction_path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/validation/Case8021.nii.gz",
+            "prediction_sha256": "92e173c86cb2fc1f678b730a0e3d995009a47e5712e4373009f363b7aa005381",
+            "status": "PASS"
+          }
+        ],
+        "fold": 2
+      },
+      "fold": 2,
+      "stock_exposure": {
+        "care_checkpoint_inherits_stock_fold": 2,
+        "care_fold": 2,
+        "direct_fair_claim_allowed": false,
+        "panel_case_count": 6,
+        "panel_cases_in_care_stock_validation": [],
+        "panel_cases_in_care_stock_validation_count": 0,
+        "panel_cases_seen_by_care_stock_training": [
+          "Case1031",
+          "Case2001",
+          "Case2025",
+          "Case3020",
+          "Case5010",
+          "Case8021"
+        ],
+        "panel_cases_seen_by_care_stock_training_count": 6
+      }
+    },
+    {
+      "baseline_oof": {
+        "all_baseline_rows_held_out": true,
+        "baseline_rows": [
+          {
+            "case_id": "Case1024",
+            "case_in_oof_source_train": false,
+            "case_in_oof_source_val": true,
+            "oof_source_fold": 2,
+            "prediction_path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_2/validation/Case1024.nii.gz",
+            "prediction_sha256": "2319a797808dbc4abb6164e919a1cb66b8943336abb963955d04dc0cd0cf5849",
+            "status": "PASS"
+          },
+          {
+            "case_id": "Case2003",
+            "case_in_oof_source_train": false,
+            "case_in_oof_source_val": true,
+            "oof_source_fold": 4,
+            "prediction_path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_4/validation/Case2003.nii.gz",
+            "prediction_sha256": "1f119a9519f54905a940d95883c7ffa95178af08c155d378b3269ccd1614f105",
+            "status": "PASS"
+          },
+          {
+            "case_id": "Case2017",
+            "case_in_oof_source_train": false,
+            "case_in_oof_source_val": true,
+            "oof_source_fold": 0,
+            "prediction_path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/validation/Case2017.nii.gz",
+            "prediction_sha256": "c5967b38d6492448f6272921d159646dacbdbbcd8ece6bff02dd9b518f6513f2",
+            "status": "PASS"
+          },
+          {
+            "case_id": "Case3005",
+            "case_in_oof_source_train": false,
+            "case_in_oof_source_val": true,
+            "oof_source_fold": 4,
+            "prediction_path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_4/validation/Case3005.nii.gz",
+            "prediction_sha256": "6d3cf44d15179a7d5a5306950934c628e24e03d747441ac2872082e2fbe757c1",
+            "status": "PASS"
+          },
+          {
+            "case_id": "Case3038",
+            "case_in_oof_source_train": false,
+            "case_in_oof_source_val": true,
+            "oof_source_fold": 0,
+            "prediction_path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/validation/Case3038.nii.gz",
+            "prediction_sha256": "c4b011218dea45f84bb78960d605b1483af128ce15e270ca32c921a71c825939",
+            "status": "PASS"
+          },
+          {
+            "case_id": "Case7005",
+            "case_in_oof_source_train": false,
+            "case_in_oof_source_val": true,
+            "oof_source_fold": 0,
+            "prediction_path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/validation/Case7005.nii.gz",
+            "prediction_sha256": "8710125f12c9beb9df281639cd5462b780886124f0aeae27ca5343a15ee32d93",
+            "status": "PASS"
+          }
+        ],
+        "fold": 3
+      },
+      "fold": 3,
+      "stock_exposure": {
+        "care_checkpoint_inherits_stock_fold": 3,
+        "care_fold": 3,
+        "direct_fair_claim_allowed": false,
+        "panel_case_count": 6,
+        "panel_cases_in_care_stock_validation": [],
+        "panel_cases_in_care_stock_validation_count": 0,
+        "panel_cases_seen_by_care_stock_training": [
+          "Case1024",
+          "Case2003",
+          "Case2017",
+          "Case3005",
+          "Case3038",
+          "Case7005"
+        ],
+        "panel_cases_seen_by_care_stock_training_count": 6
+      }
+    }
+  ],
+  "forbidden_use": [
+    "fair superiority claim",
+    "formal checkpoint selection",
+    "outer or hosted validation claim",
+    "leaderboard claim"
+  ],
+  "nnunet_baseline_manifest": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/nnunet_baseline_manifest.json",
+  "nnunet_baseline_manifest_sha256": "937491a98cedc90c4da932a454b9edb5a980f668c5bed40de994f567ae4552b1",
+  "outer_accessed": false,
+  "practical_conclusion": "The frozen CORE panel is inner-only and its nnU-Net baseline rows are held-out OOF, but CARE-ASE checkpoints inherit stock nnU-Net weights from the same CARE fold. All current panel cases are in that inherited stock fold's training split, so CARE-vs-clean-OOF deltas are not direct fair superiority evidence.",
+  "schema": "CARE_ASE_COMPARISON_CONTRACT_AUDIT_V1",
+  "splits_final_path": "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/splits_final.json",
+  "splits_final_sha256": "9c3e9f3b7e4565a5c3c2589ddbb913c78c0ad423f4265370585841c93c6f880a",
+  "status": "NOT_DIRECTLY_FAIR_VS_CLEAN_OOF",
+  "updated_utc": "2026-08-13T16:30:57Z"
+}

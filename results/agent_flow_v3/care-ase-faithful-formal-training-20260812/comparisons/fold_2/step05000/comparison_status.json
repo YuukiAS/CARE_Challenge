@@ -1,0 +1,39 @@
+{
+  "allowed_use": [
+    "learning trend with caveat",
+    "implementation anomaly detection",
+    "legacy diagnostic curve with stock-exposure warning"
+  ],
+  "checkpoint_path": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/checkpoint_step05000.pt",
+  "checkpoint_sha256": "87e3c6a9b4c4339c3c676247cf8b0d520dc87e669c7bdd0084b9ce042c633e8d",
+  "checkpoint_step": 5000,
+  "checkpoint_verified_status": "PASS",
+  "comparison_contract_audit": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/comparisons/comparison_contract_audit.json",
+  "fold": 2,
+  "forbidden_use": [
+    "fair superiority claim",
+    "formal checkpoint selection",
+    "outer or hosted validation claim",
+    "leaderboard claim"
+  ],
+  "formal_fair_comparison_available": false,
+  "formal_fair_comparison_blocker": "inner panel cases are stock-training-privileged through inherited stock nnU-Net fold weights",
+  "full_reload_status": "PASS",
+  "legacy_core_monitor_casewise": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_panel_monitor/fold_2/step05000/casewise_metrics.csv",
+  "legacy_core_monitor_packet": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_panel_monitor/fold_2/step05000/monitor_packet.json",
+  "legacy_core_monitor_packet_sha256": "e9d34d16a050d7b1cbc664f2c80add39fd2db2f4384ef3b5596439398040a3cf",
+  "legacy_core_monitor_type": "ASYNC_INNER_TREND_ONLY",
+  "legacy_summary": {
+    "legacy_care_pure_edema_dice_mean": 0.8612225534281684,
+    "legacy_care_scar_dice_mean": 0.814166554275258,
+    "legacy_case_count": 6,
+    "legacy_casewise_present": true,
+    "legacy_metric_use": "diagnostic_only_not_direct_fair_claim",
+    "legacy_nnunet_oof_pure_edema_dice_mean": 0.5869038517461146,
+    "legacy_nnunet_oof_scar_dice_mean": 0.4339047652402197
+  },
+  "outer_accessed": false,
+  "schema": "CARE_ASE_COMPARISON_STATUS_V1",
+  "status": "NOT_DIRECTLY_FAIR_VS_CLEAN_OOF",
+  "updated_utc": "2026-08-13T16:31:15Z"
+}
