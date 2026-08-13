@@ -40,6 +40,85 @@
     },
     "status": "PASS"
   },
+  "diagnostic_no_t2_matched_class_set_baseline": {
+    "boundary": "diagnostic-only; does not replace original six-class nnU-Net outer headline and must not drive checkpoint selection",
+    "combined_partial_modality_scar": {
+      "care_scar_dice": 0.3203595370391111,
+      "care_scar_hd95": 178594.07884904026,
+      "care_scar_precision": 0.6731287038407714,
+      "care_scar_sensitivity": 0.26175458332547474,
+      "care_scar_volume_ratio": 0.45494967824635707,
+      "case_count": 56,
+      "delta_care_minus_nnunet_direct_six_class": -0.16950330110121886,
+      "delta_care_minus_nnunet_matched_no_t2_class_set": -0.16950330110121886,
+      "harm_vs_direct": 44,
+      "harm_vs_matched_no_t2": 44,
+      "help_vs_direct": 7,
+      "help_vs_matched_no_t2": 7,
+      "nnunet_direct_six_class_scar_dice": 0.48986283814032994,
+      "nnunet_direct_six_class_scar_hd95": 53591.903333146234,
+      "nnunet_direct_six_class_scar_precision": 0.5534281772286509,
+      "nnunet_direct_six_class_scar_sensitivity": 0.4940074428297055,
+      "nnunet_direct_six_class_scar_volume_ratio": 0.9580605078577993,
+      "nnunet_matched_minus_direct": 0.0,
+      "nnunet_matched_no_t2_class_set_scar_dice": 0.48986283814032994,
+      "nnunet_matched_no_t2_class_set_scar_hd95": 53591.903333146234,
+      "nnunet_matched_no_t2_class_set_scar_precision": 0.5534281772286509,
+      "nnunet_matched_no_t2_class_set_scar_sensitivity": 0.4940074428297055,
+      "nnunet_matched_no_t2_class_set_scar_volume_ratio": 0.9580605078577993
+    },
+    "fold2_partial_modality_scar": {
+      "care_scar_dice": 0.4297266596358166,
+      "care_scar_hd95": 71451.32865239629,
+      "care_scar_precision": 0.6429047423823763,
+      "care_scar_sensitivity": 0.3814578190455397,
+      "care_scar_volume_ratio": 0.712842308836585,
+      "case_count": 28,
+      "delta_care_minus_nnunet_direct_six_class": -0.0998200298178531,
+      "delta_care_minus_nnunet_matched_no_t2_class_set": -0.0998200298178531,
+      "harm_vs_direct": 20,
+      "harm_vs_matched_no_t2": 20,
+      "help_vs_direct": 5,
+      "help_vs_matched_no_t2": 5,
+      "nnunet_direct_six_class_scar_dice": 0.5295466894536697,
+      "nnunet_direct_six_class_scar_hd95": 71444.85726445501,
+      "nnunet_direct_six_class_scar_precision": 0.540019189003606,
+      "nnunet_direct_six_class_scar_sensitivity": 0.5740317141131193,
+      "nnunet_direct_six_class_scar_volume_ratio": 1.1980260084763419,
+      "nnunet_matched_minus_direct": 0.0,
+      "nnunet_matched_no_t2_class_set_scar_dice": 0.5295466894536697,
+      "nnunet_matched_no_t2_class_set_scar_hd95": 71444.85726445501,
+      "nnunet_matched_no_t2_class_set_scar_precision": 0.540019189003606,
+      "nnunet_matched_no_t2_class_set_scar_sensitivity": 0.5740317141131193,
+      "nnunet_matched_no_t2_class_set_scar_volume_ratio": 1.1980260084763419
+    },
+    "fold3_partial_modality_scar": {
+      "care_scar_dice": 0.2109924144424056,
+      "care_scar_hd95": 285736.82904568425,
+      "care_scar_precision": 0.7139310518096049,
+      "care_scar_sensitivity": 0.1548766942897025,
+      "care_scar_volume_ratio": 0.22468840093365358,
+      "case_count": 28,
+      "delta_care_minus_nnunet_direct_six_class": -0.2391865723845845,
+      "delta_care_minus_nnunet_matched_no_t2_class_set": -0.2391865723845845,
+      "harm_vs_direct": 24,
+      "harm_vs_matched_no_t2": 24,
+      "help_vs_direct": 2,
+      "help_vs_matched_no_t2": 2,
+      "nnunet_direct_six_class_scar_dice": 0.4501789868269901,
+      "nnunet_direct_six_class_scar_hd95": 35738.94940183745,
+      "nnunet_direct_six_class_scar_precision": 0.5668371654536958,
+      "nnunet_direct_six_class_scar_sensitivity": 0.42255720061237173,
+      "nnunet_direct_six_class_scar_volume_ratio": 0.7438055965912437,
+      "nnunet_matched_minus_direct": 0.0,
+      "nnunet_matched_no_t2_class_set_scar_dice": 0.4501789868269901,
+      "nnunet_matched_no_t2_class_set_scar_hd95": 35738.94940183745,
+      "nnunet_matched_no_t2_class_set_scar_precision": 0.5668371654536958,
+      "nnunet_matched_no_t2_class_set_scar_sensitivity": 0.42255720061237173,
+      "nnunet_matched_no_t2_class_set_scar_volume_ratio": 0.7438055965912437
+    },
+    "status": "PASS"
+  },
   "interpretation_boundary": {
     "edema_boundary": "pure_edema_t2_present already uses only T2-present cases and must not be discounted by scar subgroup decomposition",
     "mixed_scar_headline_warning": "all_outer_scar mixes complete tri-modal and no-T2 partial-modality scar cases",
@@ -67,6 +146,7 @@
         "care_precision_n": 77,
         "care_sensitivity": 0.42401885161845376,
         "care_sensitivity_n": 84,
+        "care_volume_ratio": 0.7214388621437462,
         "case_count": 88,
         "delta_care_minus_nnunet": -0.10539425013558301,
         "nnunet_dice": 0.5562721219785355,
@@ -77,8 +157,9 @@
         "nnunet_precision_n": 86,
         "nnunet_sensitivity": 0.5899200598609851,
         "nnunet_sensitivity_n": 84,
+        "nnunet_volume_ratio": 1.1062287722108475,
         "tie_count": 5,
-        "volume_ratio_status": "NOT_AVAILABLE_IN_CURRENT_CASEWISE_CSV"
+        "volume_ratio_status": "DIAGNOSTIC_ONLY_FROM_SEPARATE_VOLUME_RATIO_CSV"
       },
       "fold2": {
         "care_dice": 0.5295093412652232,
@@ -91,6 +172,7 @@
         "care_precision_n": 43,
         "care_sensitivity": 0.5202479069264747,
         "care_sensitivity_n": 41,
+        "care_volume_ratio": 0.8938177629404096,
         "case_count": 44,
         "delta_care_minus_nnunet": -0.061272205671055735,
         "nnunet_dice": 0.5907815469362789,
@@ -101,8 +183,9 @@
         "nnunet_precision_n": 43,
         "nnunet_sensitivity": 0.6428213653241672,
         "nnunet_sensitivity_n": 41,
+        "nnunet_volume_ratio": 1.2354645766573629,
         "tie_count": 3,
-        "volume_ratio_status": "NOT_AVAILABLE_IN_CURRENT_CASEWISE_CSV"
+        "volume_ratio_status": "DIAGNOSTIC_ONLY_FROM_SEPARATE_VOLUME_RATIO_CSV"
       },
       "fold3": {
         "care_dice": 0.3722464024206817,
@@ -115,6 +198,7 @@
         "care_precision_n": 34,
         "care_sensitivity": 0.3322655663247594,
         "care_sensitivity_n": 43,
+        "care_volume_ratio": 0.5570775846399509,
         "case_count": 44,
         "delta_care_minus_nnunet": -0.14951629460011034,
         "nnunet_dice": 0.521762697020792,
@@ -125,8 +209,9 @@
         "nnunet_precision_n": 43,
         "nnunet_sensitivity": 0.5394792802332999,
         "nnunet_sensitivity_n": 43,
+        "nnunet_volume_ratio": 0.9830039354130073,
         "tie_count": 2,
-        "volume_ratio_status": "NOT_AVAILABLE_IN_CURRENT_CASEWISE_CSV"
+        "volume_ratio_status": "DIAGNOSTIC_ONLY_FROM_SEPARATE_VOLUME_RATIO_CSV"
       },
       "label": "all outer scar",
       "metric_prefix": "scar"
@@ -143,6 +228,7 @@
         "care_precision_n": 13,
         "care_sensitivity": 0.5036248862027569,
         "care_sensitivity_n": 14,
+        "care_volume_ratio": 0.7980395091227513,
         "case_count": 14,
         "delta_care_minus_nnunet": -0.04732357418453703,
         "nnunet_dice": 0.5710834084303796,
@@ -153,8 +239,9 @@
         "nnunet_precision_n": 14,
         "nnunet_sensitivity": 0.5617863530182391,
         "nnunet_sensitivity_n": 14,
+        "nnunet_volume_ratio": 0.9322979913745498,
         "tie_count": 0,
-        "volume_ratio_status": "NOT_AVAILABLE_IN_CURRENT_CASEWISE_CSV"
+        "volume_ratio_status": "DIAGNOSTIC_ONLY_FROM_SEPARATE_VOLUME_RATIO_CSV"
       },
       "fold2": {
         "care_dice": 0.6087131935280635,
@@ -167,6 +254,7 @@
         "care_precision_n": 7,
         "care_sensitivity": 0.6006511371170402,
         "care_sensitivity_n": 7,
+        "care_volume_ratio": 0.9272199457432275,
         "case_count": 7,
         "delta_care_minus_nnunet": -0.00910532581477752,
         "nnunet_dice": 0.617818519342841,
@@ -177,8 +265,9 @@
         "nnunet_precision_n": 7,
         "nnunet_sensitivity": 0.6134634154078604,
         "nnunet_sensitivity_n": 7,
+        "nnunet_volume_ratio": 0.9591833373714448,
         "tie_count": 0,
-        "volume_ratio_status": "NOT_AVAILABLE_IN_CURRENT_CASEWISE_CSV"
+        "volume_ratio_status": "DIAGNOSTIC_ONLY_FROM_SEPARATE_VOLUME_RATIO_CSV"
       },
       "fold3": {
         "care_dice": 0.4388064749636218,
@@ -191,6 +280,7 @@
         "care_precision_n": 6,
         "care_sensitivity": 0.40659863528847356,
         "care_sensitivity_n": 7,
+        "care_volume_ratio": 0.6688590725022753,
         "case_count": 7,
         "delta_care_minus_nnunet": -0.08554182255429654,
         "nnunet_dice": 0.5243482975179183,
@@ -201,8 +291,9 @@
         "nnunet_precision_n": 7,
         "nnunet_sensitivity": 0.5101092906286179,
         "nnunet_sensitivity_n": 7,
+        "nnunet_volume_ratio": 0.9054126453776548,
         "tie_count": 0,
-        "volume_ratio_status": "NOT_AVAILABLE_IN_CURRENT_CASEWISE_CSV"
+        "volume_ratio_status": "DIAGNOSTIC_ONLY_FROM_SEPARATE_VOLUME_RATIO_CSV"
       },
       "label": "CenterB complete edema",
       "metric_prefix": "pure_edema"
@@ -219,6 +310,7 @@
         "care_precision_n": 13,
         "care_sensitivity": 0.650902268885133,
         "care_sensitivity_n": 14,
+        "care_volume_ratio": 0.875681435081833,
         "case_count": 14,
         "delta_care_minus_nnunet": -0.040308734045032546,
         "nnunet_dice": 0.7090172156706117,
@@ -229,8 +321,9 @@
         "nnunet_precision_n": 14,
         "nnunet_sensitivity": 0.7031972026539782,
         "nnunet_sensitivity_n": 14,
+        "nnunet_volume_ratio": 0.9782748092736673,
         "tie_count": 0,
-        "volume_ratio_status": "NOT_AVAILABLE_IN_CURRENT_CASEWISE_CSV"
+        "volume_ratio_status": "DIAGNOSTIC_ONLY_FROM_SEPARATE_VOLUME_RATIO_CSV"
       },
       "fold2": {
         "care_dice": 0.7199068520377787,
@@ -243,6 +336,7 @@
         "care_precision_n": 7,
         "care_sensitivity": 0.6984520129710065,
         "care_sensitivity_n": 7,
+        "care_volume_ratio": 0.936635378953012,
         "case_count": 7,
         "delta_care_minus_nnunet": 0.017146279336451964,
         "nnunet_dice": 0.7027605727013267,
@@ -253,8 +347,9 @@
         "nnunet_precision_n": 7,
         "nnunet_sensitivity": 0.6875059626307926,
         "nnunet_sensitivity_n": 7,
+        "nnunet_volume_ratio": 0.9434245361260131,
         "tie_count": 0,
-        "volume_ratio_status": "NOT_AVAILABLE_IN_CURRENT_CASEWISE_CSV"
+        "volume_ratio_status": "DIAGNOSTIC_ONLY_FROM_SEPARATE_VOLUME_RATIO_CSV"
       },
       "fold3": {
         "care_dice": 0.6175101112133797,
@@ -267,6 +362,7 @@
         "care_precision_n": 6,
         "care_sensitivity": 0.6033525247992595,
         "care_sensitivity_n": 7,
+        "care_volume_ratio": 0.8147274912106541,
         "case_count": 7,
         "delta_care_minus_nnunet": -0.09776374742651706,
         "nnunet_dice": 0.7152738586398968,
@@ -277,8 +373,9 @@
         "nnunet_precision_n": 7,
         "nnunet_sensitivity": 0.7188884426771638,
         "nnunet_sensitivity_n": 7,
+        "nnunet_volume_ratio": 1.0131250824213214,
         "tie_count": 0,
-        "volume_ratio_status": "NOT_AVAILABLE_IN_CURRENT_CASEWISE_CSV"
+        "volume_ratio_status": "DIAGNOSTIC_ONLY_FROM_SEPARATE_VOLUME_RATIO_CSV"
       },
       "label": "CenterB complete scar",
       "metric_prefix": "scar"
@@ -295,6 +392,7 @@
         "care_precision_n": 18,
         "care_sensitivity": 0.3415448264263368,
         "care_sensitivity_n": 18,
+        "care_volume_ratio": 0.6249135536152491,
         "case_count": 18,
         "delta_care_minus_nnunet": -0.007396788202015059,
         "nnunet_dice": 0.4006161589107714,
@@ -305,8 +403,9 @@
         "nnunet_precision_n": 18,
         "nnunet_sensitivity": 0.3557198576942582,
         "nnunet_sensitivity_n": 18,
+        "nnunet_volume_ratio": 0.6863473323463002,
         "tie_count": 0,
-        "volume_ratio_status": "NOT_AVAILABLE_IN_CURRENT_CASEWISE_CSV"
+        "volume_ratio_status": "DIAGNOSTIC_ONLY_FROM_SEPARATE_VOLUME_RATIO_CSV"
       },
       "fold2": {
         "care_dice": 0.42863536798454877,
@@ -319,6 +418,7 @@
         "care_precision_n": 9,
         "care_sensitivity": 0.38982109493996075,
         "care_sensitivity_n": 9,
+        "care_volume_ratio": 0.729013884503375,
         "case_count": 9,
         "delta_care_minus_nnunet": 0.008542691361100085,
         "nnunet_dice": 0.4200926766234487,
@@ -329,8 +429,9 @@
         "nnunet_precision_n": 9,
         "nnunet_sensitivity": 0.3935816576668985,
         "nnunet_sensitivity_n": 9,
+        "nnunet_volume_ratio": 0.7677604306850526,
         "tie_count": 0,
-        "volume_ratio_status": "NOT_AVAILABLE_IN_CURRENT_CASEWISE_CSV"
+        "volume_ratio_status": "DIAGNOSTIC_ONLY_FROM_SEPARATE_VOLUME_RATIO_CSV"
       },
       "fold3": {
         "care_dice": 0.35780337343296387,
@@ -343,6 +444,7 @@
         "care_precision_n": 9,
         "care_sensitivity": 0.29326855791271295,
         "care_sensitivity_n": 9,
+        "care_volume_ratio": 0.5208132227271233,
         "case_count": 9,
         "delta_care_minus_nnunet": -0.023336267765130314,
         "nnunet_dice": 0.3811396411980942,
@@ -353,8 +455,9 @@
         "nnunet_precision_n": 9,
         "nnunet_sensitivity": 0.31785805772161774,
         "nnunet_sensitivity_n": 9,
+        "nnunet_volume_ratio": 0.6049342340075478,
         "tie_count": 0,
-        "volume_ratio_status": "NOT_AVAILABLE_IN_CURRENT_CASEWISE_CSV"
+        "volume_ratio_status": "DIAGNOSTIC_ONLY_FROM_SEPARATE_VOLUME_RATIO_CSV"
       },
       "label": "CenterC complete edema",
       "metric_prefix": "pure_edema"
@@ -371,6 +474,7 @@
         "care_precision_n": 17,
         "care_sensitivity": 0.7430564032534173,
         "care_sensitivity_n": 17,
+        "care_volume_ratio": 1.4252347871689466,
         "case_count": 18,
         "delta_care_minus_nnunet": 0.04339608586493371,
         "nnunet_dice": 0.6441150199812599,
@@ -381,8 +485,9 @@
         "nnunet_precision_n": 18,
         "nnunet_sensitivity": 0.7957107684254527,
         "nnunet_sensitivity_n": 17,
+        "nnunet_volume_ratio": 1.6735389776127345,
         "tie_count": 0,
-        "volume_ratio_status": "NOT_AVAILABLE_IN_CURRENT_CASEWISE_CSV"
+        "volume_ratio_status": "DIAGNOSTIC_ONLY_FROM_SEPARATE_VOLUME_RATIO_CSV"
       },
       "fold2": {
         "care_dice": 0.691857397955834,
@@ -395,6 +500,7 @@
         "care_precision_n": 9,
         "care_sensitivity": 0.7671727352277694,
         "care_sensitivity_n": 9,
+        "care_volume_ratio": 1.3632247674412317,
         "case_count": 9,
         "delta_care_minus_nnunet": -0.0023854557469960014,
         "nnunet_dice": 0.69424285370283,
@@ -405,8 +511,9 @@
         "nnunet_precision_n": 9,
         "nnunet_sensitivity": 0.7992015377746707,
         "nnunet_sensitivity_n": 9,
+        "nnunet_volume_ratio": 1.566602853129027,
         "tie_count": 0,
-        "volume_ratio_status": "NOT_AVAILABLE_IN_CURRENT_CASEWISE_CSV"
+        "volume_ratio_status": "DIAGNOSTIC_ONLY_FROM_SEPARATE_VOLUME_RATIO_CSV"
       },
       "fold3": {
         "care_dice": 0.6831648137365532,
@@ -419,6 +526,7 @@
         "care_precision_n": 8,
         "care_sensitivity": 0.715925529782271,
         "care_sensitivity_n": 8,
+        "care_volume_ratio": 1.4949960593626261,
         "case_count": 9,
         "delta_care_minus_nnunet": 0.08917762747686364,
         "nnunet_dice": 0.5939871862596896,
@@ -429,8 +537,9 @@
         "nnunet_precision_n": 9,
         "nnunet_sensitivity": 0.7917836529075823,
         "nnunet_sensitivity_n": 8,
+        "nnunet_volume_ratio": 1.7938421176569055,
         "tie_count": 0,
-        "volume_ratio_status": "NOT_AVAILABLE_IN_CURRENT_CASEWISE_CSV"
+        "volume_ratio_status": "DIAGNOSTIC_ONLY_FROM_SEPARATE_VOLUME_RATIO_CSV"
       },
       "label": "CenterC complete scar",
       "metric_prefix": "scar"
@@ -447,6 +556,7 @@
         "care_precision_n": 30,
         "care_sensitivity": 0.7014384070870954,
         "care_sensitivity_n": 31,
+        "care_volume_ratio": 1.1770494023554117,
         "case_count": 32,
         "delta_care_minus_nnunet": 0.006775227154323549,
         "nnunet_dice": 0.6725097305953512,
@@ -457,8 +567,9 @@
         "nnunet_precision_n": 32,
         "nnunet_sensitivity": 0.7539304483996255,
         "nnunet_sensitivity_n": 31,
+        "nnunet_volume_ratio": 1.3595487080402524,
         "tie_count": 0,
-        "volume_ratio_status": "NOT_AVAILABLE_IN_CURRENT_CASEWISE_CSV"
+        "volume_ratio_status": "DIAGNOSTIC_ONLY_FROM_SEPARATE_VOLUME_RATIO_CSV"
       },
       "fold2": {
         "care_dice": 0.7041290341166848,
@@ -471,6 +582,7 @@
         "care_precision_n": 16,
         "care_sensitivity": 0.7371074192404357,
         "care_sensitivity_n": 16,
+        "care_volume_ratio": 1.1765919099776356,
         "case_count": 16,
         "delta_care_minus_nnunet": 0.0061596783520124765,
         "nnunet_dice": 0.6979693557646723,
@@ -481,8 +593,9 @@
         "nnunet_precision_n": 16,
         "nnunet_sensitivity": 0.750334723649224,
         "nnunet_sensitivity_n": 16,
+        "nnunet_volume_ratio": 1.2939623394402084,
         "tie_count": 0,
-        "volume_ratio_status": "NOT_AVAILABLE_IN_CURRENT_CASEWISE_CSV"
+        "volume_ratio_status": "DIAGNOSTIC_ONLY_FROM_SEPARATE_VOLUME_RATIO_CSV"
       },
       "fold3": {
         "care_dice": 0.6544408813826648,
@@ -495,6 +608,7 @@
         "care_precision_n": 14,
         "care_sensitivity": 0.6633914607901991,
         "care_sensitivity_n": 15,
+        "care_volume_ratio": 1.1775373942250391,
         "case_count": 16,
         "delta_care_minus_nnunet": 0.00739077595663451,
         "nnunet_dice": 0.6470501054260303,
@@ -505,8 +619,9 @@
         "nnunet_precision_n": 16,
         "nnunet_sensitivity": 0.757765888133387,
         "nnunet_sensitivity_n": 15,
+        "nnunet_volume_ratio": 1.4295075012136327,
         "tie_count": 0,
-        "volume_ratio_status": "NOT_AVAILABLE_IN_CURRENT_CASEWISE_CSV"
+        "volume_ratio_status": "DIAGNOSTIC_ONLY_FROM_SEPARATE_VOLUME_RATIO_CSV"
       },
       "label": "complete tri-modal scar",
       "metric_prefix": "scar"
@@ -523,6 +638,7 @@
         "care_precision_n": 47,
         "care_sensitivity": 0.26175458332547474,
         "care_sensitivity_n": 53,
+        "care_volume_ratio": 0.45494967824635707,
         "case_count": 56,
         "delta_care_minus_nnunet": -0.16949109430124398,
         "nnunet_dice": 0.48985063134035506,
@@ -533,8 +649,9 @@
         "nnunet_precision_n": 54,
         "nnunet_sensitivity": 0.49398945524404453,
         "nnunet_sensitivity_n": 53,
+        "nnunet_volume_ratio": 0.9580605078577993,
         "tie_count": 5,
-        "volume_ratio_status": "NOT_AVAILABLE_IN_CURRENT_CASEWISE_CSV"
+        "volume_ratio_status": "DIAGNOSTIC_ONLY_FROM_SEPARATE_VOLUME_RATIO_CSV"
       },
       "fold2": {
         "care_dice": 0.4297266596358166,
@@ -547,6 +664,7 @@
         "care_precision_n": 27,
         "care_sensitivity": 0.3814578190455397,
         "care_sensitivity_n": 25,
+        "care_volume_ratio": 0.712842308836585,
         "case_count": 28,
         "delta_care_minus_nnunet": -0.09980471082709474,
         "nnunet_dice": 0.5295313704629113,
@@ -557,8 +675,9 @@
         "nnunet_precision_n": 27,
         "nnunet_sensitivity": 0.5740128159961307,
         "nnunet_sensitivity_n": 25,
+        "nnunet_volume_ratio": 1.1980260084763419,
         "tie_count": 3,
-        "volume_ratio_status": "NOT_AVAILABLE_IN_CURRENT_CASEWISE_CSV"
+        "volume_ratio_status": "DIAGNOSTIC_ONLY_FROM_SEPARATE_VOLUME_RATIO_CSV"
       },
       "fold3": {
         "care_dice": 0.2109924144424056,
@@ -571,6 +690,7 @@
         "care_precision_n": 20,
         "care_sensitivity": 0.1548766942897025,
         "care_sensitivity_n": 28,
+        "care_volume_ratio": 0.22468840093365358,
         "case_count": 28,
         "delta_care_minus_nnunet": -0.23917747777539308,
         "nnunet_dice": 0.4501698922177987,
@@ -581,8 +701,9 @@
         "nnunet_precision_n": 27,
         "nnunet_sensitivity": 0.4225400260011104,
         "nnunet_sensitivity_n": 28,
+        "nnunet_volume_ratio": 0.7438055965912437,
         "tie_count": 2,
-        "volume_ratio_status": "NOT_AVAILABLE_IN_CURRENT_CASEWISE_CSV"
+        "volume_ratio_status": "DIAGNOSTIC_ONLY_FROM_SEPARATE_VOLUME_RATIO_CSV"
       },
       "label": "partial-modality scar",
       "metric_prefix": "scar"
@@ -599,6 +720,7 @@
         "care_precision_n": 31,
         "care_sensitivity": 0.4124548525785206,
         "care_sensitivity_n": 32,
+        "care_volume_ratio": 0.7006561591497814,
         "case_count": 32,
         "delta_care_minus_nnunet": -0.024864757069368415,
         "nnunet_dice": 0.4751955805756,
@@ -609,8 +731,9 @@
         "nnunet_precision_n": 32,
         "nnunet_sensitivity": 0.44587394939849984,
         "nnunet_sensitivity_n": 32,
+        "nnunet_volume_ratio": 0.7939507456711594,
         "tie_count": 0,
-        "volume_ratio_status": "NOT_AVAILABLE_IN_CURRENT_CASEWISE_CSV"
+        "volume_ratio_status": "DIAGNOSTIC_ONLY_FROM_SEPARATE_VOLUME_RATIO_CSV"
       },
       "fold2": {
         "care_dice": 0.5074194166598365,
@@ -623,6 +746,7 @@
         "care_precision_n": 16,
         "care_sensitivity": 0.48205923839243303,
         "care_sensitivity_n": 16,
+        "care_volume_ratio": 0.8157290362958105,
         "case_count": 16,
         "delta_care_minus_nnunet": 0.0008216838466537091,
         "nnunet_dice": 0.5065977328131828,
@@ -633,8 +757,9 @@
         "nnunet_precision_n": 16,
         "nnunet_sensitivity": 0.48977992667856934,
         "nnunet_sensitivity_n": 16,
+        "nnunet_volume_ratio": 0.8515079523603493,
         "tie_count": 0,
-        "volume_ratio_status": "NOT_AVAILABLE_IN_CURRENT_CASEWISE_CSV"
+        "volume_ratio_status": "DIAGNOSTIC_ONLY_FROM_SEPARATE_VOLUME_RATIO_CSV"
       },
       "fold3": {
         "care_dice": 0.39324223035262673,
@@ -647,6 +772,7 @@
         "care_precision_n": 15,
         "care_sensitivity": 0.3428504667646082,
         "care_sensitivity_n": 16,
+        "care_volume_ratio": 0.5855832820037523,
         "case_count": 16,
         "delta_care_minus_nnunet": -0.05055119798539054,
         "nnunet_dice": 0.44379342833801727,
@@ -657,12 +783,21 @@
         "nnunet_precision_n": 16,
         "nnunet_sensitivity": 0.40196797211843033,
         "nnunet_sensitivity_n": 16,
+        "nnunet_volume_ratio": 0.7363935389819696,
         "tie_count": 0,
-        "volume_ratio_status": "NOT_AVAILABLE_IN_CURRENT_CASEWISE_CSV"
+        "volume_ratio_status": "DIAGNOSTIC_ONLY_FROM_SEPARATE_VOLUME_RATIO_CSV"
       },
       "label": "pure edema on T2-present",
       "metric_prefix": "pure_edema"
     }
   },
-  "task_key": "care-ase-faithful-formal-training-20260812"
+  "task_key": "care-ase-faithful-formal-training-20260812",
+  "volume_ratio_diagnostic_source": {
+    "boundary": "volume ratios are read from a separate user-authorized read-only diagnostic CSV; they do not overwrite original outer Dice, nnU-Net headline, or checkpoint selection",
+    "casewise_csvs": {
+      "fold2": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/fold_2/step05000_no_t2_matched_20260813/outer_casewise_metrics.csv",
+      "fold3": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/fold_3/step04000_no_t2_matched_20260813/outer_casewise_metrics.csv"
+    },
+    "status": "PASS"
+  }
 }

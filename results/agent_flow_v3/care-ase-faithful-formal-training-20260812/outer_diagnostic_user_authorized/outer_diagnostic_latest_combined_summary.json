@@ -93,23 +93,14 @@
       }
     }
   ],
-  "invalidated_prior_reporting": {
-    "reason": "old ASE thread established that inner/same-exposure panels inherited stock in-sample exposure and overstate held-out performance",
-    "same_exposure_or_inner_in_sample_0_9_tables": "diagnostic_only_not_primary_fair_comparison"
-  },
   "interpretation_correction": {
-    "decision": "MIXED_SCAR_HEADLINE_REQUIRES_SUBGROUP_INTERPRETATION",
     "complete_tri_modal_scar": {
       "care_mean": 0.6792849577496748,
       "delta_care_minus_nnunet": 0.006775227154323549,
       "nnunet_mean": 0.6725097305953512
     },
+    "decision": "MIXED_SCAR_HEADLINE_REQUIRES_SUBGROUP_INTERPRETATION",
     "edema_boundary": "pure edema is already restricted to T2-present cases; its negative combined delta remains a real diagnostic issue",
-    "partial_modality_scar": {
-      "care_mean": 0.3203595370391111,
-      "delta_care_minus_nnunet": -0.16949109430124398,
-      "nnunet_mean": 0.48985063134035506
-    },
     "no_t2_matched_class_set_diagnostic": {
       "combined_partial_modality_scar": {
         "care_mean": 0.3203595370391111,
@@ -120,10 +111,42 @@
       },
       "status": "COMPLETED_DIAGNOSTIC_ONLY"
     },
+    "partial_modality_scar": {
+      "care_mean": 0.3203595370391111,
+      "delta_care_minus_nnunet": -0.16949109430124398,
+      "nnunet_mean": 0.48985063134035506
+    },
+    "provenance_judgment": "NO_NEW_FAITHFULNESS_REGRESSION_EVIDENCE",
     "subgroup_report": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/OUTER_DIAGNOSTIC_SUBGROUP_REPORT.md",
     "subgroup_summary": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/outer_diagnostic_subgroup_summary.json",
     "subgroup_verification_receipt": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/outer_diagnostic_subgroup_verification_receipt.json",
+    "training_continuation_boundary": "Continue frozen 14000-step formal training unless precise new model/loss/sampler/inference semantic regression or unrecoverable runtime failure is found; mixed 4000/5000-step outer scar headline is not an implementation block.",
+    "volume_ratio_diagnostic": {
+      "boundary": "diagnostic-only; not checkpoint selection, not threshold tuning, not original headline replacement",
+      "complete_tri_modal_scar": {
+        "care_prediction_gt_volume_ratio": 1.1770494023554117,
+        "nnunet_prediction_gt_volume_ratio": 1.3595487080402524
+      },
+      "original_casewise_volume_ratio_status": "not present in original fold2/fold3 outer_casewise_metrics.csv",
+      "partial_modality_scar": {
+        "care_prediction_gt_volume_ratio": 0.45494967824635707,
+        "nnunet_prediction_gt_volume_ratio": 0.9580605078577993
+      },
+      "pure_edema_t2_present": {
+        "care_prediction_gt_volume_ratio": 0.7006561591497814,
+        "nnunet_prediction_gt_volume_ratio": 0.7939507456711594
+      },
+      "source": "separate_read_only_no_t2_matched_diagnostic_csv_does_not_override_original_outer_dice",
+      "volume_ratio_casewise_csvs": {
+        "fold2": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/fold_2/step05000_no_t2_matched_20260813/outer_casewise_metrics.csv",
+        "fold3": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/fold_3/step04000_no_t2_matched_20260813/outer_casewise_metrics.csv"
+      }
+    },
     "warning": "The all-scar headline mixes complete tri-modal and partial-modality scar cases and must not be used alone to declare faithful CARE-ASE failed before the frozen 14000-step schedule completes."
+  },
+  "invalidated_prior_reporting": {
+    "reason": "old ASE thread established that inner/same-exposure panels inherited stock in-sample exposure and overstate held-out performance",
+    "same_exposure_or_inner_in_sample_0_9_tables": "diagnostic_only_not_primary_fair_comparison"
   },
   "outer_access_authorization": "explicit_user_authorized_in_chat_2026-08-13",
   "pure_edema": {

@@ -40,25 +40,35 @@
 
 ## Help/Harm And Shape Metrics
 
-| Group | Split | Help | Harm | Tie | CARE sens | nnU-Net sens | CARE prec | nnU-Net prec | CARE HD95 | nnU-Net HD95 | CARE empty pred | nnU-Net empty pred |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| complete tri-modal scar | fold2 | 11 | 5 | 0 | 0.737107 | 0.750335 | 0.705321 | 0.687565 | 29.271 | 31.193 | 0 | 0 |
-| complete tri-modal scar | fold3 | 8 | 8 | 0 | 0.663391 | 0.757766 | 0.738881 | 0.665278 | 62508.375 | 62511.311 | 2 | 0 |
-| complete tri-modal scar | combined | 19 | 13 | 0 | 0.701438 | 0.753930 | 0.720983 | 0.676421 | 31268.823 | 31271.252 | 2 | 0 |
-| partial-modality scar | fold2 | 5 | 20 | 3 | 0.381458 | 0.574013 | 0.642905 | 0.540004 | 71451.329 | 71444.858 | 1 | 1 |
-| partial-modality scar | fold3 | 2 | 24 | 2 | 0.154877 | 0.422540 | 0.713931 | 0.566834 | 285736.829 | 35738.950 | 8 | 1 |
-| partial-modality scar | combined | 7 | 44 | 5 | 0.261755 | 0.493989 | 0.673129 | 0.553419 | 178594.079 | 53591.904 | 9 | 2 |
-| pure edema on T2-present | fold2 | 6 | 10 | 0 | 0.482059 | 0.489780 | 0.634697 | 0.636976 | 25.208 | 24.374 | 0 | 0 |
-| pure edema on T2-present | fold3 | 6 | 10 | 0 | 0.342850 | 0.401968 | 0.634391 | 0.591657 | 62528.738 | 26.047 | 1 | 0 |
-| pure edema on T2-present | combined | 12 | 20 | 0 | 0.412455 | 0.445874 | 0.634549 | 0.614317 | 31276.973 | 25.211 | 1 | 0 |
+| Group | Split | Help | Harm | Tie | CARE sens | nnU-Net sens | CARE prec | nnU-Net prec | CARE HD95 | nnU-Net HD95 | CARE vol ratio | nnU-Net vol ratio | CARE empty pred | nnU-Net empty pred |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| complete tri-modal scar | fold2 | 11 | 5 | 0 | 0.737107 | 0.750335 | 0.705321 | 0.687565 | 29.271 | 31.193 | 1.176592 | 1.293962 | 0 | 0 |
+| complete tri-modal scar | fold3 | 8 | 8 | 0 | 0.663391 | 0.757766 | 0.738881 | 0.665278 | 62508.375 | 62511.311 | 1.177537 | 1.429508 | 2 | 0 |
+| complete tri-modal scar | combined | 19 | 13 | 0 | 0.701438 | 0.753930 | 0.720983 | 0.676421 | 31268.823 | 31271.252 | 1.177049 | 1.359549 | 2 | 0 |
+| partial-modality scar | fold2 | 5 | 20 | 3 | 0.381458 | 0.574013 | 0.642905 | 0.540004 | 71451.329 | 71444.858 | 0.712842 | 1.198026 | 1 | 1 |
+| partial-modality scar | fold3 | 2 | 24 | 2 | 0.154877 | 0.422540 | 0.713931 | 0.566834 | 285736.829 | 35738.950 | 0.224688 | 0.743806 | 8 | 1 |
+| partial-modality scar | combined | 7 | 44 | 5 | 0.261755 | 0.493989 | 0.673129 | 0.553419 | 178594.079 | 53591.904 | 0.454950 | 0.958061 | 9 | 2 |
+| pure edema on T2-present | fold2 | 6 | 10 | 0 | 0.482059 | 0.489780 | 0.634697 | 0.636976 | 25.208 | 24.374 | 0.815729 | 0.851508 | 0 | 0 |
+| pure edema on T2-present | fold3 | 6 | 10 | 0 | 0.342850 | 0.401968 | 0.634391 | 0.591657 | 62528.738 | 26.047 | 0.585583 | 0.736394 | 1 | 0 |
+| pure edema on T2-present | combined | 12 | 20 | 0 | 0.412455 | 0.445874 | 0.634549 | 0.614317 | 31276.973 | 25.211 | 0.700656 | 0.793951 | 1 | 0 |
 
 ## Diagnostic Boundaries
 
-- `volume_ratio`: not reported from the current CSV because prediction/GT voxel-count columns were not written by the original outer runner; no value is invented here.
+- `volume_ratio`: reported from explicit prediction/GT voxel-count fields (`PASS`); these are diagnostic-only and do not alter Dice denominators or checkpoint selection.
 - `empty pred`: counted from blank precision in the existing CSV, which is emitted when there are zero predicted voxels for that class.
 - `subgroup verification`: `scripts/evaluation/care_ase/verify_outer_diagnostic_subgroup_summary.py` recomputes the key subgroup rows from raw outer casewise CSV plus MyoPS metadata and writes `outer_diagnostic_subgroup_verification_receipt.json`.
 - `Case2012`: fold3 complete/T2-present case with CARE scar Dice 0 and edema Dice 0; retained in the official subgroup means.
 - `no-T2 baseline asymmetry`: CARE no-T2 decode excludes class 4 (`0,1,2,3,5`), while the current matched nnU-Net baseline row in `run_current_user_authorized_outer_diagnostic.py` uses direct six-class argmax. This is a diagnostic comparison asymmetry, not checkpoint-selection evidence.
+
+## no-T2 Matched Class-Set Diagnostic
+
+| Split | Cases | CARE scar | nnU-Net direct | nnU-Net no-T2 matched | CARE-direct delta | CARE-matched delta | matched-direct | CARE vol ratio | nnU-Net matched vol ratio |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| fold2 partial scar | 28 | 0.429727 | 0.529547 | 0.529547 | -0.099820 | -0.099820 | 0.000000 | 0.712842 | 1.198026 |
+| fold3 partial scar | 28 | 0.210992 | 0.450179 | 0.450179 | -0.239187 | -0.239187 | 0.000000 | 0.224688 | 0.743806 |
+| combined partial scar | 56 | 0.320360 | 0.489863 | 0.489863 | -0.169503 | -0.169503 | 0.000000 | 0.454950 | 0.958061 |
+
+Interpretation: matched no-T2 class-set argmax produced the same scar Dice as direct six-class argmax on the partial-modality rows in this diagnostic rerun. The code asymmetry is real and now audited, but it is not the cause of the observed partial-scar deficit.
 
 ## Provenance Snapshot
 

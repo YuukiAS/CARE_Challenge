@@ -5,9 +5,9 @@
   },
   "checks": [
     {
-      "care_dice": 0.4508778718429523,
+      "care_dice": 0.45087787184295247,
       "case_count": 88,
-      "delta_care_minus_nnunet": -0.10539425013558318,
+      "delta_care_minus_nnunet": -0.10539425013558301,
       "group": "all_outer_scar",
       "matches_expected_and_artifacts": true,
       "nnunet_dice": 0.5562721219785355,
@@ -16,10 +16,10 @@
     {
       "care_dice": 0.7041290341166848,
       "case_count": 16,
-      "delta_care_minus_nnunet": 0.0061596783520125875,
+      "delta_care_minus_nnunet": 0.0061596783520124765,
       "group": "complete_tri_modal_scar",
       "matches_expected_and_artifacts": true,
-      "nnunet_dice": 0.6979693557646722,
+      "nnunet_dice": 0.6979693557646723,
       "split": "fold2"
     },
     {
@@ -32,30 +32,30 @@
       "split": "fold3"
     },
     {
-      "care_dice": 0.6792849577496749,
+      "care_dice": 0.6792849577496748,
       "case_count": 32,
       "delta_care_minus_nnunet": 0.006775227154323549,
       "group": "complete_tri_modal_scar",
       "matches_expected_and_artifacts": true,
-      "nnunet_dice": 0.6725097305953514,
+      "nnunet_dice": 0.6725097305953512,
       "split": "combined"
     },
     {
       "care_dice": 0.3203595370391111,
       "case_count": 56,
-      "delta_care_minus_nnunet": -0.16949109430124387,
+      "delta_care_minus_nnunet": -0.16949109430124398,
       "group": "partial_modality_scar",
       "matches_expected_and_artifacts": true,
-      "nnunet_dice": 0.48985063134035495,
+      "nnunet_dice": 0.48985063134035506,
       "split": "combined"
     },
     {
-      "care_dice": 0.45033082350623155,
+      "care_dice": 0.4503308235062316,
       "case_count": 32,
-      "delta_care_minus_nnunet": -0.024864757069368526,
+      "delta_care_minus_nnunet": -0.024864757069368415,
       "group": "pure_edema_t2_present",
       "matches_expected_and_artifacts": true,
-      "nnunet_dice": 0.4751955805756001,
+      "nnunet_dice": 0.4751955805756,
       "split": "combined"
     }
   ],

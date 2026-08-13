@@ -32,6 +32,10 @@ CASEWISE_BY_FOLD = {
     2: DEFAULT_OUTER_ROOT / "fold_2/step05000/outer_casewise_metrics.csv",
     3: DEFAULT_OUTER_ROOT / "fold_3/step04000/outer_casewise_metrics.csv",
 }
+VOLUME_RATIO_CASEWISE_BY_FOLD = {
+    2: DEFAULT_OUTER_ROOT / "fold_2/step05000_no_t2_matched_20260813/outer_casewise_metrics.csv",
+    3: DEFAULT_OUTER_ROOT / "fold_3/step04000_no_t2_matched_20260813/outer_casewise_metrics.csv",
+}
 CHECKPOINTS_BY_FOLD = {
     2: DEFAULT_RESULT_ROOT / "runtime/fold_2/checkpoint_step05000.pt",
     3: DEFAULT_RESULT_ROOT / "runtime/fold_3_parallel/checkpoint_step04000.pt",
@@ -285,6 +289,35 @@ def build_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
     return summary
 
 
+def attach_volume_ratio_diagnostics(summary: dict[str, Any], rows: list[dict[str, Any]], source_paths: dict[int, Path]) -> None:
+    """Attach volume-ratio fields from a separate diagnostic CSV without changing Dice means."""
+    summary["volume_ratio_diagnostic_source"] = {
+        "status": "PASS",
+        "boundary": (
+            "volume ratios are read from a separate user-authorized read-only diagnostic CSV; "
+            "they do not overwrite original outer Dice, nnU-Net headline, or checkpoint selection"
+        ),
+        "casewise_csvs": {f"fold{fold}": rel(path) for fold, path in sorted(source_paths.items())},
+    }
+    for spec in GROUPS:
+        group = summary["subgroups"][spec.key]
+        for split, fold in (("fold2", 2), ("fold3", 3), ("combined", None)):
+            subset = filter_rows(rows, spec, fold)
+            care_column = f"care_{spec.metric_prefix}_volume_ratio"
+            nnunet_column = f"nnunet_{spec.metric_prefix}_volume_ratio"
+            group[split]["care_volume_ratio"] = mean(parse_float(row.get(care_column)) for row in subset)
+            group[split]["nnunet_volume_ratio"] = mean(parse_float(row.get(nnunet_column)) for row in subset)
+            group[split]["volume_ratio_status"] = "DIAGNOSTIC_ONLY_FROM_SEPARATE_VOLUME_RATIO_CSV"
+    if rows and "nnunet_no_t2_matched_scar_dice" in rows[0]:
+        summary["diagnostic_no_t2_matched_class_set_baseline"] = {
+            "status": "PASS",
+            "boundary": "diagnostic-only; does not replace original six-class nnU-Net outer headline and must not drive checkpoint selection",
+            "fold2_partial_modality_scar": summarize_no_t2_matched_baseline(rows, 2),
+            "fold3_partial_modality_scar": summarize_no_t2_matched_baseline(rows, 3),
+            "combined_partial_modality_scar": summarize_no_t2_matched_baseline(rows, None),
+        }
+
+
 def write_csv(summary: dict[str, Any], path: Path) -> None:
     fields = [
         "group",
@@ -389,8 +422,8 @@ def render_markdown(summary: dict[str, Any], provenance: dict[str, Any]) -> str:
     lines.append("")
     lines.append("## Help/Harm And Shape Metrics")
     lines.append("")
-    lines.append("| Group | Split | Help | Harm | Tie | CARE sens | nnU-Net sens | CARE prec | nnU-Net prec | CARE HD95 | nnU-Net HD95 | CARE empty pred | nnU-Net empty pred |")
-    lines.append("|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|")
+    lines.append("| Group | Split | Help | Harm | Tie | CARE sens | nnU-Net sens | CARE prec | nnU-Net prec | CARE HD95 | nnU-Net HD95 | CARE vol ratio | nnU-Net vol ratio | CARE empty pred | nnU-Net empty pred |")
+    lines.append("|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|")
     for group_key in ("complete_tri_modal_scar", "partial_modality_scar", "pure_edema_t2_present"):
         for split in ("fold2", "fold3", "combined"):
             item = sg[group_key][split]
@@ -399,15 +432,17 @@ def render_markdown(summary: dict[str, Any], provenance: dict[str, Any]) -> str:
                 f"{fmt(item['care_sensitivity'])} | {fmt(item['nnunet_sensitivity'])} | "
                 f"{fmt(item['care_precision'])} | {fmt(item['nnunet_precision'])} | "
                 f"{fmt(item['care_hd95'], 3)} | {fmt(item['nnunet_hd95'], 3)} | "
+                f"{fmt(item.get('care_volume_ratio'))} | {fmt(item.get('nnunet_volume_ratio'))} | "
                 f"{item['care_empty_prediction_count_from_blank_precision']} | {item['nnunet_empty_prediction_count_from_blank_precision']} |"
             )
     lines.append("")
     lines.append("## Diagnostic Boundaries")
     lines.append("")
     if sg["all_outer_scar"]["combined"].get("care_volume_ratio") is None:
-        lines.append("- `volume_ratio`: not reported from the current CSV because prediction/GT voxel-count columns were not written by the original outer runner; no value is invented here.")
+        lines.append("- `volume_ratio`: not reported from the original casewise CSV because prediction/GT voxel-count columns were not written there; no value is invented.")
     else:
-        lines.append("- `volume_ratio`: reported from explicit prediction/GT voxel-count fields in this diagnostic CSV; these are diagnostic-only and do not alter Dice denominators or checkpoint selection.")
+        source = summary.get("volume_ratio_diagnostic_source", {}).get("status", "current CSV")
+        lines.append(f"- `volume_ratio`: reported from explicit prediction/GT voxel-count fields (`{source}`); these are diagnostic-only and do not alter Dice denominators or checkpoint selection.")
     lines.append("- `empty pred`: counted from blank precision in the existing CSV, which is emitted when there are zero predicted voxels for that class.")
     lines.append("- `subgroup verification`: `scripts/evaluation/care_ase/verify_outer_diagnostic_subgroup_summary.py` recomputes the key subgroup rows from raw outer casewise CSV plus MyoPS metadata and writes `outer_diagnostic_subgroup_verification_receipt.json`.")
     lines.append("- `Case2012`: fold3 complete/T2-present case with CARE scar Dice 0 and edema Dice 0; retained in the official subgroup means.")
@@ -462,6 +497,8 @@ def main() -> int:
     parser.add_argument("--output-root", type=Path, default=DEFAULT_OUTER_ROOT)
     parser.add_argument("--casewise-fold2", type=Path, default=CASEWISE_BY_FOLD[2])
     parser.add_argument("--casewise-fold3", type=Path, default=CASEWISE_BY_FOLD[3])
+    parser.add_argument("--volume-ratio-casewise-fold2", type=Path, default=VOLUME_RATIO_CASEWISE_BY_FOLD[2])
+    parser.add_argument("--volume-ratio-casewise-fold3", type=Path, default=VOLUME_RATIO_CASEWISE_BY_FOLD[3])
     parser.add_argument("--checkpoint-fold2", type=Path, default=CHECKPOINTS_BY_FOLD[2])
     parser.add_argument("--checkpoint-fold3", type=Path, default=CHECKPOINTS_BY_FOLD[3])
     parser.add_argument("--output-prefix", default="outer_diagnostic_subgroup")
@@ -471,6 +508,13 @@ def main() -> int:
     checkpoints_by_fold = {2: args.checkpoint_fold2, 3: args.checkpoint_fold3}
     rows = load_rows(casewise_by_fold, metadata_root(REPO_ROOT, args.metadata_repo_root))
     summary = build_summary(rows)
+    volume_ratio_casewise_by_fold = {
+        2: args.volume_ratio_casewise_fold2,
+        3: args.volume_ratio_casewise_fold3,
+    }
+    if all(path.is_file() for path in volume_ratio_casewise_by_fold.values()):
+        volume_rows = load_rows(volume_ratio_casewise_by_fold, metadata_root(REPO_ROOT, args.metadata_repo_root))
+        attach_volume_ratio_diagnostics(summary, volume_rows, volume_ratio_casewise_by_fold)
     provenance = load_checkpoint_provenance(checkpoints_by_fold)
     summary["checkpoint_provenance"] = provenance
     summary["casewise_csvs"] = {f"fold{fold}": rel(path) for fold, path in sorted(casewise_by_fold.items())}

@@ -52,22 +52,22 @@
 
 ## Help/Harm 和形状诊断
 
-| 指标/人群 | Split | Help | Harm | Tie | CARE sens | nnU-Net sens | CARE prec | nnU-Net prec | CARE HD95 | nnU-Net HD95 | CARE empty pred | nnU-Net empty pred |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| complete tri-modal scar | fold2 | 11 | 5 | 0 | 0.737107 | 0.750335 | 0.705321 | 0.687565 | 29.271 | 31.193 | 0 | 0 |
-| complete tri-modal scar | fold3 | 8 | 8 | 0 | 0.663391 | 0.757766 | 0.738881 | 0.665278 | 62508.375 | 62511.311 | 2 | 0 |
-| complete tri-modal scar | combined | 19 | 13 | 0 | 0.701438 | 0.753930 | 0.720983 | 0.676421 | 31268.823 | 31271.252 | 2 | 0 |
-| partial-modality scar | fold2 | 5 | 20 | 3 | 0.381458 | 0.574013 | 0.642905 | 0.540004 | 71451.329 | 71444.858 | 1 | 1 |
-| partial-modality scar | fold3 | 2 | 24 | 2 | 0.154877 | 0.422540 | 0.713931 | 0.566834 | 285736.829 | 35738.950 | 8 | 1 |
-| partial-modality scar | combined | 7 | 44 | 5 | 0.261755 | 0.493989 | 0.673129 | 0.553419 | 178594.079 | 53591.904 | 9 | 2 |
-| pure edema on T2-present | fold2 | 6 | 10 | 0 | 0.482059 | 0.489780 | 0.634697 | 0.636976 | 25.208 | 24.374 | 0 | 0 |
-| pure edema on T2-present | fold3 | 6 | 10 | 0 | 0.342850 | 0.401968 | 0.634391 | 0.591657 | 62528.738 | 26.047 | 1 | 0 |
-| pure edema on T2-present | combined | 12 | 20 | 0 | 0.412455 | 0.445874 | 0.634549 | 0.614317 | 31276.973 | 25.211 | 1 | 0 |
+| 指标/人群 | Split | Help | Harm | Tie | CARE sens | nnU-Net sens | CARE prec | nnU-Net prec | CARE HD95 | nnU-Net HD95 | CARE vol ratio | nnU-Net vol ratio | CARE empty pred | nnU-Net empty pred |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| complete tri-modal scar | fold2 | 11 | 5 | 0 | 0.737107 | 0.750335 | 0.705321 | 0.687565 | 29.271 | 31.193 | 1.176592 | 1.293962 | 0 | 0 |
+| complete tri-modal scar | fold3 | 8 | 8 | 0 | 0.663391 | 0.757766 | 0.738881 | 0.665278 | 62508.375 | 62511.311 | 1.177537 | 1.429508 | 2 | 0 |
+| complete tri-modal scar | combined | 19 | 13 | 0 | 0.701438 | 0.753930 | 0.720983 | 0.676421 | 31268.823 | 31271.252 | 1.177049 | 1.359549 | 2 | 0 |
+| partial-modality scar | fold2 | 5 | 20 | 3 | 0.381458 | 0.574013 | 0.642905 | 0.540004 | 71451.329 | 71444.858 | 0.712842 | 1.198026 | 1 | 1 |
+| partial-modality scar | fold3 | 2 | 24 | 2 | 0.154877 | 0.422540 | 0.713931 | 0.566834 | 285736.829 | 35738.950 | 0.224688 | 0.743806 | 8 | 1 |
+| partial-modality scar | combined | 7 | 44 | 5 | 0.261755 | 0.493989 | 0.673129 | 0.553419 | 178594.079 | 53591.904 | 0.454950 | 0.958061 | 9 | 2 |
+| pure edema on T2-present | fold2 | 6 | 10 | 0 | 0.482059 | 0.489780 | 0.634697 | 0.636976 | 25.208 | 24.374 | 0.815729 | 0.851508 | 0 | 0 |
+| pure edema on T2-present | fold3 | 6 | 10 | 0 | 0.342850 | 0.401968 | 0.634391 | 0.591657 | 62528.738 | 26.047 | 0.585583 | 0.736394 | 1 | 0 |
+| pure edema on T2-present | combined | 12 | 20 | 0 | 0.412455 | 0.445874 | 0.634549 | 0.614317 | 31276.973 | 25.211 | 0.700656 | 0.793951 | 1 | 0 |
 
 ## 诊断边界
 
 - `Case2012` 是 fold3 complete/T2-present 灾难性空预测病例，CARE scar Dice 和 edema Dice 都为 0；它只作为诊断说明，仍保留在正式均值中。
-- 原始 casewise CSV 没有 prediction/GT voxel-count 字段，因此原始 subgroup 表不编造 volume ratio。后续只读 no-T2 matched diagnostic rerun 已完成，独立 CSV 中记录了 volume ratio。
+- 原始 casewise CSV 没有 prediction/GT voxel-count 字段，因此 Dice 分层仍以原始 CSV 为准；volume ratio 只从后续只读 no-T2 matched diagnostic CSV 补充，属于 diagnostic-only，不覆盖原始 outer headline，也不得用于 checkpoint selection。
 - CARE no-T2 decode 使用 class set `0,1,2,3,5`，当前 nnU-Net baseline runner 原始口径使用六类 logits 直接 argmax。这是 comparison asymmetry；已完成 diagnostic no-T2 matched class-set rerun。结果显示 partial-modality scar 上 matched no-T2 class-set nnU-Net Dice 与 direct six-class nnU-Net Dice 完全相同，combined `matched_minus_direct = 0.000000`，因此该 asymmetry 不是本次 partial scar deficit 的来源。该结果仍是 diagnostic-only，不覆盖原始报告，也不得用于 checkpoint selection。
 - `automation/agent_flow_v3/tasks/care-ase-faithful/CURRENT.json` 是 implementation-fidelity control-plane 状态，不是 formal-training live step state；当前 formal-training live state 应看 `results/agent_flow_v3/care-ase-faithful-formal-training-20260812/CURRENT_LIVE_MONITOR.json`。
 
