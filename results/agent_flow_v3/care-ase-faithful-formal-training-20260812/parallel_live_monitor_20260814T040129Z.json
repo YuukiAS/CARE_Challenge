@@ -77,21 +77,27 @@
     },
     {
       "fold": 3,
-      "job_ids": [
-        "63658268"
-      ],
-      "job_states": [
-        "COMPLETED"
-      ],
+      "job_ids": [],
+      "job_states": [],
       "output_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/inner_checkpoint_monitor/fold_3/step08000",
-      "output_present": true,
-      "status": "OUTPUT_PRESENT",
+      "output_present": false,
+      "status": "MISSING_JOB_AND_OUTPUT",
       "step": 8000
     }
   ],
   "goal_status": "RUNNING_NOT_COMPLETE",
-  "new_checkpoint_without_fair_eval_job": [],
-  "new_formal_inner_eval_without_job": [],
+  "new_checkpoint_without_fair_eval_job": [
+    {
+      "fold": 3,
+      "step": 8000
+    }
+  ],
+  "new_formal_inner_eval_without_job": [
+    {
+      "fold": 3,
+      "step": 8000
+    }
+  ],
   "outer_accessed": false,
   "schema": "CARE_ASE_PARALLEL_LIVE_MONITOR_V1",
   "slurm": {
@@ -99,25 +105,25 @@
       "cmd": [
         "sacct",
         "-j",
-        "63244446,63247953,63248355,63260064,63297258,63344579,63344580,63344581,63357146,63357148,63357150,63357152,63357154,63398313,63398316,63399995,63399998,63469158,63469233,63470808,63470841,63514613,63514614,63515339,63522659,63551511,63551512,63551514,63551623,63551625,63553692,63613156,63614063,63614367,63614368,63641855,63645534,63658266,63658268",
+        "63244446,63247953,63248355,63260064,63297258,63344579,63344580,63344581,63357146,63357148,63357150,63357152,63357154,63398313,63398316,63399995,63399998,63469158,63469233,63470808,63470841,63514613,63514614,63515339,63522659,63551511,63551512,63551514,63551623,63551625,63553692,63613156,63614063,63614367,63614368,63641855,63645534",
         "--format=JobID,JobName,Partition,State,ExitCode,Elapsed,Timelimit,NodeList",
         "-P"
       ],
       "returncode": 0,
       "stderr": "",
-      "stdout": "JobID|JobName|Partition|State|ExitCode|Elapsed|Timelimit|NodeList\n63244446|ASEFULL|htzhulab|FAILED|1:0|1-06:18:44|10-00:00:00|g1807htzh01\n63244446.batch|batch||FAILED|1:0|1-06:18:44||g1807htzh01\n63244446.extern|extern||COMPLETED|0:0|1-06:18:44||g1807htzh01\n63247953|ASEF3P|htzhulab|RUNNING|0:0|2-01:45:50|5-00:00:00|g1807htzh01\n63247953.batch|batch||RUNNING|0:0|2-01:45:50||g1807htzh01\n63247953.extern|extern||RUNNING|0:0|2-01:45:50||g1807htzh01\n63248355|ASEFAIR|htzhulab|CANCELLED by 397557|0:0|00:00:00|3-00:00:00|None assigned\n63260064|ASEF2K1|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63297258|ASEF3K1|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63344579|ASEF2K2|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63344580|ASEF2K3|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63344581|ASEF3K2|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63357146|ASEF2K1A|a100-gpu|COMPLETED|0:0|00:06:38|08:00:00|g141602\n63357146.batch|batch||COMPLETED|0:0|00:06:38||g141602\n63357146.extern|extern||COMPLETED|0:0|00:06:38||g141602\n63357148|ASEF2K2A|a100-gpu|COMPLETED|0:0|00:31:55|08:00:00|g141606\n63357148.batch|batch||COMPLETED|0:0|00:31:55||g141606\n63357148.extern|extern||COMPLETED|0:0|00:31:55||g141606\n63357150|ASEF2K3A|a100-gpu|COMPLETED|0:0|00:28:51|08:00:00|g141607\n63357150.batch|batch||COMPLETED|0:0|00:28:51||g141607\n63357150.extern|extern||COMPLETED|0:0|00:28:52||g141607\n63357152|ASEF3K1A|a100-gpu|COMPLETED|0:0|00:26:28|08:00:00|g141607\n63357152.batch|batch||COMPLETED|0:0|00:26:28||g141607\n63357152.extern|extern||COMPLETED|0:0|00:26:28||g141607\n63357154|ASEF3K2A|a100-gpu|COMPLETED|0:0|00:02:59|08:00:00|g141603\n63357154.batch|batch||COMPLETED|0:0|00:02:59||g141603\n63357154.extern|extern||COMPLETED|0:0|00:02:59||g141603\n63398313|ASEF2K4|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63398316|ASEF2K4A|a100-gpu|COMPLETED|0:0|00:02:38|08:00:00|g141608\n63398316.batch|batch||COMPLETED|0:0|00:02:38||g141608\n63398316.extern|extern||COMPLETED|0:0|00:02:38||g141608\n63399995|ASEF3K3|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63399998|ASEF3K3A|a100-gpu|COMPLETED|0:0|00:01:33|08:00:00|g141602\n63399998.batch|batch||COMPLETED|0:0|00:01:33||g141602\n63399998.extern|extern||COMPLETED|0:0|00:01:33||g141602\n63469158|ASEF2K5|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63469233|ASEF2K5A|a100-gpu|COMPLETED|0:0|00:02:03|08:00:00|g141606\n63469233.batch|batch||COMPLETED|0:0|00:02:03||g141606\n63469233.extern|extern||COMPLETED|0:0|00:02:03||g141606\n63470808|ASEF3K4|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63470841|ASEF3K4A|a100-gpu|COMPLETED|0:0|00:00:31|08:00:00|g141606\n63470841.batch|batch||COMPLETED|0:0|00:00:31||g141606\n63470841.extern|extern||COMPLETED|0:0|00:00:31||g141606\n63514613|ASEF2K6|htzhulab|COMPLETED|0:0|00:00:13|08:00:00|g1807htzh01\n63514613.batch|batch||COMPLETED|0:0|00:00:13||g1807htzh01\n63514613.extern|extern||COMPLETED|0:0|00:00:14||g1807htzh01\n63514614|ASEF2R6|htzhulab|RUNNING|0:0|19:44:01|5-00:00:00|g1807htzh01\n63514614.batch|batch||RUNNING|0:0|19:44:01||g1807htzh01\n63514614.extern|extern||RUNNING|0:0|19:44:01||g1807htzh01\n63515339|ASEF3K5|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63522659|ASEF3K5A|a100-gpu|COMPLETED|0:0|00:02:24|08:00:00|g141601\n63522659.batch|batch||COMPLETED|0:0|00:02:24||g141601\n63522659.extern|extern||COMPLETED|0:0|00:02:24||g141601\n63551511|ASEI3K6|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63551512|ASEF2K7|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63551514|ASEF3K6|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63551623|ASEF2K7A|a100-gpu|COMPLETED|0:0|00:02:01|08:00:00|g141607\n63551623.batch|batch||COMPLETED|0:0|00:02:01||g141607\n63551623.extern|extern||COMPLETED|0:0|00:02:01||g141607\n63551625|ASEF3K6A|a100-gpu|COMPLETED|0:0|00:00:31|08:00:00|g141607\n63551625.batch|batch||COMPLETED|0:0|00:00:31||g141607\n63551625.extern|extern||COMPLETED|0:0|00:00:31||g141607\n63553692|ASEI3K6A|a100-gpu|COMPLETED|0:0|00:01:53|08:00:00|g141606\n63553692.batch|batch||COMPLETED|0:0|00:01:53||g141606\n63553692.extern|extern||COMPLETED|0:0|00:01:53||g141606\n63613156|ASEF2K8A|a100-gpu|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63614063|ASEF3K7A|a100-gpu|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63614367|ASEF2K8|htzhulab|COMPLETED|0:0|00:04:28|08:00:00|g180702\n63614367.batch|batch||COMPLETED|0:0|00:04:28||g180702\n63614367.extern|extern||COMPLETED|0:0|00:04:28||g180702\n63614368|ASEF3K7|htzhulab|COMPLETED|0:0|00:04:28|08:00:00|g180702\n63614368.batch|batch||COMPLETED|0:0|00:04:28||g180702\n63614368.extern|extern||COMPLETED|0:0|00:04:28||g180702\n63641855|ASEF2K9A|a100-gpu|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63645534|ASEF2K9|htzhulab|COMPLETED|0:0|00:04:22|08:00:00|g180702\n63645534.batch|batch||COMPLETED|0:0|00:04:22||g180702\n63645534.extern|extern||COMPLETED|0:0|00:04:22||g180702\n63658266|ASEF3K8|htzhulab|COMPLETED|0:0|00:00:23|08:00:00|g180702\n63658266.batch|batch||COMPLETED|0:0|00:00:23||g180702\n63658266.extern|extern||COMPLETED|0:0|00:00:23||g180702\n63658268|ASEI3K8|htzhulab|COMPLETED|0:0|00:00:35|08:00:00|g180702\n63658268.batch|batch||COMPLETED|0:0|00:00:35||g180702\n63658268.extern|extern||COMPLETED|0:0|00:00:35||g180702\n"
+      "stdout": "JobID|JobName|Partition|State|ExitCode|Elapsed|Timelimit|NodeList\n63244446|ASEFULL|htzhulab|FAILED|1:0|1-06:18:44|10-00:00:00|g1807htzh01\n63244446.batch|batch||FAILED|1:0|1-06:18:44||g1807htzh01\n63244446.extern|extern||COMPLETED|0:0|1-06:18:44||g1807htzh01\n63247953|ASEF3P|htzhulab|RUNNING|0:0|2-01:43:06|5-00:00:00|g1807htzh01\n63247953.batch|batch||RUNNING|0:0|2-01:43:06||g1807htzh01\n63247953.extern|extern||RUNNING|0:0|2-01:43:06||g1807htzh01\n63248355|ASEFAIR|htzhulab|CANCELLED by 397557|0:0|00:00:00|3-00:00:00|None assigned\n63260064|ASEF2K1|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63297258|ASEF3K1|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63344579|ASEF2K2|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63344580|ASEF2K3|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63344581|ASEF3K2|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63357146|ASEF2K1A|a100-gpu|COMPLETED|0:0|00:06:38|08:00:00|g141602\n63357146.batch|batch||COMPLETED|0:0|00:06:38||g141602\n63357146.extern|extern||COMPLETED|0:0|00:06:38||g141602\n63357148|ASEF2K2A|a100-gpu|COMPLETED|0:0|00:31:55|08:00:00|g141606\n63357148.batch|batch||COMPLETED|0:0|00:31:55||g141606\n63357148.extern|extern||COMPLETED|0:0|00:31:55||g141606\n63357150|ASEF2K3A|a100-gpu|COMPLETED|0:0|00:28:51|08:00:00|g141607\n63357150.batch|batch||COMPLETED|0:0|00:28:51||g141607\n63357150.extern|extern||COMPLETED|0:0|00:28:52||g141607\n63357152|ASEF3K1A|a100-gpu|COMPLETED|0:0|00:26:28|08:00:00|g141607\n63357152.batch|batch||COMPLETED|0:0|00:26:28||g141607\n63357152.extern|extern||COMPLETED|0:0|00:26:28||g141607\n63357154|ASEF3K2A|a100-gpu|COMPLETED|0:0|00:02:59|08:00:00|g141603\n63357154.batch|batch||COMPLETED|0:0|00:02:59||g141603\n63357154.extern|extern||COMPLETED|0:0|00:02:59||g141603\n63398313|ASEF2K4|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63398316|ASEF2K4A|a100-gpu|COMPLETED|0:0|00:02:38|08:00:00|g141608\n63398316.batch|batch||COMPLETED|0:0|00:02:38||g141608\n63398316.extern|extern||COMPLETED|0:0|00:02:38||g141608\n63399995|ASEF3K3|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63399998|ASEF3K3A|a100-gpu|COMPLETED|0:0|00:01:33|08:00:00|g141602\n63399998.batch|batch||COMPLETED|0:0|00:01:33||g141602\n63399998.extern|extern||COMPLETED|0:0|00:01:33||g141602\n63469158|ASEF2K5|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63469233|ASEF2K5A|a100-gpu|COMPLETED|0:0|00:02:03|08:00:00|g141606\n63469233.batch|batch||COMPLETED|0:0|00:02:03||g141606\n63469233.extern|extern||COMPLETED|0:0|00:02:03||g141606\n63470808|ASEF3K4|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63470841|ASEF3K4A|a100-gpu|COMPLETED|0:0|00:00:31|08:00:00|g141606\n63470841.batch|batch||COMPLETED|0:0|00:00:31||g141606\n63470841.extern|extern||COMPLETED|0:0|00:00:31||g141606\n63514613|ASEF2K6|htzhulab|COMPLETED|0:0|00:00:13|08:00:00|g1807htzh01\n63514613.batch|batch||COMPLETED|0:0|00:00:13||g1807htzh01\n63514613.extern|extern||COMPLETED|0:0|00:00:14||g1807htzh01\n63514614|ASEF2R6|htzhulab|RUNNING|0:0|19:41:17|5-00:00:00|g1807htzh01\n63514614.batch|batch||RUNNING|0:0|19:41:17||g1807htzh01\n63514614.extern|extern||RUNNING|0:0|19:41:17||g1807htzh01\n63515339|ASEF3K5|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63522659|ASEF3K5A|a100-gpu|COMPLETED|0:0|00:02:24|08:00:00|g141601\n63522659.batch|batch||COMPLETED|0:0|00:02:24||g141601\n63522659.extern|extern||COMPLETED|0:0|00:02:24||g141601\n63551511|ASEI3K6|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63551512|ASEF2K7|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63551514|ASEF3K6|htzhulab|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63551623|ASEF2K7A|a100-gpu|COMPLETED|0:0|00:02:01|08:00:00|g141607\n63551623.batch|batch||COMPLETED|0:0|00:02:01||g141607\n63551623.extern|extern||COMPLETED|0:0|00:02:01||g141607\n63551625|ASEF3K6A|a100-gpu|COMPLETED|0:0|00:00:31|08:00:00|g141607\n63551625.batch|batch||COMPLETED|0:0|00:00:31||g141607\n63551625.extern|extern||COMPLETED|0:0|00:00:31||g141607\n63553692|ASEI3K6A|a100-gpu|COMPLETED|0:0|00:01:53|08:00:00|g141606\n63553692.batch|batch||COMPLETED|0:0|00:01:53||g141606\n63553692.extern|extern||COMPLETED|0:0|00:01:53||g141606\n63613156|ASEF2K8A|a100-gpu|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63614063|ASEF3K7A|a100-gpu|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63614367|ASEF2K8|htzhulab|COMPLETED|0:0|00:04:28|08:00:00|g180702\n63614367.batch|batch||COMPLETED|0:0|00:04:28||g180702\n63614367.extern|extern||COMPLETED|0:0|00:04:28||g180702\n63614368|ASEF3K7|htzhulab|COMPLETED|0:0|00:04:28|08:00:00|g180702\n63614368.batch|batch||COMPLETED|0:0|00:04:28||g180702\n63614368.extern|extern||COMPLETED|0:0|00:04:28||g180702\n63641855|ASEF2K9A|a100-gpu|CANCELLED by 397557|0:0|00:00:00|08:00:00|None assigned\n63645534|ASEF2K9|htzhulab|COMPLETED|0:0|00:04:22|08:00:00|g180702\n63645534.batch|batch||COMPLETED|0:0|00:04:22||g180702\n63645534.extern|extern||COMPLETED|0:0|00:04:22||g180702\n"
     },
     "squeue": {
       "cmd": [
         "squeue",
         "-j",
-        "63244446,63247953,63248355,63260064,63297258,63344579,63344580,63344581,63357146,63357148,63357150,63357152,63357154,63398313,63398316,63399995,63399998,63469158,63469233,63470808,63470841,63514613,63514614,63515339,63522659,63551511,63551512,63551514,63551623,63551625,63553692,63613156,63614063,63614367,63614368,63641855,63645534,63658266,63658268",
+        "63244446,63247953,63248355,63260064,63297258,63344579,63344580,63344581,63357146,63357148,63357150,63357152,63357154,63398313,63398316,63399995,63399998,63469158,63469233,63470808,63470841,63514613,63514614,63515339,63522659,63551511,63551512,63551514,63551623,63551625,63553692,63613156,63614063,63614367,63614368,63641855,63645534",
         "-o",
         "%i|%j|%P|%T|%M|%L|%R|%b|%D"
       ],
       "returncode": 0,
       "stderr": "",
-      "stdout": "JOBID|NAME|PARTITION|STATE|TIME|TIME_LEFT|NODELIST(REASON)|TRES_PER_NODE|NODES\n63514614|ASEF2R6|htzhulab|RUNNING|19:44:01|4-04:15:59|g1807htzh01|gres/gpu:1|1\n63247953|ASEF3P|htzhulab|RUNNING|2-01:45:50|2-22:14:10|g1807htzh01|gres/gpu:1|1\n"
+      "stdout": "JOBID|NAME|PARTITION|STATE|TIME|TIME_LEFT|NODELIST(REASON)|TRES_PER_NODE|NODES\n63514614|ASEF2R6|htzhulab|RUNNING|19:41:17|4-04:18:43|g1807htzh01|gres/gpu:1|1\n63247953|ASEF3P|htzhulab|RUNNING|2-01:43:06|2-22:16:54|g1807htzh01|gres/gpu:1|1\n"
     }
   },
   "task_key": "care-ase-faithful-formal-training-20260812",
@@ -125,26 +131,26 @@
     {
       "basis": "training_log_recent20_excludes_fair_eval",
       "fold": 2,
-      "projected_finish_utc": "2026-08-15T09:28:14.382789Z",
-      "recent20_median_sec_per_optimizer_step": 22.263602351536974,
-      "remaining_steps": 4754,
-      "updated_utc": "2026-08-14T04:04:12Z"
+      "projected_finish_utc": "2026-08-15T09:28:00.702270Z",
+      "recent20_median_sec_per_optimizer_step": 22.2577399474103,
+      "remaining_steps": 4762,
+      "updated_utc": "2026-08-14T04:01:28Z"
     },
     {
       "basis": "training_log_recent20_excludes_fair_eval",
       "fold": 3,
-      "projected_finish_utc": "2026-08-16T01:23:40.218155Z",
-      "recent20_median_sec_per_optimizer_step": 27.21260102954693,
-      "remaining_steps": 5996,
-      "updated_utc": "2026-08-14T04:04:12Z"
+      "projected_finish_utc": "2026-08-15T16:41:48.936657Z",
+      "recent20_median_sec_per_optimizer_step": 22.003184291999787,
+      "remaining_steps": 6000,
+      "updated_utc": "2026-08-14T04:01:28Z"
     }
   ],
   "training_progress": [
     {
-      "elapsed": "19:44:01",
+      "elapsed": "19:41:17",
       "fold": 2,
       "job_id": "63514614",
-      "last_completed_optimizer_step": 9246,
+      "last_completed_optimizer_step": 9238,
       "latest_checkpoint_step": 9000,
       "nan_or_inf_count": 0,
       "next_checkpoint_step": 10000,
@@ -153,14 +159,14 @@
       "slurm_state": "RUNNING",
       "stage": "B",
       "target_step": 14000,
-      "time_left": "4-04:15:59",
-      "updated_utc": "2026-08-14T04:04:12Z"
+      "time_left": "4-04:18:43",
+      "updated_utc": "2026-08-14T04:01:28Z"
     },
     {
-      "elapsed": "2-01:45:50",
+      "elapsed": "2-01:43:06",
       "fold": 3,
       "job_id": "63247953",
-      "last_completed_optimizer_step": 8004,
+      "last_completed_optimizer_step": 8000,
       "latest_checkpoint_step": 8000,
       "nan_or_inf_count": 0,
       "next_checkpoint_step": 9000,
@@ -169,11 +175,11 @@
       "slurm_state": "RUNNING",
       "stage": "B",
       "target_step": 14000,
-      "time_left": "2-22:14:10",
-      "updated_utc": "2026-08-14T04:04:12Z"
+      "time_left": "2-22:16:54",
+      "updated_utc": "2026-08-14T04:01:28Z"
     }
   ],
-  "updated_utc": "2026-08-14T04:04:12Z",
+  "updated_utc": "2026-08-14T04:01:28Z",
   "watchers": {
     "a100_mirror_ledger": {
       "created_utc": "2026-08-12T17:22:23Z",
@@ -904,9 +910,9 @@
       "poll_seconds": 600,
       "ready_without_submission_seen_this_scan": [
         {
-          "fold": 3,
+          "fold": 2,
           "reason": "ready",
-          "step": 8000
+          "step": 9000
         }
       ],
       "schema": "CARE_ASE_CORE_FAIR_EVAL_CHECKPOINT_WATCHER_STATUS_V1",
@@ -952,11 +958,6 @@
           "step": 8000
         },
         {
-          "fold": 2,
-          "reason": "output_present",
-          "step": 9000
-        },
-        {
           "fold": 3,
           "reason": "output_present",
           "step": 1000
@@ -995,14 +996,14 @@
       "status": "RUNNING",
       "submitted_this_scan": [
         {
-          "checkpoint": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/checkpoint_step08000.pt",
-          "created_utc": "2026-08-14T04:02:36Z",
-          "fold": 3,
-          "job_name": "ASEF3K8",
-          "lock_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/core_fair_panel_step08000_eval.lock",
+          "checkpoint": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/checkpoint_step09000.pt",
+          "created_utc": "2026-08-14T02:45:26Z",
+          "fold": 2,
+          "job_name": "ASEF2K9",
+          "lock_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/core_fair_panel_step09000_eval.lock",
           "non_interference": "eval-only job; checkpoint is read-only input; isolated output directory and mkdir lock; does not touch active training jobs",
           "outer_accessed": false,
-          "output_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_panel_monitor/fold_3/step08000",
+          "output_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_panel_monitor/fold_2/step09000",
           "partition": "htzhulab",
           "qos": "gpu_access",
           "resource_request": {
@@ -1014,20 +1015,20 @@
           "sbatch": {
             "cmd": [
               "sbatch",
-              "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold3_step08000_auto.sbatch"
+              "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold2_step09000_auto.sbatch"
             ],
             "returncode": 0,
             "stderr": "",
-            "stdout": "Submitted batch job 63658266\n"
+            "stdout": "Submitted batch job 63645534\n"
           },
-          "script": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold3_step08000_auto.sbatch",
-          "slurm_job_id": "63658266",
+          "script": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold2_step09000_auto.sbatch",
+          "slurm_job_id": "63645534",
           "status": "SUBMITTED",
-          "step": 8000,
-          "verified": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/checkpoint_step08000.pt.verified.json"
+          "step": 9000,
+          "verified": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/checkpoint_step09000.pt.verified.json"
         }
       ],
-      "updated_utc": "2026-08-14T04:02:36Z"
+      "updated_utc": "2026-08-14T02:45:26Z"
     },
     "auto_watcher_ledger": {
       "created_utc": "2026-08-12T17:01:57Z",
@@ -1325,41 +1326,9 @@
           "status": "SUBMITTED",
           "step": 9000,
           "verified": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/checkpoint_step09000.pt.verified.json"
-        },
-        {
-          "checkpoint": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/checkpoint_step08000.pt",
-          "created_utc": "2026-08-14T04:02:36Z",
-          "fold": 3,
-          "job_name": "ASEF3K8",
-          "lock_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/core_fair_panel_step08000_eval.lock",
-          "non_interference": "eval-only job; checkpoint is read-only input; isolated output directory and mkdir lock; does not touch active training jobs",
-          "outer_accessed": false,
-          "output_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_panel_monitor/fold_3/step08000",
-          "partition": "htzhulab",
-          "qos": "gpu_access",
-          "resource_request": {
-            "cpus": 8,
-            "gres": "gpu:1",
-            "memory": "64G",
-            "time_limit": "08:00:00"
-          },
-          "sbatch": {
-            "cmd": [
-              "sbatch",
-              "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold3_step08000_auto.sbatch"
-            ],
-            "returncode": 0,
-            "stderr": "",
-            "stdout": "Submitted batch job 63658266\n"
-          },
-          "script": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold3_step08000_auto.sbatch",
-          "slurm_job_id": "63658266",
-          "status": "SUBMITTED",
-          "step": 8000,
-          "verified": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/checkpoint_step08000.pt.verified.json"
         }
       ],
-      "updated_utc": "2026-08-14T04:02:36Z",
+      "updated_utc": "2026-08-14T02:45:26Z",
       "user_authorization": "checkpoint-level fair comparison may use extra eval-only sbatch jobs on htzhulab/a100-gpu; jobs must be read-only, isolated, and non-interfering with active training jobs"
     },
     "duplicate_cleanup_ledger": {
@@ -1759,16 +1728,11 @@
           "fold": 3,
           "reason": "output_present",
           "step": 6000
-        },
-        {
-          "fold": 3,
-          "reason": "output_present",
-          "step": 8000
         }
       ],
       "status": "RUNNING",
       "submitted_this_scan": [],
-      "updated_utc": "2026-08-14T04:03:49Z"
+      "updated_utc": "2026-08-14T03:53:49Z"
     },
     "same_exposure_ledger": null,
     "same_exposure_watcher": null

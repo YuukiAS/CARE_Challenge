@@ -1,5 +1,5 @@
 {
-  "checkpoint_count": 16,
+  "checkpoint_count": 17,
   "checkpoints": [
     {
       "checkpoint_path": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/checkpoint_step01000.pt",
@@ -466,9 +466,35 @@
       "stage": "B",
       "step": 7000,
       "verified_status": "PASS"
+    },
+    {
+      "checkpoint_path": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/checkpoint_step08000.pt",
+      "checkpoint_sha256": "0f8ff5cba3409e65a1be0344b3b69a49b4e0d9efca9c385e92757a7f9795fb29",
+      "core_fair_eval_bound_partitions": [
+        "htzhulab"
+      ],
+      "core_fair_eval_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_panel_monitor/fold_3/step08000",
+      "core_fair_eval_job_id": "63658266",
+      "core_fair_eval_job_ids": [
+        "63658266"
+      ],
+      "core_fair_eval_job_states": [],
+      "core_fair_eval_mirror_job_ids": [],
+      "core_fair_eval_output_present": true,
+      "core_fair_eval_status": "PRESENT",
+      "fold": 3,
+      "formal_inner_eval_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/inner_checkpoint_monitor/fold_3/step08000",
+      "formal_inner_eval_status": "PRESENT",
+      "full_reload_logit_parity": 0.0,
+      "full_reload_status": "PASS",
+      "required_fields_present": true,
+      "schema_version": 4,
+      "stage": "B",
+      "step": 8000,
+      "verified_status": "PASS"
     }
   ],
   "new_checkpoint_without_fair_eval_job": [],
   "new_formal_inner_eval_without_job": [],
-  "updated_utc": "2026-08-14T03:50:06Z"
+  "updated_utc": "2026-08-14T04:04:12Z"
 }
