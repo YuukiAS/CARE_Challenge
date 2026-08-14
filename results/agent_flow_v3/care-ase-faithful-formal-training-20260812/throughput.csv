@@ -1,3 +1,3 @@
 updated_utc,fold,recent20_median_sec_per_optimizer_step,remaining_steps,projected_finish_utc,basis
-2026-08-13T23:56:38Z,2,21.05929205007851,5434,2026-08-15T07:43:55.149465Z,training_log_recent20_excludes_fair_eval
-2026-08-13T23:56:38Z,3,21.974511882988736,6658,2026-08-15T16:35:05.573460Z,training_log_recent20_excludes_fair_eval
+2026-08-13T23:59:57Z,2,22.332691323244944,5425,2026-08-15T09:39:14.003445Z,training_log_recent20_excludes_fair_eval
+2026-08-13T23:59:57Z,3,22.260271943174303,6649,2026-08-15T17:06:48.241486Z,training_log_recent20_excludes_fair_eval
