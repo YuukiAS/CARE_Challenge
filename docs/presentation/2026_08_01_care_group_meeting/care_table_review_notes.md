@@ -26,3 +26,9 @@
 - `git diff --check` 无输出，退出码 0。
 - `git diff --stat` 无输出，因为本轮输出文件未 staged、仍为 untracked；自定义检查已覆盖新文件内容。
 - 最终 `git status --short` 除本轮 `docs/presentation/` 外，还显示若干无关 untracked 文件/目录；本轮未清理、未覆盖。
+
+## SRR retrospective presentation feedback
+
+- SRR 的展示入口应是“共享信息也可能抹掉病理”，不要从 batch 编号、route token 或 dictionary 组件名开场。
+- 原论文 PDF 未在本地找到前，不要在 slide 上复述原论文细节；只把 SRR 当 CARE 历史动机和 evidence-bounded retrospective。
+- 最清楚的转场是：old question = how heterogeneous sources share useful representations；new question = when integration helps and when it removes clinically meaningful pathology。
