@@ -260,6 +260,26 @@
       "state": "PENDING",
       "status": "SCANCEL_SUBMITTED",
       "step": 7000
+    },
+    {
+      "cancelled_utc": "2026-08-14T02:50:08Z",
+      "fold": 2,
+      "job_id": "63641855",
+      "job_name": "ASEF2K9A",
+      "partition": "a100-gpu",
+      "reason": "output_present",
+      "scancel": {
+        "cmd": [
+          "scancel",
+          "63641855"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "state": "PENDING",
+      "status": "SCANCEL_SUBMITTED",
+      "step": 9000
     }
   ],
   "outer_accessed": false,
@@ -270,5 +290,5 @@
     "63248355"
   ],
   "schema": "CARE_ASE_CORE_FAIR_EVAL_DUPLICATE_CLEANUP_LEDGER_V1",
-  "updated_utc": "2026-08-13T21:19:04Z"
+  "updated_utc": "2026-08-14T02:50:08Z"
 }

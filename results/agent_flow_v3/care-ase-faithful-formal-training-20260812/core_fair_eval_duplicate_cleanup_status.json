@@ -1,16 +1,16 @@
 {
   "cancelled": [
     {
-      "cancelled_utc": "2026-08-13T21:19:05Z",
+      "cancelled_utc": "2026-08-14T02:50:08Z",
       "fold": 2,
-      "job_id": "63613156",
-      "job_name": "ASEF2K8A",
+      "job_id": "63641855",
+      "job_name": "ASEF2K9A",
       "partition": "a100-gpu",
-      "reason": "same_fold_step_attempt_running",
+      "reason": "output_present",
       "scancel": {
         "cmd": [
           "scancel",
-          "63613156"
+          "63641855"
         ],
         "returncode": 0,
         "stderr": "",
@@ -18,53 +18,24 @@
       },
       "state": "PENDING",
       "status": "SCANCEL_SUBMITTED",
-      "step": 8000
-    },
-    {
-      "cancelled_utc": "2026-08-13T21:19:05Z",
-      "fold": 3,
-      "job_id": "63614063",
-      "job_name": "ASEF3K7A",
-      "partition": "a100-gpu",
-      "reason": "same_fold_step_attempt_running",
-      "scancel": {
-        "cmd": [
-          "scancel",
-          "63614063"
-        ],
-        "returncode": 0,
-        "stderr": "",
-        "stdout": ""
-      },
-      "state": "PENDING",
-      "status": "SCANCEL_SUBMITTED",
-      "step": 7000
+      "step": 9000
     }
   ],
   "candidates": [
     {
       "fold": 2,
-      "job_id": "63613156",
-      "job_name": "ASEF2K8A",
+      "job_id": "63641855",
+      "job_name": "ASEF2K9A",
       "partition": "a100-gpu",
-      "reason": "same_fold_step_attempt_running",
+      "reason": "output_present",
       "state": "PENDING",
-      "step": 8000
-    },
-    {
-      "fold": 3,
-      "job_id": "63614063",
-      "job_name": "ASEF3K7A",
-      "partition": "a100-gpu",
-      "reason": "same_fold_step_attempt_running",
-      "state": "PENDING",
-      "step": 7000
+      "step": 9000
     }
   ],
   "dry_run": false,
-  "groups_seen": 15,
+  "groups_seen": 16,
   "ledger_path": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_eval_duplicate_cleanup_ledger.json",
-  "live_jobs_seen": 4,
+  "live_jobs_seen": 1,
   "manifest_path": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_eval_job_manifest.json",
   "outer_accessed": false,
   "protected_job_ids": [
@@ -77,15 +48,15 @@
     "cmd": [
       "squeue",
       "-j",
-      "63357146,63357148,63357150,63357152,63357154,63398313,63398316,63399995,63399998,63469158,63469233,63470808,63470841,63514613,63515339,63522659,63551512,63551514,63551623,63551625,63613156,63614063,63614367,63614368",
+      "63357146,63357148,63357150,63357152,63357154,63398313,63398316,63399995,63399998,63469158,63469233,63470808,63470841,63514613,63515339,63522659,63551512,63551514,63551623,63551625,63613156,63614063,63614367,63614368,63641855,63645534",
       "-h",
       "-o",
       "%i|%j|%P|%T|%M|%L|%R|%b|%D"
     ],
     "returncode": 0,
     "stderr": "",
-    "stdout": "63614063|ASEF3K7A|a100-gpu|PENDING|0:00|8:00:00|(Priority)|gres/gpu:nvidia_a100-pcie-40gb:1|1\n63613156|ASEF2K8A|a100-gpu|PENDING|0:00|8:00:00|(Priority)|gres/gpu:nvidia_a100-pcie-40gb:1|1\n63614367|ASEF2K8|htzhulab|RUNNING|2:41|7:57:19|g180702|gres/gpu:1|1\n63614368|ASEF3K7|htzhulab|RUNNING|2:41|7:57:19|g180702|gres/gpu:1|1\n"
+    "stdout": "63641855|ASEF2K9A|a100-gpu|PENDING|0:00|8:00:00|(Priority)|gres/gpu:nvidia_a100-pcie-40gb:1|1\n"
   },
   "status": "RUNNING",
-  "updated_utc": "2026-08-13T21:19:04Z"
+  "updated_utc": "2026-08-14T02:50:08Z"
 }
