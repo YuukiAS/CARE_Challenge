@@ -272,19 +272,7 @@
       "core_fair_eval_job_ids": [
         "63683179"
       ],
-      "core_fair_eval_job_states": [
-        {
-          "elapsed": "0:18",
-          "job_id": "63683179",
-          "job_name": "ASEF2K10",
-          "node_or_reason": "g180702",
-          "nodes": "1",
-          "partition": "htzhulab",
-          "state": "RUNNING",
-          "time_left": "7:59:42",
-          "tres_per_node": "gres/gpu:1"
-        }
-      ],
+      "core_fair_eval_job_states": [],
       "core_fair_eval_mirror_job_ids": [],
       "core_fair_eval_output_present": true,
       "core_fair_eval_status": "PRESENT",
@@ -534,5 +522,5 @@
   ],
   "new_checkpoint_without_fair_eval_job": [],
   "new_formal_inner_eval_without_job": [],
-  "updated_utc": "2026-08-14T08:40:03Z"
+  "updated_utc": "2026-08-14T08:45:07Z"
 }

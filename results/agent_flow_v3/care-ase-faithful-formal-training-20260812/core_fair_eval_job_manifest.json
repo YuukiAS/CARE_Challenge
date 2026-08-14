@@ -824,18 +824,17 @@
       "script": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold2_step10000_auto.sbatch",
       "slurm_job_id": "63683179",
       "slurm_state": {
-        "elapsed": "0:18",
+        "elapsed": "00:00:19",
+        "exit_code": "0:0",
         "job_id": "63683179",
         "job_name": "ASEF2K10",
         "node_or_reason": "g180702",
-        "nodes": "1",
         "partition": "htzhulab",
-        "state": "RUNNING",
-        "time_left": "7:59:42",
-        "tres_per_node": "gres/gpu:1"
+        "state": "COMPLETED",
+        "time_limit": "08:00:00"
       },
-      "state": "RUNNING",
-      "state_source": "squeue",
+      "state": "COMPLETED",
+      "state_source": "sacct",
       "status": "SUBMITTED",
       "step": 10000
     }
@@ -844,5 +843,5 @@
   "routing_review_summary": "fold3 step5000 a100 eval-only mirror submitted because htzhulab attempt was pending and a100 was compatible; duplicate cleanup may cancel the still-pending loser after one attempt starts/completes",
   "schema": "CARE_ASE_CORE_FAIR_EVAL_JOB_MANIFEST_V1",
   "task_key": "care-ase-faithful-formal-training-20260812",
-  "updated_utc": "2026-08-14T08:40:03Z"
+  "updated_utc": "2026-08-14T08:45:07Z"
 }
