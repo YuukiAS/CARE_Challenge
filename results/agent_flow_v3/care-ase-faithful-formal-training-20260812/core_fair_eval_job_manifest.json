@@ -813,5 +813,5 @@
   "routing_review_summary": "fold3 step5000 a100 eval-only mirror submitted because htzhulab attempt was pending and a100 was compatible; duplicate cleanup may cancel the still-pending loser after one attempt starts/completes",
   "schema": "CARE_ASE_CORE_FAIR_EVAL_JOB_MANIFEST_V1",
   "task_key": "care-ase-faithful-formal-training-20260812",
-  "updated_utc": "2026-08-14T05:25:13Z"
+  "updated_utc": "2026-08-14T05:28:43Z"
 }
