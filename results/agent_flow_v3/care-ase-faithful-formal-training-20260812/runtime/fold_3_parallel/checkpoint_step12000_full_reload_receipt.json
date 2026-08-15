@@ -1,0 +1,76 @@
+{
+  "augmentation_rng_state_loaded": true,
+  "checkpoint_path": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/checkpoint_step12000.pt",
+  "checkpoint_sha256": "83e7d89acd706cbb34d1a14d0efedb4015354b674770b826f25fe503cc520ec8",
+  "dataloader_worker_seed_state_nonempty": true,
+  "fixed_batch_case_id": "Case3007",
+  "fixed_batch_descriptor_sha256": "6bc457db9b70098be844b8d0d170c6f39985168624b3b11813510fa3787c4cad",
+  "fold": 3,
+  "fresh_model_instance_loaded": true,
+  "global_optimizer_step": 12000,
+  "hard_negative_manifest_path": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/hard_negative_manifest_fold3.json",
+  "live_scheduler_last_global_step": 11999,
+  "logits_max_abs_error": 0.0,
+  "logits_tolerance": 1e-05,
+  "next_batch_hash_match": true,
+  "next_batch_hash_payload": "676a5799581c0ed12528a9398ba7c1fc0fad42df1a4e70f004db77bc51918064",
+  "next_batch_hash_recomputed": "676a5799581c0ed12528a9398ba7c1fc0fad42df1a4e70f004db77bc51918064",
+  "next_optimizer_step_micro_descriptor_hash_match": true,
+  "next_optimizer_step_micro_descriptor_hash_payload": "676a5799581c0ed12528a9398ba7c1fc0fad42df1a4e70f004db77bc51918064",
+  "optimizer_state_loaded": true,
+  "payload_sha256": "ef52fc73cf09b311afd3ccb9a31a38604329862454ba014d696e960906fe94e4",
+  "sampler_rng_state_loaded": true,
+  "scheduler_state_loaded": {
+    "last_global_step": 11999,
+    "power": 0.9,
+    "stage_base_lrs": {
+      "A": {
+        "cloned_pathology_blocks": 0.0001,
+        "cloned_pathology_classifiers": 0.0002,
+        "new_modules": 0.0005
+      },
+      "B": {
+        "anatomy_decoder": 0.0001,
+        "cloned_pathology_blocks": 0.0001,
+        "cloned_pathology_classifiers": 0.0001,
+        "new_modules": 0.0003,
+        "shared_low_mid_decoder": 0.0001,
+        "upper_two_encoder": 5e-05
+      },
+      "C": {
+        "anatomy_decoder": 5e-05,
+        "cloned_pathology_blocks": 5e-05,
+        "cloned_pathology_classifiers": 5e-05,
+        "lower_encoder_bottleneck": 1e-05,
+        "new_modules": 0.0001,
+        "shared_low_mid_decoder": 5e-05,
+        "upper_two_encoder": 5e-05
+      }
+    },
+    "stage_min_lrs": {
+      "A": 5e-06,
+      "B": 1e-06,
+      "C": 1e-06
+    },
+    "stage_ranges": {
+      "A": [
+        0,
+        2000
+      ],
+      "B": [
+        2000,
+        10000
+      ],
+      "C": [
+        10000,
+        14000
+      ]
+    },
+    "stage_warmup_steps": {
+      "A": 200,
+      "B": 500,
+      "C": 0
+    }
+  },
+  "status": "PASS"
+}

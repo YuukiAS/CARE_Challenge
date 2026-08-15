@@ -1,0 +1,16 @@
+{
+  "checkpoint_sha256": "83e7d89acd706cbb34d1a14d0efedb4015354b674770b826f25fe503cc520ec8",
+  "contract_sha256": "1b02fb37fa30054b74f7b73b7bd15617d74ab931b4a12965ea1d700bb7fa3c1e",
+  "fold": 3,
+  "full_reload_logit_parity": "PASS",
+  "global_step": 12000,
+  "next_bundle_hash": "676a5799581c0ed12528a9398ba7c1fc0fad42df1a4e70f004db77bc51918064",
+  "optimizer_state_load": true,
+  "sampler_state_load": true,
+  "scheduler_state_load": true,
+  "source_sha": "fdd45b5ee1c1abea352c318c66951910e565262f",
+  "status": "PASS",
+  "verification_command": "in_process_scheme_B_rng_restored_probe",
+  "verification_exit": 0,
+  "verification_rng_transparency": "PASS"
+}
