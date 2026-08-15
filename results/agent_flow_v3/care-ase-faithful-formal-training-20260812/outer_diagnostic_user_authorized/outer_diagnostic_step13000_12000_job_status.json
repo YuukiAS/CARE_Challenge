@@ -1,0 +1,23 @@
+{
+  "authorized_by_user": true,
+  "authorized_utc": "2026-08-15T09:00:00Z_USER_CHAT_REQUEST",
+  "comparison_contract": "USER_AUTHORIZED_OUTER_DIAGNOSTIC_OLD_ASE_LOGIC",
+  "fold_steps_requested": {
+    "fold_2": 13000,
+    "fold_3": 12000
+  },
+  "output": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/outer_diagnostic_step13000_12000_combined_summary.json",
+  "result_summary": {
+    "case_count_total": 88,
+    "pure_edema_care_mean": 0.4722790347792464,
+    "pure_edema_delta_care_minus_nnunet": -0.0029092215136184985,
+    "pure_edema_nnunet_mean": 0.4751882562928649,
+    "scar_care_mean": 0.3987994602175924,
+    "scar_delta_care_minus_nnunet": -0.15749123299516365,
+    "scar_nnunet_mean": 0.556290693212756
+  },
+  "slurm_job_id": "63850731",
+  "status": "COMPLETED_PASS",
+  "training_interference": "none_eval_only_read_only_checkpoint_inputs_isolated_outer_output",
+  "updated_utc": "2026-08-15T09:24:13Z"
+}

@@ -1,0 +1,54 @@
+{
+  "case_count": 44,
+  "casewise_csv": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/fold_3/step12000_step13000_12000_20260815/outer_casewise_metrics.csv",
+  "casewise_csv_sha256": "df86a3d349dbe3fbe7dd63d47628ec4c7e9dd010f81ea4b47f27962290f5916e",
+  "checkpoint": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/checkpoint_step12000.pt",
+  "checkpoint_sha256": "83e7d89acd706cbb34d1a14d0efedb4015354b674770b826f25fe503cc520ec8",
+  "checkpoint_step": 12000,
+  "comparison_contract": "USER_AUTHORIZED_OUTER_DIAGNOSTIC_OLD_ASE_LOGIC",
+  "data_repo_root": "/users/a/e/aereinh/CARE",
+  "decision": "USER_AUTHORIZED_CURRENT_OUTER_DIAGNOSTIC",
+  "decode_asymmetry_audit": {
+    "care_no_t2_decode_classes": [
+      0,
+      1,
+      2,
+      3,
+      5
+    ],
+    "diagnostic_nnunet_no_t2_matched_columns": "nnunet_no_t2_matched_scar_* for no-T2 rows only; diagnostic-only, not checkpoint selection",
+    "original_nnunet_baseline_decode": "direct_six_class_argmax"
+  },
+  "edema_t2_case_count": 16,
+  "fold": 3,
+  "inference_settings": {
+    "allowed_mirror_axes": [
+      0,
+      1,
+      2
+    ],
+    "decode": "fixed_argmax_t2_present_0_1_2_3_4_5_no_t2_0_1_2_3_5",
+    "gaussian_sigma_scale": 0.125,
+    "padding_mode": "constant_zero_symmetric_pad_nd_image",
+    "patch_size": [
+      20,
+      256,
+      256
+    ],
+    "precision": "fp32",
+    "tile_step_size": 0.5,
+    "use_gaussian": true,
+    "use_mirroring": true
+  },
+  "status": "PASS",
+  "stock_checkpoint": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_3/checkpoint_final.pth",
+  "stock_checkpoint_sha256": "0c27009930261c93a4890c66aa7f88f226a5f8b32a3358e43dd10d357b6fdeb8",
+  "summary": {
+    "care_minus_nnunet_pure_edema_mean": -0.0033600920257588207,
+    "care_minus_nnunet_scar_mean": -0.3025865237464105,
+    "care_pure_edema_mean": 0.44043885804490074,
+    "care_scar_mean": 0.21918930149204782,
+    "nnunet_pure_edema_mean": 0.44379895007065956,
+    "nnunet_scar_mean": 0.5217758252384583
+  }
+}
