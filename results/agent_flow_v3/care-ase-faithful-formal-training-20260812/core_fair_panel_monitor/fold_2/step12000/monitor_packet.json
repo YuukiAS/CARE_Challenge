@@ -1,0 +1,130 @@
+{
+  "allowed_uses": [
+    "learning_trend",
+    "implementation_or_numeric_anomaly_detection",
+    "user_progress_report"
+  ],
+  "baseline_casewise_path": "results/20260801_care_nnunet_mosaic_complementarity_closure/oof_complementarity_casewise.csv",
+  "baseline_casewise_sha256": "a4e71b119deb59da3a792fd08d098ad6621b449616877cd4f3f501f5b2100251",
+  "baseline_join": "same_case_id_nnunet_oof_mosaic_clean_oof",
+  "casewise_metrics_path": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_panel_monitor/fold_2/step12000/casewise_metrics.csv",
+  "checkpoint_path": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/checkpoint_step12000.pt",
+  "checkpoint_payload_global_optimizer_step": 12000,
+  "checkpoint_sha256": "e3dffc2edff3b7cf14c86694cc3a945372018706c45d504604e722550693849f",
+  "checkpoint_step": 12000,
+  "checkpoint_verified_receipt": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/checkpoint_step12000.pt.verified.json",
+  "checkpoint_verified_receipt_status": "PASS",
+  "decode": "fixed_argmax_t2_present_0_1_2_3_4_5_no_t2_0_1_2_3_5",
+  "fold": 2,
+  "forbidden_uses": [
+    "early_stop",
+    "formal_checkpoint_selection",
+    "model_loss_sampler_scheduler_change",
+    "threshold_tuning",
+    "training_budget_change",
+    "final_baseline_claim"
+  ],
+  "full_volume_inference_settings": {
+    "allowed_mirror_axes": [],
+    "decode": "fixed_argmax_t2_present_0_1_2_3_4_5_no_t2_0_1_2_3_5",
+    "gaussian_sigma_scale": 0.125,
+    "padding_mode": "constant_zero_symmetric_pad_nd_image",
+    "patch_size": [
+      20,
+      256,
+      256
+    ],
+    "precision": "fp32",
+    "tile_step_size": 0.5,
+    "use_gaussian": true,
+    "use_mirroring": false
+  },
+  "inner_case_count": 6,
+  "inner_cases_sha256": "0935fa9d167c4e64bba2bfcddfade0bc6dd9b34d91b3b0e80230dcf62ddb4537",
+  "monitor_type": "ASYNC_INNER_TREND_ONLY",
+  "outer_access_count_delta": 0,
+  "pure_edema_population": "T2_present_inner_cases_only",
+  "reviewer_required_checks": [
+    "case_population",
+    "checkpoint_sha",
+    "fixed_decode",
+    "baseline_join"
+  ],
+  "split_case_lists_path": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/fair_panel_split_case_lists.csv",
+  "split_case_lists_sha256": "c97297da81df652fca34397ece81530ff30fe45c6e3b4abf11afcbd092d07a28",
+  "status": "PASS",
+  "subgroups": {
+    "CenterB": {
+      "case_count": 2,
+      "pure_edema_dice_mean": 0.863487781096381,
+      "pure_edema_dice_median": 0.863487781096381,
+      "scar_dice_mean": 0.9151562209814637,
+      "scar_dice_median": 0.9151562209814637
+    },
+    "CenterC": {
+      "case_count": 1,
+      "pure_edema_dice_mean": 0.8111227701993704,
+      "pure_edema_dice_median": 0.8111227701993704,
+      "scar_dice_mean": 0.8746736292428199,
+      "scar_dice_median": 0.8746736292428199
+    },
+    "no_T2_scar": {
+      "case_count": 3,
+      "pure_edema_dice_mean": null,
+      "pure_edema_dice_median": null,
+      "scar_dice_mean": 0.7987384495615508,
+      "scar_dice_median": 0.8852459016393442
+    },
+    "small_scar": {
+      "case_count": 0,
+      "pure_edema_dice_mean": null,
+      "pure_edema_dice_median": null,
+      "scar_dice_mean": null,
+      "scar_dice_median": null
+    }
+  },
+  "summary": {
+    "pure_edema_component_count_mean": 3.6666666666666665,
+    "pure_edema_dice_mean": 0.8460327774640443,
+    "pure_edema_dice_median": 0.8484573502722323,
+    "pure_edema_empty_prediction_count": 0,
+    "pure_edema_harm_fraction_vs_nnunet": 0.0,
+    "pure_edema_hd95_mean": 5.455184137598704,
+    "pure_edema_help_harm_neutral_vs_mosaic": {
+      "harm": 0,
+      "help": 3,
+      "neutral": 0
+    },
+    "pure_edema_help_harm_neutral_vs_nnunet": {
+      "harm": 0,
+      "help": 3,
+      "neutral": 0
+    },
+    "pure_edema_precision_mean": 0.8328024447413956,
+    "pure_edema_sensitivity_mean": 0.8649169845542358,
+    "pure_edema_volume_ratio_mean": 1.0418662323987993,
+    "scar_component_count_mean": 1.8333333333333333,
+    "scar_dice_mean": 0.8502002366483999,
+    "scar_dice_median": 0.8914678353081209,
+    "scar_empty_prediction_count": 0,
+    "scar_harm_fraction_vs_nnunet": 0.0,
+    "scar_hd95_mean": 2.25840820039752,
+    "scar_help_harm_neutral_vs_mosaic": {
+      "harm": 0,
+      "help": 6,
+      "neutral": 0
+    },
+    "scar_help_harm_neutral_vs_nnunet": {
+      "harm": 0,
+      "help": 6,
+      "neutral": 0
+    },
+    "scar_precision_mean": 0.9036752445513309,
+    "scar_remote_fp_volume_mm3_mean": 9.56085205078125,
+    "scar_sensitivity_mean": 0.8171810064659581,
+    "scar_volume_ratio_mean": 0.9030209100710299,
+    "small_lesion_recall_mean": null,
+    "stock_pure_edema_hd95_mean": 5.455184137598704,
+    "stock_scar_hd95_mean": 2.25840820039752
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "checkpoint_count": 22,
+  "checkpoint_count": 23,
   "checkpoints": [
     {
       "checkpoint_path": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/checkpoint_step01000.pt",
@@ -311,6 +311,32 @@
       "schema_version": 4,
       "stage": "C",
       "step": 11000,
+      "verified_status": "PASS"
+    },
+    {
+      "checkpoint_path": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/checkpoint_step12000.pt",
+      "checkpoint_sha256": "e3dffc2edff3b7cf14c86694cc3a945372018706c45d504604e722550693849f",
+      "core_fair_eval_bound_partitions": [
+        "htzhulab"
+      ],
+      "core_fair_eval_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_panel_monitor/fold_2/step12000",
+      "core_fair_eval_job_id": "63768054",
+      "core_fair_eval_job_ids": [
+        "63768054"
+      ],
+      "core_fair_eval_job_states": [],
+      "core_fair_eval_mirror_job_ids": [],
+      "core_fair_eval_output_present": true,
+      "core_fair_eval_status": "PRESENT",
+      "fold": 2,
+      "formal_inner_eval_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/inner_checkpoint_monitor/fold_2/step12000",
+      "formal_inner_eval_status": "PRESENT",
+      "full_reload_logit_parity": 0.0,
+      "full_reload_status": "PASS",
+      "required_fields_present": true,
+      "schema_version": 4,
+      "stage": "C",
+      "step": 12000,
       "verified_status": "PASS"
     },
     {
@@ -626,5 +652,5 @@
   ],
   "new_checkpoint_without_fair_eval_job": [],
   "new_formal_inner_eval_without_job": [],
-  "updated_utc": "2026-08-15T00:03:03Z"
+  "updated_utc": "2026-08-15T00:23:47Z"
 }

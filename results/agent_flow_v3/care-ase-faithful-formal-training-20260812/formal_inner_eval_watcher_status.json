@@ -31,6 +31,11 @@
       "step": 10000
     },
     {
+      "fold": 2,
+      "reason": "output_present",
+      "step": 12000
+    },
+    {
       "fold": 3,
       "reason": "output_present",
       "step": 2000
@@ -52,11 +57,11 @@
     },
     {
       "fold": 3,
-      "reason": "manifest_has_job",
+      "reason": "output_present",
       "step": 10000
     }
   ],
   "status": "RUNNING",
   "submitted_this_scan": [],
-  "updated_utc": "2026-08-14T16:13:50Z"
+  "updated_utc": "2026-08-15T00:23:52Z"
 }
