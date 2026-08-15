@@ -31,7 +31,7 @@
       "step": 5000
     },
     {
-      "aggregation_status": "OUTPUT_PRESENT",
+      "aggregation_status": "NEEDS_OUTPUT_CHECK",
       "checkpoint": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_2/checkpoint_step06000.pt",
       "created_utc": "2026-08-13T08:20:21Z",
       "fold": 2,
@@ -39,7 +39,7 @@
       "job_name": "ASEF2K6",
       "outer_accessed": false,
       "output_dir": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_panel_monitor/fold_2/step06000",
-      "output_present": true,
+      "output_present": false,
       "partition": "htzhulab",
       "qos": "gpu_access",
       "script": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold2_step06000_auto.sbatch",
@@ -60,7 +60,7 @@
       "step": 6000
     },
     {
-      "aggregation_status": "OUTPUT_PRESENT",
+      "aggregation_status": "PENDING_OR_NONTERMINAL",
       "checkpoint": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/checkpoint_step05000.pt",
       "created_utc": "2026-08-13T08:29:46Z",
       "fold": 3,
@@ -68,7 +68,7 @@
       "job_name": "ASEF3K5",
       "outer_accessed": false,
       "output_dir": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_panel_monitor/fold_3/step05000",
-      "output_present": true,
+      "output_present": false,
       "partition": "htzhulab",
       "qos": "gpu_access",
       "script": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold3_step05000_auto.sbatch",
@@ -927,11 +927,41 @@
       "state_source": "sacct",
       "status": "SUBMITTED",
       "step": 11000
+    },
+    {
+      "aggregation_status": "OUTPUT_PRESENT",
+      "checkpoint": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/checkpoint_step11000.pt",
+      "created_utc": "2026-08-15T00:00:52Z",
+      "fold": 3,
+      "job_id": "63766007",
+      "job_name": "ASEF3K11",
+      "lock_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/runtime/fold_3_parallel/core_fair_panel_step11000_eval.lock",
+      "outer_accessed": false,
+      "output_dir": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/core_fair_panel_monitor/fold_3/step11000",
+      "output_present": true,
+      "partition": "htzhulab",
+      "qos": "gpu_access",
+      "script": "/users/a/e/aereinh/CARE/.worktrees/care-ase-faithful-formal-training-20260812/results/agent_flow_v3/care-ase-faithful-formal-training-20260812/run_core_fair_panel_fold3_step11000_auto.sbatch",
+      "slurm_job_id": "63766007",
+      "slurm_state": {
+        "elapsed": "00:00:22",
+        "exit_code": "0:0",
+        "job_id": "63766007",
+        "job_name": "ASEF3K11",
+        "node_or_reason": "g180702",
+        "partition": "htzhulab",
+        "state": "COMPLETED",
+        "time_limit": "08:00:00"
+      },
+      "state": "COMPLETED",
+      "state_source": "sacct",
+      "status": "SUBMITTED",
+      "step": 11000
     }
   ],
   "outer_accessed": false,
   "routing_review_summary": "fold3 step5000 a100 eval-only mirror submitted because htzhulab attempt was pending and a100 was compatible; duplicate cleanup may cancel the still-pending loser after one attempt starts/completes",
   "schema": "CARE_ASE_CORE_FAIR_EVAL_JOB_MANIFEST_V1",
   "task_key": "care-ase-faithful-formal-training-20260812",
-  "updated_utc": "2026-08-14T16:29:50Z"
+  "updated_utc": "2026-08-15T00:03:03Z"
 }
