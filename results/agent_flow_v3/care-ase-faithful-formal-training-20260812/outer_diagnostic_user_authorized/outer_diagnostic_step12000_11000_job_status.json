@@ -1,0 +1,38 @@
+{
+  "authorized_by_user": true,
+  "authorized_utc": "2026-08-15T00:00:00Z_USER_CHAT_REQUEST",
+  "comparison_contract": "USER_AUTHORIZED_OUTER_DIAGNOSTIC_OLD_ASE_LOGIC",
+  "fold_steps_requested": {
+    "fold_2": 12000,
+    "fold_3": 11000
+  },
+  "output": "results/agent_flow_v3/care-ase-faithful-formal-training-20260812/outer_diagnostic_user_authorized/outer_diagnostic_step12000_11000_combined_summary.json",
+  "result_summary": {
+    "case_count_total": 88,
+    "pure_edema_care_mean": 0.48084479064832214,
+    "pure_edema_delta_care_minus_nnunet": 0.005656534355457266,
+    "pure_edema_nnunet_mean": 0.4751882562928649,
+    "scar_care_mean": 0.3925397546487405,
+    "scar_delta_care_minus_nnunet": -0.1637509385640155,
+    "scar_nnunet_mean": 0.556290693212756
+  },
+  "slurm_job_id": "63773851",
+  "status": "COMPLETED_PASS",
+  "training_interference": "none_eval_only_read_only_checkpoint_inputs_isolated_outer_output",
+  "updated_utc": "2026-08-15T01:29:33Z",
+  "routing_race_accounting": {
+    "a100_mirror_job_id": "63773409",
+    "a100_mirror_partition": "a100-gpu",
+    "a100_mirror_terminal_state": "CANCELLED by 397557",
+    "a100_mirror_exit_code": "0:0",
+    "a100_mirror_elapsed": "00:00:00",
+    "htzhulab_job_id": "63773851",
+    "htzhulab_partition": "htzhulab",
+    "htzhulab_terminal_state": "COMPLETED",
+    "htzhulab_exit_code": "0:0",
+    "htzhulab_elapsed": "00:05:23",
+    "htzhulab_node": "g180702",
+    "sacct_checked_utc": "2026-08-15T01:47:02.105966Z",
+    "training_interference": "none; eval-only isolated output; a100 mirror canceled after htzhulab run completed/started path was used"
+  }
+}
