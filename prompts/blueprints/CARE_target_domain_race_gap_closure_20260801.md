@@ -481,7 +481,7 @@ queued job和interactive takeover必须先原子获取claim；loser写`RACE_LOST
 当当前interactive lane完成：
 
 1. 按 `M0R -> M1 -> M2` 检查状态；
-2. 若lane job `PENDING`，执行`scancel`并等待`sacct`确认`CANCELLED`；
+2. 若lane job `PENDING`，通过已安装 `slurm-workflows` 的中央 `safe-cancel` 正常入口处理；只有 `ALLOW_OWNED_UNPROTECTED` 且确认已执行时才等待`sacct`确认`CANCELLED`。若返回 `REQUIRE_FRESH_HUMAN`、拒绝或事实不完整，保留该lane并输出精确人工请求或原因，不得直接调用`scancel`或另建fallback；
 3. interactive allocation通过`srun --jobid --overlap --exclusive --gres=gpu:1`运行该lane；
 4. 若queue job已`RUNNING`且持有claim，不重复运行，interactive转下一个pending lane；
 5. 若queue job `COMPLETED`，直接转下一个；

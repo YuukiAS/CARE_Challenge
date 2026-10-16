@@ -8,6 +8,7 @@ import json
 import os
 import shlex
 import subprocess
+import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -15,6 +16,9 @@ from typing import Any
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO_ROOT))
+
+from scripts.ops.slurm_safe_cancel import safe_cancel_pending_job  # noqa: E402
 TASK_KEY = "20260801_care_target_domain_race_gap_closure"
 RESULT_ROOT = REPO_ROOT / "results" / TASK_KEY
 RUNTIME_ROOT = Path("/users/a/e/aereinh/.tmp/codex-CARE") / TASK_KEY
@@ -82,6 +86,8 @@ def main() -> int:
     parser.add_argument("--m1-queue-job-id", default="61576324")
     parser.add_argument("--poll-seconds", type=int, default=60)
     parser.add_argument("--max-polls", type=int, default=10000)
+    parser.add_argument("--site-id", default=os.environ.get("CARE_SLURM_SITE_ID", "longleaf"))
+    parser.add_argument("--local-override", default=os.environ.get("AI_SKILLS_LOCAL_OVERRIDE"))
     args = parser.parse_args()
 
     log_path = RUNTIME_ROOT / "logs/interactive_takeover_monitor.log"
@@ -112,9 +118,19 @@ def main() -> int:
             return 0
 
         if m1_state == "PENDING" and not m0r_running and interactive_state == "RUNNING":
-            append_log(log_path, f"interactive free; cancelling pending M1 queue job {args.m1_queue_job_id}")
-            cancel = run(["scancel", args.m1_queue_job_id])
-            append_log(log_path, "scancel output=" + shlex.quote(cancel.stdout.strip()))
+            append_log(log_path, f"interactive free; evaluating pending M1 queue job {args.m1_queue_job_id} through safe-cancel")
+            cancel = safe_cancel_pending_job(
+                args.m1_queue_job_id,
+                current_run_id=f"{TASK_KEY}:m1:{args.m1_queue_job_id}",
+                site_id=args.site_id,
+                local_override=args.local_override,
+            )
+            append_log(log_path, "safe_cancel=" + shlex.quote(json.dumps(cancel, sort_keys=True)))
+            if not cancel["executed"]:
+                state["status"] = cancel["action"]
+                state["safe_cancel"] = cancel
+                write_json(state_path, state)
+                return 2
             terminal = "UNKNOWN"
             for _ in range(60):
                 terminal = sacct_state(args.m1_queue_job_id)

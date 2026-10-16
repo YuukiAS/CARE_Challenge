@@ -4,10 +4,19 @@
 from __future__ import annotations
 
 import argparse
+import json
+import os
 import subprocess
+import sys
 import time
 from datetime import datetime
 from pathlib import Path
+
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO_ROOT))
+
+from scripts.ops.slurm_safe_cancel import safe_cancel_pending_job  # noqa: E402
 
 
 def now() -> str:
@@ -69,6 +78,8 @@ def main() -> int:
     parser.add_argument("--pending-block-threshold", type=int, default=12)
     parser.add_argument("--pending-streak-file", default="results/20260705_srr_v3_m7_training_and_cine_utilization/runtime/routing_locks/pending_streak.txt")
     parser.add_argument("--log-file", required=True)
+    parser.add_argument("--site-id", default=os.environ.get("CARE_SLURM_SITE_ID", "longleaf"))
+    parser.add_argument("--local-override", default=os.environ.get("AI_SKILLS_LOCAL_OVERRIDE"))
     args = parser.parse_args()
 
     log_path = Path(args.log_file)
@@ -89,13 +100,13 @@ def main() -> int:
             log.write(f"{now()} snapshot {snapshot}\n")
             log.flush()
             if job_has_state(rows, args.a100_job, "RUNNING"):
-                proc = run_command(["scancel", args.htzhulab_job])
-                log.write(f"{now()} a100_running_cancel_htzhulab exit={proc.returncode} output={proc.stdout.strip()}\n")
-                return 0
+                result = safe_cancel_pending_job(args.htzhulab_job, current_run_id="care-srr-v3-m7:" + ",".join(sorted(job_ids)), site_id=args.site_id, local_override=args.local_override)
+                log.write(f"{now()} a100_running_safe_cancel_htzhulab {json.dumps(result, sort_keys=True)}\n")
+                return 0 if result["executed"] else 2
             if job_has_state(rows, args.htzhulab_job, "RUNNING"):
-                proc = run_command(["scancel", args.a100_job])
-                log.write(f"{now()} htzhulab_running_cancel_a100 exit={proc.returncode} output={proc.stdout.strip()}\n")
-                return 0
+                result = safe_cancel_pending_job(args.a100_job, current_run_id="care-srr-v3-m7:" + ",".join(sorted(job_ids)), site_id=args.site_id, local_override=args.local_override)
+                log.write(f"{now()} htzhulab_running_safe_cancel_a100 {json.dumps(result, sort_keys=True)}\n")
+                return 0 if result["executed"] else 2
             if not rows:
                 log.write(f"{now()} no_jobs_left\n")
                 return 0

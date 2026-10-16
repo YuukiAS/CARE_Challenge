@@ -5,7 +5,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
+import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -13,6 +15,9 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
+
+from scripts.ops.slurm_safe_cancel import safe_cancel_pending_job  # noqa: E402
 RESULT = ROOT / "results/20260724_care_myops_srr_cascade_submission_rescue"
 RC1_ROOT = RESULT / "runtime_closure_repair_rc1"
 
@@ -103,26 +108,34 @@ def merged_snapshot(job_ids: list[str]) -> dict[str, dict[str, str]]:
     return merged
 
 
-def cancel_if_pending(job_id: str, snapshot: dict[str, dict[str, str]], *, dry_run: bool) -> dict[str, Any]:
+def cancel_if_pending(
+    job_id: str,
+    snapshot: dict[str, dict[str, str]],
+    *,
+    current_run_id: str,
+    site_id: str,
+    local_override: str | None,
+    dry_run: bool,
+) -> dict[str, Any]:
     state = snapshot.get(job_id, {}).get("state", "")
     if state != "PENDING":
         return {"job_id": job_id, "action": "NOT_CANCELLED_NOT_PENDING", "state": state}
-    cmd = ["scancel", job_id]
-    if dry_run:
-        return {"job_id": job_id, "action": "DRY_RUN_SCANCEL_PENDING_LOSER", "state": state, "command": " ".join(cmd)}
-    proc = run(cmd)
     return {
         "job_id": job_id,
-        "action": "SCANCEL_PENDING_LOSER",
         "state": state,
-        "command": " ".join(cmd),
-        "exit_code": proc.returncode,
-        "stdout": proc.stdout.strip(),
-        "stderr": proc.stderr.strip(),
+        **safe_cancel_pending_job(
+            job_id,
+            current_run_id=current_run_id,
+            site_id=site_id,
+            local_override=local_override,
+            dry_run=dry_run,
+        ),
     }
 
 
-def evaluate_once(pairs: list[dict[str, str]], *, dry_run: bool) -> dict[str, Any]:
+def evaluate_once(
+    pairs: list[dict[str, str]], *, site_id: str, local_override: str | None, dry_run: bool
+) -> dict[str, Any]:
     job_ids = sorted({pair["a100_job"] for pair in pairs} | {pair["htzhulab_job"] for pair in pairs})
     snapshot = merged_snapshot(job_ids)
     actions = []
@@ -130,13 +143,13 @@ def evaluate_once(pairs: list[dict[str, str]], *, dry_run: bool) -> dict[str, An
         a100_state = snapshot.get(pair["a100_job"], {}).get("state", "")
         htz_state = snapshot.get(pair["htzhulab_job"], {}).get("state", "")
         if a100_state == "RUNNING" and htz_state == "PENDING":
-            actions.append({**pair, "winner_job_id": pair["a100_job"], "winner_partition": "a100-gpu", **cancel_if_pending(pair["htzhulab_job"], snapshot, dry_run=dry_run)})
+            actions.append({**pair, "winner_job_id": pair["a100_job"], "winner_partition": "a100-gpu", **cancel_if_pending(pair["htzhulab_job"], snapshot, current_run_id="care-srr-cascade:" + pair["logical_run_id"], site_id=site_id, local_override=local_override, dry_run=dry_run)})
         elif htz_state == "RUNNING" and a100_state == "PENDING":
-            actions.append({**pair, "winner_job_id": pair["htzhulab_job"], "winner_partition": "htzhulab", **cancel_if_pending(pair["a100_job"], snapshot, dry_run=dry_run)})
+            actions.append({**pair, "winner_job_id": pair["htzhulab_job"], "winner_partition": "htzhulab", **cancel_if_pending(pair["a100_job"], snapshot, current_run_id="care-srr-cascade:" + pair["logical_run_id"], site_id=site_id, local_override=local_override, dry_run=dry_run)})
         elif a100_state == "COMPLETED" and htz_state == "PENDING":
-            actions.append({**pair, "winner_job_id": pair["a100_job"], "winner_partition": "a100-gpu", **cancel_if_pending(pair["htzhulab_job"], snapshot, dry_run=dry_run)})
+            actions.append({**pair, "winner_job_id": pair["a100_job"], "winner_partition": "a100-gpu", **cancel_if_pending(pair["htzhulab_job"], snapshot, current_run_id="care-srr-cascade:" + pair["logical_run_id"], site_id=site_id, local_override=local_override, dry_run=dry_run)})
         elif htz_state == "COMPLETED" and a100_state == "PENDING":
-            actions.append({**pair, "winner_job_id": pair["htzhulab_job"], "winner_partition": "htzhulab", **cancel_if_pending(pair["a100_job"], snapshot, dry_run=dry_run)})
+            actions.append({**pair, "winner_job_id": pair["htzhulab_job"], "winner_partition": "htzhulab", **cancel_if_pending(pair["a100_job"], snapshot, current_run_id="care-srr-cascade:" + pair["logical_run_id"], site_id=site_id, local_override=local_override, dry_run=dry_run)})
         else:
             actions.append({**pair, "action": "NO_CANCEL", "a100_state": a100_state, "htzhulab_state": htz_state})
     active_states = {"PENDING", "RUNNING", "CONFIGURING", "COMPLETING"}
@@ -163,12 +176,14 @@ def main() -> int:
     parser.add_argument("--state-file", type=Path, default=RC1_ROOT / "formal_race_watcher_state_v2.json")
     parser.add_argument("--history-file", type=Path, default=RC1_ROOT / "formal_race_watcher_history_v2.jsonl")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--site-id", default=os.environ.get("CARE_SLURM_SITE_ID", "longleaf"))
+    parser.add_argument("--local-override", default=os.environ.get("AI_SKILLS_LOCAL_OVERRIDE"))
     parser.add_argument("--once", action="store_true")
     args = parser.parse_args()
     pairs = parse_pairs(args.pairs)
     iterations = 1 if args.once else args.max_iterations
     for index in range(iterations):
-        payload = evaluate_once(pairs, dry_run=args.dry_run)
+        payload = evaluate_once(pairs, site_id=args.site_id, local_override=args.local_override, dry_run=args.dry_run)
         payload["iteration"] = index + 1
         write_json(args.state_file, payload)
         append_jsonl(args.history_file, payload)

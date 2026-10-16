@@ -74,8 +74,9 @@ When both `htzhulab` and `a100-gpu` are plausibly long-wait and either may start
 Rules:
 
 - Use isolated output directories or an atomic per-run/per-variant lock.
-- As soon as one partition starts running, cancel the other partition's still-pending mirror job.
-- Record job IDs, partition states, cancellation command, and watcher/log path.
+- As soon as one partition starts running, send the other partition's still-pending mirror through the installed `slurm-workflows` central `safe-cancel` entry.
+- Count the loser as cancelled only when the central result says it executed. On `REQUIRE_FRESH_HUMAN`, denial, or unknown facts, retain it and record the exact request or reason; do not use direct `scancel` or another fallback.
+- Record job IDs, partition states, safe-cancel result, and watcher/log path.
 - Do not include `volta-gpu` in the race unless `htzhulab` and `a100-gpu` are unusable or the user explicitly approves it.
 
 ## Preflight and Replacement Submission

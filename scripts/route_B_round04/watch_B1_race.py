@@ -6,7 +6,9 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import os
 import subprocess
+import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -14,6 +16,9 @@ from typing import Any
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO_ROOT))
+
+from scripts.ops.slurm_safe_cancel import safe_cancel_pending_job  # noqa: E402
 ROUND_ROOT = REPO_ROOT / "results" / "route_B" / "round04"
 LEDGER = ROUND_ROOT / "controller_ledger.csv"
 STATE = ROUND_ROOT / "b1_race_state.json"
@@ -97,6 +102,8 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--job", action="append", required=True, help="partition:jobid")
     parser.add_argument("--poll-seconds", type=int, default=300)
+    parser.add_argument("--site-id", default=os.environ.get("CARE_SLURM_SITE_ID", "longleaf"))
+    parser.add_argument("--local-override", default=os.environ.get("AI_SKILLS_LOCAL_OVERRIDE"))
     args = parser.parse_args()
     jobs = dict(item.split(":", 1) for item in args.job)
     git_head = run(["git", "rev-parse", "HEAD"]).stdout.strip()
@@ -120,12 +127,15 @@ def main() -> int:
             winner_partition = running[0]
             for partition in pending:
                 if partition not in cancelled:
-                    scancel = run(["scancel", jobs[partition]])
-                    states[partition]["cancel_command"] = f"scancel {jobs[partition]}"
-                    states[partition]["cancel_exit"] = str(scancel.returncode)
-                    states[partition]["cancel_stdout"] = scancel.stdout.strip()
-                    states[partition]["cancel_stderr"] = scancel.stderr.strip()
-                    cancelled.add(partition)
+                    safe_cancel = safe_cancel_pending_job(
+                        jobs[partition],
+                        current_run_id="care-route-b-round04-b1:" + ",".join(sorted(jobs.values())),
+                        site_id=args.site_id,
+                        local_override=args.local_override,
+                    )
+                    states[partition]["safe_cancel"] = safe_cancel
+                    if safe_cancel["executed"]:
+                        cancelled.add(partition)
             append_ledger(
                 {
                     "timestamp_utc": utc_now(),

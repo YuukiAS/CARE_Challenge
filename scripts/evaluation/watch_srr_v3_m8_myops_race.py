@@ -4,10 +4,19 @@
 from __future__ import annotations
 
 import argparse
+import json
+import os
 import subprocess
+import sys
 import time
 from datetime import datetime
 from pathlib import Path
+
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO_ROOT))
+
+from scripts.ops.slurm_safe_cancel import safe_cancel_pending_job  # noqa: E402
 
 
 def run(command: list[str]) -> tuple[int, str]:
@@ -48,6 +57,8 @@ def main() -> None:
     parser.add_argument("--log-path", required=True)
     parser.add_argument("--check-interval-seconds", type=int, default=120)
     parser.add_argument("--max-checks", type=int, default=720)
+    parser.add_argument("--site-id", default=os.environ.get("CARE_SLURM_SITE_ID", "longleaf"))
+    parser.add_argument("--local-override", default=os.environ.get("AI_SKILLS_LOCAL_OVERRIDE"))
     args = parser.parse_args()
 
     log_path = Path(args.log_path)
@@ -61,12 +72,12 @@ def main() -> None:
         h_pending = any_state(h_rows, "PENDING")
         a_pending = any_state(a_rows, "PENDING")
         if h_running and a_pending and not a_running:
-            code, out = run(["scancel", args.a100_job_id])
-            log(log_path, f"cancel_a100 code={code} output={out}")
+            result = safe_cancel_pending_job(args.a100_job_id, current_run_id="care-srr-v3-m8:" + ",".join(sorted([args.htzhulab_job_id, args.a100_job_id])), site_id=args.site_id, local_override=args.local_override)
+            log(log_path, "safe_cancel_a100 " + json.dumps(result, sort_keys=True))
             return
         if a_running and h_pending and not h_running:
-            code, out = run(["scancel", args.htzhulab_job_id])
-            log(log_path, f"cancel_htzhulab code={code} output={out}")
+            result = safe_cancel_pending_job(args.htzhulab_job_id, current_run_id="care-srr-v3-m8:" + ",".join(sorted([args.htzhulab_job_id, args.a100_job_id])), site_id=args.site_id, local_override=args.local_override)
+            log(log_path, "safe_cancel_htzhulab " + json.dumps(result, sort_keys=True))
             return
         if h_running and a_running:
             log(log_path, "both_partitions_running manual_intervention_required")

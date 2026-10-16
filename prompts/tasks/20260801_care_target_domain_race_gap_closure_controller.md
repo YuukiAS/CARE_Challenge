@@ -318,8 +318,8 @@ queued job和interactive step均先claim；loser写`RACE_LOST_ZERO_CREDIT`退出
 当interactive当前lane terminal：
 
 1. 按 M0R、M1、M2 检查queue状态；
-2. 第一条eligible lane若`PENDING`，`scancel`；
-3. 等待`sacct`确认CANCELLED；
+2. 第一条eligible lane若`PENDING`，通过已安装 `slurm-workflows` 的中央 `safe-cancel` 正常入口处理；
+3. 只有中央结果为 `ALLOW_OWNED_UNPROTECTED` 且确认已执行时，才等待`sacct`确认CANCELLED；若为 `REQUIRE_FRESH_HUMAN`、拒绝或事实不完整，保留该lane并输出精确人工请求或原因，不得直接调用`scancel`或另建fallback；
 4. 用existing interactive `srun --jobid --overlap --exclusive --gres=gpu:1`运行该lane；
 5. 若queue job已RUNNING并持claim，不重复，检查下一个pending lane；
 6. 若已COMPLETED，检查下一lane；
