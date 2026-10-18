@@ -38,6 +38,8 @@ class NormalEntryTests(unittest.TestCase):
             if 'which("scancel"' in source or "which('scancel'" in source:
                 violations.append(str(path.relative_to(repo_root)))
         self.assertEqual(violations, [])
+        self.assertFalse((repo_root / ".codex/hooks.json").exists())
+        self.assertFalse((repo_root / ".codex/config.toml").exists())
 
     def test_rejects_non_exact_job_id_without_subprocess(self) -> None:
         with mock.patch.object(normal_entry.subprocess, "run") as run:
