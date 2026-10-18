@@ -96,19 +96,25 @@ def main() -> int:
             log.write(f"{now()} snapshot {snapshot}\n")
             log.flush()
             if job_has_state(rows, args.a100_job, "RUNNING"):
-                proc = guarded_scancel(args.htzhulab_job)
-                log.write(
-                    f"{now()} a100_running_cancel_htzhulab exit={proc.returncode} "
-                    f"stdout={proc.stdout.strip()} stderr={proc.stderr.strip()}\n"
-                )
-                return proc.returncode
+                if job_has_state(rows, args.htzhulab_job, "PENDING"):
+                    proc = guarded_scancel(args.htzhulab_job)
+                    log.write(
+                        f"{now()} a100_running_cancel_htzhulab exit={proc.returncode} "
+                        f"stdout={proc.stdout.strip()} stderr={proc.stderr.strip()}\n"
+                    )
+                    return proc.returncode
+                log.write(f"{now()} a100_running_no_pending_htzhulab_loser\n")
+                return 0
             if job_has_state(rows, args.htzhulab_job, "RUNNING"):
-                proc = guarded_scancel(args.a100_job)
-                log.write(
-                    f"{now()} htzhulab_running_cancel_a100 exit={proc.returncode} "
-                    f"stdout={proc.stdout.strip()} stderr={proc.stderr.strip()}\n"
-                )
-                return proc.returncode
+                if job_has_state(rows, args.a100_job, "PENDING"):
+                    proc = guarded_scancel(args.a100_job)
+                    log.write(
+                        f"{now()} htzhulab_running_cancel_a100 exit={proc.returncode} "
+                        f"stdout={proc.stdout.strip()} stderr={proc.stderr.strip()}\n"
+                    )
+                    return proc.returncode
+                log.write(f"{now()} htzhulab_running_no_pending_a100_loser\n")
+                return 0
             if not rows:
                 log.write(f"{now()} no_jobs_left\n")
                 return 0

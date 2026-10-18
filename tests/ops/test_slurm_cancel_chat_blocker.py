@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 import json
 from pathlib import Path
 import subprocess
@@ -21,22 +22,44 @@ def blocked(job_id: str, code: int = 75) -> subprocess.CompletedProcess[str]:
 
 
 class NormalEntryTests(unittest.TestCase):
+    def test_consumer_scripts_have_no_direct_scancel_subprocess(self) -> None:
+        repo_root = Path(__file__).resolve().parents[2]
+        violations: list[str] = []
+        for path in (repo_root / "scripts").rglob("*.py"):
+            source = path.read_text(encoding="utf-8")
+            tree = ast.parse(source, filename=str(path))
+            for node in ast.walk(tree):
+                if not isinstance(node, ast.Call) or not isinstance(node.func, ast.Attribute):
+                    continue
+                if node.func.attr not in {"run", "Popen", "call", "check_call", "check_output"}:
+                    continue
+                if "scancel" in ast.dump(node).lower():
+                    violations.append(str(path.relative_to(repo_root)))
+            if 'which("scancel"' in source or "which('scancel'" in source:
+                violations.append(str(path.relative_to(repo_root)))
+        self.assertEqual(violations, [])
+
     def test_rejects_non_exact_job_id_without_subprocess(self) -> None:
         with mock.patch.object(normal_entry.subprocess, "run") as run:
             result = normal_entry.guarded_scancel("123,456")
         self.assertEqual(result.returncode, 64)
         run.assert_not_called()
 
-    def test_uses_only_project_guard_resolution(self) -> None:
-        completed = subprocess.CompletedProcess(["scancel", "123"], 75, "", "blocked")
-        with (
-            mock.patch.object(normal_entry.shutil, "which", return_value=str(normal_entry.GUARD)),
-            mock.patch.object(normal_entry.subprocess, "run", return_value=completed) as run,
-        ):
+    def test_returns_exact_intent_without_starting_a_subprocess(self) -> None:
+        with mock.patch.object(normal_entry.subprocess, "run") as run:
             result = normal_entry.guarded_scancel("123")
         self.assertEqual(result.returncode, 75)
-        self.assertEqual(run.call_args.args[0], ["scancel", "123"])
-        self.assertEqual(run.call_args.kwargs["env"]["PATH"].split(":", 1)[0], str(normal_entry.GUARD_DIR))
+        self.assertEqual(result.args, ["scancel", "123"])
+        self.assertEqual(json.loads(result.stdout)["job_id"], "123")
+        self.assertEqual(json.loads(result.stdout)["mutation_count"], 0)
+        run.assert_not_called()
+
+    def test_dry_run_is_also_pure_intent(self) -> None:
+        with mock.patch.object(normal_entry.subprocess, "run") as run:
+            result = normal_entry.guarded_scancel("123_4", dry_run=True)
+        self.assertEqual(result.returncode, 0)
+        self.assertEqual(result.stdout, "DRY_RUN_CANCELLATION_INTENT")
+        run.assert_not_called()
 
 
 class WatcherPropagationTests(unittest.TestCase):
@@ -83,9 +106,49 @@ class WatcherPropagationTests(unittest.TestCase):
             with (
                 mock.patch.object(sys, "argv", argv),
                 mock.patch.object(m7, "job_lines", return_value=rows),
-                mock.patch.object(m7, "guarded_scancel", return_value=blocked("22")),
+                mock.patch.object(m7, "guarded_scancel", return_value=blocked("22")) as cancel,
             ):
                 self.assertEqual(m7.main(), 75)
+            cancel.assert_called_once_with("22")
+
+    def test_m7_only_cancels_a_loser_that_is_still_pending(self) -> None:
+        cases = (
+            (
+                "htzhulab_wins_pending_a100",
+                [("11", "a100-gpu", "PENDING", "Priority"), ("22", "htzhulab", "RUNNING", "None")],
+                "11",
+            ),
+            ("a100_wins_loser_absent", [("11", "a100-gpu", "RUNNING", "None")], None),
+            ("htzhulab_wins_loser_absent", [("22", "htzhulab", "RUNNING", "None")], None),
+        )
+        for name, rows, expected_job in cases:
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as temp:
+                log = Path(temp) / "m7.log"
+                argv = [
+                    "watch",
+                    "--a100-job",
+                    "11",
+                    "--htzhulab-job",
+                    "22",
+                    "--log-file",
+                    str(log),
+                    "--max-iterations",
+                    "1",
+                ]
+                with (
+                    mock.patch.object(sys, "argv", argv),
+                    mock.patch.object(m7, "job_lines", return_value=rows),
+                    mock.patch.object(
+                        m7,
+                        "guarded_scancel",
+                        return_value=subprocess.CompletedProcess(["scancel"], 0, "", ""),
+                    ) as cancel,
+                ):
+                    self.assertEqual(m7.main(), 0)
+                if expected_job is None:
+                    cancel.assert_not_called()
+                else:
+                    cancel.assert_called_once_with(expected_job)
 
     def test_m8_propagates_nonzero(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -132,6 +195,28 @@ class WatcherPropagationTests(unittest.TestCase):
             launch.assert_not_called()
             payload = json.loads((root / "results/interactive_takeover_monitor_state.json").read_text(encoding="utf-8"))
             self.assertEqual(payload["status"], "CANCEL_BLOCKED")
+
+    def test_takeover_resume_after_host_hook_cancellation_launches_without_second_cancel(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            argv = ["watch", "--interactive-job-id", "11", "--m1-queue-job-id", "22", "--max-polls", "1"]
+            with (
+                mock.patch.object(sys, "argv", argv),
+                mock.patch.object(takeover, "RUNTIME_ROOT", root / "runtime"),
+                mock.patch.object(takeover, "RESULT_ROOT", root / "results"),
+                mock.patch.object(takeover, "squeue_state", side_effect=["RUNNING", "NOT_IN_SQUEUE"]),
+                mock.patch.object(takeover, "pid_running", return_value=False),
+                mock.patch.object(takeover, "guarded_scancel") as cancel,
+                mock.patch.object(takeover, "sacct_state", return_value="CANCELLED") as accounting,
+                mock.patch.object(takeover, "launch_m1", return_value=(1234, "launcher.log")) as launch,
+            ):
+                self.assertEqual(takeover.main(), 0)
+            cancel.assert_not_called()
+            accounting.assert_called_once_with("22")
+            launch.assert_called_once()
+            payload = json.loads((root / "results/interactive_takeover_monitor_state.json").read_text(encoding="utf-8"))
+            self.assertEqual(payload["status"], "M1_INTERACTIVE_TAKEOVER_LAUNCHED")
+            self.assertEqual(payload["m1_sacct_state"], "CANCELLED")
 
     def test_cascade_stops_current_round_on_nonzero(self) -> None:
         pairs = [

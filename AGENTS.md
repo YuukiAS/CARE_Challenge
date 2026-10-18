@@ -168,13 +168,13 @@ Third-party papers for consultation live under **`literature/`** (PDFs, etc.). U
 
 ## Compute resources
 
-Cancellation automation must prepend the repository's `.codex/automation-bin`
-directory to `PATH` and invoke the ordinary `scancel <exact-job-id>` shape so
-the central Slurm Workflows guard remains the sole policy and authority owner.
-If that guarded command returns nonzero, propagate the code and end the current
-cancellation attempt or race round. Do not fall back to an absolute system
-`scancel`, SSH/API cancellation, allocation-holder termination, or a second
-cancellation after an interactive Host Hook has completed the exact request.
+Cancellation automation must return an exact ordinary-cancel intent to the root
+interactive Codex and propagate the blocker code; it must not start `scancel`
+through a subprocess, PATH lookup, absolute executable, SSH/API call, or holder
+termination. The root Codex issues `scancel <exact-job-id>` and the trusted
+Slurm Workflows Host Hooks own all resolution, protected-partition confirmation,
+and mutation. After a confirmed Host Hook cancellation, resumed automation only
+observes scheduler state and never emits a second cancellation intent.
 
 The usual working environment is a compute node. The user also has access to the **`htzhulab`** partition; when CPU-only execution would be slow, use temporary GPU jobs there via `sbatch`, `srun`, or similar Slurm commands instead of letting long CPU runs crawl.
 

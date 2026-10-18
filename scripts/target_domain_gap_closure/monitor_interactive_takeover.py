@@ -56,6 +56,16 @@ def sacct_state(job_id: str) -> str:
     return states[0] if states else "NO_SACCT"
 
 
+def wait_for_cancelled(job_id: str) -> str:
+    terminal = "UNKNOWN"
+    for _ in range(60):
+        terminal = sacct_state(job_id)
+        if "CANCELLED" in terminal:
+            break
+        time.sleep(5)
+    return terminal
+
+
 def pid_running(pid: int) -> bool:
     return run(["ps", "-p", str(pid), "-o", "pid="]).stdout.strip() != ""
 
@@ -116,32 +126,30 @@ def main() -> int:
             append_log(log_path, state["status"])
             return 0
 
-        if m1_state == "PENDING" and not m0r_running and interactive_state == "RUNNING":
-            append_log(log_path, f"interactive free; cancelling pending M1 queue job {args.m1_queue_job_id}")
-            cancel = guarded_scancel(args.m1_queue_job_id)
-            append_log(
-                log_path,
-                "scancel exit="
-                + str(cancel.returncode)
-                + " stdout="
-                + shlex.quote(cancel.stdout.strip())
-                + " stderr="
-                + shlex.quote(cancel.stderr.strip()),
-            )
-            if cancel.returncode != 0:
-                state["status"] = "CANCEL_BLOCKED"
-                state["cancel_exit"] = cancel.returncode
-                state["cancel_stdout"] = cancel.stdout.strip()
-                state["cancel_stderr"] = cancel.stderr.strip()
-                write_json(state_path, state)
-                append_log(log_path, "CANCEL_BLOCKED_NEEDS_INTERACTIVE_CHAT_CONFIRMATION")
-                return cancel.returncode
-            terminal = "UNKNOWN"
-            for _ in range(60):
-                terminal = sacct_state(args.m1_queue_job_id)
-                if "CANCELLED" in terminal:
-                    break
-                time.sleep(5)
+        if not m0r_running and interactive_state == "RUNNING" and m1_state in {"PENDING", "NOT_IN_SQUEUE"}:
+            if m1_state == "PENDING":
+                append_log(log_path, f"interactive free; cancelling pending M1 queue job {args.m1_queue_job_id}")
+                cancel = guarded_scancel(args.m1_queue_job_id)
+                append_log(
+                    log_path,
+                    "scancel exit="
+                    + str(cancel.returncode)
+                    + " stdout="
+                    + shlex.quote(cancel.stdout.strip())
+                    + " stderr="
+                    + shlex.quote(cancel.stderr.strip()),
+                )
+                if cancel.returncode != 0:
+                    state["status"] = "CANCEL_BLOCKED"
+                    state["cancel_exit"] = cancel.returncode
+                    state["cancel_stdout"] = cancel.stdout.strip()
+                    state["cancel_stderr"] = cancel.stderr.strip()
+                    write_json(state_path, state)
+                    append_log(log_path, "CANCEL_BLOCKED_NEEDS_INTERACTIVE_CHAT_CONFIRMATION")
+                    return cancel.returncode
+            else:
+                append_log(log_path, f"queue job {args.m1_queue_job_id} absent; checking prior cancellation")
+            terminal = wait_for_cancelled(args.m1_queue_job_id)
             if "CANCELLED" not in terminal:
                 state["status"] = "M1_CANCEL_ACCOUNTING_NOT_CONFIRMED"
                 state["m1_sacct_state"] = terminal
