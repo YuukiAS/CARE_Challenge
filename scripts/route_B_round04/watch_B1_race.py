@@ -7,6 +7,7 @@ import argparse
 import csv
 import json
 import subprocess
+import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -14,6 +15,10 @@ from typing import Any
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO_ROOT))
+
+from scripts.ops.slurm_cancel_normal_entry import guarded_scancel  # noqa: E402
+
 ROUND_ROOT = REPO_ROOT / "results" / "route_B" / "round04"
 LEDGER = ROUND_ROOT / "controller_ledger.csv"
 STATE = ROUND_ROOT / "b1_race_state.json"
@@ -120,11 +125,34 @@ def main() -> int:
             winner_partition = running[0]
             for partition in pending:
                 if partition not in cancelled:
-                    scancel = run(["scancel", jobs[partition]])
+                    scancel = guarded_scancel(jobs[partition])
                     states[partition]["cancel_command"] = f"scancel {jobs[partition]}"
                     states[partition]["cancel_exit"] = str(scancel.returncode)
                     states[partition]["cancel_stdout"] = scancel.stdout.strip()
                     states[partition]["cancel_stderr"] = scancel.stderr.strip()
+                    if scancel.returncode != 0:
+                        write_json(
+                            STATE,
+                            {
+                                "status": "CANCEL_BLOCKED",
+                                "updated_at_utc": utc_now(),
+                                "jobs": jobs,
+                                "states": states,
+                                "cancelled_partitions": sorted(cancelled),
+                            },
+                        )
+                        append_ledger(
+                            {
+                                "timestamp_utc": utc_now(),
+                                "phase": "B1_RACE_CANCEL_BLOCKED",
+                                "git_head": git_head,
+                                "job_ids": json.dumps(jobs, sort_keys=True),
+                                "job_states": json.dumps(states, sort_keys=True),
+                                "decision": "NEEDS_INTERACTIVE_CHAT_CONFIRMATION",
+                                "next_action": "propagate guarded scancel result and end this cancellation attempt",
+                            }
+                        )
+                        return scancel.returncode
                     cancelled.add(partition)
             append_ledger(
                 {

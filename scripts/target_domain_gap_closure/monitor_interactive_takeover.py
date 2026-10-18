@@ -8,6 +8,7 @@ import json
 import os
 import shlex
 import subprocess
+import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -15,6 +16,10 @@ from typing import Any
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO_ROOT))
+
+from scripts.ops.slurm_cancel_normal_entry import guarded_scancel  # noqa: E402
+
 TASK_KEY = "20260801_care_target_domain_race_gap_closure"
 RESULT_ROOT = REPO_ROOT / "results" / TASK_KEY
 RUNTIME_ROOT = Path("/users/a/e/aereinh/.tmp/codex-CARE") / TASK_KEY
@@ -113,8 +118,24 @@ def main() -> int:
 
         if m1_state == "PENDING" and not m0r_running and interactive_state == "RUNNING":
             append_log(log_path, f"interactive free; cancelling pending M1 queue job {args.m1_queue_job_id}")
-            cancel = run(["scancel", args.m1_queue_job_id])
-            append_log(log_path, "scancel output=" + shlex.quote(cancel.stdout.strip()))
+            cancel = guarded_scancel(args.m1_queue_job_id)
+            append_log(
+                log_path,
+                "scancel exit="
+                + str(cancel.returncode)
+                + " stdout="
+                + shlex.quote(cancel.stdout.strip())
+                + " stderr="
+                + shlex.quote(cancel.stderr.strip()),
+            )
+            if cancel.returncode != 0:
+                state["status"] = "CANCEL_BLOCKED"
+                state["cancel_exit"] = cancel.returncode
+                state["cancel_stdout"] = cancel.stdout.strip()
+                state["cancel_stderr"] = cancel.stderr.strip()
+                write_json(state_path, state)
+                append_log(log_path, "CANCEL_BLOCKED_NEEDS_INTERACTIVE_CHAT_CONFIRMATION")
+                return cancel.returncode
             terminal = "UNKNOWN"
             for _ in range(60):
                 terminal = sacct_state(args.m1_queue_job_id)

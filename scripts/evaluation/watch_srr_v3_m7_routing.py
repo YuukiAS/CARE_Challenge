@@ -5,9 +5,16 @@ from __future__ import annotations
 
 import argparse
 import subprocess
+import sys
 import time
 from datetime import datetime
 from pathlib import Path
+
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO_ROOT))
+
+from scripts.ops.slurm_cancel_normal_entry import guarded_scancel  # noqa: E402
 
 
 def now() -> str:
@@ -89,13 +96,19 @@ def main() -> int:
             log.write(f"{now()} snapshot {snapshot}\n")
             log.flush()
             if job_has_state(rows, args.a100_job, "RUNNING"):
-                proc = run_command(["scancel", args.htzhulab_job])
-                log.write(f"{now()} a100_running_cancel_htzhulab exit={proc.returncode} output={proc.stdout.strip()}\n")
-                return 0
+                proc = guarded_scancel(args.htzhulab_job)
+                log.write(
+                    f"{now()} a100_running_cancel_htzhulab exit={proc.returncode} "
+                    f"stdout={proc.stdout.strip()} stderr={proc.stderr.strip()}\n"
+                )
+                return proc.returncode
             if job_has_state(rows, args.htzhulab_job, "RUNNING"):
-                proc = run_command(["scancel", args.a100_job])
-                log.write(f"{now()} htzhulab_running_cancel_a100 exit={proc.returncode} output={proc.stdout.strip()}\n")
-                return 0
+                proc = guarded_scancel(args.a100_job)
+                log.write(
+                    f"{now()} htzhulab_running_cancel_a100 exit={proc.returncode} "
+                    f"stdout={proc.stdout.strip()} stderr={proc.stderr.strip()}\n"
+                )
+                return proc.returncode
             if not rows:
                 log.write(f"{now()} no_jobs_left\n")
                 return 0

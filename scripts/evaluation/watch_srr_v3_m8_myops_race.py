@@ -5,9 +5,16 @@ from __future__ import annotations
 
 import argparse
 import subprocess
+import sys
 import time
 from datetime import datetime
 from pathlib import Path
+
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO_ROOT))
+
+from scripts.ops.slurm_cancel_normal_entry import guarded_scancel  # noqa: E402
 
 
 def run(command: list[str]) -> tuple[int, str]:
@@ -41,7 +48,7 @@ def log(path: Path, message: str) -> None:
         f.write(f"{datetime.now().isoformat()} {message}\n")
 
 
-def main() -> None:
+def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--htzhulab-job-id", required=True)
     parser.add_argument("--a100-job-id", required=True)
@@ -61,22 +68,23 @@ def main() -> None:
         h_pending = any_state(h_rows, "PENDING")
         a_pending = any_state(a_rows, "PENDING")
         if h_running and a_pending and not a_running:
-            code, out = run(["scancel", args.a100_job_id])
-            log(log_path, f"cancel_a100 code={code} output={out}")
-            return
+            proc = guarded_scancel(args.a100_job_id)
+            log(log_path, f"cancel_a100 code={proc.returncode} stdout={proc.stdout.strip()} stderr={proc.stderr.strip()}")
+            return proc.returncode
         if a_running and h_pending and not h_running:
-            code, out = run(["scancel", args.htzhulab_job_id])
-            log(log_path, f"cancel_htzhulab code={code} output={out}")
-            return
+            proc = guarded_scancel(args.htzhulab_job_id)
+            log(log_path, f"cancel_htzhulab code={proc.returncode} stdout={proc.stdout.strip()} stderr={proc.stderr.strip()}")
+            return proc.returncode
         if h_running and a_running:
             log(log_path, "both_partitions_running manual_intervention_required")
-            return
+            return 0
         if all_gone(h_rows) and all_gone(a_rows):
             log(log_path, "both_jobs_gone watcher_exit")
-            return
+            return 0
         time.sleep(max(1, args.check_interval_seconds))
     log(log_path, "max_checks_reached no_cancellation")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

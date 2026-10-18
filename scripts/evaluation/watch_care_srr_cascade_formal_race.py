@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import subprocess
+import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -13,6 +14,10 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
+
+from scripts.ops.slurm_cancel_normal_entry import guarded_scancel  # noqa: E402
+
 RESULT = ROOT / "results/20260724_care_myops_srr_cascade_submission_rescue"
 RC1_ROOT = RESULT / "runtime_closure_repair_rc1"
 
@@ -107,15 +112,12 @@ def cancel_if_pending(job_id: str, snapshot: dict[str, dict[str, str]], *, dry_r
     state = snapshot.get(job_id, {}).get("state", "")
     if state != "PENDING":
         return {"job_id": job_id, "action": "NOT_CANCELLED_NOT_PENDING", "state": state}
-    cmd = ["scancel", job_id]
-    if dry_run:
-        return {"job_id": job_id, "action": "DRY_RUN_SCANCEL_PENDING_LOSER", "state": state, "command": " ".join(cmd)}
-    proc = run(cmd)
+    proc = guarded_scancel(job_id, dry_run=dry_run)
     return {
         "job_id": job_id,
-        "action": "SCANCEL_PENDING_LOSER",
+        "action": "DRY_RUN_SCANCEL_PENDING_LOSER" if dry_run else ("SCANCEL_PENDING_LOSER" if proc.returncode == 0 else "CANCEL_BLOCKED"),
         "state": state,
-        "command": " ".join(cmd),
+        "command": f"scancel {job_id}",
         "exit_code": proc.returncode,
         "stdout": proc.stdout.strip(),
         "stderr": proc.stderr.strip(),
@@ -126,22 +128,42 @@ def evaluate_once(pairs: list[dict[str, str]], *, dry_run: bool) -> dict[str, An
     job_ids = sorted({pair["a100_job"] for pair in pairs} | {pair["htzhulab_job"] for pair in pairs})
     snapshot = merged_snapshot(job_ids)
     actions = []
+    blocked_exit_code = 0
     for pair in pairs:
         a100_state = snapshot.get(pair["a100_job"], {}).get("state", "")
         htz_state = snapshot.get(pair["htzhulab_job"], {}).get("state", "")
         if a100_state == "RUNNING" and htz_state == "PENDING":
-            actions.append({**pair, "winner_job_id": pair["a100_job"], "winner_partition": "a100-gpu", **cancel_if_pending(pair["htzhulab_job"], snapshot, dry_run=dry_run)})
+            action = {**pair, "winner_job_id": pair["a100_job"], "winner_partition": "a100-gpu", **cancel_if_pending(pair["htzhulab_job"], snapshot, dry_run=dry_run)}
+            actions.append(action)
         elif htz_state == "RUNNING" and a100_state == "PENDING":
-            actions.append({**pair, "winner_job_id": pair["htzhulab_job"], "winner_partition": "htzhulab", **cancel_if_pending(pair["a100_job"], snapshot, dry_run=dry_run)})
+            action = {**pair, "winner_job_id": pair["htzhulab_job"], "winner_partition": "htzhulab", **cancel_if_pending(pair["a100_job"], snapshot, dry_run=dry_run)}
+            actions.append(action)
         elif a100_state == "COMPLETED" and htz_state == "PENDING":
-            actions.append({**pair, "winner_job_id": pair["a100_job"], "winner_partition": "a100-gpu", **cancel_if_pending(pair["htzhulab_job"], snapshot, dry_run=dry_run)})
+            action = {**pair, "winner_job_id": pair["a100_job"], "winner_partition": "a100-gpu", **cancel_if_pending(pair["htzhulab_job"], snapshot, dry_run=dry_run)}
+            actions.append(action)
         elif htz_state == "COMPLETED" and a100_state == "PENDING":
-            actions.append({**pair, "winner_job_id": pair["htzhulab_job"], "winner_partition": "htzhulab", **cancel_if_pending(pair["a100_job"], snapshot, dry_run=dry_run)})
+            action = {**pair, "winner_job_id": pair["htzhulab_job"], "winner_partition": "htzhulab", **cancel_if_pending(pair["a100_job"], snapshot, dry_run=dry_run)}
+            actions.append(action)
         else:
             actions.append({**pair, "action": "NO_CANCEL", "a100_state": a100_state, "htzhulab_state": htz_state})
+            action = actions[-1]
+        if action.get("exit_code", 0) != 0:
+            blocked_exit_code = int(action["exit_code"])
+            break
     active_states = {"PENDING", "RUNNING", "CONFIGURING", "COMPLETING"}
-    decision = "NEEDS_MONITOR" if any(row.get("state") in active_states for row in snapshot.values()) else "TERMINAL_NEEDS_ACCOUNTING"
-    return {"timestamp_utc": utc_now(), "decision": decision, "pairs": pairs, "snapshot": snapshot, "actions": actions, "dry_run": dry_run}
+    if blocked_exit_code:
+        decision = "CANCEL_BLOCKED"
+    else:
+        decision = "NEEDS_MONITOR" if any(row.get("state") in active_states for row in snapshot.values()) else "TERMINAL_NEEDS_ACCOUNTING"
+    return {
+        "timestamp_utc": utc_now(),
+        "decision": decision,
+        "exit_code": blocked_exit_code,
+        "pairs": pairs,
+        "snapshot": snapshot,
+        "actions": actions,
+        "dry_run": dry_run,
+    }
 
 
 def write_json(path: Path, payload: dict[str, Any]) -> None:
@@ -173,6 +195,8 @@ def main() -> int:
         write_json(args.state_file, payload)
         append_jsonl(args.history_file, payload)
         print(json.dumps(payload, indent=2, sort_keys=True))
+        if payload["decision"] == "CANCEL_BLOCKED":
+            return int(payload["exit_code"])
         if args.once or payload["decision"] == "TERMINAL_NEEDS_ACCOUNTING":
             return 0
         time.sleep(args.interval_seconds)
