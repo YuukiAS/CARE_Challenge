@@ -17,8 +17,8 @@ from scripts.route_B_round04 import watch_B1_race as b1
 from scripts.target_domain_gap_closure import monitor_interactive_takeover as takeover
 
 
-def blocked(job_id: str, code: int = 75) -> subprocess.CompletedProcess[str]:
-    return subprocess.CompletedProcess(["scancel", job_id], code, "", "interactive confirmation required")
+def blocked(job_id: str, code: int = 75) -> normal_entry.CancellationIntent:
+    return normal_entry.CancellationIntent(["scancel", job_id], code, "", "interactive confirmation required")
 
 
 class NormalEntryTests(unittest.TestCase):
@@ -42,26 +42,20 @@ class NormalEntryTests(unittest.TestCase):
         self.assertFalse((repo_root / ".codex/config.toml").exists())
 
     def test_rejects_non_exact_job_id_without_subprocess(self) -> None:
-        with mock.patch.object(normal_entry.subprocess, "run") as run:
-            result = normal_entry.guarded_scancel("123,456")
+        result = normal_entry.request_slurm_cancellation("123,456")
         self.assertEqual(result.returncode, 64)
-        run.assert_not_called()
 
     def test_returns_exact_intent_without_starting_a_subprocess(self) -> None:
-        with mock.patch.object(normal_entry.subprocess, "run") as run:
-            result = normal_entry.guarded_scancel("123")
+        result = normal_entry.request_slurm_cancellation("123")
         self.assertEqual(result.returncode, 75)
         self.assertEqual(result.args, ["scancel", "123"])
         self.assertEqual(json.loads(result.stdout)["job_id"], "123")
         self.assertEqual(json.loads(result.stdout)["mutation_count"], 0)
-        run.assert_not_called()
 
     def test_dry_run_is_also_pure_intent(self) -> None:
-        with mock.patch.object(normal_entry.subprocess, "run") as run:
-            result = normal_entry.guarded_scancel("123_4", dry_run=True)
+        result = normal_entry.request_slurm_cancellation("123_4", dry_run=True)
         self.assertEqual(result.returncode, 0)
         self.assertEqual(result.stdout, "DRY_RUN_CANCELLATION_INTENT")
-        run.assert_not_called()
 
 
 class WatcherPropagationTests(unittest.TestCase):
@@ -81,7 +75,7 @@ class WatcherPropagationTests(unittest.TestCase):
                 mock.patch.object(b1, "LEDGER", ledger),
                 mock.patch.object(b1, "run", return_value=subprocess.CompletedProcess([], 0, "head\n", "")),
                 mock.patch.object(b1, "squeue_state", side_effect=job_state),
-                mock.patch.object(b1, "guarded_scancel", return_value=blocked("22")),
+                mock.patch.object(b1, "request_slurm_cancellation", return_value=blocked("22")),
             ):
                 code = b1.main()
 
@@ -108,7 +102,7 @@ class WatcherPropagationTests(unittest.TestCase):
             with (
                 mock.patch.object(sys, "argv", argv),
                 mock.patch.object(m7, "job_lines", return_value=rows),
-                mock.patch.object(m7, "guarded_scancel", return_value=blocked("22")) as cancel,
+                mock.patch.object(m7, "request_slurm_cancellation", return_value=blocked("22")) as cancel,
             ):
                 self.assertEqual(m7.main(), 75)
             cancel.assert_called_once_with("22")
@@ -142,8 +136,8 @@ class WatcherPropagationTests(unittest.TestCase):
                     mock.patch.object(m7, "job_lines", return_value=rows),
                     mock.patch.object(
                         m7,
-                        "guarded_scancel",
-                        return_value=subprocess.CompletedProcess(["scancel"], 0, "", ""),
+                        "request_slurm_cancellation",
+                        return_value=normal_entry.CancellationIntent(["scancel"], 0, "", ""),
                     ) as cancel,
                 ):
                     self.assertEqual(m7.main(), 0)
@@ -174,7 +168,7 @@ class WatcherPropagationTests(unittest.TestCase):
             with (
                 mock.patch.object(sys, "argv", argv),
                 mock.patch.object(m8, "states", side_effect=states),
-                mock.patch.object(m8, "guarded_scancel", return_value=blocked("22")),
+                mock.patch.object(m8, "request_slurm_cancellation", return_value=blocked("22")),
             ):
                 self.assertEqual(m8.main(), 75)
 
@@ -188,7 +182,7 @@ class WatcherPropagationTests(unittest.TestCase):
                 mock.patch.object(takeover, "RESULT_ROOT", root / "results"),
                 mock.patch.object(takeover, "squeue_state", side_effect=["RUNNING", "PENDING"]),
                 mock.patch.object(takeover, "pid_running", return_value=False),
-                mock.patch.object(takeover, "guarded_scancel", return_value=blocked("22")),
+                mock.patch.object(takeover, "request_slurm_cancellation", return_value=blocked("22")),
                 mock.patch.object(takeover, "sacct_state") as accounting,
                 mock.patch.object(takeover, "launch_m1") as launch,
             ):
@@ -208,7 +202,7 @@ class WatcherPropagationTests(unittest.TestCase):
                 mock.patch.object(takeover, "RESULT_ROOT", root / "results"),
                 mock.patch.object(takeover, "squeue_state", side_effect=["RUNNING", "NOT_IN_SQUEUE"]),
                 mock.patch.object(takeover, "pid_running", return_value=False),
-                mock.patch.object(takeover, "guarded_scancel") as cancel,
+                mock.patch.object(takeover, "request_slurm_cancellation") as cancel,
                 mock.patch.object(takeover, "sacct_state", return_value="CANCELLED") as accounting,
                 mock.patch.object(takeover, "launch_m1", return_value=(1234, "launcher.log")) as launch,
             ):
@@ -233,7 +227,7 @@ class WatcherPropagationTests(unittest.TestCase):
         }
         with (
             mock.patch.object(cascade, "merged_snapshot", return_value=snapshot),
-            mock.patch.object(cascade, "guarded_scancel", return_value=blocked("22")) as cancel,
+            mock.patch.object(cascade, "request_slurm_cancellation", return_value=blocked("22")) as cancel,
         ):
             payload = cascade.evaluate_once(pairs, dry_run=False)
         self.assertEqual(payload["decision"], "CANCEL_BLOCKED")

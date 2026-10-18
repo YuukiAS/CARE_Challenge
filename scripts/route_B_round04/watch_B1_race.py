@@ -17,7 +17,7 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.ops.slurm_cancel_normal_entry import guarded_scancel  # noqa: E402
+from scripts.ops.slurm_cancel_normal_entry import request_slurm_cancellation  # noqa: E402
 
 ROUND_ROOT = REPO_ROOT / "results" / "route_B" / "round04"
 LEDGER = ROUND_ROOT / "controller_ledger.csv"
@@ -125,7 +125,7 @@ def main() -> int:
             winner_partition = running[0]
             for partition in pending:
                 if partition not in cancelled:
-                    scancel = guarded_scancel(jobs[partition])
+                    scancel = request_slurm_cancellation(jobs[partition])
                     states[partition]["cancel_command"] = f"scancel {jobs[partition]}"
                     states[partition]["cancel_exit"] = str(scancel.returncode)
                     states[partition]["cancel_stdout"] = scancel.stdout.strip()
@@ -149,7 +149,7 @@ def main() -> int:
                                 "job_ids": json.dumps(jobs, sort_keys=True),
                                 "job_states": json.dumps(states, sort_keys=True),
                                 "decision": "NEEDS_INTERACTIVE_CHAT_CONFIRMATION",
-                                "next_action": "propagate guarded scancel result and end this cancellation attempt",
+                                "next_action": "propagate cancellation intent and end this cancellation attempt",
                             }
                         )
                         return scancel.returncode

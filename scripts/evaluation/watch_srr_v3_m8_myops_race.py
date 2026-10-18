@@ -14,7 +14,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.ops.slurm_cancel_normal_entry import guarded_scancel  # noqa: E402
+from scripts.ops.slurm_cancel_normal_entry import request_slurm_cancellation  # noqa: E402
 
 
 def run(command: list[str]) -> tuple[int, str]:
@@ -68,11 +68,11 @@ def main() -> int:
         h_pending = any_state(h_rows, "PENDING")
         a_pending = any_state(a_rows, "PENDING")
         if h_running and a_pending and not a_running:
-            proc = guarded_scancel(args.a100_job_id)
+            proc = request_slurm_cancellation(args.a100_job_id)
             log(log_path, f"cancel_a100 code={proc.returncode} stdout={proc.stdout.strip()} stderr={proc.stderr.strip()}")
             return proc.returncode
         if a_running and h_pending and not h_running:
-            proc = guarded_scancel(args.htzhulab_job_id)
+            proc = request_slurm_cancellation(args.htzhulab_job_id)
             log(log_path, f"cancel_htzhulab code={proc.returncode} stdout={proc.stdout.strip()} stderr={proc.stderr.strip()}")
             return proc.returncode
         if h_running and a_running:

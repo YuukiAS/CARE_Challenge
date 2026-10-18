@@ -172,9 +172,11 @@ Cancellation automation must return an exact ordinary-cancel intent to the root
 interactive Codex and propagate the blocker code; it must not start `scancel`
 through a subprocess, PATH lookup, absolute executable, SSH/API call, or holder
 termination. The root Codex issues `scancel <exact-job-id>`; the current
-Longleaf Codex identity's single user-level Slurm Workflows Host Hooks own all
-resolution, protected-partition confirmation, and mutation. CARE declares no
-project Hook or protected policy. After a confirmed Host Hook cancellation, resumed automation only
+Longleaf Codex identity's single user-level Slurm Workflows Host Hooks detect
+protected targets, prevent ordinary approval bypass, and perform one exact
+cancellation only after native chat confirmation. Non-protected targets keep
+Codex's existing permission and command semantics. CARE declares no project
+Hook or protected policy. After a confirmed Host Hook cancellation, resumed automation only
 observes scheduler state and never emits a second cancellation intent.
 
 The usual working environment is a compute node. The user also has access to the **`htzhulab`** partition; when CPU-only execution would be slow, use temporary GPU jobs there via `sbatch`, `srun`, or similar Slurm commands instead of letting long CPU runs crawl.

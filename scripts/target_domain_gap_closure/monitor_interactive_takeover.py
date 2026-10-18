@@ -18,7 +18,7 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.ops.slurm_cancel_normal_entry import guarded_scancel  # noqa: E402
+from scripts.ops.slurm_cancel_normal_entry import request_slurm_cancellation  # noqa: E402
 
 TASK_KEY = "20260801_care_target_domain_race_gap_closure"
 RESULT_ROOT = REPO_ROOT / "results" / TASK_KEY
@@ -129,7 +129,7 @@ def main() -> int:
         if not m0r_running and interactive_state == "RUNNING" and m1_state in {"PENDING", "NOT_IN_SQUEUE"}:
             if m1_state == "PENDING":
                 append_log(log_path, f"interactive free; cancelling pending M1 queue job {args.m1_queue_job_id}")
-                cancel = guarded_scancel(args.m1_queue_job_id)
+                cancel = request_slurm_cancellation(args.m1_queue_job_id)
                 append_log(
                     log_path,
                     "scancel exit="

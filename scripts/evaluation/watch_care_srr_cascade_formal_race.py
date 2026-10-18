@@ -16,7 +16,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-from scripts.ops.slurm_cancel_normal_entry import guarded_scancel  # noqa: E402
+from scripts.ops.slurm_cancel_normal_entry import request_slurm_cancellation  # noqa: E402
 
 RESULT = ROOT / "results/20260724_care_myops_srr_cascade_submission_rescue"
 RC1_ROOT = RESULT / "runtime_closure_repair_rc1"
@@ -112,7 +112,7 @@ def cancel_if_pending(job_id: str, snapshot: dict[str, dict[str, str]], *, dry_r
     state = snapshot.get(job_id, {}).get("state", "")
     if state != "PENDING":
         return {"job_id": job_id, "action": "NOT_CANCELLED_NOT_PENDING", "state": state}
-    proc = guarded_scancel(job_id, dry_run=dry_run)
+    proc = request_slurm_cancellation(job_id, dry_run=dry_run)
     return {
         "job_id": job_id,
         "action": "DRY_RUN_SCANCEL_PENDING_LOSER" if dry_run else ("SCANCEL_PENDING_LOSER" if proc.returncode == 0 else "CANCEL_BLOCKED"),

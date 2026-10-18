@@ -5,21 +5,29 @@ from __future__ import annotations
 
 import json
 import re
-import subprocess
+from dataclasses import dataclass
 
 
 EXACT_JOB_ID = re.compile(r"^[0-9]+(?:_[0-9]+)?$")
 INTENT_EXIT = 75
 
 
-def guarded_scancel(job_id: str, *, dry_run: bool = False) -> subprocess.CompletedProcess[str]:
-    """Preserve business intent without starting any cancellation executable."""
+@dataclass(frozen=True)
+class CancellationIntent:
+    args: list[str]
+    returncode: int
+    stdout: str
+    stderr: str
+
+
+def request_slurm_cancellation(job_id: str, *, dry_run: bool = False) -> CancellationIntent:
+    """Return a cancellation intent without starting any command or API call."""
 
     command = ["scancel", str(job_id)]
     if not EXACT_JOB_ID.fullmatch(str(job_id)):
-        return subprocess.CompletedProcess(command, 64, "", "non_exact_job_id")
+        return CancellationIntent(command, 64, "", "non_exact_job_id")
     if dry_run:
-        return subprocess.CompletedProcess(command, 0, "DRY_RUN_CANCELLATION_INTENT", "")
+        return CancellationIntent(command, 0, "DRY_RUN_CANCELLATION_INTENT", "")
     payload = {
         "status": "NEEDS_ROOT_INTERACTIVE_CODEX_CANCELLATION",
         "operation": "ordinary_cancel",
@@ -27,7 +35,7 @@ def guarded_scancel(job_id: str, *, dry_run: bool = False) -> subprocess.Complet
         "command": f"scancel {job_id}",
         "mutation_count": 0,
     }
-    return subprocess.CompletedProcess(
+    return CancellationIntent(
         command,
         INTENT_EXIT,
         json.dumps(payload, sort_keys=True),
